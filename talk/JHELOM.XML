@@ -1,0 +1,115 @@
+<?xml version="1.0"?>
+<dialogue xml:space="preserve">
+  <person id="0" name="Geoffrey" pronoun="Er" turnAwayProb="0">
+    <description>Einen 1,95m großen Krieger.</description>
+    <topic query="job">Ich führe in die Schlacht!</topic>
+    <topic query="health">Ich bin gesund und stark!</topic>
+    <topic query="KRIE">Ein großer Krieger ist ein tapferer Krieger!<question type="0">Bist du tapfer?<yes>Vielleicht könnte ich dich eines Tages begleiten!</yes><no>Die Schlacht zu fliehen zeigt Feigheit!</no></question></topic>
+    <topic query="SCHL">Ich will wieder in der Schlacht kämpfen!</topic>
+  </person>
+  <person id="1" name="Lord Robert" pronoun="Er" turnAwayProb="0">
+    <description>Einen geheimnisvollen Krieger.</description>
+    <topic query="job">Ich schlage Schlachten für Lord British!<question type="0">Bist du ein tapferer Krieger?<yes>Du verdienst die Rune, frag Nostro!</yes><no>Du bist ein Schwächling!</no></question></topic>
+    <topic query="health">Hervorragend!</topic>
+    <topic query="KRIE">Du mußt lange und harte Schlachten schlagen, um ein Krieger zu sein.</topic>
+    <topic query="SCHL">Schlachten gibt es wenige, und zu viele!</topic>
+  </person>
+  <person id="2" name="Lady Donna" pronoun="Sie" turnAwayProb="0">
+    <description>Eine 1,50m große schwangere Frau.</description>
+    <topic query="job">Ich wache über meine Schafe.</topic>
+    <topic query="health">Gut, außer dem Brocken in meinem Bauche.</topic>
+    <topic query="SCHW">Schwanger sein macht keinen Spaß.<question type="0">Warum, bist du der Vater?<yes>Warte, bis ich's meinem Manne sage!</yes><no>Gott sei Dank!</no></question></topic>
+    <topic query="SCHA">Ich kann Schafe nicht ausstehen!</topic>
+  </person>
+  <person id="3" name="Bengrod" pronoun="Er" turnAwayProb="0">
+    <description>Einen verwundeten Kämpfer!</description>
+    <topic query="job">Ich durchsuche die Höhlen!</topic>
+    <topic query="health">Schlecht.</topic>
+    <topic query="HOEH">Ich wurde in der Höhle Memme geschlagen.<question type="0">Hast du ihren Altarraum gefunden?<yes>Er ist verbunden mit Gierig, Schande und Hylot!</yes><no>Finde ihn!</no></question></topic>
+    <topic query="ALTA">Benutze darin die Steine, die in den verbundenen Höhlen zu finden sind!</topic>
+  </person>
+  <person id="4" name="Sir William" pronoun="Er" turnAwayProb="0">
+    <description>Einen edlen Kämpfer.</description>
+    <topic query="job">Ich suche nach tapferen Kämpfern!<question type="0">Bist du tapfer?<yes>Strebe danach, alles böse zu besiegen!</yes><no>Ich verstehe.</no></question></topic>
+    <topic query="health">Sehr gut.</topic>
+    <topic query="BOES">Töte keine nicht-bösen Geschöpfe, aber halte dennoch immer die Stellung!</topic>
+    <topic query="TOET">Laß sie stattdessen fliehen. Flieh niemals unverletzt!</topic>
+  </person>
+  <person id="5" name="Sir Hrothgar" pronoun="Er" turnAwayProb="0">
+    <description>Einen mächtigen Krieger!</description>
+    <topic query="job">Ich kämpfe für Tapferkeit!</topic>
+    <topic query="health">Exzellent.</topic>
+    <topic query="TAPF">Die tapfere Seele fürchtet nicht ihr eigenes Antlitz!<question type="1">Bist du die tapferste aller Seelen?<yes>Das ist nicht wahrscheinlich!</yes><no>Du solltest den Schrein der Tapferkeit aufsuchen!</no></question></topic>
+    <topic query="SCHR">Das Mantra muß man kennen, frag Aesop!</topic>
+  </person>
+  <person id="6" name="eine Wache" pronoun="Er" turnAwayProb="32">
+    <description>Eine strenge Wache.</description>
+    <topic query="job">Wir bewachen die Tore und diese Gänge!</topic>
+    <topic query="health">Gut.</topic>
+    <topic query="TORE">Die Tore von Jhelom.</topic>
+    <topic query="GAEN">Diese Gänge sind nicht zugänglich.</topic>
+  </person>
+  <person id="7" name="Aesop" pronoun="Er" turnAwayProb="0">
+    <description>Einen kleinen Mann.</description>
+    <topic query="job">Ich suche nach Tapferkeit!</topic>
+    <topic query="health">Gut genug.</topic>
+    <topic query="TAPF">Ich stelle fest, daß es leicht ist, aus sicherer Entfernung wagemutig zu sein!<question type="0">Weißt du, was ich meine?<yes>Das ist mein Problem.</yes><no>Du bist wagemutig!</no></question></topic>
+    <topic query="MANT">Das Mantra der Tapferkeit ist 'RA', benutze es im Schreine auf der nächsten Insel!</topic>
+  </person>
+  <person id="8" name="Gravnor" pronoun="Er" turnAwayProb="0">
+    <description>Einen sehr ernsten Kämpfer.</description>
+    <topic query="job">Ich durchsuche die Höhlen.</topic>
+    <topic query="health">Na ja.</topic>
+    <topic query="HOEH">Ich suche den roten Stein.</topic>
+    <topic query="STEI">Man findet ihn auf einem Altare!<question type="0">Hast du ihn?<yes>Kein Wunder, daß ich ihn nicht finde!</yes><no>Er liegt in der Höhle Memme!</no></question></topic>
+  </person>
+  <person id="9" name="Senora" pronoun="Sie" turnAwayProb="0">
+    <description>Eine schöne Magierin.</description>
+    <topic query="job">Ich bin in diesem Turme eingesperrt.</topic>
+    <topic query="health">Halbwegs gut.</topic>
+    <topic query="TURM">Ich werde für meine Verbrechen bestraft.</topic>
+    <topic query="VERB">Spielt keine Rolle, ich kann dir helfen!<question type="0">Hast du ein Schiff?<yes>Dann brauchst du einen Sextanten, frag den Wirt, der weiß mehr!</yes><no>Schade.</no></question></topic>
+  </person>
+  <person id="10" name="Nostro" pronoun="Er" turnAwayProb="0">
+    <description>Eine verkümmernde Seele</description>
+    <topic query="job">Ich habe diese Gänge gebaut und sie haben mich eingemauert!</topic>
+    <topic query="health">Ganz nah am Tode!</topic>
+    <topic query="GAEN">Dieser Gang führt rund um die Stadt!<question type="0">Wirst du mich hinausführen?<yes>Ich bin gerettet!</yes><no>Du bist gemein! Und ich folge dir trotzdem!</no></question></topic>
+    <topic query="RUNE">Die Rune ist in einem Turme vergraben!</topic>
+  </person>
+  <person id="11" name="Luke" pronoun="Er" turnAwayProb="0">
+    <description>Einen Waldläufer mit Blick in die Ferne.</description>
+    <topic query="job">Ich suche das innere Licht!</topic>
+    <topic query="health">Ganz ordentlich.</topic>
+    <topic query="LICH">Ich komme aus Skara Brae und bin auf meinem Wege nach Yew.<question type="0">Warst du schon in Skara Brae?<yes>Eine schöne Stadt!</yes><no>Es ist eine spirituelle Stadt!</no></question></topic>
+    <topic query="YEW ">Es ist eine Stadt, die auf der Tugend der Gerechtigkeit aufbaut!</topic>
+  </person>
+  <person id="12" name="Max" pronoun="Er" turnAwayProb="0">
+    <description>Den Zimmerjungen.</description>
+    <topic query="job">Ich bin der Zimmerjunge.</topic>
+    <topic query="health">Gut!</topic>
+    <topic query="ZIMM">Ich reinige den Raum.<question type="0">Gibt es ein Problem mit deinem Raume?<yes>Es tut mir sehr leid, ich werde es sofort beheben!</yes><no>Oh, ich hab mir schon Sorgen gemacht!</no></question></topic>
+    <topic query="RAUM">Der da hinten ist seltsam. Leute verschwinden häufig.</topic>
+  </person>
+  <person id="13" name="X" pronoun="Er" turnAwayProb="0">
+    <description>Eine seltsame Person.</description>
+    <topic query="job">Ich suche den Stein.</topic>
+    <topic query="health">O.K.</topic>
+    <topic query="STEI">Den roten Stein.</topic>
+    <topic query="ROTE">Rot steht für Tapferkeit, eine Tugend des Avatars!<question type="1">Hast du die Queste des Avatars vollendet?<yes>Hui!</yes><no>Dann brauchst du den roten stein in &gt;einem&lt; Altarraume, um den dritten Teil eines Schlüssels zu bekommen!</no></question></topic>
+  </person>
+  <person id="14" name="Slithe" pronoun="Er" turnAwayProb="0">
+    <description>Einen tapferen Krieger.</description>
+    <topic query="job">Ich schlage Schlachten!</topic>
+    <topic query="health">Nur kleine Wunden!</topic>
+    <topic query="SCHL">Echte Tapferkeit sieht man nicht in der Kraft der Waffen, sondern in der Kraft des Willens!<question type="0">Bist du tapfer?<yes>Dann flieh niemals, außer wenn die Not groß ist!</yes><no>Feigling.</no></question></topic>
+    <topic query="TAPF">Ich zeige meine Tapferkeit in der Schlacht.</topic>
+  </person>
+  <person id="15" name="Timrod" pronoun="Er" turnAwayProb="0">
+    <description>Einen dünnen Kämpfer.</description>
+    <topic query="job">Ich kämpfe mit Tapferkeit!</topic>
+    <topic query="health">Könnte nicht besser sein!</topic>
+    <topic query="TAPF">Es gibt keinen heiligeren Grund als den, wo besiegte Tapferkeit liegt.<question type="0">Bist du wagemutig?<yes>Das Schicksal hilft den Wagemutigen!</yes><no>Feigling.</no></question></topic>
+    <topic query="WAGE">Sei mutig, denn es gibt viel zu wagen!</topic>
+  </person>
+</dialogue>

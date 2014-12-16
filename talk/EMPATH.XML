@@ -1,0 +1,115 @@
+<?xml version="1.0"?>
+<dialogue xml:space="preserve">
+  <person id="0" name="Lord Robert" pronoun="Er" turnAwayProb="0">
+    <description>Einen stattlichen Freiherrn.</description>
+    <topic query="job">Ich regiere diese Provinz.</topic>
+    <topic query="health">Sehr gut.</topic>
+    <topic query="PROV">Meine Frau Marcy kann dir mehr erzählen!</topic>
+    <topic query="WORT">Ich kenne nur eine von drei Silben.<question type="0">Willst du sie jetzt wissen?<yes>Sie lautet 'amo', such nun die anderen Teile!</yes><no>Vielleicht ein andermal.</no></question></topic>
+  </person>
+  <person id="1" name="Lady Marcy" pronoun="Sie" turnAwayProb="0">
+    <description>Eine charmante Freifrau.</description>
+    <topic query="job">Ich regiere mit meinem Herrn.</topic>
+    <topic query="health">Gut.</topic>
+    <topic query="REGI">Diese Provinz.</topic>
+    <topic query="PROV">Unser Volk glaubt an Liebe als Lebensweg und lebt sie voll aus!<question type="0">Suchst du Liebe?<yes>Dann mögest du sie finden!</yes><no>Dann wirst du sie nicht finden!</no></question></topic>
+  </person>
+  <person id="2" name="Suzanna" pronoun="Sie" turnAwayProb="64">
+    <description>Eine hübsche Dame.</description>
+    <topic query="job">Ich bin eine Aufwartedame.</topic>
+    <topic query="health">Überarbeitet!</topic>
+    <topic query="AUFW">Ich diene Marcy.<question type="0">Darfst du hier drin sein?<yes>Ich bezweifle es! Du solltest gehen!</yes><no>Du solltest gehen!</no></question></topic>
+    <topic query="HORN">Es gibt einen Paladin namens Malchor. Er kann dich zum silbernen Horne führen!</topic>
+  </person>
+  <person id="3" name="Leben" pronoun="Es" turnAwayProb="0">
+    <description>Ein Ench.</description>
+    <topic query="job">Ich schwinge mit Gedanken mit.</topic>
+    <topic query="health">Ich existiere.</topic>
+    <topic query="SCHW">Was sind deine Gedanken?</topic>
+    <topic query="LIEB">Such die Kerze der Liebe, denn nur mit ihr und zwei anderen Teilen kannst du den Abgrund betreten!<question type="0">Hast du sie?<yes>Gut.</yes><no>Frag den Barden hinter dem Geheimgange!</no></question></topic>
+  </person>
+  <person id="4" name="die Hallenwache" pronoun="Sie" turnAwayProb="0">
+    <description>Eine Wache.</description>
+    <topic query="job">Ich bewache die Hallen.</topic>
+    <topic query="health">Prima.</topic>
+    <topic query="HALL">Es gibt keine Gefahr.</topic>
+    <topic query="GEFA">Nun, zumindest nicht im Vergleiche mit einem Altarraume der Höhlen!<question type="0">Hast du die Altäre gelöst?<yes>Gut.</yes><no>Von ihnen gewinnt man einen Dreiteiligen Schlüssel, notwendig, um die Kammer des Kodex zu betreten!</no></question></topic>
+  </person>
+  <person id="5" name="eine Torwache" pronoun="Er" turnAwayProb="0">
+    <description>Eine Wache.</description>
+    <topic query="job">Eine Torwache.</topic>
+    <topic query="health">Einfach Spitze.</topic>
+    <topic query="TORW">Das Tor zur Abtei.</topic>
+    <topic query="ABTE">Hier im Eichenhaine finden viele die Bedeutung von Frieden und Liebe!<question type="1">Bist du völlig ausgefüllt mit Liebe?<yes>Dann brauchst du nicht hier zu sein!</yes><no>Besuch den kleinen Schrein innerhalb der Abtei!</no></question></topic>
+  </person>
+  <person id="6" name="Derek der Barde" pronoun="Er" turnAwayProb="0">
+    <description>Einen jungen Barden, der eine Laute spielt.</description>
+    <topic query="job">Ich bin ein Barde, ich singe Lieder.</topic>
+    <topic query="health">Ziemlich gut.</topic>
+    <topic query="LIED">Oh, alle Arten.<question type="0">Gefällt dir dies hier?<yes>Danke, ich habe es gerade geschrieben!</yes><no>Leider! Es war neu.</no></question></topic>
+    <topic query="KERZ">Die Kerze der Liebe findet man an einem geheimen Orte, versteckt abseits des Umschlossenen Sees!</topic>
+  </person>
+  <person id="7" name="Chinup" pronoun="Er" turnAwayProb="0">
+    <description>Ein kleines aber stattliches Kind.</description>
+    <topic query="job">Ich heiße dich Wilkommen in der Abtei!<question type="0">Bist du auf der Suche nach Liebe hier?<yes>Vielleicht dann den Eichenhain!</yes><no>Vielleicht dann den Eichenhain.</no></question></topic>
+    <topic query="health">Sehr gut, danke dir!</topic>
+    <topic query="HAIN">Ein Hain von Eichen.</topic>
+    <topic query="EICH">Dort suchen vier Berufsgruppen die Wahrheit!</topic>
+  </person>
+  <person id="8" name="Diane" pronoun="Sie" turnAwayProb="0">
+    <description>Eine große Frau.</description>
+    <topic query="job">Ich berate die, welche in den Hain eintreten.</topic>
+    <topic query="health">Gut.</topic>
+    <topic query="BERA">Hier kannst du vielleicht Einsichten in die Liebe finden, in dir selbst oder den anderen hier im Haine.</topic>
+    <topic query="LIEB">Frag die anderen.<question type="1">Bist du die liebevollste Person?<yes>Zweifelhaft!</yes><no>Strebe nach Liebe!</no></question></topic>
+  </person>
+  <person id="9" name="Benjamin" pronoun="Er" turnAwayProb="0">
+    <description>Einen ernsten Barden.</description>
+    <topic query="job">Ich beziehe Liebe und Mitgefühl aufeinander.</topic>
+    <topic query="health">Prima.<question type="0">Geht es dir gut?<yes>Sehr gut.</yes><no>Schade...</no></question></topic>
+    <topic query="LIEB">Wenn die drei sich in acht Weisen kombinieren, ist Liebe allein das Mitgefühl.</topic>
+    <topic query="MITG">Von den acht Eigenschaften des Avatars leitet sich Mitgefühl von Liebe allein ab.</topic>
+  </person>
+  <person id="10" name="Deirdre" pronoun="Sie" turnAwayProb="0">
+    <description>Eine Druidin, verloren in Gedanken.</description>
+    <topic query="job">Ich erwäge Liebe und Gerechtigkeit.</topic>
+    <topic query="health">Prima.<question type="0">Und du?<yes>Sehr gut.</yes><no>Ich verstehe.</no></question></topic>
+    <topic query="LIEB">Wenn Drei Acht bauen, wird Wahrheit gemildert durch Liebe zu Gerechtigkeit!</topic>
+    <topic query="GERE">Gerechtigkeit ist eine der acht Avatar-Tugenden und leitet sich ab von Wahrheit und Liebe.</topic>
+  </person>
+  <person id="11" name="Thomas" pronoun="Er" turnAwayProb="0">
+    <description>Einen herzhaften Zinker.</description>
+    <topic query="job">Ich denke an den Anteil der Liebe im Verzichte.</topic>
+    <topic query="health">Prima.<question type="0">Selbst?<yes>Gut.</yes><no>Schande.</no></question></topic>
+    <topic query="LIEB">Liebe zu anderen und der Mut, sogar dem Tode ins Auge zu sehen, ist Selbst-Verzicht.</topic>
+    <topic query="VERZ">Verzicht baut sich auf das Motiv der Liebe und die Fähigkeit des Mutes.</topic>
+  </person>
+  <person id="12" name="Lastro" pronoun="Er" turnAwayProb="0">
+    <description>Einen ernsten Waldläufer.</description>
+    <topic query="job">Ich folge dem spirituellen Wege.</topic>
+    <topic query="health">Ganz und gar gut.<question type="0">Und dir?<yes>Gut.</yes><no>So traurig.</no></question></topic>
+    <topic query="SPIR">Meine Spiritualität ist keine Religion, sondern eine Suche, mein eigenes inneres Wesen zu kennen und zu verbessern.</topic>
+    <topic query="WESE">Mein Wesen basiert auf meiner eigenen Wahrheit, meiner eigenen Liebe und meinem eigenen Mute.</topic>
+  </person>
+  <person id="13" name="Humlock" pronoun="Er" turnAwayProb="0">
+    <description>Einen murmelnden Bettler.</description>
+    <topic query="job">Ich suche Erlösung.</topic>
+    <topic query="health">Nicht so gut.</topic>
+    <topic query="MURM">Das... Ench... sprach zu mir!</topic>
+    <topic query="ERLO">Ich bin nur ein armer, mittelloser Bettler, ich habe nichts!<question type="0">Wirst du mir etwas Geld geben?<yes>Ich wäre soooo dankbar...</yes><no>Aber ich bin in ärgster Not!</no></question></topic>
+  </person>
+  <person id="14" name="Malchor" pronoun="Er" turnAwayProb="0">
+    <description>Einen kühnen Paladin.</description>
+    <topic query="job">Ich löse Questen.</topic>
+    <topic query="health">Gerade ganz geheilt worden!</topic>
+    <topic query="QUES">Meine letzte Queste brachte mich in die Nähe des Geistwaldes.<question type="0">Bist du auf einer Queste?<yes>Viel Glück dabei!</yes><no>Oh.</no></question></topic>
+    <topic query="HORN">Manche sagen, daß das silberne Horn auf einer kleinen Insel abseits der Spitze des Geistwaldes vergraben liegt.</topic>
+  </person>
+  <person id="15" name="Bruder Antos" pronoun="Er" turnAwayProb="0">
+    <description>Einen weisen Druiden.</description>
+    <topic query="job">Ich bewahre große Weisheit.</topic>
+    <topic query="health">Ich werde langsam alt und schwach.</topic>
+    <topic query="WEIS">Was willst du mich fragen?</topic>
+    <topic query="KERZ">Du brauchst die Kerze der Liebe, um den Abgrund zu betreten.<question type="0">Weißt du, wo sie zu finden ist?<yes>Sehr gut.</yes><no>Meditier über Liebe an unserem Schreine.</no></question></topic>
+  </person>
+</dialogue>

@@ -8,9 +8,10 @@
  *
  * intro stuff goes here...
  */
- 
+
 #include "vc6.h" // Fixes things if you're using VC6, does nothing if otherwise
 
+#include <SDL.h>
 #include "u4.h"
 #include <cstring>
 #include "debug.h"
@@ -45,20 +46,21 @@ using namespace std;
 
 int main(int argc, char *argv[]) {
     Debug::initGlobal("debug/global.txt");
-    
+
 #if defined(MACOSX)
     osxInit(argv[0]);
 #endif
 
     if (!u4fopen("AVATAR.EXE"))
 	{
-        errorFatal(	"xu4 requires the PC version of Ultima IV to be present. "
-        			"It must either be in the same directory as the xu4 executable, "
-        			"or in a subdirectory named \"ultima4\"."
-        			"\n\nThis can be achieved by downloading \"UltimaIV.zip\" from www.ultimaforever.com"
-        			"\n - Extract the contents of UltimaIV.zip"
-        			"\n - Copy the \"ultima4\" folder to your xu4 executable location."
-        			"\n\nVisit the XU4 website for additional information.\n\thttp://xu4.sourceforge.net/");
+        errorFatal(	"xu4 erfordert die MS-DOS-Version von Ultima IV. "
+        			"Diese muss sich im gleichen Verzeichnis bedinden wie die ausführbare Datei, "
+        			"oder in einem Unterverzeichnisse davon namens \"ultima4\"."
+        			"\n\nDies kannst Du erreichen, indem Du"
+			        "\n - \"UltimaIV.zip\" von www.ultimaforever.com herunterlädtst"
+        			"\n - Den Inhalt von UltimaIV.zip entpackst"
+        			"\n - Den Ordner \"ultima4\" an den Ort der ausführbaren Datei xu4 kopierst."
+        			"\n\nBesuche die xu4-Webseite für weitere Informationen.\n\thttp://xu4.sourceforge.net/");
 	}
 
 	unsigned int i;
@@ -99,10 +101,12 @@ int main(int argc, char *argv[]) {
             settings.filter = argv[i+1];
             i++;
         }
+#if 0
         else if (strcmp(argv[i], "-scale") == 0 && (unsigned int)argc > i + 1) {
             settings.scale = strtoul(argv[i+1], NULL, 0);
             i++;
         }
+#endif
         else if (((strcmp(argv[i], "-p") == 0)
                     || (strcmp(argv[i], "-profile") == 0))
                 && (unsigned int)argc > i + 1) {
@@ -125,30 +129,32 @@ int main(int argc, char *argv[]) {
 
     perf.start();
     screenInit();
+    /*
     ProgressBar pb((320/2) - (200/2), (200/2), 200, 10, 0, (skipIntro ? 4 : 7));
-    pb.setBorderColor(240, 240, 240);
-    pb.setColor(0, 0, 128);
+    pb.setBorderColor(255, 255, 255);
+    pb.setColor(0, 149, 255);
     pb.setBorderWidth(1);
 
-    screenTextAt(15, 11, "Loading...");
+    screenTextAt(15, 11, "Lade...");
+    */
     screenRedrawScreen();
-    perf.end("Screen Initialization");
-    ++pb;
+    perf.end("Bildschirm wird aufgebaut");
+    /* ++pb; */
 
     perf.start();
     soundInit();
-    perf.end("Misc Initialization");
-    ++pb;
+    perf.end("Verschiedene Initialisierungen");
+    /* ++pb; */
 
     perf.start();
     Tileset::loadAll();
     perf.end("Tileset::loadAll()");
-    ++pb;
+    /* ++pb; */
 
     perf.start();
     creatureMgr->getInstance();
     perf.end("creatureMgr->getInstance()");
-    ++pb;
+    /* ++pb; */
 
     intro = new IntroController();
     if (!skipIntro)
@@ -157,17 +163,17 @@ int main(int argc, char *argv[]) {
         perf.start();
         intro->init();
         perf.end("introInit()");
-        ++pb;
+        /* ++pb; */
 
         perf.start();
         intro->preloadMap();
         perf.end("intro->preloadMap()");
-        ++pb;
+        /* ++pb; */
 
         perf.start();
         musicMgr->init();
         perf.end("musicMgr->init()");
-        ++pb;
+        /* ++pb; */
 
         /* give a performance report */
         if (settings.debug)
@@ -190,7 +196,7 @@ int main(int argc, char *argv[]) {
     game = new GameController();
     game->init();
     perf.end("gameInit()");
-    
+
     /* give a performance report */
     if (settings.debug)
         perf.report("\n===============================\n\n");

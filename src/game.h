@@ -57,7 +57,7 @@ class AlphaActionController : public WaitableController<int> {
 public:
     AlphaActionController(char letter, const string &p) : lastValidLetter(letter), prompt(p) {}
     bool keyPressed(int key);
-    
+
     static int get(char lastValidLetter, const string &prompt, EventHandler *eh = NULL);
 
 private:
@@ -83,7 +83,7 @@ public:
  * The main game controller that handles basic game flow and keypresses.
  *
  * @todo
- *  <ul> 
+ *  <ul>
  *      <li>separate the dungeon specific stuff into another class (subclass?)</li>
  *  </ul>
  */
@@ -167,7 +167,7 @@ bool gameSpawnCreature(const class Creature *m);
 
 /* etc */
 string gameGetInput(int maxlen = 32);
-int gameGetPlayer(bool canBeDisabled, bool canBeActivePlayer);
+int gameGetPlayer(bool canBeDisabled, bool canBeActivePlayer, bool zeroIsValid);
 void gameGetPlayerForCommand(bool (*commandFn)(int player), bool canBeDisabled, bool canBeActivePlayer);
 void gameDamageParty(int minDamage, int maxDamage);
 void gameDamageShip(int minDamage, int maxDamage);

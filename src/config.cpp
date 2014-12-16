@@ -2,6 +2,8 @@
  * $Id$
  */
 
+#include "vc6.h" // Fixes things if you're using VC6, does nothing if otherwise
+
 #include <cstdio>
 #include <cstdarg>
 #include <cstdlib>
@@ -14,7 +16,7 @@
 #include <libxml/xinclude.h>
 #include <libxml/xpath.h>
 
-#if defined(MACOSX) || defined(IOS)
+#if defined(MACOSX)
 #include <CoreFoundation/CoreFoundation.h>
 #endif
 
@@ -66,7 +68,7 @@ char DEFAULT_CONFIG_XML_LOCATION[] = "config.xml";
 char * Config::CONFIG_XML_LOCATION_POINTER = &DEFAULT_CONFIG_XML_LOCATION[0];
 
 Config::Config() {
-    doc = xmlParseFile(Config::CONFIG_XML_LOCATION_POINTER);
+  doc = xmlReadFile(Config::CONFIG_XML_LOCATION_POINTER, NULL, XML_PARSE_NOENT|XML_PARSE_XINCLUDE);
     if (!doc) {
     	printf("Failed to read core config.xml. Assuming it is located at '%s'", Config::CONFIG_XML_LOCATION_POINTER);
         errorFatal("error parsing config.xml");
@@ -83,9 +85,8 @@ Config::Config() {
 
         cvp.userData = &errorMessage;
         cvp.error = &accumError;
-
         if (!xmlValidateDocument(&cvp, doc))
-            errorFatal("xml parse error:\n%s", errorMessage.c_str());        
+            errorFatal("xml parse error:\n%s", errorMessage.c_str());
     }
 }
 
@@ -160,7 +161,7 @@ string ConfigElement::getString(const string &name) const {
 
     string result(reinterpret_cast<const char *>(prop));
     xmlFree(prop);
-    
+
     return result;
 }
 

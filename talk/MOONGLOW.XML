@@ -1,0 +1,115 @@
+<?xml version="1.0"?>
+<dialogue xml:space="preserve">
+  <person id="0" name="Mariah" pronoun="Sie" turnAwayProb="0">
+    <description>Eine junge Magierin.</description>
+    <topic query="job">Ich suche Abenteuer!</topic>
+    <topic query="health">Durchaus gut.</topic>
+    <topic query="ABEN">Ja, ich hoffe auf eine große Queste zu gehen!<question type="0">Bist du auf einer Queste?<yes>Ich wünschte, ich könnte dich begleiten!</yes><no>Ich wünschte, du wärst!</no></question></topic>
+    <topic query="QUES">Die Queste des Avatars ist ausgesprochen edel!</topic>
+  </person>
+  <person id="1" name="Tracie" pronoun="Sie" turnAwayProb="0">
+    <description>Eine hungernde Journalistin.</description>
+    <topic query="job">Ich bin Autorin.</topic>
+    <topic query="health">Ich fühle mich prima... wenn ich nur mit dem Rauchen aufhören könnte!</topic>
+    <topic query="AUTO">Es wird schlecht bezahlt, aber es ist glamourös!</topic>
+    <topic query="RAUC">Hust... Hust...<question type="0">Rauchst du?<yes>Ich merk's am Geruche!</yes><no>Fang nicht an!</no></question></topic>
+  </person>
+  <person id="2" name="Cromwell" pronoun="Er" turnAwayProb="0">
+    <description>Einen hoheitsvollen Paladin.</description>
+    <topic query="job">Ich spreche von den Vorzügen der Ehrlichkeit!</topic>
+    <topic query="health">Ausgesprochen gut.</topic>
+    <topic query="EHRL">Ein paar ehrliche Männer sind besser als Massen!<question type="0">Strebst du danach, ehrlich zu sein?<yes>Dann brauchst du das Mantra.</yes><no>Schande!</no></question></topic>
+    <topic query="MANT">Das Mantra des Schreines der Ehrlichkeit ist 'AHM'.</topic>
+  </person>
+  <person id="3" name="Rebelias" pronoun="Er" turnAwayProb="0">
+    <description>Einen mystischen Zauberer.</description>
+    <topic query="job">Ich lebe ein ehrliches Leben.</topic>
+    <topic query="health">War schon mal besser.</topic>
+    <topic query="EHRL">Sprich die Wahrheit und beschäme die bösen Kräfte!</topic>
+    <topic query="BOES">Das Böse existiert noch in unseren Herzen und Seelen!<question type="0">Versuchst du, dein eigenes Böses zu besiegen?<yes>Eine Queste auf Lebenszeit!</yes><no>Schuft!</no></question></topic>
+  </person>
+  <person id="4" name="Christen" pronoun="Sie" turnAwayProb="0">
+    <description>Ein verspieltes Kind.</description>
+    <topic query="job">Ich bin dein Freund.</topic>
+    <topic query="health">Fühl mich gut.</topic>
+    <topic query="FREU">Ehrliche Freunde gibt's nur wenige!<question type="0">Bist du mein Freund?<yes>Das macht mich glücklich.</yes><no>Ich bin traurig.</no></question></topic>
+    <topic query="EHRL">Mein Freund William weiß, wo die Rune der Ehrlichkeit ist.</topic>
+  </person>
+  <person id="5" name="Patric der bescheidene Hirte" pronoun="Er" turnAwayProb="0">
+    <description>Einen sanftmütigen Hirten.</description>
+    <topic query="job">Ich bin Hirte.</topic>
+    <topic query="health">Ziemlich gut.</topic>
+    <topic query="BESC">Demut leitet sich nicht von der direkten Kombination von Wahrheit, Liebe oder Mut ab.</topic>
+    <topic query="DEMU">Demut bedeutet, bescheiden zu handeln und zu sein.<question type="1">Bist du vollkommen demütig?<yes>Zweifelhaft!</yes><no>Strebe danach.</no></question></topic>
+  </person>
+  <person id="6" name="Shazom" pronoun="Er" turnAwayProb="0">
+    <description>Einen sterbenden jungen Zauberer.</description>
+    <topic query="job">Ich bin Lehrling des großen Zauberers Nigel!</topic>
+    <topic query="health">Ich werde bald sterben.</topic>
+    <topic query="NIGE">Ich werde bald den Zauber benutzen müssen, den er 'Revocatus' nennt.<question type="0">Hast du Nigel getroffen?<yes>Such ihn auf, er wird ihn dir beibringen.</yes><no>Er lebt im Lyzeum.</no></question></topic>
+    <topic query="STER">Weiterziehen.</topic>
+  </person>
+  <person id="7" name="Shakespeare" pronoun="Er" turnAwayProb="0">
+    <description>Einen weisen Zauberer.</description>
+    <topic query="job">Ich schaffe Erzählungen von der Ehrlichkeit.</topic>
+    <topic query="health">Geht so weit.</topic>
+    <topic query="EHRL">Denk daran, es gibt keinen Schrecken in Drohungen, denn ich bin stark in Ehrlichkeit!<question type="0">Strebst du danach, ehrlich zu sein?<yes>Hüte dich vor Korruption!</yes><no>Narr!</no></question></topic>
+    <topic query="KORR">Korruption gewinnt dir nicht mehr als Ehrlichkeit!</topic>
+  </person>
+  <person id="8" name="Browning" pronoun="Er" turnAwayProb="0">
+    <description>Einen großen Magier.</description>
+    <topic query="job">Ich strebe danach, ein ehrliches Leben zu leben!</topic>
+    <topic query="health">War mal besser.</topic>
+    <topic query="EHRL">Eine ehrliche Seele braucht sich keine Lügen zu merken!<question type="1">Warst du immer ehrlich?<yes>Das scheint mir nicht wahrscheinlich!</yes><no>Wahrheit verletzt niemals den, der sie sagt!</no></question></topic>
+    <topic query="WAHR">Wahrheit ist die Wurzel der Ehrlichkeit!</topic>
+  </person>
+  <person id="9" name="Cosima" pronoun="Sie" turnAwayProb="0">
+    <description>Eine betagte Frau.</description>
+    <topic query="job">Ich bin eine Alchimistin.</topic>
+    <topic query="health">Müde, so müde.</topic>
+    <topic query="ALCH">Ich weiß, wie man am besten Reagenzien mischt!<question type="0">Weißt du, wie man am besten Zauber mischt?<yes>Gut!</yes><no>Das Geheimnis liegt in den Reagenzien!</no></question></topic>
+    <topic query="REAG">Ein Slipitus braucht in Wirklichkeit nur &gt;einen&lt; Teil Spinnweben!</topic>
+  </person>
+  <person id="10" name="Daranor" pronoun="Er" turnAwayProb="32">
+    <description>Einen kauernden, irre aussehenden Mann!</description>
+    <topic query="job">Ich bewege die Sonne!</topic>
+    <topic query="health">Gesundheit?</topic>
+    <topic query="SONN">Die Monde sind meine Feinde!</topic>
+    <topic query="MOND">Wen ich sterbe, wird die Welt enden!<question type="0">Glaubst Du meine Geschichte!?!?<yes>Dann müssen wir die Monde fällen!</yes><no>Idiot, du mußt mich für irre halten!</no></question></topic>
+  </person>
+  <person id="11" name="Inoo" pronoun="Sie" turnAwayProb="0">
+    <description>Eine alte Zigeunerin.</description>
+    <topic query="job">Ich bin Hellseherin, ich lese Handlinien.</topic>
+    <topic query="health">Ich sehe voraus, daß es mir heute gut gehen wird!</topic>
+    <topic query="HAND">Handlinien erzählen Schicksale!</topic>
+    <topic query="SCHI">Zeig mir deine Hand.<question type="0">Wünschst du deine Bestimmung?<yes>Eine große Queste wird dich in den Abgrund führen, wo dich der Kodex erwartet!</yes><no>Eine weise Wahl.</no></question></topic>
+  </person>
+  <person id="12" name="Calabrini" pronoun="Er" turnAwayProb="0">
+    <description>Einen großen Magier.</description>
+    <topic query="job">Ich grüße dich von der schönen Stadt Moonglow.<question type="0">Suchst Du ein Gasthaus oder Heilung?<yes>Welches?</yes><no>Vielleicht den Schrein, der auf einer Insel Richtung Norden liegt!</no></question></topic>
+    <topic query="health">Prima.</topic>
+    <topic query="GAST">Wir haben einen exzellenten Gasthof.</topic>
+    <topic query="HEIL">Unser Heiler ist einer der Besten!</topic>
+  </person>
+  <person id="13" name="Dekker" pronoun="Er" turnAwayProb="0">
+    <description>Einen munteren Narren.</description>
+    <topic query="job">Ich verdiene mir einen ehrlichen Unterhalt, durch Narretei!</topic>
+    <topic query="health">Sehr gut.</topic>
+    <topic query="EHRL">Ehrliche Arbeit trägt ein liebenswertes Gesicht!</topic>
+    <topic query="NARR">Ich liebe eine gute Narretei.<question type="0">Du auch?<yes>Wir sollten mal Witze austauschen!</yes><no>Du bist wohl ein Miesepeter!</no></question></topic>
+  </person>
+  <person id="14" name="William" pronoun="Er" turnAwayProb="0">
+    <description>Ein Kind, das ein Sandwich ißt.</description>
+    <topic query="job">Oh, nicht viel.</topic>
+    <topic query="health">Ganz ordentlich.</topic>
+    <topic query="SAND">Erdnußbutter und Traubengelee auf leicht getoastetem Brote!<question type="0">Möchtest du mal beißen?<yes>Lecker, was!</yes><no>Es ist furchtbar lecker!</no></question></topic>
+    <topic query="RUNE">Such nach der Rune der Ehrlichkeit bei Mariahs Golde!</topic>
+  </person>
+  <person id="15" name="Tyrone" pronoun="Er" turnAwayProb="0">
+    <description>Einen ramponierten Magier.</description>
+    <topic query="job">Ich habe nach dem blauen Steine gesucht.</topic>
+    <topic query="health">Schwindend.</topic>
+    <topic query="STEI">Der Stein der Ehrlichkeit befindet sich auf einem Altare in der Höhle Betrug.<question type="0">Wirst du suchen?<yes>Kenne seine Verwendungen!</yes><no>Hmm.</no></question></topic>
+    <topic query="VERW">Er wird in den Altarräumen der Höhlen und im Abgrunde benutzt.</topic>
+  </person>
+</dialogue>

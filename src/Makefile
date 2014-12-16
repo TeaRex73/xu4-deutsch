@@ -8,14 +8,19 @@ libdir=$(prefix)/lib
 datadir=$(prefix)/share
 
 UI=sdl
-UILIBS=$(shell sdl-config --libs) -lSDL_mixer
-UIFLAGS=$(shell sdl-config --cflags)
+UILIBS=-L/media/linards/main/usr/local/lib -Wl,-rpath,/media/linards/main/usr/local/lib -Wl,-rpath,/media/linards/main/usr/lib -Wl,-rpath,/media/linards/main/usr/lib/arm-linux-gnueabihf -Wl,-rpath,/media/linards/main/lib/arm-linux-gnueabihf -Wl,-rpath,/media/linards/main/opt/vc/lib -lSDL -lpthread -lSDL_mixer
+UIFLAGS=-I/media/linards/main/usr/local/include/SDL -D_REENTRANT
 
+LIBS=-L/media/linards/main/usr/lib -L/media/linards/main/usr/lib/arm-linux-gnueabihf -L/media/linards/main/lib/arm-linux-gnueabihf $(UILIBS) -lxml2 -lpng -lz
+# CCPREFIX=~/raspberry/tools/arm-bcm2708/arm-bcm2708hardfp-linux-gnueabi/bin/arm-bcm2708hardfp-linux-gnueabi-
+# CCPREFIX=~/raspberry/tools/arm-bcm2708/gcc-linaro-arm-linux-gnueabihf-raspbian/bin/arm-linux-gnueabihf-
+CC=$(CCPREFIX)gcc
+CXX=$(CCPREFIX)g++
 FEATURES=-DHAVE_BACKTRACE=1 -DHAVE_VARIADIC_MACROS=1
-DEBUGCXXFLAGS=-ggdb1 -rdynamic -g -O0 -fno-inline -fno-eliminate-unused-debug-types -gstabs -g3
-CXXFLAGS=$(FEATURES) -Wall -I. $(UIFLAGS) $(shell xml2-config --cflags) -DICON_FILE=\"$(datadir)/pixmaps/u4.bmp\" -DVERSION=\"$(VERSION)\" $(DEBUGCXXFLAGS)
+DEBUGCXXFLAGS=-Ofast -marm -mfpu=vfp -march=native -mtune=native -mfloat-abi=hard -DNDEBUG -DRASB_PI
+# DEBUGCXXFLAGS=-Ofast -march=native -mtune=native -DNDEBUG -URASB_PI
+CXXFLAGS=$(FEATURES) -Wall -pipe -I. -I/usr/include/libxml2 -I/usr/include/SDL -I/media/linards/main/usr/include -I/media/linards/main/usr/local/include -I/media/linards/main/include -I/media/linards/main/usr/include/arm-linux-gnueabihf $(UIFLAGS) -I/media/linards/main/usr/include/libxml2 -DICON_FILE=\"$(datadir)/pixmaps/u4.bmp\" -DVERSION=\"$(VERSION)\" $(DEBUGCXXFLAGS) $(LIBS)
 CFLAGS=$(CXXFLAGS)
-LIBS=$(UILIBS) $(shell xml2-config --libs) -lpng
 INSTALL=install
 
 ifeq ($(STATIC_GCC_LIBS),true)
@@ -28,34 +33,34 @@ install::
 	$(INSTALL) -D $(MAIN) $(bindir)/$(MAIN)
 	$(INSTALL) -D ../icons/u4.bmp $(datadir)/pixmaps/u4.bmp
 	$(INSTALL) -D ../icons/u4.png $(datadir)/pixmaps/u4.png
-	mkdir -p $(libdir)/u4/music
-	$(INSTALL) ../mid/*.mid $(libdir)/u4/music
-	$(INSTALL) ../mid/*.it $(libdir)/u4/music
-	mkdir -p $(libdir)/u4/sound
-	$(INSTALL) ../sound/*.ogg $(libdir)/u4/sound
-	$(INSTALL) -D coord $(libdir)/u4/coord
-	$(INSTALL) -D dumpsavegame $(libdir)/u4/dumpsavegame
-	$(INSTALL) -D tlkconv $(libdir)/u4/tlkconv
-	$(INSTALL) -D u4dec $(libdir)/u4/u4dec
-	$(INSTALL) -D u4enc $(libdir)/u4/u4enc
-	$(INSTALL) -D u4unpackexe $(libdir)/u4/u4unpackexe
-	$(INSTALL) ../conf/*.xml $(libdir)/u4
-	mkdir -p $(libdir)/u4/dtd
-	$(INSTALL) ../conf/dtd/*.dtd $(libdir)/u4/dtd
-	mkdir -p $(libdir)/u4/graphics
-	mkdir -p $(libdir)/u4/graphics/ega
-	mkdir -p $(libdir)/u4/graphics/hires
-	mkdir -p $(libdir)/u4/graphics/png
-	mkdir -p $(libdir)/u4/graphics/vga
-	mkdir -p $(libdir)/u4/graphics/vga2
-	mkdir -p $(libdir)/u4/graphics/new
-	$(INSTALL) ../graphics/ega/*.png $(libdir)/u4/graphics/ega
-	$(INSTALL) ../graphics/hires/*.png $(libdir)/u4/graphics/hires
-	$(INSTALL) ../graphics/hires/*.vga $(libdir)/u4/graphics/hires
-	$(INSTALL) ../graphics/png/*.png $(libdir)/u4/graphics/png
-	$(INSTALL) ../graphics/vga/*.png $(libdir)/u4/graphics/vga
-	$(INSTALL) ../graphics/vga2/*.png $(libdir)/u4/graphics/vga2
-	$(INSTALL) ../graphics/new/* $(libdir)/u4/graphics/new
+	mkdir -p $(libdir)/u4g/music
+	$(INSTALL) ../mid/*.mid $(libdir)/u4g/music
+	$(INSTALL) ../mid/*.it $(libdir)/u4g/music
+	mkdir -p $(libdir)/u4g/sound
+	$(INSTALL) ../sound/*.ogg $(libdir)/u4g/sound
+	$(INSTALL) -D coord $(libdir)/u4g/coord
+	$(INSTALL) -D dumpsavegame $(libdir)/u4g/dumpsavegame
+	$(INSTALL) -D tlkconv $(libdir)/u4g/tlkconv
+	$(INSTALL) -D u4dec $(libdir)/u4g/u4dec
+	$(INSTALL) -D u4enc $(libdir)/u4g/u4enc
+	$(INSTALL) -D u4unpackexe $(libdir)/u4g/u4unpackexe
+	$(INSTALL) ../conf/*.xml $(libdir)/u4g
+	mkdir -p $(libdir)/u4g/dtd
+	$(INSTALL) ../conf/dtd/*.dtd $(libdir)/u4g/dtd
+	mkdir -p $(libdir)/u4g/graphics
+	mkdir -p $(libdir)/u4g/graphics/ega
+	mkdir -p $(libdir)/u4g/graphics/hires
+	mkdir -p $(libdir)/u4g/graphics/png
+	mkdir -p $(libdir)/u4g/graphics/vga
+	mkdir -p $(libdir)/u4g/graphics/vga2
+	mkdir -p $(libdir)/u4g/graphics/new
+	$(INSTALL) ../graphics/ega/*.png $(libdir)/u4g/graphics/ega
+	$(INSTALL) ../graphics/hires/*.png $(libdir)/u4g/graphics/hires
+	$(INSTALL) ../graphics/hires/*.vga $(libdir)/u4g/graphics/hires
+	$(INSTALL) ../graphics/png/*.png $(libdir)/u4g/graphics/png
+	$(INSTALL) ../graphics/vga/*.png $(libdir)/u4g/graphics/vga
+	$(INSTALL) ../graphics/vga2/*.png $(libdir)/u4g/graphics/vga2
+	$(INSTALL) ../graphics/new/* $(libdir)/u4g/graphics/new
 	$(INSTALL) -D ../u4.desktop $(datadir)/applications/u4.desktop
 
 

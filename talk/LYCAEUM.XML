@@ -1,0 +1,115 @@
+<?xml version="1.0"?>
+<dialogue xml:space="preserve">
+  <person id="0" name="Robert Frasier" pronoun="Er" turnAwayProb="0">
+    <description>Einen stattlichen Freiherren.</description>
+    <topic query="job">Ich regiere diese Provinz.</topic>
+    <topic query="health">Sehr gut.</topic>
+    <topic query="PROV">Meine Frau Beth kann dir mehr erzählen!</topic>
+    <topic query="WORT">Ich weiß nur eine von drei Silben.<question type="0">Willst du sie jetzt wissen?<yes>Sie ist 'ver'! Such nun die beiden anderen Teile!</yes><no>Vielleicht ein andermal.</no></question></topic>
+  </person>
+  <person id="1" name="Beth Frasier" pronoun="Sie" turnAwayProb="0">
+    <description>Eine charmante Freifrau.</description>
+    <topic query="job">Ich regiere mit meinem Herrn.</topic>
+    <topic query="health">Gut.</topic>
+    <topic query="REGI">Diese Provinz.</topic>
+    <topic query="PROV">Unser Volk glaubt an Wahrheit als Lebensweg und lebt sie voll aus!<question type="0">Suchst du Wahrheit?<yes>Dann mögest du sie finden!</yes><no>Dann wirst du sie nicht finden!</no></question></topic>
+  </person>
+  <person id="2" name="eine Wache" pronoun="Er" turnAwayProb="20">
+    <description>Eine schläfrige Wache.</description>
+    <topic query="job">Wachen über das Tor, wachen über den Freiherrn, wachen über die Freifrau, wachen über die Türme....</topic>
+    <topic query="health">Sehr schläfrig.</topic>
+    <topic query="WACH">Ich bin schon seit Stunden hier!</topic>
+    <topic query="STUN">Ja, viele Stunden!<question type="0">Siehst du, warum ich müde bin?<yes>Es sind harte Arbeit und lange Stunden in der freiherrlichen Wache!</yes><no>Penner!</no></question></topic>
+  </person>
+  <person id="3" name="Palamar" pronoun="Er" turnAwayProb="0">
+    <description>Einen weisen alten Gelehrten.</description>
+    <topic query="job">Ich bin ein alter Zauberer, aber habe viel zu zeigen!</topic>
+    <topic query="health">Meine Knochen schmerzen, aber mein Geist ist noch scharf!</topic>
+    <topic query="ZEIG">Hier in meinem Teleskope!</topic>
+    <topic query="TELE">Such da am Ende, du wirst einen Drehknopf finden.<question type="0">Siehst du wo?<yes>Stell das Ziffernblatt ein und du wirst sehen!</yes><no>Schau!!!</no></question></topic>
+  </person>
+  <person id="4" name="Vater Antos" pronoun="Er" turnAwayProb="0">
+    <description>Einen alten Druiden, der dir seltsam bekannt vorkommt.</description>
+    <topic query="job">Ich bewahre großes Wissen.</topic>
+    <topic query="health">Alt und schwach, habe ich viele Questen gesehen!<question type="0">Bist du auf der Queste?<yes>Mögest du Erfolg haben!</yes><no>Oh.</no></question></topic>
+    <topic query="WISS">Was ist es, das du suchst?</topic>
+    <topic query="BUCH">Such das Buch der Wahrheit, wo andere Bücher liegen.</topic>
+  </person>
+  <person id="5" name="Jon" pronoun="Er" turnAwayProb="0">
+    <description>Eine bullige Wache.</description>
+    <topic query="job">Ich bewache den Thronsaal.</topic>
+    <topic query="health">Bißchen müde.</topic>
+    <topic query="THRO">Thron der Wahrheit!</topic>
+    <topic query="WAHR">Es gibt vier Städte, die dem Prinzipe der Wahrheit folgen.<question type="0">Weißt du welche?<yes>Gut!</yes><no>Es gibt acht mögliche Kombinationen der drei Prinzipien, es gibt acht Städte!</no></question></topic>
+  </person>
+  <person id="6" name="Scatu" pronoun="Er" turnAwayProb="0">
+    <description>Einen großen Magier, der fremdartige Rüstung trägt.</description>
+    <topic query="job">Ich berate.</topic>
+    <topic query="health">Gut!</topic>
+    <topic query="BERA">Du wärest gut beraten, den Seher oft zu besuchen!</topic>
+    <topic query="RUES">Ich trage mystische Rüstung.<question type="0">Bist du ein Teil-Avatar?<yes>Wenn du 8 Teile Avatar bist, such Zircon in Minoc auf und frag nach den mystischen!</yes><no>Leider.</no></question></topic>
+  </person>
+  <person id="7" name="Estro" pronoun="Er" turnAwayProb="0">
+    <description>Einen kurzgewachsenen Druiden.</description>
+    <topic query="job">Recherche.</topic>
+    <topic query="health">Oh es geht mir prima, dir auch, hoffe ich.</topic>
+    <topic query="RECH">Ich suche nach dem Buche der Gerechtigkeit!</topic>
+    <topic query="GERE">Es muß hier irgendwo sein!<question type="1">Hast du niemals auch nur &gt;ein&lt; Verbrechen begangen!?<yes>Ich glaube, du lügst und gibst an!</yes><no>Dann sprich mit dem Richter in Yew!</no></question></topic>
+  </person>
+  <person id="8" name="Tymus" pronoun="Er" turnAwayProb="0">
+    <description>Einen stattlichen Zauberer.</description>
+    <topic query="job">Dich wilkommen zu heißen!</topic>
+    <topic query="health">Sehr gut, danke!</topic>
+    <topic query="WILK">Ja, wilkommen im Lyzeum, der Festung der Wahrheit!<question type="0">Weißt du, wie viele Städte dem Prinzipe der Wahrheit folgen?<yes>Wie viele?</yes><no>Reise und lerne!</no></question></topic>
+    <topic query="VIER">Die Altarräume der Höhlen brauchen jeweils 4 Steine!</topic>
+  </person>
+  <person id="9" name="ein Wahrheitssucher" pronoun="Er" turnAwayProb="32">
+    <description>Eine in Gedanken verlorene Person.</description>
+    <topic query="job">Ich suche, Wahrheit zu erkennen.</topic>
+    <topic query="health">Ich bin in einem meditativen Zustande.</topic>
+    <topic query="WAHR">Das Prinzip, über das ich meditiere.</topic>
+    <topic query="MEDI">Meditiere an jedem Schreine für 1, 2 und 3 Minuten, dann wirst du die Pfade der Güte kennen!</topic>
+  </person>
+  <person id="10" name="ein Kämpfer" pronoun="Er" turnAwayProb="0">
+    <description>Einen verletzten Krieger.</description>
+    <topic query="job">Keiner mehr!</topic>
+    <topic query="health">Meine Wunden wiegen schwer!</topic>
+    <topic query="KRIE">Jetzt nicht mehr!</topic>
+    <topic query="WUND">Ich verlor in einem Altarraume der Höhlen!<question type="0">Hast du einen gesehen?<yes>Bemerke, daß jeder der drei Räume mit je vier Höhlen verbunden ist!</yes><no>Sie verbinden die Höhlen miteinander!</no></question></topic>
+  </person>
+  <person id="11" name="Lord Terence" pronoun="Er" turnAwayProb="0">
+    <description>Einen großen, wendigen Mann.</description>
+    <topic query="job">Ich bin der Bibliothekar.</topic>
+    <topic query="health">Mir geht es gut.</topic>
+    <topic query="BIBL">In diesen Räumen befindet sich der größte Schatz an Wissen in Britannia, außer dem Kodexe!<question type="0">Suchst du ein bestimmtes Buch?<yes>Welches Buch?</yes><no>Du darfst gerne stöbern.</no></question></topic>
+    <topic query="WAHR">Schau unter 'W'.</topic>
+  </person>
+  <person id="12" name="Zajac" pronoun="Er" turnAwayProb="0">
+    <description>Einen flatterhaften Narren.</description>
+    <topic query="job">Zu unterhalten!</topic>
+    <topic query="health">Unglücklich.</topic>
+    <topic query="UNTE">Ach, jetzt nicht.</topic>
+    <topic query="UNGL">Weil mein Freund Chuckles mir nicht sein Geheimnis verraten will!<question type="0">Kennst du Chuckles?<yes>Warum fragst du ihn nicht nach seinem Tipp!</yes><no>Er lebt in der Burg Britannia, frag ihn nach seinem Tipp!</no></question></topic>
+  </person>
+  <person id="13" name="Catriona" pronoun="Sie" turnAwayProb="0">
+    <description>Eine starke Wache.</description>
+    <topic query="job">Die Schätze zu bewachen.</topic>
+    <topic query="health">Sehr gut.</topic>
+    <topic query="SCHA">Die Schätze sind von großem Werte!</topic>
+    <topic query="WERT">Ja, viel Gold.<question type="0">Hast du vor zu stehlen?<yes>Ich werde dich nicht aufhalten,</yes><no>Gut, ich hab mir schon Sorgen gemacht!</no></question></topic>
+  </person>
+  <person id="14" name="Nigel, zu deinen Diensten" pronoun="Er" turnAwayProb="0">
+    <description>Einen edlen Zauberer.</description>
+    <topic query="job">Ich lehre Zaubersprüche.</topic>
+    <topic query="health">Ausreichend gut.</topic>
+    <topic query="ZAUB">Ich habe eine Spezialität!<question type="0">Weißt du, was es ist?<yes>Wie nenne ich den Spruch?</yes><no>Tut mir leid.</no></question></topic>
+    <topic query="REVO">Ja, Resurrectus, man braucht: Asche, Ginseng, Knoblauch, Weben, Blutmoos, und Alraune!</topic>
+  </person>
+  <person id="15" name="Shylock der Sanftmütige" pronoun="Er" turnAwayProb="0">
+    <description>Einen erbärmlichen Bettler.</description>
+    <topic query="job">Ich sitze und bettle oh... bitte...</topic>
+    <topic query="health">Mir ist kalt und ich bin krank! oh... bitte...<question type="0">Wirst du mir helfen? Oh... bitte...<yes>Oh... bitte...</yes><no>Oh... bitte...</no></question></topic>
+    <topic query="BETT">Ja, bitte gib mir Geld! oh... bitte...</topic>
+    <topic query="KRAN">Ich habe die schwarze Pest!</topic>
+  </person>
+</dialogue>

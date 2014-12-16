@@ -6,7 +6,7 @@
  * @file
  * @brief Declares interfaces for working with the screen
  *
- * This file declares interfaces for manipulating areas of the screen, or the 
+ * This file declares interfaces for manipulating areas of the screen, or the
  * entire screen.  Functions like drawing images, tiles, and other items are
  * declared, as well as functions to draw pixels and rectangles and to update
  * areas of the screen.
@@ -15,7 +15,7 @@
  * migrated to the xxxView classes.
  *
  * @todo
- *  <ul> 
+ *  <ul>
  *      <li>migrate rest of text output logic to TextView</li>
  *      <li>migrate rest of dungeon drawing logic to DungeonView</li>
  *  </ul>
@@ -133,6 +133,8 @@ Image *screenScale(Image *src, int scale, int n, int filter);
 Image *screenScaleDown(Image *src, int scale);
 
 extern int screenCurrentCycle;
+
+extern volatile bool screenStill;
 
 #define SCR_CYCLE_MAX 16
 

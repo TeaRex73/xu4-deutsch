@@ -68,7 +68,7 @@ int main (int argc, char *argv[]) {
     printf("Couldn't allocate buffer for %s\n", argv[1]);
     return(EXIT_FAILURE);
   }
-  fread(buffer, 1, infileSize, file);
+  if((long)fread(buffer, 1, infileSize, file) != infileSize) perror("fread failed");
   fclose(file);
 
   /* Is the infile a valid exe file? */
@@ -135,6 +135,6 @@ long getWord(unsigned char *ofs) {
 }
 
 void putWord(unsigned char *ofs, long word) {
-  *ofs = word & 0xff;
-  *(ofs+1) = word >> 8;
+  *ofs = (char)(word & 0xff);
+  *(ofs+1) = (char)(word >> 8);
 }

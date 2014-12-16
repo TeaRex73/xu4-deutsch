@@ -23,7 +23,7 @@ int u4_SDL_InitSubSystem(Uint32 flags) {
     }
     if (!SDL_WasInit(flags))
         return SDL_InitSubSystem(flags);
-    else return 0;    
+    else return 0;
 }
 
 void u4_SDL_QuitSubSystem(Uint32 flags) {

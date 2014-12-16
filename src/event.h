@@ -16,7 +16,7 @@ using std::string;
 
 #define eventHandler (EventHandler::getInstance())
 
-#define U4_UP           '['
+#define U4_UP           '@'
 #define U4_DOWN         '/'
 #define U4_LEFT         ';'
 #define U4_RIGHT        '\''
@@ -45,7 +45,7 @@ class EventHandler;
 class TextView;
 
 /**
- * A class for handling keystrokes. 
+ * A class for handling keystrokes.
  */
 class KeyHandler {
 public:
@@ -70,10 +70,10 @@ public:
 
     /* Constructors */
     KeyHandler(Callback func, void *data = NULL, bool asyncronous = true);
-    
-    /* Static functions */    
+
+    /* Static functions */
     static int setKeyRepeat(int delay, int interval);
-    static bool globalHandler(int key);    
+    static bool globalHandler(int key);
 
     /* Static default key handler functions */
     static bool defaultHandler(int key, void *data);
@@ -81,9 +81,9 @@ public:
 
     /* Operators */
     bool operator==(Callback cb) const;
-    
-    /* Member functions */    
-    bool handle(int key); 
+
+    /* Member functions */
+    bool handle(int key);
     virtual bool isKeyIgnored(int key);
 
 protected:
@@ -113,17 +113,12 @@ private:
  */
 class ReadStringController : public WaitableController<string> {
 public:
-    ReadStringController(int maxlen, int screenX, int screenY, const string &accepted_chars = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890 \n\r\010");
-    ReadStringController(int maxlen, TextView *view, const string &accepted_chars = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890 \n\r\010");
+    ReadStringController(int maxlen, int screenX, int screenY, const string &accepted_chars = "abcdefghijklmnopqrstuvwxyz{|}~ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]1234567890 \n\r\010");
+    ReadStringController(int maxlen, TextView *view, const string &accepted_chars = "abcdefghijklmnopqrstuvwxyz{|}~ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]1234567890 \n\r\010");
     virtual bool keyPressed(int key);
 
     static string get(int maxlen, int screenX, int screenY, EventHandler *eh = NULL);
     static string get(int maxlen, TextView *view, EventHandler *eh = NULL);
-#ifdef IOS
-    void setValue(const string &utf8StringValue) {
-        value = utf8StringValue;
-    }
-#endif
 
 protected:
     int maxlen, screenX, screenY;
@@ -161,9 +156,9 @@ protected:
  * A controller to read a direction enter with the arrow keys.
  */
 class ReadDirController : public WaitableController<Direction> {
-public:    
+public:
     ReadDirController();
-    virtual bool keyPressed(int key);    
+    virtual bool keyPressed(int key);
 };
 
 /**
@@ -186,7 +181,7 @@ private:
 
 /**
  * A class for handling timed events.
- */ 
+ */
 class TimedEvent {
 public:
     /* Typedefs */
@@ -200,33 +195,22 @@ public:
     Callback getCallback() const;
     void *getData();
     void tick();
-    
+
     /* Properties */
-protected:    
+protected:
     Callback callback;
     void *data;
     int interval;
     int current;
 };
 
-#if defined(IOS)
-#ifndef __OBJC__
-typedef void *TimedManagerHelper;
-typedef void *UIEvent;
-#else
-@class TimedManagerHelper;
-@class UIEvent;
-#endif
-#endif
-
-
 /**
  * A class for managing timed events
- */ 
+ */
 class TimedEventMgr {
 public:
     /* Typedefs */
-    typedef TimedEvent::List List;    
+    typedef TimedEvent::List List;
 
     /* Constructors */
     TimedEventMgr(int baseInterval);
@@ -236,7 +220,7 @@ public:
     static unsigned int callback(unsigned int interval, void *param);
 
     /* Member functions */
-    bool isLocked() const;      /**< Returns true if the event list is locked (in use) */    
+    bool isLocked() const;      /**< Returns true if the event list is locked (in use) */
 
     void add(TimedEvent::Callback callback, int interval, void *data = NULL);
     List::iterator remove(List::iterator i);
@@ -245,11 +229,8 @@ public:
     void tick();
     void stop();
     void start();
-    
+
     void reset(unsigned int interval);     /**< Re-initializes the event manager to a new base interval */
-#if defined(IOS)
-    bool hasActiveTimer() const;
-#endif
 
 private:
     void lock();                /**< Locks the event list */
@@ -265,24 +246,21 @@ protected:
     bool locked;
     List events;
     List deferredRemovals;
-#if defined(IOS)
-    TimedManagerHelper *m_helper;
-#endif
 };
 
 typedef void(*updateScreenCallback)(void);
 /**
- * A class for handling game events. 
+ * A class for handling game events.
  */
 class EventHandler {
-public:    
+public:
     /* Typedefs */
-    typedef std::list<_MouseArea*> MouseAreaList;    
+    typedef std::list<_MouseArea*> MouseAreaList;
 
     /* Constructors */
-    EventHandler();    
+    EventHandler();
 
-    /* Static functions */    
+    /* Static functions */
     static EventHandler *getInstance();
     static void sleep(unsigned int usec);
     static void wait_msecs(unsigned int msecs);
@@ -295,14 +273,9 @@ public:
     /* Member functions */
     TimedEventMgr* getTimer();
 
-    /* Event functions */    
+    /* Event functions */
     void run();
     void setScreenUpdate(void (*updateScreen)(void));
-#if defined(IOS)
-    void handleEvent(UIEvent *);
-    static void controllerStopped_helper();
-    updateScreenCallback screenCallback() { return updateScreen; }
-#endif
 
     /* Controller functions */
     Controller *pushController(Controller *c);
@@ -322,7 +295,7 @@ public:
     _MouseArea* getMouseAreaSet() const;
     _MouseArea* mouseAreaForPoint(int x, int y);
 
-protected:    
+protected:
     static bool controllerDone;
     static bool ended;
     TimedEventMgr timer;

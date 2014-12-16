@@ -12,7 +12,8 @@
  * These routines convert the various enumerations for classes, reagents,
  * etc. into the textual representations used in the game.
  */
-const char *getClassName(ClassType klass);
+const char *getClassNameEnglish(ClassType klass);
+const char *getClassNameTranslated(ClassType klass, SexType sex);
 const char *getReagentName(Reagent reagent);
 const char *getVirtueName(Virtue virtue);
 const char *getBaseVirtueName(int virtueMask);

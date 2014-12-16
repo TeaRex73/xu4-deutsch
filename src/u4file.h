@@ -5,7 +5,7 @@
 #ifndef U4FILE_H
 #define U4FILE_H
 
-#include "vc6.h"
+#include "vc6.h" // Fixes things if you're using VC6, does nothing if otherwise
 #include <map>
 #include <string>
 #include <vector>
@@ -27,7 +27,7 @@ public:
     bool isExtension() const { return extension; }
     const string &translate(const string &name) const;
 
-private:    
+private:
     string name;                /**< filename */
     string path;                /**< the path within the zipfile where resources are located */
     bool extension;             /**< whether this zipfile is an extension with config information */
@@ -41,7 +41,7 @@ class U4ZipPackageMgr {
 public:
     static U4ZipPackageMgr *getInstance();
     static void destroy();
-    
+
     void add(U4ZipPackage *package);
     const std::vector<U4ZipPackage *> &getPackages() const { return packages; }
 

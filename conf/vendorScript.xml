@@ -11,16 +11,9 @@
         <intro>            
             <ztats screen="weapons"/>
             <music type="shopping"/>
+            WILLKOMMEN BEI {name}.
 
-
-
-            Welcome to
-            {name}
-
-            {owner} says:
-            Welcome friend!
-            Art thou here to
-            Buy or Sell? <input type="choice" options="bs" target="buy_sell"/>
+            {owner} SAGT: WILLKOMMEN FREUND! WILLST DU KAUFEN ODER VERKAUFEN?<input type="choice" options="kv" target="buy_sell"/>
         </intro>
 
         <end>
@@ -29,9 +22,7 @@
         </end>
 
         <bye>
-
-            {owner} says:
-            Fare thee well!
+            {owner} SAGT: LEBE WOHL!
         <end/>
         </bye>        
 
@@ -46,21 +37,21 @@
          * how much gold to give you when you sell it
          */ 
          -->
-        <weapon choice="b" name="Staff" price="20"/>
-        <weapon choice="c" name="Dagger" price="2"/>
-        <weapon choice="d" name="Sling" price="25"/>
-        <weapon choice="e" name="Mace" price="100"/>
-        <weapon choice="f" name="Axe" price="225"/>
-        <weapon choice="g" name="Sword" price="300"/>
-        <weapon choice="h" name="Bow" price="250"/>
-        <weapon choice="i" name="Crossbow" price="600"/>
-        <weapon choice="j" name="Flaming Oil" price="5"/>
-        <weapon choice="k" name="Halberd" price="350"/>
-        <weapon choice="l" name="Magic Axe" price="1500"/>
-        <weapon choice="m" name="Magic Sword" price="2500"/>
-        <weapon choice="n" name="Magic Bow" price="2000"/>
-        <weapon choice="o" name="Magic Wand" price="5000"/>
-        <weapon choice="p" name="Mystic Sword" price="7000"/>
+        <weapon choice="b" name="STAB" price="20"/>
+        <weapon choice="c" name="DOLCH" price="2"/>
+        <weapon choice="d" name="SCHLEUDER" price="25"/>
+        <weapon choice="e" name="STREITKOLBEN" price="100"/>
+        <weapon choice="f" name="AXT" price="225"/>
+        <weapon choice="g" name="SCHWERT" price="300"/>
+        <weapon choice="h" name="BOGEN" price="250"/>
+        <weapon choice="i" name="ARMBRUST" price="600"/>
+        <weapon choice="j" name="BRAND\L" price="5"/>
+        <weapon choice="k" name="HELLEBARDE" price="350"/>
+        <weapon choice="l" name="MAG. AXT" price="1500"/>
+        <weapon choice="m" name="MAG. SCHWERT" price="2500"/>
+        <weapon choice="n" name="MAG. BOGEN" price="2000"/>
+        <weapon choice="o" name="MAG. STAB" price="5000"/>
+        <weapon choice="p" name="MYST. SCHWERT" price="7000"/>
 
         <buy_sell default="true" redirect="bye"/>
         
@@ -71,20 +62,14 @@
          -->  
          
         <buy_more default="true" redirect="bye"/>  
-        <buy_more choice="y">
-            <redirect target="buy_sell" choice="b"/>
+        <buy_more choice="j">
+            <redirect target="buy_sell" choice="k"/>
         </buy_more>
 
-        <buy_sell choice="b">
-
-
-
-            Very Good!
-
-            We Have:
+        <buy_sell choice="k">
+            SEHR GUT! WIR F]HREN:
             {show_inventory:show_item}
-            Your
-            Interest? <input type="choice" options="{inventory_choices}" target="check_money"/>
+            DEIN WUNSCH?<input type="choice" options="{inventory_choices}" target="check_money"/>
         </buy_sell>
 
         <!-- what to show as the inventory for each item -->
@@ -99,90 +84,88 @@
             <var name="quantity" value="1"/>
 
             <if test="{party:gold}&lt;{price}">
-                You have not the funds for even one!<redirect target="anything_else_buy"/>
+                DU HAST NICHT EINMAL DIE MITTEL F]R EIN EXEMPLAR!
+                <redirect target="anything_else_buy"/>
             </if>
             
             <include script="tell_about" choice="{$choice}"/>
             <if test="{party:gold}&gt;={math({price}*2)}">
                 <redirect target="howmany_buy"/>
             </if>            
-            Take it? <input type="choice" options="yn" target="take_it"/>
+            ABGEMACHT?<input type="choice" options="jn" target="take_it"/>
         </check_money>
 
         <not_enough_money>
-            I fear you have not the funds, perhaps something else.<redirect target="anything_else_buy"/>
+            ICH F]RCHTE DU HAST NICHT DIE MITTEL, VIELLEICHT ETWAS ANDERES.
+            <redirect target="anything_else_buy"/>
         </not_enough_money>
 
         <take_it default="true" redirect="toobad"/>
-        <take_it choice="y">
+        <take_it choice="j">
             <include script="buy"/> <!-- include the basic "buy" script -->
         </take_it>
 
         <!-- description of each weapon -->
 
         <tell_about choice="b">
-            We are the only staff makers in Britannia, yet sell them for only {price}gp.            
+            WIR SIND DIE EINZIGEN STABMACHER IN BRITANNIA, ABER VERKAUFEN SIE F]R NUR {price}gs.
         </tell_about>
         
         <tell_about choice="c">
-            We sell the most deadly of daggers, a bargain at only {price}gp each.            
+            WIR VERKAUFEN DIE T\DLICHSTEN DOLCHE, GESCHENKT F]R NUR JE {price}gs.  
         </tell_about>
 
         <tell_about choice="d">
-            Our slings are made from only the finest guy and leather,
-            'Tis yours for {price}gp.            
+            UNSERE SCHLEUDERN WERDEN NUR AUS BESTEN LEDER UND SCHNUR GEMACHT. F]R {price}gs IST EINE DEIN.            
         </tell_about>
 
         <tell_about choice="e">
-            These maces have a hardened shaft and a 5lb head fairly priced at {price}gp.            
+	    DIESER STREITKOLBEN HAT EINEN GEH[RTETEN SCHAFT UND SEIN KOPF WIEGT F]NF PFUND, {price}gs SIND EIN SPOTTPREIS.
         </tell_about>
 
         <tell_about choice="f">
-            Notice the fine workmanship on this axe, you'll agree {price}gp is a good price.
+            SIEHST DU DIE FEINE VERARBEITUNG DIESER AXT? DU WIRST MIR ZUSTIMMEN, DASS {price}gs EIN GUTER PREIS IST.
         </tell_about>
 
         <tell_about choice="g">
-            The fine work on these swords will be the dread of thy foes, for {price}gp.
+	    DIE HERVORRAGENDE AUSF]HRUNG DIESES SCHWERTES WIRD DEINE FEINDE DAS F]RCHTEN LEHREN, F]R {price}gs.
         </tell_about>
 
         <tell_about choice="h">
-            Our bows are made of finest yew, and the arrows willow, a steal at {price}gp.
+	    UNSER BOGEN IST AUS BESTER EIBE, UND DIE PFEILE AUS WEIDE. GERADEZU GESTOHLEN F]R {price}gs.
         </tell_about>
 
         <tell_about choice="i">
-            Crossbows made by Iolo the Bard are the finest in the world, your for {price}gp.
+	    EINE ARMBRUST VON IOLO DEM BARDEN, ER MACHT DIE BESTEN DER WELT. F]R {price}gs GEH\RT SIE DIR.
         </tell_about>
 
         <tell_about choice="j">
-            Flasks of oil make great weapons and creates a wall of flame too.
-            {price}gp each.
+	    \LAMPHOREN SIND HERVORRAGENDE WAFFEN UND ERZEUGEN EINE VERITABLE FLAMMENWAND. {price}gs PRO ST]CK.
         </tell_about>
 
         <tell_about choice="k">
-            A Halberd is a mighty weapon to attack over obstacles; a must and only {price}gp.
+	    EINE HELLEBARDE IST EINE M[CHTIGE WAFFE, UM ]BER HINDERNISSE ANZUGREIFEN; EIN MUSS, UND NUR {price}gs.
         </tell_about>
 
         <tell_about choice="l">
-            This magical axe can be thrown at thy enemy and will then return all for {price}gp.
+	    DIESE MAGISCHE AXT KANNST DU NACH DEINEM FEINDE WERFEN, SIE KEHRT ZUR]CK. DAS ALLES F]R {price}gs.
         </tell_about>
 
         <tell_about choice="m">
-            Magical swords such as these are rare indeed
-            I will part with one for {price}gp.            
+            MAGISCHE SCHWERTER WIE DIESES SIND WIRKLICH SELTEN. ICH TRENNE MICH DAVON F]R {price}gs.            
         </tell_about>
 
         <tell_about choice="n">
-            A magical bow will keep thy enemies far away or dead! A must for {price}gp!
+            EIN MAGISCHER BOGEN H[LT DEINE FEINDE AUF ABSTAND - ODER TOT. EIN MUSS F]R {price}gs.
         </tell_about>
 
         <tell_about choice="o">
-            This magic wand casts mighty blue bolts to strike down thy foes, {price}gp.
+            DIESER MAGISCHE STAB ERZEUGT M[CHTIGE BLAUE BLITZE, UM DEINE FEINDE NIEDERZUSTRECKEN, {price}gs.
         </tell_about>
 
         <!-- input how many to buy -->
         <howmany_buy>            
-            How many would
-            you like? <input name="quantity" type="number" maxlen="2" target="buy"/>
+            WIE VIELE M\CHTEST DU?<input name="quantity" type="number" maxlen="2" target="buy"/>
         </howmany_buy>
 
         <!-- buy the weapon -->
@@ -192,17 +175,18 @@
             <if test="{party:gold}&lt;{math({$quantity}*{price})}" redirect="not_enough_money"/>
             <pay price="{$cost}" quantity="{$quantity}" cantpay="check_money"/>
             <add type="weapon" subtype="{$weapon}" quantity="{$quantity}"/>
-            {owner} says: A fine choice!<redirect target="anything_else_buy"/>
+            {owner} SAGT: EINE GUTE WAHL!
+            <redirect target="anything_else_buy"/>
         </buy>
         
         <toobad>
-            Too bad.<redirect target="anything_else_buy"/>
+            SCHADE.
+            <redirect target="anything_else_buy"/>
         </toobad>
 
         <anything_else_buy>
             <unset_context/>
-            Anything
-            else? <input type="choice" options="yn" target="buy_more"/>
+            NOCH ETWAS?<input type="choice" options="jn" target="buy_more"/>
         </anything_else_buy>
 
         <!--
@@ -210,14 +194,14 @@
          * Selling
          */ 
          -->
-        <buy_sell choice="s">           
-            Excellent! Which
-            wouldst <redirect target="you_sell"/>
+        <buy_sell choice="v">           
+            EXZELLENT! WELCHE M\CHTEST DU VERKAUFEN?
+            <redirect target="you_sell"/>
         </buy_sell>
 
         <you_sell choice="null" redirect="bye"/>
         <you_sell>
-            You sell: <input type="choice" options="bcdefghijklmnop" target="sell_weapon"/>
+            VERKAUFE: <input type="choice" options="bcdefghijklmnop" target="sell_weapon"/>
         </you_sell>
 
         <sell_weapon choice="null" redirect="bye"/>
@@ -233,82 +217,78 @@
         <!-- sell just one item -->
         <sell_one>
             <var name="quantity" value="1"/>
-            I will give you {$price}gp for that {name}.
-            Deal? <input type="choice" options="yn" target="sell"/>
+            ICH GEBE DIR {$price}gs DAF]R. ABGEMACHT?<input type="choice" options="jn" target="sell"/>
         </sell_one>
 
         <sell_many>
-            How many {name}s
-            would you wish
-            to sell? <input name="quantity" type="number" maxlen="2" target="sell_many_offer"/>
+            WIE VIELE DAVON M\CHTEST DU VERKAUFEN?<input name="quantity" type="number" maxlen="2" target="sell_many_offer"/>
         </sell_many>
         
         <sell_many_offer choice="null" redirect="bye"/>
         <sell_many_offer>
             <if test="{$quantity}==0" redirect="sell" choice="n"/>
             <if test="{$quantity}&gt;{party:weapon:{name}}" redirect="dont_have_that_many"/>
-            I will give you {math({$price}*{$quantity})}gp for them.
-            Deal? <input type="choice" options="yn" target="sell"/>
+            ICH GEBE DIR {math({$price}*{$quantity})}gs DAF]R. ABGEMACHT?<input type="choice" options="jn" target="sell"/>
         </sell_many_offer>
 
         <dont_have_that_many>
-            You don't have that many swine!            
+            DU HAST NICHT SO VIELE, SCHWEIN!
             <end/>
         </dont_have_that_many>
 
         <sell default="true" redirect="bye"/>
         <sell choice="n">
-            Hmmph. What else
-            would <redirect target="you_sell"/>
+            HMMPF. WAS WILLST DU NOCH VERKAUFEN?
+	    <redirect target="you_sell"/>
         </sell>
-        <sell choice="y">            
+        <sell choice="j">            
             <lose type="weapon" subtype="{$weapon}" quantity="{$quantity}"/>
             <add type="gold" quantity="{math({$quantity}*{$price})}"/>
             <unset_context/>
-            Fine! What else?
+            HERVORRAGEND! WAS SONST NOCH?
             <redirect target="you_sell"/>
         </sell>
 
-        <vendor id="Britain" name="Windsor Weaponry" owner="Winston">
-            <weapon choice="b" name="Staff" price="20"/>
-            <weapon choice="c" name="Dagger" price="2"/>
-            <weapon choice="d" name="Sling" price="25"/>
-            <weapon choice="g" name="Sword" price="300"/>
+        <vendor id="BRITAIN" name="DER WINDSOR WAFFENSCHMIEDE" owner="WINSTON">
+            <weapon choice="b" name="STAB" price="20"/>
+            <weapon choice="c" name="DOLCH" price="2"/>
+            <weapon choice="d" name="SCHLEUDER" price="25"/>
+            <weapon choice="g" name="SCHWERT" price="300"/>
         </vendor>
 
-        <vendor id="Jhelom" name="Willard's Weaponry" owner="Willard">
-            <weapon choice="f" name="Axe" price="225"/>
-            <weapon choice="g" name="Sword" price="300"/>
-            <weapon choice="i" name="Crossbow" price="600"/>
-            <weapon choice="k" name="Halberd" price="350"/>
+        <vendor id="JHELOM" name="WILLARDS WAFFENSCHMIEDE" owner="WILLARD">
+            <weapon choice="f" name="AXT" price="225"/>
+            <weapon choice="g" name="SCHWERT" price="300"/>
+            <weapon choice="i" name="ARMBRUST" price="600"/>
+            <weapon choice="k" name="HELLEBARDE" price="350"/>
         </vendor>
 
-        <vendor id="Minoc" name="The Iron Works" owner="Peter">
-            <weapon choice="e" name="Mace" price="100"/>
-            <weapon choice="k" name="Halberd" price="300"/>
-            <weapon choice="l" name="Magic Axe" price="1500"/>
-            <weapon choice="m" name="Magic Sword" price="2500"/>
+        <vendor id="MINOC" name="DEN EISENWERKEN" owner="PETER">
+            <weapon choice="e" name="STREITKOLBEN" price="100"/>
+            <weapon choice="k" name="HELLEBARDE" price="300"/>
+            <weapon choice="l" name="MAG. AXT" price="1500"/>
+            <weapon choice="m" name="MAG. SCHWERT" price="2500"/>
         </vendor>
 
-        <vendor id="Trinsic" name="Dueling Weapons" owner="Jumar">
-            <weapon choice="e" name="Mace" price="100"/>
-            <weapon choice="f" name="Axe" price="225"/>
-            <weapon choice="g" name="Sword" price="300"/>
-            <weapon choice="h" name="Bow" price="250"/>
+        <vendor id="TRINSIC" name="DEN DUELL-ARTIKELN" owner="JUMAR">
+            <weapon choice="e" name="STREITKOLBEN" price="100"/>
+            <weapon choice="f" name="AXT" price="225"/>
+            <weapon choice="g" name="SCHWERT" price="300"/>
+            <weapon choice="h" name="BOGEN" price="250"/>
         </vendor>
 
-        <vendor id="Buccaneers Den" name="Hook's Arms" owner="Hook">
-            <weapon choice="i" name="Crossbow" price="600"/>
-            <weapon choice="j" name="Flaming Oil" price="5"/>
-            <weapon choice="n" name="Magic Bow" price="2000"/>
-            <weapon choice="o" name="Magic Wand" price="5000"/>
+        <vendor id="BUKANIER-NEST" name="HOOKS WEHR" owner="HOOK">
+            <weapon choice="i" name="ARMBRUST" price="600"/>
+            <weapon choice="j" name="BRAND\L" price="5"/>
+            <weapon choice="n" name="MAG. BOGEN" price="2000"/>
+            <weapon choice="o" name="MAG. STAB" price="5000"/>
         </vendor>
 
-        <vendor id="Vesper" name="Village Arms" owner="Wendy">
-            <weapon choice="c" name="Dagger" price="2"/>
-            <weapon choice="d" name="Sling" price="25"/>
-            <weapon choice="h" name="Bow" price="250"/>
-            <weapon choice="j" name="Flaming Oil" price="5"/>            
+        <vendor id="VESPER" name="DES D\RFLERS WEHR" owner="WENDY">
+            <weapon choice="c" name="DOLCH" price="2"/>
+            <weapon choice="d" name="SCHLEUDER" price="25"/>
+            <weapon choice="h" name="BOGEN" price="250"/>
+            <weapon choice="j" name="BRAND\L" price="5"/>            
         </vendor>
 
     </script>
@@ -322,16 +302,9 @@
         <intro>
             <ztats screen="armor"/>
             <music type="shopping"/>
+            WILLKOMMEN BEI {name}.
 
-
-
-            Welcome to
-            {name}
-
-            {owner} says:
-            Welcome friend!
-            Want to Buy or
-            Sell? <input type="choice" options="bs" target="buy_sell"/>
+            {owner} SAGT: WILLKOMMEN FREUND! WILLST DU KAUFEN ODER VERKAUFEN?<input type="choice" options="kv" target="buy_sell"/>
         </intro>
 
         <end>
@@ -340,8 +313,7 @@
         </end>
 
         <bye>
-            {owner} says:
-            Good Bye.
+            {owner} SAGT: ADE.
         <end/>
         </bye>
 
@@ -356,13 +328,13 @@
          * how much gold to give you when you sell it
          */ 
          -->
-        <armor choice="b" name="Cloth" price="50"/>
-        <armor choice="c" name="Leather" price="200"/>
-        <armor choice="d" name="Chain Mail" price="600"/> 
-        <armor choice="e" name="Plate Mail" price="2000"/>
-        <armor choice="f" name="Magic Chain" price="4000"/>
-        <armor choice="g" name="Magic Plate" price="7000"/>
-        <armor choice="h" name="Mystic Robe" price="9000"/>
+        <armor choice="b" name="TUCH" price="50"/>
+        <armor choice="c" name="LEDER" price="200"/>
+        <armor choice="d" name="KETTE" price="600"/> 
+        <armor choice="e" name="PLATTE" price="2000"/>
+        <armor choice="f" name="MAG. KETTE" price="4000"/>
+        <armor choice="g" name="MAG. PLATTE" price="7000"/>
+        <armor choice="h" name="MYST. ROBE" price="9000"/>
 
         <buy_sell default="true" redirect="bye"/>
 
@@ -373,24 +345,19 @@
          -->
 
         <buy_more default="true" redirect="bye"/>  
-        <buy_more choice="y">
-            <redirect target="buy_sell" choice="b"/>
+        <buy_more choice="j">
+            <redirect target="buy_sell" choice="k"/>
         </buy_more>
 
-        <buy_sell choice="b">
-
-            
-
-            Well then,
-            We've got:
+        <buy_sell choice="k">
+            NUN DANN, WIR HABEN:
             {show_inventory:show_item}
             
-            What'll it
-            be? <input type="choice" options="{inventory_choices}" target="check_money"/>
+            WAS SOLL ES SEIN?<input type="choice" options="{inventory_choices}" target="check_money"/>
         </buy_sell>
 
         <!-- what to show as the inventory for each item -->
-        <show_item>{toupper({choice})} {name}</show_item>        
+        <show_item>{toupper({choice})}-{name}</show_item>        
 
         <!-- check to see if the player has enough gold first -->
         <check_money choice="null" redirect="bye"/>
@@ -400,56 +367,56 @@
             <var name="quantity" value="1"/>            
 
             <if test="{party:gold}&lt;{price}">
-                You have not the funds for even one!<redirect target="anything_else_buy"/>
+                DU HAST NICHT EINMAL DIE MITTEL F]R EIN EXEMPLAR!
+                <redirect target="anything_else_buy"/>
             </if>
             
             <include script="tell_about" choice="{$choice}"/>
             <if test="{party:gold}&gt;={math({price}*2)}">
                 <redirect target="howmany_buy"/>
             </if>            
-            Take it? <input type="choice" options="yn" target="take_it"/>
+            ABGEMACHT?<input type="choice" options="jn" target="take_it"/>
         </check_money>
 
         <not_enough_money>
-            You don't have enough gold. Maybe something cheaper?<redirect target="anything_else_buy"/>
+            DU HAST NICHT GENUG GOLD. VIELLEICHT ETWAS G]NSTIGERES?
+            <redirect target="anything_else_buy"/>
         </not_enough_money>
 
         <take_it default="true" redirect="toobad"/>
-        <take_it choice="y">
+        <take_it choice="j">
             <include script="buy"/> <!-- include the basic "buy" script -->
         </take_it>
 
         <!-- description of each armor -->
 
         <tell_about choice="b">
-            Cloth Armour is good for a tight budget, Fairly priced at {price}gp.
+            TUCHR]STUNG IST GUT F]R EIN ENGES BUDGET, ZUM FAIREN PREISE VON {price}gs.
         </tell_about>
 
         <tell_about choice="c">
-            Leather Armour is both supple and strong, and costs a mere {price}gp.
-            A Bargain!
+            LEDERR]STUNG IST EBENSO GESCHMEIDIG WIE FEST, UND KOSTET LAUSIGE {price}gs. EIN SCHN[PPCHEN!
         </tell_about>
 
         <tell_about choice="d">
-            Chail Mail is the armour used by more warriors than all others. Ours costs {price}gp.
+            KETTENR]STUNG WIRD VON MEHR KRIEGERN GETRAGEN ALS JEDE ANDERE ART. UNSERE KOSTET {price}gs.
         </tell_about>
 
         <tell_about choice="e">
-            Full Plate armour is the ultimate in non-magical armour. Get yours for {price}gp.
+            VOLLE PLATTENR]STUNG IST DAS NONPLUSULTRA DER NICHT-MAGISCHEN R]STUNGEN. ERHALTE DEINE F]R {price}gs.
         </tell_about>
 
         <tell_about choice="f">
-            Magic Armour is rare and expensive. This chain sells for {price}gp.
+	    MAGISCHE R]STUNG IST SELTEN UND TEUER. DIESES KETTENHEMD WIRD F]R {price}gs VERKAUFT.
         </tell_about>
 
         <tell_about choice="g">
-            Magic Plate Armour is the best known protection. Only we have it. Cost: {price}gp.
+	    MAGISCHE PLATTENR]STUNG IST DER BESTE BEKANNTE SCHUTZ. NUR WIR HABEN SIE. KOSTEN: {price}gs.
         </tell_about>
 
         <!-- input how many to buy -->
         <howmany_buy>
-            How many would
-            you like? <input name="quantity" type="number" target="buy"/>
+            WIE VIELE WILLST DU?<input name="quantity" type="number" target="buy"/>
         </howmany_buy>
 
         <!-- buy the armor -->
@@ -459,18 +426,18 @@
             <if test="{party:gold}&lt;{math({$quantity}*{price})}" redirect="not_enough_money"/>
             <pay price="{price}" quantity="{$quantity}" cantpay="check_money"/>
             <add type="armor" subtype="{$armor}" quantity="{$quantity}"/>
-
-            {owner} says: Good choice!<redirect target="anything_else_buy"/>
+            {owner} SAGT: GUTE WAHL!
+	    <redirect target="anything_else_buy"/>
         </buy>
 
         <toobad>
-            Too bad.<redirect target="anything_else_buy"/>
+            SCHADE.
+            <redirect target="anything_else_buy"/>
         </toobad>
 
         <anything_else_buy>
             <unset_context/>
-            Anything
-            else? <input type="choice" options="yn" target="buy_more"/>
+            NOCH ETWAS ANDERES?<input type="choice" options="jn" target="buy_more"/>
         </anything_else_buy>
 
         <!--
@@ -478,12 +445,12 @@
          * Selling
          */ 
          -->
-        <buy_sell choice="s">           
-            What will <redirect target="you_sell"/>
+        <buy_sell choice="v">           
+            WAS WILLST DU <redirect target="you_sell"/>
         </buy_sell>
 
         <you_sell>
-            You sell: <input type="choice" options="bcdefgh" target="sell_armor"/>
+            VERKAUFEN: <input type="choice" options="bcdefgh" target="sell_armor"/>
         </you_sell>
 
         <sell_armor choice="null" redirect="bye"/>
@@ -493,8 +460,8 @@
             <var name="price" value="{math({price}/2)}"/>
 
             <if test="{party:armor:{name}}==0">
-                Come on, you
-                don't own any.<redirect target="bye"/>
+                KOMM SCHON, DAS BESITZT DU NICHT.
+		<redirect target="bye"/>
             </if>
     
             <if test="{party:armor:{name}}&gt;1" redirect="sell_many"/>
@@ -504,14 +471,11 @@
         <!-- sell just one item -->
         <sell_one>
             <var name="quantity" value="1"/>
-            I will give you {$price}gp for that {name}.
-            Deal? <input type="choice" options="yn" target="sell"/>
+            ICH GEBE DIR {$price}gs DAF]R. ABGEMACHT?<input type="choice" options="jn" target="sell"/>
         </sell_one>
 
         <sell_many>
-            How many {name}s
-            would you wish
-            to sell? <input name="quantity" type="number" target="sell_many_offer"/>
+            WIE VIELE DAVON W]RDEST DU VERKAUFEN WOLLEN?<input name="quantity" type="number" target="sell_many_offer"/>
         </sell_many>
 
         <sell_many_offer choice="null" redirect="bye"/>
@@ -519,56 +483,54 @@
             <if test="{$quantity}==0" redirect="sell" choice="n"/>
             <var name="price" value="{math({$price}*{$quantity})}"/>
             <if test="{$quantity}&gt;{party:armor:{name}}" redirect="dont_have_that_many"/>            
-            I will give you {$price}gp for them.
-            Deal? <input type="choice" options="yn" target="sell"/>
+            ICH GEBE DIR {$price}gs DAF]R. ABGEMACHT?<input type="choice" options="jn" target="sell"/>
         </sell_many_offer>
 
         <dont_have_that_many>
-            You don't have that many swine!
+            DU HAST NICHT SO VIELE, SCHWEIN!
             <end/>
         </dont_have_that_many>
 
         <sell default="true" redirect="bye"/>
         <sell choice="n">
             <unset_context/>
-            Harumph. What else would <redirect target="you_sell"/>
+            HARUMPF. WAS WILLST DU NOCH <redirect target="you_sell"/>
         </sell>
-        <sell choice="y">
+        <sell choice="j">
             <lose type="armor" subtype="{$armor}" quantity="{$quantity}"/>
             <add type="gold" quantity="{$price}"/>
             <unset_context/>
-            Fine! What else?
-            <redirect target="you_sell"/>
+            SCH\N! WAS NOCH <redirect target="you_sell"/>
         </sell>
 
-        <vendor id="Britain" name="Winsdor Armour" owner="Winston">
-            <armor choice="b" name="Cloth" price="50"/>
-            <armor choice="c" name="Leather" price="200"/>
-            <armor choice="d" name="Chain Mail" price="600"/>
+        <vendor id="BRITAIN" name="WINDSOR SCHUTZMACHEREI" owner="WINSTON">
+            <armor choice="b" name="TUCH" price="50"/>
+            <armor choice="c" name="LEDER" price="200"/>
+            <armor choice="d" name="KETTE" price="600"/>
         </vendor>
 
-        <vendor id="Jhelom" name="Valiant's Armour" owner="Valiant">            
-            <armor choice="d" name="Chain Mail" price="600"/> 
-            <armor choice="e" name="Plate Mail" price="2000"/>
-            <armor choice="f" name="Magic Chain" price="4000"/>
-            <armor choice="g" name="Magic Plate" price="7000"/>
+        <vendor id="JHELOM" name="VALIANTS SCHUTZMACHEREI" owner="VALIANT">
+            <armor choice="d" name="KETTE" price="600"/> 
+            <armor choice="e" name="PLATTE" price="2000"/>
+            <armor choice="f" name="MAG. KETTE" price="4000"/>
+            <armor choice="g" name="MAG. PLATTE" price="7000"/>
         </vendor>
 
-        <vendor id="Trinsic" name="Duelling Armour" owner="Jean">
-            <armor choice="b" name="Cloth" price="50"/>            
-            <armor choice="d" name="Chain Mail" price="600"/>
-            <armor choice="f" name="Magic Chain" price="4000"/>
+        <vendor id="TRINSIC" name="DER DECKUNG GMBH &amp; CO. KG" owner="JEAN">
+            <armor choice="b" name="TUCH" price="50"/>            
+            <armor choice="d" name="KETTE" price="600"/>
+            <armor choice="f" name="MAG. KETTE" price="4000"/>
         </vendor>
 
-        <vendor id="Paws" name="Light Armour" owner="Pierre">
-            <armor choice="b" name="Cloth" price="50"/>
-            <armor choice="c" name="Leather" price="200"/>            
+        <vendor id="PAWS" name="LEICHTSCHUTZ" owner="PIERRE">
+            <armor choice="b" name="TUCH" price="50"/>
+            <armor choice="c" name="LEDER" price="200"/>            
         </vendor>
 
-        <vendor id="Buccaneers Den" name="Basic Armour" owner="Limpy">
-            <armor choice="b" name="Cloth" price="50"/>
-            <armor choice="c" name="Leather" price="200"/>
-            <armor choice="d" name="Chain Mail" price="600"/>
+        <vendor id="BUKANIER-NEST" name="DEM EINFACHEN SCHUTZE" owner="LIMPY">
+            <armor choice="b" name="TUCH" price="50"/>
+            <armor choice="c" name="LEDER" price="200"/>
+            <armor choice="d" name="KETTE" price="600"/>
         </vendor>
          
     </script>
@@ -581,11 +543,11 @@
     <script id="Food">
         <intro>
             <music type="shopping"/>
-            Welcome to {name}
+            WILLKOMMEN BEI{name}.
         
-            {owner} says: Good day, and Welcome friend.
+            {owner} SAGT: GUTEN TAG, UND WILLKOMMEN, FREUND.
             <if test="{party:gold}&lt;{price}" redirect="come_back"/>
-            May I interest you in some rations? <input type="choice" options="yn" target="ask"/>            
+            BIST DU AN LEBENSMITTELN INTERESSIERT?<input type="choice" options="jn" target="ask"/>            
         </intro>
         
         <end>
@@ -593,44 +555,43 @@
         </end>
 
         <ask default="true" redirect="bye"/>
-        <ask choice="y">
-            We have the best adventure rations, {quant} for only {price}gp.            
+        <ask choice="j">
+            WIR HABEN DIE BESTEN RATIONEN F]R ABENTEUER, {quant} F]R NUR {price}gs.            
             <redirect target="howmany"/>
         </ask>
-        <howmany>How many packs of {quant} would you like? <input name="quantity" type="number" target="buy"/></howmany>        
+        <howmany>WIE VIELE PAKETE ZU JE {quant} M\CHTEST DU?<input name="quantity" type="number" target="buy"/></howmany>        
         <buy choice="null">
-            Too bad. Maybe next time.
+            SEHR SCHADE. VIELLEICHT BEIM N[CHSTEN MALE.
             <redirect target="bye"/>
         </buy>
         <buy>            
             <pay price="{price}" quantity="{$quantity}" cantpay="cantpay"/>            
             <add type="food" quantity="{math({quant}*{$quantity})}"/>
-            Thank you.<if test="{party:gold}&lt;{price}" redirect="come_again"/>
-            Anything
-            else? <input type="choice" options="yn" target="ask"/>
+            DANKE.<if test="{party:gold}&lt;{price}" redirect="come_again"/>
+            NOCH ETWAS?<input type="choice" options="jn" target="ask"/>
         </buy>
         <cantpay>
-            You can only afford {math({party:gold}/{price})} packs.
+            DU KANNST DIR NUR {math({party:gold}/{price})} PAKETE LEISTEN.
             <redirect target="howmany"/>
         </cantpay>
         <come_back>            
-            Come back when you have some money!
+            KOMM WIEDER, WENN DU ETWAS GELD HAST!
             <end/>
         </come_back>
         <come_again>
-            Come again!
+            KOMM WIEDER VORBEI!
             <end/>
         </come_again>
         <bye>
-            Goodbye. Come again!
+            ADE. KOMM WIEDER VORBEI!
             <end/>
         </bye>        
         
-        <vendor id="Moonglow" name="The Sage Deli" owner="Shaman" price="25" quant="25"/>
-        <vendor id="Britain" name="Adventure Food" owner="Windrick" price="40" quant="25"/>
-        <vendor id="Yew" name="The Dry Goods" owner="Donnar" price="35" quant="25"/>
-        <vendor id="Skara Brae" name="Food For Thought" owner="Mintol" price="20" quant="25"/>
-        <vendor id="Paws" name="The Market" owner="Max" price="30" quant="25"/>
+        <vendor id="MOONGLOW" name=" DEN WEISEN DELIKATESSEN" owner="SHAMAN" price="25" quant="25"/>
+        <vendor id="BRITAIN" name=" ABENTEUER-KOST" owner="WINDRICK" price="40" quant="25"/>
+        <vendor id="YEW" name=" DEN TROCKENWAREN" owner="DONNAR" price="35" quant="25"/>
+        <vendor id="SKARA BRAE" name=" SINNIER NAHRUNG" owner="MINTOL" price="20" quant="25"/>
+        <vendor id="PAWS" name="M DISCOUNTER" owner="MAX" price="30" quant="25"/>
     </script>
 
     <!--
@@ -641,7 +602,7 @@
     <script id="Tavern">
         <intro>
             <music type="shopping"/>
-            {owner} says: Welcome to {name}<redirect target="whatll_it_be"/>
+            {owner} SAGT: WILLKOMMEN I{name}. <redirect target="whatll_it_be"/>
         </intro>
 
         <end>
@@ -649,116 +610,101 @@
         </end>
 
         <ask default="true" redirect="bye"/>
-        <ask choice="y" redirect="whatll_it_be"/>        
+        <ask choice="j" redirect="whatll_it_be"/>        
         <whatll_it_be>
-            {owner} says: What'll it be,
-            Food er Ale? <input type="choice" options="fa" target="buy"/>
+
+            {owner} SAGT: WAS SOLL'S SEIN, WAS ZU FUTTERN ODER 'N BIER?<input type="choice" options="fb" target="buy"/>
         </whatll_it_be>
 
         <bye>            
-            See ya mate!
+            BIS BALD, KUMPEL!
             <end/>
         </bye>
         
         <buy default="true" redirect="bye"/>
         <buy choice="f">
-            Our specialty is {specialty},
-            which costs {spec_price}gp.<redirect target="how_many_plates"/>
+            UNSERE SPEZIALIT[T IST {specialty}, KOSTET {spec_price}gs.<redirect target="how_many_plates"/>
         </buy>       
 
-        <how_many_plates>How many plates would you
-            like? <input name="quantity" type="number" target="food_buy"/>
+        <how_many_plates>WIE VIELE TELLER WILLSTE DAVON?<input name="quantity" type="number" target="food_buy"/>
         </how_many_plates>
 
         <food_buy choice="null" redirect="bye"/>
         <food_buy>
             <if test="{$quantity}==0" redirect="bye"/>
             <pay price="{spec_price}" quantity="{$quantity}" cantpay="cantpay_food"/>
-            Here ye arr.
+            BITTESCH\N.
             <add type="food" quantity="{$quantity}"/>
             <redirect target="something_else"/>
         </food_buy>
 
         <cantpay_food>
-            Ya can only afford {math({party:gold}/{spec_price})} plates.
+            MANN, DU KANNST DIR DOCH NUR {math({party:gold}/{spec_price})} TELLER LEISTEN.
             <redirect target="how_many_plates"/>
         </cantpay_food>
 
         <something_else>
-            Somethin'
-            else? <input type="choice" options="yn" target="ask"/>
+            NOCH WAS?<input type="choice" options="jn" target="ask"/>
         </something_else>
 
-        <buy choice="a">
-            Here's a mug of our best.
-            That'll be {ale_price}gp.
-            You pay? <input name="price" type="number" maxlen="2" target="ale_buy"/>            
+        <buy choice="b">
+            HIER HASTE 'N HUMPEN VOM BESTEN. DAS MACHT {ale_price}gs.
+            
+            Du Zahlst-<input name="price" type="number" maxlen="2" target="ale_buy"/>            
         </buy>
 
         <ale_buy choice="null" redirect="bye"/>
         <ale_buy>            
             <if test="{$price}&lt;{ale_price}">
-                Won't pay, eh.
-                Ya scum, be gone
-                fore ey call the
-                guards!
+                WILLST NICH ZAHLEN, HE? ABSCHAUM, ZIEH LEINE BEVOR ICH DIE WACHEN RUFE!
                 <end/>
             </if>
             <pay price="{$price}" quantity="1" cantpay="cantpay_ale"/>
             <if test="{$price}={ale_price}" redirect="something_else"/>
             <if test="{$price}&gt;{ale_price}">
                 <var name="tip_total" value="{math({$price}-{ale_price})}"/>
-                What'd ya like to know friend?
+                WAS WILLSTE WISSSEN, MEIN FREUND?
                 <input name="choice" type="text" target="topic"/>
             </if>
         </ale_buy>
 
         <cantpay_ale>
-            It seems that you have not the gold. Good Day!<redirect target="bye"/>            
+            WIE'S SCHEINT HASTE KEINE KOHLE. GUTEN TAG!<redirect target="bye"/>            
         </cantpay_ale>
 
         <topic default="true">
             <if test="{isempty({$choice})}" redirect="something_else"/>            
-            'fraid I can't help ya there friend!
+            F]RCHTE ICH KANN DIR DA NICHT HELFEN, MEIN FREUND!
             <redirect target="something_else"/>
         </topic>        
 
-        <reply choice="black stone">
-            {owner} says: Ah, the Black Stone.
-            Yes I've heard of it. But, the 
-            only one who knows where it
-            lies is the wizard Merlin.
+        <reply choice="SCHWARZER STEIN">
+	    {owner} SAGT: ACH, DER SCHWARZE STEIN. JA, SCHON MAL VON GEH\RT. ABER DER EINZIGE, DER WEISS, WO ER LIEGT, IST DER ZAUBERER MERLIN.
             <redirect target="something_else"/>
         </reply>
 
-        <reply choice="sextant">
-            {owner} says: For navigation a Sextant is vital... Ask for item "D" in the Guild shops!
+        <reply choice="SEXTANT">
+            {owner} SAGT: BEIM NAVIGIEREN IST 'N SEXTANT LEBENSWICHTIG... FRAG IN DEN GILDENL[DEN NACH GEGENSTAND "D"!
             <redirect target="something_else"/>
         </reply>
 
-        <reply choice="white stone">
-            Now let me see... Yes it was the old Hermit...
-            Sloven! He is tough to find,
-            lives near Lock Lake I hear.
+        <reply choice="WEISSER STEIN">
+            LASS MICH ]BERLEGEN... JA, 'S WAR DIESER ALTE EREMIT... SLOVEN! SCHWER ZU FINDEN, LEBT BEIM UMSCHLOSSENEN SEE WIE MAN H\RT.
             <redirect target="something_else"/>
         </reply>
 
-        <reply choice="mandrake">
-            {owner} says: The last person I knew that had
-            any Mandrake was an old alchemist
-            named Calumny.
+        <reply choice="ALRAUNE">
+            {owner} SAGT: DER LETZTE, VON DEM ICH WEISS, DASS ER ALRAUNE HATTE, WAR SO'N ALTER ALCHIMIST NAMENS CALUMNY.
             <redirect target="something_else"/>
         </reply>        
 
-        <reply choice="skull">
-            {owner} says: If thou must know of that evilest of all things...
-            find the beggar Jude. He is very very poor!
+        <reply choice="SCH[DEL">
+            {owner} SAGT: WENN DU DENN VON DIESEM B\SESTEN ALLER DINGE WISSEN MUSST... FINDE DEN BETTLER JUDE. ER IST SEHR, SEHR ARM!
             <redirect target="something_else"/>
         </reply>
         
-        <reply choice="nightshade">
-            {owner} says: Of Nightshade I know but this...
-            Seek out Virgil or thou shalt miss! Try in Trinsic!
+        <reply choice="SCHATTEN">
+            {owner} SAGT: VON SCHATTEN WEISS ICH NUR SOVIEL... FRAG VIRGIL, SONST FINDSTE KEINEN STIEL. VERSUCHS IN TRINSIC!
             <redirect target="something_else"/>
         </reply>
         
@@ -770,8 +716,7 @@
         </save>
         
         <sorry>
-            Sorry, I could
-            not help ya mate!<redirect target="something_else"/>
+            TUT MIR LEID, DABEI K\NNT' ICH DIR NICHT HELFEN, KUMPEL!<redirect target="something_else"/>
         </sorry>
 
         <foggy choice="null" redirect="sorry"/>
@@ -779,53 +724,39 @@
             <pay price="payment" quantity="1" cantpay="cantpay_topic"/>
             <var name="tip_total" value="{math({$tip_total}+{$payment})}"/>
             <if test="{price}&lt;={$tip_total}" choice="{$topic}" redirect="reply"/>
-            That subject is a bit foggy, perhaps more gold will refresh my memory. You
-            give: <input name="payment" type="number" maxlen="2"/>
+            DAS THEMA IST GERADE 'N BISSCHEN TR]BE, VIELLEICHT ERFRISCHT MEHR GOLD JA MEIN GED[CHTNIS.
+
+            Du gibst-<input name="payment" type="number" maxlen="2"/>
             <if test="{$payment}==0" redirect="sorry"/>
         	<redirect target="foggy"/>
         </foggy>
 
         <cantpay_topic>
-            Ye don't have that mate!<redirect target="sorry"/>
+            SOVIEL HASTE GAR NICHT, KUMPEL!<redirect target="sorry"/>
         </cantpay_topic>
 
-        <vendor id="Britain" name="Jolly Spirits" owner="Sam" specialty="Lamb Chops" spec_price="4" ale_price="2">
-            <topic choice="black stone" price="20" redirect="save"/>
-            <topic choice="sextant" price="30" redirect="save"/>
-            <topic choice="white stone" price="10" redirect="save"/>
-            <topic choice="mandrake" price="40" redirect="save"/>
-            <topic choice="skull" price="99" redirect="save"/>
-            <topic choice="nightshade" price="25" redirect="save"/>
+        <vendor id="BRITAIN" name="N DEN LAUNIGEN GEISTERN" owner="SAM" specialty="LAMMKOTLETTS" spec_price="4" ale_price="2">
+            <topic choice="SCHWARZER STEIN" price="20" redirect="save"/>
         </vendor>
         
-        <vendor id="Jhelom" name="The Bloody Pub" owner="Celestial" specialty="Dragon Tartar" spec_price="2" ale_price="2">
-            <topic choice="sextant" price="30" redirect="save"/>
-            <topic choice="white stone" price="10" redirect="save"/>
-            <topic choice="mandrake" price="40" redirect="save"/>
-            <topic choice="skull" price="99" redirect="save"/>
-            <topic choice="nightshade" price="25" redirect="save"/>
+        <vendor id="JHELOM" name="N DER BLUTIGEN PINTE" owner="CELESTIAL" specialty="DRACHENTARTAR" spec_price="2" ale_price="2">
+            <topic choice="SEXTANT" price="30" redirect="save"/>
         </vendor>
 
-        <vendor id="Trinsic" name="The Keg Tap" owner="Terran" specialty="Brown Beans" spec_price="3" ale_price="2">
-            <topic choice="white stone" price="10" redirect="save"/>
-            <topic choice="mandrake" price="40" redirect="save"/>
-            <topic choice="skull" price="99" redirect="save"/>
-            <topic choice="nightshade" price="25" redirect="save"/>
+        <vendor id="TRINSIC" name="M ZAPFHAHNE" owner="TERRAN" specialty="BRAUNE BOHNEN" spec_price="3" ale_price="2">
+            <topic choice="WEISSER STEIN" price="10" redirect="save"/>
         </vendor>
 
-        <vendor id="Paws" name="Folley Tavern" owner="Greg 'n Rob" specialty="Folley Filet" spec_price="2" ale_price="2">
-            <topic choice="mandrake" price="40" redirect="save"/>
-            <topic choice="skull" price="99" redirect="save"/>
-            <topic choice="nightshade" price="25" redirect="save"/>
+        <vendor id="PAWS" name="N FOLLEYS KNEIPE" owner="GREG &amp; ROB" specialty="FOLLEY-FILET" spec_price="2" ale_price="2">
+            <topic choice="ALRAUNE" price="40" redirect="save"/>
         </vendor>
         
-        <vendor id="Buccaneers Den" name="Captain Black Tavern" owner="The Cap'n" specialty="Dog Meat Pie" spec_price="4" ale_price="2">
-            <topic choice="skull" price="99" redirect="save"/>
-            <topic choice="nightshade" price="25" redirect="save"/>
+        <vendor id="BUKANIER-NEST" name="N DER SPELUNKE ZUM KORSAREN" owner="DER CAP'N" specialty="HUNDEPASTETE" spec_price="4" ale_price="2">
+            <topic choice="SCH[DEL" price="99" redirect="save"/>
         </vendor>
 
-        <vendor id="Vesper" name="Axe 'n Ale" owner="Arron" specialty="Green Granukit" spec_price="2" ale_price="2">
-            <topic choice="nightshade" price="25" redirect="save"/>
+        <vendor id="VESPER" name="M AXT &amp; ALE" owner="ARRON" specialty="GR]NER GRANUKIT" spec_price="2" ale_price="2">
+            <topic choice="SCHATTEN" price="25" redirect="save"/>
         </vendor>
     </script>
 
@@ -839,10 +770,9 @@
         <intro>
             <music type="shopping"/>
             <ztats screen="reagents"/>
-            A blind woman turns to you and says: Welcome to {name}
+            EINE BLINDE FRAU DREHT SICH ZU DIR UM UND SAGT: WILKOMMEN BEI{name}.
 
-            I am {owner}
-            Are you in need of Reagents? <input type="choice" options="yn" target="show_reagents"/>
+            ICH BIN {owner}. BRAUCHST DU REAGENZIEN?<input type="choice" options="jn" target="show_reagents"/>
         </intro>
 
         <end>
@@ -850,20 +780,17 @@
             <ztats screen="party"/>            
         </end>
 
-        <bye>            
-            {owner} says:
-            Perhaps another time then....
-            and slowly turns away.
+        <bye>
+            {owner} SAGT: DANN VIELLEICHT EIN ANDERNMAL... UND DREHT SICH LANGSAM WEG.
             <end/>            
         </bye>
 
         <show_reagents default="true" redirect="bye"/>
-        <show_reagents choice="y">
-            Very well,
-            I have
+        <show_reagents choice="j">
+            SEHR SCH\N,
+            ICH HABE
             {show_inventory:show_item}
-            Your
-            Interest: <input type="choice" options="{inventory_choices}" target="how_many"/>
+            DEIN WUNSCH:<input type="choice" options="{inventory_choices}" target="how_many"/>
         </show_reagents>
 
         <show_item>{toupper({choice})}-{name}</show_item>
@@ -872,80 +799,90 @@
         <how_many>
             <context name="reagent"/>
             <var name="reagent" value="{$choice}"/>            
-            Very well, we sell {name} for {price}gp. How many would you
-            like? <input name="quantity" type="number" target="you_pay"/>
+            SEHR SCH\N,
+            WIR VERKAUFEN
+            {name}
+            F]R {price}gs.
+
+            WIE VIELE
+            M\CHSTEST DU,
+            (0-9)?<input name="quantity" type="number" maxlen="1" target="that_makes"/>
         </how_many>
 
         <i_see_then>
-            I see, then <redirect target="anything_else"/>
+            ICH VERSTEHE, DANN<redirect target="anything_else"/>
         </i_see_then>        
 
         <anything_else>
             <unset_context/>
-            Anything
-            else? <input type="choice" options="yn" target="show_reagents"/>
+            NOCH ETWAS?<input type="choice" options="jn" target="show_reagents"/>
         </anything_else>
 
-        <you_pay choice="null" redirect="i_see_then"/>
-        <you_pay>
+        <that_makes choice="null" redirect="i_see_then"/>
+        <that_makes>
             <if test="{$quantity}==0" redirect="i_see_then"/>
-            Very good, that will be {math({price}*{$quantity})}gp.
-            You pay: <input name="price" type="number" target="buy"/>
+            SEHR SCH\N, DAS MACHT DANN {math({price}*{$quantity})}gs.<redirect target="you_pay"/>
+        </that_makes>
+
+	<you_pay>
+            DU ZAHLST:<input name="price" type="number" maxlen="2" target="buy"/>
         </you_pay>
 
         <buy choice="null" redirect="i_see_then"/>
         <buy>
-            <if test="{$price}==0" redirect="i_see_then"/>
+            <if test="{$price}==0" redirect="gold_drop"/>
             <pay price="{$price}" quantity="1" cantpay="cantpay"/>
             <add type="reagent" subtype="{type}" quantity="{$quantity}"/>
-            Very good.
-            <if test="{$price}&lt;{math({price}*{$quantity})}">
-                <karma action="cheated_merchant"/>
-                <redirect target="anything_else"/>
-            </if>
-
+            SEHR SCH\N.<if test="{$price}&lt;{math({price}*{$quantity})}">
+                         <karma action="cheated_merchant"/>
+                         <redirect target="anything_else"/>
+                     </if>
             <karma action="honest_to_merchant"/>
             <redirect target="anything_else"/>
         </buy>
 
         <cantpay>
-            It seems you have not the gold! <redirect target="anything_else"/>
+            ES SCHEINT, DU HAST NICHT SO VIEL!<redirect target="anything_else"/>
         </cantpay>
 
-        <vendor id="Moonglow" name="Magical Herbs" owner="Margot">
-            <reagent choice="a" name="Sulfurous Ash" type="ash" price="2"/>
-            <reagent choice="b" name="Ginseng" type="ginseng" price="5"/>
-            <reagent choice="c" name="Garlic" type="garlic" price="6"/>
-            <reagent choice="d" name="Spider Silk" type="silk" price="3"/>
-            <reagent choice="e" name="Blood Moss" type="moss" price="6"/>
-            <reagent choice="f" name="Black Pearl" type="pearl" price="9"/>
+        <gold_drop>
+            KOMM SCHON, LASS MICH DAS GOLD FALLEN H\REN!<redirect target="you_pay"/>
+	</gold_drop>
+
+        <vendor id="MOONGLOW" name="M MAGISCHEN KRAUT" owner="MARGOT">
+            <reagent choice="a" name="SCHWELASCHE" type="ash" price="2"/>
+            <reagent choice="b" name="GINSENG" type="ginseng" price="5"/>
+            <reagent choice="c" name="KNOBLAUCH" type="garlic" price="6"/>
+            <reagent choice="d" name="SPINNWEBEN" type="silk" price="3"/>
+            <reagent choice="e" name="BLUTMOOS" type="moss" price="6"/>
+            <reagent choice="f" name="SCHWARZPERL" type="pearl" price="9"/>
         </vendor>
 
-        <vendor id="Skara Brae" name="Herbs and Spice" owner="Sasha">
-            <reagent choice="a" name="Sulfurous Ash" type="ash" price="2"/>
-            <reagent choice="b" name="Ginseng" type="ginseng" price="4"/>
-            <reagent choice="c" name="Garlic" type="garlic" price="9"/>
-            <reagent choice="d" name="Spider Silk" type="silk" price="6"/>
-            <reagent choice="e" name="Blood Moss" type="moss" price="4"/>
-            <reagent choice="f" name="Black Pearl" type="pearl" price="8"/>
+        <vendor id="SKARA BRAE" name=" KRAUT UND GEW]RZ" owner="SASHA">
+            <reagent choice="a" name="SCHWELASCHE" type="ash" price="2"/>
+            <reagent choice="b" name="GINSENG" type="ginseng" price="4"/>
+            <reagent choice="c" name="KNOBLAUCH" type="garlic" price="9"/>
+            <reagent choice="d" name="SPINNWEBEN" type="silk" price="6"/>
+            <reagent choice="e" name="BLUTMOOS" type="moss" price="4"/>
+            <reagent choice="f" name="SCHWARZPERL" type="pearl" price="8"/>
         </vendor>
 
-        <vendor id="Paws" name="The Magics" owner="Sheila">
-            <reagent choice="a" name="Sulfurous Ash" type="ash" price="3"/>
-            <reagent choice="b" name="Ginseng" type="ginseng" price="4"/>
-            <reagent choice="c" name="Garlic" type="garlic" price="2"/>
-            <reagent choice="d" name="Spider Silk" type="silk" price="9"/>
-            <reagent choice="e" name="Blood Moss" type="moss" price="6"/>
-            <reagent choice="f" name="Black Pearl" type="pearl" price="7"/>
+        <vendor id="PAWS" name=" MAGICK" owner="SHEILA">
+            <reagent choice="a" name="SCHWELASCHE" type="ash" price="3"/>
+            <reagent choice="b" name="GINSENG" type="ginseng" price="4"/>
+            <reagent choice="c" name="KNOBLAUCH" type="garlic" price="2"/>
+            <reagent choice="d" name="SPINNWEBEN" type="silk" price="9"/>
+            <reagent choice="e" name="BLUTMOOS" type="moss" price="6"/>
+            <reagent choice="f" name="SCHWARZPERL" type="pearl" price="7"/>
         </vendor>
 
-        <vendor id="Buccaneers Den" name="Magic Mentar" owner="Shannon">
-            <reagent choice="a" name="Sulfurous Ash" type="ash" price="6"/>
-            <reagent choice="b" name="Ginseng" type="ginseng" price="7"/>
-            <reagent choice="c" name="Garlic" type="garlic" price="9"/>
-            <reagent choice="d" name="Spider Silk" type="silk" price="9"/>
-            <reagent choice="e" name="Blood Moss" type="moss" price="9"/>
-            <reagent choice="f" name="Black Pearl" type="pearl" price="1"/>
+        <vendor id="BUKANIER-NEST" name="M MAGISCHEN MENTAR" owner="SHANNON">
+            <reagent choice="a" name="SCHWELASCHE" type="ash" price="6"/>
+            <reagent choice="b" name="GINSENG" type="ginseng" price="7"/>
+            <reagent choice="c" name="KNOBLAUCH" type="garlic" price="9"/>
+            <reagent choice="d" name="SPINNWEBEN" type="silk" price="9"/>
+            <reagent choice="e" name="BLUTMOOS" type="moss" price="9"/>
+            <reagent choice="f" name="SCHWARZPERL" type="pearl" price="1"/>
         </vendor>
     </script>
 
@@ -958,12 +895,9 @@
     <script id="Healer" noun="service">
         <intro>
             <music type="shopping"/>
-            Welcome unto
-            {name}
+            WILKOMMEN BEI{name}.
 
-            {healer} says:
-            Peace and Joy be with you friend.
-            Are you in need of help? <input type="choice" options="yn" target="show_services"/>
+            {healer} SAGT: FRIEDE UND FREUDE SEI MIT DIR, FREUND. BEN\TIGST DU HILFE?<input type="choice" options="jn" target="show_services"/>
         </intro>
 
         <end>
@@ -971,13 +905,13 @@
         </end>
 
         <bye>
-            {healer} says: May thy life be guarded by the powers of good.
+            {healer} SAGT: M\GE DEIN LEBEN BESCHIRMT SEIN VON DEN M[CHTEN DES GUTEN.
             <end/>
         </bye>
 
         <give_blood>            
             <if test="{party:member1:hp}&gt;=400">
-                Art thou willing to give 100pts of thy blood to aid others? <input type="choice" options="yn" target="gave_blood"/>
+                BIST DU GEWILLT, 100 PUNKTE VON DEINEM BLUTE ZU GEBEN, UM ANDEREN ZU HELFEN?<input type="choice" options="jn" target="gave_blood"/>
             </if>
             <redirect target="bye"/>
         </give_blood>
@@ -987,22 +921,25 @@
             <karma action="didnt_give_blood"/>
             <redirect target="bye"/>
         </gave_blood>
-        <gave_blood choice="y">
+        <gave_blood choice="j">
             <damage player="1" pts="100"/>
             <karma action="gave_blood"/>
-            Thou art a great help. We are in dire need! <redirect target="bye"/>
+            DU BIST EINE GROSSE HILFE. WIR HABEN DRINGENDEN BEDARF! <redirect target="bye"/>
         </gave_blood>
 
         <more_help>
             <unset_context/>
-            {healer} asks: Do you need more help? <input type="choice" options="yn" target="show_services"/>            
+
+            {healer} FRAGT: BRAUCHST DU NOCH MEHR HILFE?<input type="choice" options="jn" target="show_services"/>            
         </more_help>
 
         <show_services default="true" redirect="give_blood"/>
-        <show_services choice="y">
-            {healer} says: We can perform:
+        <show_services choice="j">
+            {healer} SAGT: WIR TUN FOLGENDES:
+
             {show_inventory:show_item}
-            Your need: <input type="choice" options="{inventory_choices}" target="who_needs"/>
+
+            Dein Bedarf-<input type="choice" options="{inventory_choices}" target="who_needs"/>
         </show_services>
         
         <show_item>{toupper({choice})}-{name}</show_item>
@@ -1012,15 +949,11 @@
             <context name="service"/>
             <var name="service" value="{$choice}"/>
             <var name="choice" value="1"/>
-                        
-            <if test="{party:members}==1" redirect="will_pay"/>            
-            {healer} asks:
-            Who is in
-            need? <input name="choice" type="player" target="will_pay"/>
+            {healer} FRAGT: WER HAT BEDARF?<input name="choice" type="player" target="will_pay"/>
         </who_needs>
 
         <will_pay choice="null">
-            No one? <redirect target="more_help"/>
+            NIEMAND?<redirect target="more_help"/>
         </will_pay>
 
         <will_pay>
@@ -1029,16 +962,15 @@
                 <include script="dont_need" choice="{$service}"/>
                 <redirect target="more_help"/>
             </if>
-            {desc} will cost thee {price}gp.
+            {desc} KOSTET DICH {price}gs.
             <if test="{party:gold}&lt;{price}">
-                I see by thy purse that thou hast not enough gold. I cannot aid thee. <redirect target="more_help"/>
+                ICH SEHE AN DEINER B\RSE, DASS DU NICHT GENUG GOLD HAST. ICH KANN DIR NICHT HELFEN. <redirect target="more_help"/>
             </if>
-            Wilt thou
-            pay? <input type="choice" options="yn" target="heal"/>            
+            WILLST DU DAS BEZAHLEN?<input type="choice" options="jn" target="heal"/>            
         </will_pay>
 
         <heal default="true" redirect="more_help"/>
-        <heal choice="y">
+        <heal choice="j">
             <pay price="{price}" quantity="1"/>
             <cast_spell/>
             <heal type="{type}" player="{$player}"/>
@@ -1046,69 +978,69 @@
         </heal>
 
         <dont_need choice="a">
-            Thou suffers not from Poison!</dont_need>
+            DU LEIDEST NICHT UNTER VERGIFTUNG!</dont_need>
         <dont_need choice="b">
-            Thou art already quite healthy!</dont_need>
+            DU BIST SCHON GANZ GESUND!</dont_need>
         <dont_need choice="c">
-            Thou art not dead fool!</dont_need>
-        <vendor id="Britannia" name="The Royal Healer" healer="Pendragon">
-            <service choice="a" name="Curing" desc="A curing" price="100" type="cure"/>
-            <service choice="b" name="Healing" desc="A healing" price="200" type="fullheal"/>
-            <service choice="c" name="Resurrection" desc="Resurrection" price="300" type="resurrect"/>
+            DU BIST NICHT TOT, NARR!</dont_need>
+        <vendor id="BRITANNIA" name=" DES K\NIGS HEILER" healer="PENDRAGON">
+            <service choice="a" name="GIFT HEILEN" desc="EINE ENTGIFTUNG" price="100" type="cure"/>
+            <service choice="b" name="WUNDEN HEILEN" desc="EINE WUNDHEILUNG" price="200" type="fullheal"/>
+            <service choice="c" name="TOTE WECKEN" desc="EINE ERWECKUNG" price="300" type="resurrect"/>
         </vendor>
 
-        <vendor id="Moonglow" name="The Healer" healer="Harmony">
-            <service choice="a" name="Curing" desc="A curing" price="100" type="cure"/>
-            <service choice="b" name="Healing" desc="A healing" price="200" type="fullheal"/>
-            <service choice="c" name="Resurrection" desc="Resurrection" price="300" type="resurrect"/>
+        <vendor id="MOONGLOW" name="M HEILER" healer="HARMONY">
+            <service choice="a" name="GIFT HEILEN" desc="EINE ENTGIFTUNG" price="100" type="cure"/>
+            <service choice="b" name="WUNDEN HEILEN" desc="EINE WUNDHEILUNG" price="200" type="fullheal"/>
+            <service choice="c" name="TOTE WECKEN" desc="EINE ERWECKUNG" price="300" type="resurrect"/>
         </vendor>
 
-        <vendor id="Britain" name="Wound Healing" healer="Celest">
-            <service choice="a" name="Curing" desc="A curing" price="100" type="cure"/>
-            <service choice="b" name="Healing" desc="A healing" price="200" type="fullheal"/>
-            <service choice="c" name="Resurrection" desc="Resurrection" price="300" type="resurrect"/>
+        <vendor id="BRITAIN" name="M WUNDHEILER" healer="CELEST">
+            <service choice="a" name="GIFT HEILEN" desc="EINE ENTGIFTUNG" price="100" type="cure"/>
+            <service choice="b" name="WUNDEN HEILEN" desc="EINE WUNDHEILUNG" price="200" type="fullheal"/>
+            <service choice="c" name="TOTE WECKEN" desc="EINE ERWECKUNG" price="300" type="resurrect"/>
         </vendor>
 
-        <vendor id="Jhelom" name="Heal and Health" healer="Triplet">
-            <service choice="a" name="Curing" desc="A curing" price="100" type="cure"/>
-            <service choice="b" name="Healing" desc="A healing" price="200" type="fullheal"/>
-            <service choice="c" name="Resurrection" desc="Resurrection" price="300" type="resurrect"/>
+        <vendor id="JHELOM" name=" HEIL UND GESUND" healer="TRIPLET">
+            <service choice="a" name="GIFT HEILEN" desc="EINE ENTGIFTUNG" price="100" type="cure"/>
+            <service choice="b" name="WUNDEN HEILEN" desc="EINE WUNDHEILUNG" price="200" type="fullheal"/>
+            <service choice="c" name="TOTE WECKEN" desc="EINE ERWECKUNG" price="300" type="resurrect"/>
         </vendor>
 
-        <vendor id="Yew" name="Just Healing" healer="Justin">
-            <service choice="a" name="Curing" desc="A curing" price="100" type="cure"/>
-            <service choice="b" name="Healing" desc="A healing" price="200" type="fullheal"/>
-            <service choice="c" name="Resurrection" desc="Resurrection" price="300" type="resurrect"/>
+        <vendor id="YEW" name=" RECHTE HEILUNG" healer="JUSTIN">
+            <service choice="a" name="GIFT HEILEN" desc="EINE ENTGIFTUNG" price="100" type="cure"/>
+            <service choice="b" name="WUNDEN HEILEN" desc="EINE WUNDHEILUNG" price="200" type="fullheal"/>
+            <service choice="c" name="TOTE WECKEN" desc="EINE ERWECKUNG" price="300" type="resurrect"/>
         </vendor>        
 
-        <vendor id="Skara Brae" name="The Mystic Heal" healer="Spiran">
-            <service choice="a" name="Curing" desc="A curing" price="100" type="cure"/>
-            <service choice="b" name="Healing" desc="A healing" price="200" type="fullheal"/>
-            <service choice="c" name="Resurrection" desc="Resurrection" price="300" type="resurrect"/>
+        <vendor id="SKARA BRAE" name="M MYSTISCHEN HEILE" healer="SPIRAN">
+            <service choice="a" name="GIFT HEILEN" desc="EINE ENTGIFTUNG" price="100" type="cure"/>
+            <service choice="b" name="WUNDEN HEILEN" desc="EINE WUNDHEILUNG" price="200" type="fullheal"/>
+            <service choice="c" name="TOTE WECKEN" desc="EINE ERWECKUNG" price="300" type="resurrect"/>
         </vendor>
 
-        <vendor id="Lycaeum" name="The Truth Healer" healer="Starfire">
-            <service choice="a" name="Curing" desc="A curing" price="100" type="cure"/>
-            <service choice="b" name="Healing" desc="A healing" price="200" type="fullheal"/>
-            <service choice="c" name="Resurrection" desc="Resurrection" price="300" type="resurrect"/>
+        <vendor id="DAS LYZEUM" name=" DER WAHRHEIT HEILER" healer="STARFIRE">
+            <service choice="a" name="GIFT HEILEN" desc="EINE ENTGIFTUNG" price="100" type="cure"/>
+            <service choice="b" name="WUNDEN HEILEN" desc="EINE WUNDHEILUNG" price="200" type="fullheal"/>
+            <service choice="c" name="TOTE WECKEN" desc="EINE ERWECKUNG" price="300" type="resurrect"/>
         </vendor>
 
-        <vendor id="Empath Abbey" name="The Love Healer" healer="Salle'">
-            <service choice="a" name="Curing" desc="A curing" price="100" type="cure"/>
-            <service choice="b" name="Healing" desc="A healing" price="200" type="fullheal"/>
-            <service choice="c" name="Resurrection" desc="Resurrection" price="300" type="resurrect"/>
+        <vendor id="EMPATH-ABTEI" name=" DER LIEBE HEILER" healer="SALLE'">
+            <service choice="a" name="GIFT HEILEN" desc="EINE ENTGIFTUNG" price="100" type="cure"/>
+            <service choice="b" name="WUNDEN HEILEN" desc="EINE WUNDHEILUNG" price="200" type="fullheal"/>
+            <service choice="c" name="TOTE WECKEN" desc="EINE ERWECKUNG" price="300" type="resurrect"/>
         </vendor>
 
-        <vendor id="Serpents Hold" name="The Courage Healer" healer="Windwalker">
-            <service choice="a" name="Curing" desc="A curing" price="100" type="cure"/>
-            <service choice="b" name="Healing" desc="A healing" price="200" type="fullheal"/>
-            <service choice="c" name="Resurrection" desc="Resurrection" price="300" type="resurrect"/>
+        <vendor id="SCHLANGENFESTE" name=" DES MUTES HEILER" healer="WINDWALKER">
+            <service choice="a" name="GIFT HEILEN" desc="EINE ENTGIFTUNG" price="100" type="cure"/>
+            <service choice="b" name="WUNDEN HEILEN" desc="EINE WUNDHEILUNG" price="200" type="fullheal"/>
+            <service choice="c" name="TOTE WECKEN" desc="EINE ERWECKUNG" price="300" type="resurrect"/>
         </vendor>
 
-        <vendor id="Cove" name="The Healer Shop" healer="Quat">
-            <service choice="a" name="Curing" desc="A curing" price="100" type="cure"/>
-            <service choice="b" name="Healing" desc="A healing" price="200" type="fullheal"/>
-            <service choice="c" name="Resurrection" desc="Resurrection" price="300" type="resurrect"/>
+        <vendor id="COVE" name="M HEILERLADEN" healer="QUAT">
+            <service choice="a" name="GIFT HEILEN" desc="EINE ENTGIFTUNG" price="100" type="cure"/>
+            <service choice="b" name="WUNDEN HEILEN" desc="EINE WUNDHEILUNG" price="200" type="fullheal"/>
+            <service choice="c" name="TOTE WECKEN" desc="EINE ERWECKUNG" price="300" type="resurrect"/>
         </vendor>
 
     </script>
@@ -1121,11 +1053,9 @@
     <script id="Inn" noun="room">
         <intro>
             <music type="shopping"/>
-            The Innkeeper says: <if test="{party:transport}=horse" redirect="nohorse"/>Welcome to {name}
+            DER GASTWIRT SAGT: <if test="{party:transport}=horse" redirect="nohorse"/>WILKOMMEN I{name}.
         
-            I am {innkeeper}.
-        
-            Are you in need of lodging?<input type="choice" options="yn" target="ask"/>
+            ICH BIN {innkeeper}. BRAUCHST DU UNTERKUNFT?<input type="choice" options="jn" target="ask"/>
         </intro>
         
         <end>
@@ -1133,116 +1063,111 @@
         </end>
 
         <bye>
-            {innkeeper} says: Then you have come to the wrong place!
-            Good day.
+            {innkeeper} SAGT: DANN BIST DU HIER FALSCH! GUTEN TAG.
             <end/>
         </bye>
-        <nohorse>Get that horse out of here!!!
+        <nohorse>SCHAFF DAS PFERD HIER RAUS!!!
             <end/>
         </nohorse>
         <ask default="true" redirect="bye"/>
         <ask choice="n" redirect="bye"/>
         <rent default="true" redirect="no_better_deal"/>
-        <rent choice="y" redirect="stay"/>        
+        <rent choice="j" redirect="stay"/>        
         <rent choice="1" redirect="stay"/>
         <rent choice="2" redirect="stay"/>
         <rent choice="3" redirect="stay"/>
 
         <no_better_deal>        
-            You won't find a better deal in this towne!            
+            IN DIESER STADT FINDEST DU NICHTS G]NSTIGERES!
             <end/>
         </no_better_deal>
         <stay>
             <context name="room"/>
             <pay price="{price}" quantity="1" cantpay="cantpay"/>
             <cursor enable="false"/>            
-            Very good. Have
-            a pleasant night.
+            SEHR GUT. W]NSCHE EINE ANGENEHME NACHT.
             <move x="{x}" y="{y}"/>            
             <random chance="25%">
                 <wait msecs="1000"/>
-                Oh, and don't mind the strange noises, it's only rats!
+                OH, UND K]MMER DICH NICHT UM DIE GER[USCHE, DAS SIND NUR RATTEN!
             </random>
             <sleep/>
             <end/>
         </stay>
         <cantpay>
-            If you can't pay, you can't stay! Good Bye.
+            KANNST NICHT ZAHLEN, KANNST NICHT BLEIBEN! ADE.
             <end/>
         </cantpay>
 
-        <!-- Moonglow -->
-        <vendor id="Moonglow" name="The Honest Inn" innkeeper="Scatu">
-            <room choice="y" price="20" x="28" y="6"/>
-            <ask choice="y">
-                We have a room with 2 beds that rents for 20gp.
+        <!-- MOONGLOW -->
+        <vendor id="MOONGLOW" name="M EHRLICHEN GASTHOFE" innkeeper="SCATU">
+            <room choice="j" price="20" x="28" y="6"/>
+            <ask choice="j">
+                WIR VERMIETEN EINEN RAUM MIT 2 BETTEN F]R 20gs.
 
-                Take it? <input type="choice" options="yn" target="rent"/>
+                WILLST DU IHN?<input type="choice" options="jn" target="rent"/>
             </ask>
         </vendor>
 
-        <!-- Britain -->
-        <vendor id="Britain" name="Britannia Manor" innkeeper="Jason">
-            <room choice="y" price="15" x="29" y="6"/>
-            <ask choice="y">
-                We have a modest sized room with 1 bed for 15 gp.
+        <!-- BRITAIN -->
+        <vendor id="BRITAIN" name="M CHATEAU BRITANNIA" innkeeper="JASON">
+            <room choice="j" price="15" x="29" y="6"/>
+            <ask choice="j">
+                WIR HABEN EINEN RAUM BESCHEIDENER GR\SSE MIT 1 BETT F]R 15gs.
             
-                Take it? <input type="choice" options="yn" target="rent"/>
+                WILLST DU IHN?<input type="choice" options="jn" target="rent"/>
             </ask>            
         </vendor>
 
-        <!-- Jhelom -->
-        <vendor id="Jhelom" name="The Inn of Ends" innkeeper="Smirk">
-            <room choice="y" price="10" x="10" y="26"/>
-            <ask choice="y">
-                We have a very secure room of modest size and 1 bed for 10gp.
+        <!-- JHELOM -->
+        <vendor id="JHELOM" name="M GASTHOFE DER ENDEN" innkeeper="SMIRK">
+            <room choice="j" price="10" x="10" y="26"/>
+            <ask choice="j">
+                WIR HABEN EINEN SEHR SICHEREN RAUM, MIT BESCHEIDENER GR\SSE UND 1 BETT, F]R 10gs.
 
-                Take it? <input type="choice" options="yn" target="rent"/>
+                WILLST DU IHN?<input type="choice" options="jn" target="rent"/>
             </ask>
         </vendor>        
         
-        <!-- Minoc -->
-        <vendor id="Minoc" name="Wayfarer's Inn" innkeeper="Estro" rooms="3">
+        <!-- MINOC -->
+        <vendor id="MINOC" name="N DES WEGEFAHRERS GASTHOF" innkeeper="ESTRO" rooms="3">
             <room choice="1" price="30" x="2" y="6"/>
             <room choice="2" price="60" x="2" y="2"/>
             <room choice="3" price="90" x="8" y="2"/>
-            <ask choice="y">
-                We have three rooms available,
-                a 1, 2 and 3 bed room for 30, 60
-                and 90 gp each.
-                1, 2 or 3
-                beds? <input type="choice" options="0123" target="rent"/>
+            <ask choice="j">
+                WIR HABEN DREI R[UME FREI, MIT 1, 2 ODER 3 BETTEN, F]R JE 30, 60 ODER 90 gs.
+            
+		1, 2 ODER 3 BETTEN?<input type="choice" options="0123" target="rent"/>
             </ask>
         </vendor>
 
-        <!-- Trinsic -->
-        <vendor id="Trinsic" name="Honorable Inn" innkeeper="Zajac">
-            <room choice="y" price="15" x="29" y="2"/>
-            <ask choice="y">
-                We have a single bed room with a back door for 15gp.
+        <!-- TRINSIC -->
+        <vendor id="TRINSIC" name="M HOTEL HONORIG" innkeeper="ZAJAC">
+            <room choice="j" price="15" x="29" y="2"/>
+            <ask choice="j">
+                WIR HABEN NUR EINEN RAUM, MIT HINTERT]R, F]R 15gs.
 
-                Take it? <input type="choice" options="yn" target="rent"/>
+                WILLST DU IHN?<input type="choice" options="jn" target="rent"/>
             </ask>
         </vendor>
 
-        <!-- Skara Brae -->
-        <vendor id="Skara Brae" name="The Inn of the Spirits" innkeeper="Tyrone">
-            <room choice="y" price="5" x="28" y="11"/>
-            <ask choice="y">
-                Unfortunately, I have but only a very small room with 1 bed:
-                worse yet, it's haunted! If you do wish to stay it costs 5gp.
+        <!-- SKARA BRAE -->
+        <vendor id="SKARA BRAE" name="M HOFE DER GEISTER" innkeeper="TYRONE">
+            <room choice="j" price="5" x="28" y="11"/>
+            <ask choice="j">
+                LEIDER HABE ICH NUR EINEN SEHR KLEINEN RAUM MIT 1 BETT; NOCH SCHLIMMER, ES SPUKT DORT! WENN DU BLEIBEN WILLST, KOSTET ES 5gs.
 
-                Take it? <input type="choice" options="yn" target="rent"/>
+                WILLST DU IHN?<input type="choice" options="jn" target="rent"/>
             </ask>
         </vendor>
 
-        <!-- Vesper -->
-        <vendor id="Vesper" name="The Sleep Shop" innkeeper="Tymus">
-            <room choice="y" price="1" x="25" y="23"/>
-            <ask choice="y">
-                All we have is that cot over there. But it is comfortable, and only 1 gp.
+        <!-- VESPER -->
+        <vendor id="VESPER" name="M TRAUMLADEN" innkeeper="TYMUS">
+            <room choice="j" price="1" x="25" y="23"/>
+            <ask choice="j">
+                ALLES, WAS WIR HABEN, IST DAS FELDBETT DA DR]BEN. ABER ES IST BEQUEM UND KOSTET NUR 1gs.
 
-                Take it? <input type="choice" options="yn" target="rent"/>
+                WILLST DU ES?<input type="choice" options="jn" target="rent"/>
             </ask>
         </vendor>
     </script>
@@ -1256,11 +1181,10 @@
         <intro>
             <music type="shopping"/>
             <ztats screen="equipment"/>
-            Avast ye mate! Shure ye wishes to buy from ol'
-            {owner}?
+            WARSCHAU, KAMERAD! SICHER WILLSTE VOM ALTEN {owner} KAUFEN!
 
-            {owner} says: Welcome to {name}.
-            Like to see my goods? <input type="choice" options="yn" target="show_goods"/>
+            {owner} SAGT: WILKOMMEN BEI{name}.
+            WILLST DU MEINE BEUTE SEHEN?<input type="choice" options="jn" target="show_goods"/>
         </intro>
 
         <end>
@@ -1270,16 +1194,16 @@
 
         <bye>
             <unset_context/>
-            {owner} says: See ya matie!
+            {owner} SAGT: AUF BALD, KAMERAD!
             <end/>
         </bye>
         
         <show_goods default="true" redirect="bye"/>
-        <show_goods choice="y">
-            {owner} says: Good Mate!
-            Ya see I gots:
+        <show_goods choice="j">
+            {owner} SAGT: GUT, KAMERAD!
+            SIEHSTE, ICH HAB:
             {show_inventory:show_item}
-            Wat'l it be? <input type="choice" options="{inventory_choices}" target="tell_about"/>
+            WAS SOLLS'N SEIN?<input type="choice" options="{inventory_choices}" target="tell_about"/>
         </show_goods>
 
         <show_item>{toupper({choice})}-{name}</show_item>
@@ -1287,76 +1211,73 @@
         <tell_about default="true" redirect="bye"/>
         <tell_about choice="a">
             <context name="item"/>
-            I can give ya {quant} long lasting Torches for a mere {price}gp.<redirect target="will_buy"/>
+            ICH KANN DIR {quant} LANGLEBIGE FACKELN F]R LAUSIGE {price}gs GEBEN.<redirect target="will_buy"/>
         </tell_about>
         <tell_about choice="b">
             <context name="item"/>
-            I've got magical mapping Gems, {quant} for only {price}gp.<redirect target="will_buy"/>
+            ICH HAB MAGISCHE KARTIERENDE JUWELEN, {quant} F]R NUR {price}gs.<redirect target="will_buy"/>
         </tell_about>
         <tell_about choice="c">
             <context name="item"/>
-            Magical Keys, 1 use each, a fair price at {price}gp for {quant}.<redirect target="will_buy"/>
+            MAGISCHE DIETRICHE, EINWEG, MEIN FAIRER PREIS IST {price}gs F]R {quant}.<redirect target="will_buy"/>
         </tell_about>
         <tell_about choice="d">
             <context name="item"/>
-            So...Ya want a Sextant...Well I gots one which I might part with fer {price} gold!<redirect target="will_buy"/>
+            SOSO... DU WILLST 'N SEXTANTEN... NUN, ICH HAB EINEN DA, VON DEM ICH MICH F]R {price}gs TRENNEN K\NNTE!<redirect target="will_buy"/>
         </tell_about>
 
         <will_buy>
             <var name="item" value="{$choice}"/>
-            Will ya buy? <input type="choice" options="yn" target="buy_item"/>
+            WILLSTE KAUFEN?<input type="choice" options="jn" target="buy_item"/>
         </will_buy>
 
         <buy_item default="true" choice="n">
-            Hmmm...Grmbl...<redirect target="bye"/>
+            HMMM... GRUMMEL...<redirect target="bye"/>
         </buy_item>
-        <buy_item choice="y">
+        <buy_item choice="j">
             <redirect target="buy" choice="{$item}"/>
         </buy_item>
         
         <buy>
             <pay price="{price}" quantity="1" cantpay="cantpay"/>
-            Fine... fine...
+            GUT... GUT...
             <add type="{type}" quantity="{quant}"/>
             <redirect target="see_more"/>
         </buy>
         <cantpay>
-            What? Can't pay! Buzz off swine!
+            WAS? KANNST NICHT ZAHLEN? HAUB AB, SCHWEIN!
             <end/>
         </cantpay>
 
         <see_more>
             <unset_context/>
-            {owner} says: See
-            more? <input type="choice" options="yn" target="show_goods"/>
+            {owner} SAGT: MEHR SEHEN?<input type="choice" options="jn" target="show_goods"/>
         </see_more>
         
-        <vendor id="Vesper" name="The Guild Shop" owner="Long John Leary">
-            <item choice="a" name="Torches" price="50" quant="5" type="torch"/>
-            <item choice="b" name="Magic Gems" price="60" quant="5" type="gem"/>
-            <item choice="c" name="Magic Keys" price="60" quant="6" type="key"/>
-            <item choice="d" hidden="true" name="Sextant" price="900" quant="1" type="sextant"/>            
+        <vendor id="VESPER" name="M GILDENLADEN" owner="LONG JOHN LEARY">
+            <item choice="a" name="FACKELN" price="50" quant="5" type="torch"/>
+            <item choice="b" name="JUWELEN" price="60" quant="5" type="gem"/>
+            <item choice="c" name="DIETRICHE" price="60" quant="6" type="key"/>
+            <item choice="d" hidden="true" name="SEXTANT" price="900" quant="1" type="sextant"/>            
         </vendor>
 
-        <vendor id="Buccaneers Den" name="Pirate's Guild" owner="One Eyed Willey">
-            <item choice="a" name="Torches" price="50" quant="5" type="torch"/>
-            <item choice="b" name="Magic Gems" price="60" quant="5" type="gem"/>
-            <item choice="c" name="Magic Keys" price="60" quant="6" type="key"/>
-            <item choice="d" hidden="true" name="Sextant" price="900" quant="1" type="sextant"/>            
+        <vendor id="BUKANIER-NEST" name=" DER PIRATENGILDE" owner="ONE EYED WILLEY">
+            <item choice="a" name="FACKELN" price="50" quant="5" type="torch"/>
+            <item choice="b" name="JUWELEN" price="60" quant="5" type="gem"/>
+            <item choice="c" name="DIETRICHE" price="60" quant="6" type="key"/>
+            <item choice="d" hidden="true" name="SEXTANT" price="900" quant="1" type="sextant"/>            
         </vendor>
     </script>
 
     <!--
     /**
-     * Stable
+     * STABle
      */ 
     -->    
     <script id="Stable">
         <intro>
             <music type="shopping"/>
-            Welcome friend!
-            Can I interest thee in
-            horses? <input type="choice" options="yn" target="ask"/>
+            WILKOMMEN FREUND! KANN ICH DICH AN PFERDEN INERESSIEREN?<input type="choice" options="jn" target="ask"/>
         </intro>
 
         <end>
@@ -1364,30 +1285,29 @@
         </end>
 
         <bye>            
-            A shame, thou looks like thou could use a good horse!
+            EINE SCHANDE, DU SIEHST AUS, ALS WENN DU EIN GUTES PFERD BRAUCHEN KANNST!
             <end/>
         </bye>
 
         <ask default="true" redirect="bye"/>
-        <ask choice="y">
-            For only {price}g.p.
-            Thou can have the best! Wilt thou buy? <input type="choice" options="yn" target="buy"/>
+        <ask choice="j">
+            F]R NUR {price}gs FEST IM SATTEL! WILLST DU KAUFEN?<input type="choice" options="jn" target="buy"/>
         </ask>  
         
         <buy default="true" redirect="bye"/>      
-        <buy choice="y">
+        <buy choice="j">
             <pay price="{price}" quantity="1" cantpay="cantpay"/>
             <add type="horse"/>
-            Here, a better breed thou shalt not find ever!
+            HIER, EIN BESSERE RASSE WIRST DU NIEMALS FINDEN!
             <end/>
         </buy>       
 
         <cantpay>
-            It seems thou hast not gold enough to pay!
+            ES SCHEINT, DU HAST NICHT GENUG GOLD ZUM BEZAHLEN!
             <end/>
         </cantpay>
 
-        <vendor id="Paws" price="{math({party:members}*100)}"/>
+        <vendor id="PAWS" price="{math({party:members}*100)}"/>
     </script>
     
 </scripts>

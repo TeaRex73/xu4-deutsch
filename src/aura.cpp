@@ -2,7 +2,7 @@
  * $Id$
  */
 
-#include "vc6.h"
+#include "vc6.h" // Fixes things if you're using VC6, does nothing if otherwise
 
 #include "aura.h"
 
@@ -30,7 +30,7 @@ void Aura::setType(Type t) {
 void Aura::passTurn() {
     if (duration > 0) {
         duration--;
-        
+
         if (duration == 0) {
             type = NONE;
 

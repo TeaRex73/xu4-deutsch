@@ -17,10 +17,10 @@ class Annotation;
  * There are three types of annotations:
  * - permanent: lasts until annotationClear is called
  * - turn based: lasts a given number of cycles
- * - time based: lasts a given number of time units (1/4 seconds) 
+ * - time based: lasts a given number of time units (1/4 seconds)
  */
 class Annotation {
-public:    
+public:
     typedef std::list<Annotation> List;
 
     Annotation(const Coords &coords, MapTile tile, bool visual = false, bool coverUp = false);
@@ -30,8 +30,8 @@ public:
     // Getters
     const Coords& getCoords() const {return coords; } /**< Returns the coordinates of the annotation */
     MapTile& getTile()              {return tile;   } /**< Returns the annotation's tile */
-    const bool isVisualOnly() const {return visual; } /**< Returns true for visual-only annotations */
-    const int getTTL() const        {return ttl;    } /**< Returns the number of turns the annotation has left to live */
+    bool isVisualOnly() const {return visual; } /**< Returns true for visual-only annotations */
+    int getTTL() const        {return ttl;    } /**< Returns the number of turns the annotation has left to live */
     bool isCoverUp()                {return coverUp;}
 
     // Setters
@@ -41,25 +41,25 @@ public:
     void setTTL(int turns)          {ttl = turns;   } /**< Sets the number of turns the annotation will live */
     void passTurn()                 {if (ttl > 0) ttl--; } /**< Passes a turn for the annotation */
 
-    bool operator==(const Annotation&) const;    
+    bool operator==(const Annotation&) const;
 
     // Properties
-private:        
+private:
     Coords coords;
-    MapTile tile;        
+    MapTile tile;
     bool visual;
     int ttl;
     bool coverUp;
 
 };
 
-/** 
+/**
  * Manages annotations for the current map.  This includes
  * adding and removing annotations, as well as finding annotations
  * and managing their existence.
  */
-class AnnotationMgr {    
-public:        
+class AnnotationMgr {
+public:
     AnnotationMgr();
 
     Annotation       *add(Coords coords, MapTile tile, bool visual = false, bool isCoverUp = false);
@@ -72,7 +72,7 @@ public:
     void             remove(Annotation::List);
     int              size();
 
-private:        
+private:
     Annotation::List  annotations;
     Annotation::List::iterator i;
 };

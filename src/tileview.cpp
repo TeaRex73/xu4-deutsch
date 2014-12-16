@@ -72,33 +72,31 @@ void TileView::drawTile(MapTile &mapTile, bool focus, int x, int y) {
     ASSERT(y < rows, "y value of %d out of range", y);
 
     //Blank scratch pad
-	animated->fillRect(0,0,SCALED(tileWidth),SCALED(tileHeight),0,0,0, 255);
+        animated->fillRect(0,0,SCALED(tileWidth),SCALED(tileHeight),0,0,0, 255);
+#if 0
 	//Draw blackness on the tile.
 	animated->drawSubRect(SCALED(x * tileWidth + this->x),
-						  SCALED(y * tileHeight + this->y),
-						  0,
-						  0,
-						  SCALED(tileWidth),
-						  SCALED(tileHeight));
-
+			      SCALED(y * tileHeight + this->y),
+			      0,
+			      0,
+			      SCALED(tileWidth),
+			      SCALED(tileHeight));
+#endif
     // draw the tile to the screen
     if (tile->getAnim()) {
         // First, create our animated version of the tile
-#ifdef IOS
-        animated->clearImageContents();
-#endif
         tile->getAnim()->draw(animated, tile, mapTile, DIR_NONE);
 
         // Then draw it to the screen
         animated->drawSubRect(SCALED(x * tileWidth + this->x),
                               SCALED(y * tileHeight + this->y),
-                              0, 
-                              0, 
-                              SCALED(tileWidth), 
+                              0,
+                              0,
+                              SCALED(tileWidth),
                               SCALED(tileHeight));
     }
     else {
-        image->drawSubRect(SCALED(x * tileWidth + this->x), 
+        image->drawSubRect(SCALED(x * tileWidth + this->x),
                            SCALED(y * tileHeight + this->y),
                            0,
                            SCALED(tileHeight * mapTile.frame),
@@ -148,7 +146,7 @@ void TileView::drawTile(vector<MapTile> &tiles, bool focus, int x, int y) {
 		}
 		else {
             if (!image)
-                return; //This is a problem //FIXME, error message it. 
+                return; //This is a problem //FIXME, error message it.
 			image->drawSubRectOn(animated,
 								0, 0,
 								0, SCALED(tileHeight * frontTile.frame),

@@ -1,0 +1,115 @@
+<?xml version="1.0"?>
+<dialogue xml:space="preserve">
+  <person id="0" name="Iolo" pronoun="Er" turnAwayProb="0">
+    <description>Einen charmanten Barden.</description>
+    <topic query="job">Ich spiele für die Leute.</topic>
+    <topic query="health">Gut.</topic>
+    <topic query="SPIE">Ich spiele meine Laute und empfange die guten Wünsche der Leute.<question type="0">Magst du meine Musik?<yes>Ich würde dich begleiten!</yes><no>Wie schade.</no></question></topic>
+    <topic query="MITG">Wenn du jemand anders gut behandelst, wird er einen Grund haben, das gleiche zu tun.</topic>
+  </person>
+  <person id="1" name="Gweno" pronoun="Sie" turnAwayProb="0">
+    <description>Eine charmante Närrin.</description>
+    <topic query="job">Ich tanze und singe für die Kinder.</topic>
+    <topic query="health">Sehr gut.</topic>
+    <topic query="TANZ">Tanzen ist gut für die Seele.<question type="0">Gibst du den Bedürftigen?<yes>Bettler sind dankbar für kleine Gaben.</yes><no>Leider!</no></question></topic>
+    <topic query="BETT">Einem Bettler etwas zu geben, zeigt Mitgefühl.</topic>
+  </person>
+  <person id="2" name="ein Kind" pronoun="Das Kind" turnAwayProb="0">
+    <description>Ein kleines Kind.</description>
+    <topic query="job">Singen.</topic>
+    <topic query="health">Sehr froh.</topic>
+    <topic query="SING">Das Lied geht so: Ho eyo he hum!</topic>
+    <topic query="HO E">Es bedeutet: Liebe für einen und alle!<question type="0">Magst Du das Lied?<yes>Dann hilf uns, die Nachricht zu verbreiten!</yes><no>Zu schade.</no></question></topic>
+  </person>
+  <person id="3" name="eine Wache" pronoun="Er" turnAwayProb="0">
+    <description>Eine Wache.</description>
+    <topic query="job">Ich bewache die Brücke.</topic>
+    <topic query="health">Gut.</topic>
+    <topic query="BRUE">Jenseits der Brücke tanzen und singen unsere Leute!<question type="0">Möchtest du mitmachen?<yes>Denk daran, ein offenes Herz ist der erste Schritt auf dem Wege zur Weisheit!</yes><no>Dann hast Du jenseits der Brücke nichts zu suchen.</no></question></topic>
+    <topic query="BEWA">Jo.</topic>
+  </person>
+  <person id="4" name="Pepper" pronoun="Sie" turnAwayProb="0">
+    <description>Eine würzige Frau.</description>
+    <topic query="job">Ich bin eine kämpfende Bardin.</topic>
+    <topic query="health">Gesund.</topic>
+    <topic query="BARD">Barden wissen viele Dinge.<question type="0">Suchst du etwas?<yes>Was könnte das sein?</yes><no>Wie schade, ich hätte vielleicht helfen können.</no></question></topic>
+    <topic query="RUNE">Die Rune des Mitgefühles liegt am Ende eines Flures irgendwo in dieser Stadt.</topic>
+  </person>
+  <person id="5" name="Thevel" pronoun="Er" turnAwayProb="0">
+    <description>Einen bewährten Kämpfer.</description>
+    <topic query="job">Ich suche nach dem Geheimnisse der Magischen Kugeln.</topic>
+    <topic query="health">Halbwegs gut.</topic>
+    <topic query="KUGE">Ein einhändiger Bettler kennt ihre Geheimnisse!<question type="0">Hast du ihn gesehen?<yes>Nur er kennt die Gabe der Kugeln!</yes><no>Finde ihn in der Schlagenfeste denn er weiß von Kugeln!</no></question></topic>
+    <topic query="MAGI">Magische Kugeln.</topic>
+  </person>
+  <person id="6" name="Joe" pronoun="Er" turnAwayProb="32">
+    <description>Einen betrunkenen Kämpfer.</description>
+    <topic query="job">Jo ho ho... und 'ne Buddel... voll Rum... hick...</topic>
+    <topic query="health">Und 'ne Buddel voll...</topic>
+    <topic query="STEI">Der gelbe Stein ist in der Höhle Verachten...</topic>
+    <topic query="RUM ">Rrum... hick...<question type="0">Ggibsse mir Rum?...<yes>Ddankse... mein Freund Joe kann mit den Steinen helfen... hick...</yes><no>Ach, sei ein Joe!</no></question></topic>
+  </person>
+  <person id="7" name="Cricket" pronoun="Er" turnAwayProb="32">
+    <description>Einen Barden in Grün.</description>
+    <topic query="job">Psst, ich spiele!</topic>
+    <topic query="health">Psst!</topic>
+    <topic query="PSST">Ja, psst!<question type="0">Bist du jetzt still?<yes>Danke.</yes><no>Ich rufe die Wachen!</no></question></topic>
+    <topic query="MANT">Das Mantra für den Schrein des Mitgefühles ist 'MU'!</topic>
+  </person>
+  <person id="8" name="eine Wache" pronoun="Er" turnAwayProb="0">
+    <description>Eine gut gelaunte Wache.</description>
+    <topic query="job">Ich bin natürlich eine Wache!</topic>
+    <topic query="health">Ich bin ganz geheilt.</topic>
+    <topic query="WACH">Wir Wachen haben eine Menge Mitgefühl.</topic>
+    <topic query="MITG">Wir sagen immer: Laß die Schwierigkeiten aller anderen wie deine eigenen sein!<question type="0">Tötest du nicht-böse Wesen?<yes>Das zeigt kein Mitgefühl!</yes><no>Gut.</no></question></topic>
+  </person>
+  <person id="9" name="ein Kind" pronoun="Er" turnAwayProb="0">
+    <description>Ein kleines Kind.</description>
+    <topic query="job">Ich lerne Mitgefühl.</topic>
+    <topic query="health">O.K.</topic>
+    <topic query="LERN">Die Lösung der eigenen Probleme liegt oft darin, die Probleme anderer zu lösen!</topic>
+    <topic query="MITG">Kümmer dich nie so sehr um dich selbst, daß du dich nicht um andere kümmern kannst!<question type="0">Kennst du das Mantra des Mitgefühles?<yes>Gut.</yes><no>Frag Cricket!</no></question></topic>
+  </person>
+  <person id="10" name="Shalimar" pronoun="Er" turnAwayProb="0">
+    <description>Einen müden Hirten.</description>
+    <topic query="job">Ich passe auf die Kinder auf.</topic>
+    <topic query="health">Gut.</topic>
+    <topic query="KIND">Es braucht viel Mitgefühl, um mit Kindern umzugehen!</topic>
+    <topic query="MITG">Mitgefühl stärkt die Seele, wie Wissen den Verstand mäßigt!<question type="0">Hast du Kinder?<yes>Du weißt, was ich meine!</yes><no>Schade.</no></question></topic>
+  </person>
+  <person id="11" name="Sebastian" pronoun="Er" turnAwayProb="0">
+    <description>Eine verletzte Person.</description>
+    <topic query="job">Ich kenne ein schreckliches Geheimnis!</topic>
+    <topic query="health">Nicht so gut.</topic>
+    <topic query="GEHE">Mondains Einfluß hat die Welt nicht verlassen!</topic>
+    <topic query="MOND">Ein Artefakt ist übrig! Ich hörte es im Neste der Bukanier!<question type="0">Willst du es finden und zerstören?<yes>Dann frag in der Kneipe dort nach dem Schädel!</yes><no>Oh.</no></question></topic>
+  </person>
+  <person id="12" name="Shapero" pronoun="Er" turnAwayProb="0">
+    <description>Einen Druiden.</description>
+    <topic query="job">Ich suche nach Julio.</topic>
+    <topic query="health">In Ordnung.</topic>
+    <topic query="JULI">Er kennt die wahre Natur des Mitgefühles.<question type="0">Bist du auf der Queste des Avatars?<yes>Finde den Schrein des Mitgefühles, östlich hinter 2 Brücken!</yes><no>Schade.</no></question></topic>
+    <topic query="MITG">Such Julio auf und frag ihn nach Mitgefühl!</topic>
+  </person>
+  <person id="13" name="Julio" pronoun="Er" turnAwayProb="0">
+    <description>Einen ernsten Barden.</description>
+    <topic query="job">Ich suche die wahre Natur der Dinge!</topic>
+    <topic query="health">Ernst.</topic>
+    <topic query="NATU">Alle Dinge haben eine wahre Natur!<question type="1">Kennst Du die wahre Natur aller Dinge?<yes>Du bist ein Lügner und ein Prahler.</yes><no>Kein sterblicher kann es.</no></question></topic>
+    <topic query="MITG">Mitgefühl leitet sich von unendlicher Liebe ab!</topic>
+  </person>
+  <person id="14" name="Mentor" pronoun="Er" turnAwayProb="0">
+    <description>Einen weisen Hirten.</description>
+    <topic query="job">Ich bin aus Magincia entkommen!</topic>
+    <topic query="health">Mir geht es gut.</topic>
+    <topic query="MAGI">Der Stolz war zu groß in Magincia!</topic>
+    <topic query="STOL">Die Stadt wurde für ihren Stolz von Dämonen zerstört!<question type="1">Bist du stolz?<yes>Das ist keine Tugend!</yes><no>Stolz existiert ohne Wahrheit, Liebe oder Mut!</no></question></topic>
+  </person>
+  <person id="15" name="Sprite" pronoun="Sie" turnAwayProb="0">
+    <description>Eine arme Bettlerin.</description>
+    <topic query="job">Ich habe keinen Beruf, so bettle ich nun!</topic>
+    <topic query="health">Ich fürchte, ich werde Hungers sterben!</topic>
+    <topic query="HUNG">Ich habe eine Woche nichts gegessen!</topic>
+    <topic query="BETT">Bitte! Hilf mir!<question type="0">Wirst du mir helfen?<yes>Als Gegenleistung erzähle ich dir, daß Pepper von der Rune weiß!</yes><no>Ich werde zu Tode hungern!</no></question></topic>
+  </person>
+</dialogue>

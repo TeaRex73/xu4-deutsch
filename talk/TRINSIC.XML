@@ -1,0 +1,115 @@
+<?xml version="1.0"?>
+<dialogue xml:space="preserve">
+  <person id="0" name="Dupre" pronoun="Er" turnAwayProb="0">
+    <description>Einen gutaussehenden Kämpfer.</description>
+    <topic query="job">Ich bin Anführer der Stadt.</topic>
+    <topic query="health">Sehr gut.</topic>
+    <topic query="ANFU">Das ist eine Ehre!<question type="0">Versuchst du, ehrenhaft zu leben?<yes>Es ist eine ständige Queste. Ehre ist wie eine fein polierte Rüstung. Ohne ständige Pflege ist sie bald getrübt!</yes><no>Narr!</no></question></topic>
+    <topic query="EHRE">Sie gibt dem Leben Bedeutung!</topic>
+  </person>
+  <person id="1" name="Virgil" pronoun="Er" turnAwayProb="0">
+    <description>Einen mystischen Zauberer.</description>
+    <topic query="job">Ich schaffe magische Felder.</topic>
+    <topic query="health">Mir geht es gut.</topic>
+    <topic query="FELD">Gift ist mein Liebstes.<question type="0">Deins auch?<yes>Bravo!</yes><no>Nun, mich kümmert's nicht!</no></question></topic>
+    <topic query="SCHA">Schatten findet man nur nahe Breite-J'F" Länge-C'O" nur in den dunkelsten Nächten!</topic>
+  </person>
+  <person id="2" name="Publius" pronoun="Er" turnAwayProb="0">
+    <description>Einen schläfrigen Kämpfer.</description>
+    <topic query="job">Ich bringe einen Toast auf die Ehre!</topic>
+    <topic query="health">Müde.</topic>
+    <topic query="EHRE">Was bleibt, wenn die Ehre verloren geht?</topic>
+    <topic query="NICH">Genau, nimm mir die Ehre und mein Leben ist vorbei!<question type="0">Stebst du nach einem ehrenhaften Leben?<yes>Ehre schenkt Größe.</yes><no>Keine Ehre, keine Bedeutung!</no></question></topic>
+  </person>
+  <person id="3" name="Skitle" pronoun="Es" turnAwayProb="0">
+    <description>Ein knochiges Skelett.</description>
+    <topic query="job">Ich grüße aus tiefer Höhle.</topic>
+    <topic query="health">Wie meinen?</topic>
+    <topic query="HOEH">Ich komme aus der Höhle Schande!</topic>
+    <topic query="STEI">Ich habe den violetten Stein in den Altarräumen der Wahrheit und des Mutes verwendet gesehen!<question type="0">Warst du je dort?<yes>Gut.</yes><no>Sie enthalten Dinge, die du brauchen wirst.</no></question></topic>
+  </person>
+  <person id="4" name="Matrose Sam" pronoun="Er" turnAwayProb="0">
+    <description>Einen häßlichen Matrosen.</description>
+    <topic query="job">Ich segele auf den Meeren Britannias!</topic>
+    <topic query="health">Ein bißchen wäßrig.</topic>
+    <topic query="MEER">Meine Spezialität ist die Navigation!<question type="0">Ist das auch deine Spezialität?<yes>Gute Arbeit, Kamerad!</yes><no>Du hast wohl keinen Sextanten, was?</no></question></topic>
+    <topic query="SEXT">Geh in die Kneipe in Jhelom und frag nach Sextanten.</topic>
+  </person>
+  <person id="5" name="Aristotle" pronoun="Er" turnAwayProb="0">
+    <description>Einen würdigen Paladin.</description>
+    <topic query="job">Ich suche nach Ehre.</topic>
+    <topic query="health">Mir geht es gut.</topic>
+    <topic query="EHRE">Würde besteht nicht darin, Ehren zu erhalten, sondern, Ehren zu verdienen.</topic>
+    <topic query="WUER">Ehre niemanden als die Ehre selbst!<question type="1">Bist du immer ehrenvoll?<yes>Beeindruckend.</yes><no>Strebe danach, so zu sein.</no></question></topic>
+  </person>
+  <person id="6" name="Terrin" pronoun="Er" turnAwayProb="0">
+    <description>Ein kauerndes Kind.</description>
+    <topic query="job">Ich bin vor dem Bullen weggerannt!</topic>
+    <topic query="health">Ich hab Angst!</topic>
+    <topic query="BULL">Ein fetter, mit langen spitzen Hörnern!<question type="0">Ist er schon weg?<yes>Uff, ich dachte, er kriegt mich!</yes><no>Rette mich!</no></question></topic>
+    <topic query="RUNE">Sie liegt in der Südwestecke der Stadt vergraben.</topic>
+  </person>
+  <person id="7" name="Rigmore" pronoun="Er" turnAwayProb="0">
+    <description>Einen starken Paladin.</description>
+    <topic query="job">Ich bin der Begrüßer.</topic>
+    <topic query="health">Extragut.</topic>
+    <topic query="BEGR">Ja, wilkommen in Trinsic, Stadt der Ehre!</topic>
+    <topic query="EHRE">Weisheit über die Tugend der Ehre findet man überall in dieser Stadt.<question type="0">Suchst du diese Weisheit?<yes>Tritt ein und finde deinen Weg.</yes><no>Dies ist der falsche Ort!</no></question></topic>
+  </person>
+  <person id="8" name="Winthrop" pronoun="Er" turnAwayProb="0">
+    <description>Einen ungepflegten Händler.</description>
+    <topic query="job">Ich handle in Gerüchten.</topic>
+    <topic query="health">Ein bißchen abgerissen.</topic>
+    <topic query="GERU">Worüber?</topic>
+    <topic query="RUNE">Es gibt ein kleines Kind, das von ihr wußte... Terrin.<question type="0">Kennst du ihn?<yes>Frag ihn nach der Rune.</yes><no>Finde ihn und frag nach der Rune!</no></question></topic>
+  </person>
+  <person id="9" name="Swindrik" pronoun="Er" turnAwayProb="0">
+    <description>Einen großen Zauberer.</description>
+    <topic query="job">Ich zaubere.</topic>
+    <topic query="health">Ganz geheilt.</topic>
+    <topic query="ZAUB">Sprüche von großer Macht.<question type="0">Zauberst du Sprüche von großer Macht?<yes>Was ist das mächtigste Reagenz?</yes><no>Kennst du ihre Hauptzutat?</no></question></topic>
+    <topic query="ALRA">Frag in Folleys Kneipe nach Alraune.</topic>
+  </person>
+  <person id="10" name="Kline" pronoun="Er" turnAwayProb="0">
+    <description>Einen suchenden Paladin!</description>
+    <topic query="job">Ich suche Zutritt zum Schreine der Ehre!<question type="0">Weißt du von den beiden Vorbedingungen, um den Schrein zu betreten und zu benutzen?<yes>Was sind sie?</yes><no>Was glaubst du?</no></question></topic>
+    <topic query="health">Gut.</topic>
+    <topic query="MANT">Das Mantra ist 'SUMM'.</topic>
+    <topic query="RUNE">Ein Mann namens Winthrop weiß von der Rune!</topic>
+  </person>
+  <person id="11" name="Lexington" pronoun="Er" turnAwayProb="0">
+    <description>Einen glänzenden Paladin.</description>
+    <topic query="job">Ich bin Kriegsfürst von Trinsic.</topic>
+    <topic query="health">Spitze.</topic>
+    <topic query="KRIE">Ich habe viele Questen gelöst!</topic>
+    <topic query="QUES">Questen zu lösen, bringt dir Ehre!<question type="0">Strebst du nach Ehre?<yes>Dann löse Questen, aber greif keine nicht-bösen Geschöpfe an, und nimm nicht das Gold anderer!</yes><no>Oh.</no></question></topic>
+  </person>
+  <person id="12" name="Dergin" pronoun="Er" turnAwayProb="0">
+    <description>Einen inbrünstigen Kämpfer.</description>
+    <topic query="job">Ich suche einen Ort zum Ausruhen.</topic>
+    <topic query="health">Müde.</topic>
+    <topic query="AUSR">Ich war lange auf harter Queste.</topic>
+    <topic query="QUES">Ich suche Erleuchtung am Schreine der Ehre!<question type="0">Bist du erleuchtet in Ehre?<yes>Gut.</yes><no>Der Schrein liegt nach Süden und Westen hinter den Sümpfen!</no></question></topic>
+  </person>
+  <person id="13" name="eine Wache" pronoun="Er" turnAwayProb="0">
+    <description>Eine vierschrötige Wache.</description>
+    <topic query="job">Wir wachen über das Tor.</topic>
+    <topic query="health">Exzellent.</topic>
+    <topic query="TOR ">Herein nach und hinaus aus Trinsic.</topic>
+    <topic query="WACH">Es ist ein ehrenvoller Beruf!<question type="0">Strebst du danach, Ehre auf deine Zeitgenossen zu bringen?<yes>Dupre, der Anfüher unserer Stadt, begleitet viele ehrenhafte Questen!</yes><no>Tölpel.</no></question></topic>
+  </person>
+  <person id="14" name="Quix" pronoun="Sie" turnAwayProb="0">
+    <description>Eine wandernde Magierin.</description>
+    <topic query="job">Ich suche das Skelett!</topic>
+    <topic query="health">Ausreichend.</topic>
+    <topic query="SKEL">Es kennt ein großes Geheimnis.</topic>
+    <topic query="GEHE">Über den violetten Stein der Ehre!<question type="0">Hast du den violetten Stein?<yes>Benutz ihn weise!</yes><no>Such ihn, denn er ist sehr nützlich!</no></question></topic>
+  </person>
+  <person id="15" name="eine Wache" pronoun="Sie" turnAwayProb="64">
+    <description>Eine starke Wache.</description>
+    <topic query="job">Zu wachen.</topic>
+    <topic query="health">Wach.</topic>
+    <topic query="WACH">Wachend.</topic>
+    <topic query="STAR">Wache.</topic>
+  </person>
+</dialogue>

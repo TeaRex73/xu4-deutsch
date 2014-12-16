@@ -1,0 +1,115 @@
+<?xml version="1.0"?>
+<dialogue xml:space="preserve">
+  <person id="0" name="Katrina" pronoun="Sie" turnAwayProb="0">
+    <description>Eine Hirtin.</description>
+    <topic query="job">Eine Überlebende.</topic>
+    <topic query="health">Gut.</topic>
+    <topic query="UEBE">Die Stadt Magincia wurde für ihren Stolz zerstört.</topic>
+    <topic query="STOL">Stolz gedeiht in Abwesehnheit von Wahrheit, Liebe und Mut.<question type="1">Bist du stolz?<yes>Deine Mühen sind bedeutungslos.</yes><no>Demut ist die Tugend, die den Stolz überwinden muß!</no></question></topic>
+  </person>
+  <person id="1" name="Ghostly" pronoun="Es" turnAwayProb="0">
+    <description>Ein schattenhaftes Gespenst.</description>
+    <topic query="job">Ich spuke in Magincia.</topic>
+    <topic query="health">Untot, auf der Suche nach Frieden.</topic>
+    <topic query="FRIE">Frieden kann ich nie finden, für immer verbannt in das Reich der erdgebundenen Geister.</topic>
+    <topic query="GEIS">Sei nicht stolz auf deine kleinen Taten, damit du nicht auch aus dem Lichte fällst!</topic>
+  </person>
+  <person id="2" name="Skullface" pronoun="Es" turnAwayProb="0">
+    <description>Ein quasselndes Skelett.</description>
+    <topic query="job">Ich bin ein Edelmann von hoher Geburt.</topic>
+    <topic query="health">Ganz hervorragend.</topic>
+    <topic query="EDEL">Ich und mein Bruder sind die letzten Sprößlinge der bedeutenden Familie Meridid.<question type="0">Du hast natürlich von uns gehört, ja?<yes>Dachte ich mir.</yes><no>Du kannst nicht aus dieser Gegend sein!</no></question></topic>
+    <topic query="A   ">A</topic>
+  </person>
+  <person id="3" name="Casperin" pronoun="Es" turnAwayProb="0">
+    <description>Ein kleines Gespenst.</description>
+    <topic query="job">In diesem Laden spuken.</topic>
+    <topic query="health">Fühl mich ein bißchen durchscheinend.</topic>
+    <topic query="SPUK">Hier wird eine Menge gespukt.<question type="0">Weißt du warum?<yes>Stolz ist das sicherste Maß nie erreichter Ziele!</yes><no>Stolz!</no></question></topic>
+    <topic query="STOL">Such das Mantra der Demut, frag Heywood!</topic>
+  </person>
+  <person id="4" name="Faultless" pronoun="Es" turnAwayProb="0">
+    <description>Ein großes Gespenst.</description>
+    <topic query="job">Oh, ich hänge nur so herum!</topic>
+    <topic query="health">War schon besser.</topic>
+    <topic query="HAEN">Ich wurde aufgehängt für meine Sünde, Stolz!<question type="1">Bist du stolz?<yes>Eine schwere Sünde!</yes><no>Stolz ist des Bösen Lieblingssünde!</no></question></topic>
+    <topic query="MANT">Das Mantra des Stolzes, des Gegenpols der Demut, ist 'MUL'.</topic>
+  </person>
+  <person id="5" name="Heywood" pronoun="Es" turnAwayProb="0">
+    <description>Ein großes Gespenst.</description>
+    <topic query="job">Auf ewig spuken.</topic>
+    <topic query="health">So gut, wie zu erwarten ist.</topic>
+    <topic query="SPUK">Stolz geht voraus, Schande kommt nach!<question type="1">Bist du stolz?<yes>Du wirst Schande finden!</yes><no>Eine stolze Seele kennt mit Sicherheit nicht ihren Wert!</no></question></topic>
+    <topic query="MANT">Faultless kennt das Mantra des Stolzes, frag ihn!</topic>
+  </person>
+  <person id="6" name="Slim" pronoun="Es" turnAwayProb="0">
+    <description>Ein schmales Skelett.</description>
+    <topic query="job">Ich klappere mit meinen Knochen.</topic>
+    <topic query="health">Ein bißchen dünn geraten.</topic>
+    <topic query="KNOC">Ich habe mich selbst viel zu wichtig genommen, dieser Stolz war mein Niedergang.<question type="1">Bist du immer demütig?<yes>Zweifelhaft.</yes><no>Sei nicht stolz auf die Demut, sonst zerstörst du sie!</no></question></topic>
+    <topic query="STOL">Eine grausame Eigenschaft!</topic>
+  </person>
+  <person id="7" name="Banter" pronoun="Es" turnAwayProb="0">
+    <description>Ein zerbröckelndes Skelett.</description>
+    <topic query="job">Ich besaß einst das silberne Horn.</topic>
+    <topic query="health">Etwas knochig.</topic>
+    <topic query="HORN">Das silberne Horn muß man benutzen, um die Dämonenwache am Schreine zu passieren.</topic>
+    <topic query="SCHR">Wierdrum war schon am Schreine der Demut!<question type="0">Suchst du das Horn?<yes>Frag Demitry!</yes><no>Oh.</no></question></topic>
+  </person>
+  <person id="8" name="Demitry" pronoun="Es" turnAwayProb="0">
+    <description>Ein dünnes Skelett.</description>
+    <topic query="job">Ich klappere mit meinen Gebeinen.</topic>
+    <topic query="health">Ungefähr wie gestern.</topic>
+    <topic query="GEBE">Gebeine, ihr Gebeine, ihr verdorrten Gebeine...<question type="0">Bist du tot?<yes>Ach, wie schade!</yes><no>Paß auf auf Nate!</no></question></topic>
+    <topic query="HORN">Die Königin der Liebe hat eine Aufwartedame, sie kann dir mehr über das Horn sagen!</topic>
+  </person>
+  <person id="9" name="Wierdrum" pronoun="Es" turnAwayProb="0">
+    <description>Ein klapperndes Knochengestell.</description>
+    <topic query="job">Ich spuke, und spuke, und spuke!</topic>
+    <topic query="health">Spukhaft.</topic>
+    <topic query="SPUK">Der Spuk-Beruf dauert länger als ein Leben, er dauert für immer!</topic>
+    <topic query="SCHR">Ja, ich war einst am Schreine, er liegt am Nordufer auf der Insel des Abgrunds!</topic>
+  </person>
+  <person id="10" name="Boozer" pronoun="Es" turnAwayProb="0">
+    <description>Ein plumpes Gespenst.</description>
+    <topic query="job">Ich war einst ein mächtiger Händler!</topic>
+    <topic query="health">Hick...</topic>
+    <topic query="HAEN">Mein Reichtum war grenzenlos, ich übte große Macht aus!</topic>
+    <topic query="MACH">Eine stolze Seele kennt mit Sicherheit nicht ihren Wert!<question type="0">Verstehst du?<yes>Die Welt geht auch ohne mich weiter.</yes><no>Die Welt geht auch ohne mich weiter.</no></question></topic>
+  </person>
+  <person id="11" name="Bulbous" pronoun="Es" turnAwayProb="0">
+    <description>Ein fettes Skelett.</description>
+    <topic query="job">Ich betreibe diesen Laden.</topic>
+    <topic query="health">Könnte gar nicht besser sein.</topic>
+    <topic query="LADE">Na, den für Lebensmittel natürlich.<question type="0">Hast du Interesse an Rationen?<yes>Hmmm, unser Bestand ist wohl verdorben....</yes><no>Ich verkaufe nur die allerbesten.</no></question></topic>
+    <topic query="VERD">Nun, wir erwarten jeden Tag frische Ware!</topic>
+  </person>
+  <person id="12" name="Splot" pronoun="Es" turnAwayProb="0">
+    <description>Ein weinendes Skelett.</description>
+    <topic query="job">Ich bereue.</topic>
+    <topic query="health">War schon besser.</topic>
+    <topic query="BERE">Ich war stolz, streif die Dünkel von dir ab, nur die demütigen sind rein!</topic>
+    <topic query="DEMU">Die Wurzel, aus der alle Tugenden wachsen!<question type="0">Suchst du Reinheit?<yes>Dann frag die Schlange nach der Rune und dem Steine!</yes><no>Narr!</no></question></topic>
+  </person>
+  <person id="13" name="Ruskin" pronoun="Es" turnAwayProb="0">
+    <description>Ein blaues Gespenst.</description>
+    <topic query="job">Ich versuche jetzt, Demut zu verstehen.</topic>
+    <topic query="health">Nicht gut.</topic>
+    <topic query="DEMU">Die erste Prüfung einer großen Seele ist Demut!<question type="0">Suchst du Demut zu verstehen?<yes>Du wirst die Rune brauchen!</yes><no>Eine Schande.</no></question></topic>
+    <topic query="RUNE">Frag die Schlange nach der Rune, kurz bevor sie zubeißt!</topic>
+  </person>
+  <person id="14" name="Nate" pronoun="Sie" turnAwayProb="0">
+    <description>Eine gemein aussehende Viper!</description>
+    <topic query="job">Ich bringe allem Leben in Magincia den Tod!</topic>
+    <topic query="health">Blutdurstig!</topic>
+    <topic query="STEI">Die den schwarzen Stein suchen, müssen in der Kneipe in Britain fragen!</topic>
+    <topic query="RUNE">Die heilige Rune der Demut wurde aus dieser Stadt verbannt. Frag Barren in Paws!</topic>
+  </person>
+  <person id="15" name="Virtuebane" pronoun="Er" turnAwayProb="0">
+    <description>Einen abscheulichen entsetzlichen Teufel!</description>
+    <topic query="job">Ich heiße dich wilkommen in Magincia! Der stolzen Stadt auf hoher See!</topic>
+    <topic query="health">Teuflisch!</topic>
+    <topic query="MAGI">Magincia ist ins Reich der Dunkelheit gefallen, denn das Fundament ihrer Tugend war auf Stolz gebaut!<question type="1">Bist du stolz?<yes>Gut!</yes><no>Ach.</no></question></topic>
+    <topic query="A   ">A</topic>
+  </person>
+</dialogue>

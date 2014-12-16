@@ -1,0 +1,115 @@
+<?xml version="1.0"?>
+<dialogue xml:space="preserve">
+  <person id="0" name="Twin Gates" pronoun="Er" turnAwayProb="0">
+    <description>Einen großen Magier.</description>
+    <topic query="job">Wir heißen dich wilkommen in Vesper.</topic>
+    <topic query="health">Gut.</topic>
+    <topic query="VESP">Ja, Vesper ist ein hübsches Städtchen.<question type="0">Kommst du von weit her?<yes>Der Besuch von einem auf der Queste ehrt uns!</yes><no>Der Besuch von einem auf der Queste ehrt uns!</no></question></topic>
+    <topic query="WILK">Wilkommen, in Vesper!</topic>
+  </person>
+  <person id="1" name="Wache" pronoun="Er" turnAwayProb="0">
+    <description>Einen Koloß.</description>
+    <topic query="job">Uff, ich taff!</topic>
+    <topic query="health">Uff, ich taff!</topic>
+    <topic query="TAFF">Uff, ich taff!</topic>
+    <topic query="UFF  ">Ich taff!<question type="0">Uff, du taff?<yes>Uff, du taff!</yes><no>Uff, ich taff!</no></question></topic>
+  </person>
+  <person id="2" name="Servile" pronoun="Er" turnAwayProb="0">
+    <description>Einen sanften Hirten.</description>
+    <topic query="job">Ich kann dir helfen!</topic>
+    <topic query="health">Fürs erste gut.</topic>
+    <topic query="HELF">Ich kenne den Schädel von Mondain dem Zauberer!<question type="0">Hast du von ihm gehört?<yes>Er ist ein übles Artefakt!</yes><no>Er ist ein übles Artefakt!</no></question></topic>
+    <topic query="SCHA">Ihn aus irgendeinem Grunde zu benutzen ist ein Zeichen großen Übels, und keine Tugend!</topic>
+  </person>
+  <person id="3" name="Reisender Dan" pronoun="Er" turnAwayProb="0">
+    <description>Einen kurzen runden Mann mit Hut und Weste.</description>
+    <topic query="job">Reisender Dan, der Zinkermann.</topic>
+    <topic query="health">Mir geht's prima, danke.</topic>
+    <topic query="ZINK">Ich bin hier, um für den Gildenladen Waren zu reparieren.<question type="0">Warst du schon im Gildenladen?<yes>Tolle Auswahl!</yes><no>Beste Preise!</no></question></topic>
+    <topic query="REIS">Ich weiß, daß die Welt rund ist!</topic>
+  </person>
+  <person id="4" name="Balthasar" pronoun="Er" turnAwayProb="0">
+    <description>Einen handfesten Bauern.</description>
+    <topic query="job">Ich bin ein Leibeigener.</topic>
+    <topic query="health">Ich bin fix und alle.</topic>
+    <topic query="LEIB">Leibeigene arbeiten hart für wenig Geld!</topic>
+    <topic query="ARBE">Ich arbeite für meinen Herrn auf den Feldern!<question type="0">Hast du einen Herrn?<yes>Ich hoffe er oder sie ist ein freundlicher!</yes><no>Du hast wirklich Glück!</no></question></topic>
+  </person>
+  <person id="5" name="Plain" pronoun="Er" turnAwayProb="0">
+    <description>Einen kleinen Mann.</description>
+    <topic query="job">Ich suche Demut.</topic>
+    <topic query="health">Ich bin ganz geheilt.</topic>
+    <topic query="DEMU">Wenn sich die 3 Prinzipien der Tugend auf acht Weisen vereinigen, hat Stolz keine Tugend!</topic>
+    <topic query="STOL">Stolz zu sein ist keine Tugend, und so wurde Magincia zerstört! Demut ist die Tugend, die bleibt!</topic>
+  </person>
+  <person id="6" name="Simple" pronoun="Sie" turnAwayProb="0">
+    <description>Eine schlanke Hirtin.</description>
+    <topic query="job">Ich suche den Schrein.</topic>
+    <topic query="health">Mir geht es prima.</topic>
+    <topic query="SCHR">Den Schrein der Demut!</topic>
+    <topic query="DEMU">Der Schrein liegt am Nordufer der Insel des Abgrundes und wird von endlosen Horden Dämonen bewacht!<question type="0">Kennst du die Insel?<yes>Gut.</yes><no>Südöstlich von Britannia!</no></question></topic>
+  </person>
+  <person id="7" name="Gem" pronoun="Sie" turnAwayProb="0">
+    <description>Eine hübsche Frau.</description>
+    <topic query="job">Ich mache einfache Arbeiten.</topic>
+    <topic query="health">Ich komme gut zurecht.</topic>
+    <topic query="ARBE">Ich kann dir mit dem Mantra helfen!</topic>
+    <topic query="MANT">Da Demut das Gegenteil von Stolz ist, ist es auch ihr Mantra!<question type="0">Kennst du das Mantra des Stolzes?<yes>Dann kehre es um für Demut!</yes><no>Wenn du es weißt, kehre es um!</no></question></topic>
+  </person>
+  <person id="8" name="Joseph" pronoun="Er" turnAwayProb="0">
+    <description>Einen weisen Hirten.</description>
+    <topic query="job">Ich bin nur ein demütiger Hirte.</topic>
+    <topic query="health">Mir geht es gut.</topic>
+    <topic query="HIRT">Ich bin auf Pilgerfahrt zum Schreine der Demut!<question type="0">Wußtest du, daß es keinen Schrein des Stolzes gibt?<yes>Sehr gut.</yes><no>Stolz ist keine Tugend des Avatars!</no></question></topic>
+    <topic query="SCHR">Er liegt auf der dunklen Insel!</topic>
+  </person>
+  <person id="9" name="Friday" pronoun="Sie" turnAwayProb="0">
+    <description>Eine schöne und beeindruckende Wache.</description>
+    <topic query="job">Ich soll dich davor warnen, dieses Gold zu nehmen!<question type="0">Planst du, es zu nehmen?<yes>Das würde kein gutes Licht auf deine Tugenden werfen!</yes><no>Das ist gut.</no></question></topic>
+    <topic query="health">Mir geht es gut genug!</topic>
+    <topic query="GOLD">Es ist nicht deins!</topic>
+    <topic query="WARN">Es ist nicht deins!</topic>
+  </person>
+  <person id="10" name="Randal" pronoun="Er" turnAwayProb="0">
+    <description>Einen ernsten Waldläufer.</description>
+    <topic query="job">Ich lehre von den Schreinen.</topic>
+    <topic query="health">Mir geht es gut.</topic>
+    <topic query="SCHR">Mann &gt;muß&lt; jeden Schrein jeweils für 1, 2 &amp; 3 Zyklen besuchen, damit einem die Wege klar werden!<question type="0">Besuchst du sie oft?<yes>Sehr gut.</yes><no>Mach das zu deinem ersten Ziele auf deinem Wege zum Avatartume!</no></question></topic>
+    <topic query="A   ">A</topic>
+  </person>
+  <person id="11" name="Dirgen" pronoun="Er" turnAwayProb="0">
+    <description>Einen weisen Mann.</description>
+    <topic query="job">Ich gebe weisen Rat.</topic>
+    <topic query="health">Gut.</topic>
+    <topic query="RAT ">Strebe danach, die Tugend in dir zu kennen und zu entwickeln.</topic>
+    <topic query="TUGE">Der Seher Hawkwind sollte &gt;oft&lt; konsultiert werden, denn er kann in dein Inneres sehen!<question type="0">Tust du das?<yes>Gut!</yes><no>Dann wirst du mit Sicherheit vom Wege abkommen!</no></question></topic>
+  </person>
+  <person id="12" name="Shazbot" pronoun="Sie" turnAwayProb="0">
+    <description>Eine komische Närrin.</description>
+    <topic query="job">Du denkst wohl, ich bin komisch!<question type="0">Nicht wahr?<yes>Sehr gut, ich versuch's zu sein!</yes><no>Ah, schade, ich dachte, ich wär's.</no></question></topic>
+    <topic query="health">Mich juckt's ein bißchen!</topic>
+    <topic query="KOMI">Wetten, du fragst mich nicht nach Nate der Schlange!</topic>
+    <topic query="NATE">Nun, es ist 'ne lange Geschichte und wir haben nicht die Zeit.</topic>
+  </person>
+  <person id="13" name="Flatbush" pronoun="Er" turnAwayProb="0">
+    <description>Einen schlanken Jüngling.</description>
+    <topic query="job">Ich bin ein Zauberlehrling!</topic>
+    <topic query="health">Ich bin sehr mächtig!</topic>
+    <topic query="ZAUB">Ich bin Calumnys Liebling!</topic>
+    <topic query="CALU">Er lebt in Yew!<question type="0">Bist du schon in Yew gewesen?<yes>Calumny kennt den Zauber Quicatus!</yes><no>Calumny kennt den Zauber Quicatus! Such ihn auf!</no></question></topic>
+  </person>
+  <person id="14" name="Corkrin" pronoun="Er" turnAwayProb="0">
+    <description>Einen kühnen Paladin.</description>
+    <topic query="job">Ich bereise diese schönen Lande, um die Tugenden zu verbreiten!</topic>
+    <topic query="health">Ich bin ganz geheilt!</topic>
+    <topic query="TUGE">Um seinen Fortschritt auf den Pfaden der Tugend zu kennen, &gt;muß&lt; man den Seher Hawkwind oft besuchen!<question type="0">Tust du das?<yes>Gut.</yes><no>Du mußt, oder du gehst fehl!</no></question></topic>
+    <topic query="A   ">A</topic>
+  </person>
+  <person id="15" name="Dyka" pronoun="Er" turnAwayProb="0">
+    <description>Einen großen flinken Mann.</description>
+    <topic query="job">Ich bin ein Dieb, ich borge mir gerne Sachen aus!</topic>
+    <topic query="health">Mir geht es sehr gut!</topic>
+    <topic query="BORG">Was ich mir am liebsten ausborge, sind Pferde!</topic>
+    <topic query="PFER">Man kann im Dorfe Paws Pferde stehlen!<question type="0">Bist du ein Dieb?<yes>Paß auf den Bullen auf der Weide auf!</yes><no>Wahrscheinlich bist du ein Schwächling!</no></question></topic>
+  </person>
+</dialogue>

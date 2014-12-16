@@ -22,7 +22,7 @@ vector<Armor *> Armor::armors;
 
 /**
  * Returns armor by ArmorType.
- */ 
+ */
 const Armor *Armor::get(ArmorType a) {
     // Load in XML if it hasn't been already
     loadConf();
@@ -34,7 +34,7 @@ const Armor *Armor::get(ArmorType a) {
 
 /**
  * Returns armor that has the given name
- */ 
+ */
 const Armor *Armor::get(const string &name) {
     // Load in XML if it hasn't been already
     loadConf();
@@ -61,13 +61,13 @@ Armor::Armor(const ConfigElement &conf) {
             continue;
 
         for (int cl = 0; cl < 8; cl++) {
-            if (strcasecmp(i->getString("class").c_str(), getClassName(static_cast<ClassType>(cl))) == 0)
+            if (strcasecmp(i->getString("class").c_str(), getClassNameEnglish(static_cast<ClassType>(cl))) == 0)
                 mask = (1 << cl);
         }
         if (mask == 0 && strcasecmp(i->getString("class").c_str(), "all") == 0)
             mask = 0xFF;
         if (mask == 0) {
-            errorFatal("malformed armor.xml file: constraint has unknown class %s", 
+            errorFatal("malformed armor.xml file: constraint has unknown class %s",
                        i->getString("class").c_str());
         }
         if (i->getBool("canuse"))
@@ -85,7 +85,7 @@ void Armor::loadConf() {
 
     const Config *config = Config::getInstance();
 
-    vector<ConfigElement> armorConfs = config->getElement("armors").getChildren();    
+    vector<ConfigElement> armorConfs = config->getElement("armors").getChildren();
     for (std::vector<ConfigElement>::iterator i = armorConfs.begin(); i != armorConfs.end(); i++) {
         if (i->getName() != "armor")
             continue;

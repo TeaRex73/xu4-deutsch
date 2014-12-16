@@ -1,5 +1,5 @@
 /*
- *  hash.c - hash functions for Ultima 4 LZW implementation 
+ *  hash.c - hash functions for Ultima 4 LZW implementation
  *
  *  Copyright (C) 2002  Marc Winterrowd
  *
@@ -17,6 +17,8 @@
  *  along with this program; if not, write to the Free Software
  *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
+
+#include "../vc6.h" // Fixes things if you're using VC6, does nothing if otherwise
 
 #include "hash.h"
 
@@ -58,7 +60,7 @@ int probe2(unsigned char root, int codeword)
             carry = (registers[j] >> 15) & 1;
             registers[j] = (registers[j] << 1) | oldCarry;
             registers[j] = registers[j] & 0xffff;   /* make sure register stays 16 bit */
-        }        
+        }
     }
 
     /* final touches */

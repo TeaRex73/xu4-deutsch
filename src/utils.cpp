@@ -17,10 +17,10 @@
  * Seed the random number generator.
  */
 void xu4_srandom() {
-#if (defined(BSD) && (BSD >= 199103)) || (defined (MACOSX) || defined (IOS)) 
+#if (defined(BSD) && (BSD >= 199103)) || defined (MACOSX)
     srandom(time(NULL));
 #else
-    srand(time(NULL));
+    srand((unsigned int)time(NULL));
 #endif
 }
 
@@ -31,7 +31,7 @@ void xu4_srandom() {
  * lower bits (e.g. MacOS X).
  */
 int xu4_random(int upperRange) {
-#if (defined(BSD) && (BSD >= 199103)) || (defined (MACOSX) || defined (IOS)) 
+#if (defined(BSD) && (BSD >= 199103)) || defined (MACOSX)
     int r = random();
 #else
     int r = rand();
@@ -50,40 +50,79 @@ string& trim(string &val, const string &chars_to_trim) {
     if (val.size()) {
         string::size_type pos;
         for (i = val.begin(); (i != val.end()) && (pos = chars_to_trim.find(*i)) != string::npos; )
-            i = val.erase(i);    
+            i = val.erase(i);
         for (i = val.end()-1; (i != val.begin()) && (pos = chars_to_trim.find(*i)) != string::npos; )
             i = val.erase(i)-1;
     }
     return val;
 }
 
+int mytoupper(int c) {
+  if (c >= 'a' && c <= '}' ) return c - 32;
+  return c;
+}
+
+int mytolower(int c) {
+  if (c >= 'A' && c <= ']' ) return c + 32;
+  return c;
+}
+
 /**
  * Converts the string to lowercase
- */ 
-string& lowercase(string &val) {
+ */
+string lowercase(string val) {
     using namespace std;
     string::iterator i;
     for (i = val.begin(); i != val.end(); i++)
-        *i = tolower(*i);
+        *i = mytolower(*i);
     return val;
 }
 
 /**
  * Converts the string to uppercase
- */ 
-string& uppercase(string &val) {
+ */
+string uppercase(string val) {
     using namespace std;
+    string ret = "";
     string::iterator i;
-    for (i = val.begin(); i != val.end(); i++)
-        *i = toupper(*i);
-    return val;
+    for (i = val.begin(); i != val.end(); i++) {
+      if (*i == '~') ret += "SS"; else ret += string(1, (char)mytoupper(*i));
+    }
+    return ret;
+}
+
+string deumlaut(string val) {
+    using namespace std;
+    string ret = "";
+    string::iterator i;
+    for (i = val.begin(); i != val.end(); i++) {
+        switch (*i) {
+        case '[':
+            ret += "AE"; break;
+        case '\\':
+            ret += "OE"; break;
+        case ']':
+            ret += "UE"; break;
+        case '{':
+            ret += "ae"; break;
+        case '|':
+            ret += "oe"; break;
+        case '}':
+            ret += "ue"; break;
+        case '~':
+            ret += "ss"; break;
+        default:
+            ret += string(1, (char)mytoupper(*i));
+        }
+    }
+    return ret;
 }
 
 /**
  * Converts an integer value to a string
- */ 
+ */
 string to_string(int val) {
-    char buffer[16];    
+    char buffer[16];
     sprintf(buffer, "%d", val);
     return buffer;
 }

@@ -1,0 +1,115 @@
+<?xml version="1.0"?>
+<dialogue xml:space="preserve">
+  <person id="0" name="Sentri" pronoun="Er" turnAwayProb="0">
+    <description>Einen stattlichen Freiherrn.</description>
+    <topic query="job">Ich regiere diese Provinz.</topic>
+    <topic query="health">Sehr gut.</topic>
+    <topic query="PROV">Ja, diese Inseln und noch viel mehr.</topic>
+    <topic query="WORT">Ich kenne nur eine von drei Silben, 'cor'.<question type="0">Kennst du die vier Städte des Mutes?<yes>Sehr gut.</yes><no>Es sind Jhelom, Minoc, Trinsic und Skara Brae.</no></question></topic>
+  </person>
+  <person id="1" name="die Torwache" pronoun="Er" turnAwayProb="0">
+    <description>Eine sehr große und breite Wache.</description>
+    <topic query="job">Über die Tore zu wachen natürlich.</topic>
+    <topic query="health">Sehr stark!</topic>
+    <topic query="TORE">Dies sind die Tore zur Schlangenburg.</topic>
+    <topic query="WACH">Wachen, beobachten, schützen.<question type="0">Bist du hier, um Mut zu finden?<yes>Dann bist du am richtigen Orte.</yes><no>Dann vielleicht, um eine Wache zu werden!</no></question></topic>
+  </person>
+  <person id="2" name="Lassorn" pronoun="Er" turnAwayProb="0">
+    <description>Einen verwundeten Seemann.</description>
+    <topic query="job">Ich bin ein Seemann.</topic>
+    <topic query="health">Ich habe als einziger den Untergang überlebt.</topic>
+    <topic query="UNTE">Seiner Majestät Schiff 'Kap'.<question type="0">Je von ihr gehört?<yes>Sie war ein mächtiges Gefährt!</yes><no>Sie war ein mächtiges Gefährt!</no></question></topic>
+    <topic query="STEU">Sie versank in den tiefen Wassern der Bucht im Kap der Helden!</topic>
+  </person>
+  <person id="3" name="Roark" pronoun="Er" turnAwayProb="0">
+    <description>Einen altbewährten Kämpfer.</description>
+    <topic query="job">Ich kämpfe für Britannia!</topic>
+    <topic query="health">Gerade geheilt.<question type="0">Geht es dir gut?<yes>Dann strebe danach, die Geheimnisse des Abgrunds zu finden.</yes><no>Du bist an den richtigen Ort gekommen.</no></question></topic>
+    <topic query="ABGR">Der Große Stygische Abgrund verbirgt den Kodex der Ultimativen Weisheit!</topic>
+    <topic query="KODE">Ich weiß nur wenig.</topic>
+  </person>
+  <person id="4" name="ein Waldläufer" pronoun="Er" turnAwayProb="0">
+    <description>Einen Waldläufer, der ganz im Training aufgeht.</description>
+    <topic query="job">Ich trainiere!</topic>
+    <topic query="health">Exzellent.</topic>
+    <topic query="TRAI">Ich trainiere, damit ich die Höhlen überlebe!</topic>
+    <topic query="HOEH">Ich habe vor, das Geheimnis der Altarräume zu bezwingen.<question type="0">Du auch?<yes>Frag unsere Trainerin nach den Räumen, sie weiß viel!</yes><no>Schwächling.</no></question></topic>
+  </person>
+  <person id="5" name="Shyra" pronoun="Sie" turnAwayProb="0">
+    <description>Die Meisterin der Übungen.</description>
+    <topic query="job">Ich trainiere Krieger, mit Mut zu kämpfen!</topic>
+    <topic query="health">Top.</topic>
+    <topic query="TRAI">Trainiere gut, und dein Mut kann mit Zutrauen wachsen.<question type="0">Wirst du trainieren?<yes>Bravo!</yes><no>Bedauernswert.</no></question></topic>
+    <topic query="RAEU">Im Altarraume des Mutes, benutze die roten, orangenen, violetten und weißen Steine!</topic>
+  </person>
+  <person id="6" name="eine freiherrliche Wache" pronoun="Sie" turnAwayProb="0">
+    <description>Eine strenge Wache.</description>
+    <topic query="job">Ich bewache unseren Herrn.</topic>
+    <topic query="health">Äußerst gut.</topic>
+    <topic query="HERR">Sentri herrscht über diese Burg.<question type="0">Wünschst du eine Audienz mit Sentri?<yes>Gewährt, tritt ein.</yes><no>Dann störe ihn nicht.</no></question></topic>
+    <topic query="BURG">Diese Burg ist auf Mut gebaut.</topic>
+  </person>
+  <person id="7" name="eine Schatzwache" pronoun="Er" turnAwayProb="0">
+    <description>Eine stramme Wache.</description>
+    <topic query="job">Wir bewachen unseres Herrn Schatz.</topic>
+    <topic query="health">Höhlenerprobt exzellent.</topic>
+    <topic query="SCHA">Dieser Schatz ist nicht für dich.<question type="0">Hast du vor, den Schatz unseres Herrn zu stehlen?<yes>Narr!</yes><no>Kluger Zug!</no></question></topic>
+    <topic query="HOEH">Such Durham auf für Wissen über Höhlen.</topic>
+  </person>
+  <person id="8" name="Garam" pronoun="Er" turnAwayProb="0">
+    <description>Einen kühnen Kämpfer.</description>
+    <topic query="job">Ich kämpfe mit Mut!<question type="0">Du auch?<yes>Gut.</yes><no>Dann trainiere!</no></question></topic>
+    <topic query="health">Sehr ordentlich.</topic>
+    <topic query="MUT ">Mut macht aus Knaben Könige!</topic>
+    <topic query="GLOC">Die Glocke des Mutes liegt am Grunde eines tiefen Brunnens auf See, bei Breite-N'A" Länge-L'A"</topic>
+  </person>
+  <person id="9" name="Durham" pronoun="Er" turnAwayProb="0">
+    <description>Einen großen Kämpfer.</description>
+    <topic query="job">Ich queste um Ruhm!</topic>
+    <topic query="health">Ziemlich gut.</topic>
+    <topic query="QUES">Ich fühle, daß, wenn ich auf Queste bin, mein Leben ein Ziel hat!<question type="0">Bist du auf einer Queste?<yes>Dann hat dein Leben Bedeutung!</yes><no>Welch ein Verlust.</no></question></topic>
+    <topic query="HOEH">Der Altarrraum des Mutes gibt den dritten Teil eines Schlüssels.</topic>
+  </person>
+  <person id="10" name="Lori" pronoun="Sie" turnAwayProb="0">
+    <description>Eine dralle Wache.</description>
+    <topic query="job">Ich bewache diesen Durchgang.<question type="0">Suchst du nach jemandem?<yes>Nach wem?</yes><no>Dann mach dich davon!</no></question></topic>
+    <topic query="health">So weit, so gut.</topic>
+    <topic query="GARA">Er ist in der westlichen Kammer.</topic>
+    <topic query="DURH">Er ist in der östlichen Kammer.</topic>
+  </person>
+  <person id="11" name="Samuel" pronoun="Er" turnAwayProb="0">
+    <description>Eine gutaussehende Wache.</description>
+    <topic query="job">Ich bewache diesen Durchgang.<question type="0">Suchst du nach jemandem?<yes>Nach wem?</yes><no>Dann mach dich davon!</no></question></topic>
+    <topic query="health">So weit, so gut.</topic>
+    <topic query="GARA">Er ist in der westlichen Kammer.</topic>
+    <topic query="DURH">Er ist in der östlichen Kammer.</topic>
+  </person>
+  <person id="12" name="Roderick" pronoun="Er" turnAwayProb="0">
+    <description>Einen mitellosen, stinkenden Bettler.</description>
+    <topic query="job">Ich kann nicht arbeiten.</topic>
+    <topic query="health">Ich habe eine Hand verloren!</topic>
+    <topic query="HAND">Ein Zorn hat sie gefressen.<question type="0">Wirst du mir Gold geben?<yes>Du bist freundlich.</yes><no>Geizkragen!</no></question></topic>
+    <topic query="KUGE">Eine Kugel blauen Lichtes wird deine Stärke, Geschicklichkeit oder Intelligenz steigern, aber für einen Preis!</topic>
+  </person>
+  <person id="13" name="Schwester Antos" pronoun="Sie" turnAwayProb="0">
+    <description>Eine weise Druidin.</description>
+    <topic query="job">Ich habe wichtige Informationen.</topic>
+    <topic query="health">Gut genug.</topic>
+    <topic query="INFO">Über welches Thema?</topic>
+    <topic query="GLOC">Die Glocke des Mutes braucht man, um den Abgrund zu betreten.<question type="0">Hast du sie?<yes>Sehr gut.</yes><no>Dann frag den Kämpfer Garam, denn er weiß, wo sie liegt!</no></question></topic>
+  </person>
+  <person id="14" name="Noxum" pronoun="Er" turnAwayProb="0">
+    <description>Einen stacheligen Nix!</description>
+    <topic query="job">Ich schwimme in den Meeren!</topic>
+    <topic query="health">Schön naß!</topic>
+    <topic query="MEER">Es gibt viele Wracks auf dem Grunde!</topic>
+    <topic query="WRAC">Ein Überlebender würde wissen, wo man suchen muß.<question type="0">Hast du von Seiner Majestät Schiff 'Kap' gehört?<yes>Sie hatte ein magisches Steuerrad, das ihren Rumpf stärker machte!</yes><no>Ein großartiges Schiff!</no></question></topic>
+  </person>
+  <person id="15" name="Michelle" pronoun="Sie" turnAwayProb="0">
+    <description>Eine schöne Paladinin!</description>
+    <topic query="job">Ich heiße dich Wilkommen in der Schlangenburg!</topic>
+    <topic query="health">Sehr gut.<question type="0">Geht es dir gut?<yes>Sehr gut, vielleicht suchst du Sentri.</yes><no>Dann solltest du unseren Heiler besuchen!</no></question></topic>
+    <topic query="SENT">Er ist der Herr hier, geh immer geradeaus.</topic>
+    <topic query="HEIL">Geh geradeaus, dann nimm die östliche Tür.</topic>
+  </person>
+</dialogue>

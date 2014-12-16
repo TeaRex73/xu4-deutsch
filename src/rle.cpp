@@ -13,6 +13,7 @@
  * Decompress an RLE encoded file.
  */
 long rleDecompressFile(FILE *in, long inlen, void **out) {
+    long check;
     void *indata;
     long outlen;
 
@@ -22,8 +23,8 @@ long rleDecompressFile(FILE *in, long inlen, void **out) {
 
     /* load compressed file into memory */
     indata = malloc(inlen);
-    fread(indata, 1, inlen, in);
-
+    check = fread(indata, 1, inlen, in);
+    if (check != inlen) perror("fread failed");
     outlen = rleDecompressMemory(indata, inlen, out);
 
     free(indata);

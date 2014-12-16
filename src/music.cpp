@@ -98,7 +98,7 @@ bool Music::load(Type music) {
         if (isPlaying())
             return false;
         /* it loaded correctly */
-        else 
+        else
             return true;
     }
 
@@ -116,7 +116,7 @@ bool Music::load(Type music) {
  * Ensures that the music is playing if it is supposed to be, or off
  * if it is supposed to be turned off.
  */
-void Music::callback(void *data) {    
+void Music::callback(void *data) {
     eventHandler->getTimer()->remove(&Music::callback);
 
     if (musicMgr->on && !isPlaying())
@@ -124,7 +124,7 @@ void Music::callback(void *data) {
     else if (!musicMgr->on && isPlaying())
         musicMgr->stop();
 }
-    
+
 /**
  * Main music loop
  */
@@ -155,7 +155,7 @@ bool Music::toggle() {
         fadeIn(1000, true);
 
     eventHandler->getTimer()->add(&Music::callback, settings.gameCyclesPerSecond);
-    return on;    
+    return on;
 }
 
 /**

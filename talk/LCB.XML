@@ -1,0 +1,115 @@
+<?xml version="1.0"?>
+<dialogue xml:space="preserve">
+  <person id="0" name="Joshua" pronoun="Er" turnAwayProb="0">
+    <description>Einen weisen Magier.</description>
+    <topic query="job">Ich kann helfen.</topic>
+    <topic query="health">Gut.</topic>
+    <topic query="HELF">Das Rätsel!</topic>
+    <topic query="RAET">Wenn die acht Philosophien des Avatartumes sich kombinieren in und gemacht werden aus Wahrheit, Liebe &amp; Mut...<question type="0">Weiter?<yes>Welches Eine erschafft und ist erschaffen von allen Wahrheiten, aller Liebe &amp; allem Mute?</yes><no>Oh.</no></question></topic>
+  </person>
+  <person id="1" name="Juliet" pronoun="Sie" turnAwayProb="0">
+    <description>Eine schöne Maid.</description>
+    <topic query="job">Ich kann dir Helfen.</topic>
+    <topic query="health">Prima, danke.</topic>
+    <topic query="HELF">Such zu wissen, wie die acht Tugenden sich in die drei Prinzipien formieren.<question type="0">Weißt du dies?<yes>Nun das Eine!</yes><no>Such es!</no></question></topic>
+    <topic query="EINE">Such zu wissen, in welches Eine sich die drei Prinzipien der Tugend vereinigen!</topic>
+  </person>
+  <person id="2" name="Jester Twin" pronoun="Er" turnAwayProb="0">
+    <description>Einen tanzenden Narren.</description>
+    <topic query="job">Zu unterhalten.</topic>
+    <topic query="health">Perfekt hopfig!</topic>
+    <topic query="NARR">Ein Narr braucht einen guten Barden!</topic>
+    <topic query="BARD">Unser Barde ist sehr gut.<question type="0">Gefällt dir die Musik?<yes>Dann solltest du nach Britain gehen, dort lebt der Beste!</yes><no>Eine Schande, uns gefällt sie!</no></question></topic>
+  </person>
+  <person id="3" name="eine Wache" pronoun="Er" turnAwayProb="0">
+    <description>Eine stramme Wache.</description>
+    <topic query="job">Ich wache über die Burg und meinen Lehnsherren!</topic>
+    <topic query="health">Großartig!</topic>
+    <topic query="WACH">Eine Wache muß ein tapferer Krieger sein!<question type="1">Bist du der tapferste Krieger?<yes>Dann solltest du eine Wache sein!</yes><no>Flieh trotzdem nicht aus dem Kampfe!</no></question></topic>
+    <topic query="LEHN">Ich diene Lord British!</topic>
+  </person>
+  <person id="4" name="Le Chef" pronoun="Er" turnAwayProb="0">
+    <description>Eine Person mit einer weißen Mütze.</description>
+    <topic query="job">Ich bin der Chefkoch.</topic>
+    <topic query="health">Gut... außer daß ich mir in den Finger geschnitten habe!</topic>
+    <topic query="LEBE">Lebensmittel, ruhmreiche Lebensmittel, zu kochen ist mein Leben!</topic>
+    <topic query="KOCH">Kochen ist angewandte Kunst.<question type="0">Ißt du?<yes>Dann versuch mal meine Suppe!</yes><no>Dann mußt du ein Spiritualist sein!</no></question></topic>
+  </person>
+  <person id="5" name="ein Schnitter" pronoun="Er" turnAwayProb="50">
+    <description>Einen Schnitter.</description>
+    <topic query="job">Ich töte Abenteurer!</topic>
+    <topic query="health">Nicht so gut, niemand zu essen hier drin!</topic>
+    <topic query="TOET">Es gibt einen Gegenstand, der viele töten kann!</topic>
+    <topic query="GEGE">Wissen darüber findet man im Neste der Bukanier!<question type="0">Wirst du diesen Gegenstand suchen?<yes>Er bringt große Macht!</yes><no>Dann mußt du dumm sein.</no></question></topic>
+  </person>
+  <person id="6" name="ein namenloser Gefangener" pronoun="Er" turnAwayProb="0">
+    <description>Eine zerlumpte Seele.</description>
+    <topic query="job">Ich habe keinen.</topic>
+    <topic query="health">Sehr schlecht.</topic>
+    <topic query="VERB">Verbrechen ist eine böse Sache!</topic>
+    <topic query="GEFA">Hier bezahle ich für meine Verbrechen!<question type="1">Bist du ein Pirat?<yes>Du wirst die Queste wohl nie vollenden, denn Böses ergibt keinen Avatar!</yes><no>Ich hoffe, das ist wahr!</no></question></topic>
+  </person>
+  <person id="7" name="Zorin" pronoun="Er" turnAwayProb="0">
+    <description>Einen weisen Magier.</description>
+    <topic query="job">Ich bin hier, um dir zu helfen.</topic>
+    <topic query="health">Ich bin alt, sehr alt...</topic>
+    <topic query="HELF">Such Hilfe in den Burgen!</topic>
+    <topic query="BURG">Such: Das Lyzeum, Empath-Abtei, Schlangenfeste!<question type="0">Wirst du dorthin gehen?<yes>Finde darin alle namens Antos und frag nach der Glocke, dem Buche und der Kerze!</yes><no>Leider.</no></question></topic>
+  </person>
+  <person id="8" name="eine Wache" pronoun="Er" turnAwayProb="0">
+    <description>Eine stramme Wache.</description>
+    <topic query="job">Ich wache über die Burg und alles darin.</topic>
+    <topic query="health">Könnte nicht besser sein!</topic>
+    <topic query="WACH">Ich bewache die Burg!</topic>
+    <topic query="BURG">Die Burg ist schön und stark!<question type="0">Suchst du Lord British?<yes>Er ist in der oberen Etage im Thronsaale.</yes><no>Er hilft dir, wenn du Hilfe brauchst!</no></question></topic>
+  </person>
+  <person id="9" name="Wasser" pronoun="Es" turnAwayProb="0">
+    <description>Wasser.</description>
+    <topic query="job">Ich bewahre ein Geheimnis.</topic>
+    <topic query="health">Prima.</topic>
+    <topic query="GEHE">Worüber?</topic>
+    <topic query="ALTA">Es gibt drei Altarräume. Sie verbinden die untersten Ebenen aller acht Höhlen!<question type="0">Weiter?<yes>Wenn jemand die Steine der richtigen Farben an den Altären verwendet, kann er einen Dreiteiligen Schlüssel gewinnen!</yes><no>Oh.</no></question></topic>
+  </person>
+  <person id="10" name="Shawn" pronoun="Sie" turnAwayProb="0">
+    <description>Eine ebenso starke wie schöne Hirtin.</description>
+    <topic query="job">Ich betrachte das Wasser.</topic>
+    <topic query="health">Gut.</topic>
+    <topic query="WASS">Es bringt mir Frieden.</topic>
+    <topic query="FRIE">Ich komme aus einer stolzen Stadt.<question type="1">Bist du stolz?<yes>Hmmm.</yes><no>Meine Stadt wurde für ihren Stolz zerstört. Die Ruinen liegen auf einer Insel bei Breite-K'J" Länge-L'L"!</no></question></topic>
+  </person>
+  <person id="11" name="Seesha" pronoun="Sie" turnAwayProb="0">
+    <description>Eine verletzte Kämpferin.</description>
+    <topic query="job">Ich kämpfe für mein Land.</topic>
+    <topic query="health">Ich habe eine schwere Wunde.</topic>
+    <topic query="WUND">Tief.</topic>
+    <topic query="LAND">Britannia.<question type="0">Kämpfst du für Britannia?<yes>Dann such den Schmied namens Zircon in Minoc auf, denn er machte die mystischen Waffen, nur diese werden dich im Abgrunde retten!</yes><no>Hmm.</no></question></topic>
+  </person>
+  <person id="12" name="Chuckles" pronoun="Er" turnAwayProb="0">
+    <description>Einen herumhüpfenden Narren.</description>
+    <topic query="job">Ich bin der königliche Narr.</topic>
+    <topic query="health">Gut, danke.</topic>
+    <topic query="NARR">Wilkommen in der Burg Britannia!<question type="0">Hast du ein Ench?<yes>Dann tritt in Frieden ein!</yes><no>Warum bist du dann hier?</no></question></topic>
+    <topic query="TIPP">Sprich mit dem Wasser des Quells und frage nach Altären!</topic>
+  </person>
+  <person id="13" name="eine Wache" pronoun="Er" turnAwayProb="0">
+    <description>Eine Wache.</description>
+    <topic query="job">Eine Wache.</topic>
+    <topic query="health">Exzellent.</topic>
+    <topic query="WACH">Wir bewachen die Burg und ihre Schätze.</topic>
+    <topic query="SCHA">Das geht dich nichts an.<question type="0">Planst du zu stehlen?<yes>Ich glaube, das wäre für dich eine fruchtlose Unternehmung.</yes><no>Dann geh bitte sofort wieder!</no></question></topic>
+  </person>
+  <person id="14" name="Sheila" pronoun="Sie" turnAwayProb="0">
+    <description>Eine ernste Waldläuferin.</description>
+    <topic query="job">Ich suche nach dem inneren Lichte.</topic>
+    <topic query="health">Mir geht es gut.</topic>
+    <topic query="LICH">Such inneres Licht in den Schreinen!</topic>
+    <topic query="SCHR">Runen werden benötigt, um Schreine zu betreten!<question type="0">Weißt du von Mantras?<yes>Gut.</yes><no>Die Mantras sind Gesänge, die du brauchst, um deine Gedanken zu fokussieren, wenn du meditierst.</no></question></topic>
+  </person>
+  <person id="15" name="Landri" pronoun="Er" turnAwayProb="0">
+    <description>Einen grimmigen Hirten.</description>
+    <topic query="job">Ich bin hier, um dich zu warnen!</topic>
+    <topic query="health">Mir geht es gut, aber du mußt umkehren!</topic>
+    <topic query="WARN">Vor dir liegt ein gefahrvoller Ort!</topic>
+    <topic query="GEFA">Wenn du einmal eintrittst, kannst du nicht mehr dahin zurück, woher du kamst!<question type="0">Wirst du weitergehen?<yes>Dann bist du verloren!</yes><no>Das ist gut.</no></question></topic>
+  </person>
+</dialogue>

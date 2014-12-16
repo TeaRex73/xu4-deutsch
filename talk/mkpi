@@ -1,0 +1,10 @@
+#!/bin/sh
+if grep '[^ <>]\{17,\}' *.XML | grep -v turnAwayProb | grep -v 'space="preserve"'; then exit 0; fi
+rm -rf 2* || exit 1
+for i in *.XML; do cat "$i" | recode UTF-8..ISO646-DE > "2$i" && /usr/local/lib/u4g/tlkconv --fromxml "2$i" "${i%%XML}GER" || exit 1; done
+rm -rf 2* || exit 1
+mv *.GER /home/pi/U4N/ULTIMA4/ || exit 1
+cd  /home/pi/U4N/ULTIMA4/ || exit 1
+rm  /home/pi/ultima4g-1.01.zip || exit 1
+zip -9vvr /home/pi/ultima4g-1.01.zip * || exit 1
+cd /home/pi/xu4g/u4/talk || exit 1

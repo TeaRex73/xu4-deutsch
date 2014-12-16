@@ -23,6 +23,7 @@
 #include <string>
 #include <cstdio>
 #include <cstdlib>
+/* #include <unistd.h> */
 
 using std::string;
 
@@ -36,18 +37,18 @@ using std::string;
 void print_trace(FILE *file);
 
 #if HAVE_VARIADIC_MACROS
-#   ifdef NDEBUG        
+#   ifdef NDEBUG
 #       define ASSERT(exp, desc, ...)  /* nothing */
 #   else
 #       define ASSERT(exp, ...)                                             \
             do {                                                            \
                 if (!(exp)) {                                               \
-                    fprintf(stderr, "%s:%s:%d: assertion `%s' failed. ",    \
+                    fprintf(stderr, "%s:%s:%d: assert `%s' fehlgeschlagen. ",    \
                            __FILE__, XU4_FUNCTION, __LINE__, #exp);         \
                     fprintf(stderr, __VA_ARGS__);                           \
                     fprintf(stderr, "\n\n");                                \
                     print_trace(stderr);                                    \
-                    abort();                                                \
+                    exit(EXIT_FAILURE);		                  	    \
                 }                                                           \
             } while(0)
 #   endif /* ifdef NDEBUG */
@@ -70,7 +71,7 @@ public:
     static void initGlobal(const string &filename);
     void trace(const string &msg, const string &file = "", const string &func = "", const int line = -1, bool glbl = true);
 
-private:        
+private:
     // disallow assignments, copy contruction
     Debug(const Debug&);
     const Debug &operator=(const Debug &);
@@ -80,12 +81,10 @@ private:
     bool disabled;
     string filename, name;
     FILE *file;
-    static FILE *global; 
+    static FILE *global;
 
     string l_filename, l_func;
     int l_line;
 };
 
 #endif /* ifndef DEBUG_H */
-
-

@@ -11,6 +11,7 @@
 #include <utility>
 #include "debug.h"
 #include "image.h"
+#include "screen.h"
 #include "settings.h"
 #include "error.h"
 
@@ -81,17 +82,17 @@ Image *Image::createScreenImage() {
 /**
  * Creates a duplicate of another image
  */
-Image *Image::duplicate(Image *image) {    
+Image *Image::duplicate(Image *image) {
     bool alphaOn = image->isAlphaOn();
     Image *im = create(image->width(), image->height(), false, HARDWARE);
-    
+
 //    if (image->isIndexed())
 //        im->setPaletteFromImage(image);
 
     /* Turn alpha off before blitting to non-screen surfaces */
     if (alphaOn)
         image->alphaOff();
-    
+
     image->drawOn(im, 0, 0);
 
     if (alphaOn)
@@ -114,12 +115,13 @@ Image::~Image() {
  */
 void Image::setPalette(const RGBA *colors, unsigned n_colors) {
     ASSERT(indexed, "imageSetPalette called on non-indexed image");
-    
+
     SDL_Color *sdlcolors = new SDL_Color[n_colors];
     for (unsigned i = 0; i < n_colors; i++) {
         sdlcolors[i].r = colors[i].r;
         sdlcolors[i].g = colors[i].g;
         sdlcolors[i].b = colors[i].b;
+        sdlcolors[i].unused = 0;
     }
 
     SDL_SetColors(surface, sdlcolors, 0, n_colors);
@@ -132,8 +134,8 @@ void Image::setPalette(const RGBA *colors, unsigned n_colors) {
  */
 void Image::setPaletteFromImage(const Image *src) {
     ASSERT(indexed && src->indexed, "imageSetPaletteFromImage called on non-indexed image");
-    memcpy(surface->format->palette->colors, 
-           src->surface->format->palette->colors, 
+    memcpy(surface->format->palette->colors,
+           src->surface->format->palette->colors,
            sizeof(SDL_Color) * src->surface->format->palette->ncolors);
 }
 
@@ -254,7 +256,7 @@ bool Image::setPaletteIndex(unsigned int index, RGBA color) {
 bool Image::getTransparentIndex(unsigned int &index) const {
     if (!indexed || (surface->flags & SDL_SRCCOLORKEY) == 0)
         return false;
-        
+
     index = surface->format->colorkey;
     return true;
 }
@@ -286,8 +288,8 @@ void Image::alphaOff()
     surface->flags &= ~SDL_SRCALPHA;
 }
 
-void Image::putPixel(int x, int y, int r, int g, int b, int a) {
-    putPixelIndex(x, y, SDL_MapRGBA(surface->format, Uint8(r), Uint8(g), Uint8(b), Uint8(a)));
+void Image::putPixel(int x, int y, int r, int g, int b, int a, bool anyway) {
+    putPixelIndex(x, y, SDL_MapRGBA(surface->format, Uint8(r), Uint8(g), Uint8(b), Uint8(a)), anyway);
 }
 
 
@@ -349,7 +351,7 @@ void Image::performTransparencyHack(unsigned int colorValue, unsigned int numFra
     		unsigned int y_finish = std::min(int(bottom), oy + span + 1);
         	for (y = y_start; y < y_finish; ++y) {
 
-        		int divisor = 1 + span * 2 - abs(ox - x) - abs(oy - y);
+        		int divisor = 1 + span * 2 - abs((int)(ox - x)) - abs((int)(oy - y));
 
                 unsigned int r, g, b, a;
                 getPixel(x, y, r, g, b, a);
@@ -366,9 +368,9 @@ void Image::performTransparencyHack(unsigned int colorValue, unsigned int numFra
 void Image::setTransparentIndex(unsigned int index)//, unsigned int numFrames, unsigned int currentFrameIndex, int shadowOutlineWidth, int shadowOpacityOverride)
 {
     if (indexed) {
-        SDL_SetColorKey(surface, SDL_SRCCOLORKEY, index);
+        SDL_SetColorKey(surface, SDL_SRCCOLORKEY | SDL_RLEACCEL, index);
     } else {
-    	//errorWarning("Setting transparent index for non indexed");
+        //errorWarning("Setting transparent index for non indexed");
     }
 }
 
@@ -377,9 +379,11 @@ void Image::setTransparentIndex(unsigned int index)//, unsigned int numFrames, u
  * indexed mode, then the index is simply the palette entry number.
  * If the image is RGB, it is a packed RGB triplet.
  */
-void Image::putPixelIndex(int x, int y, unsigned int index) {
+void Image::putPixelIndex(int x, int y, unsigned int index, bool anyway) {
     int bpp;
     Uint8 *p;
+	
+	if (!screenStill && !anyway) return;
 
     bpp = surface->format->BytesPerPixel;
     p = static_cast<Uint8 *>(surface->pixels) + y * surface->pitch + x * bpp;
@@ -414,7 +418,7 @@ void Image::putPixelIndex(int x, int y, unsigned int index) {
 /**
  * Fills a rectangle in the image with a given color.
  */
-void Image::fillRect(int x, int y, int w, int h, int r, int g, int b, int a) {
+void Image::fillRect(int x, int y, int w, int h, int r, int g, int b, int a, bool anyway) {
     SDL_Rect dest;
     Uint32 pixel;
 
@@ -424,14 +428,16 @@ void Image::fillRect(int x, int y, int w, int h, int r, int g, int b, int a) {
     dest.w = w;
     dest.h = h;
 
-    SDL_FillRect(surface, &dest, pixel);
+	if (screenStill || anyway) {
+		SDL_FillRect(surface, &dest, pixel);
+	}
 }
 
 /**
  * Gets the color of a single pixel.
  */
 void Image::getPixel(int x, int y, unsigned int &r, unsigned int &g, unsigned int &b, unsigned int &a) const {
-    unsigned int index;
+    unsigned int index = 0;
     Uint8 r1, g1, b1, a1;
 
     getPixelIndex(x, y, index);
@@ -480,10 +486,9 @@ void Image::getPixelIndex(int x, int y, unsigned int &index) const {
 /**
  * Draws the image onto another image.
  */
-void Image::drawOn(Image *d, int x, int y) const {
+void Image::drawOn(Image *d, int x, int y, bool anyway) const {
     SDL_Rect r;
     SDL_Surface *destSurface;
-
     if (d == NULL)
         destSurface = SDL_GetVideoSurface();
     else
@@ -493,13 +498,15 @@ void Image::drawOn(Image *d, int x, int y) const {
     r.y = y;
     r.w = w;
     r.h = h;
-    SDL_BlitSurface(surface, NULL, destSurface, &r);
+	if (screenStill || anyway) {
+		SDL_BlitSurface(surface, NULL, destSurface, &r);
+	}
 }
 
 /**
  * Draws a piece of the image onto another image.
  */
-void Image::drawSubRectOn(Image *d, int x, int y, int rx, int ry, int rw, int rh) const {
+void Image::drawSubRectOn(Image *d, int x, int y, int rx, int ry, int rw, int rh, bool anyway) const {
     SDL_Rect src, dest;
     SDL_Surface *destSurface;
 
@@ -517,14 +524,15 @@ void Image::drawSubRectOn(Image *d, int x, int y, int rx, int ry, int rw, int rh
     dest.y = y;
     /* dest w & h unused */
 
-
-    SDL_BlitSurface(surface, &src, destSurface, &dest);
+	if (screenStill || anyway) {
+		SDL_BlitSurface(surface, &src, destSurface, &dest);
+	}
 }
 
 /**
  * Draws a piece of the image onto another image, inverted.
  */
-void Image::drawSubRectInvertedOn(Image *d, int x, int y, int rx, int ry, int rw, int rh) const {
+void Image::drawSubRectInvertedOn(Image *d, int x, int y, int rx, int ry, int rw, int rh, bool anyway) const {
     int i;
     SDL_Rect src, dest;
     SDL_Surface *destSurface;
@@ -544,7 +552,9 @@ void Image::drawSubRectInvertedOn(Image *d, int x, int y, int rx, int ry, int rw
         dest.y = y + rh - i - 1;
         /* dest w & h unused */
 
-        SDL_BlitSurface(surface, &src, destSurface, &dest);
+		if (screenStill || anyway) {
+			SDL_BlitSurface(surface, &src, destSurface, &dest);
+		}
     }
 }
 

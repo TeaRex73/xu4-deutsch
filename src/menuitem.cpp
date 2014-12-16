@@ -9,6 +9,7 @@
 #include "menu.h"
 #include "menuitem.h"
 #include "settings.h"
+#include "utils.h"
 
 /**
  * MenuItem class
@@ -26,7 +27,7 @@ MenuItem::MenuItem(string t, short xpos, short ypos, int sc) :
 {
     // if the sc/scOffset is outside the range of the text string, assert
     ASSERT(sc==-1 || (sc >= 0 && sc <= (int)text.length()), "sc value of %d out of range!", sc);
-    if (sc != -1) addShortcutKey(tolower(text[sc]));
+    if (sc != -1) addShortcutKey(mytolower(text[sc]));
 }
 
 int MenuItem::getId() const                         { return id; }
@@ -76,7 +77,7 @@ void MenuItem::setClosesMenu(bool closesMenu) {
     this->closesMenu = closesMenu;
 }
 
-BoolMenuItem::BoolMenuItem(string text, short x, short y, int shortcutKey, bool *val) : 
+BoolMenuItem::BoolMenuItem(string text, short x, short y, int shortcutKey, bool *val) :
     MenuItem(text, x, y, shortcutKey),
     val(val),
     on("On"),
@@ -90,43 +91,43 @@ BoolMenuItem *BoolMenuItem::setValueStrings(const string &onString, const string
     return this;
 }
 
-string BoolMenuItem::getText() const { 
+string BoolMenuItem::getText() const {
     char buffer[64];
     snprintf(buffer, sizeof(buffer), text.c_str(), *val ? on.c_str() : off.c_str());
     return buffer;
 }
 
-void BoolMenuItem::activate(MenuEvent &event) { 
-    if (event.getType() == MenuEvent::DECREMENT || 
-        event.getType() == MenuEvent::INCREMENT || 
+void BoolMenuItem::activate(MenuEvent &event) {
+    if (event.getType() == MenuEvent::DECREMENT ||
+        event.getType() == MenuEvent::INCREMENT ||
         event.getType() == MenuEvent::ACTIVATE)
         *val = !(*val);
 }
 
-StringMenuItem::StringMenuItem(string text, short x, short y, int shortcutKey, string *val, const vector<string> &validSettings) : 
+StringMenuItem::StringMenuItem(string text, short x, short y, int shortcutKey, string *val, const vector<string> &validSettings) :
     MenuItem(text, x, y, shortcutKey),
     val(val),
     validSettings(validSettings)
 {
 }
 
-string StringMenuItem::getText() const { 
+string StringMenuItem::getText() const {
     char buffer[64];
     snprintf(buffer, sizeof(buffer), text.c_str(), val->c_str());
     return buffer;
 }
 
-void StringMenuItem::activate(MenuEvent &event) { 
+void StringMenuItem::activate(MenuEvent &event) {
     vector<string>::const_iterator current = find(validSettings.begin(), validSettings.end(), *val);
 
     if (current == validSettings.end())
         errorFatal("Error: menu string '%s' not a valid choice", val->c_str());
-            
+
     if (event.getType() == MenuEvent::INCREMENT || event.getType() == MenuEvent::ACTIVATE) {
         /* move to the next valid choice, wrapping if necessary */
         current++;
         if (current == validSettings.end())
-            current = validSettings.begin();    
+            current = validSettings.begin();
         *val = *current;
 
     } else if (event.getType() == MenuEvent::DECREMENT) {
@@ -155,10 +156,10 @@ string IntMenuItem::getText() const {
 
     switch (output){
         case MENU_OUTPUT_REAGENT:
-            snprintf(outputBuffer, sizeof(outputBuffer), "%2d", static_cast<short>(*val));
+            snprintf(outputBuffer, sizeof(outputBuffer), "%2d", static_cast<short>((*val) & 0xFFFF));
             break;
         case MENU_OUTPUT_GAMMA:
-            snprintf(outputBuffer, sizeof(outputBuffer), "%.1f", static_cast<float>(*val) / 100);
+            snprintf(outputBuffer, sizeof(outputBuffer), "%.1f", static_cast<double>(*val) / 100);
             break;
         case MENU_OUTPUT_SHRINE:
 /*
@@ -170,7 +171,7 @@ string IntMenuItem::getText() const {
  *
  * settings.shrineTime is only used in one function within shrine.cpp, and that code appears
  * to handle the min value, caping the minimum interval at 1.
- *  
+ *
             // make sure that the setting we're trying for is even possible
             if (event.getType() == MenuEvent::INCREMENT || event.getType() == MenuEvent::ACTIVATE) {
                 settingsChanged.shrineTime++;
@@ -214,7 +215,7 @@ string IntMenuItem::getText() const {
     return buffer;
 }
 
-void IntMenuItem::activate(MenuEvent &event) { 
+void IntMenuItem::activate(MenuEvent &event) {
     if (event.getType() == MenuEvent::INCREMENT || event.getType() == MenuEvent::ACTIVATE) {
         *val += increment;
         if (*val > max)

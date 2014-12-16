@@ -1,0 +1,115 @@
+<?xml version="1.0"?>
+<dialogue xml:space="preserve">
+  <person id="0" name="Julia" pronoun="Sie" turnAwayProb="0">
+    <description>Eine behände Zinkerin.</description>
+    <topic query="job">Ich sorge für die Armen.</topic>
+    <topic query="health">Gut.</topic>
+    <topic query="SORG">Selbsterhaltung ist das erste Gesetz der Natur; Selbstverzicht die höchste Regel der Anmut.</topic>
+    <topic query="ARME">In diesem Hause gibt es viele arme und notleidende Seelen.<question type="0">Wirst du helfen?<yes>Ich würde dich begleiten.</yes><no>Penner.</no></question></topic>
+  </person>
+  <person id="1" name="Zircon" pronoun="Er" turnAwayProb="0">
+    <description>Einen erfahrenen Schmied.</description>
+    <topic query="job">Ich schmiede Waffen.</topic>
+    <topic query="health">Sehr gut.</topic>
+    <topic query="WAFF">Ich mache die allerbesten!<question type="0">Suchst du eine Waffe?<yes>Frag an der Theke!</yes><no>Hmmm.</no></question></topic>
+    <topic query="MYST">Ah, ja, die mystischen Waffen, und Rüstungen, mein größtes Werk! Die gab ich Sir Simon und Lady Tessa.</topic>
+  </person>
+  <person id="2" name="Bob der Bettler" pronoun="Er" turnAwayProb="0">
+    <description>Einen kränklichen kleinen Mann.</description>
+    <topic query="job">Ich habe keinen, hilf mir.</topic>
+    <topic query="health">Ich bin sehr krank, hilf mir!</topic>
+    <topic query="HILF">Ich brauche Geld, um meine Krankheit zu heilen.</topic>
+    <topic query="KRAN">Ich habe Beinfäule im Endstadium.<question type="0">Hast du Geld?<yes>Dann teil es bitte mit mir!</yes><no>Dann begleite mich und wir können zusammen betteln!</no></question></topic>
+  </person>
+  <person id="3" name="Linda Sue" pronoun="Sie" turnAwayProb="0">
+    <description>Ein kleines schlammiges Mädchen.</description>
+    <topic query="job">Ich bin ein unterernährtes Bettelmädchen.</topic>
+    <topic query="health">Ich bin hungrig.</topic>
+    <topic query="HUNG">Ich habe seit Tagen nichts gegessen.<question type="0">Hättest du einen Bissen Essen übrig?<yes>Ich fände das sehr gut.</yes><no>Oh, ich verstehe.</no></question></topic>
+    <topic query="ESSE">Oh, du bist eine freundliche Seele!</topic>
+  </person>
+  <person id="4" name="Gimble" pronoun="Er" turnAwayProb="64">
+    <description>Einen schwindenden Mann.</description>
+    <topic query="job">Ich werde bald sterben.</topic>
+    <topic query="health">Ich bin kaum bei Bewußtsein.</topic>
+    <topic query="STER">Ich leide an einem Tsetse-Bisse!</topic>
+    <topic query="BEWU">Bald schlafe ich für immer.<question type="0">Hättest du ein Goldstück übrig, daß ich mir einen letzten Drink kaufen kann?<yes>Denk daran, Azure weiß von der Rune!</yes><no>Du machst mich traurig.</no></question></topic>
+  </person>
+  <person id="5" name="Jude" pronoun="Er" turnAwayProb="0">
+    <description>Eine abgerissene Seele.</description>
+    <topic query="job">Wiedergutmachung</topic>
+    <topic query="health">Kränklich.</topic>
+    <topic query="WIED">Ich spreche nicht von meiner Sünde!</topic>
+    <topic query="SCHA">Ich habe ihn benutzt!<question type="0">Wenn ich dir helfe, wirst du schwören, ihn nur am Munde des Abgrundes zu benutzen, um ihn zu zerstören?<yes>Man findet ihn bei Breite-P'F" Länge-M'F" in der dunkelsten Nacht!</yes><no>Oh.</no></question></topic>
+  </person>
+  <person id="6" name="Alkerion" pronoun="Er" turnAwayProb="0">
+    <description>Einen alten abgerissenen Mann.</description>
+    <topic query="job">Ich bin Bauer, ich höre viele Dinge.</topic>
+    <topic query="health">Ich bin alt und schwach.</topic>
+    <topic query="HOER">Was willst du wissen?</topic>
+    <topic query="STEI">Der Stein des Verzichtes ist von orangener Farbe und wird in den Altarräumen der Liebe und des Mutes benutzt!<question type="0">Suchst du?<yes>Viel Glück.</yes><no>Oh.</no></question></topic>
+  </person>
+  <person id="7" name="Mike Ward" pronoun="Er" turnAwayProb="0">
+    <description>Einen gedrungenen Waldläufer.</description>
+    <topic query="job">Ich versuche, ein Zimmer zu bekommen.</topic>
+    <topic query="health">Gut genug.</topic>
+    <topic query="ZIMM">Ich bin aus Skara Brae weggereist.</topic>
+    <topic query="SKAR">Die Rune unserer Stadt wird vermißt!<question type="0">Weißt du von der Rune?<yes>Sie ist der Schlüssel zum Schreine der Spiritualität!</yes><no>Sie ist nicht in Skara Brae.</no></question></topic>
+  </person>
+  <person id="8" name="Alex" pronoun="Er" turnAwayProb="0">
+    <description>Einen halbwüchsigen Jungen.</description>
+    <topic query="job">Ich verteile Blumen. Bitteschön!</topic>
+    <topic query="health">Prima, danke.</topic>
+    <topic query="BLUM">So wie ich's sehe, wenn man freundlich zu andern ist, werden sie 'nen Grund haben, auch freundlich zu sein!</topic>
+    <topic query="FREU">Ja, gib alles, was du kannst, den Bedürftigen!<question type="0">Wirst du geben?<yes>Gut.</yes><no>Leider.</no></question></topic>
+  </person>
+  <person id="9" name="Shentis" pronoun="Er" turnAwayProb="0">
+    <description>Einen rundlichen Zinker.</description>
+    <topic query="job">Ich heiße dich Wilkommen in Minoc, Stadt des Verzichtes!</topic>
+    <topic query="health">OK.</topic>
+    <topic query="VERZ">Verzicht ist eine notwendige Tugend!</topic>
+    <topic query="TUGE">Avatare streben danach, tugendhaft zu sein.<question type="0">Strebst du nach Tugend?<yes>Dann wirst du vielleicht ein Avatar!</yes><no>Ein Avatar bist du nicht!</no></question></topic>
+  </person>
+  <person id="10" name="Singsong" pronoun="Sie" turnAwayProb="0">
+    <description>Eine süße Bardin.</description>
+    <topic query="job">Ich singe Lieder!</topic>
+    <topic query="health">Wirklich Spitze!</topic>
+    <topic query="SING">Ich singe Lieder!</topic>
+    <topic query="LIED">Nun gut, der Rabe singt, der Rabe sah, und in dem Korne sagt er 'CAH'.<question type="0">Gefällt es dir?<yes>Danke.</yes><no>Schade...</no></question></topic>
+  </person>
+  <person id="11" name="Damon" pronoun="Er" turnAwayProb="16">
+    <description>Einen milden Hirten.</description>
+    <topic query="job">Ich stehe hier und denke.</topic>
+    <topic query="health">Prima.</topic>
+    <topic query="DENK">Oh, nur über so Dinge.<question type="0">Darf ein Mensch nicht einfach mal nachdenken?<yes>Nun, ich hoffe es!</yes><no>Oh doch, ich darf, du Sabbelschnack!</no></question></topic>
+    <topic query="MANT">Hör dir das Lied der Bardin an, denn in ihrer Strophe liegt der Schlüssel!</topic>
+  </person>
+  <person id="12" name="Mischief" pronoun="Sie" turnAwayProb="0">
+    <description>Eine glückliche Zinkerin.</description>
+    <topic query="job">Dies und das.</topic>
+    <topic query="health">O.K., denk ich.</topic>
+    <topic query="DIES">Und das...</topic>
+    <topic query="RUNE">Die Rune des Verzichtes ist schwer zu bekommen. Sie liegt inmitten der Feuers der Schmiede!<question type="0">Hast du die Rune?<yes>Dann frag Alkerion nach dem Steine!</yes><no>Komm wieder, wenn du sie findest!</no></question></topic>
+  </person>
+  <person id="13" name="Azure" pronoun="Er" turnAwayProb="0">
+    <description>Einen Zinker an der Theke.</description>
+    <topic query="job">Ich schnitze Runen.</topic>
+    <topic query="health">O.K.</topic>
+    <topic query="RUNE">Ich schnitze Runen zum Zutritte in die Schreine!<question type="0">Suchst du eine Rune?<yes>Welche?</yes><no>Ich verstehe.</no></question></topic>
+    <topic query="VERZ">Frag meine Schwester Mischief.</topic>
+  </person>
+  <person id="14" name="Merida" pronoun="Er" turnAwayProb="0">
+    <description>Einen wandernden Zinker.</description>
+    <topic query="job">Ich suche das Wissen des Schreines des Verzichtes.</topic>
+    <topic query="health">War schon besser.</topic>
+    <topic query="SCHR">Aber zuerst brauche ich das Mantra!<question type="0">Kennst du das Mantra?<yes>Gut!</yes><no>Der Schrein liegt in einem See im Osten!</no></question></topic>
+    <topic query="MANT">Man sagte mir, daß ein verborgener Hirte das Mantra kennt.</topic>
+  </person>
+  <person id="15" name="eine Wache" pronoun="Er" turnAwayProb="0">
+    <description>Eine massige Wache.</description>
+    <topic query="job">Zu wachen natürlich.</topic>
+    <topic query="health">Ordentlich.</topic>
+    <topic query="WACH">Ich frage mich oft, ob ich einmal mein Leben geben muß in Ausübung meiner Pflicht.<question type="0">Verstehst du mein Dilemma?<yes>Natürlich, wenn es soweit käme, hoffe ich, ich würde es tun!</yes><no>Schade.</no></question></topic>
+    <topic query="LEBE">Ein Leben für viele!</topic>
+  </person>
+</dialogue>

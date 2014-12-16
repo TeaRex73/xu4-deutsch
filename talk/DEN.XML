@@ -1,0 +1,115 @@
+<?xml version="1.0"?>
+<dialogue xml:space="preserve">
+  <person id="0" name="Roofus" pronoun="Er" turnAwayProb="32">
+    <description>Eine fies aussehende Wache.</description>
+    <topic query="job">Wir bewachen die Brücke, Schleim!</topic>
+    <topic query="health">Was geht's dich an, du Dreckswelpe!</topic>
+    <topic query="BRUE">Diese Brücke, du blödes Stück!<question type="0">Bist du ein Klug&amp;%#er!?<yes>Dann gewöhn's dir ab!</yes><no>Dann verzieh dich einfach!</no></question></topic>
+    <topic query="A   ">A</topic>
+  </person>
+  <person id="1" name="Rankbreath" pronoun="Er" turnAwayProb="32">
+    <description>Eine große, muskulöse, beeindruckende Wache.</description>
+    <topic query="job">Ich bin eine Wache.</topic>
+    <topic query="health">Sehr hungrig!</topic>
+    <topic query="WACH">Ich bewache die Stadt!</topic>
+    <topic query="HUNG">Ja, ich bin sehr hungrig!<question type="0">Bist du hier, um mich zu füttern?<yes>Ich bin dankbar.</yes><no>Dann hau bloß ab!!!</no></question></topic>
+  </person>
+  <person id="2" name="Seemann" pronoun="Er" turnAwayProb="0">
+    <description>Einen dreckigen Seemann.</description>
+    <topic query="job">Ich bin ein Seemann!</topic>
+    <topic query="health">Salzig.</topic>
+    <topic query="SEEM">Oh, eines Seemannes Leben ist das beste, ungelogen,</topic>
+    <topic query="LEBE">Wie ich so segle über die stampfenden Wogen!<question type="0">Den Rest?<yes>Und über's Wetter sorge ich mich niemals je, denn hat das Wetter je etwas für mich getan auf See?</yes><no>Oh.</no></question></topic>
+  </person>
+  <person id="3" name="Silver John" pronoun="Er" turnAwayProb="0">
+    <description>Einen großen Seemann.</description>
+    <topic query="job">Ich bin ein Pirat, Kumpelchen!</topic>
+    <topic query="health">Gut genug, was!</topic>
+    <topic query="PIRA">Wir plündern die Küsten Britannias, 'n Spaß was!<question type="1">Bist du ein Pirat?<yes>Gut, Kumpelchen!</yes><no>Du solltest hier besser verschwinden, bevor's Ärger gibt!</no></question></topic>
+    <topic query="PLUE">Niedermachen und brandschatzen!</topic>
+  </person>
+  <person id="4" name="Slysam" pronoun="Er" turnAwayProb="16">
+    <description>Einen geschickten Dieb.</description>
+    <topic query="job">Was geht's dich an?</topic>
+    <topic query="health">So gut wie nötig ist!</topic>
+    <topic query="DIEB">Ja, und auch klever.</topic>
+    <topic query="KLEV">Du stellst zu viele Fragen!<question type="0">Bist du ein Dieb?<yes>Oh, da paß ich wohl besser mal auf!</yes><no>Habs mir schon gedacht.</no></question></topic>
+  </person>
+  <person id="5" name="Ragnar" pronoun="Er" turnAwayProb="16">
+    <description>Einen ernsten Waldläufer.</description>
+    <topic query="job">Ich reise.</topic>
+    <topic query="health">O.K.</topic>
+    <topic query="REIS">Die Länder Britannias.<question type="0">Suchst du hier Informationen?<yes>Worüber?</yes><no>Dann verzieh dich.</no></question></topic>
+    <topic query="SCHA">Sei gewarnt daß, wenn du jemals den Schädel benutzt, außer um ihn zu zerstören, all deine Tugend verloren ist!</topic>
+  </person>
+  <person id="6" name="Seanna" pronoun="Sie" turnAwayProb="0">
+    <description>Eine aufreizende Magierin.</description>
+    <topic query="job">Ich bin eine Hexerin.<question type="0">Mein lieber Freund, darf ich dir helfen?<yes>Zum Beispiel mit deiner Magie?</yes><no>Ah</no></question></topic>
+    <topic query="health">Mir geht es gut.</topic>
+    <topic query="MAGI">Wie wär's mit dem Zauber Slipitus... Zzzzz... Zzzzz....</topic>
+    <topic query="SLIP">Der Slipitus erfordert nur &gt;einen&lt; Teil Weben! Zzzzz... Zzzzz... Zzzzz...</topic>
+  </person>
+  <person id="7" name="Jeremy James Scirlock" pronoun="Er" turnAwayProb="0">
+    <description>Einen heimtückischen Dieb!</description>
+    <topic query="job">Zu deinen Diensten!</topic>
+    <topic query="health">Sehr gut!</topic>
+    <topic query="DIEN">Wie wär's mit Informationen?<question type="0">Suchst du eine bestimmte Höhle?<yes>Welche?</yes><no>Ich kann dir nicht helfen.</no></question></topic>
+    <topic query="HYLO">Die Höhle Hylot erreicht man nur durch einen geheimen Eingang in der großen Burg.</topic>
+  </person>
+  <person id="8" name="Starlight" pronoun="Er" turnAwayProb="0">
+    <description>Einen Magier, ganz in schwarz gekleidet.</description>
+    <topic query="job">Ich benutze schwarze Magie!</topic>
+    <topic query="health">Wirklich dunkel.</topic>
+    <topic query="MAGI">Ich mache den Zauber Missailus mächtig.<question type="0">Du auch?<yes>Versuch mal meine Mischung von Reagenzien!</yes><no>Schade.</no></question></topic>
+    <topic query="MISC">Versuch &gt;eine&lt; Schwarzperle und &gt;einen&lt; Teil Schwelasche!</topic>
+  </person>
+  <person id="9" name="Brigant" pronoun="Er" turnAwayProb="128">
+    <description>Einen großen fetten Troll.</description>
+    <topic query="job">Hmpf, verzieh dich!</topic>
+    <topic query="health">Schieb's dir!<question type="0">Hast du mich gehört?<yes>Dann tu's!</yes><no>Ich sagte schieb's dir!</no></question></topic>
+    <topic query="SCHIE">Dein Gesicht!</topic>
+    <topic query="A   ">A</topic>
+  </person>
+  <person id="10" name="Boris" pronoun="Er" turnAwayProb="0">
+    <description>Einen häßlichen Ork!</description>
+    <topic query="job">Ich schmuggle Waren für den Schwarzmarkt.</topic>
+    <topic query="health">Gut und stinkig.</topic>
+    <topic query="WARE">Magische Dietriche, Magische Juwelen, so'n Kram.<question type="0">Brauchst du so was?<yes>Ich hab dem Gildenladen gerade 'ne frische Ladung besorgt!</yes><no>Na ja, vielleicht nächstes mal.</no></question></topic>
+    <topic query="A   ">A</topic>
+  </person>
+  <person id="11" name="Ignap" pronoun="Er" turnAwayProb="0">
+    <description>Einen hochaufragenden Zauberer.</description>
+    <topic query="job">Ich muß dich warnen!</topic>
+    <topic query="health">Adäquat.</topic>
+    <topic query="WARN">In diesen Wald zu treten, wird dein Schicksal besiegeln!</topic>
+    <topic query="SCHI">Dort drinnen liegt die dunkle Seite, tritt nicht ein!<question type="0">Wirst du weitergehen?<yes>Das Böse wird dich verzehren!</yes><no>Weise Entscheidung!</no></question></topic>
+  </person>
+  <person id="12" name="Green Beard" pronoun="Er" turnAwayProb="0">
+    <description>Einen großen Piraten mit einem Grünen Barte!</description>
+    <topic query="job">Ich kaufe Rüstung für meine Crew!</topic>
+    <topic query="health">Richtig gut, Kumpel!</topic>
+    <topic query="RUES">Ich hoffe, magische Platte zu bekommen!<question type="0">Weißt du, wo man mystische Rüstung kaufen kann?<yes>Wo?</yes><no>Ich wünschte, ich wüßte es!</no></question></topic>
+    <topic query="NIRG">Oh, ich verstehe.</topic>
+  </person>
+  <person id="13" name="Marsor" pronoun="Er" turnAwayProb="0">
+    <description>Einen dicklichen Händler.</description>
+    <topic query="job">Ich verkaufe Wein!</topic>
+    <topic query="health">Großartig!</topic>
+    <topic query="WEIN">Ich habe ein paar gute Berge.</topic>
+    <topic query="BERG">Ich besitze meine eigenen Weinberge, sie liegen auf einer Insel nordöstlich von hier!<question type="0">Magst du Wein?<yes>Ah, dann trink ein Glas mit mir!</yes><no>Du weißt gar nicht, was du verpaßt!</no></question></topic>
+  </person>
+  <person id="14" name="Dancek" pronoun="Er" turnAwayProb="0">
+    <description>Eine fröhliche alte Seele.</description>
+    <topic query="job">Mein Handwerk ist die Zinkerei.</topic>
+    <topic query="health">Richtig gut, danke.</topic>
+    <topic query="ZINK">Ich schaffe Geschosse und Mechanismen.</topic>
+    <topic query="MECH">Vor allem Schiffskanonen!<question type="0">Besitzt du ein Schiff?<yes>Sehr wahrscheinlich, daß ich die Kanonen gebaut habe!</yes><no>Du solltest dir wirklich eins zulegen!</no></question></topic>
+  </person>
+  <person id="15" name="Sniflet" pronoun="Er" turnAwayProb="0">
+    <description>Einen sich duckenden Mann.</description>
+    <topic query="job">Ich verstecke mich.</topic>
+    <topic query="health">O.K. für den Moment.</topic>
+    <topic query="VERS">Ich kenne etwas, das andere wollen!</topic>
+    <topic query="ETWA">Ich... ich...<question type="0">Wirst du versprechen, es nur zu benutzen, um den Mächten des Guten zu helfen?<yes>Das gestohlene Gerät, das leichter als Luft ist, liegt nahe der Höhle Hylot!</yes><no>Oh nein.</no></question></topic>
+  </person>
+</dialogue>

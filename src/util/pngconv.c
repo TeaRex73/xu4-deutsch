@@ -18,6 +18,7 @@ void setEgaPalette(png_color *palette) {
         palette[i].red = r; \
         palette[i].green = g; \
         palette[i].blue = b;
+#if 0
     setpalentry(0,  0,   0,   0);
     setpalentry(1,  0,   0,   162);
     setpalentry(2,  0,   162, 0);
@@ -33,6 +34,23 @@ void setEgaPalette(png_color *palette) {
     setpalentry(12, 255, 80,  80);
     setpalentry(13, 255, 80,  255);
     setpalentry(14, 255, 255, 80);
+    setpalentry(15, 255, 255, 255);
+#endif
+    setpalentry(0,  0,   0,   0);
+    setpalentry(1,  47,  149, 229);
+    setpalentry(2,  47,  188, 26);
+    setpalentry(3,  255, 255, 255);
+    setpalentry(4,  208,  67, 229);
+    setpalentry(5,  208, 106, 26);
+    setpalentry(6,  208, 106, 26);
+    setpalentry(7,  255, 255, 255);
+    setpalentry(8,  0,   0,   0);
+    setpalentry(9,  47,  149, 229);
+    setpalentry(10, 47,  188, 26);
+    setpalentry(11, 47,  149, 229);
+    setpalentry(12, 208, 106, 26);
+    setpalentry(13, 208,  67, 229);
+    setpalentry(14, 208, 106, 26);
     setpalentry(15, 255, 255, 255);
     #undef setpalentry
 }
@@ -62,7 +80,7 @@ int writePngFromEga(unsigned char *data, int height, int width, int bits, const 
     png_infop info_ptr;
     int bit_depth, color_type, interlace_type, compression_type, filter_method;
     int palette_size;
-    png_color *palette;
+    png_color *palette = NULL;
     png_byte **row_pointers;
     int i, j;
 
@@ -72,7 +90,7 @@ int writePngFromEga(unsigned char *data, int height, int width, int bits, const 
         palette_size = 16;
     else if (bits == 8)
         palette_size = 256;
-    else 
+    else
         palette_size = 0;
 
     if (palette_size != 0) {
@@ -103,7 +121,7 @@ int writePngFromEga(unsigned char *data, int height, int width, int bits, const 
         perror(fname);
         exit(1);
     }
-    
+
     png_ptr = png_create_write_struct(PNG_LIBPNG_VER_STRING, NULL, NULL, NULL);
     if (!png_ptr) {
         fprintf(stderr, "png_create_write_struct error\n");
@@ -147,7 +165,7 @@ int writePngFromEga(unsigned char *data, int height, int width, int bits, const 
     interlace_type = PNG_INTERLACE_NONE;
     compression_type = PNG_COMPRESSION_TYPE_DEFAULT;
     filter_method = PNG_FILTER_TYPE_DEFAULT;
-    png_set_IHDR(png_ptr, info_ptr, (png_uint_32) width, (png_uint_32) height, bit_depth, 
+    png_set_IHDR(png_ptr, info_ptr, (png_uint_32) width, (png_uint_32) height, bit_depth,
                  color_type, interlace_type, compression_type, filter_method);
 
     if (palette_size != 0)
@@ -178,8 +196,8 @@ int readEgaFromPng(unsigned char **data, int *height, int *width, int *bits, con
     if (!fp) {
         perror(fname);
         exit(1);
-    }    
-    fread(header, 1, sizeof(header), fp);
+    }
+    if (fread(header, 1, sizeof(header), fp) != sizeof(header)) perror("fread failed");
     if (png_sig_cmp((png_byte*)header, 0, sizeof(header)) != 0) {
         fprintf(stderr, "not a PNG\n");
         exit(1);
@@ -216,7 +234,7 @@ int readEgaFromPng(unsigned char **data, int *height, int *width, int *bits, con
     png_set_sig_bytes(png_ptr, sizeof(header));
 
     png_read_png(png_ptr, info_ptr, PNG_TRANSFORM_IDENTITY, NULL);
-    
+
     png_get_IHDR(png_ptr, info_ptr, &pwidth, &pheight,
        &bit_depth, &color_type, &interlace_type,
        &compression_type, &filter_method);

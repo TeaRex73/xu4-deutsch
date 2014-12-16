@@ -8,10 +8,12 @@
 #include <map>
 #include <vector>
 
+#include "direction.h"
 #include "object.h"
 #include "movement.h"
 #include "savegame.h"
 #include "types.h"
+
 
 class CombatController;
 class ConfigElement;
@@ -31,7 +33,7 @@ typedef std::vector<class Creature *> CreatureVector;
 /* Creature ids */
 
 typedef enum {
-    HORSE1_ID		= 0,
+    HORSE1_ID	    = 0,
     HORSE2_ID       = 1,
 
     MAGE_ID         = 2,
@@ -59,6 +61,7 @@ typedef enum {
     SEAHORSE_ID     = 22,
     WHIRLPOOL_ID    = 23,
     STORM_ID        = 24,
+
     RAT_ID          = 25,
     BAT_ID          = 26,
     GIANT_SPIDER_ID = 27,
@@ -97,9 +100,9 @@ typedef enum {
     MATTR_GOOD          = 0x10,
     MATTR_WATER         = 0x20,
     MATTR_NONATTACKABLE = 0x40,
-    MATTR_NEGATE        = 0x80,    
-    MATTR_CAMOUFLAGE    = 0x100,    
-    MATTR_NOATTACK      = 0x200,    
+    MATTR_NEGATE        = 0x80,
+    MATTR_CAMOUFLAGE    = 0x100,
+    MATTR_NOATTACK      = 0x200,
     MATTR_AMBUSHES      = 0x400,
     MATTR_RANDOMRANGED  = 0x800,
     MATTR_INCORPOREAL   = 0x1000,
@@ -138,7 +141,7 @@ typedef enum {
  *      creature instance)</li>
  *      <li>creatures can be looked up by name, ids can probably go away</li>
  * </ul>
- */ 
+ */
 class Creature : public Object {
     typedef std::list<StatusType> StatusList;
 
@@ -159,12 +162,14 @@ public:
     SlowedType getSlowedType() const            {return slowedType;}
     int getEncounterSize() const                {return encounterSize;}
     unsigned char getResists() const            {return resists;}
+    Direction getLastDir()                      {return lastDir;}
 
     // Setters
     void setName(string s)                      {name = s;}
     void setHitTile(const string &t)            {rangedhittile = t;}
     void setMissTile(const string &t)           {rangedmisstile = t;}
     virtual void setHp(int points)              {hp = points;}
+    void setLastDir(Direction d)                {lastDir = d;}
 
     // Query methods
     bool isGood() const                 {return mattr & MATTR_GOOD;}
@@ -195,7 +200,7 @@ public:
     bool leavesTile() const             {return leavestile;}
     bool castsSleep() const             {return mattr & MATTR_CASTS_SLEEP;}
     bool isForceOfNature() const        {return mattr & MATTR_FORCE_OF_NATURE;}
-    int getDamage() const;    
+    int getDamage() const;
     const string &getCamouflageTile() const {return camouflageTile;}
     void setRandomRanged();
     int setInitialHp(int hp = -1);
@@ -229,15 +234,15 @@ protected:
     string          name;
     string          rangedhittile;
     string          rangedmisstile;
-    CreatureId      id;    
-    string          camouflageTile;    
+    CreatureId      id;
+    string          camouflageTile;
     CreatureId      leader;
     int             basehp;
     int             hp;
     StatusList      status;
     int             xp;
     unsigned char   ranged;
-    string          worldrangedtile;    
+    string          worldrangedtile;
     bool            leavestile;
     CreatureAttrib  mattr;
     CreatureMovementAttrib movementAttr;
@@ -245,11 +250,12 @@ protected:
     int             encounterSize;
     unsigned char   resists;
     CreatureId      spawn;
+    Direction       lastDir;
 };
 
 /**
  * CreatureMgr Class Definition
- */ 
+ */
 class CreatureMgr {
 public:
     static CreatureMgr *getInstance();
@@ -263,7 +269,7 @@ public:
     Creature *randomForDungeon(int dnglevel);
     Creature *randomAmbushing();
 
-private:    
+private:
     CreatureMgr() {}
 
     // disallow assignments, copy contruction
@@ -272,7 +278,7 @@ private:
 
     static CreatureMgr *instance;
 
-    CreatureMap creatures;    
+    CreatureMap creatures;
 };
 
 bool isCreature(Object *punknown);

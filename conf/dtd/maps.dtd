@@ -29,7 +29,7 @@
 <!-- city-map specific information -->
 <!ELEMENT city ( personrole* ) >
 <!ATTLIST city name               CDATA    #REQUIRED
-               type               ( castle | towne | village | ruins ) #REQUIRED
+               type               ( Burg | Stadt | Dorf | Ruine ) #REQUIRED
                tlk_fname          NMTOKEN  #REQUIRED>
 
 <!-- special roles for persons in a city: e.g. vendors -->

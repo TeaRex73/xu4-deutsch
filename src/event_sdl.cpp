@@ -15,6 +15,7 @@
 #include "screen.h"
 #include "settings.h"
 #include "u4_sdl.h"
+#include "utils.h"
 
 extern bool verbose, quit;
 extern int eventTimerGranularity;
@@ -63,7 +64,12 @@ bool KeyHandler::defaultHandler(int key, void *data) {
     switch (key) {
     case '`':
         if (c && c->location)
-            printf("x = %d, y = %d, level = %d, tile = %d (%s)\n", c->location->coords.x, c->location->coords.y, c->location->coords.z, c->location->map->translateToRawTileIndex(*c->location->map->tileAt(c->location->coords, WITH_OBJECTS)), c->location->map->tileTypeAt(c->location->coords, WITH_OBJECTS)->getName().c_str());
+            printf("x = %d, y = %d, level = %d, tile = %d (%s)\n",
+		   c->location->coords.x,
+		   c->location->coords.y,
+		   c->location->coords.z,
+		   c->location->map->translateToRawTileIndex(*c->location->map->tileAt(c->location->coords, WITH_OBJECTS)),
+		   c->location->map->tileTypeAt(c->location->coords, WITH_OBJECTS)->getName().c_str());
         break;
     default:
         valid = false;
@@ -87,7 +93,7 @@ bool KeyHandler::ignoreKeys(int key, void *data) {
  * through the global key handler. If the global handler
  * does not process the keystroke, then the key handler
  * handles it itself by calling its handler callback function.
- */ 
+ */
 bool KeyHandler::handle(int key) {
     bool processed = false;
     if (!isKeyIgnored(key)) {
@@ -95,7 +101,7 @@ bool KeyHandler::handle(int key) {
         if (!processed)
             processed = handler(key, data);
     }
-    
+
     return processed;
 }
 
@@ -119,7 +125,7 @@ bool KeyHandler::isKeyIgnored(int key) {
 }
 
 bool KeyHandler::operator==(Callback cb) const {
-    return (handler == cb) ? true : false;        
+    return (handler == cb) ? true : false;
 }
 
 KeyHandlerController::KeyHandlerController(KeyHandler *handler) {
@@ -146,12 +152,11 @@ KeyHandler *KeyHandlerController::getKeyHandler() {
  * controls.
  */
 TimedEventMgr::TimedEventMgr(int i) : baseInterval(i) {
-    /* start the SDL timer */    
+    /* start the SDL timer */
     if (instances == 0) {
         if (u4_SDL_InitSubSystem(SDL_INIT_TIMER) < 0)
             errorFatal("unable to init SDL: %s", SDL_GetError());
     }
-
     id = static_cast<void*>(SDL_AddTimer(i, &TimedEventMgr::callback, this));
     instances++;
 }
@@ -165,7 +170,7 @@ TimedEventMgr::TimedEventMgr(int i) : baseInterval(i) {
 TimedEventMgr::~TimedEventMgr() {
     SDL_RemoveTimer(static_cast<SDL_TimerID>(id));
     id = NULL;
-    
+
     if (instances == 1)
         u4_SDL_QuitSubSystem(SDL_INIT_TIMER);
 
@@ -190,11 +195,11 @@ unsigned int TimedEventMgr::callback(unsigned int interval, void *param) {
 
 /**
  * Re-initializes the timer manager to a new timer granularity
- */ 
+ */
 void TimedEventMgr::reset(unsigned int interval) {
     baseInterval = interval;
     stop();
-    start();    
+    start();
 }
 
 void TimedEventMgr::stop() {
@@ -210,12 +215,12 @@ void TimedEventMgr::start() {
 }
 
 /**
- * Constructs an event handler object. 
+ * Constructs an event handler object.
  */
 EventHandler::EventHandler() : timer(eventTimerGranularity), updateScreen(NULL) {
 }
 
-static void handleMouseMotionEvent(const SDL_Event &event) {    
+static void handleMouseMotionEvent(const SDL_Event &event) {
     if (!settings.mouseOptions.enabled)
         return;
 
@@ -228,28 +233,28 @@ static void handleMouseMotionEvent(const SDL_Event &event) {
 }
 
 static void handleActiveEvent(const SDL_Event &event, updateScreenCallback updateScreen) {
-    if (event.active.state & SDL_APPACTIVE) {            
+    if (event.active.state & SDL_APPACTIVE) {
         // application was previously iconified and is now being restored
         if (event.active.gain) {
             if (updateScreen)
                 (*updateScreen)();
             screenRedrawScreen();
-        }                
+        }
     }
 }
 
 static void handleMouseButtonDownEvent(const SDL_Event &event, Controller *controller, updateScreenCallback updateScreen) {
     int button = event.button.button - 1;
-    
+
     if (!settings.mouseOptions.enabled)
         return;
-    
+
     if (button > 2)
         button = 0;
     MouseArea *area = eventHandler->mouseAreaForPoint(event.button.x, event.button.y);
     if (!area || area->command[button] == 0)
         return;
-    controller->keyPressed(area->command[button]);            
+    controller->keyPressed(area->command[button]);
     if (updateScreen)
         (*updateScreen)();
     screenRedrawScreen();
@@ -258,21 +263,44 @@ static void handleMouseButtonDownEvent(const SDL_Event &event, Controller *contr
 static void handleKeyDownEvent(const SDL_Event &event, Controller *controller, updateScreenCallback updateScreen) {
     int processed;
     int key;
-    
-    if (event.key.keysym.unicode != 0)
-        key = event.key.keysym.unicode & 0x7F;
+
+    if (event.key.keysym.unicode <= 0xff) {
+        key = event.key.keysym.unicode;
+	  if (key > 0x7f) {
+	    switch (key) {
+	    case 0xe4:
+	      key = '{'; break;
+	    case 0xc4:
+	      key = '['; break;
+	    case 0xf6:
+	      key = '|'; break;
+	    case 0xd6:
+	      key = '\\'; break;
+	    case 0xfc:
+	      key = '}'; break;
+	    case 0xdc:
+	      key = ']'; break;
+	    case 0xdf:
+	      key = '~'; break;
+	    case 0xa7:
+	      key = '@'; break;
+	    default:
+	      key = 0;
+	    }
+	  }
+    }
     else
         key = event.key.keysym.sym;
-    
+
     if (event.key.keysym.mod & KMOD_ALT)
-#if defined(MACOSX)
+#if 1 // defined(MACOSX)
         key = U4_ALT + event.key.keysym.sym; // macosx translates alt keys into strange unicode chars
 #else
     key += U4_ALT;
 #endif
     if (event.key.keysym.mod & KMOD_META)
         key += U4_META;
-    
+
     if (event.key.keysym.sym == SDLK_UP)
         key = U4_UP;
     else if (event.key.keysym.sym == SDLK_DOWN)
@@ -284,29 +312,30 @@ static void handleKeyDownEvent(const SDL_Event &event, Controller *controller, u
     else if (event.key.keysym.sym == SDLK_BACKSPACE ||
              event.key.keysym.sym == SDLK_DELETE)
         key = U4_BACKSPACE;
-    
-#if defined(MACOSX)
+
+#if 1 // defined(MACOSX)
     // Mac OS X translates function keys weirdly too
     if ((event.key.keysym.sym >= SDLK_F1) && (event.key.keysym.sym <= SDLK_F15))
         key = U4_FKEY + (event.key.keysym.sym - SDLK_F1);
 #endif
-    
+
     if (verbose)
-        printf("key event: unicode = %d, sym = %d, mod = %d; translated = %d\n", 
-               event.key.keysym.unicode, 
-               event.key.keysym.sym, 
-               event.key.keysym.mod, 
+        printf("key event: unicode = %d, sym = %d, mod = %d; translated = %d\n",
+               event.key.keysym.unicode,
+               event.key.keysym.sym,
+               event.key.keysym.mod,
                key);
-    
+
     /* handle the keypress */
+    if (key >= 'a' && key <= '}') key = mytoupper(key);
     processed = controller->notifyKeyPressed(key);
-    
+
     if (processed) {
         if (updateScreen)
             (*updateScreen)();
         screenRedrawScreen();
     }
-    
+
 }
 
 static Uint32 sleepTimerCallback(Uint32 interval, void *) {
@@ -328,7 +357,7 @@ void EventHandler::sleep(unsigned int usec) {
     // Start a timer for the amount of time we want to sleep from user input.
     static bool stopUserInput = true; // Make this static so that all instance stop. (e.g., sleep calling sleep).
     SDL_TimerID sleepingTimer = SDL_AddTimer(usec, sleepTimerCallback, 0);
-    
+
     stopUserInput = true;
     while (stopUserInput) {
         SDL_Event event;
@@ -409,7 +438,7 @@ void EventHandler::setScreenUpdate(void (*updateScreen)(void)) {
 }
 
 /**
- * Returns true if the queue is empty of events that match 'mask'. 
+ * Returns true if the queue is empty of events that match 'mask'.
  */
  bool EventHandler::timerQueueEmpty() {
     SDL_Event event;
@@ -423,7 +452,7 @@ void EventHandler::setScreenUpdate(void (*updateScreen)(void)) {
 
 /**
  * Adds a key handler to the stack.
- */ 
+ */
 void EventHandler::pushKeyHandler(KeyHandler kh) {
     KeyHandler *new_kh = new KeyHandler(kh);
     KeyHandlerController *khc = new KeyHandlerController(new_kh);
@@ -434,7 +463,7 @@ void EventHandler::pushKeyHandler(KeyHandler kh) {
  * Pops a key handler off the stack.
  * Returns a pointer to the resulting key handler after
  * the current handler is popped.
- */ 
+ */
 void EventHandler::popKeyHandler() {
     if (controllers.empty())
         return;
@@ -445,7 +474,7 @@ void EventHandler::popKeyHandler() {
 /**
  * Returns a pointer to the current key handler.
  * Returns NULL if there is no key handler.
- */ 
+ */
 KeyHandler *EventHandler::getKeyHandler() const {
     if (controllers.empty())
         return NULL;
@@ -464,7 +493,7 @@ KeyHandler *EventHandler::getKeyHandler() const {
  * the key handler provided to the stack, making it the
  * only key handler left. Use this function only if you
  * are sure the key handlers in the stack are disposable.
- */ 
+ */
 void EventHandler::setKeyHandler(KeyHandler kh) {
     while (popController() != NULL) {}
     pushKeyHandler(kh);

@@ -1,0 +1,115 @@
+<?xml version="1.0"?>
+<dialogue xml:space="preserve">
+  <person id="0" name="Allen" pronoun="Er" turnAwayProb="0">
+    <description>Einen kleinen Jungen.</description>
+    <topic query="job">Ich weiß, wie man den Abgrund betritt!</topic>
+    <topic query="health">Mir geht es prima.</topic>
+    <topic query="ABGR">Dem Abgrunde kann man sich nur per Schiff nähern!</topic>
+    <topic query="SCHI">Das Schiff muß einen magisch verstärkten Rumpf haben!<question type="0">Hast du solch ein Gefährt?<yes>Frag Blissful nach dem Abgrunde.</yes><no>Frag Blissful nach dem Abgrunde.</no></question></topic>
+  </person>
+  <person id="1" name="Frontis" pronoun="Er" turnAwayProb="0">
+    <description>Einen kleinen Druiden.</description>
+    <topic query="job">Wilkommen in Cove, der versteckten Stadt der Weisheit.</topic>
+    <topic query="health">Mir geht es gut.<question type="0">Geht es dir gut?<yes>Sehr gut.</yes><no>Besuch unsere Heiler, ich bin sicher, sie können dir helfen!</no></question></topic>
+    <topic query="WEIS">In diesem Orte findet man viel Weisheit und Frieden.</topic>
+    <topic query="FRIE">Finde Frieden in unserem Schreine.</topic>
+  </person>
+  <person id="2" name="Sloven" pronoun="Er" turnAwayProb="0">
+    <description>Einen alten Einsiedler.</description>
+    <topic query="job">Ich bin ein Klausner.</topic>
+    <topic query="health">Mir geht es gut.</topic>
+    <topic query="KLAU">Ich habe mich aus der Gesellschaft zurückgezogen.</topic>
+    <topic query="STEI">Nur der Geist von Isaac, der im Gasthause von Skara Brae spukt, kann es dir sagen.<question type="0">Hast du ihn gesehen?<yes>Frag ihn!</yes><no>Übernachte im Gasthause, bis er sich zeigt!</no></question></topic>
+  </person>
+  <person id="3" name="Mentorian" pronoun="Er" turnAwayProb="0">
+    <description>Einen großen Zauberer.</description>
+    <topic query="job">Ich studiere die magischen Künste.</topic>
+    <topic query="health">Wirklich gut.</topic>
+    <topic query="KUEN">Es liegt Wahrheit in der Magie!<question type="0">Widersprichst du mir?<yes>Nun, dann verschwinde!</yes><no>Gut.</no></question></topic>
+    <topic query="GATE">Da du das Ench trägst, werde ich es dir sagen. Ein Gatetus erfordert Asche, Perle, und Alraunenwurzel!</topic>
+  </person>
+  <person id="4" name="Das Ench" pronoun="Es" turnAwayProb="0">
+    <description>Ein glänzendes Ench!</description>
+    <topic query="job">Ich schwinge mit Gedanken mit.<question type="0">Suchst du Hilfe?<yes>Was sind deine Gedanken?</yes><no>Oh.</no></question></topic>
+    <topic query="health">Hell.</topic>
+    <topic query="KODE">Die Kammer des Kodexes zu betreten.</topic>
+    <topic query="KAMM">Mann muß 8 Teile Avatar sein, den 3-teiligen Schlüssel haben, das Wort des Durchlasses, und das reine Axiom kennen!</topic>
+  </person>
+  <person id="5" name="Paul" pronoun="Er" turnAwayProb="0">
+    <description>Einen Barden, der dir merkwürdig bekannt vorkommt.</description>
+    <topic query="job">Ich spiele von der Liebe.<question type="0">Willst du zuhören?<yes>Über Liebe.</yes><no>Schade.</no></question></topic>
+    <topic query="health">Mir geht es gut.</topic>
+    <topic query="LIEB">Ich entzünde eine Kerze auf unsere Liebe, in Liebe verschwinden unsere Schwierigkeiten.</topic>
+    <topic query="SCHW">Aber alles in allem entdecken wir bald, daß eins und eins alles ist, was wir hören möchten!</topic>
+  </person>
+  <person id="6" name="Linda" pronoun="Sie" turnAwayProb="0">
+    <description>Eine Sängerin.</description>
+    <topic query="job">Ich singe von den Kindern.</topic>
+    <topic query="health">Prima.</topic>
+    <topic query="KIND">Rund um die Welt werden kleine Kinder in die Welt geboren.</topic>
+    <topic query="WELT">Wir müssen ihnen alles geben, was wir können, bis die Queste gewonnen ist, dann ist das Werk getan!<question type="0">Willst du helfen?<yes>Lehre sie Lieder der Freude!</yes><no>Hmm.</no></question></topic>
+  </person>
+  <person id="7" name="Merlin" pronoun="Er" turnAwayProb="0">
+    <description>Einen mystischen Zauberer.</description>
+    <topic query="job">Ich verwende Magie.<question type="0">Studierst du Magie?<yes>Viel Glück bei deinen Studien!</yes><no>Schade.</no></question></topic>
+    <topic query="health">Prima.</topic>
+    <topic query="STEI">Der schwarze Stein ist in einem Mondtore gefangen!</topic>
+    <topic query="MOND">Steh dort, wo das Tor der dunklen Monde erscheinen wird. Such, wenn die Monde sich verdunkeln!</topic>
+  </person>
+  <person id="8" name="Draconian" pronoun="Er" turnAwayProb="0">
+    <description>Einen alten Druiden.</description>
+    <topic query="job">Ich lehre das Verhältnis.<question type="0">Weißt du davon?<yes>Sehr gut!</yes><no>Lerne in den Städten und Burgen!</no></question></topic>
+    <topic query="health">Mir geht es gut.</topic>
+    <topic query="VERH">Es gibt acht mögliche Kombinationen von Wahrheit, Liebe und Mut. Jede der acht Tugenden ist eine dieser Kombinationen!</topic>
+    <topic query="A   ">A</topic>
+  </person>
+  <person id="9" name="Blissful" pronoun="Sie" turnAwayProb="0">
+    <description>Eine majestätische Seestute!</description>
+    <topic query="job">Ich weiß viel vom Kodexe!</topic>
+    <topic query="health">Mir geht es gut.</topic>
+    <topic query="KODE">Das Ench im Schreine weiß, wie man die Kammer des Kodexes betritt!</topic>
+    <topic query="ABGR">Meditiere an den Schreinen von Ehrlichkeit, Mitgefühl und Tapferkeit je 3 Zyklen, um zu wissen, wie man ihn betritt!</topic>
+  </person>
+  <person id="10" name="Rabindranath Tagore" pronoun="Er" turnAwayProb="0">
+    <description>Einen weisen Mann.</description>
+    <topic query="job">Ich spreche von Liebe.<question type="0">Suchst du, Liebe in deinem Herzen zu tragen?<yes>Du bist eine gute Seele.</yes><no>Du bist ein Narr.</no></question></topic>
+    <topic query="health">Ich bin alt aber stark!</topic>
+    <topic query="LIEB">Alle Widersprüche des Lebens lösen sich auf und verschwinden in Liebe.</topic>
+    <topic query="HERZ">Trag Liebe darin!</topic>
+  </person>
+  <person id="11" name="Bruder Zair" pronoun="Er" turnAwayProb="0">
+    <description>Einen alten Druiden.</description>
+    <topic query="job">Ich sitze und beobachte den Fluß.</topic>
+    <topic query="health">Mir geht es gut.</topic>
+    <topic query="FLUS">Er fließt endlos.<question type="0">Stimmt's?<yes>Gut.</yes><no>Wirklich.</no></question></topic>
+    <topic query="WORT">Die Fürsten der Burgen, welche die drei Prinzipien der Tugend repräsentieren, kennen jeder nur eine Silbe des Wortes des Durchlasses!</topic>
+  </person>
+  <person id="12" name="Spellbind" pronoun="Sie" turnAwayProb="0">
+    <description>Eine schlanke Magierin.</description>
+    <topic query="job">Ich weiß vom Kodexe.</topic>
+    <topic query="health">Wirklich gut.</topic>
+    <topic query="KODE">Mann muß die Kombination der drei Prinzipien der Tugend kennen!</topic>
+    <topic query="KOMB">Die Kombination der drei Prinzipien der Tugend gleicht dem Maße von Raume und Zeit!</topic>
+  </person>
+  <person id="13" name="Shaman" pronoun="Er" turnAwayProb="0">
+    <description>Einen großen Magier.</description>
+    <topic query="job">Ich studiere das &gt;eine&lt; Ding, welches das Geheimnis zum Kodexe ist!</topic>
+    <topic query="health">Ganz gut.</topic>
+    <topic query="STUD">Ich studiere über den Kodex!</topic>
+    <topic query="KODE">Das eine reine Axiom ist endloser als die wechselnden Gezeiten, ewiger als Tag und Nacht!</topic>
+  </person>
+  <person id="14" name="Charm" pronoun="Sie" turnAwayProb="0">
+    <description>Eine hübsche Hexerin.</description>
+    <topic query="job">Ich betrachte den Schlüssel zum Axiome.</topic>
+    <topic query="health">Gut genug.</topic>
+    <topic query="SCHL">Zum Axiome.</topic>
+    <topic query="AXIO">Das 1 reine Axiom umfaßt alle Dinge.<question type="0">Weißt du, was sie sind?<yes>Gut.</yes><no>Die Wahrheiten des Universumes, die Liebe des Herzens, und der Mut der Seele!</no></question></topic>
+  </person>
+  <person id="15" name="Circe" pronoun="Er" turnAwayProb="0">
+    <description>Einen weisen Magier.</description>
+    <topic query="job">Ich lehre vom Axiome!</topic>
+    <topic query="health">Gut.</topic>
+    <topic query="AXIO">Das Ganze des Axiomes ist größer als alle seine Teile!</topic>
+    <topic query="TEIL">Das Maß unendlicher Liebe, der unbegrenzte Mut, der alle Hindernisse angeht, die Wahrheit, die alle Dinge umfaßt!</topic>
+  </person>
+</dialogue>

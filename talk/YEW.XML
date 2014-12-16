@@ -1,0 +1,115 @@
+<?xml version="1.0"?>
+<dialogue xml:space="preserve">
+  <person id="0" name="Jaana" pronoun="Sie" turnAwayProb="0">
+    <description>Eine stille Druidin.</description>
+    <topic query="job">Ich versuche, Gerechtigkeit zu verstehen.</topic>
+    <topic query="health">Mir geht es gut.</topic>
+    <topic query="GERE">Wahre Gerechtigkeit befriedigt alle, falsche niemanden.</topic>
+    <topic query="VERS">Laß Gerechtigkeit deine Berufung sein, nicht deine Ausrede!<question type="0">Bist du gerecht?<yes>Schon viele Gräber wurden zu unrecht gefüllt im Namen der Gerechtigkeit.</yes><no>Leider.</no></question></topic>
+  </person>
+  <person id="1" name="eine Wache" pronoun="Sie" turnAwayProb="0">
+    <description>Eine große Wache.</description>
+    <topic query="job">Das Gericht bewachen.</topic>
+    <topic query="health">Ja.</topic>
+    <topic query="GERE">Ein gutes Leben wird inspiriert von Liebe und geleitet von Wissen.</topic>
+    <topic query="GERI">In dieser Kammer wird der Gerechtigkeit genüge getan.<question type="0">Hast Du ein Anliegen vor Gericht?<yes>Dann tritt ein.</yes><no>Dann stör nicht die Sitzung!</no></question></topic>
+  </person>
+  <person id="2" name="eine Wache" pronoun="Er" turnAwayProb="0">
+    <description>Eine vierschrötige Wache.</description>
+    <topic query="job">Wir bewachen das Gefängnis.<question type="0">Bist du gekommen, um dich selbst einzuliefern?<yes>In welche Zelle gehörst du, Verbrecher oder Vagabunden?</yes><no>Nur zu Besuch, was?</no></question></topic>
+    <topic query="health">Fit.</topic>
+    <topic query="VAGA">Das ist die linke Zelle.</topic>
+    <topic query="VERB">Das ist die rechte Zelle. Obacht da drin!</topic>
+  </person>
+  <person id="3" name="Calumny" pronoun="Er" turnAwayProb="0">
+    <description>Einen ernsten Druiden.</description>
+    <topic query="job">Ich mache Zauber.</topic>
+    <topic query="health">Gut.</topic>
+    <topic query="ZAUB">Ich habe Quicatus erfunden!<question type="0">Kannst du ihn zaubern?<yes>Er erfordert nur &gt;ein&lt; Blutmoos!</yes><no>Anfänger.</no></question></topic>
+    <topic query="ALRA">Alraune findet man nur in den Fennen der Toten und auf der Blutigen Ebene, wo der Boden immer feucht ist.</topic>
+  </person>
+  <person id="4" name="Talfourd" pronoun="Er" turnAwayProb="0">
+    <description>Einen weisen Richter.</description>
+    <topic query="job">Ich entscheide Gerechtigkeit.</topic>
+    <topic query="health">Gut.</topic>
+    <topic query="GERE">Gerechtigkeit ist Wahrheit in Aktion!</topic>
+    <topic query="RUNE">Sie ist gut versteckt!<question type="1">Kannst Du ehrlich behaupten, niemals eine Straftat begangen zu haben?<yes>Zweifelhaft.</yes><no>Dann tue Buße in einer Zelle, und beim Verbrecher suchst du recht.</no></question></topic>
+  </person>
+  <person id="5" name="Flamis" pronoun="Es" turnAwayProb="0">
+    <description>Ein brennendes Feuer.</description>
+    <topic query="job">Ich enthalte das Gewebe der wahren Natur der Gerechtigkeit.</topic>
+    <topic query="health">Strahlend.</topic>
+    <topic query="GERE">Die Tugend der Gerechtigkeit bezieht ihre Natur aus den Prinzipien Wahrheit und Liebe!</topic>
+    <topic query="GEWE">Der Gerechtigkeit.<question type="1">Warst du immer gerecht?<yes>Nicht sehr wahrscheinlich.</yes><no>Zumindest bist du ehrlich.</no></question></topic>
+  </person>
+  <person id="6" name="Silent" pronoun="Er" turnAwayProb="32">
+    <description>Einen singenden Druiden.</description>
+    <topic query="job">Beh... Beh...</topic>
+    <topic query="health">Beh... Beh...</topic>
+    <topic query="BEH.">Beh... Beh...</topic>
+    <topic query="BEH ">Beh... Beh...</topic>
+  </person>
+  <person id="7" name="Dwp" pronoun="Er" turnAwayProb="0">
+    <description>Einen weisen Druiden.</description>
+    <topic query="job">Dich wilkommen heißen in Yew, Stadt der Gerechtigkeit!</topic>
+    <topic query="health">Mir geht es gut.</topic>
+    <topic query="GERE">Liebe niemanden mehr als die Wahrheit, denn Gerechtigkeit sucht keine Bevorzugung. Mäßige deine Gerechtigkeit durch Verständnis.</topic>
+    <topic query="YEW ">Ja, es ist eine schöne Stadt!<question type="0">Gefällt sie dir?<yes>Laß sie wie deine eigene sein!</yes><no>Sehr bedauerlich.</no></question></topic>
+  </person>
+  <person id="8" name="ein armer Bettler" pronoun="Er" turnAwayProb="0">
+    <description>Einen armen Bettler.</description>
+    <topic query="job">Ich bin sündig.</topic>
+    <topic query="health">Gut behandelt.</topic>
+    <topic query="SUEN">Ich habe Schätze in den Städten genommen und nicht-böse Geschöpfe getötet.<question type="0">Solltest Du beim Verbrecher sein?<yes>Du bist in der falschen Zelle.</yes><no>Gut.</no></question></topic>
+    <topic query="VERB">Er ist ein gemeiner widerlicher häßlicher Bösewicht!</topic>
+  </person>
+  <person id="9" name="Vorpal" pronoun="Er" turnAwayProb="96">
+    <description>Einen gemeinen widerlichen häßlichen Bösewicht!</description>
+    <topic query="job">Ich fresse Leute, die mich nerven!</topic>
+    <topic query="health">Hungrig!</topic>
+    <topic query="BOES">Das bin ich, jawohl!</topic>
+    <topic query="LEUT">Wie dich!<question type="0">Bist du hier, um mich zu nerven?<yes>Friß Tod, Dreckswelpe!</yes><no>Doch, bist du!</no></question></topic>
+  </person>
+  <person id="10" name="eine Waldläuferin" pronoun="Sie" turnAwayProb="0">
+    <description>Eine schlanke Waldläuferin.</description>
+    <topic query="job">Ich suche nach einer Heimat.</topic>
+    <topic query="health">O.K.</topic>
+    <topic query="HEIM">In der Wildnis!</topic>
+    <topic query="WILD">Wo der Hirsch und die Antilope spielen.<question type="0">Hast du je von so einem Orte gehört?<yes>Selten hört man dort ein entmutigendes Wort!</yes><no>Ach, wozu mußt du's ruinieren!</no></question></topic>
+  </person>
+  <person id="11" name="Short Round" pronoun="Er" turnAwayProb="0">
+    <description>Ein kleines Kind</description>
+    <topic query="job">Ich arbeite für Jones.</topic>
+    <topic query="health">Mir geht's prima.</topic>
+    <topic query="JONE">Ich glaube Indi ist auf einer Queste!</topic>
+    <topic query="QUES">Ich bin mir nicht sicher, aber es sollte Spaß machen!<question type="0">Hast Du Spaß?<yes>Schreib an Lord British und sag's ihm!!!</yes><no>Es tut mir sehr leid, wir alle wünschten, du hättest welchen!</no></question></topic>
+  </person>
+  <person id="12" name="Frida" pronoun="Sie" turnAwayProb="0">
+    <description>Eine verkümmerte Gestalt.</description>
+    <topic query="job">Sieh mein armes Baby, ich bettle für ihn.</topic>
+    <topic query="health">Ich hungere und bin krank.</topic>
+    <topic query="BABY">Oh, nein, mein Baby liegt im Sterben!<question type="0">Wirst du mir Geld geben, damit ich mein Baby heilen lassen kann?<yes>Du bist freundlich und gerecht!</yes><no>Du gemeiner Schurke, sei verflucht!</no></question></topic>
+    <topic query="GERE">Jaana wird dich vielleicht begleiten!</topic>
+  </person>
+  <person id="13" name="Pinrod" pronoun="Er" turnAwayProb="0">
+    <description>Einen dünnen Mann.</description>
+    <topic query="job">Ich berate mich.</topic>
+    <topic query="health">Prima.</topic>
+    <topic query="BERA">Über Gerechtigkeit.<question type="0">Kämpfst du für Gerechtigkeit?<yes>Gut, die Druiden singen das Mantra!</yes><no>Schuft.</no></question></topic>
+    <topic query="GERE">Gerechtigkeit findet man am schwersten an der Spitze eines Schwertes, der Stahl ist ein Mittel der Gerechtigkeit, die Menschheit der Täter!</topic>
+  </person>
+  <person id="14" name="eine Wache" pronoun="Er" turnAwayProb="0">
+    <description>Eine vierschrötige Wache.</description>
+    <topic query="job">Den Frieden bewahren und Gerechtigkeit gewährleisten!</topic>
+    <topic query="health">O.K.</topic>
+    <topic query="FRIE">Ein gutes Leben wird inspiriert durch Liebe und gelenkt durch Wahrheit!<question type="1">Bist du immer gerecht?<yes>Das ist nicht wahrscheinlich!</yes><no>Strebe danach!</no></question></topic>
+    <topic query="GERE">Gerechtigkeit bedeutet nicht nur, den Schlechten zu bestrafen, sondern auch, den Guten zu belohnen!</topic>
+  </person>
+  <person id="15" name="Druidin" pronoun="Sie" turnAwayProb="0">
+    <description>Eine wandernde Druidin.</description>
+    <topic query="job">Ich suche Gerechtigkeit.</topic>
+    <topic query="health">Gut.</topic>
+    <topic query="GERE">Lerne sie am Schreine!</topic>
+   <topic query="SCHR">Der Schrein liegt nach Osten, dann nach Norden!<question type="0">Hast du die Rune?<yes>Lerne nun das Mantra, und such den grünen Stein in der Höhle Falsch!</yes><no>Frag Talfourd, denn er weiß von der Rune.</no></question></topic>
+  </person>
+</dialogue>
