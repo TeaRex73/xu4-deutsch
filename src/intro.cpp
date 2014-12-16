@@ -2,17 +2,16 @@
  * $Id$
  */
 
-#ifndef IOS
 #define SLACK_ON_SDL_AGNOSTICISM
 #ifdef SLACK_ON_SDL_AGNOSTICISM
 #include <SDL.h>
-#endif
 #endif
 
 #include "vc6.h" // Fixes things if you're using VC6, does nothing if otherwise
 
 #include <algorithm>
 #include <cstring>
+
 #include "u4.h"
 
 #include "intro.h"
@@ -34,10 +33,6 @@
 #include "u4file.h"
 #include "utils.h"
 
-#ifdef IOS
-#include "ios_helpers.h"
-#endif
-
 using namespace std;
 
 extern bool useProfile;
@@ -49,22 +44,22 @@ IntroController *intro = NULL;
 #define INTRO_MAP_HEIGHT 5
 #define INTRO_MAP_WIDTH 19
 #define INTRO_TEXT_X 0
-#define INTRO_TEXT_Y 19
+#define INTRO_TEXT_Y 18
 #define INTRO_TEXT_WIDTH 40
-#define INTRO_TEXT_HEIGHT 6
+#define INTRO_TEXT_HEIGHT 7
 
 #define GYP_PLACES_FIRST 0
 #define GYP_PLACES_TWOMORE 1
 #define GYP_PLACES_LAST 2
 #define GYP_UPON_TABLE 3
-#define GYP_SEGUE1 13
-#define GYP_SEGUE2 14
+#define GYP_SEGUE1 12
+#define GYP_SEGUE2 13
 
 class IntroObjectState {
 public:
     IntroObjectState() : x(0), y(0), tile(0) {}
     int x, y;
-    MapTile tile; /* base tile + tile frame */    
+    MapTile tile; /* base tile + tile frame */
 };
 
 /* temporary place-holder for settings changes */
@@ -83,9 +78,9 @@ const int IntroBinData::BEASTIE_FRAME_TABLE_OFFSET = 0x7380;
 const int IntroBinData::BEASTIE1_FRAMES_OFFSET = 0;
 const int IntroBinData::BEASTIE2_FRAMES_OFFSET = 0x78;
 
-IntroBinData::IntroBinData() : 
-    sigData(NULL), 
-    scriptTable(NULL), 
+IntroBinData::IntroBinData() :
+    sigData(NULL),
+    scriptTable(NULL),
     baseTileTable(NULL),
     beastie1FrameTable(NULL),
     beastie2FrameTable(NULL) {
@@ -103,25 +98,37 @@ IntroBinData::~IntroBinData() {
     if (beastie2FrameTable)
         delete [] beastie2FrameTable;
 
-    introQuestions.clear();
-    introText.clear();
-    introGypsy.clear();
+    introQuestions[0].clear();
+	introQuestions[1].clear();
+    introText[0].clear();
+	introText[1].clear();
+    introGypsy[0].clear();
+	introGypsy[1].clear();
 }
 
 bool IntroBinData::load() {
     int i;
 
+    U4FILE *introger = u4fopen("introm.ger");
     U4FILE *title = u4fopen("title.exe");
-    if (!title)
+    if (!introger || !title)
         return false;
 
-    introQuestions = u4read_stringtable(title, INTRO_TEXT_OFFSET, 28);
-    introText = u4read_stringtable(title, -1, 24);
-    introGypsy = u4read_stringtable(title, -1, 15);
+    introQuestions[0] = u4read_stringtable(introger, 0, 28);
+    introText[0] = u4read_stringtable(introger, -1, 25);
+    introGypsy[0] = u4read_stringtable(introger, -1, 14);
+
+	u4fclose(introger);
+	introger = u4fopen("introf.ger");
+
+    introQuestions[1] = u4read_stringtable(introger, 0, 28);
+    introText[1] = u4read_stringtable(introger, -1, 25);
+    introGypsy[1] = u4read_stringtable(introger, -1, 14);
+
 
     /* clean up stray newlines at end of strings */
-    for (i = 0; i < 15; i++)
-        trim(introGypsy[i]);
+    for (i = 0; i < 14; i++)
+        trim(introGypsy[0][i]);
 
     if (sigData)
         delete sigData;
@@ -131,9 +138,9 @@ bool IntroBinData::load() {
 
     u4fseek(title, INTRO_MAP_OFFSET, SEEK_SET);
     introMap.resize(INTRO_MAP_WIDTH * INTRO_MAP_HEIGHT, MapTile(0));
-    for (i = 0; i < INTRO_MAP_HEIGHT * INTRO_MAP_WIDTH; i++)        
+    for (i = 0; i < INTRO_MAP_HEIGHT * INTRO_MAP_WIDTH; i++)
         introMap[i] = TileMap::get("base")->translate(u4fgetc(title));
-        
+
     u4fseek(title, INTRO_SCRIPT_TABLE_OFFSET, SEEK_SET);
     scriptTable = new unsigned char[INTRO_SCRIPT_TABLE_SIZE];
     for (i = 0; i < INTRO_SCRIPT_TABLE_SIZE; i++)
@@ -164,13 +171,14 @@ bool IntroBinData::load() {
         beastie2FrameTable[i] = u4fgetc(title);
     }
 
+    u4fclose(introger);
     u4fclose(title);
 
     return true;
 }
 
-IntroController::IntroController() : 
-    Controller(1), 
+IntroController::IntroController() :
+    Controller(1),
     backgroundArea(),
     menuArea(1 * CHAR_WIDTH, 13 * CHAR_HEIGHT, 38, 11),
     extendedMenuArea(2 * CHAR_WIDTH, 10 * CHAR_HEIGHT, 36, 13),
@@ -179,7 +187,7 @@ IntroController::IntroController() :
     binData(NULL),
     titles(),                   // element list
     title(titles.begin()),      // element iterator
-    transparentIndex(13),       // palette index for transparency
+    transparentIndex(2),       // palette index for transparency
     transparentColor(),         // palette color for transparency
     bSkipTitles(false)
 {
@@ -202,7 +210,9 @@ IntroController::IntroController() :
 
     videoMenu.setTitle("Video Options:", 0, 0);
     videoMenu.add(MI_VIDEO_CONF_GFX, 						 "\010 Game Graphics Options",  2,  2,/*'g'*/  2);
+#if 0
     videoMenu.add(MI_VIDEO_04,    		new IntMenuItem		("Scale                x%d", 2,  4,/*'s'*/  0, reinterpret_cast<int *>(&settingsChanged.scale), 1, 5, 1));
+#endif
     videoMenu.add(MI_VIDEO_05,  (		new BoolMenuItem	("Mode                 %s",  2,  5,/*'m'*/  0, &settingsChanged.fullscreen))->setValueStrings("Fullscreen", "Window"));
     videoMenu.add(MI_VIDEO_06, 			new StringMenuItem	("Filter               %s",  2,  6,/*'f'*/  0, &settingsChanged.filter, screenGetFilterNames()));
     videoMenu.add(MI_VIDEO_08,    		new IntMenuItem		("Gamma                %s",  2,  7,/*'a'*/  1, &settingsChanged.gamma, 50, 150, 10, MENU_OUTPUT_GAMMA));
@@ -211,7 +221,7 @@ IntroController::IntroController() :
     videoMenu.addShortcutKey(CANCEL, ' ');
     videoMenu.setClosesMenu(USE_SETTINGS);
     videoMenu.setClosesMenu(CANCEL);
-    
+
     gfxMenu.setTitle("Game Graphics Options", 0,0);
     gfxMenu.add(MI_GFX_SCHEME, new StringMenuItem		 	 			("Graphics Scheme    %s", 2, 2, /*'G'*/ 0, &settingsChanged.videoType, imageMgr->getSetNames()));
     gfxMenu.add(MI_GFX_TILE_TRANSPARENCY, new BoolMenuItem              ("Transparency Hack  %s", 2, 4, /*'t'*/ 0, &settingsChanged.enhancementsOptions.u4TileTransparencyHack));
@@ -244,7 +254,7 @@ IntroController::IntroController() :
     inputMenu.addShortcutKey(CANCEL, ' ');
     inputMenu.setClosesMenu(USE_SETTINGS);
     inputMenu.setClosesMenu(CANCEL);
-    
+
     speedMenu.setTitle("Speed Options:", 0, 0);
     speedMenu.add(MI_SPEED_01, new IntMenuItem("Game Cycles per Second    %3d",      2,  2,/*'g'*/  0, &settingsChanged.gameCyclesPerSecond, 1, MAX_CYCLES_PER_SECOND, 1));
     speedMenu.add(MI_SPEED_02, new IntMenuItem("Battle Speed              %3d",      2,  3,/*'b'*/  0, &settingsChanged.battleSpeed, 1, MAX_BATTLE_SPEED, 1));
@@ -266,7 +276,7 @@ IntroController::IntroController() :
     gameplayMenu.add(MI_GAMEPLAY_03,   new BoolMenuItem("Gazer Spawns Insects       %s", 2,  4,/*'g'*/  0, &settingsChanged.enhancementsOptions.gazerSpawnsInsects));
     gameplayMenu.add(MI_GAMEPLAY_04,   new BoolMenuItem("Gem View Shows Objects     %s", 2,  5,/*'e'*/  1, &settingsChanged.enhancementsOptions.peerShowsObjects));
     gameplayMenu.add(MI_GAMEPLAY_05,   new BoolMenuItem("Slime Divides              %s", 2,  6,/*'s'*/  0, &settingsChanged.enhancementsOptions.slimeDivides));
-    gameplayMenu.add(MI_GAMEPLAY_06,   new BoolMenuItem("Debug Mode (Cheats)        %s", 2,  8,/*'d'*/  0, &settingsChanged.debug)); 
+    gameplayMenu.add(MI_GAMEPLAY_06,   new BoolMenuItem("Debug Mode (Cheats)        %s", 2,  8,/*'d'*/  0, &settingsChanged.debug));
     gameplayMenu.add(USE_SETTINGS,                      "\010 Use These Settings",       2, 11,/*'u'*/  2);
     gameplayMenu.add(CANCEL,                            "\010 Cancel",                   2, 12,/*'c'*/  2);
     gameplayMenu.addShortcutKey(CANCEL, ' ');
@@ -305,11 +315,7 @@ bool IntroController::init() {
         // the init() method is called again from within the
         // game via ALT-Q, so return to the menu
         //
-#ifndef IOS
         mode = INTRO_MENU;
-#else
-        mode = INTRO_MAP;
-#endif
         beastiesVisible = true;
         beastieOffset = 0;
         musicMgr->intro();
@@ -385,20 +391,21 @@ bool IntroController::keyPressed(int key) {
         break;
 
     case INTRO_MENU:
+       if (key >= 'A' && key <= ']') key = mytolower(key);
         switch (key) {
-        case 'i':
+        case 'n':
             errorMessage.erase();
             initiateNewGame();
             break;
-        case 'j':
+        case 'r':
             journeyOnward();
             break;
-        case 'r':
+        case 'z':
             errorMessage.erase();
             mode = INTRO_MAP;
             updateScreen();
             break;
-        case 'c': {
+        case 'k': {
             errorMessage.erase();
             // Make a copy of our settings so we can change them
             settingsChanged = settings;
@@ -408,7 +415,7 @@ bool IntroController::keyPressed(int key) {
             updateScreen();
             break;
         }
-        case 'a':
+        case '}':
             errorMessage.erase();
             about();
             break;
@@ -445,10 +452,9 @@ bool IntroController::keyPressed(int key) {
  * Draws the small map on the intro screen.
  */
 void IntroController::drawMap() {
-    if (0 && sleepCycles > 0) {
-        drawMapStatic();
+    if (sleepCycles > 0) {
         drawMapAnimated();
-        sleepCycles--;
+        sleepCycles-=2;
     }
     else {
         unsigned char commandNibble;
@@ -475,8 +481,8 @@ void IntroController::drawMap() {
                 dataNibble = binData->scriptTable[scrPos] & 0xf;
                 objectStateTable[dataNibble].x = binData->scriptTable[scrPos+1] & 0x1f;
                 objectStateTable[dataNibble].y = commandNibble;
-                
-                // See if the tile id needs to be recalculated 
+
+                // See if the tile id needs to be recalculated
                 if ((binData->scriptTable[scrPos+1] >> 5) >= binData->baseTileTable[dataNibble]->getFrames()) {
                     int frame = (binData->scriptTable[scrPos+1] >> 5) - binData->baseTileTable[dataNibble]->getFrames();
                     objectStateTable[dataNibble].tile = MapTile(binData->baseTileTable[dataNibble]->getId() + 1);
@@ -486,7 +492,7 @@ void IntroController::drawMap() {
                     objectStateTable[dataNibble].tile = MapTile(binData->baseTileTable[dataNibble]->getId());
                     objectStateTable[dataNibble].tile.frame = (binData->scriptTable[scrPos+1] >> 5);
                 }
-                
+
                 scrPos += 2;
                 break;
             case 7:
@@ -505,7 +511,6 @@ void IntroController::drawMap() {
                    Format: 8c
                    c = cycles to sleep
                    ---------------------------------------------- */
-                drawMapStatic();
                 drawMapAnimated();
 
                 /* set sleep cycles */
@@ -533,6 +538,7 @@ void IntroController::drawMap() {
 void IntroController::drawMapStatic() {
     int x, y;
 
+
     // draw unmodified map
     for (y = 0; y < INTRO_MAP_HEIGHT; y++)
         for (x = 0; x < INTRO_MAP_WIDTH; x++)
@@ -540,17 +546,31 @@ void IntroController::drawMapStatic() {
 }
 
 void IntroController::drawMapAnimated() {
-    int i;    
+    int i;
+    int x, y;
+
+    MapTile tempMap[INTRO_MAP_WIDTH][INTRO_MAP_HEIGHT];
+
+    // draw unmodified map
+    for (y = 0; y < INTRO_MAP_HEIGHT; y++)
+        for (x = 0; x < INTRO_MAP_WIDTH; x++)
+            tempMap[x][y] =
+	      binData->introMap[x + (y * INTRO_MAP_WIDTH)];
 
     // draw animated objects
     for (i = 0; i < IntroBinData::INTRO_BASETILE_TABLE_SIZE; i++)
         if (objectStateTable[i].tile != 0)
         {
-        	std::vector<MapTile> tiles;
+	        /* std::vector<MapTile> tiles;
         	tiles.push_back(objectStateTable[i].tile);
-        	tiles.push_back(binData->introMap[objectStateTable[i].x + (objectStateTable[i].y * INTRO_MAP_WIDTH)]);
-            mapArea.drawTile(tiles, false, objectStateTable[i].x, objectStateTable[i].y);
+        	tiles.push_back(binData->introMap[objectStateTable[i].x + (objectStateTable[i].y * INTRO_MAP_WIDTH)]); */
+            tempMap[objectStateTable[i].x][objectStateTable[i].y] = 
+	      objectStateTable[i].tile;
         }
+    for (y = 0; y < INTRO_MAP_HEIGHT; y++)
+        for (x = 0; x < INTRO_MAP_WIDTH; x++)
+            mapArea.drawTile(tempMap[x][y], false, x, y);
+
 }
 
 /**
@@ -591,22 +611,22 @@ void IntroController::drawBeastie(int beast, int vertoffset, int frame) {
  * dot representing the anhk and history book.
  */
 void IntroController::animateTree(const string &frame) {
-    backgroundArea.draw(frame, 72, 68);
+    backgroundArea.draw(frame, 47, 43);
 }
 
 /**
  * Draws the cards in the character creation sequence with the gypsy.
  */
 void IntroController::drawCard(int pos, int card) {
-    static const char *cardNames[] = { 
+    static const char *cardNames[] = {
         "honestycard", "compassioncard", "valorcard", "justicecard",
-        "sacrificecard", "honorcard", "spiritualitycard", "humilitycard" 
+        "sacrificecard", "honorcard", "spiritualitycard", "humilitycard"
     };
 
     ASSERT(pos == 0 || pos == 1, "invalid pos: %d", pos);
     ASSERT(card < 8, "invalid card: %d", card);
 
-    backgroundArea.draw(cardNames[card], pos ? 218 : 12, 12);
+    backgroundArea.draw(cardNames[card], pos ? 216 : 34, 16);
 }
 
 /**
@@ -616,9 +636,9 @@ void IntroController::drawAbacusBeads(int row, int selectedVirtue, int rejectedV
     ASSERT(row >= 0 && row < 7, "invalid row: %d", row);
     ASSERT(selectedVirtue < 8 && selectedVirtue >= 0, "invalid virtue: %d", selectedVirtue);
     ASSERT(rejectedVirtue < 8 && rejectedVirtue >= 0, "invalid virtue: %d", rejectedVirtue);
-    
-    backgroundArea.draw("whitebead", 128 + (selectedVirtue * 9), 24 + (row * 15));
-    backgroundArea.draw("blackbead", 128 + (rejectedVirtue * 9), 24 + (row * 15));
+
+    backgroundArea.draw("whitebead", 132 + (selectedVirtue * 7), 16 + (row * 16));
+    backgroundArea.draw("blackbead", 132 + (rejectedVirtue * 7), 16 + (row * 16));
 }
 
 /**
@@ -656,17 +676,20 @@ void IntroController::updateScreen() {
             backgroundArea.draw(BKGD_OPTIONS_BTM, 0, 120);
         }
 
-        menuArea.textAt(1,  1, "In another world, in a time to come.");
-        menuArea.textAt(14, 3, "Options:");
-        menuArea.textAt(10, 5, "%s", menuArea.colorizeString("Return to the view", FG_YELLOW, 0, 1).c_str());
-        menuArea.textAt(10, 6, "%s", menuArea.colorizeString("Journey Onward",     FG_YELLOW, 0, 1).c_str());
-        menuArea.textAt(10, 7, "%s", menuArea.colorizeString("Initiate New Game",  FG_YELLOW, 0, 1).c_str());
-        menuArea.textAt(10, 8, "%s", menuArea.colorizeString("Configure",          FG_YELLOW, 0, 1).c_str());
-        menuArea.textAt(10, 9, "%s", menuArea.colorizeString("About",              FG_YELLOW, 0, 1).c_str());
+        menuArea.textAt(9,  1, "IN EINER ANDEREN WELT");
+	menuArea.textAt(8,  2, "IN EINER ZEIT DIE KOMMT");
+        menuArea.textAt(14, 4, "OPTIONEN:");
+        menuArea.textAt(10, 6, "%s", menuArea.colorizeString("Zur}ck zur Ansicht", FG_YELLOW, 0, 1).c_str());
+        menuArea.textAt(10, 7, "%s", menuArea.colorizeString("Reise fortsetzen",     FG_YELLOW, 0, 1).c_str());
+        menuArea.textAt(10, 8, "%s", menuArea.colorizeString("Neues Spiel starten",  FG_YELLOW, 0, 1).c_str());
+#if 0
+        menuArea.textAt(10, 8, "%s", menuArea.colorizeString("Konfigurieren",          FG_YELLOW, 0, 1).c_str());
+        menuArea.textAt(10, 9, "%s", menuArea.colorizeString("]ber...",              FG_YELLOW, 0, 1).c_str());
+#endif
         drawBeasties();
 
         // draw the cursor last
-        screenSetCursorPos(24, 16);
+        screenSetCursorPos(24, 17);
         screenShowCursor();
         break;
 
@@ -691,19 +714,19 @@ void IntroController::initiateNewGame() {
     backgroundArea.draw(BKGD_OPTIONS_BTM, 0, 120);
 
     // display name prompt and read name from keyboard
-    menuArea.textAt(3, 3, "By what name shalt thou be known");
-    menuArea.textAt(3, 4, "in this world and time?");
+    menuArea.textAt(3, 3, "Unter welchem Namen wirst du in");
+    menuArea.textAt(3, 4, "dieser Welt und Zeit bekannt sein?");
 
     // enable the text cursor after setting it's initial position
     // this will avoid drawing in undesirable areas like 0,0
-    menuArea.setCursorPos(11, 7, false);
+    menuArea.setCursorPos(15, 7, false);
     menuArea.setCursorFollowsText(true);
     menuArea.enableCursor();
 
     drawBeasties();
     screenRedrawScreen();
 
-    string nameBuffer = ReadStringController::get(12, &menuArea);
+    string nameBuffer = ReadStringController::get(8, &menuArea);
     if (nameBuffer.length() == 0) {
         // the user didn't enter a name
         menuArea.disableCursor();
@@ -717,15 +740,15 @@ void IntroController::initiateNewGame() {
     backgroundArea.draw(BKGD_OPTIONS_BTM, 0, 120);
 
     // display sex prompt and read sex from keyboard
-    menuArea.textAt(3, 3, "Art thou Male or Female?");
+    menuArea.textAt(3, 3, "Bist du m{nnlich oder weiblich?");
 
     // the cursor is already enabled, just change its position
-    menuArea.setCursorPos(28, 3, true);
+    menuArea.setCursorPos(34, 3, true);
 
     drawBeasties();
 
     SexType sex;
-    int sexChoice = ReadChoiceController::get("mf");
+    int sexChoice = ReadChoiceController::get("mw");
     if (sexChoice == 'm')
         sex = SEX_MALE;
     else
@@ -736,17 +759,14 @@ void IntroController::initiateNewGame() {
 
 void IntroController::finishInitiateGame(const string &nameBuffer, SexType sex)
 {
-#ifdef IOS
-    mode = INTRO_MENU; // ensure we are now in the menu mode, (i.e., stop drawing the map).
-#endif
     // no more text entry, so disable the text cursor
     menuArea.disableCursor();
 
     // show the lead up story
-    showStory();
+    showStory(sex);
 
     // ask questions that determine character class
-    startQuestions();
+    startQuestions(sex);
 
     // write out save game an segue into game
     SaveGame saveGame;
@@ -772,29 +792,31 @@ void IntroController::finishInitiateGame(const string &nameBuffer, SexType sex)
     saveGame.reagents[REAG_GARLIC] = 4;
     saveGame.torches = 2;
     saveGame.write(saveGameFile);
+    fsync(fileno(saveGameFile));
     fclose(saveGameFile);
+    sync();
 
     saveGameFile = fopen((settings.getUserPath() + MONSTERS_SAV_BASE_FILENAME).c_str(), "wb");
     if (saveGameFile) {
         saveGameMonstersWrite(NULL, saveGameFile);
+        fsync(fileno(saveGameFile));
         fclose(saveGameFile);
+	sync();
     }
     justInitiatedNewGame = true;
 
     // show the text thats segues into the main game
-    showText(binData->introGypsy[GYP_SEGUE1]);
-#ifdef IOS
-    U4IOS::switchU4IntroControllerToContinueButton();
-#endif
+    showText(binData->introGypsy[sex == SEX_FEMALE][GYP_SEGUE1]);
     ReadChoiceController pauseController("");
     eventHandler->pushController(&pauseController);
     pauseController.waitFor();
 
-    showText(binData->introGypsy[GYP_SEGUE2]);
+    showText(binData->introGypsy[sex == SEX_FEMALE][GYP_SEGUE2]);
 
     eventHandler->pushController(&pauseController);
     pauseController.waitFor();
 
+    backgroundArea.clear();
     // done: exit intro and let game begin
     questionArea.disableCursor();
     EventHandler::setControllerDone();
@@ -802,14 +824,14 @@ void IntroController::finishInitiateGame(const string &nameBuffer, SexType sex)
     return;
 }
 
-void IntroController::showStory() {
+void IntroController::showStory(SexType sex) {
     ReadChoiceController pauseController("");
 
     beastiesVisible = false;
 
     questionArea.setCursorFollowsText(true);
 
-    for (int storyInd = 0; storyInd < 24; storyInd++) {
+    for (int storyInd = 0; storyInd < 25; storyInd++) {
         if (storyInd == 0)
             backgroundArea.draw(BKGD_TREE);
         else if (storyInd == 3)
@@ -818,20 +840,20 @@ void IntroController::showStory() {
             animateTree("items");
         else if (storyInd == 6)
             backgroundArea.draw(BKGD_PORTAL);
-        else if (storyInd == 11)
+        else if (storyInd == 12)
             backgroundArea.draw(BKGD_TREE);
-        else if (storyInd == 15)
+        else if (storyInd == 16)
             backgroundArea.draw(BKGD_OUTSIDE);
-        else if (storyInd == 17)
+        else if (storyInd == 18)
             backgroundArea.draw(BKGD_INSIDE);
-        else if (storyInd == 20)
-            backgroundArea.draw(BKGD_WAGON);
         else if (storyInd == 21)
+            backgroundArea.draw(BKGD_WAGON);
+        else if (storyInd == 22)
             backgroundArea.draw(BKGD_GYPSY);
-        else if (storyInd == 23)
+        else if (storyInd == 24)
             backgroundArea.draw(BKGD_ABACUS);
 
-        showText(binData->introText[storyInd]);
+		showText(binData->introText[sex == SEX_FEMALE][storyInd]);
 
         eventHandler->pushController(&pauseController);
         // enable the cursor here to avoid drawing in undesirable locations
@@ -844,7 +866,7 @@ void IntroController::showStory() {
  * Starts the gypsys questioning that eventually determines the new
  * characters class.
  */
-void IntroController::startQuestions() {
+void IntroController::startQuestions(SexType sex) {
     ReadChoiceController pauseController("");
     ReadChoiceController questionController("ab");
 
@@ -861,27 +883,21 @@ void IntroController::startQuestions() {
         drawCard(1, questionTree[questionRound * 2 + 1]);
 
         questionArea.clear();
-        questionArea.textAt(0, 0, "%s", binData->introGypsy[questionRound == 0 ? GYP_PLACES_FIRST : (questionRound == 6 ? GYP_PLACES_LAST : GYP_PLACES_TWOMORE)].c_str());
-        questionArea.textAt(0, 1, "%s", binData->introGypsy[GYP_UPON_TABLE].c_str());
-        questionArea.textAt(0, 2, "%s and %s.  She says", 
-                            binData->introGypsy[questionTree[questionRound * 2] + 4].c_str(), 
-                            binData->introGypsy[questionTree[questionRound * 2 + 1] + 4].c_str());
-        questionArea.textAt(0, 3, "\"Consider this:\"");
+        questionArea.textAt(0, 0, "%s", binData->introGypsy[sex == SEX_FEMALE][questionRound == 0 ? GYP_PLACES_FIRST : (questionRound == 6 ? GYP_PLACES_LAST : GYP_PLACES_TWOMORE)].c_str());
+		questionArea.textAt(0, 1, "%s", binData->introGypsy[sex == SEX_FEMALE][GYP_UPON_TABLE].c_str());
+        questionArea.textAt(0, 2, "%s und %s.",
+                            binData->introGypsy[sex == SEX_FEMALE][questionTree[questionRound * 2] + 4].c_str(),
+                            binData->introGypsy[sex == SEX_FEMALE][questionTree[questionRound * 2 + 1] + 4].c_str());
+        questionArea.textAt(0, 3, "Sie sagt, \"]berlege dir:\"");
 
-#ifdef IOS
-        U4IOS::switchU4IntroControllerToContinueButton();
-#endif
         // wait for a key
         eventHandler->pushController(&pauseController);
         pauseController.waitFor();
 
         screenEnableCursor();
         // show the question to choose between virtues
-        showText(getQuestion(questionTree[questionRound * 2], questionTree[questionRound * 2 + 1]));
+        showText(getQuestion(sex, questionTree[questionRound * 2], questionTree[questionRound * 2 + 1]));
 
-#ifdef IOS
-        U4IOS::switchU4IntroControllerToABButtons();
-#endif
         // wait for an answer
         eventHandler->pushController(&questionController);
         int choice = questionController.waitFor();
@@ -897,7 +913,7 @@ void IntroController::startQuestions() {
  * Get the text for the question giving a choice between virtue v1 and
  * virtue v2 (zero based virtue index, starting at honesty).
  */
-string IntroController::getQuestion(int v1, int v2) {
+string IntroController::getQuestion(SexType sex, int v1, int v2) {
     int i = 0;
     int d = 7;
 
@@ -912,14 +928,14 @@ string IntroController::getQuestion(int v1, int v2) {
 
     ASSERT((i + v2 - 1) < 28, "calculation failed");
 
-    return binData->introQuestions[i + v2 - 1];
+	return binData->introQuestions[sex == SEX_FEMALE][i + v2 - 1];
 }
 
 /**
  * Starts the game.
  */
 void IntroController::journeyOnward() {
-    FILE *saveGameFile;    
+    FILE *saveGameFile;
     bool validSave = false;
 
     /*
@@ -932,15 +948,15 @@ void IntroController::journeyOnward() {
 
         // Make sure there are players in party.sav --
         // In the Ultima Collection CD, party.sav exists, but does
-        // not contain valid info to journey onward        
-        saveGame->read(saveGameFile);        
+        // not contain valid info to journey onward
+        saveGame->read(saveGameFile);
         if (saveGame->members > 0)
             validSave = true;
         delete saveGame;
     }
-    
+
     if (!validSave) {
-        errorMessage = "Initiate a new game first!";
+        errorMessage = "Starte zuerst ein neues Spiel!";
         updateScreen();
         screenRedrawScreen();
         return;
@@ -959,13 +975,15 @@ void IntroController::about() {
     backgroundArea.draw(BKGD_OPTIONS_BTM, 0, 120);
 
     screenHideCursor();
-    menuArea.textAt(14, 1, "XU4 %s", VERSION);
-    menuArea.textAt(1, 3, "xu4 is free software; you can redist-");
-    menuArea.textAt(1, 4, "ribute it and/or modify it under the");
-    menuArea.textAt(1, 5, "terms of the GNU GPL as published by");
-    menuArea.textAt(1, 6, "the FSF.  See COPYING.");
-    menuArea.textAt(4, 8, "Copyright \011 2002-2006, xu4 Team");
-    menuArea.textAt(4, 9, "Copyright \011 1987, Lord British");
+    menuArea.textAt(14, 0, "XU4G %s", VERSION);
+    menuArea.textAt(1, 2, "xu4g ist Freie Software; du darfst");
+    menuArea.textAt(1, 3, "es weitergeben und/oder ver{ndern,");
+    menuArea.textAt(1, 4, "unter den Bedingungen der GNU GPL");
+    menuArea.textAt(1, 5, "die von der FSF ver|ffentlicht");
+    menuArea.textAt(1, 6, "wurde. Siehe Datei COPYING.");
+    menuArea.textAt(1, 9, "\011 2006, xu4 Team");
+    menuArea.textAt(1, 8, "\011 1987, Lord British");
+    menuArea.textAt(1, 10,"\011 2013, Linards Ticmanis");
     drawBeasties();
 
     ReadChoiceController::get("");
@@ -982,14 +1000,14 @@ void IntroController::showText(const string &text) {
     int lineNo = 0;
 
     questionArea.clear();
-    
+
     unsigned long pos = current.find("\n");
     while (pos < current.length()) {
         questionArea.textAt(0, lineNo++, "%s", current.substr(0, pos).c_str());
         current = current.substr(pos+1);
         pos = current.find("\n");
     }
-    
+
     /* write the last line (possibly only line) */
     questionArea.textAt(0, lineNo++, "%s", current.substr(0, pos).c_str());
 }
@@ -1041,7 +1059,7 @@ void IntroController::timerFired() {
     if (beastiesVisible)
         drawBeasties();
 
-    /* 
+    /*
      * refresh the screen only if the timer queue is empty --
      * i.e. drop a frame if another timer event is about to be fired
      */
@@ -1146,7 +1164,7 @@ void IntroController::updateVideoMenu(MenuEvent &event) {
 
                 // go back to menu mode
                 mode = INTRO_MENU;
-            }        
+            }
             break;
         case MI_VIDEO_CONF_GFX:
         	runMenu(&gfxMenu, &extendedMenuArea, true);
@@ -1240,14 +1258,14 @@ void IntroController::updateInputMenu(MenuEvent &event) {
                 SDL_ShowCursor(SDL_DISABLE);
             }
 #endif
-    
+
             break;
         case CANCEL:
             // discard settings
             settingsChanged = settings;
             break;
         default: break;
-        }    
+        }
     }
 
     // draw the extended background for all option screens
@@ -1268,11 +1286,11 @@ void IntroController::updateSpeedMenu(MenuEvent &event) {
             // save settings
             settings.setData(settingsChanged);
             settings.write();
-    
+
             // re-initialize events
             eventTimerGranularity = (1000 / settings.gameCyclesPerSecond);
-            eventHandler->getTimer()->reset(eventTimerGranularity);            
-        
+            eventHandler->getTimer()->reset(eventTimerGranularity);
+
             break;
         case CANCEL:
             // discard settings
@@ -1361,7 +1379,7 @@ void IntroController::initQuestionTree() {
         questionTree[0] = questionTree[1];
         questionTree[1] = tmp;
     }
-        
+
 }
 
 /**
@@ -1374,7 +1392,7 @@ bool IntroController::doQuestion(int answer) {
         questionTree[answerInd] = questionTree[questionRound * 2];
     else
         questionTree[answerInd] = questionTree[questionRound * 2 + 1];
-    
+
     drawAbacusBeads(questionRound, questionTree[answerInd],
         questionTree[questionRound * 2 + ((answer) ? 0 : 1)]);
 
@@ -1512,7 +1530,7 @@ void IntroController::initPlayers(SaveGame *saveGame) {
  */
 void IntroController::preloadMap()
 {
-    int x, y, i;    
+    int x, y, i;
 
     // draw unmodified map
     for (y = 0; y < INTRO_MAP_HEIGHT; y++)
@@ -1536,12 +1554,12 @@ void IntroController::initTitles()
     //          x,  y,   w,  h, method,  delay, duration
     //
     addTitle(  97,  0, 130, 16, SIGNATURE,   1000, 3000 );  // "Lord British"
-    addTitle( 148, 17,  24,  4, AND,         1000,  100 );  // "and"
-    addTitle(  84, 31, 152,  1, BAR,         1000,  500 );  // <bar>
-    addTitle(  86, 21, 148,  9, ORIGIN,      1000,  100 );  // "Origin Systems, Inc."
-    addTitle( 133, 33,  54,  5, PRESENT,        0,  100 );  // "present"
-    addTitle(  59, 33, 202, 46, TITLE,       1000, 5000 );  // "Ultima IV"
-    addTitle(  40, 80, 240, 13, SUBTITLE,    1000,  100 );  // "Quest of the Avatar"
+    addTitle( 148, 17,  22,  4, AND,         1000,  100 );  // "and"
+    addTitle(  80, 31, 158,  1, BAR,         1000,  500 );  // <bar>
+    addTitle(  84, 21, 147,  9, ORIGIN,      1000,  100 );  // "Origin Systems, Inc."
+    addTitle( 115, 33,  91,  5, PRESENT,        0,  100 );  // "present"
+    addTitle(  57, 34, 200, 45, TITLE,       1000, 5000 );  // "Ultima IV"
+    addTitle(   8, 81, 304, 12, SUBTITLE,    1000,  100 );  // "Quest of the Avatar"
     addTitle(   0, 96, 320, 96, MAP,         1000,  100 );  // the map
 
     // get the source data for the elements
@@ -1643,7 +1661,7 @@ void IntroController::getTitleSourceData()
                 // PLOT: "Lord British"
                 srcData = intro->getSigData();
 
-                RGBA color = info->image->setColor(0, 255, 255);    // cyan for EGA
+                RGBA color = info->image->setColor(255, 255, 255);    // white for EGA
                 int blue[16] = {255, 250, 226, 226, 210, 194, 161, 161,
                                 129,  97,  97,  64,  64,  32,  32,   0};
                 int x = 0;
@@ -1660,12 +1678,12 @@ void IntroController::getTitleSourceData()
                         color = info->image->setColor(255, (y == 2 ? 250 : 255), blue[y-1]);
                     }
                     AnimPlot plot = {
-                        x,
-                        y,
-                        color.r,
-                        color.g,
-                        color.b,
-                        255};
+		      (uint8_t) x,
+                      (uint8_t)  y,
+                      (uint8_t)  color.r,
+                      (uint8_t)  color.g,
+                      (uint8_t)  color.b,
+                      (uint8_t)  255};
                     titles[i].plotData.push_back(plot);
                     titles[i].animStepMax += 2;
                 }
@@ -1688,7 +1706,7 @@ void IntroController::getTitleSourceData()
                         titles[i].srcImage->getPixel(x*info->prescale, y*info->prescale, r, g, b, a);
                         if (r || g || b)
                         {
-                            AnimPlot plot = {x+1, y+1, r, g, b, a};
+			  AnimPlot plot = {(uint8_t) (x+1), (uint8_t) (y+1), (uint8_t) r, (uint8_t) g, (uint8_t) b, (uint8_t) a};
                             titles[i].plotData.push_back(plot);
                         }
                     }
@@ -1763,7 +1781,7 @@ int getTicks()
 {
 	return SDL_GetTicks();
 }
-#elif !defined(IOS)
+#else
 static int ticks = 0;
 int getTicks()
 {
@@ -1777,18 +1795,10 @@ int getTicks()
 //
 bool IntroController::updateTitle()
 {
-#ifdef IOS
-    static bool firstTime = true;
-    if (firstTime) {
-        firstTime = false;
-        startTicks();
-    }
-#endif
-
     int animStepTarget = 0;
 
     int timeCurrent = getTicks();
-    float timePercent = 0;
+    double timePercent = 0;
 
     if (title->animStep == 0 && !bSkipTitles)
     {
@@ -1823,10 +1833,10 @@ bool IntroController::updateTitle()
     }
 
     // determine how much of the animation should have been drawn up until now
-    timePercent = float(timeCurrent - title->timeBase - title->timeDelay) / title->timeDuration;
+    timePercent = (double)(timeCurrent - title->timeBase - title->timeDelay) / title->timeDuration;
     if (timePercent > 1 || bSkipTitles)
         timePercent = 1;
-    animStepTarget = int(title->animStepMax * timePercent);
+    animStepTarget = (int)(title->animStepMax * timePercent);
 
     // perform the animation
     switch (title->method)
@@ -1855,7 +1865,7 @@ bool IntroController::updateTitle()
             while (animStepTarget > title->animStep)
             {
                 title->animStep++;
-                color = title->destImage->setColor(128, 0, 0); // dark red for the underline
+                color = title->destImage->setColor(27, 154, 255); // blue for the underline
 
                 // blit bar to the canvas
                 title->destImage->fillRect(
@@ -1947,11 +1957,13 @@ bool IntroController::updateTitle()
 
             // cover the "present" area with the transparent color
             title->destImage->fillRect(
-                75, 1, 54, 5,
+                59, 0, 91, 5,
                 transparentColor.r,
                 transparentColor.g,
                 transparentColor.b);
+	    title->destImage->setTransparentIndex(transparentIndex);
             break;
+
         }
 
         case SUBTITLE:
@@ -2017,7 +2029,6 @@ bool IntroController::updateTitle()
 
                 // draw the updated map display
                 intro->drawMapStatic();
-
                 screen->drawSubRectOn(
                     title->srcImage,
                     SCALED(8),
@@ -2068,7 +2079,7 @@ bool IntroController::updateTitle()
         if (title->method == TITLE)
         {
             // assume this is "Ultima IV" and pre-load sound
-//            soundLoad(SOUND_TITLE_FADE);
+            soundLoad(SOUND_TITLE_FADE);
             eventHandler->getTimer()->reset(settings.titleSpeedRandom);
         }
         else if (title->method == MAP)
@@ -2138,12 +2149,3 @@ void IntroController::skipTitles()
     bSkipTitles = true;
     soundStop();
 }
-
-#ifdef IOS
-// Try to put the intro music back at just the correct moment on iOS;
-// don't play it at the very beginning.
-void IntroController::tryTriggerIntroMusic() {
-    if (mode == INTRO_MAP)
-        musicMgr->intro();
-}
-#endif

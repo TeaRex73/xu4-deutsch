@@ -11,14 +11,8 @@
 #include "u4file.h"
 #include "textcolor.h"
 
-#if defined(IOS)
-typedef struct CGImage *CGImageRef;
-typedef struct CGLayer *CGLayerRef;
-typedef CGLayerRef BackendSurface;
-#else
 struct SDL_Surface;
 typedef SDL_Surface *BackendSurface;
-#endif
 
 using std::string;
 
@@ -100,13 +94,13 @@ public:
     /**
      * Sets the color of a single pixel.
      */
-    void putPixel(int x, int y, int r, int g, int b, int a); //TODO Consider using &
+    void putPixel(int x, int y, int r, int g, int b, int a, bool anyway = false); //TODO Consider using &
 
 
-    void putPixelIndex(int x, int y, unsigned int index);
+    void putPixelIndex(int x, int y, unsigned int index, bool anyway = false);
 
 
-    void fillRect(int x, int y, int w, int h, int r, int g, int b, int a=IM_OPAQUE);
+    void fillRect(int x, int y, int w, int h, int r, int g, int b, int a=IM_OPAQUE, bool anyway = false);
 
     /* reading from image */
     void getPixel(int x, int y, unsigned int &r, unsigned int &g, unsigned int &b, unsigned int &a) const;
@@ -137,21 +131,17 @@ public:
     void drawSubRectInverted(int x, int y, int rx, int ry, int rw, int rh) const {
         drawSubRectInvertedOn(NULL, x, y, rx, ry, rw, rh);
     }
-
+	
     /* image drawing methods for drawing onto another image instead of the screen */
-    void drawOn(Image *d, int x, int y) const;
-    void drawSubRectOn(Image *d, int x, int y, int rx, int ry, int rw, int rh) const;
-    void drawSubRectInvertedOn(Image *d, int x, int y, int rx, int ry, int rw, int rh) const;
+    void drawOn(Image *d, int x, int y, bool anyway = false) const;
+    void drawSubRectOn(Image *d, int x, int y, int rx, int ry, int rw, int rh, bool anyway = false) const;
+    void drawSubRectInvertedOn(Image *d, int x, int y, int rx, int ry, int rw, int rh, bool anyway = false) const;
 
     int width() const { return w; }
     int height() const { return h; }
     bool isIndexed() const { return indexed; }
     BackendSurface getSurface() { return surface; }
     void save(const string &filename);
-#ifdef IOS
-    void initWithImage(CGImageRef image);
-    void clearImageContents();
-#endif
     void drawHighlighted();
 
 
@@ -159,12 +149,6 @@ private:
     unsigned int w, h;
     bool indexed;
     RGBA backgroundColor;
-#ifdef IOS
-    mutable char *cachedImageData;
-    void clearCachedImageData() const;
-    void createCachedImage() const;
-    friend Image *screenScale(Image *src, int scale, int n, int filter);
-#endif
     Image();                    /* use create method to construct images */
 
     // disallow assignments, copy contruction

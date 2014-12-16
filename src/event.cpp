@@ -16,15 +16,11 @@
 #include "screen.h"
 #include "settings.h"
 #include "textview.h"
+#include "utils.h"
 
 using namespace std;
 
-#ifdef IOS
-// Seems that iOS hands-off event loop means we need to fire a bit more slowly.
-int eventTimerGranularity = 300;
-#else
 int eventTimerGranularity = 250;
-#endif
 
 extern bool quit;
 bool EventHandler::controllerDone = false;
@@ -33,19 +29,19 @@ unsigned int TimedEventMgr::instances = 0;
 
 EventHandler *EventHandler::instance = NULL;
 EventHandler *EventHandler::getInstance() {
-    if (instance == NULL) 
+    if (instance == NULL)
         instance = new EventHandler();
     return instance;
 }
 
 /**
- * Waits a given number of milliseconds before continuing 
- */ 
+ * Waits a given number of milliseconds before continuing
+ */
 void EventHandler::wait_msecs(unsigned int msecs) {
     int msecs_per_cycle = (1000 / settings.gameCyclesPerSecond);
     int cycles = msecs / msecs_per_cycle;
 
-    if (cycles > 0) {        
+    if (cycles > 0) {
         WaitController waitCtrl(cycles);
         getInstance()->pushController(&waitCtrl);
         waitCtrl.wait();
@@ -56,20 +52,16 @@ void EventHandler::wait_msecs(unsigned int msecs) {
 
 /**
  * Waits a given number of game cycles before continuing
- */ 
+ */
 void EventHandler::wait_cycles(unsigned int cycles) {
     WaitController waitCtrl(cycles);
     getInstance()->pushController(&waitCtrl);
     waitCtrl.wait();
 }
 
-void EventHandler::setControllerDone(bool done) 
-{ 
-	controllerDone = done; 
-#if defined(IOS)
-    if (done)
-        controllerStopped_helper();
-#endif
+void EventHandler::setControllerDone(bool done)
+{
+	controllerDone = done;
 }     /**< Sets the controller exit flag for the event handler */
 bool EventHandler::getControllerDone()         { return controllerDone; }      /**< Returns the current value of the global exit flag */
 void EventHandler::end() { ended = true; }                                     /**< End all event processing */
@@ -182,9 +174,9 @@ void TimedEventMgr::remove(TimedEvent::Callback callback, void *data) {
 void TimedEventMgr::tick() {
     List::iterator i;
     lock();
-    
+
     for (i = events.begin(); i != events.end(); i++)
-        (*i)->tick();   
+        (*i)->tick();
 
     unlock();
 
@@ -241,7 +233,7 @@ bool ReadStringController::keyPressed(int key) {
     int valid = true,
         len = value.length();
     string::size_type pos = string::npos;
-    
+
     if (key < U4_ALT)
          pos = accepted.find_first_of(key);
 
@@ -262,7 +254,7 @@ bool ReadStringController::keyPressed(int key) {
                 }
             }
         }
-        else if (key == '\n' || key == '\r') {            
+        else if (key == '\n' || key == '\r') {
             doneWaiting();
         }
         else if (len < maxlen) {
@@ -270,17 +262,17 @@ bool ReadStringController::keyPressed(int key) {
             value += key;
 
             if (view) {
-                view->textAt(screenX + len, screenY, "%c", key);
+	      view->textAt(screenX + len, screenY, "%c", key);
             } else {
                 screenHideCursor();
                 screenTextAt(screenX + len, screenY, "%c", key);
                 screenSetCursorPos(screenX + len + 1, screenY);
                 c->col = len + 1;
-                screenShowCursor();            
+                screenShowCursor();
             }
         }
     }
-    else valid = false;    
+    else valid = false;
 
     return valid || KeyHandler::defaultHandler(key, NULL);
 }
@@ -291,7 +283,7 @@ string ReadStringController::get(int maxlen, int screenX, int screenY, EventHand
 
     ReadStringController ctrl(maxlen, screenX, screenY);
     eh->pushController(&ctrl);
-    return ctrl.waitFor();
+    return deumlaut(ctrl.waitFor());
 }
 
 string ReadStringController::get(int maxlen, TextView *view, EventHandler *eh) {
@@ -300,7 +292,7 @@ string ReadStringController::get(int maxlen, TextView *view, EventHandler *eh) {
 
     ReadStringController ctrl(maxlen, view);
     eh->pushController(&ctrl);
-    return ctrl.waitFor();
+    return deumlaut(ctrl.waitFor());
 }
 
 ReadIntController::ReadIntController(int maxlen, int screenX, int screenY) : ReadStringController(maxlen, screenX, screenY, "0123456789 \n\r\010") {}
@@ -324,19 +316,17 @@ ReadChoiceController::ReadChoiceController(const string &choices) {
 }
 
 bool ReadChoiceController::keyPressed(int key) {
-    // isupper() accepts 1-byte characters, yet the modifier keys
-    // (ALT, SHIFT, ETC) produce values beyond 255
-    if ((key <= 0x7F) && (isupper(key)))
-        key = tolower(key);
-
+    key = mytolower(key);
     value = key;
 
     if (choices.empty() || choices.find_first_of(value) < choices.length()) {
         // If the value is printable, display it
-        if (!isspace(key))
-        	screenMessage("%c", toupper(key));
-        doneWaiting();
-        return true;
+      if (!choices.empty() && isgraph(key))
+        screenMessage("%c", mytoupper(key));
+      else
+	screenMessage("%c", ' ');
+      doneWaiting();
+      return true;
     }
 
     return false;
@@ -345,7 +335,7 @@ bool ReadChoiceController::keyPressed(int key) {
 char ReadChoiceController::get(const string &choices, EventHandler *eh) {
     if (!eh)
         eh = eventHandler;
-    
+
     ReadChoiceController ctrl(choices);
     eh->pushController(&ctrl);
     return ctrl.waitFor();
@@ -358,7 +348,7 @@ ReadDirController::ReadDirController() {
 bool ReadDirController::keyPressed(int key) {
     Direction d = keyToDirection(key);
     bool valid = (d != DIR_NONE);
-    
+
     switch(key) {
     case U4_ESC:
     case U4_SPACE:
@@ -374,7 +364,7 @@ bool ReadDirController::keyPressed(int key) {
             return true;
         }
         break;
-    }    
+    }
 
     return false;
 }
@@ -393,11 +383,9 @@ bool WaitController::keyPressed(int key) {
 }
 
 void WaitController::wait() {
-    Controller_startWait();    
+    Controller_startWait();
 }
 
 void WaitController::setCycles(int c) {
     cycles = c;
 }
-
-

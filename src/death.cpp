@@ -23,6 +23,7 @@
 #include "screen.h"
 #include "settings.h"
 #include "stats.h"
+#include "utils.h"
 
 #define REVIVE_WORLD_X 86
 #define REVIVE_WORLD_Y 107
@@ -32,6 +33,7 @@
 int timerCount;
 unsigned int timerMsg;
 int deathSequenceRunning = 0;
+bool music = false;
 
 void deathTimer(void *data);
 void deathRevive(void);
@@ -40,35 +42,37 @@ const struct {
     int timeout;                /* pause in seconds */
     const char *text;           /* text of message */
 } deathMsgs[] = {
-    { 5, "\n\n\nAll is Dark...\n" },
-    { 5, "\nBut wait...\n" },
-    { 5, "Where am I?...\n" },
-    { 5, "Am I dead?...\n" },
-    { 5, "Afterlife?...\n" },
-    { 5, "You hear:\n    %s\n" },
-    { 5, "I feel motion...\n" },
-    { 5, "\nLord British says: I have pulled thy spirit and some possessions from the void.  Be more careful in the future!\n\n\020" }
+    { 5, "\n\nAber warte..." },
+    { 5, "\nWo bin ich?..." },
+    { 5, "\nBin ich tot?..." },
+    { 5, "\nJenseits?..." },
+    { 5, "\nDU H\\RST:\n    %s" },
+    { 5, "\nIch f}hle Bewegung..." },
+    { 5, "\n\n\nLORD BRITISH SAGT:\nICH HABE DEINEN GEIST UND EINIGE BESITZT]MER AUS DER LEERE GEZOGEN. SEI IN ZUKUNFT VORSICHTIGER!\n\n\020" }
 };
-    
+
 #define N_MSGS (sizeof(deathMsgs) / sizeof(deathMsgs[0]))
 
 void deathStart(int delay) {
     if (deathSequenceRunning)
         return;
-    
+
+    c->willPassTurn = false;
     // stop playing music
+    music = musicMgr->isPlaying();
     musicMgr->fadeOut(1000);
 
     deathSequenceRunning = 1;
     timerCount = 0;
     timerMsg = 0;
 
+    gameSetViewMode(VIEW_DEAD);
+
+    screenMessage("\n\nDUNKELHEIT...");
     WaitController waitCtrl(delay * settings.gameCyclesPerSecond);
     eventHandler->pushController(&waitCtrl);
     waitCtrl.wait();
-    
-    gameSetViewMode(VIEW_DEAD);
-    
+
     eventHandler->pushKeyHandler(&KeyHandler::ignoreKeys);
     screenDisableCursor();
 
@@ -80,7 +84,7 @@ void deathTimer(void *data) {
     timerCount++;
     if ((timerMsg < N_MSGS) && (timerCount > deathMsgs[timerMsg].timeout)) {
 
-        screenMessage(deathMsgs[timerMsg].text, c->party->member(0)->getName().c_str());
+      screenMessage(deathMsgs[timerMsg].text, uppercase(c->party->member(0)->getName()).c_str());
         screenHideCursor();
 
         timerCount = 0;
@@ -95,17 +99,17 @@ void deathTimer(void *data) {
 
 void deathRevive() {
     while(!c->location->map->isWorldMap() && c->location->prev != NULL) {
-        game->exitToParentMap();        
+        game->exitToParentMap();
     }
 
     eventHandler->setController(game);
-    
+
     deathSequenceRunning = 0;
     gameSetViewMode(VIEW_NORMAL);
 
     /* Move our world map location to Lord British's Castle */
     c->location->coords = c->location->map->portals[0]->coords;
-    
+
     /* Now, move the avatar into the castle and put him
        in front of Lord British */
     game->setMap(mapMgr->get(100), 1, NULL);
@@ -115,8 +119,8 @@ void deathRevive() {
 
     c->aura->set();
     c->horseSpeed = 0;
-    c->lastCommandTime = time(NULL);    
-    musicMgr->play();
+    if (music)
+      musicMgr->play();
 
     c->party->reviveParty();
 
@@ -124,4 +128,6 @@ void deathRevive() {
     screenShowCursor();
     c->stats->setView(STATS_PARTY_OVERVIEW);
     screenRedrawScreen();
+    c->lastCommandTime= (long)time(NULL);
+    c->willPassTurn = true;
 }

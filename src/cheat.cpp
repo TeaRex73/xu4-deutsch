@@ -26,7 +26,7 @@ CheatMenuController::CheatMenuController(GameController *game) : game(game) {
 bool CheatMenuController::keyPressed(int key) {
     int i;
     bool valid = true;
-
+    if (key >= 'A' && key <= ']') key = mytolower(key);
     switch (key) {
     case '1':
     case '2':
@@ -36,15 +36,15 @@ bool CheatMenuController::keyPressed(int key) {
     case '6':
     case '7':
     case '8':
-        screenMessage("Gate %d!\n", key - '0');
+        screenMessage("Tor %d!\n", key - '0');
 
         if (c->location->map->isWorldMap()) {
             const Coords *moongate = moongateGetGateCoordsForPhase(key - '1');
             if (moongate)
-                c->location->coords = *moongate;                
+                c->location->coords = *moongate;
         }
         else
-            screenMessage("Not here!\n");
+            screenMessage("HIER NICHT!\n");
         break;
 
     case 'a': {
@@ -52,7 +52,7 @@ bool CheatMenuController::keyPressed(int key) {
         if (newTrammelphase > 7)
             newTrammelphase = 0;
 
-        screenMessage("Advance Moons!\n");
+        screenMessage("MONDLAUF!\n");
         while (c->saveGame->trammelphase != newTrammelphase)
             game->updateMoons(true);
         break;
@@ -60,11 +60,11 @@ bool CheatMenuController::keyPressed(int key) {
 
     case 'c':
         collisionOverride = !collisionOverride;
-        screenMessage("Collision detection %s!\n", collisionOverride ? "off" : "on");
+        screenMessage("KOLLISONSTEST %s!\n", collisionOverride ? "AUS" : "EIN");
         break;
 
     case 'e':
-        screenMessage("Equipment!\n");
+        screenMessage("AUSR]STUNG!\n");
         for (i = ARMR_NONE + 1; i < ARMR_MAX; i++)
             c->saveGame->armor[i] = 8;
         for (i = WEAP_HANDS + 1; i < WEAP_MAX; i++) {
@@ -77,7 +77,7 @@ bool CheatMenuController::keyPressed(int key) {
         break;
 
     case 'f':
-        screenMessage("Full Stats!\n");
+        screenMessage("VOLLE PUNKTE!\n");
         for (i = 0; i < c->saveGame->members; i++) {
             c->saveGame->players[i].str = 50;
             c->saveGame->players[i].dex = 50;
@@ -92,7 +92,7 @@ bool CheatMenuController::keyPressed(int key) {
         break;
 
     case 'g': {
-        screenMessage("Goto: ");
+        screenMessage("GEH ZU: ");
         string dest = gameGetInput(32);
         lowercase(dest);
 
@@ -117,53 +117,53 @@ bool CheatMenuController::keyPressed(int key) {
             }
         }
         if (!found)
-            screenMessage("\ncan't find\n%s!\n", dest.c_str());
+	  screenMessage("\nKANN %s\nNICHT FINDEN!\n", dest.c_str());
         break;
     }
 
     case 'h': {
-        screenMessage("Help:\n"
-                      "1-8   - Gate\n"
-                      "F1-F8 - +Virtue\n"
-                      "a - Adv. Moons\n"
-                      "c - Collision\n"
-                      "e - Equipment\n"
-                      "f - Full Stats\n"
-                      "g - Goto\n"
-                      "h - Help\n"
-                      "i - Items\n"
-                      "k - Show Karma\n"
-                      "(more)");
+        screenMessage("HILFE:\n"
+                      "1-8   - TOR\n"
+                      "F1-F8 - +TUGEND\n"
+                      "A - MONDLAUF\n"
+                      "C - KOLLISION\n"
+                      "E - WERKZEUG\n"
+                      "F - VOLLE PUNKTE\n"
+                      "G - GEHE ZU\n"
+                      "H - HILFE\n"
+                      "I - DINGE\n"
+                      "K - ZEIG KARMA\n"
+                      "(MEHR)");
 
         ReadChoiceController pauseController("");
         eventHandler->pushController(&pauseController);
         pauseController.waitFor();
 
         screenMessage("\n"
-                      "l - Location\n"
-                      "m - Mixtures\n"
-                      "o - Opacity\n"
-                      "p - Peer\n"
-                      "r - Reagents\n"
-                      "s - Summon\n"
-                      "t - Transports\n"
-                      "v - Full Virtues\n"
-                      "w - Change Wind\n"
-                      "x - Exit Map\n"
-                      "y - Y-up\n"
-                      "(more)");
+                      "L - ORT\n"
+                      "M - MIXTUREN\n"
+                      "O - OPAZIT[T\n"
+                      "P - PEER\n"
+                      "R - REAGENZIEN\n"
+                      "S - BESCHW\\RE\n"
+                      "T - TRANSPORTE\n"
+                      "V - VOLLTUGEND\n"
+                      "W - WIND\n"
+                      "X - VERLASSEN\n"
+                      "Y - STEIG AUF\n"
+                      "(MEHR)");
 
         eventHandler->pushController(&pauseController);
         pauseController.waitFor();
 
         screenMessage("\n"
-                      "z - Z-down\n"
+                      "Z - STEIG AB\n"
                   );
         break;
     }
 
     case 'i':
-        screenMessage("Items!\n");
+        screenMessage("DINGE!\n");
         c->saveGame->torches = 99;
         c->saveGame->gems = 99;
         c->saveGame->keys = 99;
@@ -177,7 +177,7 @@ bool CheatMenuController::keyPressed(int key) {
         break;
 
     case 'j':
-        screenMessage("Joined by companions!\n");
+        screenMessage("BEGLEITER!\n");
         for (int m = c->saveGame->members; m < 8; m++) {
             fprintf(stderr, "m = %d\n", m);
             fprintf(stderr, "n = %s\n", c->saveGame->players[m].name);
@@ -189,56 +189,56 @@ bool CheatMenuController::keyPressed(int key) {
         break;
 
     case 'k':
-        screenMessage("Karma!\n\n");
+        screenMessage("KARMA!\n\n");
         for (i = 0; i < 8; i++) {
             unsigned int j;
             screenMessage("%s:", getVirtueName(static_cast<Virtue>(i)));
             for (j = 13; j > strlen(getVirtueName(static_cast<Virtue>(i))); j--)
                 screenMessage(" ");
-            if (c->saveGame->karma[i] > 0)                
-                screenMessage("%.2d\n", c->saveGame->karma[i]);            
+            if (c->saveGame->karma[i] > 0)
+                screenMessage("%.2d\n", c->saveGame->karma[i]);
             else screenMessage("--\n");
         }
         break;
 
     case 'l':
         if (c->location->map->isWorldMap())
-            screenMessage("\nLocation:\n%s\nx: %d\ny: %d\n", "World Map", c->location->coords.x, c->location->coords.y);
+            screenMessage("\nORT:\n%s\nX: %d\nY: %d\n", "WELTKARTE", c->location->coords.x, c->location->coords.y);
         else
-            screenMessage("\nLocation:\n%s\nx: %d\ny: %d\nz: %d\n", c->location->map->getName().c_str(), c->location->coords.x, c->location->coords.y, c->location->coords.z);
+            screenMessage("\nORT:\n%s\nX: %d\nY: %d\nZ: %d\n", c->location->map->getName().c_str(), c->location->coords.x, c->location->coords.y, c->location->coords.z);
         break;
 
     case 'm':
-        screenMessage("Mixtures!\n");
+        screenMessage("MIXTUREN!\n");
         for (i = 0; i < SPELL_MAX; i++)
             c->saveGame->mixtures[i] = 99;
         break;
 
     case 'o':
         c->opacity = !c->opacity;
-        screenMessage("Opacity %s!\n", c->opacity ? "on" : "off");
+        screenMessage("OPAZIT[T %s!\n", c->opacity ? "EIN" : "AUS");
         break;
 
-    case 'p':        
+    case 'p':
         if ((c->location->viewMode == VIEW_NORMAL) || (c->location->viewMode == VIEW_DUNGEON))
             c->location->viewMode = VIEW_GEM;
         else if (c->location->context == CTX_DUNGEON)
             c->location->viewMode = VIEW_DUNGEON;
-        else 
+        else
             c->location->viewMode = VIEW_NORMAL;
-        
-        screenMessage("\nToggle View!\n");
+
+        screenMessage("\nANSICHT!\n");
         break;
 
     case 'r':
-        screenMessage("Reagents!\n");
+        screenMessage("REAGENZIEN!\n");
         for (i = 0; i < REAG_MAX; i++)
             c->saveGame->reagents[i] = 99;
         break;
 
     case 's':
-        screenMessage("Summon!\n");
-        screenMessage("What?\n");
+        screenMessage("BESCHW\\RE!\n");
+        screenMessage("WAS?\n");
         summonCreature(gameGetInput());
         break;
 
@@ -248,16 +248,16 @@ bool CheatMenuController::keyPressed(int key) {
             static MapTile horse = c->location->map->tileset->getByName("horse")->getId(),
                 ship = c->location->map->tileset->getByName("ship")->getId(),
                 balloon = c->location->map->tileset->getByName("balloon")->getId();
-            MapTile *choice; 
+            MapTile *choice;
             Tile *tile;
-            
-            screenMessage("Create transport!\nWhich? ");            
+
+            screenMessage("ERZEUGE TRASNPORT!\nWELCHEN? ");
 
             // Get the transport of choice
-            char transport = ReadChoiceController::get("shb \033\015");
+            char transport = ReadChoiceController::get("spb \033\015");
             switch(transport) {
                 case 's': choice = &ship; break;
-                case 'h': choice = &horse; break;
+                case 'p': choice = &horse; break;
                 case 'b': choice = &balloon; break;
                 default:
                     choice = NULL;
@@ -271,11 +271,11 @@ bool CheatMenuController::keyPressed(int key) {
                 screenMessage("%s\n", tile->getName().c_str());
 
                 // Get the direction in which to create the transport
-                eventHandler->pushController(&readDir);                
+                eventHandler->pushController(&readDir);
 
-                screenMessage("Dir: ");
+                screenMessage("WOHIN-");
                 coords.move(readDir.waitFor(), c->location->map);
-                if (coords != c->location->coords) {            
+                if (coords != c->location->coords) {
                     bool ok = false;
                     MapTile *ground = c->location->map->tileAt(coords, WITHOUT_OBJECTS);
 
@@ -285,31 +285,31 @@ bool CheatMenuController::keyPressed(int key) {
                     case 's': ok = ground->getTileType()->isSailable(); break;
                     case 'h': ok = ground->getTileType()->isWalkable(); break;
                     case 'b': ok = ground->getTileType()->isWalkable(); break;
-                    default: break;                      
+                    default: break;
                     }
 
                     if (choice && ok) {
                         c->location->map->addObject(*choice, *choice, coords);
-                        screenMessage("%s created!\n", tile->getName().c_str());
+                        screenMessage("%s ERZEUGT!\n", tile->getName().c_str());
                     }
                     else if (!choice)
-                        screenMessage("Invalid transport!\n");
-                    else screenMessage("Can't place %s there!\n", tile->getName().c_str());
+                        screenMessage("UNG]LTIGER\nTRANSPORT!\n");
+                    else screenMessage("KANN %s NICHT PLATZIEREN!\n", tile->getName().c_str());
                 }
             }
-            else screenMessage("None!\n");
+            else screenMessage("KEINER!\n");
         }
         break;
 
     case 'v':
-        screenMessage("\nFull Virtues!\n");
+        screenMessage("\nVOLLE TUGEND!\n");
         for (i = 0; i < 8; i++)
-            c->saveGame->karma[i] = 0;        
+            c->saveGame->karma[i] = 0;
         c->stats->update();
         break;
 
     case 'w': {
-        screenMessage("Wind Dir ('l' to lock):\n");
+        screenMessage("WINDRICHTUNG ('L' zum SPERREN):\n");
         WindCmdController ctrl;
         eventHandler->pushController(&ctrl);
         ctrl.waitFor();
@@ -317,28 +317,28 @@ bool CheatMenuController::keyPressed(int key) {
     }
 
     case 'x':
-        screenMessage("\nX-it!\n");        
+        screenMessage("\nVERLASSE!\n");
         if (!game->exitToParentMap())
-            screenMessage("Not Here!\n");
+            screenMessage("HIER NICHT!\n");
         musicMgr->play();
         break;
 
     case 'y':
-        screenMessage("Y-up!\n");
+        screenMessage("STEIG AUF!\n");
         if ((c->location->context & CTX_DUNGEON) && (c->location->coords.z > 0))
             c->location->coords.z--;
         else {
-            screenMessage("Leaving...\n");
+            screenMessage("VERLASSE...\n");
             game->exitToParentMap();
             musicMgr->play();
         }
         break;
 
     case 'z':
-        screenMessage("Z-down!\n");
+        screenMessage("STEIG AB!\n");
         if ((c->location->context & CTX_DUNGEON) && (c->location->coords.z < 7))
             c->location->coords.z++;
-        else screenMessage("Not Here!\n");
+        else screenMessage("HIER NICHT!\n");
         break;
 
     case U4_FKEY+0:
@@ -349,7 +349,7 @@ bool CheatMenuController::keyPressed(int key) {
     case U4_FKEY+5:
     case U4_FKEY+6:
     case U4_FKEY+7:
-        screenMessage("Improve %s!\n", getVirtueName(static_cast<Virtue>(key - U4_FKEY)));
+        screenMessage("STEIGERE %s!\n", getVirtueName(static_cast<Virtue>(key - U4_FKEY)));
         if (c->saveGame->karma[key - U4_FKEY] == 99)
             c->saveGame->karma[key - U4_FKEY] = 0;
         else if (c->saveGame->karma[key - U4_FKEY] != 0)
@@ -362,7 +362,7 @@ bool CheatMenuController::keyPressed(int key) {
     case U4_ESC:
     case U4_ENTER:
     case U4_SPACE:
-        screenMessage("Nothing\n");
+        screenMessage("NICHTS!\n");
         break;
 
     default:
@@ -392,7 +392,7 @@ void CheatMenuController::summonCreature(const string &name) {
         screenMessage("\n");
         return;
     }
-    
+
     /* find the creature by its id and spawn it */
     unsigned int id = atoi(creatureName.c_str());
     if (id > 0)
@@ -403,13 +403,13 @@ void CheatMenuController::summonCreature(const string &name) {
 
     if (m) {
         if (gameSpawnCreature(m))
-            screenMessage("\n%s summoned!\n", m->getName().c_str());
-        else screenMessage("\n\nNo place to put %s!\n\n", m->getName().c_str());
-        
+            screenMessage("\n%s BESCHWOREN!\n", m->getName().c_str());
+        else screenMessage("\n\nKEIN PLATZ F]R %s!\n\n", m->getName().c_str());
+
         return;
     }
-    
-    screenMessage("\n%s not found\n", creatureName.c_str());
+
+    screenMessage("\n%s UNBEKANNT!\n", creatureName.c_str());
 }
 
 bool WindCmdController::keyPressed(int key) {
@@ -419,13 +419,13 @@ bool WindCmdController::keyPressed(int key) {
     case U4_DOWN:
     case U4_RIGHT:
         c->windDirection = keyToDirection(key);
-        screenMessage("Wind %s!\n", getDirectionName(static_cast<Direction>(c->windDirection)));
+        screenMessage("WIND %s!\n", getDirectionName(static_cast<Direction>(c->windDirection)));
         doneWaiting();
         return true;
 
     case 'l':
         c->windLock = !c->windLock;
-        screenMessage("Wind direction is %slocked!\n", c->windLock ? "" : "un");
+        screenMessage("WINDRICHTUNG %sSPERRT!\n", c->windLock ? "GE" : "ENT");
         doneWaiting();
         return true;
     }

@@ -13,6 +13,7 @@
 #include "imagemgr.h"
 #include "settings.h"
 #include "textview.h"
+#include "utils.h"
 
 Image *TextView::charset = NULL;
 
@@ -95,9 +96,9 @@ string TextView::colorizeStatus(char statustype) {
     }
 
     switch (statustype) {
-        case 'P':  output = FG_GREEN;    break;
+        case 'V':  output = FG_GREEN;    break;
         case 'S':  output = FG_PURPLE;   break;
-        case 'D':  output = FG_RED;      break;
+        case 'T':  output = FG_RED;      break;
         default:   output = statustype;  return output;
     }
     output += statustype;
@@ -115,7 +116,7 @@ string TextView::colorizeString(string input, ColorFG color, unsigned int colors
     string::size_type i;
     bool colorization = false;
 
-    // loop through the entire string and 
+    // loop through the entire string and
     for (i = 0; i < length; i++) {
         if (i == colorstart) {
             output += color;

@@ -6,7 +6,7 @@
 
 #include "names.h"
 
-const char *getClassName(ClassType klass) {
+const char *getClassNameEnglish(ClassType klass) {
     switch (klass) {
     case CLASS_MAGE:
         return "Mage";
@@ -29,11 +29,90 @@ const char *getClassName(ClassType klass) {
     }
 }
 
-const char *getReagentName(Reagent reagent) {   
+const char *getClassNameTranslated(ClassType klass, SexType sex) {
+    switch (klass) {
+    case CLASS_MAGE:
+		switch (sex) {
+		case SEX_MALE:
+			return "Magier";
+		case SEX_FEMALE:
+			return "Magierin";
+		default:
+			return "???";
+		}
+    case CLASS_BARD:
+	    switch (sex) {
+		case SEX_MALE:
+			return "Barde";
+		case SEX_FEMALE:
+			return "Bardin";
+		default:
+			return "???";
+		}
+    case CLASS_FIGHTER:
+		switch (sex) {
+		case SEX_MALE:
+			return "K{mpfer";
+		case SEX_FEMALE:
+			return "K{mpferin";
+		default:
+			return "???";
+		}
+    case CLASS_DRUID:
+		switch (sex) {
+		case SEX_MALE:
+			return "Druide";
+		case SEX_FEMALE:
+			return "Druidin";
+		default:
+			return "???";
+		}
+	case CLASS_TINKER:
+		switch (sex) {
+		case SEX_MALE:
+			return "Zinker";
+		case SEX_FEMALE:
+			return "Zinkerin";
+		default:
+			return "???";
+		}
+    case CLASS_PALADIN:
+		switch (sex) {
+		case SEX_MALE:
+			return "Paladin";
+		case SEX_FEMALE:
+			return "Paladinin";
+		default:
+			return "???";
+		}
+    case CLASS_RANGER:
+		switch (sex) {
+		case SEX_MALE:
+			return "Waldl{ufer";
+		case SEX_FEMALE:
+			return "Waldl{uferin";
+		default:
+			return "???";
+		}
+    case CLASS_SHEPHERD:
+		switch (sex) {
+		case SEX_MALE:
+			return "Hirte";
+		case SEX_FEMALE:
+			return "Hirtin";
+		default:
+			return "???";
+		}
+    default:
+        return "???";
+    }
+}
+
+const char *getReagentName(Reagent reagent) {
     static const char * const reagentNames[] = {
-        "Sulfur Ash", "Ginseng", "Garlic", 
-        "Spider Silk", "Blood Moss", "Black Pearl", 
-        "Nightshade", "Mandrake"
+        "Schwelasche", "Ginseng", "Knoblauch",
+        "Spinnweben", "Blutmoos", "Schwarzperl",
+        "Schatten", "Alraune"
     };
 
     if (reagent < REAG_MAX)
@@ -44,9 +123,9 @@ const char *getReagentName(Reagent reagent) {
 
 const char *getVirtueName(Virtue virtue) {
     static const char * const virtueNames[] = {
-        "Honesty", "Compassion", "Valor", 
-        "Justice", "Sacrifice", "Honor", 
-        "Spirituality", "Humility"
+		"Ehrlichkeit", "Mitgef}hl", "Tapferkeit",
+        "Gerechtigkeit", "Verzicht", "Ehre",
+        "Spiritualit{t", "Demut"
     };
 
     if (virtue < 8)
@@ -56,13 +135,13 @@ const char *getVirtueName(Virtue virtue) {
 }
 
 const char *getBaseVirtueName(int virtueMask) {
-    if (virtueMask == VIRT_TRUTH)           return "Truth";
-    else if (virtueMask == VIRT_LOVE)       return "Love";
-    else if (virtueMask == VIRT_COURAGE)    return "Courage";
-    else if (virtueMask == (VIRT_TRUTH | VIRT_LOVE)) return "Truth and Love";
-    else if (virtueMask == (VIRT_LOVE | VIRT_COURAGE)) return "Love and Courage";
-    else if (virtueMask == (VIRT_COURAGE | VIRT_TRUTH)) return "Courage and Truth";
-    else if (virtueMask == (VIRT_TRUTH | VIRT_LOVE | VIRT_COURAGE)) return "Truth, Love and Courage";
+    if (virtueMask == VIRT_TRUTH)           return "Wahrheit";
+    else if (virtueMask == VIRT_LOVE)       return "Liebe";
+    else if (virtueMask == VIRT_COURAGE)    return "Mut";
+    else if (virtueMask == (VIRT_TRUTH | VIRT_LOVE)) return "Wahrheit und Liebe";
+    else if (virtueMask == (VIRT_LOVE | VIRT_COURAGE)) return "Liebe und Mut";
+    else if (virtueMask == (VIRT_COURAGE | VIRT_TRUTH)) return "Mut und Wahrheit";
+    else if (virtueMask == (VIRT_TRUTH | VIRT_LOVE | VIRT_COURAGE)) return "Wahrheit, Liebe und Mut";
     else return "???";
 }
 
@@ -82,14 +161,14 @@ int getBaseVirtues(Virtue virtue) {
 
 const char *getVirtueAdjective(Virtue virtue) {
     static const char * const virtueAdjectives[] = {
-        "honest",
-        "compassionate",
-        "valiant",
-        "just",
-        "sacrificial",
-        "honorable",
-        "spiritual",
-        "humble"
+        "ehrlich",
+		"mitf}hlend",
+        "tapfer",
+        "gerecht",
+        "verzichtend",
+        "ehrenvoll",
+        "spirituell",
+        "dem}tig"
     };
 
     if (virtue < 8)
@@ -100,9 +179,9 @@ const char *getVirtueAdjective(Virtue virtue) {
 
 const char *getStoneName(Virtue virtue) {
     static const char * const virtueNames[] = {
-        "Blue", "Yellow", "Red", 
-        "Green", "Orange", "Purple", 
-        "White", "Black"
+        "Blau", "Gelb", "Rot",
+        "Gr}n", "Orange", "Violett",
+        "Wei~", "Schwarz"
     };
 
     if (virtue < VIRT_MAX)
@@ -114,23 +193,23 @@ const char *getStoneName(Virtue virtue) {
 const char *getItemName(Item item) {
     switch (item) {
     case ITEM_SKULL:
-        return "Skull";
+        return "SCH[DEL";
     case ITEM_CANDLE:
-        return "Candle";
+        return "KERZE";
     case ITEM_BOOK:
-        return "Book";
+        return "BUCH";
     case ITEM_BELL:
-        return "Bell";
+        return "GLOCKE";
     case ITEM_KEY_C:
-        return "Courage";
+        return "MUT";
     case ITEM_KEY_L:
-        return "Love";
+        return "LIEBE";
     case ITEM_KEY_T:
-        return "Truth";
+        return "WAHRHEIT";
     case ITEM_HORN:
-        return "Horn";
+        return "HORN";
     case ITEM_WHEEL:
-        return "Wheel";
+        return "STEUER";
     default:
         return "???";
     }
@@ -138,7 +217,7 @@ const char *getItemName(Item item) {
 
 const char *getDirectionName(Direction dir) {
     static const char * const directionNames[] = {
-        "West", "North", "East", "South"
+        "West", "Nord", "Ost", "S}d"
     };
 
     if (dir >= DIR_WEST && dir <= DIR_SOUTH)

@@ -26,7 +26,7 @@ void errorFatal(const char *fmt, ...) {
     UIAlertView *alert = [[[UIAlertView alloc] initWithTitle:@"Ultima4 iPad"
                                                     message:[NSString stringWithCString:buffer encoding:NSUTF8StringEncoding]
                               delegate:nil cancelButtonTitle:nil otherButtonTitles:nil] autorelease];
-    [alert show];    
+    [alert show];
 #endif
 }
 
@@ -43,7 +43,7 @@ void errorWarning(const char *fmt, ...) {
     UIAlertView *alert = [[[UIAlertView alloc] initWithTitle:@"Ultima4 iPad"
                                                     message:[NSString stringWithCString:buffer encoding:NSUTF8StringEncoding]
                                                    delegate:nil cancelButtonTitle:nil otherButtonTitles:nil] autorelease];
-    [alert show];    
+    [alert show];
 #endif
 }
 

@@ -48,9 +48,9 @@ public:
     Tile **baseTileTable;
     unsigned char *beastie1FrameTable;
     unsigned char *beastie2FrameTable;
-    std::vector<std::string> introText;
-    std::vector<std::string> introQuestions;
-    std::vector<std::string> introGypsy;
+    std::vector<std::string> introText[2];
+    std::vector<std::string> introQuestions[2];
+    std::vector<std::string> introGypsy[2];
 
 private:
     // disallow assignments, copy contruction
@@ -117,20 +117,13 @@ private:
     void initQuestionTree();
     bool doQuestion(int answer);
     void initPlayers(SaveGame *saveGame);
-    std::string getQuestion(int v1, int v2);
-#ifdef IOS
-public:
-    void tryTriggerIntroMusic();
-#endif
+    std::string getQuestion(SexType sex, int v1, int v2);
     void initiateNewGame();
     void finishInitiateGame(const string &nameBuffer, SexType sex);
-    void startQuestions();
-    void showStory();
+    void startQuestions(SexType sex);
+    void showStory(SexType sex);
     void journeyOnward();
     void about();
-#ifdef IOS
-private:
-#endif
     void showText(const string &text);
 
     void runMenu(Menu *menu, TextView *view, bool withBeasties);
@@ -267,13 +260,7 @@ private:
     void compactTitle();
     void drawTitle();
     void getTitleSourceData();
-#ifdef IOS
-public:
-#endif
     void skipTitles();
-#ifdef IOS
-private:
-#endif
     std::vector<AnimElement> titles;            // list of title elements
     std::vector<AnimElement>::iterator title;   // current title element
 

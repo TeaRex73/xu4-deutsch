@@ -43,22 +43,29 @@ DialogueLoader* U4HWDialogueLoader::instance = DialogueLoader::registerLoader(ne
  * A special case dialogue loader for Hawkwind.
  */
 Dialogue* U4HWDialogueLoader::load(void *source) {
-    U4FILE *avatar = u4fopen("avatar.exe");
-    if (!avatar)
+    U4FILE *hawkwind = NULL;
+	switch (c->party->member(0)->getSex()) {
+	case SEX_MALE:	
+	  hawkwind = u4fopen("hawkwinm.ger");
+	case SEX_FEMALE:
+		hawkwind = u4fopen("hawkwinf.ger");
+	}
+    if (!hawkwind)
         return NULL;
-    
-    hawkwindText = u4read_stringtable(avatar, 74729, 53);
+
+    hawkwindText = u4read_stringtable(hawkwind, 0, 53);
+
 
     Dialogue *dlg = new Dialogue();
     dlg->setTurnAwayProb(0);
 
-    dlg->setName("Hawkwind");
-    dlg->setPronoun("He");
-    dlg->setPrompt(hawkwindText[HW_PROMPT]);
+    dlg->setName(uppercase("Hawkwind"));
+    dlg->setPronoun(uppercase("Er"));
+    dlg->setPrompt("\n\n" + uppercase(hawkwindText[HW_PROMPT])+ "\n?");
     Response *intro = new DynamicResponse(&hawkwindGetIntro);
     dlg->setIntro(intro);
     dlg->setLongIntro(intro);
-    dlg->setDefaultAnswer(new Response(string("\n" + hawkwindText[HW_DEFAULT])));
+    dlg->setDefaultAnswer(new Response(string("\n" + uppercase(hawkwindText[HW_DEFAULT]))));
 
     for (int v = 0; v < VIRT_MAX; v++) {
         string virtue(getVirtueName((Virtue) v));
@@ -67,11 +74,12 @@ Dialogue* U4HWDialogueLoader::load(void *source) {
         dlg->addKeyword(virtue, new DynamicResponse(&hawkwindGetAdvice, virtue));
     }
 
-    Response *bye = new Response(hawkwindText[HW_BYE]);
+    Response *bye = new Response(uppercase(hawkwindText[HW_BYE]) + "\n");
     bye->add(ResponsePart::STOPMUSIC);
     bye->add(ResponsePart::END);
-    dlg->addKeyword("bye", bye);
+    dlg->addKeyword("ade", bye);
     dlg->addKeyword("", bye);
+    dlg->addKeyword("kein", bye);
 
     return dlg;
 }
@@ -95,21 +103,21 @@ Response *hawkwindGetAdvice(const DynamicResponse *dynResp) {
         }
     }
     if (virtue != -1) {
-        text = "\n\n";
-        if (virtueLevel == 0)            
-            text += hawkwindText[HW_ALREADYAVATAR] + "\n";        
-        else if (virtueLevel < 80)            
+        text = "\n";
+        if (virtueLevel == 0)
+            text += hawkwindText[HW_ALREADYAVATAR] + "\n";
+        else if (virtueLevel < 80)
             text += hawkwindText[(virtueLevel/20) * 8 + virtue];
         else if (virtueLevel < 99)
             text += hawkwindText[3 * 8 + virtue];
         else /* virtueLevel >= 99 */
-            text = hawkwindText[4 * 8 + virtue] + hawkwindText[HW_GOTOSHRINE];
+            text += hawkwindText[4 * 8 + virtue] + " " + hawkwindText[HW_GOTOSHRINE];
     }
     else {
         text = string("\n") + hawkwindText[HW_DEFAULT];
     }
-        
-    return new Response(text);
+
+    return new Response(uppercase(text));
 }
 
 Response *hawkwindGetIntro(const DynamicResponse *dynResp) {
@@ -117,9 +125,9 @@ Response *hawkwindGetIntro(const DynamicResponse *dynResp) {
 
     if (c->party->member(0)->getStatus() == STAT_SLEEPING ||
         c->party->member(0)->getStatus() == STAT_DEAD) {
-        intro->add(hawkwindText[HW_SPEAKONLYWITH] + c->party->member(0)->getName() +
-                   hawkwindText[HW_RETURNWHEN] + c->party->member(0)->getName() +
-                   hawkwindText[HW_ISREVIVED]);
+      intro->add(uppercase("\n\n" + hawkwindText[HW_SPEAKONLYWITH] + " " + c->party->member(0)->getName() +
+                   " " + hawkwindText[HW_RETURNWHEN] + " " + c->party->member(0)->getName() + " " +
+			   hawkwindText[HW_ISREVIVED] + "\n"));
         intro->add(ResponsePart::END);
     }
 
@@ -127,8 +135,8 @@ Response *hawkwindGetIntro(const DynamicResponse *dynResp) {
         intro->add(ResponsePart::STARTMUSIC_HW);
         intro->add(ResponsePart::HAWKWIND);
 
-        intro->add(hawkwindText[HW_WELCOME] + c->party->member(0)->getName() +
-                   hawkwindText[HW_GREETING1] + hawkwindText[HW_GREETING2]);
+        intro->add(uppercase("\n\n" + hawkwindText[HW_WELCOME] + " " + c->party->member(0)->getName() +
+			     ", " + hawkwindText[HW_GREETING1] + "\n\n" + hawkwindText[HW_GREETING2] + "\n?"));
     }
 
     return intro;

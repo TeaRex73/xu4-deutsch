@@ -1,3 +1,5 @@
+#include "vc6.h" // Fixes things if you're using VC6, does nothing if otherwise
+
 #include <SDL.h>
 #include <SDL_mixer.h>
 
@@ -109,7 +111,7 @@ void Music::setSoundVolume_sys(int volume) {
     /**
      * Use Channel 1 for sound effects
      */
-    Mix_Volume(1, int((float)MIX_MAX_VOLUME / MAX_VOLUME * volume));
+    Mix_Volume(1, int((double)MIX_MAX_VOLUME / MAX_VOLUME * volume));
 }
 
 /**
@@ -125,7 +127,7 @@ bool Music::isPlaying_sys()
  * Set, increase, and decrease music volume
  */
 void Music::setMusicVolume_sys(int volume) {
-    Mix_VolumeMusic(int((float)MIX_MAX_VOLUME / MAX_VOLUME * volume));
+    Mix_VolumeMusic(int((double)MIX_MAX_VOLUME / MAX_VOLUME * volume));
 }
 
 void Music::fadeIn_sys(int msecs, bool loadFromMap) {

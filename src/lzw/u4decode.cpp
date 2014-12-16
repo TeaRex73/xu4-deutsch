@@ -17,6 +17,7 @@
  *  along with this program; if not, write to the Free Software
  *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
+#include "../vc6.h" // Fixes things if you're using VC6, does nothing if otherwise
 
 #include "lzw.h"
 #include <cstdlib>
@@ -50,7 +51,7 @@ long decompress_u4_file(FILE *in, long filesize, void **out)
 
     /* load compressed file into compressed_mem[] */
     compressed_mem = (unsigned char *) malloc(compressed_filesize);
-    fread(compressed_mem, 1, compressed_filesize, in);
+    if (fread(compressed_mem, 1, compressed_filesize, in) != (size_t) compressed_filesize) perror ("fread failed");
 
     /*
      * determine decompressed file size
@@ -148,7 +149,7 @@ unsigned char mightBeValidCompressedFile(FILE *input_file)
 
     /* read first byte */
     fseek(input_file, 0, SEEK_SET);   /* move file pointer to file start */
-    fread(&firstByte, 1, 1, input_file);
+    if (fread(&firstByte, 1, 1, input_file) != 1) perror("fread failed");
     fseek(input_file, 0, SEEK_SET);   /* move file pointer to file start */
     c3 = (firstByte >> 4) == 0;
 

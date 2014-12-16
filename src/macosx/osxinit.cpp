@@ -23,7 +23,7 @@ void osxInit(char *binpath)
     struct stat sb;
     mode_t mask;
     int result;
-    
+
     home = getenv("HOME");
 
     std::list<std::string> mac_roots;
@@ -41,7 +41,7 @@ void osxInit(char *binpath)
     CFURLGetFileSystemRepresentation(resourcePath, true, reinterpret_cast<UInt8 *>(macOSX_AppBundle_Resource_Path),
                                      MAXPATHLEN);
     CFRelease(resourcePath);
-    
+
     u4Path.rootResourcePaths.push_back(macOSX_AppBundle_Resource_Path);
 
     // On the first run, the directory for user files must be created.

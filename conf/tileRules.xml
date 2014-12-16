@@ -22,13 +22,13 @@
     <rule name="walls" cantwalkon="all" unflyable="true"/>
     <rule name="locked_door" cantwalkon="all" lockeddoor="true"/>
     <rule name="door" cantwalkon="all" door="true"/>
-    <rule name="secret_door" cantwalkon="retreat"/>
+    <rule name="secret_door" cantwalkon="retreat" wontwanderon="true"/>
     <rule name="chest" chest="true"/>
-    <rule name="poison_field" effect="poisonField" dispel="true"/>
-    <rule name="energy_field" cantwalkon="all" effect="electricity" creatureunwalkable="true" unflyable="true" dispel="true"/>
-    <rule name="fire_field" speed="vvslow" effect="fire" dispel="true"/>
-    <rule name="sleep_field" effect="sleep" dispel="true"/>
-    <rule name="lava" effect="lava" replacement="true"/>
+    <rule name="poison_field" speed="vslow" effect="poisonField" dispel="true" wontwanderon="true"/>
+    <rule name="energy_field" cantwalkon="all" speed="vvslow" effect="electricity" creatureunwalkable="true" unflyable="true" dispel="true"/>
+    <rule name="fire_field" speed="vslow" effect="fire" dispel="true" wontwanderon="true"/>
+    <rule name="sleep_field" speed="vslow" effect="sleep" dispel="true" wontwanderon="true"/>
+    <rule name="lava" effect="lava" replacement="true" wontwanderon="true"/>
     <rule name="signs" cantwalkon="all" talkover="true"/>
     <rule name="spacers" cantwalkon="all"/>
     <rule name="monster" cantwalkon="all" livingthing="true"/>    

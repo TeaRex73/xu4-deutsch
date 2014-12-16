@@ -33,7 +33,7 @@ Direction dirFromMask(int dir_mask);
 Direction dirRotateCW(Direction dir);
 Direction dirRotateCCW(Direction dir);
 int dirGetBroadsidesDirs(Direction dir);
-Direction dirRandomDir(int valid_directions_mask);
+Direction dirRandomDir(int valid_directions_mask, Direction preferred = DIR_NONE);
 Direction dirNormalize(Direction orientation, Direction dir);
 Direction keyToDirection(int key);
 int directionToKey(Direction dir);

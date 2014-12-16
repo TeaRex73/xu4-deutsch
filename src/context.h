@@ -47,11 +47,12 @@ public:
     int windDirection;
     int windCounter;
     bool windLock;
-    Aura *aura;    
+    Aura *aura;
     int horseSpeed;
     int opacity;
     TransportContext transportContext;
     long lastCommandTime;
+    bool willPassTurn;
     class Object *lastShip;
 
     /**

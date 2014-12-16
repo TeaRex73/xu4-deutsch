@@ -36,7 +36,7 @@ typedef enum {
     ANIM_CAMPFIRE,
     ANIM_CITYFLAG,
     ANIM_CASTLEFLAG,
-    ANIM_SHIPFLAG,    
+    ANIM_SHIPFLAG,
     ANIM_LCBFLAG,
     ANIM_FRAMES
 } TileAnimationStyle;
@@ -46,7 +46,7 @@ typedef enum {
  */
 class MapTile {
 public:
-    MapTile() : id(0), frame(0) {}
+    MapTile() : id(0), frame(0), freezeAnimation(false) {}
     MapTile(const TileId &i, unsigned char f = 0) : id(i), frame(f), freezeAnimation(false) {}
     MapTile(const MapTile &t) : id(t.id), frame(t.frame), freezeAnimation(t.freezeAnimation) {}
 
@@ -59,7 +59,7 @@ public:
     bool operator!=(const MapTile &m) const  { return id != m.id; }
     bool operator!=(const TileId &i) const   { return id != i; }
     bool operator<(const MapTile &m) const   { return id < m.id; } /* for std::less */
-    
+
     Direction getDirection() const;
     bool setDirection(Direction d);
 
@@ -72,7 +72,7 @@ public:
 };
 
 /**
- * An Uncopyable has no default copy constructor of operator=.  A subclass may derive from
+ * An Uncopyable has no default copy constructor or operator=.  A subclass may derive from
  * Uncopyable at any level of visibility, even private, and subclasses will not have a default copy
  * constructor or operator=. See also, boost::noncopyable Uncopyable (from the Boost project) and
  * Item 6 from Scott Meyers Effective C++.

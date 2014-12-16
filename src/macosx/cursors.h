@@ -3,7 +3,7 @@
  * XPM's for mouse cursors in OS X (SDL for OS X doesn't support the 32x32
  * cursors used by windows/linux/etc)
  */
- 
+
 /* XPM */
 static const char * const n_xpm[] = {
 "16 16 3 1",

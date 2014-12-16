@@ -2,6 +2,16 @@
  * $Id$
  */
 
+#ifdef RASB_PI
+#define MY_WIDTH 384
+#define MY_HEIGHT 288
+#define FIXUP
+#else
+#define MY_WIDTH 320
+#define MY_HEIGHT 200
+#undef FIXUP
+#endif
+
 #include "vc6.h" // Fixes things if you're using VC6, does nothing if otherwise
 
 #include <algorithm>
@@ -51,9 +61,12 @@ void screenRefreshThreadInit();
 void screenRefreshThreadEnd();
 
 void screenInit_sys() {
+
+    SDL_Surface *screen, *window;
+
     /* start SDL */
     if (u4_SDL_InitSubSystem(SDL_INIT_VIDEO) < 0)
-        errorFatal("unable to init SDL: %s", SDL_GetError());    
+        errorFatal("unable to init SDL: %s", SDL_GetError());
     SDL_EnableUNICODE(1);
     SDL_SetGamma(settings.gamma / 100.0f, settings.gamma / 100.0f, settings.gamma / 100.0f);
     atexit(SDL_Quit);
@@ -61,10 +74,37 @@ void screenInit_sys() {
     SDL_WM_SetCaption("Ultima IV", NULL);
 #ifdef ICON_FILE
     SDL_WM_SetIcon(SDL_LoadBMP(ICON_FILE), NULL);
-#endif   
+#endif
 
-    if (!SDL_SetVideoMode(320 * settings.scale, 200 * settings.scale, 16, SDL_SWSURFACE | SDL_ANYFORMAT | (settings.fullscreen ? SDL_FULLSCREEN : 0)))
+    if (!(screen = SDL_SetVideoMode(MY_WIDTH * settings.scale, MY_HEIGHT * settings.scale, 8, SDL_DOUBLEBUF | SDL_HWSURFACE | SDL_ANYFORMAT | (settings.fullscreen ? SDL_FULLSCREEN : 0))))
         errorFatal("unable to set video: %s", SDL_GetError());
+
+    SDL_LockSurface(screen);
+    window = SDL_CreateRGBSurfaceFrom(screen->pixels,
+				     MY_WIDTH,
+				     MY_HEIGHT,
+				     screen->format->BitsPerPixel,
+				     screen->pitch,
+				     screen->format->Rmask,
+				     screen->format->Gmask,
+				     screen->format->Bmask,
+				     screen->format->Amask);
+
+    if (screen->format->palette)
+      SDL_SetColors(window,
+		    screen->format->palette->colors,
+		    0,
+		    screen->format->palette->ncolors);
+    SDL_UnlockSurface(screen);
+
+#ifdef FIXUP
+    screen->w = 320;
+    screen->h = 200;
+    char *pix;
+    pix = (char *)(screen->pixels);
+    pix +=(screen->pitch * 44 + screen->format->BytesPerPixel * 32);
+    screen->pixels = pix;
+#endif
 
     if (verbose) {
         char driver[32];
@@ -91,7 +131,7 @@ void screenInit_sys() {
 }
 
 void screenDelete_sys() {
-	screenRefreshThreadEnd();
+    screenRefreshThreadEnd();
     SDL_FreeCursor(cursors[1]);
     SDL_FreeCursor(cursors[2]);
     SDL_FreeCursor(cursors[3]);
@@ -117,7 +157,7 @@ void screenDeinterlaceCga(unsigned char *data, int width, int height, int tiles,
     for (t = 0; t < tiles; t++) {
         unsigned char *base;
         base = &(data[t * (width * tileheight / 4)]);
-        
+
         for (y = 0; y < (tileheight / 2); y++) {
             for (x = 0; x < width; x+=4) {
                 tmp[((y * 2) * width + x) / 4] = base[(y * width + x) / 4];
@@ -158,11 +198,11 @@ int screenLoadImageCga(Image **image, int width, int height, U4FILE *file, Compr
         break;
     case COMP_RLE:
         decompResult = rleDecompressMemory(compressed_data, inlen, (void **) &decompressed_data);
-        free(compressed_data);
+        free(compressed_data); compressed_data = NULL;
         break;
     case COMP_LZW:
         decompResult = decompress_u4_memory(compressed_data, inlen, (void **) &decompressed_data);
-        free(compressed_data);
+        free(compressed_data); compressed_data = NULL;
         break;
     default:
         ASSERT(0, "invalid compression type %d", comp);
@@ -170,7 +210,7 @@ int screenLoadImageCga(Image **image, int width, int height, U4FILE *file, Compr
 
     if (decompResult == -1) {
         if (decompressed_data)
-            free(decompressed_data);
+	  free(decompressed_data); compressed_data = NULL;
         return 0;
     }
 
@@ -179,7 +219,7 @@ int screenLoadImageCga(Image **image, int width, int height, U4FILE *file, Compr
     img = Image::create(width, height, true, Image::HARDWARE);
     if (!img) {
         if (decompressed_data)
-            free(decompressed_data);
+	  free(decompressed_data); compressed_data = NULL;
         return 0;
     }
 
@@ -193,7 +233,7 @@ int screenLoadImageCga(Image **image, int width, int height, U4FILE *file, Compr
             img->putPixelIndex(x + 3, y, (decompressed_data[(y * width + x) / 4]) & 0x03);
         }
     }
-    free(decompressed_data);
+    free(decompressed_data); compressed_data = NULL;
 
     (*image) = img;
 
@@ -218,8 +258,8 @@ void screenUnlock() {
 
 void screenRedrawScreen() {
 	screenLock();
-    SDL_UpdateRect(SDL_GetVideoSurface(), 0, 0, 0, 0);
-    screenUnlock();
+	SDL_UpdateRect(SDL_GetVideoSurface(), 0, 0, 0, 0);
+	screenUnlock();
 }
 
 void screenRedrawTextArea(int x, int y, int width, int height) {
@@ -241,6 +281,8 @@ int screenRefreshThreadFunction(void *unused) {
 		SDL_Delay(frameDuration);
 		screenRedrawScreen();
 	}
+
+	return 0;
 }
 
 void screenRefreshThreadInit() {
@@ -256,7 +298,7 @@ void screenRefreshThreadInit() {
 
 	screenRefreshThread = SDL_CreateThread(screenRefreshThreadFunction, NULL);
 	if (!screenRefreshThread) {
-		errorWarning(SDL_GetError());
+	        errorWarning("SDL Error: %s", SDL_GetError());
 		return;
 	}
 }
@@ -271,8 +313,8 @@ void screenRefreshThreadEnd() {
 /**
  * Scale an image up.  The resulting image will be scale * the
  * original dimensions.  The original image is no longer deleted.
- * n is the number of tiles in the image; each tile is filtered 
- * seperately. filter determines whether or not to filter the 
+ * n is the number of tiles in the image; each tile is filtered
+ * seperately. filter determines whether or not to filter the
  * resulting image.
  */
 Image *screenScale(Image *src, int scale, int n, int filter) {
@@ -344,10 +386,10 @@ Image *screenScaleDown(Image *src, int scale) {
     for (y = 0; y < src->height(); y+=scale) {
         for (x = 0; x < src->width(); x+=scale) {
             unsigned int index;
-            src->getPixelIndex(x, y, index);                
+            src->getPixelIndex(x, y, index);
             dest->putPixelIndex(x / scale, y / scale, index);
         }
-    }    
+    }
 
     if (isTransparent)
         dest->setTransparentIndex(transparentIndex);

@@ -1,5 +1,5 @@
 /*
- * $Id: imageloader_u4.cpp 2885 2011-04-03 19:18:32Z andrewtaylor $
+ * $Id$
  */
 
 #include "vc6.h" // Fixes things if you're using VC6, does nothing if otherwise
@@ -39,7 +39,7 @@ Image *FMTOWNSImageLoader::load(U4FILE *file, int width, int height, int bpp) {
     if (rawLen < requiredLength) {
         if (raw)
             free(raw);
-        errorWarning("FMTOWNS Image of size %d does not fit anticipated size %d", rawLen, requiredLength);
+        errorWarning("FMTOWNS Image of size %ld does not fit anticipated size %ld", rawLen, requiredLength);
         return NULL;
     }
 

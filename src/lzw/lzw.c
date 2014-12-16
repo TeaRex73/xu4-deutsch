@@ -31,6 +31,7 @@
  * An article on LZW data (de)compression can be found here:
  * http://dogma.net/markn/articles/lzw/lzw.htm
  */
+#include "../vc6.h" // Fixes things if you're using VC6, does nothing if otherwise
 
 #include "lzw.h"
 #include "hash.h"
@@ -229,7 +230,7 @@ long generalizedDecompress(WRITE_DECOMP outFunc, unsigned char* compressedMem, u
             /* OLD_CODE = NEW_CODE */
             old_code = new_code;
         }
-    }    
+    }
     /* clean up */
     free(lzwStack);
     free(lzwDictionary);

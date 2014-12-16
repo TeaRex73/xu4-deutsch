@@ -9,7 +9,7 @@ OSX_VERSION=$(shell sw_vers -productVersion | cut -f 1,2 -d . -)
 ULTIMA4=ultima4*.zip
 U4UPGRADE=u4upgrad.zip
 
-# for crosscompiling arch ppc or i386 from OS X 10.6 use 
+# for crosscompiling arch ppc or i386 from OS X 10.6 use
 # CC=/usr/bin/gcc-4.0
 # CXX=/usr/bin/g++-4.0
 CC=gcc
@@ -51,7 +51,7 @@ SYSROOT=
 # SYSROOT='-isysroot /Developer/SDKs/MacOSX10.4u.sdk -mmacosx-version-min=10.4'
 
 # for crosscompiling from OS X 10.6 set the arch
-# SPECIFIC_ARCH=-arch i386 
+# SPECIFIC_ARCH=-arch i386
 # SPECIFIC_ARCH=-arch ppc
 SPECIFIC_ARCH=
 
@@ -69,7 +69,7 @@ macosx/SDLMain.o: macosx/SDLMain.m macosx/SDLMain.h
 	$(CC) $(CXXFLAGS) -c -o macosx/SDLMain.o macosx/SDLMain.m
 
 macosx/osxerror.o: macosx/osxerror.mm
-	$(CC) $(CXXFLAGS) -c -o macosx/osxerror.o macosx/osxerror.mm 
+	$(CC) $(CXXFLAGS) -c -o macosx/osxerror.o macosx/osxerror.mm
 
 macosx/osxinit.o: macosx/osxinit.cpp
 	$(CXX) $(CXXFLAGS) -c -o macosx/osxinit.o macosx/osxinit.cpp

@@ -57,12 +57,12 @@ xmlDocPtr xmlParse(const char *filename) {
     if (!ioRegistered)
         xmlRegisterIO();
 
-    doc = xmlParseFile(filename);
+    doc = xmlReadFile(filename, NULL, XML_PARSE_NOENT|XML_PARSE_XINCLUDE);
     if (!doc)
         errorFatal("error parsing %s", filename);
 
     if (settings.validateXml && doc->intSubset) {
-        string errorMessage;        
+        string errorMessage;
         xmlValidCtxt cvp;
 
         if (verbose)
@@ -71,8 +71,8 @@ xmlDocPtr xmlParse(const char *filename) {
         cvp.userData = &errorMessage;
         cvp.error = &xmlAccumError;
 
-        if (!xmlValidateDocument(&cvp, doc))            
-            errorFatal("xml parse error:\n%s", errorMessage.c_str());        
+        if (!xmlValidateDocument(&cvp, doc))
+            errorFatal("xml parse error:\n%s", errorMessage.c_str());
     }
 
     return doc;
@@ -103,14 +103,14 @@ string xmlGetPropAsString(xmlNodePtr node, const char *name) {
 
     if (settings.validateXml && !xmlHasProp(node, (const xmlChar *)name))
         return "";
-    
+
     prop = xmlGetProp(node, (const xmlChar *)name);
     if (!prop)
         return "";
 
     string result((char *)prop);
     xmlFree(prop);
-    
+
     return result;
 }
 
@@ -192,12 +192,12 @@ int xmlGetPropAsEnum(xmlNodePtr node, const char *name, const char *enumValues[]
  */
 int xmlPropCmp(xmlNodePtr node, const char *name, const char *s) {
     int result;
-    xmlChar *prop;    
-    
+    xmlChar *prop;
+
     prop = xmlGetProp(node, (const xmlChar *)name);
     result = xmlStrcmp(prop, (const xmlChar *) s);
     xmlFree(prop);
-    
+
     return result;
 }
 
@@ -208,10 +208,10 @@ int xmlPropCmp(xmlNodePtr node, const char *name, const char *s) {
 int xmlPropCaseCmp(xmlNodePtr node, const char *name, const char *s) {
     int result;
     xmlChar *prop;
-    
+
     prop = xmlGetProp(node, (const xmlChar *)name);
     result = xmlStrcasecmp(prop, (const xmlChar *) s);
     xmlFree(prop);
-    
+
     return result;
 }

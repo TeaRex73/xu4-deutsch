@@ -149,38 +149,47 @@
         <image name="borders"  filename="start.ega"    width="320" height="200" depth="4" filetype="image/x-u4rle"/>
 
         <!-- intro screen images -->
-        <image name="title"   filename="title.ega"  width="320" height="200" depth="4" filetype="image/x-u4lzw" introOnly="true" fixup="intro">
+        <image name="title"   filename="title.ega"  width="320" height="200" depth="4" filetype="image/x-u4lzw" introOnly="true">
             <subimage name="options_top"  x="0"  y="32"   width="320"  height="128"/>
             <subimage name="options_btm"  x="0"  y="112"  width="320"  height="80"/>
         </image>
         <image name="tree"     filename="tree.ega"     width="320" height="200" depth="4" filetype="image/x-u4lzw" introOnly="true">
-            <subimage name="moongate" x="0"   y="152" width="24" height="24"/>
-            <subimage name="items"    x="24"  y="152" width="24" height="24"/>
+            <subimage name="moongate" x="47"   y="152" width="23" height="27"/>
+            <subimage name="items"    x="47"   y="43"  width="23" height="27"/>
         </image>
         <image name="portal"   filename="portal.ega"   width="320" height="200" depth="4" filetype="image/x-u4lzw" introOnly="true"/>
         <image name="outside"  filename="outside.ega"  width="320" height="200" depth="4" filetype="image/x-u4lzw" introOnly="true"/>
         <image name="inside"   filename="inside.ega"   width="320" height="200" depth="4" filetype="image/x-u4lzw" introOnly="true"/>
         <image name="wagon"    filename="wagon.ega"    width="320" height="200" depth="4" filetype="image/x-u4lzw" introOnly="true"/>
         <image name="gypsy"    filename="gypsy.ega"    width="320" height="200" depth="4" filetype="image/x-u4lzw" introOnly="true"/>
-        <image name="abacus"   filename="abacus.ega"   width="320" height="200" depth="4" filetype="image/x-u4lzw" introOnly="true" fixup="abacus">
-            <subimage name="whitebead"      x="8"   y="187" width="8" height="12"/>
-            <subimage name="blackbead"      x="24"  y="187" width="8" height="12"/>
+        <image name="abacus"   filename="abacus.ega"   width="320" height="200" depth="4" filetype="image/x-u4lzw" introOnly="true"/>
+	<image name="beads"    filename="beads.ega"    width="14" height="16" depth="4" filetype="image/x-u4lzw" introOnly="true">
+            <subimage name="whitebead"      x="7"   y="0" width="7" height="16"/>
+            <subimage name="blackbead"      x="0"  y="0" width="7" height="16"/>
         </image>
-        <image name="honcom"   filename="honcom.ega"   width="320" height="200" depth="4" filetype="image/x-u4lzw" introOnly="true">
-            <subimage name="honestycard"    x="12"  y="12" width="90" height="124"/>
-            <subimage name="compassioncard" x="218" y="12" width="90" height="124"/>
+        <image name="honecard"   filename="honecard.ega"   width="70" height="112" depth="4" filetype="image/x-u4lzw" introOnly="true">
+            <subimage name="honestycard"    x="0"  y="0" width="70" height="112"/>
+	</image>
+        <image name="compcard"   filename="compcard.ega"   width="70" height="112" depth="4" filetype="image/x-u4lzw" introOnly="true">
+            <subimage name="compassioncard" x="0" y="0" width="70" height="112"/>
         </image>
-        <image name="valjus"   filename="valjus.ega"   width="320" height="200" depth="4" filetype="image/x-u4lzw" introOnly="true">
-            <subimage name="valorcard"      x="12"  y="12" width="90" height="124"/>
-            <subimage name="justicecard"    x="218" y="12" width="90" height="124"/>
+        <image name="valocard"   filename="valocard.ega"   width="70" height="112" depth="4" filetype="image/x-u4lzw" introOnly="true">
+            <subimage name="valorcard"      x="0"  y="0" width="70" height="112"/>
+	</image>
+        <image name="justcard"   filename="justcard.ega"   width="70" height="112" depth="4" filetype="image/x-u4lzw" introOnly="true">
+            <subimage name="justicecard"    x="0" y="0" width="70" height="112"/>
         </image>
-        <image name="sachonor" filename="sachonor.ega" width="320" height="200" depth="4" filetype="image/x-u4lzw" introOnly="true">
-            <subimage name="sacrificecard"  x="12"  y="12" width="90" height="124"/>
-            <subimage name="honorcard"      x="218" y="12" width="90" height="124"/>
+        <image name="sacrcard" filename="sacrcard.ega" width="70" height="112" depth="4" filetype="image/x-u4lzw" introOnly="true">
+            <subimage name="sacrificecard"  x="0"  y="0" width="70" height="112"/>
+	</image>
+        <image name="honocard" filename="honocard.ega" width="70" height="112" depth="4" filetype="image/x-u4lzw" introOnly="true">
+            <subimage name="honorcard"      x="0" y="0" width="70" height="112"/>
         </image>
-        <image name="spirhum"  filename="spirhum.ega"  width="320" height="200" depth="4" filetype="image/x-u4lzw" introOnly="true">
-            <subimage name="spiritualitycard" x="12"  y="12" width="90" height="124"/>
-            <subimage name="humilitycard"   x="218" y="12" width="90" height="124"/>
+        <image name="spircard"  filename="spircard.ega"  width="70" height="112" depth="4" filetype="image/x-u4lzw" introOnly="true">
+            <subimage name="spiritualitycard" x="0"  y="0" width="70" height="112"/>
+	</image>
+        <image name="humicard"  filename="humicard.ega"  width="70" height="112" depth="4" filetype="image/x-u4lzw" introOnly="true">
+            <subimage name="humilitycard"   x="0" y="0" width="70" height="112"/>
         </image>
         <image name="beasties" filename="animate.ega"  width="320" height="200" depth="4" filetype="image/x-u4lzw" introOnly="true">
             <subimage name="beast0frame00" x="0"   y="0"   width="55" height="31"/>
@@ -1728,13 +1737,13 @@
             <transform type="frame"/>
         </tileanim>
         <tileanim name="cityflag" random="50">
-            <transform type="invert" x="5" y="2" width="4" height="4"/>
+            <transform type="invert" x="3" y="3" width="4" height="2"/>
         </tileanim>
         <tileanim name="lcbflag" random="50">
-            <transform type="invert" x="4" y="0" width="4" height="4"/>
+            <transform type="invert" x="3" y="1" width="4" height="2"/>
         </tileanim>
         <tileanim name="castleflag" random="50">
-            <transform type="invert" x="4" y="0" width="4" height="4"/>
+            <transform type="invert" x="9" y="1" width="4" height="2"/>
         </tileanim>
         <tileanim name="shipflag" random="50">
             <context type="frame" frame="0">
@@ -1744,7 +1753,7 @@
                 <transform type="invert" x="0" y="0" width="0" height="0"/>
             </context>
             <context type="frame" frame="2">
-                <transform type="invert" x="7" y="1" width="3" height="4"/>                
+                <transform type="invert" x="7" y="1" width="3" height="4"/>
             </context>
             <context type="frame" frame="3">
                 <transform type="invert" x="0" y="0" width="0" height="0"/>
@@ -1754,15 +1763,166 @@
             <transform type="invert" x="0" y="1" width="16" height="2"/>
         </tileanim>  
         <tileanim name="campfire">
-            <transform type="pixel_color" x="3" y="5" width="7" height="11">
+            <transform type="pixel" x="4" y="7">
                 <color red="0" green="0" blue="0"/>
-                <color red="180" green="0" blue="0"/>
+                <color red="255" green="106" blue="0"/>
             </transform>
-            <transform type="pixel_color" x="4" y="8" width="5" height="6">
-                <color red="97" green="0" blue="0"/>
-                <color red="256" green="200" blue="0"/>                
+            <transform type="pixel" x="5" y="7">
+                <color red="0" green="0" blue="0"/>
+                <color red="255" green="106" blue="0"/>
+            </transform>
+            <transform type="pixel" x="4" y="8">
+                <color red="0" green="0" blue="0"/>
+                <color red="255" green="106" blue="0"/>
+            </transform>
+            <transform type="pixel" x="5" y="8">
+                <color red="0" green="0" blue="0"/>
+                <color red="255" green="106" blue="0"/>
+            </transform>
+            <transform type="pixel" x="7" y="8">
+                <color red="0" green="0" blue="0"/>
+                <color red="255" green="106" blue="0"/>
+            </transform>
+	    <transform type="pixel" x="8" y="8">
+                <color red="0" green="0" blue="0"/>
+                <color red="255" green="106" blue="0"/>
+            </transform>
+            <transform type="pixel" x="3" y="9">
+                <color red="0" green="0" blue="0"/>
+                <color red="255" green="106" blue="0"/>
+            </transform>
+            <transform type="pixel" x="4" y="9">
+                <color red="0" green="0" blue="0"/>
+                <color red="255" green="106" blue="0"/>
+            </transform>
+            <transform type="pixel" x="5" y="9">
+                <color red="0" green="0" blue="0"/>
+                <color red="255" green="106" blue="0"/>
+            </transform>
+            <transform type="pixel" x="6" y="9">
+                <color red="0" green="0" blue="0"/>
+                <color red="255" green="106" blue="0"/>
+            </transform>
+	    <transform type="pixel" x="7" y="9">
+                <color red="0" green="0" blue="0"/>
+                <color red="255" green="106" blue="0"/>
+            </transform>
+            <transform type="pixel" x="8" y="9">
+                <color red="0" green="0" blue="0"/>
+                <color red="255" green="106" blue="0"/>
+            </transform>
+            <transform type="pixel" x="9" y="9">
+                <color red="0" green="0" blue="0"/>
+                <color red="255" green="106" blue="0"/>
+            </transform>
+            <transform type="pixel" x="3" y="10">
+                <color red="0" green="0" blue="0"/>
+                <color red="255" green="106" blue="0"/>
+            </transform>
+            <transform type="pixel" x="4" y="10">
+                <color red="0" green="0" blue="0"/>
+                <color red="255" green="106" blue="0"/>
+            </transform>
+	    <transform type="pixel" x="5" y="10">
+                <color red="0" green="0" blue="0"/>
+                <color red="255" green="106" blue="0"/>
+            </transform>
+            <transform type="pixel" x="6" y="10">
+                <color red="0" green="0" blue="0"/>
+                <color red="255" green="106" blue="0"/>
+            </transform>
+            <transform type="pixel" x="7" y="10">
+                <color red="0" green="0" blue="0"/>
+                <color red="255" green="106" blue="0"/>
+            </transform>
+            <transform type="pixel" x="8" y="10">
+                <color red="0" green="0" blue="0"/>
+                <color red="255" green="106" blue="0"/>
+            </transform>
+            <transform type="pixel" x="9" y="10">
+                <color red="0" green="0" blue="0"/>
+                <color red="255" green="106" blue="0"/>
+            </transform>
+	    <transform type="pixel" x="4" y="11">
+                <color red="0" green="0" blue="0"/>
+                <color red="255" green="106" blue="0"/>
+            </transform>
+            <transform type="pixel" x="5" y="11">
+                <color red="0" green="0" blue="0"/>
+                <color red="255" green="106" blue="0"/>
+            </transform>
+            <transform type="pixel" x="6" y="11">
+                <color red="0" green="0" blue="0"/>
+                <color red="255" green="106" blue="0"/>
+            </transform>
+            <transform type="pixel" x="7" y="11">
+                <color red="0" green="0" blue="0"/>
+                <color red="255" green="106" blue="0"/>
+            </transform>
+            <transform type="pixel" x="8" y="11">
+                <color red="0" green="0" blue="0"/>
+                <color red="255" green="106" blue="0"/>
+            </transform>
+	    <transform type="pixel" x="3" y="12">
+                <color red="0" green="0" blue="0"/>
+                <color red="255" green="106" blue="0"/>
+            </transform>
+            <transform type="pixel" x="4" y="12">
+                <color red="0" green="0" blue="0"/>
+                <color red="255" green="106" blue="0"/>
+            </transform>
+            <transform type="pixel" x="5" y="12">
+                <color red="0" green="0" blue="0"/>
+                <color red="255" green="106" blue="0"/>
+            </transform>
+            <transform type="pixel" x="6" y="12">
+                <color red="0" green="0" blue="0"/>
+                <color red="255" green="106" blue="0"/>
+            </transform>
+            <transform type="pixel" x="7" y="12">
+                <color red="0" green="0" blue="0"/>
+                <color red="255" green="106" blue="0"/>
+            </transform>
+	    <transform type="pixel" x="8" y="12">
+                <color red="0" green="0" blue="0"/>
+                <color red="255" green="106" blue="0"/>
+            </transform>
+            <transform type="pixel" x="9" y="12">
+                <color red="0" green="0" blue="0"/>
+                <color red="255" green="106" blue="0"/>
+            </transform>
+            <transform type="pixel" x="3" y="13">
+                <color red="0" green="0" blue="0"/>
+                <color red="255" green="106" blue="0"/>
+            </transform>
+            <transform type="pixel" x="6" y="13">
+                <color red="0" green="0" blue="0"/>
+                <color red="255" green="106" blue="0"/>
+            </transform>
+            <transform type="pixel" x="9" y="13">
+                <color red="0" green="0" blue="0"/>
+                <color red="255" green="106" blue="0"/>
+            </transform>
+	    <transform type="pixel" x="3" y="14">
+                <color red="0" green="0" blue="0"/>
+                <color red="255" green="106" blue="0"/>
+            </transform>
+            <transform type="pixel" x="4" y="14">
+                <color red="0" green="0" blue="0"/>
+                <color red="255" green="106" blue="0"/>
+            </transform>
+            <transform type="pixel" x="8" y="14">
+                <color red="0" green="0" blue="0"/>
+                <color red="255" green="106" blue="0"/>
+            </transform>
+            <transform type="pixel" x="9" y="14">
+                <color red="0" green="0" blue="0"/>
+                <color red="255" green="106" blue="0"/>
             </transform>
         </tileanim>
+	<tileanim name="scramble">
+	    <transform type="scramble"/>
+	</tileanim>
     </tileanimset>
 
     <tileanimset name="VGA">
@@ -1822,6 +1982,9 @@
                 <color red="156" green="0" blue="0"/>                
             </transform>
         </tileanim>
+	<tileanim name="scramble">
+	    <transform type="scramble"/>
+	</tileanim>
     </tileanimset>
     
     <tileanimset name="VGA-ALLPNG">
@@ -1881,6 +2044,9 @@
                 <color red="156" green="0" blue="0"/>                
             </transform>
         </tileanim>
+	<tileanim name="scramble">
+	    <transform type="scramble"/>
+	</tileanim>
     </tileanimset>
 
     <tileanimset name="HiresVGA">
@@ -1940,6 +2106,9 @@
                 <color red="156" green="0" blue="0"/>                
             </transform>
         </tileanim>
+	<tileanim name="scramble">
+	    <transform type="scramble"/>
+	</tileanim>
     </tileanimset>
 
     <tileanimset name="VGA2">
@@ -1999,6 +2168,9 @@
                 <color red="156" green="0" blue="0"/>                
             </transform>
         </tileanim>
+	<tileanim name="scramble">
+	    <transform type="scramble"/>
+	</tileanim>
     </tileanimset>
 
 	<!-- TODO 'extends' for animsets -->
@@ -2059,6 +2231,9 @@
                 <color red="156" green="0" blue="0"/>                
             </transform>
         </tileanim>
+	<tileanim name="scramble">
+	    <transform type="scramble"/>
+	</tileanim>
     </tileanimset>
     
     
@@ -2119,6 +2294,9 @@
                 <color red="156" green="0" blue="0"/>                
             </transform>
         </tileanim>
+	<tileanim name="scramble">
+	    <transform type="scramble"/>
+	</tileanim>
     </tileanimset>
 
 

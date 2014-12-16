@@ -28,12 +28,8 @@ using std::string;
 
 #define DEFAULT_SCALE                   2
 #define DEFAULT_FULLSCREEN              0
-#define DEFAULT_FILTER                  "Scale2x"
-#ifndef IOS
-#define DEFAULT_VIDEO_TYPE              "VGA"
-#else
-#define DEFAULT_VIDEO_TYPE              "new"
-#endif
+#define DEFAULT_FILTER                  "Point"
+#define DEFAULT_VIDEO_TYPE              "EGA"
 #define DEFAULT_GEM_LAYOUT              "Standard"
 #define DEFAULT_LINEOFSIGHT             "DOS"
 #define DEFAULT_SCREEN_SHAKES           1
@@ -76,7 +72,7 @@ struct SettingsEnhancementOptions {
     bool slimeDivides;
     bool gazerSpawnsInsects;
     bool textColorization;
-    bool c64chestTraps;    
+    bool c64chestTraps;
     bool smartEnterKey;
     bool peerShowsObjects;
     bool u4TileTransparencyHack;
@@ -102,7 +98,7 @@ public:
     int                 campTime;
     bool                debug;
     bool                enhancements;
-    SettingsEnhancementOptions enhancementsOptions;    
+    SettingsEnhancementOptions enhancementsOptions;
     bool                filterMoveMessages;
     bool                fullscreen;
     int                 gameCyclesPerSecond;
@@ -113,7 +109,7 @@ public:
     int                 keyinterval;
     MouseOptions        mouseOptions;
     int                 musicVol;
-    unsigned int        scale;
+    static const unsigned int        scale = 1;
     bool                screenShakes;
     int                 gamma;
     int                 shakeInterval;
@@ -135,7 +131,7 @@ public:
      * be bitwise-compared must be placed here at the
      * end of the list so that our == and != operators
      * function correctly
-     */ 
+     */
     long                end_of_bitwise_comparators;
 
     string              filter;
@@ -157,7 +153,12 @@ class Settings : public SettingsData, public Observable<Settings *> {
 public:
     /* Methods */
 	void init(const bool useProfile, const string profileName);
-    static Settings &getInstance();
+        static inline Settings &getInstance() {
+	  if (__builtin_expect(instance == NULL, false))
+            instance = new Settings();
+            return *instance;
+        }
+
     void setData(const SettingsData &data);
     bool read();
     bool write();

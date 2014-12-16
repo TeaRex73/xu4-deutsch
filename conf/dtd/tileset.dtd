@@ -2,7 +2,7 @@
 
 <!ENTITY % bool '( true | false )'>
 <!ENTITY % comp '( none | rle | lzw )'>
-<!ENTITY % anim '( scroll | frame | slow_frame | cityflag | castleflag | lcbflag | shipflag | pirateflag | campfire | none )'>
+<!ENTITY % anim '( scroll | frame | slow_frame | cityflag | castleflag | lcbflag | shipflag | pirateflag | campfire | scramble | none )'>
 
 <!ELEMENT tileset ( tile+ ) >
 <!ATTLIST tileset name               CDATA    #REQUIRED

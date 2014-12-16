@@ -26,14 +26,14 @@
      SOUND_LBHEAL,           // LB heals party
      SOUND_LEVELUP,          // PC level up
      SOUND_MOONGATE,         // moongate used
-     
+
      SOUND_CANNON,
      SOUND_RUMBLE,
      SOUND_PREMAGIC_MANA_JUMBLE,
      SOUND_MAGIC,
      SOUND_WHIRLPOOL,
      SOUND_STORM,
-     
+
      //    SOUND_MISSED,
      //    SOUND_CREATUREATTACK,
      //    SOUND_PLAYERHIT,
@@ -43,6 +43,7 @@
 int soundInit(void);
 void soundDelete(void);
 
+void soundLoad(Sound sound);
 void soundPlay(Sound sound, bool onlyOnce = true, int specificDurationInTicks = -1);
 
 void soundStop(int channel = 1);

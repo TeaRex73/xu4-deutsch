@@ -178,10 +178,10 @@ SubImage *ImageMgr::loadSubImageFromConf(const ImageInfo *info, const ConfigElem
     static int x = 0,
                y = 0,
                last_width = 0,
-               last_height = 0;    
+               last_height = 0;
 
     subimage = new SubImage;
-    subimage->name = conf.getString("name");    
+    subimage->name = conf.getString("name");
     subimage->width = conf.getInt("width");
     subimage->height = conf.getInt("height");
     subimage->srcImageName = info->name;
@@ -338,10 +338,10 @@ void ImageMgr::fixupIntro(Image *im, int prescale) {
         im->setPaletteFromImage(borderInfo->image);
 
         // update the color of "and" and "present"
-        im->setPaletteIndex(15, im->setColor(226, 226, 255));
+        im->setPaletteIndex(15, im->setColor(255, 255, 255));
 
         // update the color of "Origin Systems, Inc."
-        im->setPaletteIndex(9, im->setColor(129, 129, 255));
+        im->setPaletteIndex(9, im->setColor(255, 255, 255));
 
         borderInfo->image->save("border.png");
         // update the border appearance
@@ -362,7 +362,7 @@ void ImageMgr::fixupIntro(Image *im, int prescale) {
     /* -----------------------------
      * draw "Lord British" signature
      * ----------------------------- */
-    color = im->setColor(0, 255, 255);  // cyan for EGA
+    color = im->setColor(255, 255, 255);  // white for EGA
     int blue[16] = {255, 250, 226, 226, 210, 194, 161, 161,
                     129,  97,  97,  64,  64,  32,  32,   0};
     i = 0;
@@ -393,7 +393,7 @@ void ImageMgr::fixupIntro(Image *im, int prescale) {
     }
     else
     {
-        color = im->setColor(128, 0, 0);    // dark red for EGA
+        color = im->setColor(0, 149, 255);    // blue for EGA
     }
     for (i = 84; i < 236; i++)  // 152 px wide
         im->fillRect(i * prescale, 31 * prescale,
@@ -432,7 +432,7 @@ void ImageMgr::fixupAbyssVision(Image *im, int prescale) {
 
 void ImageMgr::fixupAbacus(Image *im, int prescale) {
 
-    /* 
+    /*
      * surround each bead with a row green pixels to avoid artifacts
      * when scaling
      */
@@ -466,8 +466,8 @@ void ImageMgr::fixupDungNS(Image *im, int prescale) {
 }
 
 /**
- * The FMTowns images have a different screen dimension. This moves them up to what xu4 is accustomed to.
- * south.
+ * The FMTowns images have a different screen dimension. This moves them up
+ * to what xu4 is accustomed to.
  */
 void ImageMgr::fixupFMTowns(Image *im, int prescale) {
     for (int y = 20; y < im->height(); y++) {
@@ -674,7 +674,9 @@ ImageInfo *ImageMgr::get(const string &name, bool returnUnscaled) {
     int imageScale = settings.scale;
     if ((settings.scale % info->prescale) != 0) {
         int orig_scale = settings.scale;
+#if 0
         settings.scale = info->prescale;
+#endif
         settings.write();
     	errorFatal("image %s is prescaled to an incompatible size: %d\nResetting the scale to %d. Sorry about the inconvenience, please restart.", info->filename.c_str(), orig_scale, settings.scale);
     }
@@ -704,7 +706,7 @@ SubImage *ImageMgr::getSubImage(const string &name) {
 
         set = getSet(set->extends);
     }
-        
+
     return NULL;
 }
 

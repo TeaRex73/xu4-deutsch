@@ -17,6 +17,8 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
 
+#include "vc6.h" // Fixes things if you're using VC6, does nothing if otherwise
+
 #include "context.h"
 
 Context::Context()

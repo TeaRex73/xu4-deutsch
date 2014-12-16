@@ -32,10 +32,6 @@
 #include "utils.h"
 #include "script.h"
 
-#ifdef IOS
-#include "ios_helpers.h"
-#endif
-
 using namespace std;
 
 int chars_needed(const char *s, int columnmax, int linesdesired, int *real_lines);
@@ -43,7 +39,7 @@ int chars_needed(const char *s, int columnmax, int linesdesired, int *real_lines
 /**
  * Returns true of the object that 'punknown' points
  * to is a person object
- */ 
+ */
 bool isPerson(Object *punknown) {
     Person *p;
     if ((p = dynamic_cast<Person*>(punknown)) != NULL)
@@ -63,37 +59,42 @@ list<string> replySplit(const string &text) {
     /* skip over any initial newlines */
     if ((pos = str.find("\n\n")) == 0)
         str = str.substr(pos+1);
-    
+
     unsigned int num_chars = chars_needed(str.c_str(), TEXT_AREA_W, TEXT_AREA_H, &real_lines);
-    
+
     /* we only have one chunk, no need to split it up */
+#if 0
     unsigned int len = str.length();
     if (num_chars == len)
         reply.push_back(str);
-    else {
-        string pre = str.substr(0, num_chars);        
+	else {
+#endif
+          string pre = str.substr(0, num_chars);
 
         /* add the first chunk to the list */
         reply.push_back(pre);
         /* skip over any initial newlines */
+#if 0
         if ((pos = str.find("\n\n")) == 0)
             str = str.substr(pos+1);
-
+#endif
         while (num_chars != str.length()) {
             /* go to the rest of the text */
             str = str.substr(num_chars);
             /* skip over any initial newlines */
-            if ((pos = str.find("\n\n")) == 0)
-                str = str.substr(pos+1);
-
+#if 0
+	    if ((pos = str.find("\n\n")) == 0)
+	        str = str.substr(pos+1);
+#endif
             /* find the next chunk and add it */
             num_chars = chars_needed(str.c_str(), TEXT_AREA_W, TEXT_AREA_H, &real_lines);
-            pre = str.substr(0, num_chars);            
+            pre = str.substr(0, num_chars);
 
             reply.push_back(pre);
         }
+#if 0
     }
-    
+#endif
     return reply;
 }
 
@@ -152,23 +153,20 @@ list<string> Person::getConversationText(Conversation *cnv, const char *inquiry)
      * a convsation with a vendor
      */
     if (isVendor()) {
-        static const string ids[] = { 
+        static const string ids[] = {
             "Weapons", "Armor", "Food", "Tavern", "Reagents", "Healer", "Inn", "Guild", "Stable"
         };
         Script *script = cnv->script;
 
         /**
          * We aren't currently running a script, load the appropriate one!
-         */ 
+         */
         if (cnv->state == Conversation::INTRO) {
             // unload the previous script if it wasn't already unloaded
             if (script->getState() != Script::STATE_UNLOADED)
                 script->unload();
             script->load("vendorScript.xml", ids[npcType - NPC_VENDOR_WEAPONS], "vendor", c->location->map->getName());
-            script->run("intro");       
-#ifdef IOS
-            U4IOS::IOSConversationChoiceHelper choiceDialog;
-#endif
+            script->run("intro");
             while (script->getState() != Script::STATE_DONE) {
                 // Gather input for the script
                 if (script->getState() == Script::STATE_INPUT) {
@@ -176,9 +174,6 @@ list<string> Person::getConversationText(Conversation *cnv, const char *inquiry)
                     case Script::INPUT_CHOICE: {
                         const string &choices = script->getChoices();
                         // Get choice
-#ifdef IOS
-                        choiceDialog.updateChoices(choices, script->getTarget(), npcType);
-#endif
                         char val = ReadChoiceController::get(choices);
                         if (isspace(val) || val == '\033')
                             script->unsetVar(script->getInputName());
@@ -193,34 +188,26 @@ list<string> Person::getConversationText(Conversation *cnv, const char *inquiry)
                     case Script::INPUT_KEYPRESS:
                         ReadChoiceController::get(" \015\033");
                         break;
-                        
+
                     case Script::INPUT_NUMBER: {
-#ifdef IOS
-                        U4IOS::IOSConversationHelper ipadNumberInput;
-                        ipadNumberInput.beginConversation(U4IOS::UIKeyboardTypeNumberPad, "Amount?");
-#endif
                         int val = ReadIntController::get(script->getInputMaxLen(), TEXT_AREA_X + c->col, TEXT_AREA_Y + c->line);
                         script->setVar(script->getInputName(), val);
                     } break;
 
                     case Script::INPUT_STRING: {
-#ifdef IOS
-                        U4IOS::IOSConversationHelper ipadNumberInput;
-                        ipadNumberInput.beginConversation(U4IOS::UIKeyboardTypeDefault);
-#endif
                         string str = ReadStringController::get(script->getInputMaxLen(), TEXT_AREA_X + c->col, TEXT_AREA_Y + c->line);
                         if (str.size()) {
-                            lowercase(str);                        
+                            lowercase(str);
                             script->setVar(script->getInputName(), str);
                         }
                         else script->unsetVar(script->getInputName());
-                    } break;                    
-                    
+                    } break;
+
                     case Script::INPUT_PLAYER: {
                         ReadPlayerController getPlayerCtrl;
                         eventHandler->pushController(&getPlayerCtrl);
                         int player = getPlayerCtrl.waitFor();
-                        if (player != -1) {                            
+                        if (player != -1) {
                             string player_str = to_string(player+1);
                             script->setVar(script->getInputName(), player_str);
                         }
@@ -233,10 +220,10 @@ list<string> Person::getConversationText(Conversation *cnv, const char *inquiry)
                     // Continue running the script!
                     c->line++;
                     script->_continue();
-                } // } if 
+                } // } if
             } // } while
         }
-        
+
         // Unload the script
         script->unload();
         cnv->state = Conversation::DONE;
@@ -264,8 +251,8 @@ list<string> Person::getConversationText(Conversation *cnv, const char *inquiry)
 
         case Conversation::ASK:
         case Conversation::ASKYESNO:
-            ASSERT(npcType != NPC_HAWKWIND, "invalid state for hawkwind conversation");            
-            text += talkerGetQuestionResponse(cnv, inquiry) + "\n";
+            ASSERT(npcType != NPC_HAWKWIND, "invalid state for hawkwind conversation");
+            text += talkerGetQuestionResponse(cnv, inquiry);
             break;
 
         case Conversation::GIVEBEGGAR:
@@ -295,13 +282,13 @@ string Person::getPrompt(Conversation *cnv) {
 
     string prompt;
     if (cnv->state == Conversation::ASK)
-        prompt = getQuestion(cnv);
+        prompt = uppercase(getQuestion(cnv));
     else if (cnv->state == Conversation::GIVEBEGGAR)
-        prompt = "How much? ";
+        prompt = "Wie viel-";
     else if (cnv->state == Conversation::CONFIRMATION)
-        prompt = "\n\nHe asks: Art thou well?";
+        prompt = uppercase("\nEr fragt:\nGeht es dir gut?\n\nDeine Antwort:\n?");
     else if (cnv->state != Conversation::ASKYESNO)
-        prompt = dialogue->getPrompt();
+        prompt = uppercase(dialogue->getPrompt());
 
     return prompt;
 }
@@ -312,11 +299,11 @@ string Person::getPrompt(Conversation *cnv) {
 const char *Person::getChoices(Conversation *cnv) {
     if (isVendor())
         return cnv->script->getChoices().c_str();
-    
-    switch (cnv->state) {    
+
+    switch (cnv->state) {
     case Conversation::CONFIRMATION:
     case Conversation::CONTINUEQUESTION:
-        return "ny\015 \033";
+        return "nj\015 \033";
 
     case Conversation::PLAYER:
         return "012345678\015 \033";
@@ -331,7 +318,7 @@ const char *Person::getChoices(Conversation *cnv) {
 string Person::getIntro(Conversation *cnv) {
     if (npcType == NPC_EMPTY) {
         cnv->state = Conversation::DONE;
-        return string("Funny, no\nresponse!\n");
+        return string("KOMISCH, KEINE ANTWORT!\n");
     }
 
     // As far as I can tell, about 50% of the time they tell you their
@@ -402,7 +389,7 @@ void Person::runCommand(Conversation *cnv, const ResponsePart &command) {
     else {
         ASSERT(0, "unknown command trigger in dialogue response: %s\n", string(command).c_str());
     }
-} 
+}
 
 string Person::getResponse(Conversation *cnv, const char *inquiry) {
     string reply;
@@ -410,38 +397,38 @@ string Person::getResponse(Conversation *cnv, const char *inquiry) {
     const ResponsePart &action = dialogue->getAction();
 
     reply = "\n";
-    
+
     /* Does the person take action during the conversation? */
     if (action == ResponsePart::END) {
         runCommand(cnv, action);
-        return dialogue->getPronoun() + " turns away!\n";
+        return uppercase(dialogue->getPronoun() + " wendet sich ab!\n");
     }
     else if (action == ResponsePart::ATTACK) {
         runCommand(cnv, action);
-        return string("\n") + getName() + " says: On guard! Fool!";
+        return uppercase(getName() + " sagt:\nPa~ auf! Narr!");
     }
 
-    if (npcType == NPC_TALKER_BEGGAR && strncasecmp(inquiry, "give", 4) == 0) {
-        reply.erase();
+    if (npcType == NPC_TALKER_BEGGAR && (strncasecmp(inquiry, "gib", 3) == 0 || strncasecmp(inquiry, "gebe", 4) == 0)) {
+        reply = "\b";
         cnv->state = Conversation::GIVEBEGGAR;
     }
 
-    else if (strncasecmp(inquiry, "join", 4) == 0 &&
+    else if (strncasecmp(inquiry, "begl", 4) == 0 &&
              c->party->canPersonJoin(getName(), &v)) {
         CannotJoinError join = c->party->join(getName());
 
         if (join == JOIN_SUCCEEDED) {
-            reply += "I am honored to join thee!";
+	    reply = dialogue->getPronoun() + " sagt:\nEs ist mir eine Ehre, dich zu begleiten!";
             c->location->map->removeObject(this);
             cnv->state = Conversation::DONE;
         } else {
-            reply += "Thou art not ";
-            reply += (join == JOIN_NOT_VIRTUOUS) ? getVirtueAdjective(v) : "experienced";
-            reply += " enough for me to join thee.";
+	    reply = dialogue->getPronoun() + " sagt:\nDu bist nicht ";
+            reply += (join == JOIN_NOT_VIRTUOUS) ? getVirtueAdjective(v) : "erfahren";
+            reply += " genug fuer mich, um dich zu begleiten.";
         }
     }
 
-    else if ((*dialogue)[inquiry]) {        
+    else if ((*dialogue)[inquiry]) {
         Dialogue::Keyword *kw = (*dialogue)[inquiry];
 
         reply = processResponse(cnv, kw->getResponse());
@@ -456,28 +443,28 @@ string Person::getResponse(Conversation *cnv, const char *inquiry) {
     }
 
     else
-        reply += processResponse(cnv, dialogue->getDefaultAnswer());
+        reply = processResponse(cnv, dialogue->getDefaultAnswer());
 
-    return reply;
+    return uppercase(reply);
 }
 
 string Person::talkerGetQuestionResponse(Conversation *cnv, const char *answer) {
     bool valid = false;
     bool yes;
-    char ans = tolower(answer[0]);
+    char ans = mytolower(answer[0]);
 
-    if (ans == 'y' || ans == 'n') {
+    if (ans == 'j' || ans == 'n') {
         valid = true;
-        yes = ans == 'y';
+        yes = ans == 'j';
     }
 
     if (!valid) {
         cnv->state = Conversation::ASKYESNO;
-        return "Yes or no!";
-    } 
+        return uppercase(dialogue->getPronoun() + " fragt:\nJa oder nein?\n") + "\nDeine Antwort:\n?";
+    }
 
     cnv->state = Conversation::TALK;
-    return "\n" + processResponse(cnv, cnv->question->getResponse(yes));
+    return processResponse(cnv, cnv->question->getResponse(yes)) + "\n";
 }
 
 string Person::beggarGetQuantityResponse(Conversation *cnv, const char *response) {
@@ -488,17 +475,17 @@ string Person::beggarGetQuantityResponse(Conversation *cnv, const char *response
 
     if (cnv->quant > 0) {
         if (c->party->donate(cnv->quant)) {
-            reply = "\n";
+            reply = "\n\n\n";
             reply += dialogue->getPronoun();
-            reply += " says: Oh Thank thee! I shall never forget thy kindness!\n";
+            reply += " sagt:\nOh danke dir! Ich werde deine Freundlichkeit nie vergessen!\n";
         }
 
         else
-            reply = "\n\nThou hast not that much gold!\n";
+            reply = "\n\n\nSo viel Gold hast du nicht!\n";
     } else
         reply = "\n";
 
-    return reply;
+    return uppercase(reply);
 }
 
 string Person::lordBritishGetQuestionResponse(Conversation *cnv, const char *answer) {
@@ -506,27 +493,27 @@ string Person::lordBritishGetQuestionResponse(Conversation *cnv, const char *ans
 
     cnv->state = Conversation::TALK;
 
-    if (tolower(answer[0]) == 'y') {
-        reply = "Y\n\nHe says: That is good.\n";
+    if (mytolower(answer[0]) == 'j') {
+        reply = "Er sagt:\nDas ist gut.\n\n";
     }
 
-    else if (tolower(answer[0]) == 'n') {
-        reply = "N\n\nHe says: Let me heal thy wounds!\n";
-        cnv->state = Conversation::FULLHEAL;           
+    else if (mytolower(answer[0]) == 'n') {
+        reply = "Er sagt:\nLa~ mich deine Wunden heilen!\n\n";
+        cnv->state = Conversation::FULLHEAL;
     }
 
     else
-        reply = "\n\nThat I cannot\nhelp thee with.\n";
+        reply = "Er sagt:\nDamit kann ich dir nicht helfen.\n\n";
 
-    return reply;
+    return uppercase(reply);
 }
 
 string Person::getQuestion(Conversation *cnv) {
-    return "\n" + cnv->question->getText() + "\n\nYou say: ";
+  return uppercase("\n" + cnv->question->getText()) + "\n\nDeine Antwort:\n?";
 }
 
 /**
- * Returns the number of characters needed to get to 
+ * Returns the number of characters needed to get to
  * the next line of text (based on column width).
  */
 int chars_to_next_line(const char *s, int columnmax) {
@@ -538,7 +525,7 @@ int chars_to_next_line(const char *s, int columnmax) {
         for (const char *str = s; *str; str++) {
             if (*str == '\n')
                 return (str - s);
-            else if (*str == ' ')
+            else if (*str == ' ' || *str == '-')
                 lastbreak = (str - s);
             else if (++chars >= columnmax)
                 return lastbreak;
@@ -570,10 +557,10 @@ int linecount(const string &s, int columnmax) {
  */
 int chars_needed(const char *s, int columnmax, int linesdesired, int *real_lines) {
     int chars = 0,
-        totalChars = 0;    
+        totalChars = 0;
 
     char *new_str = strdup(s),
-         *str = new_str;    
+         *str = new_str;
 
     // try breaking text into paragraphs first
     string text = s;
@@ -588,8 +575,8 @@ int chars_needed(const char *s, int columnmax, int linesdesired, int *real_lines
         else break;
         text = text.substr(pos+1);
     }
-    // Seems to be some sort of clang compilation bug in this code, that causes this addition
-    // to not work correctly.
+    // Seems to be some sort of clang compilation bug in this code,
+    //  that causes this addition to not work correctly.
     int totalPossibleLines = lines + linecount(text.c_str(), columnmax);
     if (totalPossibleLines <= linesdesired)
         paragraphs += text;
@@ -611,7 +598,7 @@ int chars_needed(const char *s, int columnmax, int linesdesired, int *real_lines
         int num_to_move = chars;
         if (*(str + num_to_move) == '\n')
             num_to_move++;
-        
+
         totalChars += num_to_move;
         str += num_to_move;
     }
@@ -619,5 +606,5 @@ int chars_needed(const char *s, int columnmax, int linesdesired, int *real_lines
     free(new_str);
 
     *real_lines = lines;
-    return totalChars;    
+    return totalChars;
 }

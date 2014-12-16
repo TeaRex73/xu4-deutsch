@@ -2,16 +2,20 @@
  * $Id$
  */
 
+#include "vc6.h" // Fixes things if you're using VC6, does nothing if otherwise
+
 #include <cctype>
 #include <cstdlib>
+#include <cstdio>
+#include <cstring>
 
 #include "u4file.h"
 #include "unzip.h"
 #include "debug.h"
+#include "utils.h"
+
 #ifdef MACOSX
 #include <libgen.h>
-#elif defined(IOS)
-#include "ios_helpers.h"
 #endif
 
 using std::map;
@@ -55,6 +59,7 @@ public:
 
 private:
     unzFile zfile;
+    long length_cached;
 };
 
 extern bool verbose;
@@ -76,20 +81,20 @@ void U4PATH::initDefaultPaths() {
 
 	/*Try to cover all root possibilities. These can be added to by separate modules*/
 	rootResourcePaths.push_back("./");
-	rootResourcePaths.push_back("./ultima4/");
-	rootResourcePaths.push_back("/usr/lib/u4/");
-	rootResourcePaths.push_back("/usr/local/lib/u4/");
+	rootResourcePaths.push_back("./ultima4g/");
+	rootResourcePaths.push_back("/usr/lib/u4g/");
+	rootResourcePaths.push_back("/usr/local/lib/u4g/");
 
 	//The second (specific) part of the path searched will be these various subdirectories
 
 	/* the possible paths where u4 for DOS can be installed */
 	u4ForDOSPaths.push_back("");
-	u4ForDOSPaths.push_back("u4/");
-	u4ForDOSPaths.push_back("ultima4/");
+	u4ForDOSPaths.push_back("u4g/");
+	u4ForDOSPaths.push_back("ultima4g/");
 
 	/* the possible paths where the u4 zipfiles can be installed */
 	u4ZipPaths.push_back("");
-	u4ZipPaths.push_back("u4/");
+	u4ZipPaths.push_back("u4g/");
 
 	/* the possible paths where the u4 music files can be installed */
 	musicPaths.push_back("");
@@ -166,7 +171,7 @@ U4ZipPackage::U4ZipPackage(const string &name, const string &path, bool extensio
 void U4ZipPackage::addTranslation(const string &value, const string &translation) {
     translations[value] = translation;
 }
-    
+
 const string &U4ZipPackage::translate(const string &name) const {
     std::map<string, string>::const_iterator i = translations.find(name);
     if (i != translations.end())
@@ -190,7 +195,7 @@ void U4ZipPackageMgr::destroy() {
         instance = NULL;
     }
 }
-    
+
 void U4ZipPackageMgr::add(U4ZipPackage *package) {
     packages.push_back(package);
 }
@@ -238,69 +243,69 @@ U4ZipPackageMgr::U4ZipPackageMgr() {
 
 	do {
 		//Check for the upgraded package once. unlikely it'll be renamed.
-		pathname = u4find_path("ultima4-1.01.zip", u4Path.u4ZipPaths);
+		pathname = u4find_path("ultima4g-1.01.zip", u4Path.u4ZipPaths);
 		if (!pathname.empty()) {
 		    flag = 1;
 			break;
 		}
 
 		// We check for all manner of generic packages, though.
-		pathname = u4find_path("ultima4.zip", u4Path.u4ZipPaths);
+		pathname = u4find_path("ultima4g.zip", u4Path.u4ZipPaths);
 		if (!pathname.empty()) {
 		    flag = 1;
 			break;
 		}
 
-	    pathname = u4find_path("Ultima4.zip", u4Path.u4ZipPaths);
+	    pathname = u4find_path("Ultima4g.zip", u4Path.u4ZipPaths);
 		if (!pathname.empty()) {
 		    flag = 1;
 			break;
 		}
 
-	    pathname = u4find_path("ULTIMA4.zip", u4Path.u4ZipPaths);
+	    pathname = u4find_path("ULTIMA4G.zip", u4Path.u4ZipPaths);
 		if (!pathname.empty()) {
 		    flag = 1;
 			break;
 		}
 
-	    pathname = u4find_path("u4.zip", u4Path.u4ZipPaths);
+	    pathname = u4find_path("u4g.zip", u4Path.u4ZipPaths);
 		if (!pathname.empty()) {
 		    flag = 1;
 			break;
 		}
 		
-	    pathname = u4find_path("U4.zip", u4Path.u4ZipPaths);
+	    pathname = u4find_path("U4G.zip", u4Path.u4ZipPaths);
 		if (!pathname.empty()) {
 		    flag = 1;
 			break;
 		}
 
 		//search for the ultimaforever.com zip and variations
-		pathname = u4find_path("UltimaIV.zip", u4Path.u4ZipPaths);
+		pathname = u4find_path("UltimaIVg.zip", u4Path.u4ZipPaths);
 		if (!pathname.empty()) {
 		    flag = 1;
 			break;
 		}
 		
-		pathname = u4find_path("Ultimaiv.zip", u4Path.u4ZipPaths);
+		pathname = u4find_path("Ultimaivg.zip", u4Path.u4ZipPaths);
 		if (!pathname.empty()) {
 		    flag = 1;
 			break;
 		}
 		
-		pathname = u4find_path("ULTIMAIV.zip", u4Path.u4ZipPaths);
+		pathname = u4find_path("ULTIMAIVG.zip", u4Path.u4ZipPaths);
 		if (!pathname.empty()) {
 		    flag = 1;
 			break;
 		}
 		
-		pathname = u4find_path("ultimaIV.zip", u4Path.u4ZipPaths);
+		pathname = u4find_path("ultimaIVg.zip", u4Path.u4ZipPaths);
 		if (!pathname.empty()) {
 		    flag = 1;
 			break;
 		}
 		
-		pathname = u4find_path("ultimaiv.zip", u4Path.u4ZipPaths);
+		pathname = u4find_path("ultimaivg.zip", u4Path.u4ZipPaths);
 		if (!pathname.empty()) {
 		    flag = 1;
 			break;
@@ -364,7 +369,7 @@ U4FILE *U4FILE_stdio::open(const string &fname) {
 
     u4f = new U4FILE_stdio;
     u4f->file = f;
-    
+
     return u4f;
 }
 
@@ -424,6 +429,7 @@ U4FILE *U4FILE_zip::open(const string &fname, const U4ZipPackage *package) {
 
     u4f = new U4FILE_zip;
     u4f->zfile = f;
+    u4f->length_cached = -1;
 
     return u4f;
 }
@@ -486,11 +492,14 @@ int U4FILE_zip::putc(int c) {
 long U4FILE_zip::length() {
     unz_file_info fileinfo;
 
-    unzGetCurrentFileInfo(zfile, &fileinfo,
-                          NULL, 0,
-                          NULL, 0,
-                          NULL, 0);
-    return fileinfo.uncompressed_size;
+    if (length_cached == -1) {
+        unzGetCurrentFileInfo(zfile, &fileinfo,
+			      NULL, 0,
+			      NULL, 0,
+			      NULL, 0);
+            length_cached = fileinfo.uncompressed_size;
+    }
+     return length_cached;
 }
 
 /**
@@ -515,7 +524,7 @@ U4FILE *u4fopen(const string &fname) {
     /**
      * search for file within zipfiles (ultima4.zip, u4upgrad.zip, etc.)
      */
-    const vector<U4ZipPackage *> &packages = U4ZipPackageMgr::getInstance()->getPackages(); 
+    const vector<U4ZipPackage *> &packages = U4ZipPackageMgr::getInstance()->getPackages();
     for (std::vector<U4ZipPackage *>::const_reverse_iterator j = packages.rbegin(); j != packages.rend(); j++) {
         u4f = U4FILE_zip::open(fname, *j);
         if (u4f)
@@ -525,20 +534,20 @@ U4FILE *u4fopen(const string &fname) {
     /*
      * file not in a zipfile; check if it has been unzipped
      */
-    string fname_copy(fname);
+    string fname_copy(fname + '\0');
 
     string pathname = u4find_path(fname_copy, u4Path.u4ForDOSPaths);
     if (pathname.empty()) {
         using namespace std;
         if (islower(fname_copy[0])) {
-            fname_copy[0] = toupper(fname_copy[0]);
+            fname_copy[0] = mytoupper(fname_copy[0]);
             pathname = u4find_path(fname_copy, u4Path.u4ForDOSPaths);
         }
 
         if (pathname.empty()) {
             for (i = 0; fname_copy[i] != '\0'; i++) {
                 if (islower(fname_copy[i]))
-                    fname_copy[i] = toupper(fname_copy[i]);
+		  fname_copy[i] = mytoupper(fname_copy[i]);
             }
             pathname = u4find_path(fname_copy, u4Path.u4ForDOSPaths);
         }
@@ -627,8 +636,9 @@ vector<string> u4read_stringtable(U4FILE *f, long offset, int nstrings) {
 
         while ((c = f->getc()) != '\0')
             buffer += c;
-        
+
         strs.push_back(buffer);
+	/* fwrite(buffer.c_str(), 1, strlen(buffer.c_str()) + 1, stderr); */
     }
 
     return strs;
@@ -655,37 +665,11 @@ string u4find_path(const string &fname, std::list<string> specificSubPaths) {
                 break;
     	}
     }
-#if defined(IOS)
-    if (f == NULL) {
-        string base = fname;
-        string ext = "";
-        string dir = "";
-        // This is VERY dependant on the current layout of the XML files. It will fail in a general case.
-        size_t seppos = fname.rfind('/');
-        if (seppos != string::npos)
-            dir = fname.substr(0, seppos);        
-        size_t pos = fname.rfind('.');
-        if (pos != string::npos) {
-            if (seppos != string::npos)
-                base = fname.substr(seppos + 1, pos - seppos - 1);
-            else
-                base = fname.substr(0, pos);
-            ext = fname.substr(pos + 1);
-        }
-        
-        string pathFile = U4IOS::getFileLocation(dir, base, ext);
-        strncpy(path, pathFile.c_str(), 2048);
-        if (verbose)
-            printf("trying to open %s\n", path);
-        
-        f = fopen(path, "rb");
-    }    
-#endif
 
     if (verbose) {
         if (f != NULL)
             printf("%s successfully found\n", path);
-        else 
+        else
             printf("%s not found\n", fname.c_str());
     }
 
