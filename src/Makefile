@@ -8,18 +8,18 @@ libdir=$(prefix)/lib
 datadir=$(prefix)/share
 
 UI=sdl
-UILIBS=-L/media/linards/main/usr/local/lib -Wl,-rpath,/media/linards/main/usr/local/lib -Wl,-rpath,/media/linards/main/usr/lib -Wl,-rpath,/media/linards/main/usr/lib/arm-linux-gnueabihf -Wl,-rpath,/media/linards/main/lib/arm-linux-gnueabihf -Wl,-rpath,/media/linards/main/opt/vc/lib -lSDL -lpthread -lSDL_mixer
-UIFLAGS=-I/media/linards/main/usr/local/include/SDL -D_REENTRANT
+UILIBS=-L/usr/local/lib -Wl,-rpath,/usr/local/lib -Wl,-rpath,/usr/lib -Wl,-rpath,/usr/lib/arm-linux-gnueabihf -Wl,-rpath,/lib/arm-linux-gnueabihf -Wl,-rpath,/opt/vc/lib -lSDL -lpthread -lSDL_mixer
+UIFLAGS=-I/usr/local/include/SDL -D_REENTRANT
 
-LIBS=-L/media/linards/main/usr/lib -L/media/linards/main/usr/lib/arm-linux-gnueabihf -L/media/linards/main/lib/arm-linux-gnueabihf $(UILIBS) -lxml2 -lpng -lz
+LIBS=-L/usr/lib -L/usr/lib/arm-linux-gnueabihf -L/lib/arm-linux-gnueabihf $(UILIBS) -lxml2 -lpng -lz
 # CCPREFIX=~/raspberry/tools/arm-bcm2708/arm-bcm2708hardfp-linux-gnueabi/bin/arm-bcm2708hardfp-linux-gnueabi-
 # CCPREFIX=~/raspberry/tools/arm-bcm2708/gcc-linaro-arm-linux-gnueabihf-raspbian/bin/arm-linux-gnueabihf-
 CC=$(CCPREFIX)gcc
 CXX=$(CCPREFIX)g++
 FEATURES=-DHAVE_BACKTRACE=1 -DHAVE_VARIADIC_MACROS=1
-DEBUGCXXFLAGS=-Ofast -marm -mfpu=vfp -march=native -mtune=native -mfloat-abi=hard -DNDEBUG -DRASB_PI
-# DEBUGCXXFLAGS=-Ofast -march=native -mtune=native -DNDEBUG -URASB_PI
-CXXFLAGS=$(FEATURES) -Wall -pipe -I. -I/usr/include/libxml2 -I/usr/include/SDL -I/media/linards/main/usr/include -I/media/linards/main/usr/local/include -I/media/linards/main/include -I/media/linards/main/usr/include/arm-linux-gnueabihf $(UIFLAGS) -I/media/linards/main/usr/include/libxml2 -DICON_FILE=\"$(datadir)/pixmaps/u4.bmp\" -DVERSION=\"$(VERSION)\" $(DEBUGCXXFLAGS) $(LIBS)
+DEBUGCXXFLAGS=-Og -marm -mfpu=vfp -march=native -mtune=native -mfloat-abi=hard -DDEBUG -g -DRASB_PI
+# DEBUGCXXFLAGS=-Ofast -march=native -mtune=native -DNDEBUG -URASB_PI -fno-exceptions -fno-non-call-exceptions -fno-common
+CXXFLAGS=$(FEATURES) -Wall -pipe -I. -I/usr/include/libxml2 -I/usr/include/SDL -I/usr/include -I/usr/local/include -I/include -I/usr/include/arm-linux-gnueabihf $(UIFLAGS) -I/usr/include/libxml2 -DICON_FILE=\"$(datadir)/pixmaps/u4.bmp\" -DVERSION=\"$(VERSION)\" $(DEBUGCXXFLAGS) $(LIBS)
 CFLAGS=$(CXXFLAGS)
 INSTALL=install
 

@@ -14,10 +14,9 @@
 #include "u4.h"
 #include "u4file.h"
 #include "utils.h"
-
-//#include "combat.h"
-//#include "context.h"
-//#include "creature.h"
+// #include "combat.h"
+// #include "context.h"
+// #include "creature.h"
 /*
 #include "direction.h"
 #include "dungeon.h"

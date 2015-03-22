@@ -2,36 +2,40 @@
 
 using std::vector;
 
-class U6Decode::Stack {
+class U6Decode::Stack
+{
 public:
-    bool is_empty() {
+    bool is_empty()
+    {
         return stack.size() == 0;
     }
 
-    bool is_full() {
+    bool is_full()
+    {
         return stack.size() == stack_size;
     }
 
-    void push(unsigned char element) {
-        if (!is_full()) {
+    void push(unsigned char element)
+    {
+        if (!is_full())
             stack.push_back(element);
-        }
     }
 
-    unsigned char pop() {
+    unsigned char pop()
+    {
         unsigned char element;
 
         if (!is_empty()) {
             element = stack.back();
             stack.pop_back();
-        }
-        else {
+        } else
             element = 0;
-        }
+
         return element;
     }
 
-    unsigned char gettop() {
+    unsigned char gettop()
+    {
         if (!is_empty())
             return stack.back();
         else

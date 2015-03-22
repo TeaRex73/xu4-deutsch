@@ -43,15 +43,16 @@ long decompress_u4_file(FILE *in, long filesize, void **out)
 
     /* input file should be longer than 0 bytes */
     if (compressed_filesize == 0)
-        return(-1);
+        return (-1);
 
     /* check if the input file is _not_ a valid LZW-compressed file */
     if (!mightBeValidCompressedFile(in))
-        return(-1);
+        return (-1);
 
     /* load compressed file into compressed_mem[] */
     compressed_mem = (unsigned char *) malloc(compressed_filesize);
-    if (fread(compressed_mem, 1, compressed_filesize, in) != (size_t) compressed_filesize) perror ("fread failed");
+
+    if (fread(compressed_mem, 1, compressed_filesize, in) != (size_t) compressed_filesize) perror("fread failed");
 
     /*
      * determine decompressed file size
@@ -60,9 +61,8 @@ long decompress_u4_file(FILE *in, long filesize, void **out)
      */
     decompressed_filesize = lzwGetDecompressedSize(compressed_mem,compressed_filesize);
 
-    if (decompressed_filesize <= 0) {
-        return(-1);
-    }
+    if (decompressed_filesize <= 0)
+        return (-1);
 
     /* decompress file from compressed_mem[] into decompressed_mem[] */
     decompressed_mem = (unsigned char *) malloc(decompressed_filesize);
@@ -76,10 +76,11 @@ long decompress_u4_file(FILE *in, long filesize, void **out)
 
     *out = decompressed_mem;
 
-    return(errorCode);
+    return (errorCode);
 }
 
-long decompress_u4_memory(void *in, long inlen, void **out) {
+long decompress_u4_memory(void *in, long inlen, void **out)
+{
     unsigned char *compressed_mem, *decompressed_mem;
     long compressed_filesize, decompressed_filesize;
     long errorCode;
@@ -89,7 +90,7 @@ long decompress_u4_memory(void *in, long inlen, void **out) {
 
     /* input file should be longer than 0 bytes */
     if (compressed_filesize == 0)
-        return(-1);
+        return (-1);
 
     compressed_mem = (unsigned char *) in;
 
@@ -100,9 +101,8 @@ long decompress_u4_memory(void *in, long inlen, void **out) {
      */
     decompressed_filesize = lzwGetDecompressedSize(compressed_mem,compressed_filesize);
 
-    if (decompressed_filesize <= 0) {
-        return(-1);
-    }
+    if (decompressed_filesize <= 0)
+        return (-1);
 
     /* decompress file from compressed_mem[] into decompressed_mem[] */
     decompressed_mem = (unsigned char *) malloc(decompressed_filesize);
@@ -114,7 +114,7 @@ long decompress_u4_memory(void *in, long inlen, void **out) {
 
     *out = decompressed_mem;
 
-    return(errorCode);
+    return (errorCode);
 }
 
 /*
@@ -127,7 +127,7 @@ long getFilesize(FILE *input_file)
     fseek(input_file, 0, SEEK_END);   /* move file pointer to file end */
     file_length = ftell(input_file);
     fseek(input_file, 0, SEEK_SET);   /* move file pointer to file start */
-    return(file_length);
+    return (file_length);
 }
 
 /*
@@ -149,7 +149,9 @@ unsigned char mightBeValidCompressedFile(FILE *input_file)
 
     /* read first byte */
     fseek(input_file, 0, SEEK_SET);   /* move file pointer to file start */
+
     if (fread(&firstByte, 1, 1, input_file) != 1) perror("fread failed");
+
     fseek(input_file, 0, SEEK_SET);   /* move file pointer to file start */
     c3 = (firstByte >> 4) == 0;
 

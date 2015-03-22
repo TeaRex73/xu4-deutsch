@@ -75,7 +75,7 @@
     <topic query="job">Ich passe auf die Kinder auf.</topic>
     <topic query="health">Gut.</topic>
     <topic query="KIND">Es braucht viel Mitgefühl, um mit Kindern umzugehen!</topic>
-    <topic query="MITG">Mitgefühl stärkt die Seele, wie Wissen den Verstand mäßigt!<question type="0">Hast du Kinder?<yes>Du weißt, was ich meine!</yes><no>Schade.</no></question></topic>
+    <topic query="MITG">Mitgefühl stärkt die Seele, wie Wissen den Verstand stählt!<question type="0">Hast du Kinder?<yes>Du weißt, was ich meine!</yes><no>Schade.</no></question></topic>
   </person>
   <person id="11" name="Sebastian" pronoun="Er" turnAwayProb="0">
     <description>Eine verletzte Person.</description>

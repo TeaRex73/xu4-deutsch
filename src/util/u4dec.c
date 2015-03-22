@@ -15,7 +15,8 @@ int isPowerOfTwo(int n);
 /**
  * A simple command line interface to the U4 RLE and LZW decompressors.
  */
-int main(int argc, char *argv[]) {
+int main(int argc, char *argv[])
+{
     FILE *infile;
     unsigned char *indata, *outdata;
     long inlen, outlen;
@@ -43,6 +44,7 @@ int main(int argc, char *argv[]) {
     printf("decoding %s image of size %dx%d\n", alg, width, height);
 
     infile = fopen(infname, "rb");
+
     if (!infile) {
         perror(infname);
         exit(1);
@@ -52,10 +54,12 @@ int main(int argc, char *argv[]) {
         perror(infname);
         exit(1);
     }
+
     inlen = ftell(infile);
     fseek(infile, 0L, SEEK_SET);
 
     indata = (unsigned char *)malloc(inlen);
+
     if (!indata) {
         perror("malloc");
         exit(1);
@@ -67,6 +71,7 @@ int main(int argc, char *argv[]) {
         outlen = lzwGetDecompressedSize(indata, inlen);
 
         outdata = (unsigned char *)malloc(outlen);
+
         if (!outdata) {
             perror("malloc");
             exit(1);
@@ -80,15 +85,17 @@ int main(int argc, char *argv[]) {
 
         cond1 = (outlen*8) % (width*height) == 0;
         cond2 = isPowerOfTwo((outlen*8) / (width*height));
+
         if (!cond1 || !cond2) {
             printf("Invalid width or height.\n");
-            return(EXIT_FAILURE);
+            return (EXIT_FAILURE);
         }
 
         outdata = (unsigned char *)malloc(outlen);
+
         if (!outdata) {
             printf("Couldn't allocate outdata.\n");
-            return(EXIT_FAILURE);
+            return (EXIT_FAILURE);
         }
 
         rleDecompress(indata, inlen, outdata, outlen);
@@ -109,16 +116,19 @@ int main(int argc, char *argv[]) {
     return 0;
 }
 
-int isPowerOfTwo(int n) {
+int isPowerOfTwo(int n)
+{
     int tmp;
 
     if (n <= 0)
-        return(0);
+        return (0);
     else {
         tmp = n;
+
         while (tmp % 2 == 0)
             tmp = tmp >> 1;
-        if (tmp == 1) return(1);
-        else return(0);
+
+        if (tmp == 1) return (1);
+        else return (0);
     }
 }

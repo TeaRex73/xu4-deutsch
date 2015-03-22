@@ -2,24 +2,29 @@
 
 using std::vector;
 
-class U6Decode::Dict {
+class U6Decode::Dict
+{
 public:
-    void init() {
+    void init()
+    {
         contains = 0x102;
     }
 
-    void add(unsigned char root, int codeword) {
+    void add(unsigned char root, int codeword)
+    {
         dict.resize(contains+1);
         dict[contains].root = root;
         dict[contains].codeword = codeword;
         contains++;
     }
 
-    unsigned char get_root(int codeword) {
+    unsigned char get_root(int codeword)
+    {
         return (dict[codeword].root);
     }
 
-    int get_codeword(int codeword) {
+    int get_codeword(int codeword)
+    {
         return (dict[codeword].codeword);
     }
 

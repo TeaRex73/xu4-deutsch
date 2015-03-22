@@ -25,8 +25,8 @@
 extern "C" {
 #endif
 
-long lzwGetDecompressedSize(unsigned char* compressedMem, long compressedSize);
-long lzwDecompress(unsigned char* compressedMem, unsigned char* decompressedMem, long compressedSize);
+long lzwGetDecompressedSize(unsigned char *compressedMem, long compressedSize);
+long lzwDecompress(unsigned char *compressedMem, unsigned char *decompressedMem, long compressedSize);
 
 #ifdef __cplusplus
 }

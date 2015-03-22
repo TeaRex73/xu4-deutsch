@@ -11,7 +11,8 @@ void showSaveGame(SaveGame *sg);
 void showSaveGamePlayerRecord(SaveGamePlayerRecord *rec);
 char *itemsString(unsigned short items);
 
-int main(int argc, char *argv[]) {
+int main(int argc, char *argv[])
+{
     SaveGame sg;
     FILE *in;
 
@@ -21,6 +22,7 @@ int main(int argc, char *argv[]) {
     }
 
     in = fopen(argv[1], "rb");
+
     if (!in) {
         perror(argv[1]);
         exit(1);
@@ -33,7 +35,8 @@ int main(int argc, char *argv[]) {
     return 0;
 }
 
-void showSaveGame(SaveGame *sg) {
+void showSaveGame(SaveGame *sg)
+{
     int i;
 
     printf("???: %x\n", sg->unknown1);
@@ -41,31 +44,41 @@ void showSaveGame(SaveGame *sg) {
            sg->moves, ((double)sg->food) / 100.0, sg->gold);
 
     printf("karma: [ ");
+
     for (i = 0; i < 8; i++)
         printf("%d ", sg->karma[i]);
+
     printf("]\n");
 
     printf("torches: %-2d gems: %-5d keys: %-5d sextants: %d\n",
            sg->torches, sg->gems, sg->keys, sg->sextants);
 
     printf("armor: [ ");
+
     for (i = 0; i < ARMR_MAX; i++)
         printf("%d ", sg->armor[i]);
+
     printf("]\n");
 
     printf("weapons: [ ");
+
     for (i = 0; i < WEAP_MAX; i++)
         printf("%d ", sg->weapons[i]);
+
     printf("]\n");
 
     printf("reagents: [ ");
+
     for (i = 0; i < REAG_MAX; i++)
         printf("%d ", sg->reagents[i]);
+
     printf("]\n");
 
     printf("mixtures: [ ");
+
     for (i = 0; i < 26; i++)
         printf("%d ", sg->mixtures[i]);
+
     printf("]\n");
 
     printf("items: %s\n", itemsString(sg->items));
@@ -92,8 +105,9 @@ void showSaveGame(SaveGame *sg) {
     }
 }
 
-void showSaveGamePlayerRecord(SaveGamePlayerRecord *rec) {
-    static const char * const weapNames[] = {
+void showSaveGamePlayerRecord(SaveGamePlayerRecord *rec)
+{
+    static const char *const weapNames[] = {
         "Hands", "Staff", "Dagger",
         "Sling", "Mace", "Axe",
         "Sword", "Bow", "Crossbow",
@@ -102,7 +116,7 @@ void showSaveGamePlayerRecord(SaveGamePlayerRecord *rec) {
         "Mystic Sword"
     };
 
-    static const char * const armorNames[] = {
+    static const char *const armorNames[] = {
         "Skin", "Cloth", "Leather",
         "Chain Mail", "Plate Mail",
         "Magic Chain", "Magic Plate", "Mystic Robe"
@@ -117,7 +131,8 @@ void showSaveGamePlayerRecord(SaveGamePlayerRecord *rec) {
            rec->sex == 11 ? "M" : "F", getClassNameEnglish(rec->klass), rec->status);
 }
 
-char *itemsString(unsigned short items) {
+char *itemsString(unsigned short items)
+{
     static char buffer[256];
     int first = 1;
 
@@ -127,62 +142,77 @@ char *itemsString(unsigned short items) {
         strcat(strcat(buffer, first ? "" : ", "), getItemName(ITEM_SKULL));
         first = 0;
     }
+
     if (items & ITEM_SKULL_DESTROYED) {
         strcat(strcat(buffer, first ? "" : ", "), "skull destroyed");
         first = 0;
     }
+
     if (items & ITEM_CANDLE) {
         strcat(strcat(buffer, first ? "" : ", "), getItemName(ITEM_CANDLE));
         first = 0;
     }
+
     if (items & ITEM_BOOK) {
         strcat(strcat(buffer, first ? "" : ", "), getItemName(ITEM_BOOK));
         first = 0;
     }
+
     if (items & ITEM_BELL) {
         strcat(strcat(buffer, first ? "" : ", "), getItemName(ITEM_BELL));
         first = 0;
     }
+
     if (items & ITEM_KEY_C) {
         strcat(strcat(buffer, first ? "" : ", "), "key c");
         first = 0;
     }
+
     if (items & ITEM_KEY_L) {
         strcat(strcat(buffer, first ? "" : ", "), "key l");
         first = 0;
     }
+
     if (items & ITEM_KEY_T) {
         strcat(strcat(buffer, first ? "" : ", "), "key t");
         first = 0;
     }
+
     if (items & ITEM_HORN) {
         strcat(strcat(buffer, first ? "" : ", "), getItemName(ITEM_HORN));
         first = 0;
     }
+
     if (items & ITEM_WHEEL) {
         strcat(strcat(buffer, first ? "" : ", "), getItemName(ITEM_WHEEL));
         first = 0;
     }
+
     if (items & ITEM_CANDLE_USED) {
         strcat(strcat(buffer, first ? "" : ", "), "candle used");
         first = 0;
     }
+
     if (items & ITEM_BOOK_USED) {
         strcat(strcat(buffer, first ? "" : ", "), "book used");
         first = 0;
     }
+
     if (items & ITEM_BELL_USED) {
         strcat(strcat(buffer, first ? "" : ", "), "bell used");
         first = 0;
     }
+
     if (items & 0x2000) {
         strcat(strcat(buffer, first ? "" : ", "), "(bit 14)");
         first = 0;
     }
+
     if (items & 0x4000) {
         strcat(strcat(buffer, first ? "" : ", "), "(bit 15)");
         first = 0;
     }
+
     if (items & 0x8000) {
         strcat(strcat(buffer, first ? "" : ", "), "(bit 16)");
         first = 0;

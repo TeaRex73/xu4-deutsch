@@ -6,7 +6,6 @@
 #define MOONGATE_H
 
 class Coords;
-
 void moongateAdd(int phase, const Coords &coords);
 const Coords *moongateGetGateCoordsForPhase(int phase);
 bool moongateFindActiveGateAt(int trammel, int felucca, const Coords &src, Coords &dest);

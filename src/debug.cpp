@@ -2,9 +2,8 @@
  * $Id$
  */
 
-
 #ifdef MACOSX
-#include <CoreServices/CoreServices.h>
+ # include <CoreServices/CoreServices.h>
 #endif
 
 #include "vc6.h" // Fixes things if you're using VC6, does nothing if otherwise
@@ -21,75 +20,67 @@
 #include "settings.h"
 #include "utils.h"
 
-
 using std::vector;
 
 #if HAVE_BACKTRACE
-#include <execinfo.h>
-
+ # include <execinfo.h>
 /**
  * Get a backtrace and print it to the file.  Note that gcc requires
  * the -rdynamic flag to have access to the actual backtrace symbols;
  * otherwise they will be simple hex offsets.
  */
-void print_trace(FILE *file) {
-    /* Code Taken from GNU C Library manual */
-    void *array[10];
-    size_t size;
-    char **strings;
-    size_t i;
+void print_trace(FILE *file)
+{
+	/* Code Taken from GNU C Library manual */
+	void *array[10];
+	size_t size;
+	char **strings;
+	size_t i;
 
-    size = backtrace(array, 10);
-    strings = backtrace_symbols(array, size);
+	size = backtrace(array, 10);
+	strings = backtrace_symbols(array, size);
+	fprintf(file, "Stack trace:\n");
 
-    fprintf(file, "Stack trace:\n");
-
-    /* start at one to omit print_trace */
-    for (i = 1; i < size; i++) {
-        fprintf(file, "%s\n", strings[i]);
-    }
-    free(strings);
+	/* start at one to omit print_trace */
+	for (i = 1; i < size; i++) {
+		fprintf(file, "%s\n", strings[i]);
+	}
+	free(strings);
 }
-
-#else
-
+#else // if HAVE_BACKTRACE
 /**
  * Stub for systems without access to the stack backtrace.
  */
-void print_trace(FILE *file) {
-    fprintf(file, "Stack trace not available\n");
+void print_trace(FILE *file)
+{
+	fprintf(file, "Stack trace not available\n");
 }
-
-#endif
+#endif // if HAVE_BACKTRACE
 
 #if !HAVE_VARIADIC_MACROS
 
-#include <cstdarg>
-
+ # include <cstdarg>
 /**
  * Stub for systems without variadic macros.  Unfortunately, this
  * assert won't be very useful.
  */
-void ASSERT(bool exp, const char *desc, ...) {
-#ifndef NDEBUG
-    va_list args;
-    va_start(args, desc);
-
-    if (!exp) {
-        fprintf(stderr, "Assert fehlgeschlagen: ");
-        vfprintf(stderr, desc, args);
-        fprintf(stderr, "\n");
-        abort();
-    }
-
-    va_end(args);
-#endif
+void ASSERT(bool exp, const char *desc, ...)
+{
+ # ifndef NDEBUG
+	va_list args;
+	va_start(args, desc);
+	if (!exp) {
+		fprintf(stderr, "Assert fehlgeschlagen: ");
+		vfprintf(stderr, desc, args);
+		fprintf(stderr, "\n");
+		abort();
+	}
+	va_end(args);
+ # endif
 }
-
 #endif
 
 FILE *Debug::global = NULL;
-
 /**
  * A debug class that uses the TRACE() and TRACE_LOCAL() macros.
  * It writes debug info to the filename provided, creating
@@ -102,158 +93,151 @@ FILE *Debug::global = NULL;
  * @param append    If true, appends to the debug file
  *                  instead of overwriting it.
  */
-Debug::Debug(const string &fn, const string &nm, bool append) : disabled(false), filename(fn), name(nm) {
-    if (!loggingEnabled(name)) {
-        disabled = true;
-        return;
-    }
-
+Debug::Debug(const string &fn, const string &nm, bool append):disabled(false), filename(fn), name(nm)
+{
+	if (!loggingEnabled(name)) {
+		disabled = true;
+		return;
+	}
 #ifdef MACOSX
-    /* In Mac OS X store debug files in a user-specific location */
-    FSRef folder;
-    OSErr err = FSFindFolder(kUserDomain, kApplicationSupportFolderType, kCreateFolder, &folder);
-    if (err == noErr) {
-        UInt8 path[2048];
-        if (FSRefMakePath(&folder, path, 2048) == noErr) {
-            filename = reinterpret_cast<const char *>(path);
-            filename += "/xu4/" + fn;
-        }
+	/* In Mac OS X store debug files in a user-specific location */
+	FSRef folder;
+	OSErr err = FSFindFolder(kUserDomain, kApplicationSupportFolderType, kCreateFolder, &folder);
+	if (err == noErr) {
+		UInt8 path[2048];
+		if (FSRefMakePath(&folder, path, 2048) == noErr) {
+			filename = reinterpret_cast<const char *>(path);
+			filename += "/xu4/" + fn;
+		}
+	}
 
-    }
 #else
 
 #endif
-
-    if (append)
-        file = FileSystem::openFile(filename, "at");
-    else file = FileSystem::openFile(filename, "wt");
-
-    if (!file) {} // FIXME: throw exception here
-    else if (!name.empty())
-        fprintf(file, "=== %s ===\n", name.c_str());
+	if (append) {
+		file = FileSystem::openFile(filename, "at");
+	} else {
+		file = FileSystem::openFile(filename, "wt");
+	}
+	if (!file) {}                                                                                                            // FIXME: throw exception here
+	else if (!name.empty()) {
+		fprintf(file, "=== %s ===\n", name.c_str());
+	}
 }
-
 /**
  * Initializes a global debug file, if desired.
  * This file will contain the results of any TRACE()
  * macro used, whereas TRACE_LOCAL() only captures
  * the debug info in its own debug file.
  */
-void Debug::initGlobal(const string &filename) {
-    if (settings.logging.empty())
-        return;
-
-    if (global)
-        fclose(global);
-
+void Debug::initGlobal(const string &filename)
+{
+	if (settings.logging.empty()) {
+		return;
+	}
+	if (global) {
+		fclose(global);
+	}
 #ifdef MACOSX
-    /* In Mac OS X store debug files in a user-specific location */
-    string osxfname;
-    osxfname.reserve(2048);
-    FSRef folder;
-    OSErr err = FSFindFolder(kUserDomain, kApplicationSupportFolderType, kCreateFolder, &folder);
-    if (err == noErr) {
-        UInt8 path[2048];
-        if (FSRefMakePath(&folder, path, 2048) == noErr) {
-            osxfname.append(reinterpret_cast<const char *>(path));
-            osxfname += "/xu4/";
-            osxfname += filename;
-        }
-    }
-    global = osxfname.empty() ? NULL : FileSystem::openFile(osxfname, "wt");
+	/* In Mac OS X store debug files in a user-specific location */
+	string osxfname;
+	osxfname.reserve(2048);
+	FSRef folder;
+	OSErr err = FSFindFolder(kUserDomain, kApplicationSupportFolderType, kCreateFolder, &folder);
+	if (err == noErr) {
+		UInt8 path[2048];
+		if (FSRefMakePath(&folder, path, 2048) == noErr) {
+			osxfname.append(reinterpret_cast<const char *>(path));
+			osxfname += "/xu4/";
+			osxfname += filename;
+		}
+	}
+	global = osxfname.empty() ? NULL : FileSystem::openFile(osxfname, "wt");
 #else
-    global = FileSystem::openFile(filename, "wt");
+	global = FileSystem::openFile(filename, "wt");
 #endif
-
-    if (!global) {} // FIXME: throw exception here
-}
-
+	if (!global) {} // FIXME: throw exception here
+} // Debug::initGlobal
 /**
  * Traces information into the debug file.
  * This function is used by the TRACE() and TRACE_LOCAL()
  * macros to provide trace functionality.
  */
-void Debug::trace(const string &msg, const string &fn, const string &func, const int line, bool glbl) {
-    if (disabled)
-        return;
-
-    bool brackets = false;
-    string message, filename;
-
-    Path path(fn);
-    filename = path.getFilename();
-
-    if (!file)
-        return;
-
-    if (!msg.empty())
-        message += msg;
-
-    if (!filename.empty() || line > 0) {
-        brackets = true;
-        message += " [";
-    }
-
-    if ((l_filename == filename) && (l_func == func) && (l_line == line))
-        message += "...";
-    else {
-        if (!func.empty()) {
-            l_func = func;
-            message += func + "() - ";
-        }
-        else l_func.erase();
-
-        if (!filename.empty()) {
-            l_filename = filename;
-            message += filename + ": ";
-        }
-        else l_filename.erase();
-
-        if (line > 0) {
-            l_line = line;
-            char ln[8];
-            sprintf(ln, "%d", line);
-            message += "line ";
-            message += ln;
-        }
-        else l_line = -1;
-    }
-
-    if (brackets)
-        message += "]";
-    message += "\n";
-
-    fprintf(file, "%s", message.c_str());
-    if (global && glbl)
-        fprintf(global, "%12s: %s", name.c_str(), message.c_str());
-}
-
+void Debug::trace(const string &msg, const string &fn, const string &func, const int line, bool glbl)
+{
+	if (disabled) {
+		return;
+	}
+	bool brackets = false;
+	string message, filename;
+	Path path(fn);
+	filename = path.getFilename();
+	if (!file) {
+		return;
+	}
+	if (!msg.empty()) {
+		message += msg;
+	}
+	if (!filename.empty() || (line > 0)) {
+		brackets = true;
+		message += " [";
+	}
+	if ((l_filename == filename) && (l_func == func) && (l_line == line)) {
+		message += "...";
+	} else {
+		if (!func.empty()) {
+			l_func = func;
+			message += func + "() - ";
+		} else {
+			l_func.erase();
+		}
+		if (!filename.empty()) {
+			l_filename = filename;
+			message += filename + ": ";
+		} else {
+			l_filename.erase();
+		}
+		if (line > 0) {
+			l_line = line;
+			char ln[8];
+			sprintf(ln, "%d", line);
+			message += "line ";
+			message += ln;
+		} else {
+			l_line = -1;
+		}
+	}
+	if (brackets) {
+		message += "]";
+	}
+	message += "\n";
+	fprintf(file, "%s", message.c_str());
+	if (global && glbl) {
+		fprintf(global, "%12s: %s", name.c_str(), message.c_str());
+	}
+}                                                                                         // Debug::trace
 /**
  * Determines whether or not this debug element is enabled in our game settings.
  */
-bool Debug::loggingEnabled(const string &name) {
-    if (settings.logging == "all")
-        return true;
-
-    vector<string> enabledLogs = split(settings.logging, ", ");
-    if (std::find(enabledLogs.begin(), enabledLogs.end(), name) != enabledLogs.end())
-        return true;
-
-    return false;
-}
-
-#if defined(_WIN32)
-#include <windows.h>
-
-class ExceptionHandler
+bool Debug::loggingEnabled(const string &name)
 {
-	public:
-	
-	ExceptionHandler()
-	{
-		LoadLibrary("exchndl.dll");
+	if (settings.logging == "all") {
+		return true;
 	}
-};
+	vector<string> enabledLogs = split(settings.logging, ", ");
+	if (std::find(enabledLogs.begin(), enabledLogs.end(), name) != enabledLogs.end()) {
+		return true;
+	}
+	return false;
+}
+#if defined(_WIN32)
+ # include <windows.h>
 
-static ExceptionHandler gExceptionHandler;	//  global instance of class
+class ExceptionHandler {
+public: ExceptionHandler()
+{
+	LoadLibrary("exchndl.dll");
+}
+};
+static ExceptionHandler gExceptionHandler;      // global instance of class
 #endif

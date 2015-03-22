@@ -10,21 +10,24 @@
 #include <libxml/xmlmemory.h>
 #include <libxml/parser.h>
 
-xmlNodePtr addAsText(xmlDocPtr doc, xmlNodePtr node, const char *in) {
+xmlNodePtr addAsText(xmlDocPtr doc, xmlNodePtr node, const char *in)
+{
     const char *begin, *end;
     char buffer[600];
 
     begin = in;
+
     while (*begin) {
         end = strchr(begin, '\n');
+
         if (!end)
             end = begin + strlen(begin);
+
         strncpy(buffer, begin, end - begin);
         buffer[end - begin] = '\0';
 
-        if (buffer[0]) {
+        if (buffer[0])
             xmlAddChild(node, xmlNewText((const xmlChar *)buffer));
-        }
 
         begin = end;
 
@@ -37,17 +40,20 @@ xmlNodePtr addAsText(xmlDocPtr doc, xmlNodePtr node, const char *in) {
     return node;
 }
 
-void xmlToTlk(xmlDocPtr doc, FILE *tlk) {
+void xmlToTlk(xmlDocPtr doc, FILE *tlk)
+{
     xmlNodePtr root, person, node;
     const char *val;
     char *ptr;
     char tlk_buffer[384];
     enum { NAME, PRONOUN, DESC, JOB, HEALTH, RESPONSE1, RESPONSE2,
-           QUESTION, YESRESP, NORESP, KEYWORD1, KEYWORD2, MAX };
+           QUESTION, YESRESP, NORESP, KEYWORD1, KEYWORD2, MAX
+         };
     char *str[MAX];
     int i;
 
     root = xmlDocGetRootElement(doc);
+
     for (person = root->children; person; person = person->next) {
         int kw = KEYWORD1;
 
@@ -78,18 +84,17 @@ void xmlToTlk(xmlDocPtr doc, FILE *tlk) {
                 if (strcasecmp(query, "job") == 0) {
                     str[JOB] = (char *)xmlNodeListGetString(doc, node->children, 1);
                     trigger = 3;
-                }
-                else if (strcasecmp(query, "health") == 0) {
+                } else if (strcasecmp(query, "health") == 0) {
                     str[HEALTH] = (char *)xmlNodeListGetString(doc, node->children, 1);
                     trigger = 4;
-                }
-                else {
+                } else {
                     if (kw > KEYWORD2) {
                         fprintf(stderr, ".tlk files only allow 2 topics other than 'job' and 'health'\n");
                         fprintf(stderr, "If you need more than 2 keywords, then it is recommended you\n");
                         fprintf(stderr, "keep your dialogue in .xml\n");
                         exit(1);
                     }
+
                     str[kw - (KEYWORD1 - RESPONSE1)] = (char *)xmlNodeListGetString(doc, node->children, 1);
                     str[kw] = query;
                     trigger = 6 - (KEYWORD2 - kw);
@@ -99,6 +104,7 @@ void xmlToTlk(xmlDocPtr doc, FILE *tlk) {
                 // Check for questions
                 for (child = node->children; child; child = child->next) {
                     xmlNodePtr qchild;
+
                     if (strcasecmp((const char *)child->name, "question") != 0)
                         continue;
 
@@ -115,8 +121,7 @@ void xmlToTlk(xmlDocPtr doc, FILE *tlk) {
                             str[NORESP] = (char *)xmlNodeListGetString(doc, qchild->children, 1);
                     }
                 }
-            }
-            else {
+            } else {
                 fprintf(stderr, "An unknown node %s was found in the .xml file", (char *)node->name);
                 exit(1);
             }
@@ -124,17 +129,22 @@ void xmlToTlk(xmlDocPtr doc, FILE *tlk) {
 
         // Fill these with dummy info so it doesn't break anything.
         if (!str[QUESTION]) str[QUESTION] = strdup("\0");
+
         if (!str[YESRESP]) str[YESRESP] = strdup("\0");
+
         if (!str[NORESP]) str[NORESP] = strdup("\0");
 
         ptr = &tlk_buffer[3];
+
         for (i = 0; i < MAX; i++) {
             if (!str[i]) {
                 fprintf(stderr, "person missing tag %d\n", i); /* FIXME: give better info than the index */
                 exit(1);
             }
+
             strcpy(ptr, str[i]);
             ptr += strlen(str[i]) + 1;
+
             if (ptr > (tlk_buffer + sizeof(tlk_buffer))) {
                 fprintf(stderr, "tlk file overflow\n");
                 exit(1);
@@ -144,12 +154,14 @@ void xmlToTlk(xmlDocPtr doc, FILE *tlk) {
                 free(str[i]);
             else xmlFree(str[i]);
         }
-	fprintf(stderr, "%ld\n", (long) (ptr - &tlk_buffer[0]));
+
+        fprintf(stderr, "%ld\n", (long)(ptr - &tlk_buffer[0]));
         fwrite(tlk_buffer, sizeof(tlk_buffer), 1, tlk);
     }
 }
 
-xmlDocPtr tlkToXml(FILE *tlk) {
+xmlDocPtr tlkToXml(FILE *tlk)
+{
     xmlDocPtr doc;
     xmlNodePtr root, node;
     int i;
@@ -222,11 +234,23 @@ xmlDocPtr tlkToXml(FILE *tlk) {
         xmlSetProp(kw2, (const xmlChar *)"query", (const xmlChar *)ptr);
         ptr += strlen(ptr) + 1;
 
-        switch(tlk_buffer[0]) {
-        case 3: target = job; break;
-        case 4: target = health; break;
-        case 5: target = kw1; break;
-        case 6: target = kw2; break;
+        switch (tlk_buffer[0]) {
+        case 3:
+            target = job;
+            break;
+
+        case 4:
+            target = health;
+            break;
+
+        case 5:
+            target = kw1;
+            break;
+
+        case 6:
+            target = kw2;
+            break;
+
         case 0:
         default:
             target = NULL;
@@ -255,7 +279,8 @@ xmlDocPtr tlkToXml(FILE *tlk) {
     return doc;
 }
 
-int main(int argc, char *argv[1]) {
+int main(int argc, char *argv[1])
+{
     FILE *in, *out;
     xmlDocPtr doc;
     char *xml;
@@ -263,17 +288,19 @@ int main(int argc, char *argv[1]) {
 
     if (argc != 4) {
         fprintf(stderr, "usage: tlkconv --toxml file.tlk file.xml\n"
-                        "       tlkconv --fromxml file.xml file.tlk\n");
+                "       tlkconv --fromxml file.xml file.tlk\n");
         exit(1);
     }
 
     in = fopen(argv[2], "rb");
+
     if (!in) {
         perror(argv[2]);
         exit(1);
     }
 
     out = fopen(argv[3], "wb");
+
     if (!out) {
         perror(argv[3]);
         exit(1);
@@ -289,8 +316,11 @@ int main(int argc, char *argv[1]) {
         xmlSize = ftell(in);
         fseek(in, 0L, SEEK_SET);
         xml = (char *) malloc(xmlSize);
+
         if (fread(xml, xmlSize, 1, in) != 1) perror("fread failed");
+
         doc = xmlParseMemory(xml, xmlSize);
+
         if (doc)
             xmlToTlk(doc, out);
     } else {

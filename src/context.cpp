@@ -21,11 +21,5 @@
 
 #include "context.h"
 
-Context::Context()
-	: party(NULL)
-	, saveGame(NULL)
-	, location(NULL) {
-
-}
-
+Context::Context():party(NULL), saveGame(NULL), location(NULL) {}
 Context::~Context() {}

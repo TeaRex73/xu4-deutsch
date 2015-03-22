@@ -42,24 +42,25 @@ typedef Mix_Chunk OSSoundChunk;
 #include "sound.h"
 
 class SoundManager {
-public:
-    ~SoundManager();
-    static SoundManager *getInstance();
-    int init(void);
-    bool load(Sound sound);
-    void play(Sound sound, bool onlyOnce = true, int specificDurationInTicks = -1);
-    void stop(int channel = 1);
-private:
-	int init_sys();
-	void del()		{del_sys();}
-	void del_sys();
-    void play_sys(Sound sound, bool onlyOnce, int specificDurationInTicks);
-    bool load_sys(Sound sound, const std::string &soundPathName);
-    void stop_sys(int channel);
-    std::vector<std::string> soundFilenames;
-    std::vector<OSSoundChunk *> soundChunk;
-    SoundManager();
-    static SoundManager *instance;
+public: ~SoundManager();
+static SoundManager *getInstance();
+int init(void);
+bool load(Sound sound);
+void play(Sound sound, bool onlyOnce = true, int specificDurationInTicks = -1);
+void stop(int channel = 1);
+private: int init_sys();
+void del()
+{
+	del_sys();
+}
+void del_sys();
+void play_sys(Sound sound, bool onlyOnce, int specificDurationInTicks);
+bool load_sys(Sound sound, const std::string &soundPathName);
+void stop_sys(int channel);
+std::vector<std::string> soundFilenames;
+std::vector<OSSoundChunk *> soundChunk;
+SoundManager();
+static SoundManager *instance;
 };
 
 #endif // SOUND_P_H

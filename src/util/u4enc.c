@@ -28,7 +28,8 @@ struct {
  * the next time this is called.  flush_12 must be called to flush out
  * any saved data at the end of the stream.
  */
-void putc_12(int c, FILE *out) {
+void putc_12(int c, FILE *out)
+{
     if (save == -1) {
         putc(c >> 4, out);
         save = c & 0x0f;
@@ -42,7 +43,8 @@ void putc_12(int c, FILE *out) {
 /**
  * Flushes the last half byte from putc_12.
  */
-void flush_12(FILE *out) {
+void flush_12(FILE *out)
+{
     if (save != -1) {
         putc(save << 4, out);
         save = -1;
@@ -52,7 +54,8 @@ void flush_12(FILE *out) {
 /**
  *  Initializes the LZW dictionary.
  */
-void initdict() {
+void initdict()
+{
     int i;
 
     dictsize = 0;
@@ -75,7 +78,8 @@ void initdict() {
  * Gets the 12-bit LZW code for a given string.  -1 is returned if not
  * in the dictionary.
  */
-int getcode(unsigned char *str, int len) {
+int getcode(unsigned char *str, int len)
+{
     int prefixcode;
     int hashcode;
 
@@ -85,20 +89,25 @@ int getcode(unsigned char *str, int len) {
     prefixcode = getcode(str, len - 1);
 
     hashcode = probe1(str[len - 1], prefixcode);
+
     if (lzwdict[hashcode].occupied &&
-        lzwdict[hashcode].len == len &&
-        memcmp(lzwdict[hashcode].data, str, len) == 0)
-        return hashcode;
-    hashcode = probe2(str[len - 1], prefixcode);
-    if (lzwdict[hashcode].occupied &&
-        lzwdict[hashcode].len == len &&
-        memcmp(lzwdict[hashcode].data, str, len) == 0)
-        return hashcode;
-    do {
-        hashcode = probe3(hashcode);
-        if (lzwdict[hashcode].occupied &&
             lzwdict[hashcode].len == len &&
             memcmp(lzwdict[hashcode].data, str, len) == 0)
+        return hashcode;
+
+    hashcode = probe2(str[len - 1], prefixcode);
+
+    if (lzwdict[hashcode].occupied &&
+            lzwdict[hashcode].len == len &&
+            memcmp(lzwdict[hashcode].data, str, len) == 0)
+        return hashcode;
+
+    do {
+        hashcode = probe3(hashcode);
+
+        if (lzwdict[hashcode].occupied &&
+                lzwdict[hashcode].len == len &&
+                memcmp(lzwdict[hashcode].data, str, len) == 0)
             return hashcode;
     } while (lzwdict[hashcode].occupied);
 
@@ -108,21 +117,24 @@ int getcode(unsigned char *str, int len) {
 /**
  * Add a new word to the LZW dictionary.
  */
-void addcode(unsigned char *str, int len) {
+void addcode(unsigned char *str, int len)
+{
     int hashcode;
 
     if (!compressing)
         return;
 
     hashcode = probe1(str[len - 1], getcode(str, len - 1));
-    if (lzwdict[hashcode].occupied) {
+
+    if (lzwdict[hashcode].occupied)
         hashcode = probe2(str[len - 1], getcode(str, len - 1));
-    }
+
     if (lzwdict[hashcode].occupied) {
         do {
             hashcode = probe3(hashcode);
         } while (lzwdict[hashcode].occupied);
     }
+
     lzwdict[hashcode].len = len;
     lzwdict[hashcode].data = (unsigned char *) malloc(len);
     memcpy(lzwdict[hashcode].data, str, len);
@@ -133,7 +145,8 @@ void addcode(unsigned char *str, int len) {
 /**
  * LZW encode a file.
  */
-int main(int argc, char *argv[]) {
+int main(int argc, char *argv[])
+{
     FILE *out;
     char *alg, *infname, *outfname;
     int bits;
@@ -151,6 +164,7 @@ int main(int argc, char *argv[]) {
     outfname = argv[3];
 
     out = fopen(outfname, "wb");
+
     if (!out) {
         perror(outfname);
         exit(1);
@@ -171,32 +185,43 @@ int main(int argc, char *argv[]) {
         idx = 0;
         c = *p++;
         str[idx++] = c;
+
         while (1) {
             c = *p++;
+
             if (p > (data + datalen))
                 break;
+
             str[idx++] = c;
+
             if (getcode(str, idx) == -1) {
                 int code = getcode(str, idx-1);
                 putc_12(code, out);
+
                 if (idx >= 4095) {
                     fprintf(stderr, "overflow in lzwenc\n");
                     exit(1);
                 }
+
                 addcode(str, idx);
+
                 if (dictsize > MAX_DICT_CAPACITY) {
                     initdict();
                     putc_12(c, out);
                     c = *p++;
+
                     if (p > (data + datalen))
                         break;
                 }
+
                 idx = 0;
                 str[idx++] = c;
             }
         }
+
         if (idx != 0)
             putc_12(getcode(str, idx), out);
+
         flush_12(out);
     }
 
@@ -223,6 +248,7 @@ int main(int argc, char *argv[]) {
 
         while (p < data + datalen) {
             c = *p++;
+
             if (c == val && count < 255)
                 count++;
             else {
@@ -234,10 +260,12 @@ int main(int argc, char *argv[]) {
                     for (i = 0; i < count; i++)
                         putc(val, out);
                 }
+
                 val = c;
                 count = 1;
             }
         }
+
         if (count >= threshold || val == RLE_RUNSTART) {
             putc(RLE_RUNSTART, out);
             putc(count, out);
@@ -248,9 +276,8 @@ int main(int argc, char *argv[]) {
         }
     }
 
-    else if (strcmp(alg, "raw") == 0) {
+    else if (strcmp(alg, "raw") == 0)
         fwrite(data, datalen, 1, out);
-    }
 
     else {
         fprintf(stderr, "unknown algorithm %s\n", alg);

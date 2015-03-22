@@ -38,23 +38,22 @@
 #include <stdlib.h>
 #include <string.h>
 
-typedef void (*WRITE_DECOMP)(unsigned char root, unsigned char *destination, long* position);
+typedef void (*WRITE_DECOMP)(unsigned char root, unsigned char *destination, long *position);
 
-typedef struct _lzwDictionaryEntry
-{
+typedef struct _lzwDictionaryEntry {
     unsigned char root;
     int codeword;
     unsigned char occupied;
 } lzwDictionaryEntry;
 
-long generalizedDecompress(WRITE_DECOMP outFunc, unsigned char* compressedMem, unsigned char* decompressedMem, long compressedSize);
-int getNextCodeword(long* bitsRead, unsigned char *compressedMem);
-void discardRoot(unsigned char root, unsigned char *destination, long* position);
-void outputRoot(unsigned char root, unsigned char *destination, long* position);
+long generalizedDecompress(WRITE_DECOMP outFunc, unsigned char *compressedMem, unsigned char *decompressedMem, long compressedSize);
+int getNextCodeword(long *bitsRead, unsigned char *compressedMem);
+void discardRoot(unsigned char root, unsigned char *destination, long *position);
+void outputRoot(unsigned char root, unsigned char *destination, long *position);
 
-void getString(int codeword, lzwDictionaryEntry *lzwDictionary, unsigned char* stack, int *elementsInStack);
-int getNewHashCode(unsigned char root, int codeword, lzwDictionaryEntry* dictionary);
-unsigned char hashPosFound(int hashCode, unsigned char root, int codeword, lzwDictionaryEntry* dictionary);
+void getString(int codeword, lzwDictionaryEntry *lzwDictionary, unsigned char *stack, int *elementsInStack);
+int getNewHashCode(unsigned char root, int codeword, lzwDictionaryEntry *dictionary);
+unsigned char hashPosFound(int hashCode, unsigned char root, int codeword, lzwDictionaryEntry *dictionary);
 
 /*
  * This function returns the decompressed size of a block of compressed data.
@@ -67,9 +66,9 @@ unsigned char hashPosFound(int hashCode, unsigned char root, int codeword, lzwDi
  * No errors: (long) decompressed size
  * Error: (long) -1
  */
-long lzwGetDecompressedSize(unsigned char* compressedMem, long compressedSize)
+long lzwGetDecompressedSize(unsigned char *compressedMem, long compressedSize)
 {
-    return(generalizedDecompress(&discardRoot, compressedMem, NULL, compressedSize));
+    return (generalizedDecompress(&discardRoot, compressedMem, NULL, compressedSize));
 }
 
 /*
@@ -83,9 +82,9 @@ long lzwGetDecompressedSize(unsigned char* compressedMem, long compressedSize)
  * No errors: (long) decompressed size
  * Error: (long) -1
  */
-long lzwDecompress(unsigned char* compressedMem, unsigned char* decompressedMem, long compressedSize)
+long lzwDecompress(unsigned char *compressedMem, unsigned char *decompressedMem, long compressedSize)
 {
-    return(generalizedDecompress(&outputRoot, compressedMem, decompressedMem, compressedSize));
+    return (generalizedDecompress(&outputRoot, compressedMem, decompressedMem, compressedSize));
 }
 
 /* --------------------------------------------------------------------------------------
@@ -100,7 +99,7 @@ long lzwDecompress(unsigned char* compressedMem, unsigned char* decompressedMem,
  * decompressed_mem: this is where the compressed data will be decompressed to
  * compressed_size: size of the compressed data (in bytes)
  */
-long generalizedDecompress(WRITE_DECOMP outFunc, unsigned char* compressedMem, unsigned char* decompressedMem, long compressedSize)
+long generalizedDecompress(WRITE_DECOMP outFunc, unsigned char *compressedMem, unsigned char *decompressedMem, long compressedSize)
 {
     int i;
 
@@ -131,13 +130,11 @@ long generalizedDecompress(WRITE_DECOMP outFunc, unsigned char* compressedMem, u
 
     /* clear the dictionary */
     memset(lzwDictionary, 0, sizeof(lzwDictionaryEntry) * lzwDictionarySize);
-    for (i = 0; i < 0x100; i++)
-    {
-        lzwDictionary[i].occupied = 1;
-    }
 
-    if (bitsRead + 12 <= compressedSize * 8)
-    {
+    for (i = 0; i < 0x100; i++)
+        lzwDictionary[i].occupied = 1;
+
+    if (bitsRead + 12 <= compressedSize * 8) {
         /* read OLD_CODE */
         old_code = getNextCodeword(&bitsRead, compressedMem);
         /* CHARACTER = OLD_CODE */
@@ -145,22 +142,18 @@ long generalizedDecompress(WRITE_DECOMP outFunc, unsigned char* compressedMem, u
         /* output OLD_CODE */
         outFunc(character, decompressedMem, &bytesWritten);
 
-        while (bitsRead + 12 <= compressedSize * 8) /* WHILE there are still input characters DO */
-        {
+        while (bitsRead + 12 <= compressedSize * 8) { /* WHILE there are still input characters DO */
             /* read NEW_CODE */
             new_code = getNextCodeword(&bitsRead, compressedMem);
 
-            if (lzwDictionary[new_code].occupied)   /* is the codeword in the dictionary? */
-            {
+            if (lzwDictionary[new_code].occupied) { /* is the codeword in the dictionary? */
                 /* codeword is present in the dictionary                                               */
                 /* it must either be a root or a non-root that has already been added to the dicionary */
                 unknownCodeword = 0;
 
                 /* STRING = get translation of NEW_CODE */
                 getString(new_code,lzwDictionary,lzwStack,&elementsInStack);
-            }
-            else
-            {
+            } else {
                 /* codeword is yet to be defined */
                 unknownCodeword = 1;
 
@@ -176,8 +169,7 @@ long generalizedDecompress(WRITE_DECOMP outFunc, unsigned char* compressedMem, u
             character = lzwStack[elementsInStack-1];   /* element at top of stack */
 
             /* output STRING */
-            while (elementsInStack > 0)
-            {
+            while (elementsInStack > 0) {
                 outFunc(lzwStack[elementsInStack-1], decompressedMem, &bytesWritten);
                 elementsInStack--;
             }
@@ -191,39 +183,33 @@ long generalizedDecompress(WRITE_DECOMP outFunc, unsigned char* compressedMem, u
             codewordsInDictionary++;
 
             /* check for errors */
-            if (unknownCodeword && (newpos != new_code))
-            {
+            if (unknownCodeword && (newpos != new_code)) {
                 /* clean up */
                 free(lzwStack);
                 free(lzwDictionary);
 
-                return(-1);
+                return (-1);
             }
 
-            if (codewordsInDictionary > maxDictEntries)
-            {
+            if (codewordsInDictionary > maxDictEntries) {
                 /* wipe dictionary */
                 codewordsInDictionary = 0;
                 memset(lzwDictionary, 0, sizeof(lzwDictionaryEntry) * lzwDictionarySize);
-                for (i = 0; i < 0x100; i++)
-                {
-                    lzwDictionary[i].occupied = 1;
-                }
 
-                if (bitsRead + 12 <= compressedSize * 8)
-                {
+                for (i = 0; i < 0x100; i++)
+                    lzwDictionary[i].occupied = 1;
+
+                if (bitsRead + 12 <= compressedSize * 8) {
                     new_code = getNextCodeword(&bitsRead, compressedMem);
                     character = (unsigned char)new_code;
 
                     outFunc(character, decompressedMem, &bytesWritten);
-                }
-                else
-                {
+                } else {
                     /* clean up */
                     free(lzwStack);
                     free(lzwDictionary);
 
-                    return(bytesWritten);
+                    return (bytesWritten);
                 }
             }
 
@@ -231,32 +217,33 @@ long generalizedDecompress(WRITE_DECOMP outFunc, unsigned char* compressedMem, u
             old_code = new_code;
         }
     }
+
     /* clean up */
     free(lzwStack);
     free(lzwDictionary);
 
-    return(bytesWritten);
+    return (bytesWritten);
 }
 
 /* read the next 12-bit codeword from the compressed data */
-int getNextCodeword(long* bitsRead, unsigned char *compressedMem)
+int getNextCodeword(long *bitsRead, unsigned char *compressedMem)
 {
     int codeword = (compressedMem[(*bitsRead)/8] << 8) + compressedMem[(*bitsRead)/8+1];
     codeword = codeword >> (4-((*bitsRead)%8));
     codeword = codeword & 0xfff;
     (*bitsRead) += 12;
 
-    return(codeword);
+    return (codeword);
 }
 
 /* increment position pointer, but do not write root to memory */
-void discardRoot(unsigned char root, unsigned char *destination, long* position)
+void discardRoot(unsigned char root, unsigned char *destination, long *position)
 {
     (*position)++;
 }
 
 /* output a root to memory */
-void outputRoot(unsigned char root, unsigned char *destination, long* position)
+void outputRoot(unsigned char root, unsigned char *destination, long *position)
 {
     destination[*position] = root;
     (*position)++;
@@ -272,8 +259,7 @@ void getString(int codeword, lzwDictionaryEntry *dictionary, unsigned char *stac
     unsigned char root;
     int currentCodeword = codeword;
 
-    while (currentCodeword > 0xff)
-    {
+    while (currentCodeword > 0xff) {
         root = dictionary[currentCodeword].root;
         currentCodeword = dictionary[currentCodeword].codeword;
         stack[*elementsInStack] = root;
@@ -285,53 +271,47 @@ void getString(int codeword, lzwDictionaryEntry *dictionary, unsigned char *stac
     (*elementsInStack)++;
 }
 
-int getNewHashCode (unsigned char root, int codeword, lzwDictionaryEntry *dictionary)
+int getNewHashCode(unsigned char root, int codeword, lzwDictionaryEntry *dictionary)
 {
     int hashCode;
 
     /* probe 1 */
     hashCode = probe1(root, codeword);
-    if (hashPosFound(hashCode, root, codeword, dictionary)) {
-        return(hashCode);
-    }
+
+    if (hashPosFound(hashCode, root, codeword, dictionary))
+        return (hashCode);
+
     /* probe 2 */
     hashCode = probe2(root, codeword);
-    if (hashPosFound(hashCode, root, codeword, dictionary)) {
-        return(hashCode);
-    }
+
+    if (hashPosFound(hashCode, root, codeword, dictionary))
+        return (hashCode);
+
     /* probe 3 */
     do {
         hashCode = probe3(hashCode);
-    }
-    while (! hashPosFound(hashCode, root, codeword, dictionary));
+    } while (! hashPosFound(hashCode, root, codeword, dictionary));
 
-    return(hashCode);
+    return (hashCode);
 }
 
-unsigned char hashPosFound(int hashCode, unsigned char root, int codeword, lzwDictionaryEntry* dictionary)
+unsigned char hashPosFound(int hashCode, unsigned char root, int codeword, lzwDictionaryEntry *dictionary)
 {
-    if (hashCode > 0xff)   /* hash codes must not be roots */
-    {
+    if (hashCode > 0xff) { /* hash codes must not be roots */
         unsigned char c1, c2, c3;
 
-        if (dictionary[hashCode].occupied)
-        {
+        if (dictionary[hashCode].occupied) {
             /* hash table position is occupied */
             c1 = 1;
             /* is our (root,codeword) pair already in the hash table? */
             c2 = dictionary[hashCode].root == root;
             c3 = dictionary[hashCode].codeword == codeword;
-        }
-        else
-        {
+        } else {
             /* hash table position is free */
             c1 = 0;
         }
 
-        return((!c1) || (c1 && c2 && c3));
-    }
-    else
-    {
-        return(0);
-    }
+        return ((!c1) || (c1 && c2 && c3));
+    } else
+        return (0);
 }

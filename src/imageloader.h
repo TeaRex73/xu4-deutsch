@@ -10,7 +10,6 @@
 
 class Image;
 class U4FILE;
-
 /**
  * The generic image loader interface.  Image loaders should override
  * the load method to load an image from a U4FILE and register
@@ -20,18 +19,13 @@ class U4FILE;
  * (e.g. image/x-u4...).
  */
 class ImageLoader {
-public:
-    ImageLoader() {}
-    virtual ~ImageLoader() {}
-    virtual Image *load(U4FILE *file, int width, int height, int bpp) = 0;
-    static ImageLoader *getLoader(const std::string &fileType);
-
-protected:
-    static ImageLoader *registerLoader(ImageLoader *loader, const std::string &type);
-    static void setFromRawData(Image *image, int width, int height, int bpp, unsigned char *rawData);
-
-private:
-    static std::map<std::string, ImageLoader *> *loaderMap;
+public: ImageLoader() {}
+virtual ~ImageLoader() {}
+virtual Image *load(U4FILE *file, int width, int height, int bpp) = 0;
+static ImageLoader *getLoader(const std::string &fileType);
+protected: static ImageLoader *registerLoader(ImageLoader *loader, const std::string &type);
+static void setFromRawData(Image *image, int width, int height, int bpp, unsigned char *rawData);
+private: static std::map<std::string, ImageLoader *> *loaderMap;
 };
 
 #endif /* IMAGELOADER_H */

@@ -48,12 +48,13 @@ void osxInit(char *binpath)
     // This code checks if it has been created, and creates it if not.
     if (home && home[0]) {
         dirname = (char *) malloc(strlen(home) +
-        strlen(MACOSX_USER_FILES_PATH) + 1);
+                                  strlen(MACOSX_USER_FILES_PATH) + 1);
         strcpy(dirname, home);
         strcat(dirname, MACOSX_USER_FILES_PATH);
 
         /* Check if directory exists */
         result = stat(dirname, &sb);
+
         if ((result != 0) && (errno == ENOENT)) {
             /* Doesn't exist. Create it */
             mask = umask(0); /* Get current umask */
@@ -61,20 +62,18 @@ void osxInit(char *binpath)
             mkdir(dirname, S_IRWXU | mask);
         }
 
-      /* Include the application bundle's 'Resources' directory in Mac OS X */
+        /* Include the application bundle's 'Resources' directory in Mac OS X */
         u4Path.rootResourcePaths.push_back(std::string(dirname));
         free(dirname);
     }
 
     for (std::list<std::string>::iterator root = mac_roots.begin();
-    		root != mac_roots.end();
-    		++root)
-    	for (std::list<std::string>::iterator app_supp = mac_app_support.begin();
-    		app_supp != mac_app_support.end();
-    		++app_supp)
-    	{
-    		u4Path.rootResourcePaths.push_back((*root).append(*app_supp));
-    	}
+            root != mac_roots.end();
+            ++root)
+        for (std::list<std::string>::iterator app_supp = mac_app_support.begin();
+                app_supp != mac_app_support.end();
+                ++app_supp)
+            u4Path.rootResourcePaths.push_back((*root).append(*app_supp));
 
 }
 
