@@ -31,15 +31,25 @@ bool SoundManager::load_sys(Sound sound, const string &pathname)
 	}
 	return true;
 }
-void SoundManager::play_sys(Sound sound, bool onlyOnce, int specificDurationInTicks)
+static bool finished = false;
+void channel_finished(int channel)
+{
+	finished = true;
+}
+void SoundManager::play_sys(Sound sound, bool onlyOnce, int specificDurationInTicks, bool wait)
 {
 	/**
 	 * Use Channel 1 for sound effects
 	 */
+	if (wait) {
+		finished = false;
+		Mix_ChannelFinished(*channel_finished);
+	}
 	if (!onlyOnce || !Mix_Playing(1)) {
 		if (Mix_PlayChannelTimed(1, soundChunk[sound], (specificDurationInTicks == -1) ? 0 : -1, specificDurationInTicks) == -1) {
 			fprintf(stderr, "Error playing sound %d: %s\n", sound, Mix_GetError());
 		}
+		while(wait && !finished) ;
 	}
 }
 void SoundManager::stop_sys(int channel)

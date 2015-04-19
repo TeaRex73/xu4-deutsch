@@ -698,7 +698,7 @@ void gameSpellEffect(int spell, int player, Sound sound)
 		c->stats->highlightPlayer(player);
 	}
 	time = settings.spellEffectSpeed * 800 / settings.gameCyclesPerSecond;
-	soundPlay(sound, false, time);
+	soundPlay(sound, false, time, true);
 
 	///The following effect multipliers are not accurate
 	switch (spell) {
@@ -1178,9 +1178,9 @@ bool GameController::keyPressed(int key)
 			eventHandler->setScreenUpdate(NULL);
 			eventHandler->popController();
 			eventHandler->pushController(intro);
-			// Fade out the music and hide the cursor
+			// Stop the music and hide the cursor
 			// before returning to the menu.
-			musicMgr->fadeOut(1000);
+			musicMgr->pause();
 			screenHideCursor();
 			intro->init();
 			eventHandler->run();

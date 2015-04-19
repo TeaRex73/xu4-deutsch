@@ -1044,7 +1044,7 @@ void IntroController::updateSoundMenu(MenuEvent &event)
 		case MI_SOUND_01: musicMgr->setMusicVolume(settingsChanged.musicVol);
 			break;
 		case MI_SOUND_02: musicMgr->setSoundVolume(settingsChanged.soundVol);
-			soundPlay(SOUND_FLEE);
+			soundPlay(SOUND_FLEE, false, -1, true);
 			break;
 		case USE_SETTINGS:
 			// save settings
@@ -1343,7 +1343,7 @@ void IntroController::initTitles()
 	addTitle(80, 31, 158, 1, BAR, 1000, 500); // <bar>
 	addTitle(84, 21, 147, 9, ORIGIN, 1000, 100); // "Origin Systems, Inc."
 	addTitle(115, 33, 91, 5, PRESENT, 0, 100); // "present"
-	addTitle(57, 34, 200, 45, TITLE, 1000, 5000); // "Ultima IV"
+	addTitle(57, 34, 200, 45, TITLE, 1000, 4500); // "Ultima IV"
 	addTitle(8, 81, 304, 12, SUBTITLE, 1000, 100); // "Quest of the Avatar"
 	addTitle(0, 96, 320, 96, MAP, 1000, 100); // the map
 	// get the source data for the elements

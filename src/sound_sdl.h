@@ -18,7 +18,7 @@ public: SoundMgr_SDL() {}
 virtual ~SoundMgr_SDL() {}
 int init(void);
 bool load(Sound sound);
-void play(Sound sound, bool onlyOnce = true, int specificDurationInTicks = -1);
+void play(Sound sound, bool onlyOnce = true, int specificDurationInTicks = -1, bool wait = false);
 void stop(int channel = 1);
 void del() {}
 static SoundMgr *getSDLInstance();

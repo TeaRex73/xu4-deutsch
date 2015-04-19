@@ -61,10 +61,6 @@ void hawkwind()
 {
 	playMid(SHOPPING);    /**< Music when you talk to Hawkwind */
 }
-void camp()
-{
-	fadeOut(CAMP_FADE_OUT_TIME);        /**< Music that plays while camping */
-}
 void shopping()
 {
 	playMid(SHOPPING);    /**< Music when talking to a vendor */

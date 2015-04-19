@@ -60,7 +60,7 @@ void CampController::begin()
 		c->party->member(i)->putToSleep();
 	}
 	CombatController::begin();
-	musicMgr->camp();
+	musicMgr->pause();
 	screenMessage("AUSRUHEN...\n");
 	screenDisableCursor();
 	EventHandler::wait_msecs(settings.campTime * 1000);
@@ -91,7 +91,7 @@ void CampController::begin()
 		c->saveGame->lastcamp = (c->saveGame->moves / CAMP_HEAL_INTERVAL) & 0xffff;
 		eventHandler->popController();
 		game->exitToParentMap();
-		musicMgr->fadeIn(CAMP_FADE_IN_TIME, true);
+		musicMgr->play();
 		delete this;
 	}
 } // CampController::begin
@@ -132,9 +132,9 @@ void InnController::begin()
 	gameUpdateScreen();
 	/* in the original, the vendor music plays straight through sleeping */
 	if (settings.enhancements) {
-		musicMgr->fadeOut(INN_FADE_OUT_TIME);                    /* Fade volume out to ease into rest */
+		musicMgr->pause();                    /* Stop Music */
 	}
-	EventHandler::wait_msecs(INN_FADE_OUT_TIME);
+	// EventHandler::wait_msecs(INN_FADE_OUT_TIME);
 	/* show the sleeping avatar */
 	c->party->setTransport(c->location->map->tileset->getByName("corpse")->getId());
 	gameUpdateScreen();
@@ -159,7 +159,7 @@ void InnController::begin()
 	}
 	screenMessage("\nMORGEN!\n");
 	screenPrompt();
-	musicMgr->fadeIn(INN_FADE_IN_TIME, true);
+	musicMgr->play();
 } // InnController::begin
 bool InnController::heal()
 {

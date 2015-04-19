@@ -1346,11 +1346,11 @@ Script::ReturnCode Script::music(xmlNodePtr script, xmlNodePtr current)
 			musicMgr->play();
 		}
 		if (xmlGetPropAsBool(current, "stop")) {
-			musicMgr->stop();
+			musicMgr->pause();
 		} else if (type == "shopping") {
 			musicMgr->shopping();
 		} else if (type == "camp") {
-			musicMgr->camp();
+			musicMgr->pause();
 		}
 	}
 	return RET_OK;

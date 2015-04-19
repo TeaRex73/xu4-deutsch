@@ -1,11 +1,11 @@
 <?xml version="1.0"?>
 <music>
-    <track file="towne_2.it"/>
-    <track file="merch.it"/>
-    <track file="dungeon.it"/>
-    <track file="castle.it"/>
-    <track file="rulebrit.it"/>
-    <track file="wander4.it"/>
-    <track file="combat4.it"/>
-    <track file="shrine.it"/>
+    <track file="song1.wav"/>
+    <track file="song2.wav"/>
+    <track file="song3.wav"/>
+    <track file="song4.wav"/>
+    <track file="song5.wav"/>
+    <track file="song6.wav"/>
+    <track file="song7.wav"/>
+    <track file="song8.wav"/>
 </music>

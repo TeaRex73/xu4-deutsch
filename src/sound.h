@@ -35,7 +35,7 @@ enum Sound {
 int soundInit(void);
 void soundDelete(void);
 void soundLoad(Sound sound);
-void soundPlay(Sound sound, bool onlyOnce = true, int specificDurationInTicks = -1);
+void soundPlay(Sound sound, bool onlyOnce = true, int specificDurationInTicks = -1, bool wait = false);
 void soundStop(int channel = 1);
 
 #endif /* SOUND_H */

@@ -626,7 +626,7 @@
             UNSERE SPEZIALIT[T IST {specialty}, KOSTET {spec_price}gs.<redirect target="how_many_plates"/>
         </buy>       
 
-        <how_many_plates>WIE VIELE TELLER WILLSTE DAVON?<input name="quantity" type="number" target="food_buy"/>
+        <how_many_plates>WIE VIELE TELLER WILLST'N DAVON?<input name="quantity" type="number" target="food_buy"/>
         </how_many_plates>
 
         <food_buy choice="null" redirect="bye"/>

@@ -181,6 +181,7 @@ const ResponsePart &Dialogue::getAction() const
 	if (prob >= turnAwayProb) {
 		return ResponsePart::NONE;
 	} else {
+		musicMgr->play();
 		if (attackProb - prob < 0x40) {
 			return ResponsePart::END;
 		} else {

@@ -36,8 +36,10 @@ install::
 	mkdir -p $(libdir)/u4g/music
 	$(INSTALL) ../mid/*.mid $(libdir)/u4g/music
 	$(INSTALL) ../mid/*.it $(libdir)/u4g/music
+	$(INSTALL) ../mid/*.wav $(libdir)/u4g/music
 	mkdir -p $(libdir)/u4g/sound
 	$(INSTALL) ../sound/*.ogg $(libdir)/u4g/sound
+	$(INSTALL) ../sound/*.wav $(libdir)/u4g/sound
 	$(INSTALL) -D coord $(libdir)/u4g/coord
 	$(INSTALL) -D dumpsavegame $(libdir)/u4g/dumpsavegame
 	$(INSTALL) -D tlkconv $(libdir)/u4g/tlkconv

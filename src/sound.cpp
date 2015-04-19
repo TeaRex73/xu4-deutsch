@@ -28,9 +28,9 @@ void soundLoad(Sound sound)
 {
 	SoundManager::getInstance()->load(sound);
 }
-void soundPlay(Sound sound, bool onlyOnce, int specificDurationInTicks)
+void soundPlay(Sound sound, bool onlyOnce, int specificDurationInTicks, bool wait)
 {
-	SoundManager::getInstance()->play(sound, onlyOnce, specificDurationInTicks);
+	SoundManager::getInstance()->play(sound, onlyOnce, specificDurationInTicks, wait);
 }
 void soundStop(int channel)
 {
@@ -86,7 +86,7 @@ bool SoundManager::load(Sound sound)
 	}
 	return true;
 }
-void SoundManager::play(Sound sound, bool onlyOnce, int specificDurationInTicks)
+void SoundManager::play(Sound sound, bool onlyOnce, int specificDurationInTicks, bool wait)
 {
 	ASSERT(sound < SOUND_MAX, "Attempted to play an invalid sound in soundPlay()");
 	// If music didn't initialize correctly, then we can't play it anyway
@@ -98,7 +98,7 @@ void SoundManager::play(Sound sound, bool onlyOnce, int specificDurationInTicks)
 			return;
 		}
 	}
-	play_sys(sound, onlyOnce, specificDurationInTicks);
+	play_sys(sound, onlyOnce, specificDurationInTicks, wait);
 }
 void SoundManager::stop(int channel)
 {

@@ -33,7 +33,6 @@
 int timerCount;
 unsigned int timerMsg;
 int deathSequenceRunning = 0;
-bool music = false;
 void deathTimer(void *data);
 void deathRevive(void);
 const struct {
@@ -52,8 +51,7 @@ void deathStart(int delay)
 	}
 	c->willPassTurn = false;
 	// stop playing music
-	music = musicMgr->isPlaying();
-	musicMgr->fadeOut(1000);
+	musicMgr->pause();
 	deathSequenceRunning = 1;
 	timerCount = 0;
 	timerMsg = 0;
@@ -98,9 +96,7 @@ void deathRevive()
 	c->location->coords.z = 0;
 	c->aura->set();
 	c->horseSpeed = 0;
-	if (music) {
-		musicMgr->play();
-	}
+	musicMgr->play();
 	c->party->reviveParty();
 	screenEnableCursor();
 	screenShowCursor();

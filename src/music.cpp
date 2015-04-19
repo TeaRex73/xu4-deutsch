@@ -157,6 +157,7 @@ bool Music::toggle()
 		fadeIn(1000, true);
 	}
 	eventHandler->getTimer()->add(&Music::callback, settings.gameCyclesPerSecond);
+	play();
 	return on;
 }
 /**

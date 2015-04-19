@@ -329,6 +329,7 @@ bool Creature::specialEffect()
 	{
 		ObjectDeque::iterator i;
 		if (coords == c->location->coords) {
+			soundPlay(SOUND_STORM, false, -1, true);
 			/* damage the ship */
 			if (c->transportContext == TRANSPORT_SHIP) {
 				/* FIXME: Check actual damage from u4dos */
@@ -356,6 +357,7 @@ bool Creature::specialEffect()
 	{
 		ObjectDeque::iterator i;
 		if ((coords == c->location->coords) && (c->transportContext == TRANSPORT_SHIP)) {
+			soundPlay(SOUND_WHIRLPOOL, false, -1, true);
 			/* Deal 10 damage to the ship */
 			gameDamageShip(-1, 10);
 			/* Send the party to Locke Lake */
