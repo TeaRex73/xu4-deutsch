@@ -458,11 +458,13 @@ void itemUse(const string &shortname)
 			if (!items[i].isItemInInventory || (*items[i].isItemInInventory)(items[i].data)) {
 				/* use the item, if we can! */
 				if (!item || !item->useItem) {
+					soundPlay(SOUND_ERROR);
 					screenMessage("\nKEIN NUTZBARER GEGENSTAND!\n");
 				} else {
 					(*item->useItem)(items[i].data);
 				}
 			} else {
+				soundPlay(SOUND_ERROR);
 				screenMessage("\nBESITZT DU NICHT!\n");
 			}
 			/* we found the item, no need to keep searching */
@@ -485,6 +487,7 @@ bool isAbyssOpened(const Portal *p)
 	int isopened = (items & ITEM_BELL_USED) && (items & ITEM_BOOK_USED) && (items & ITEM_CANDLE_USED);
 
 	if (!isopened) {
+		soundPlay(SOUND_ERROR);
 		screenMessage("Betreten\nKANN NICHT!\n");
 	}
 	return isopened;
@@ -503,6 +506,7 @@ void itemHandleStones(const string &color)
 		}
 	}
 	if (!found) {
+		soundPlay(SOUND_ERROR);
 		screenMessage("\nBESITZT DU NICHT!\n");
 		stoneMask = 0; /* make sure stone mask is reset */
 	}

@@ -36,6 +36,7 @@ bool CheatMenuController::keyPressed(int key)
 				c->location->coords = *moongate;
 			}
 		} else {
+			soundPlay(SOUND_ERROR);
 			screenMessage("HIER NICHT!\n");
 		}
 		break;
@@ -111,7 +112,7 @@ bool CheatMenuController::keyPressed(int key)
 	}
 	case 'h':
 	{
-		screenMessage("HILFE:\n" "1-8   - TOR\n" "F1-F8 - +TUGEND\n" "A - MONDLAUF\n" "C - KOLLISION\n" "E - WERKZEUG\n" "F - VOLLE PUNKTE\n" "G - GEHE ZU\n" "H - HILFE\n" "I - DINGE\n" "K - ZEIG KARMA\n" "(MEHR)");
+		screenMessage("HILFE:\n" "1-8   - TOR\n" "F1-F8 - +TUGEND\n" "A - MONDLAUF\n" "C - KOLLISION\n" "E - WERKZEUG\n" "F - VOLLE PUNKTE\n" "G - GEHE ZU\n" "H - HILFE\n" "I - DINGE\n" "J - BEGLEITER\n" "K - ZEIG KARMA\n" "(MEHR)");
 		ReadChoiceController pauseController("");
 		eventHandler->pushController(&pauseController);
 		pauseController.waitFor();
@@ -210,7 +211,7 @@ bool CheatMenuController::keyPressed(int key)
 			if (choice) {
 				ReadDirController readDir;
 				tile = c->location->map->tileset->get(choice->getId());
-				screenMessage("%s\n", tile->getName().c_str());
+				screenMessage("\n%s\n", tile->getName().c_str());
 				// Get the direction in which to create the transport
 				eventHandler->pushController(&readDir);
 				screenMessage("WOHIN-");
@@ -222,7 +223,7 @@ bool CheatMenuController::keyPressed(int key)
 					switch (transport) {
 					case 's': ok = ground->getTileType()->isSailable();
 						break;
-					case 'h': ok = ground->getTileType()->isWalkable();
+					case 'p': ok = ground->getTileType()->isWalkable();
 						break;
 					case 'b': ok = ground->getTileType()->isWalkable();
 						break;
@@ -232,8 +233,10 @@ bool CheatMenuController::keyPressed(int key)
 						c->location->map->addObject(*choice, *choice, coords);
 						screenMessage("%s ERZEUGT!\n", tile->getName().c_str());
 					} else if (!choice) {
+						soundPlay(SOUND_ERROR);
 						screenMessage("UNG]LTIGER\nTRANSPORT!\n");
 					} else {
+						soundPlay(SOUND_ERROR);
 						screenMessage("KANN %s NICHT PLATZIEREN!\n", tile->getName().c_str());
 					}
 				}
@@ -248,16 +251,14 @@ bool CheatMenuController::keyPressed(int key)
 		}
 		c->stats->update();
 		break;
-	case 'w':
-	{
-		screenMessage("WINDRICHTUNG ('L' zum SPERREN):\n");
+	case 'w': { screenMessage("WINDRICHTUNG ('L' zum SPERREN):\n");
 		WindCmdController ctrl;
 		eventHandler->pushController(&ctrl);
 		ctrl.waitFor();
-		break;
-	}
+		break; }
 	case 'x': screenMessage("\nVERLASSE!\n");
 		if (!game->exitToParentMap()) {
+			soundPlay(SOUND_ERROR);
 			screenMessage("HIER NICHT!\n");
 		}
 		musicMgr->play();
@@ -275,6 +276,7 @@ bool CheatMenuController::keyPressed(int key)
 		if ((c->location->context & CTX_DUNGEON) && (c->location->coords.z < 7)) {
 			c->location->coords.z++;
 		} else {
+			soundPlay(SOUND_ERROR);
 			screenMessage("HIER NICHT!\n");
 		}
 		break;
@@ -328,6 +330,7 @@ void CheatMenuController::summonCreature(const string &name)
 		if (gameSpawnCreature(m)) {
 			screenMessage("\n%s BESCHWOREN!\n", m->getName().c_str());
 		} else {
+			soundPlay(SOUND_ERROR);
 			screenMessage("\n\nKEIN PLATZ F]R %s!\n\n", m->getName().c_str());
 		}
 		return;

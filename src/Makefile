@@ -17,8 +17,8 @@ LIBS=-L/usr/lib -L/usr/lib/arm-linux-gnueabihf -L/lib/arm-linux-gnueabihf $(UILI
 CC=$(CCPREFIX)gcc
 CXX=$(CCPREFIX)g++
 FEATURES=-DHAVE_BACKTRACE=1 -DHAVE_VARIADIC_MACROS=1
-DEBUGCXXFLAGS=-Og -marm -mfpu=vfp -march=native -mtune=native -mfloat-abi=hard -DDEBUG -g -DRASB_PI
-# DEBUGCXXFLAGS=-Ofast -march=native -mtune=native -DNDEBUG -URASB_PI -fno-exceptions -fno-non-call-exceptions -fno-common
+DEBUGCXXFLAGS=-Ofast -DNPERF -marm -mfpu=vfp -march=native -mtune=native -mfloat-abi=hard -DDEBUG -g -DRASB_PI
+# DEBUGCXXFLAGS=-O3 -march=native -mtune=native -DNDEBUG -URASB_PI -fno-exceptions -fno-non-call-exceptions -fno-common
 CXXFLAGS=$(FEATURES) -Wall -pipe -I. -I/usr/include/libxml2 -I/usr/include/SDL -I/usr/include -I/usr/local/include -I/include -I/usr/include/arm-linux-gnueabihf $(UIFLAGS) -I/usr/include/libxml2 -DICON_FILE=\"$(datadir)/pixmaps/u4.bmp\" -DVERSION=\"$(VERSION)\" $(DEBUGCXXFLAGS) $(LIBS)
 CFLAGS=$(CXXFLAGS)
 INSTALL=install
@@ -29,8 +29,16 @@ endif
 
 include Makefile.common
 
-install::
-	$(INSTALL) -D $(MAIN) $(bindir)/$(MAIN)
+install-prog::
+	$(INSTALL) -D -s $(MAIN) $(bindir)/$(MAIN)
+	$(INSTALL) -D -s coord $(libdir)/u4g/coord
+	$(INSTALL) -D -s dumpsavegame $(libdir)/u4g/dumpsavegame
+	$(INSTALL) -D -s tlkconv $(libdir)/u4g/tlkconv
+	$(INSTALL) -D -s u4dec $(libdir)/u4g/u4dec
+	$(INSTALL) -D -s u4enc $(libdir)/u4g/u4enc
+	$(INSTALL) -D -s u4unpackexe $(libdir)/u4g/u4unpackexe
+
+install:: install-prog
 	$(INSTALL) -D ../icons/u4.bmp $(datadir)/pixmaps/u4.bmp
 	$(INSTALL) -D ../icons/u4.png $(datadir)/pixmaps/u4.png
 	mkdir -p $(libdir)/u4g/music
@@ -40,12 +48,6 @@ install::
 	mkdir -p $(libdir)/u4g/sound
 	$(INSTALL) ../sound/*.ogg $(libdir)/u4g/sound
 	$(INSTALL) ../sound/*.wav $(libdir)/u4g/sound
-	$(INSTALL) -D coord $(libdir)/u4g/coord
-	$(INSTALL) -D dumpsavegame $(libdir)/u4g/dumpsavegame
-	$(INSTALL) -D tlkconv $(libdir)/u4g/tlkconv
-	$(INSTALL) -D u4dec $(libdir)/u4g/u4dec
-	$(INSTALL) -D u4enc $(libdir)/u4g/u4enc
-	$(INSTALL) -D u4unpackexe $(libdir)/u4g/u4unpackexe
 	$(INSTALL) ../conf/*.xml $(libdir)/u4g
 	mkdir -p $(libdir)/u4g/dtd
 	$(INSTALL) ../conf/dtd/*.dtd $(libdir)/u4g/dtd

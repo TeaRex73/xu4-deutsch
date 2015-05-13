@@ -354,7 +354,7 @@ bool screenTileUpdate(TileView *view, const Coords &coords, bool redraw)
 	if ((x >= 0) && (y >= 0) && (x < VIEWPORT_W) && (y < VIEWPORT_H) && screenLos[x][y]) {
 		view->drawTile(tiles, focus, x, y);
 		if (redraw) {
-			// screenRedrawMapArea();
+			screenRedrawMapArea();
 		}
 		return true;
 	}

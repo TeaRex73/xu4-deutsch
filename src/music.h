@@ -43,6 +43,7 @@ void playCurrent();
 void play();
 void pause()
 {
+	introMid = NONE;
 	current = NONE;
 	stopMid();
 }
@@ -67,6 +68,7 @@ void shopping()
 }
 void intro()
 {
+	if (!introMid) introMid = TOWNS;
 	playMid(introMid);
 }     /**< Play the introduction music on title loadup */
 void introSwitch(int n);

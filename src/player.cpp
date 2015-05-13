@@ -1188,6 +1188,10 @@ void Party::swapPlayers(int p1, int p2)
 	} else if (p2 == activePlayer) {
 		activePlayer = p1;
 	}
+	MapTile tmptile;
+	tmptile = member(p1)->getTile();
+	member(p1)->setTile(member(p2)->getTile());
+	member(p2)->setTile(tmptile);
 	notifyOfChange(0);
 }
 void Party::syncMembers()

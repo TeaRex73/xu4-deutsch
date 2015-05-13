@@ -44,6 +44,7 @@ enum EquipError {
  * PartyMember class
  */
 class PartyMember:public Creature, public Script::Provider {
+friend class Party;
 public: PartyMember(Party *p, SaveGamePlayerRecord *pr);
 virtual ~PartyMember();
 void notifyOfChange();

@@ -92,7 +92,7 @@ bool updateTitle();
 private: void drawMap();
 void drawMapStatic();
 void drawMapAnimated();
-void drawBeasties();
+void drawBeasties(bool musicon = true);
 void drawBeastie(int beast, int vertoffset, int frame);
 void animateTree(const string &frame);
 void drawCard(int pos, int card);
@@ -150,6 +150,7 @@ int sleepCycles;
 int scrPos;      /* current position in the script table */
 IntroObjectState *objectStateTable;
 bool justInitiatedNewGame;
+bool initiatingNewGame;
 //
 // Title defs, structs, methods, and data members
 //

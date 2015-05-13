@@ -271,6 +271,7 @@ IntroController::IntroController():Controller(1), backgroundArea(), menuArea(1 *
 bool IntroController::init()
 {
 	justInitiatedNewGame = false;
+	initiatingNewGame = false;
 	// sigData is referenced during Titles initialization
 	binData = new IntroBinData();
 	binData->load();
@@ -320,6 +321,7 @@ void IntroController::deleteIntro()
 	objectStateTable = NULL;
 	imageMgr->freeIntroBackgrounds();
 	musicMgr->introMid = Music::NONE;
+	bSkipTitles = true;
 }
 unsigned char *IntroController::getSigData()
 {
@@ -496,13 +498,16 @@ void IntroController::drawMapAnimated()
 /**
  * Draws the animated beasts in the upper corners of the screen.
  */
-void IntroController::drawBeasties()
+void IntroController::drawBeasties(bool musicon)
 {
+	if (bSkipTitles) beastieOffset = 0;
 	drawBeastie(0, beastieOffset, binData->beastie1FrameTable[beastie1Cycle]);
 	drawBeastie(1, beastieOffset, binData->beastie2FrameTable[beastie2Cycle]);
 	if (beastieOffset < 0) {
 		beastieOffset++;
-	}
+	} else if (musicon) {
+		musicMgr->intro();
+        }
 }
 /**
  * Animates the "beasties".  The animate intro image is made up frames
@@ -614,6 +619,8 @@ void IntroController::updateScreen()
  */
 void IntroController::initiateNewGame()
 {
+	initiatingNewGame = true;
+	musicMgr->pause();
 	// disable the screen cursor because a text cursor will now be used
 	screenDisableCursor();
 	// draw the extended background for all option screens
@@ -627,7 +634,7 @@ void IntroController::initiateNewGame()
 	menuArea.setCursorPos(15, 7, false);
 	menuArea.setCursorFollowsText(true);
 	menuArea.enableCursor();
-	drawBeasties();
+	drawBeasties(false);
 	screenRedrawScreen();
 	string nameBuffer = ReadStringController::get(8, &menuArea);
 	if (nameBuffer.length() == 0) {
@@ -644,7 +651,7 @@ void IntroController::initiateNewGame()
 	menuArea.textAt(3, 3, "Bist du m{nnlich oder weiblich?");
 	// the cursor is already enabled, just change its position
 	menuArea.setCursorPos(34, 3, true);
-	drawBeasties();
+	drawBeasties(false);
 	SexType sex;
 	int sexChoice = ReadChoiceController::get("mw");
 	if (sexChoice == 'm') {
@@ -718,13 +725,17 @@ void IntroController::showStory(SexType sex)
 		if (storyInd == 0) {
 			backgroundArea.draw(BKGD_TREE);
 		} else if (storyInd == 3) {
+			soundPlay(SOUND_INTROGATE_OPEN);
 			animateTree("moongate");
 		} else if (storyInd == 5) {
+			soundPlay(SOUND_INTROGATE_CLOSE);
 			animateTree("items");
 		} else if (storyInd == 6) {
 			backgroundArea.draw(BKGD_PORTAL);
 		} else if (storyInd == 12) {
 			backgroundArea.draw(BKGD_TREE);
+		} else if (storyInd == 15) {
+			musicMgr->intro();
 		} else if (storyInd == 16) {
 			backgroundArea.draw(BKGD_OUTSIDE);
 		} else if (storyInd == 18) {
@@ -732,6 +743,7 @@ void IntroController::showStory(SexType sex)
 		} else if (storyInd == 21) {
 			backgroundArea.draw(BKGD_WAGON);
 		} else if (storyInd == 22) {
+			musicMgr->pause();
 			backgroundArea.draw(BKGD_GYPSY);
 		} else if (storyInd == 24) {
 			backgroundArea.draw(BKGD_ABACUS);
@@ -910,7 +922,7 @@ void IntroController::timerFired()
 			// setup the map screen
 			mode = INTRO_MAP;
 			beastiesVisible = true;
-			musicMgr->intro();
+			// musicMgr->intro();
 			updateScreen();
 		}
 	}
@@ -918,7 +930,7 @@ void IntroController::timerFired()
 		drawMap();
 	}
 	if (beastiesVisible) {
-		drawBeasties();
+		drawBeasties(!initiatingNewGame);
 	}
 	/*
 	 * refresh the screen only if the timer queue is empty --
@@ -1044,13 +1056,13 @@ void IntroController::updateSoundMenu(MenuEvent &event)
 		case MI_SOUND_01: musicMgr->setMusicVolume(settingsChanged.musicVol);
 			break;
 		case MI_SOUND_02: musicMgr->setSoundVolume(settingsChanged.soundVol);
-			soundPlay(SOUND_FLEE, false, -1, true);
+			soundPlay(SOUND_FLEE, false);
 			break;
 		case USE_SETTINGS:
 			// save settings
 			settings.setData(settingsChanged);
 			settings.write();
-			musicMgr->intro();
+			// musicMgr->intro();
 			break;
 		case CANCEL: musicMgr->setMusicVolume(settings.musicVol);
 			musicMgr->setSoundVolume(settings.soundVol);
@@ -1653,7 +1665,6 @@ bool IntroController::updateTitle()
 			// reset the timer to the pre-titles granularity
 			eventHandler->getTimer()->reset(eventTimerGranularity);
 			// make sure the titles only appear when the app first loads
-			bSkipTitles = true;
 			return false;
 		}
 		if (title->method == TITLE) {

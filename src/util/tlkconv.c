@@ -155,7 +155,6 @@ void xmlToTlk(xmlDocPtr doc, FILE *tlk)
             else xmlFree(str[i]);
         }
 
-        fprintf(stderr, "%ld\n", (long)(ptr - &tlk_buffer[0]));
         fwrite(tlk_buffer, sizeof(tlk_buffer), 1, tlk);
     }
 }

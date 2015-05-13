@@ -255,7 +255,7 @@ StatusType getStatus() const;
 bool isAsleep() const;
 bool hideOrShow();
 Creature *nearestOpponent(int *dist, bool ranged);
-virtual void putToSleep();
+virtual void putToSleep(bool sound = true);
 virtual void removeStatus(StatusType status);
 virtual void setStatus(StatusType status);
 virtual void wakeUp();

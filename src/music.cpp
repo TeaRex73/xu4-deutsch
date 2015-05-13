@@ -38,7 +38,7 @@ bool Music::functional = true;
 /**
  * Initiliaze the music
  */
-Music::Music():introMid(MAX), current(NONE), playing(NULL), logger(new Debug("debug/music.txt", "Music"))
+Music::Music():introMid(NONE), current(NONE), playing(NULL), logger(new Debug("debug/music.txt", "Music"))
 {
 	filenames.reserve(MAX);
 	filenames.push_back(""); // filename for MUSIC_NONE;

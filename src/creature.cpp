@@ -283,6 +283,7 @@ bool Creature::specialAction()
 		   Note: Monsters in settlements in U3 do fire on party
 		*/
 		if ((mapdist <= 3) && (xu4_random(2) == 0) && ((c->location->context & CTX_CITY) == 0)) {
+			soundPlay(SOUND_NPC_ATTACK);
 			vector<Coords> path = gameGetDirectionalActionPath(dir, MASK_DIR_ALL, coords, 1, 3, NULL, false);
 			for (vector<Coords>::iterator i = path.begin(); i != path.end(); i++) {
 				if (creatureRangeAttack(*i, this)) {
@@ -299,6 +300,7 @@ bool Creature::specialAction()
 		     ((dy == 0) && (dx <= 3))) && /* avatar is close enough and on the same row, AND */
 		    ((broadsidesDirs & dir) > 0)) { /* pirate ship is firing broadsides */
 			// nothing (not even mountains!) can block cannonballs
+			soundPlay(SOUND_NPC_ATTACK);
 			vector<Coords> path = gameGetDirectionalActionPath(dir, broadsidesDirs, coords, 1, 3, NULL, false);
 			for (vector<Coords>::iterator i = path.begin(); i != path.end(); i++) {
 				if (fireAt(*i, false)) {
@@ -333,10 +335,14 @@ bool Creature::specialEffect()
 			/* damage the ship */
 			if (c->transportContext == TRANSPORT_SHIP) {
 				/* FIXME: Check actual damage from u4dos */
-				gameDamageShip(10, 30); /* anything else but balloon damages the party */
+				for (int j = 0; j < xu4_random(3) + 2; j++) {
+					gameDamageShip(3, 10); /* anything else but balloon damages the party */
+				}
 			} else if (c->transportContext != TRANSPORT_BALLOON) {
 				/* FIXME: formula for twister damage is guesstimated from u4dos */
-				gameDamageParty(0, 75);
+				for (int j = 0; j < xu4_random(3) + 2; j++) {
+					gameDamageParty(0, 25);
+				}
 			}
 			return true;
 		}
@@ -345,6 +351,7 @@ bool Creature::specialEffect()
 			obj = *i;
 			if ((this != obj) && (obj->getCoords() == coords)) {
 				/* Converged with an object, destroy the object! */
+				soundPlay(SOUND_NPC_STRUCK, false);
 				i = c->location->map->removeObject(i);
 				retval = true;
 			} else {
@@ -360,9 +367,9 @@ bool Creature::specialEffect()
 			soundPlay(SOUND_WHIRLPOOL, false, -1, true);
 			/* Deal 10 damage to the ship */
 			gameDamageShip(-1, 10);
-			/* Send the party to Locke Lake */
+			/* Send the party to Loch Lake */
 			c->location->coords = c->location->map->getLabel("lockelake");
-			/* Teleport the whirlpool that sent you there far away from lockelake */
+			/* Teleport the whirlpool that sent you there far away from loch lake */
 			this->setCoords(Coords(0, 0, 0));
 			retval = true;
 			break;
@@ -375,6 +382,7 @@ bool Creature::specialEffect()
 				/* Make sure the object isn't a flying creature or object */
 				if (!m || (m && (m->swims() || m->sails()) && !m->flies())) {
 					/* Destroy the object it met with */
+					soundPlay(SOUND_NPC_STRUCK, false);
 					i = c->location->map->removeObject(i);
 					retval = true;
 				} else {
@@ -704,7 +712,7 @@ Creature *Creature::nearestOpponent(int *dist, bool ranged)
 	}
 	return opponent;
 } // Creature::nearestOpponent
-void Creature::putToSleep()
+void Creature::putToSleep(bool sound)
 {
 	if (getStatus() != STAT_DEAD) {
 		addStatus(STAT_SLEEPING);

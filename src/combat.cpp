@@ -573,7 +573,7 @@ bool CombatController::attackAt(const Coords &coords, PartyMember *attacker, int
 	} else { /* The weapon hit! */
 		 /* show the 'hit' tile */
 		GameController::flashTile(coords, misstile, 1);
-		soundPlay(SOUND_NPC_STRUCK, false, -1);                           // NPC_STRUCK, melee hit
+		soundPlay(SOUND_NPC_STRUCK, false);                           // NPC_STRUCK, melee hit
 		GameController::flashTile(coords, hittile, 3);
 		/* apply the damage to the creature */
 		if (!attacker->dealDamage(creature, attacker->getDamage())) {
@@ -876,6 +876,7 @@ bool CombatController::keyPressed(int key)
 			screenPrompt();
 			valid = false;
 	} else {
+			soundPlay(SOUND_ERROR);
 			screenMessage("HIER NICHT!\n");
 	}
 		break;
@@ -893,6 +894,7 @@ bool CombatController::keyPressed(int key)
 			screenPrompt();
 			valid = false;
 	} else {
+			soundPlay(SOUND_ERROR);
 			screenMessage("HIER NICHT!\n");
 	}
 		break;
@@ -920,11 +922,13 @@ bool CombatController::keyPressed(int key)
 		ctrl.waitFor();
 		break;
 	}
-	case 'l': case 'b': case 'y': case 'k': case 'c': case 'f': case 'd': case 'q': case 'm': case 'o': case '|': case 'u': case 'j': case 'e': case 'n': case 'r': case 'g': case 'h': screenMessage("HIER NICHT!\n");
+	case 'l': case 'b': case 'y': case 'k': case 'c': case 'f': case 'd': case 'q': case 'm': case 'o': case '|': case 'u': case 'j': case 'e': case 'n': case 'r': case 'g': case 'h': soundPlay(SOUND_ERROR);
+		screenMessage("HIER NICHT!\n");
 		break;
 	case '0': case '1': case '2': case '3': case '4': case '5': case '6': case '7': case '8': case '9': if (settings.enhancements && settings.enhancementsOptions.activePlayer) {
 			gameSetActivePlayer(key - '1');
 	} else {
+			soundPlay(SOUND_ERROR);
 			screenMessage("WAS?\n");
 	}
 		break;

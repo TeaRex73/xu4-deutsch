@@ -27,9 +27,8 @@
     <track file="sound09.wav"/>      <!-- C64 MAGIC          -->
     <track file="sound11.wav"/>      <!--     STORM          -->
     <track file="sound12.wav"/>      <!--     WHIRLPOOL      -->
-    <track file="sound02.wav"/>      <!--     MISSED  THERE IS NO MISSED SOUND!!!       -->
-    <track file="sound03.wav"/>      <!--     CREATUREATTACK -->
-    <track file="sound07.wav"/>      <!--     PLAYERHIT      -->
+    <track file="soundyy.wav"/>      <!--     INTROGATE_OPEN -->
+    <track file="soundzz.wav"/>      <!--     INTROGATE_CLOSE-->
 </sound>
 
 

@@ -31,7 +31,7 @@ bool SoundManager::load_sys(Sound sound, const string &pathname)
 	}
 	return true;
 }
-static bool finished = false;
+static volatile bool finished = false;
 void channel_finished(int channel)
 {
 	finished = true;
@@ -41,10 +41,13 @@ void SoundManager::play_sys(Sound sound, bool onlyOnce, int specificDurationInTi
 	/**
 	 * Use Channel 1 for sound effects
 	 */
-	if (wait) {
+	finished = true;
+	if (Mix_Playing(1)) {
 		finished = false;
 		Mix_ChannelFinished(*channel_finished);
+		if (!Mix_Playing(1)) finished = true;
 	}
+	while (!onlyOnce && !finished) ;
 	if (!onlyOnce || !Mix_Playing(1)) {
 		if (Mix_PlayChannelTimed(1, soundChunk[sound], (specificDurationInTicks == -1) ? 0 : -1, specificDurationInTicks) == -1) {
 			fprintf(stderr, "Error playing sound %d: %s\n", sound, Mix_GetError());

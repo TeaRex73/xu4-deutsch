@@ -662,7 +662,7 @@ void GameController::update(Party *party, PartyEvent &event)
 		gameSpellEffect('r', -1, SOUND_MAGIC); // Same as resurrect spell
 		break;
 	case PartyEvent::STARVING: screenMessage("\n%cHUNGERN!!!%c\n", FG_YELLOW, FG_WHITE);
-		/* FIXME: add sound effect here */
+		soundPlay(SOUND_PC_STRUCK, false);
 		// 2 damage to each party member for starving!
 		for (i = 0; i < c->saveGame->members; i++) {
 			c->party->member(i)->applyDamage(2);
@@ -698,7 +698,7 @@ void gameSpellEffect(int spell, int player, Sound sound)
 		c->stats->highlightPlayer(player);
 	}
 	time = settings.spellEffectSpeed * 800 / settings.gameCyclesPerSecond;
-	soundPlay(sound, false, time, true);
+	soundPlay(sound, false, time);
 
 	///The following effect multipliers are not accurate
 	switch (spell) {
@@ -718,6 +718,7 @@ void gameSpellEffect(int spell, int player, Sound sound)
 		game->mapArea.highlight(0, 0, VIEWPORT_W * TILE_WIDTH, VIEWPORT_H * TILE_HEIGHT);
 		EventHandler::sleep(time);
 		game->mapArea.unhighlight();
+		screenUpdate(&game->mapArea, true, false);
 		screenRedrawScreen();
 		if (effect == Spell::SFX_TREMOR) {
 			gameUpdateScreen();
@@ -736,6 +737,7 @@ void gameCastSpell(unsigned int spell, int caster, int param)
 	if (!spellCast(spell, caster, param, &spellError, true)) {
 		msg = spellGetErrorMessage(spell, spellError);
 		if (!msg.empty()) {
+			soundPlay(SOUND_FLEE);
 			screenMessage("%s", msg.c_str());
 		}
 	}
@@ -815,6 +817,7 @@ bool GameController::keyPressed(int key)
 		}
 	}
 	if ((c->location->context & CTX_DUNGEON) && strchr("albkdp|usgh", key)) {
+		soundPlay(SOUND_ERROR);
 		screenMessage("%cHIER NICHT!%c\n", FG_GREY, FG_WHITE);
 	} else {
 		switch (key) {
@@ -983,14 +986,17 @@ bool GameController::keyPressed(int key)
 				if (c->transportContext == TRANSPORT_BALLOON) {
 					screenMessage("Ballon Landen\n");
 					if (!c->party->isFlying()) {
+						soundPlay(SOUND_ERROR);
 						screenMessage("%cSCHON GELANDET!%c\n", FG_GREY, FG_WHITE);
 					} else if (c->location->map->tileTypeAt(c->location->coords, WITH_OBJECTS)->canLandBalloon()) {
 						c->saveGame->balloonstate = 0;
 						c->opacity = 1;
 					} else {
+						soundPlay(SOUND_ERROR);
 						screenMessage("%cHIER NICHT!%c\n", FG_GREY, FG_WHITE);
 					}
 				} else {
+					soundPlay(SOUND_ERROR);
 					screenMessage("%cAbw{rts WOHIN?%c\n", FG_GREY, FG_WHITE);
 				}
 			} else if (cleanMap) {
@@ -1000,6 +1006,7 @@ bool GameController::keyPressed(int key)
 		}
 		case 'b': if (!usePortalAt(c->location, c->location->coords, ACTION_ENTER)) {
 				if (!c->location->map->portalAt(c->location->coords, ACTION_ENTER)) {
+					soundPlay(SOUND_ERROR);
 					screenMessage("%cBetreten - WAS?%c\n", FG_GREY, FG_WHITE);
 				}
 		} else {
@@ -1015,9 +1022,11 @@ bool GameController::keyPressed(int key)
 		case 'f': screenMessage("Fackel z}nden\n");
 			if (c->location->context == CTX_DUNGEON) {
 				if (!c->party->lightTorch()) {
+					soundPlay(SOUND_ERROR);
 					screenMessage("%cKEINE ]BRIG!%c\n", FG_GREY, FG_WHITE);
 				}
 			} else {
+				soundPlay(SOUND_ERROR);
 				screenMessage("%cHIER NICHT!%c\n", FG_GREY, FG_WHITE);
 			}
 			break;
@@ -1029,6 +1038,7 @@ bool GameController::keyPressed(int key)
 					c->opacity = 0;
 					screenMessage("Aufsteigen\n");
 				} else {
+					soundPlay(SOUND_ERROR);
 					screenMessage("%cAufw{rts WOHIN?%c\n", FG_GREY, FG_WHITE);
 				}
 		}
@@ -1039,9 +1049,11 @@ bool GameController::keyPressed(int key)
 				if (c->saveGame->sextants >= 1) {
 					screenMessage("Position\nmit Sextant\n Breite: %c'%c\"\nL{nge: %c'%c\"\n", c->location->coords.y / 16 + 'A', c->location->coords.y % 16 + 'A', c->location->coords.x / 16 + 'A', c->location->coords.x % 16 + 'A');
 				} else {
+					soundPlay(SOUND_ERROR);
 					screenMessage("%cPosition WOMIT?%c\n", FG_GREY, FG_WHITE);
 				}
 			} else {
+				soundPlay(SOUND_ERROR);
 				screenMessage("%cHIER NICHT!%c\n", FG_GREY, FG_WHITE);
 			}
 			break;
@@ -1057,6 +1069,7 @@ bool GameController::keyPressed(int key)
 			if (c->location->context & CTX_CAN_SAVE_GAME) {
 				gameSave();
 			} else {
+				soundPlay(SOUND_ERROR);
 				screenMessage("%cHIER NICHT!%c\n", FG_GREY, FG_WHITE);
 			}
 			break;
@@ -1065,6 +1078,7 @@ bool GameController::keyPressed(int key)
 		case 'n': if (c->location->context == CTX_DUNGEON) {
 				dungeonSearch();
 		} else if (c->party->isFlying()) {
+				soundPlay(SOUND_ERROR);
 				screenMessage("Nachschauen...\n%cNUR DRIFT!%c\n", FG_GREY, FG_WHITE);
 		} else {
 				screenMessage("Nachschauen...\n");
@@ -1118,6 +1132,7 @@ bool GameController::keyPressed(int key)
 				c->horseSpeed = 0;
 				screenMessage("Gehen\n");
 		} else {
+				soundPlay(SOUND_ERROR);
 				screenMessage("Gehen\n%cHIER NICHT!%c\n", FG_GREY, FG_WHITE);
 		}
 			break;
@@ -1130,6 +1145,7 @@ bool GameController::keyPressed(int key)
 					c->horseSpeed = 0;
 				}
 		} else {
+				soundPlay(SOUND_ERROR);
 				screenMessage("\"H}hott!\"\n%cHIER NICHT!%c\n", FG_GREY, FG_WHITE);
 		}
 			break;
@@ -1169,9 +1185,9 @@ bool GameController::keyPressed(int key)
 			extern bool quit;
 			endTurn = false;
 			screenMessage("ZUR]CK INS MEN]?");
-			char choice = ReadChoiceController::get("yn \n\033");
-			screenMessage("%c", choice);
-			if (choice != 'y') {
+			char choice = ReadChoiceController::get("jn \n\033");
+			// screenMessage("%c", choice);
+			if (choice != 'j') {
 				screenMessage("\n");
 				break;
 			}
@@ -1215,6 +1231,7 @@ bool GameController::keyPressed(int key)
 		case '0': case '1': case '2': case '3': case '4': case '5': case '6': case '7': case '8': case '9': if (settings.enhancements && settings.enhancementsOptions.activePlayer) {
 				gameSetActivePlayer(key - '1');
 		} else {
+				soundPlay(SOUND_ERROR);
 				screenMessage("%cWAS?%c\n", FG_GREY, FG_WHITE);
 		}
 			endTurn = 0;
@@ -1271,6 +1288,7 @@ int gameGetPlayer(bool canBeDisabled, bool canBeActivePlayer, bool zeroIsValid)
 	}
 #endif
 	if (!canBeDisabled && c->party->member(player)->isDisabled()) {
+		soundPlay(SOUND_ERROR);
 		screenMessage("%cAUSSER GEFECHT!%c\n", FG_GREY, FG_WHITE);
 		return -1;
 	}
@@ -1305,11 +1323,13 @@ bool gameSpellMixHowMany(int spell, int num, Ingredients *ingredients)
 	/* if they ask for more than will give them 99, only use what they need */
 	if (num > 99 - c->saveGame->mixtures[spell]) {
 		num = 99 - c->saveGame->mixtures[spell];
+		soundPlay(SOUND_ERROR);
 		screenMessage("\n%cDU BRAUCHST NUR %d!%c\n", FG_GREY, num, FG_WHITE);
 	}
 	screenMessage("\nMISCHE %d...\n", num);
 	/* see if there's enough reagents to make number of mixtures requested */
 	if (!ingredients->checkMultiple(num)) {
+		soundPlay(SOUND_ERROR);
 		screenMessage("\n%cDU HAST NICHT GENUG REAGENZIEN, UM %d ZAUBER ZU MISCHEN!%c\n", FG_GREY, num, FG_WHITE);
 		ingredients->revert();
 		return false;
@@ -1358,6 +1378,7 @@ void destroy()
 			return;
 		}
 	}
+	soundPlay(SOUND_ERROR);
 	screenMessage("%cDA IST NICHTS!%c\n", FG_GREY, FG_WHITE);
 }
 bool destroyAt(const Coords &coords)
@@ -1382,6 +1403,7 @@ void attack()
 {
 	screenMessage("Angreifen");
 	if (c->party->isFlying()) {
+		soundPlay(SOUND_ERROR);
 		screenMessage("-%cNUR DRIFT!%c\n", FG_GREY, FG_WHITE);
 		return;
 	}
@@ -1395,6 +1417,7 @@ void attack()
 			return;
 		}
 	}
+	soundPlay(SOUND_ERROR);
 	screenMessage("%cKEIN FEIND!%c\n", FG_GREY, FG_WHITE);
 }
 /**
@@ -1441,11 +1464,13 @@ bool attackAt(const Coords &coords)
 void board()
 {
 	if (c->transportContext != TRANSPORT_FOOT) {
+		soundPlay(SOUND_ERROR);
 		screenMessage("Losfahren\n%cKANN NICHT!%c\n", FG_GREY, FG_WHITE);
 		return;
 	}
 	Object *obj = c->location->map->objectAt(c->location->coords);
 	if (!obj) {
+		soundPlay(SOUND_ERROR);
 		screenMessage("Losfahren\n%cWOMIT?%c\n", FG_GREY, FG_WHITE);
 		return;
 	}
@@ -1460,6 +1485,7 @@ void board()
 	} else if (tile->isBalloon()) {
 		screenMessage("Losfahren\nmit Ballon!\n");
 	} else {
+		soundPlay(SOUND_ERROR);
 		screenMessage("Losfahren\n%cWOMIT?%c\n", FG_GREY, FG_WHITE);
 		return;
 	}
@@ -1583,6 +1609,7 @@ void castSpell(int player)
 void fire()
 {
 	if (c->transportContext != TRANSPORT_SHIP) {
+		soundPlay(SOUND_ERROR);
 		screenMessage("Kanone feuern\n%cHIER NICHT!%c\n", FG_GREY, FG_WHITE);
 		return;
 	}
@@ -1594,6 +1621,7 @@ void fire()
 	// can only fire broadsides
 	int broadsidesDirs = dirGetBroadsidesDirs(c->party->getDirection());
 	if (!DIR_IN_MASK(dir, broadsidesDirs)) {
+		soundPlay(SOUND_ERROR);
 		screenMessage("%cNUR BREITSEITEN!%c\n", FG_GREY, FG_WHITE);
 		return;
 	}
@@ -1630,7 +1658,7 @@ bool fireAt(const Coords &coords, bool originAvatar)
 	}
 	if (validObject) {
 		/* always displays as a 'hit' though the object may not be destroyed */
-		/* Is is a pirate ship firing at US? */
+		/* Is it a pirate ship firing at US? */
 		if (hitsAvatar) {
 			GameController::flashTile(coords, "hit_flash", 4);
 			if (c->transportContext == TRANSPORT_SHIP) {
@@ -1642,11 +1670,13 @@ bool fireAt(const Coords &coords, bool originAvatar)
 		/* inanimate objects get destroyed instantly, while creatures get a chance */
 		else if (obj->getType() == Object::UNKNOWN) {
 			GameController::flashTile(coords, "hit_flash", 4);
+			soundPlay(SOUND_NPC_STRUCK, false);
 			c->location->map->removeObject(obj);
 		}
 		/* only the avatar can hurt other creatures with cannon fire */
 		else if (originAvatar) {
 			GameController::flashTile(coords, "hit_flash", 4);
+			soundPlay(SOUND_NPC_STRUCK, false);
 			if (xu4_random(4) == 0) { /* reverse-engineered from u4dos */
 				c->location->map->removeObject(obj);
 			}
@@ -1662,6 +1692,7 @@ void getChest(int player)
 {
 	screenMessage("Truhe |ffnen\n");
 	if (c->party->isFlying()) {
+		soundPlay(SOUND_ERROR);
 		screenMessage("%cNUR DRIFT!%c\n", FG_GREY, FG_WHITE);
 		return;
 	}
@@ -1702,6 +1733,7 @@ void getChest(int player)
 			c->party->adjustKarma(KA_STOLE_CHEST);
 		}
 	} else {
+		soundPlay(SOUND_ERROR);
 		screenMessage("%cHIER NICHT!%c\n", FG_GREY, FG_WHITE);
 	}
 }                                                                                                                                                                     // getChest
@@ -1760,10 +1792,12 @@ void holeUp()
 {
 	screenMessage("Campieren...\n");
 	if (!(c->location->context & (CTX_WORLDMAP | CTX_DUNGEON))) {
+		soundPlay(SOUND_ERROR);
 		screenMessage("%cHIER NICHT!%c\n", FG_GREY, FG_WHITE);
 		return;
 	}
 	if (c->transportContext != TRANSPORT_FOOT) {
+		soundPlay(SOUND_ERROR);
 		screenMessage("%cNUR ZU FUSS!%c\n", FG_GREY, FG_WHITE);
 		return;
 	}
@@ -1887,7 +1921,8 @@ void GameController::avatarMoved(MoveEvent &event)
 					screenMessage("%s fahren\n", getDirectionName(event.dir));
 			}
 				break;
-			case TRANSPORT_BALLOON: screenMessage("%cNUR DRIFT!%c\n", FG_GREY, FG_WHITE);
+			case TRANSPORT_BALLOON: soundPlay(SOUND_ERROR);
+				screenMessage("%cNUR DRIFT!%c\n", FG_GREY, FG_WHITE);
 				break;
 			default: ASSERT(0, "bad transportContext %d in avatarMoved()", c->transportContext);
 			}
@@ -1967,6 +2002,7 @@ void GameController::avatarMovedInDungeon(MoveEvent &event)
 			}
 		}
 		if (event.result & MOVE_BLOCKED) {
+			soundPlay(SOUND_BLOCKED, false);
 			screenMessage("%cBLOCKIERT!%c\n", FG_GREY, FG_WHITE);
 		}
 	}
@@ -2011,6 +2047,7 @@ void jimmy()
 			return;
 		}
 	}
+	soundPlay(SOUND_ERROR);
 	screenMessage("%cWOZU?%c\n", FG_GREY, FG_WHITE);
 }
 /**
@@ -2032,6 +2069,7 @@ bool jimmyAt(const Coords &coords)
 		c->location->map->annotations->add(coords, door->getId());
 		screenMessage("\nENTRIEGELT!\n");
 	} else {
+		soundPlay(SOUND_ERROR);
 		screenMessage("%cKEINER ]BRIG!%c\n", FG_GREY, FG_WHITE);
 	}
 	return true;
@@ -2041,6 +2079,7 @@ void opendoor()
 	///  XXX: Pressing "o" should close any open door.
 	screenMessage("\\ffnen");
 	if (c->party->isFlying()) {
+		soundPlay(SOUND_ERROR);
 		screenMessage("-%cHIER NICHT!%c\n", FG_GREY, FG_WHITE);
 		return;
 	}
@@ -2054,6 +2093,7 @@ void opendoor()
 			return;
 		}
 	}
+	soundPlay(SOUND_ERROR);
 	screenMessage("%cHIER NICHT!%c\n", FG_GREY, FG_WHITE);
 }
 /**
@@ -2068,6 +2108,7 @@ bool openAt(const Coords &coords)
 		return false;
 	}
 	if (tile->isLockedDoor()) {
+		soundPlay(SOUND_ERROR);
 		screenMessage("%cKANN NICHT!%c\n", FG_GREY, FG_WHITE);
 		return true;
 	}
@@ -2108,9 +2149,11 @@ void readyWeapon(int player)
 	switch (p->setWeapon(w)) {
 	case EQUIP_SUCCEEDED: screenMessage("%s\n", uppercase(w->getName()).c_str());
 		break;
-	case EQUIP_NONE_LEFT: screenMessage("\n%cKEINE ]BRIG!%c\n", FG_GREY, FG_WHITE);
+	case EQUIP_NONE_LEFT: soundPlay(SOUND_ERROR);
+		screenMessage("\n%cKEINE ]BRIG!%c\n", FG_GREY, FG_WHITE);
 		break;
-	case EQUIP_CLASS_RESTRICTED: screenMessage("%s\n", uppercase(w->getName()).c_str());
+	case EQUIP_CLASS_RESTRICTED: soundPlay(SOUND_ERROR);
+		screenMessage("%s\n", uppercase(w->getName()).c_str());
 		screenMessage("\n%cEIN%s %s DARF DAS NICHT BENUTZEN!%c\n", FG_GREY, (p->getSex() == SEX_FEMALE ? "E" : ""), uppercase(getClassNameTranslated(p->getClass(), p->getSex())).c_str(), FG_WHITE);
 		break;
 	}
@@ -2119,6 +2162,7 @@ void talk()
 {
 	screenMessage("Sprechen");
 	if (c->party->isFlying()) {
+		soundPlay(SOUND_ERROR);
 		screenMessage("-%cNUR DRIFT!%c\n", FG_GREY, FG_WHITE);
 		return;
 	}
@@ -2155,6 +2199,7 @@ void mixReagents()
 			}
 		}
 		if (!found) {
+			soundPlay(SOUND_ERROR);
 			screenMessage("%cKEINE ]BRIG!%c", FG_GREY, FG_WHITE);
 			done = true;
 		} else {
@@ -2215,6 +2260,7 @@ bool mixReagentsForSpellU4(int spell)
 		}
 		screenMessage("\n");
 		if (!ingredients.addReagent((Reagent)(choice - 'a'))) {
+			soundPlay(SOUND_ERROR);
 			screenMessage("%cKEINE ]BRIG!%c\n", FG_GREY, FG_WHITE);
 		}
 		screenMessage("REAGENZ-");
@@ -2261,10 +2307,12 @@ void newOrder()
 		return;
 	}
 	if (player2 == 0) {
+		soundPlay(SOUND_ERROR);
 		screenMessage("\n%s, DU MUSST F]HREN!\n", uppercase(c->party->member(0)->getName()).c_str());
 		return;
 	}
 	if (player1 == player2) {
+		soundPlay(SOUND_ERROR);
 		screenMessage("\n%cWAS?%c\n", FG_GREY, FG_WHITE);
 		return;
 	}
@@ -2300,6 +2348,7 @@ void peer(bool useGem)
 {
 	if (useGem) {
 		if (c->saveGame->gems <= 0) {
+			soundPlay(SOUND_ERROR);
 			screenMessage("Juwel ansehen\n%cKEINE ]BRIG!%c\n", FG_GREY, FG_WHITE);
 			return;
 		}
@@ -2468,9 +2517,11 @@ void wearArmor(int player)
 	switch (p->setArmor(a)) {
 	case EQUIP_SUCCEEDED: screenMessage("%s\n", uppercase(a->getName()).c_str());
 		break;
-	case EQUIP_NONE_LEFT: screenMessage("\n%cKEINE ]BRIG!%c\n", FG_GREY, FG_WHITE);
+	case EQUIP_NONE_LEFT: soundPlay(SOUND_ERROR);
+		screenMessage("\n%cKEINE ]BRIG!%c\n", FG_GREY, FG_WHITE);
 		break;
-	case EQUIP_CLASS_RESTRICTED: screenMessage("%s\n", uppercase(a->getName()).c_str());
+	case EQUIP_CLASS_RESTRICTED: soundPlay(SOUND_ERROR);
+		screenMessage("%s\n", uppercase(a->getName()).c_str());
 		screenMessage("\n%cEIN%s %s DARF DAS NICHT BENUTZEN!%c\n", FG_GREY, (p->getSex() == SEX_FEMALE ? "E" : ""), uppercase(getClassNameTranslated(p->getClass(), p->getSex())).c_str(), FG_WHITE);
 		break;
 	}
@@ -2566,7 +2617,9 @@ void gameCheckHullIntegrity()
 			c->party->member(i)->setStatus(STAT_DEAD);
 		}
 		screenRedrawScreen();
-		deathStart(5);
+		musicMgr->pause();
+		soundPlay(SOUND_WHIRLPOOL, false, -1, true);
+		deathStart(0);
 	}
 } // gameCheckHullIntegrity
 /**
@@ -2789,8 +2842,8 @@ vector<Coords> gameGetDirectionalActionPath(int dirmask, int validDirections, co
 } // gameGetDirectionalActionPath
 /**
  * Deals an amount of damage between 'minDamage' and 'maxDamage'
- * to each party member, with a 50% chance for each member to
- * avoid the damage.  If (minDamage == -1) or (minDamage >= maxDamage),
+ * to each party member with a 50% chance for each member to
+ * avoid the damage. If (minDamage == -1) or (minDamage >= maxDamage),
  * deals 'maxDamage' damage to each member.
  */
 void gameDamageParty(int minDamage, int maxDamage)
@@ -2798,17 +2851,18 @@ void gameDamageParty(int minDamage, int maxDamage)
 	int i;
 	int damage;
 	int lastdmged = -1;
-
+	soundPlay(SOUND_PC_STRUCK, false);
 	for (i = 0; i < c->party->size(); i++) {
-		if (xu4_random(2) == 0) {
+		if (c->party->member(i)->getStatus() != STAT_DEAD && xu4_random(2) > 0) {
 			damage = ((minDamage >= 0) && (minDamage < maxDamage)) ? xu4_random((maxDamage + 1) - minDamage) + minDamage : maxDamage;
 			c->party->member(i)->applyDamage(damage);
 			c->stats->highlightPlayer(i);
+			soundPlay(SOUND_NPC_STRUCK, false);
+			screenShake(1);
 			lastdmged = i;
 			EventHandler::sleep(50);
 		}
 	}
-	screenShake(1);
 
 	// Un-highlight the last player
 	if (lastdmged != -1) {
@@ -2826,6 +2880,7 @@ void gameDamageShip(int minDamage, int maxDamage)
 
 	if (c->transportContext == TRANSPORT_SHIP) {
 		damage = ((minDamage >= 0) && (minDamage < maxDamage)) ? xu4_random((maxDamage + 1) - minDamage) + minDamage : maxDamage;
+		soundPlay(SOUND_PC_STRUCK, false);
 		screenShake(1);
 		c->party->damageShip(damage);
 		gameCheckHullIntegrity();
@@ -3161,8 +3216,10 @@ void mixReagentsSuper()
 			if (howmany == 0) {
 				screenMessage("\nKEINE GEMISCHT!\n");
 			} else if (howmany > mixQty) {
+				soundPlay(SOUND_ERROR);
 				screenMessage("\n%cDU KANNST NICHT MEHR SO VIELE VON DIESEN SPRUCH MISCHEN!%c\n", FG_GREY, FG_WHITE);
 			} else if (howmany > ingQty) {
+				soundPlay(SOUND_ERROR);
 				screenMessage("\n%cDU HAST NICHT GENUG REAGENZIEN, UM %d SPR]CHE ZU MISCHEN!%c\n", FG_GREY, howmany, FG_WHITE);
 			} else {
 				c->saveGame->mixtures[spell] += howmany;
