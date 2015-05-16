@@ -636,7 +636,7 @@ bool CombatController::rangedAttack(const Coords &coords, Creature *attacker)
 		break;
 	default:
 		/* show the appropriate 'hit' message */
-		// soundPlay(SOUND_PC_STRUCK, false);
+		soundPlay(SOUND_PC_STRUCK, false);
 		if (hittile == Tileset::findTileByName("magic_flash")->getId()) {
 			screenMessage("\n%s\n%cMAGIE-GETROFFEN%c\n", uppercase(target->getName()).c_str(), FG_BLUE, FG_WHITE);
 		} else {

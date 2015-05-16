@@ -136,8 +136,6 @@ bool CheatMenuController::keyPressed(int key)
 		break;
 	case 'j': screenMessage("BEGLEITER!\n");
 		for (int m = c->saveGame->members; m < 8; m++) {
-			fprintf(stderr, "m = %d\n", m);
-			fprintf(stderr, "n = %s\n", c->saveGame->players[m].name);
 			if (c->party->canPersonJoin(c->saveGame->players[m].name, NULL)) {
 				c->party->join(c->saveGame->players[m].name);
 			}

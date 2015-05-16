@@ -2357,10 +2357,13 @@ void peer(bool useGem)
 	}
 	game->paused = true;
 	game->pausedTimer = 0;
+	musicMgr->gem();
 	screenDisableCursor();
 	c->location->viewMode = VIEW_GEM;
 	ReadChoiceController::get("\015 \033");
+	musicMgr->play();
 	screenEnableCursor();
+	screenMessage("\n%c", CHARSET_PROMPT);
 	c->location->viewMode = VIEW_NORMAL;
 	game->paused = false;
 }
@@ -2851,7 +2854,7 @@ void gameDamageParty(int minDamage, int maxDamage)
 	int i;
 	int damage;
 	int lastdmged = -1;
-	soundPlay(SOUND_PC_STRUCK, false);
+	soundPlay(SOUND_PC_STRUCK, false, -1, true);
 	for (i = 0; i < c->party->size(); i++) {
 		if (c->party->member(i)->getStatus() != STAT_DEAD && xu4_random(2) > 0) {
 			damage = ((minDamage >= 0) && (minDamage < maxDamage)) ? xu4_random((maxDamage + 1) - minDamage) + minDamage : maxDamage;
@@ -2860,7 +2863,7 @@ void gameDamageParty(int minDamage, int maxDamage)
 			soundPlay(SOUND_NPC_STRUCK, false);
 			screenShake(1);
 			lastdmged = i;
-			EventHandler::sleep(50);
+			EventHandler::sleep(25);
 		}
 	}
 

@@ -66,6 +66,10 @@ void shopping()
 {
 	playMid(SHOPPING);    /**< Music when talking to a vendor */
 }
+void gem()
+{
+	playMid(SHRINES); /**< Music when peering */
+}
 void intro()
 {
 	if (!introMid) introMid = TOWNS;

@@ -500,12 +500,14 @@ void IntroController::drawMapAnimated()
  */
 void IntroController::drawBeasties(bool musicon)
 {
+	static bool music_has_started = false;
 	if (bSkipTitles) beastieOffset = 0;
 	drawBeastie(0, beastieOffset, binData->beastie1FrameTable[beastie1Cycle]);
 	drawBeastie(1, beastieOffset, binData->beastie2FrameTable[beastie2Cycle]);
 	if (beastieOffset < 0) {
 		beastieOffset++;
-	} else if (musicon) {
+	} else if (musicon && !music_has_started) {
+		music_has_started = true;
 		musicMgr->intro();
         }
 }
