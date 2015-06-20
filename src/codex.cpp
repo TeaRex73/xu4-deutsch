@@ -24,25 +24,25 @@
 #include "utils.h"
 
 using namespace std;
-int codexInit();
-void codexDelete();
-void codexEject(CodexEjectCode code);
-void codexHandleWOP(const string &word);
-void codexHandleVirtues(const string &virtue);
-void codexHandleInfinity(const string &answer);
-void codexImpureThoughts();
+static int codexInit();
+static void codexDelete();
+static void codexEject(CodexEjectCode code);
+static void codexHandleWOP(const string &word);
+static void codexHandleVirtues(const string &virtue);
+static void codexHandleInfinity(const string &answer);
+static void codexImpureThoughts();
 /**
  * Key handlers
  */
-bool codexHandleInfinityAnyKey(int key, void *data);
-bool codexHandleEndgameAnyKey(int key, void *data);
-vector<string> codexVirtueQuestions;
-vector<string> codexEndgameText1;
-vector<string> codexEndgameText2;
+static bool codexHandleInfinityAnyKey(int key, void *data);
+static bool codexHandleEndgameAnyKey(int key, void *data);
+static vector<string> codexVirtueQuestions;
+static vector<string> codexEndgameText1;
+static vector<string> codexEndgameText2;
 /**
  * Initializes the Chamber of the Codex sequence (runs from codexStart())
  */
-int codexInit()
+static int codexInit()
 {
 	U4FILE *codextext;
 
@@ -59,7 +59,7 @@ int codexInit()
 /**
  * Frees all memory associated with the Codex sequence
  */
-void codexDelete()
+static void codexDelete()
 {
 	codexVirtueQuestions.clear();
 	codexEndgameText1.clear();
@@ -80,13 +80,14 @@ void codexStart()
 	/**
 	 * make the avatar alone
 	 */
-	c->stats->setView(STATS_PARTY_OVERVIEW);
-	c->stats->update(true); /* show just the avatar */
+	c->stats->setView(STATS_PARTY_AVATARONLY);
+	c->stats->update(); /* show just the avatar */
 	screenRedrawScreen();
 	/**
 	 * change the view mode so the dungeon doesn't get shown
 	 */
 	gameSetViewMode(VIEW_CODEX);
+	musicMgr->pause();
 	screenMessage("\n\n\n\nPl|tztlich ist es dunkel, und du findest dich allein in einer leeren Kammer wieder.\n");
 	EventHandler::sleep(4000);
 	/**
@@ -100,7 +101,7 @@ void codexStart()
 	screenRedrawMapArea();
 	screenMessage("\nDu benutzt deinen Dreiteiligen Schl}ssel.\n");
 	EventHandler::sleep(3000);
-	screenMessage("\nEine Stimme erschallt:\n\"Wie lautet das Wort des Durchlasses?\"\n\n");
+	screenMessage("\nEine Stimme erschallt:\n\"Wie lautet das Wort des Einlasses?\"\n\n");
 	/**
 	 * Get the Word of Passage
 	 */
@@ -110,7 +111,7 @@ void codexStart()
  * Ejects you from the chamber of the codex (and the Abyss, for that matter)
  * with the correct message.
  */
-void codexEject(CodexEjectCode code)
+static void codexEject(CodexEjectCode code)
 {
 	struct {
 		int x, y;
@@ -122,24 +123,26 @@ void codexEject(CodexEjectCode code)
 		break;
 	case CODEX_EJECT_NO_FULL_PARTY: screenMessage("\nDu hast nicht in allen acht Tugenden deine F}hrung erwiesen.\n\n");
 		EventHandler::sleep(2000);
-		screenMessage("\nDurchla~ wird nicht gew{hrt.\n\n");
+		screenMessage("\nEinla~ wird nicht gew{hrt.\n\n");
 		break;
 	case CODEX_EJECT_NO_FULL_AVATAR: screenMessage("\nDu bist nicht bereit.\n");
 		EventHandler::sleep(2000);
-		screenMessage("\nDurchla~ wird nicht gew{hrt.\n\n");
+		screenMessage("\nEinla~ wird nicht gew{hrt.\n\n");
 		break;
-	case CODEX_EJECT_BAD_WOP: screenMessage("\nDurchla~ wird nicht gew{hrt.\n\n");
+	case CODEX_EJECT_BAD_WOP: screenMessage("\nEinla~ wird nicht gew{hrt.\n\n");
 		break;
 	case CODEX_EJECT_HONESTY: case CODEX_EJECT_COMPASSION: case CODEX_EJECT_VALOR: case CODEX_EJECT_JUSTICE: case CODEX_EJECT_SACRIFICE: case CODEX_EJECT_HONOR: case CODEX_EJECT_SPIRITUALITY: case CODEX_EJECT_HUMILITY: case CODEX_EJECT_TRUTH: case CODEX_EJECT_LOVE: case CODEX_EJECT_COURAGE: screenMessage("\nDeine Queste ist noch nicht vollendet.\n\n");
 		break;
 	case CODEX_EJECT_BAD_INFINITY: screenMessage("\nDu kennst die wahre Natur des Universums nicht.\n\n");
 		break;
-	default: screenMessage("\nUh-oh, Du bist gerade allzu nahe an die L|sung des Spiels herangekommen.\nB\\SER AVATAR!\n");
+	default: screenMessage("\nUh-oh, Du bist gerade allzu nahe an die L|sung des Spieles herangekommen.\nB\\SER AVATAR!\n");
 		break;
 	}
 	EventHandler::sleep(2000);
 	/* free memory associated with the Codex */
 	codexDelete();
+	c->stats->setView(STATS_PARTY_OVERVIEW);
+	c->stats->update();
 	/* re-enable the cursor and show it */
 	screenEnableCursor();
 	screenShowCursor();
@@ -166,7 +169,7 @@ void codexEject(CodexEjectCode code)
 /**
  * Handles entering the Word of Passage
  */
-void codexHandleWOP(const string &word)
+static void codexHandleWOP(const string &word)
 {
 	static int tries = 1;
 	int i;
@@ -192,7 +195,7 @@ void codexHandleWOP(const string &word)
 				return;
 			}
 		}
-		screenMessage("\nDurchla~ wird gew{hrt.\n");
+		screenMessage("\nEinla~ wird gew{hrt.\n");
 		EventHandler::sleep(4000);
 		screenEraseMapArea();
 		screenRedrawMapArea();
@@ -206,7 +209,7 @@ void codexHandleWOP(const string &word)
 	/* entered incorrectly - give 3 tries before ejecting */
 	else if (tries++ < 3) {
 		codexImpureThoughts();
-		screenMessage("\"Wie lautet das Wort des Durchlasses?\"\n\n");
+		screenMessage("\"Wie lautet das Wort des Einlasses?\"\n\n");
 		codexHandleWOP(gameGetInput());
 	}
 	/* 3 tries are up... eject! */
@@ -218,7 +221,7 @@ void codexHandleWOP(const string &word)
 /**
  * Handles naming of virtues in the Chamber of the Codex
  */
-void codexHandleVirtues(const string &virtue)
+static void codexHandleVirtues(const string &virtue)
 {
 	static const char *codexImageNames[] = {
 		BKGD_HONESTY, BKGD_COMPASSN, BKGD_VALOR, BKGD_JUSTICE, BKGD_SACRIFIC, BKGD_HONOR, BKGD_SPIRIT, BKGD_HUMILITY, BKGD_TRUTH, BKGD_LOVE, BKGD_COURAGE
@@ -262,10 +265,11 @@ void codexHandleVirtues(const string &virtue)
 		} else {
 			screenMessage("\nDer Boden erbebt unter deinen F}~en.\n");
 			EventHandler::sleep(1000);
-			screenShake(10);
+			soundPlay(SOUND_RUMBLE, false);
+			screenShake(8);
 			EventHandler::sleep(3000);
 			screenEnableCursor();
-			screenMessage("\n]ber dem Get|se fragt die Stimme:\n\nWenn alle acht Tugenden des Avatars sich vereinen zu, und abgeleitet sind von, den Drei Prinzipien der Wahrheit, der Liebe und des Mutes...");
+			screenMessage("\n]ber dem Get|se fragt die Stimme:\n");
 			eventHandler->pushKeyHandler(&codexHandleInfinityAnyKey);
 		}
 	}
@@ -282,14 +286,30 @@ void codexHandleVirtues(const string &virtue)
 		current = 0;
 	}
 } // codexHandleVirtues
-bool codexHandleInfinityAnyKey(int key, void *data)
+static int codexInfinityIndex = 1;
+static bool codexHandleInfinityAnyKey(int key, void *data)
 {
 	eventHandler->popKeyHandler();
-	screenMessage("\n\nWelches ist dann Das Eine, welches umfa~t, und das Ganze ist,\n\naller unabweisbaren Wahrheit, aller unendlichen Liebe, und allen unbeugsamen Mutes?\n\n");
-	codexHandleInfinity(gameGetInput());
+	switch (codexInfinityIndex) {
+	case 1:
+		screenMessage("\nWenn alle acht Tugenden des Avatars sich vereinen zu, und abgeleitet sind von, den Drei Prinzipien der Wahrheit, der Liebe und des Mutes...\n");
+		codexInfinityIndex++;
+	    	eventHandler->pushKeyHandler(&codexHandleInfinityAnyKey);
+		break;
+	case 2:
+		screenMessage("\nWelches ist dann Das Eine, welches umfa~t, und das Ganze ist,\n");
+		codexInfinityIndex++;
+	    	eventHandler->pushKeyHandler(&codexHandleInfinityAnyKey);
+		break;
+	default:
+		screenMessage("\naller unabweisbaren Wahrheit, aller unendlichen Liebe, und allen unbeugsamen Mutes?\n\n");
+		codexInfinityIndex = 1;
+	  	codexHandleInfinity(gameGetInput());
+		break;
+	}
 	return true;
 }
-void codexHandleInfinity(const string &answer)
+static void codexHandleInfinity(const string &answer)
 {
 	static int tries = 1;
 
@@ -299,21 +319,25 @@ void codexHandleInfinity(const string &answer)
 	screenMessage("\n");
 	screenDisableCursor();
 	EventHandler::sleep(1000);
-	if (strcasecmp(deumlaut(answer).c_str(), "infinity") == 0) {
+	if (strcasecmp(deumlaut(answer).c_str(), "unendlichkeit") == 0) {
 		EventHandler::sleep(2000);
-		screenShake(10);
+		soundPlay(SOUND_RUMBLE, false);
+		screenShake(8);
+		screenDrawImageInMapArea(BKGD_RUNE_INF);
+		screenRedrawMapArea();
 		screenEnableCursor();
 		screenMessage("\n%s", codexEndgameText1[0].c_str());
 		eventHandler->pushKeyHandler(&codexHandleEndgameAnyKey);
 	} else if (tries++ < 3) {
 		codexImpureThoughts();
-		screenMessage("\n]ber dem Get|se fragt die Stimme:\n\nWenn alle acht Tugenden des Avatars sich vereinen zu, und abgeleitet sind von, den Drei Prinzipien der Wahrheit, der Liebe und des Mutes...");
+		screenEnableCursor();
+		screenMessage("]ber dem Get|se fragt die Stimme:\n");
 		eventHandler->pushKeyHandler(&codexHandleInfinityAnyKey);
 	} else {
 		codexEject(CODEX_EJECT_BAD_INFINITY);
 	}
 } // codexHandleInfinity
-bool codexHandleEndgameAnyKey(int key, void *data)
+static bool codexHandleEndgameAnyKey(int key, void *data)
 {
 	static int index = 1;
 
@@ -328,6 +352,7 @@ bool codexHandleEndgameAnyKey(int key, void *data)
 		} else if (index == 7) {
 			screenDrawImageInMapArea(BKGD_STONCRCL);
 			screenRedrawMapArea();
+			musicMgr->intro();
 			screenMessage("\n\n%s", codexEndgameText2[0].c_str());
 		} else if (index > 7) {
 			screenMessage("%s", codexEndgameText2[index - 7].c_str());
@@ -345,8 +370,8 @@ bool codexHandleEndgameAnyKey(int key, void *data)
 /**
  * Pretty self-explanatory
  */
-void codexImpureThoughts()
+static void codexImpureThoughts()
 {
-	screenMessage("\nDeine Gedanken sind nicht rein.\nIch frage wiederum.\n");
+	screenMessage("\nDeine Gedanken sind nicht rein.\nIch frage wiederum.\n\n");
 	EventHandler::sleep(2000);
 }

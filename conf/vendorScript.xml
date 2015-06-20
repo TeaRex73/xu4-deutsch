@@ -656,14 +656,14 @@
         <ale_buy choice="null" redirect="bye"/>
         <ale_buy>            
             <if test="{$price}&lt;{ale_price}">
-                WILLST NICH ZAHLEN, HE? ABSCHAUM, ZIEH LEINE BEVOR ICH DIE WACHEN RUFE!
+                WILLST NICH ZAHLEN, HE? ABSCHAUM, ZIEH LEINE 'VOR ICH DIE WACHEN RUFE!
                 <end/>
             </if>
             <pay price="{$price}" quantity="1" cantpay="cantpay_ale"/>
             <if test="{$price}={ale_price}" redirect="something_else"/>
             <if test="{$price}&gt;{ale_price}">
                 <var name="tip_total" value="{math({$price}-{ale_price})}"/>
-                WAS WILLSTE WISSSEN, MEIN FREUND?
+                WAS WILLST'N WISSSEN, MEIN FREUND?
                 <input name="choice" type="text" target="topic"/>
             </if>
         </ale_buy>
@@ -678,32 +678,32 @@
             <redirect target="something_else"/>
         </topic>        
 
-        <reply choice="SCHWARZER STEIN">
+        <reply choice="SCHW">
 	    {owner} SAGT: ACH, DER SCHWARZE STEIN. JA, SCHON MAL VON GEH\RT. ABER DER EINZIGE, DER WEISS, WO ER LIEGT, IST DER ZAUBERER MERLIN.
             <redirect target="something_else"/>
         </reply>
 
-        <reply choice="SEXTANT">
+        <reply choice="SEXT">
             {owner} SAGT: BEIM NAVIGIEREN IST 'N SEXTANT LEBENSWICHTIG... FRAG IN DEN GILDENL[DEN NACH GEGENSTAND "D"!
             <redirect target="something_else"/>
         </reply>
 
-        <reply choice="WEISSER STEIN">
-            LASS MICH ]BERLEGEN... JA, 'S WAR DIESER ALTE EREMIT... SLOVEN! SCHWER ZU FINDEN, LEBT BEIM UMSCHLOSSENEN SEE WIE MAN H\RT.
+        <reply choice="WEIS">
+            LASS MICH ]BERLEGEN... JA, 'S WAR DIESER ALTE EREMIT... SLOVEN! SCHWER ZU FINDEN, LEBT BEIM LOCH-SEE WIE MAN H\RT.
             <redirect target="something_else"/>
         </reply>
 
-        <reply choice="ALRAUNE">
+        <reply choice="ALRA">
             {owner} SAGT: DER LETZTE, VON DEM ICH WEISS, DASS ER ALRAUNE HATTE, WAR SO'N ALTER ALCHIMIST NAMENS CALUMNY.
             <redirect target="something_else"/>
         </reply>        
 
-        <reply choice="SCH[DEL">
+        <reply choice="SCH[">
             {owner} SAGT: WENN DU DENN VON DIESEM B\SESTEN ALLER DINGE WISSEN MUSST... FINDE DEN BETTLER JUDE. ER IST SEHR, SEHR ARM!
             <redirect target="something_else"/>
         </reply>
         
-        <reply choice="SCHATTEN">
+        <reply choice="SCHA">
             {owner} SAGT: VON SCHATTEN WEISS ICH NUR SOVIEL... FRAG VIRGIL, SONST FINDSTE KEINEN STIEL. VERSUCHS IN TRINSIC!
             <redirect target="something_else"/>
         </reply>
@@ -736,27 +736,27 @@
         </cantpay_topic>
 
         <vendor id="BRITAIN" name="N DEN LAUNIGEN GEISTERN" owner="SAM" specialty="LAMMKOTLETTS" spec_price="4" ale_price="2">
-            <topic choice="SCHWARZER STEIN" price="20" redirect="save"/>
+            <topic choice="SCHW" price="20" redirect="save"/>
         </vendor>
         
         <vendor id="JHELOM" name="N DER BLUTIGEN PINTE" owner="CELESTIAL" specialty="DRACHENTARTAR" spec_price="2" ale_price="2">
-            <topic choice="SEXTANT" price="30" redirect="save"/>
+            <topic choice="SEXT" price="30" redirect="save"/>
         </vendor>
 
         <vendor id="TRINSIC" name="M ZAPFHAHNE" owner="TERRAN" specialty="BRAUNE BOHNEN" spec_price="3" ale_price="2">
-            <topic choice="WEISSER STEIN" price="10" redirect="save"/>
+            <topic choice="WEIS" price="10" redirect="save"/>
         </vendor>
 
         <vendor id="PAWS" name="N FOLLEYS KNEIPE" owner="GREG &amp; ROB" specialty="FOLLEY-FILET" spec_price="2" ale_price="2">
-            <topic choice="ALRAUNE" price="40" redirect="save"/>
+            <topic choice="ALRA" price="40" redirect="save"/>
         </vendor>
         
         <vendor id="BUKANIER-NEST" name="N DER SPELUNKE ZUM KORSAREN" owner="DER CAP'N" specialty="HUNDEPASTETE" spec_price="4" ale_price="2">
-            <topic choice="SCH[DEL" price="99" redirect="save"/>
+            <topic choice="SCH[" price="99" redirect="save"/>
         </vendor>
 
         <vendor id="VESPER" name="M AXT &amp; ALE" owner="ARRON" specialty="GR]NER GRANUKIT" spec_price="2" ale_price="2">
-            <topic choice="SCHATTEN" price="25" redirect="save"/>
+            <topic choice="SCHA" price="25" redirect="save"/>
         </vendor>
     </script>
 

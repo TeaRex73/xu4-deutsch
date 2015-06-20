@@ -249,6 +249,12 @@ int main(int argc, char *argv[])
         while (p < data + datalen) {
             c = *p++;
 
+	    switch (c) {
+	    case 0x01: c = 0x07;
+	    case 0x10: c = 0x70;
+	    case 0x11: c = 0x77;
+	    }
+
             if (c == val && count < 255)
                 count++;
             else {

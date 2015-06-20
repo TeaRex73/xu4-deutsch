@@ -40,7 +40,7 @@
     <topic query="job">Ich lese das Zauber-Journal.</topic>
     <topic query="health">Mir geht es prima.</topic>
     <topic query="JOUR">Es berichtet über den weißen Stein.</topic>
-    <topic query="STEI">Er liegt nicht mehr in der Höhle Hylot, er ist fort!<question type="0">Willst du versuchen, ihn zurück zu holen?<yes>Frag nach dem Steine beim Zapfhahne in Trinsic!</yes><no>Schade.</no></question></topic>
+    <topic query="STEI">Er liegt nicht mehr in der Höhle Hylot, er ist fort!<question type="0">Willst du versuchen, ihn zurück zu holen?<yes>Frag nach dem weißen Steine beim Zapfhahne in Trinsic!</yes><no>Schade.</no></question></topic>
   </person>
   <person id="6" name="Buddha" pronoun="Er" turnAwayProb="0">
     <description>Einen großen Philosophen.</description>
@@ -60,7 +60,7 @@
     <description>Einen kurzen plumpen Mann mit einem Buche.</description>
     <topic query="job">Ich bin ein Lehrer, ich bereichere junge Geister.</topic>
     <topic query="health">Mir geht es prima.</topic>
-    <topic query="LEHR">Ich lehre vom Abgrunde.<question type="0">Weißt du vom Abgrunde?<yes>Ein Wort des Durchlasses wird am letzten Tore benötigt!</yes><no>Lerne!</no></question></topic>
+    <topic query="LEHR">Ich lehre vom Abgrunde.<question type="0">Weißt du vom Abgrunde?<yes>Ein Wort des Einlasses wird am letzten Tore benötigt!</yes><no>Lerne!</no></question></topic>
     <topic query="WORT">Such Zair den Weisen in Paws, um mehr zu erfahren.</topic>
   </person>
   <person id="9" name="Carlyle" pronoun="Er" turnAwayProb="0">

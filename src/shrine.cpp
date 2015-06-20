@@ -25,6 +25,7 @@
 #include "portal.h"
 #include "screen.h"
 #include "settings.h"
+#include "sound.h"
 #include "tileset.h"
 #include "types.h"
 #include "utils.h"
@@ -41,7 +42,8 @@ bool shrineCanEnter(const Portal *p)
 	Shrine *shrine = dynamic_cast<Shrine *>(mapMgr->get(p->destid));
 
 	if (!c->party->canEnterShrine(shrine->getVirtue())) {
-		screenMessage("DU TR[GST NICHT DIE RUNE DES EINTRITTS! EINE SELTSAME KRAFT H[LT DICH FERN!\n");
+		soundPlay(SOUND_ERROR);
+		screenMessage("Schrein Betreten\n\nDU TR[GST NICHT DIE RUNE DES EINTRITTS! EINE SELTSAME KRAFT H[LT DICH FERN!\n");
 		return 0;
 	}
 	return 1;
@@ -66,8 +68,22 @@ Shrine::Shrine() {}
 string Shrine::getName()
 {
 	if (name.empty()) {
-		name = "Schrein von ";
-		name += getVirtueName(virtue);
+		name = "SCHREIN DE";
+		switch (virtue) {
+		case 0: case 2: case 3: case 5: case 6: case 7:
+			name += "R ";
+			break;
+		case 1: case 4:
+			name += "S ";
+			break;
+		default:
+			name += "??? ";
+			break;
+		}
+		name += uppercase(getVirtueName(virtue));
+		if (virtue == 1 || virtue == 4) {
+			name += "ES";
+		}
 	}
 	return name;
 }
@@ -119,7 +135,12 @@ void Shrine::enter()
 	completedCycles = 0;
 	screenMessage("\n\n");
 	// ensure the player chose the right virtue and entered a valid number for cycles
-	if ((strncasecmp(virtue.c_str(), getVirtueName(getVirtue()), 6) != 0) || (cycles == 0)) {
+	if (cycles == 0) {
+		screenMessage("DU VERZICHTEST AUF EINE MEDITATION!\n");
+		eject();
+		return;
+	}
+	if (strncasecmp(virtue.c_str(), getVirtueName(getVirtue()), 6) != 0) {
 		screenMessage("ES GELINGT DIR NICHT, DEINE GEDANKEN AUF DIESES THEMA ZU FOKUSSIEREN!\n");
 		eject();
 		return;
@@ -193,7 +214,7 @@ void Shrine::askMantra()
 	screenMessage("\n");
 	if (strcasecmp(mantra.c_str(), getMantra().c_str()) != 0) {
 		c->party->adjustKarma(KA_BAD_MANTRA);
-		screenMessage("ES GELINGT DIR NICHT, DEINE GEDANKEN MIT DIESEM MANTRA ZU FOKUSSIEREN!\n");
+		screenMessage("\nES GELINGT DIR NICHT, DEINE GEDANKEN MIT DIESEM MANTRA ZU FOKUSSIEREN!\n");
 		eject();
 	} else if (--cycles > 0) {
 		completedCycles++;
@@ -204,9 +225,10 @@ void Shrine::askMantra()
 		c->party->adjustKarma(KA_MEDITATION);
 		bool elevated = completedCycles == 3 && c->party->attemptElevation(getVirtue());
 		if (elevated) {
-			screenMessage("\nDU HAST IN DER TUGEND %s TEIL-AVATARTUM ERREICHT.\n\n", getVirtueName(getVirtue()));
+			screenMessage("\nDU HAST IN DER TUGEND %s TEIL-AVATARTUM ERREICHT.\n\n", uppercase(getVirtueName(getVirtue())).c_str());
+			gameSpellEffect(-1, -1, SOUND_MAGIC);
 		} else {
-			screenMessage("\nDEINE GEDANKEN SIND REIN. " "DIR WIRD EINE VISION ZUTEIL!\n");
+			screenMessage("\nDEINE GEDANKEN SIND REIN. DIR WIRD EINE VISION ZUTEIL!\n");
 		}
 		ReadChoiceController::get("");
 		showVision(elevated);
@@ -222,7 +244,7 @@ void Shrine::showVision(bool elevated)
 	};
 
 	if (elevated) {
-		screenMessage("DIR WIRD EINE VISION ZUTEIL!\n");
+		screenMessage("\bDIR WIRD EINE VISION ZUTEIL!\n");
 		gameSetViewMode(VIEW_RUNE);
 		screenDrawImageInMapArea(visionImageNames[getVirtue()]);
 	} else {
@@ -233,5 +255,6 @@ void Shrine::eject()
 {
 	game->exitToParentMap();
 	musicMgr->play();
+	screenMessage("\n%c", CHARSET_PROMPT);
 	c->location->turnCompleter->finishTurn();
 }

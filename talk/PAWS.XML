@@ -26,7 +26,7 @@
     <topic query="job">Ich war nahe beim Kodexe!</topic>
     <topic query="health">Gut.</topic>
     <topic query="KODE">Seine Geheimnisse sind grenzenlos!<question type="0">Hast du ihn gesehen?<yes>Mensch!</yes><no>Such ihn!</no></question></topic>
-    <topic query="WORT">Ein Schlüssel und ein Wort werden benötigt, um die Kammer zu betreten. Frag meinen Bruder jenseits des Umschlossenen Sees nach dem Worte!</topic>
+    <topic query="WORT">Ein Schlüssel und ein Wort werden benötigt, um die Kammer zu betreten. Frag meinen Bruder jenseits des Loch-Sees nach dem Worte!</topic>
   </person>
   <person id="4" name="Sal" pronoun="Sie" turnAwayProb="0">
     <description>Eine sehr kräftige Frau.</description>
@@ -40,7 +40,7 @@
     <topic query="job">Ich suche die Weisheit der Magie.</topic>
     <topic query="health">Prima.</topic>
     <topic query="MAGI">Mein Meister kennt den Gatetus-Zauber!</topic>
-    <topic query="MEIS">Mein Meister ist Mentorian.<question type="0">Kennst du ihn?<yes>Gut.</yes><no>Er lebt in einem versteckten Dorfe am Umschlossenen See, nur per Schiff erreichbar. Frag nach Gatetus!</no></question></topic>
+    <topic query="MEIS">Mein Meister ist Mentorian.<question type="0">Kennst du ihn?<yes>Gut.</yes><no>Er lebt in einem versteckten Dorfe am Loch-See, nur per Schiff erreichbar. Frag nach Gatetus!</no></question></topic>
   </person>
   <person id="6" name="Sir Hobie" pronoun="Er" turnAwayProb="0">
     <description>Einen großen muskulösen Ritter.</description>

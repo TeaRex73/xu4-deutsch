@@ -83,13 +83,11 @@ bool CheatMenuController::keyPressed(int key)
 	case 'g':
 	{
 		screenMessage("GEH ZU: ");
-		string dest = gameGetInput(32);
-		lowercase(dest);
+		string dest = lowercase(gameGetInput(8));
 		bool found = false;
 		for (unsigned p = 0; p < c->location->map->portals.size(); p++) {
 			MapId destid = c->location->map->portals[p]->destid;
-			string destNameLower = mapMgr->get(destid)->getName();
-			lowercase(destNameLower);
+			string destNameLower = lowercase(mapMgr->get(destid)->getName());
 			if (destNameLower.find(dest) != string::npos) {
 				screenMessage("\n%s\n", mapMgr->get(destid)->getName().c_str());
 				c->location->coords = c->location->map->portals[p]->coords;
@@ -106,7 +104,7 @@ bool CheatMenuController::keyPressed(int key)
 			}
 		}
 		if (!found) {
-			screenMessage("\nKANN %s\nNICHT FINDEN!\n", dest.c_str());
+			screenMessage("\nKANN %s\nNICHT FINDEN!\n", uppercase(dest).c_str());
 		}
 		break;
 	}

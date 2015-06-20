@@ -5,6 +5,7 @@
 #include "vc6.h" // Fixes things if you're using VC6, does nothing if otherwise
 
 #include <SDL.h>
+#include <cstdlib>
 #include "u4.h"
 
 #include "event.h"
@@ -17,7 +18,8 @@
 #include "u4_sdl.h"
 #include "utils.h"
 
-extern bool verbose, quit;
+extern bool verbose;
+extern int quit;
 extern int eventTimerGranularity;
 KeyHandler::KeyHandler(Callback func, void *d, bool asyncronous):handler(func), async(asyncronous), data(d) {}
 /**
@@ -44,10 +46,11 @@ bool KeyHandler::globalHandler(int key)
 #if 1 // defined(WIN32)
 	case U4_ALT + U4_FKEY + 3:
 #endif
-		quit = true;
+		quit = 2;
 		EventHandler::end();
 		return true;
-	default: return false;
+	default:
+                return false;
 	}
 }
 /**
@@ -337,6 +340,7 @@ void EventHandler::sleep(unsigned int usec)
 {
 	// Start a timer for the amount of time we want to sleep from user input.
 	static bool stopUserInput = true; // Make this static so that all instance stop. (e.g., sleep calling sleep).
+	// SDL_TimerID sleepingTimer = SDL_AddTimer(usec, sleepTimerCallback, 0);
 	SDL_TimerID sleepingTimer = SDL_AddTimer(usec, sleepTimerCallback, 0);
 
 	stopUserInput = true;
@@ -359,7 +363,7 @@ void EventHandler::sleep(unsigned int usec)
 				stopUserInput = false;
 		}
 			break;
-		case SDL_QUIT: ::exit(0);
+		 case SDL_QUIT: exit(EXIT_FAILURE);
 			break;
 		}
 	}
@@ -385,8 +389,8 @@ void EventHandler::run()
 			break;
 		case SDL_ACTIVEEVENT: handleActiveEvent(event, updateScreen);
 			break;
-		case SDL_QUIT: ::exit(0);
-			break;
+		case SDL_QUIT: exit(EXIT_FAILURE);
+			break; 
 		}
 	}
 } // EventHandler::run
@@ -425,6 +429,10 @@ void EventHandler::pushKeyHandler(KeyHandler kh)
 void EventHandler::popKeyHandler()
 {
 	if (controllers.empty()) {
+		return;
+	}
+	KeyHandlerController *khc = dynamic_cast<KeyHandlerController *>(controllers.back());
+	if (khc == NULL) {
 		return;
 	}
 	popController();

@@ -371,7 +371,7 @@ void screenUpdate(TileView *view, bool showmap, bool blackout)
 	screenLock();
 	if (blackout) {
 		screenEraseMapArea();
-	} else if (c->location->map->flags & FIRST_PERSON) {
+	} else if (showmap && c->location->map->flags & FIRST_PERSON) {
 		DungeonViewer.display(c, view);
 		screenRedrawMapArea();
 	} else if (showmap) {
@@ -482,14 +482,14 @@ void screenScrollMessageArea()
 }
 void screenCycle()
 {
-	if (++screenCurrentCycle >= SCR_CYCLE_MAX) {
+       if (++screenCurrentCycle >= SCR_CYCLE_MAX) {
 		screenCurrentCycle = 0;
 	}
 	screenRedrawScreen();
 }
 void screenUpdateCursor()
 {
-	int phase = screenCurrentCycle * SCR_CYCLE_PER_SECOND / SCR_CYCLE_MAX;
+       int phase = screenCurrentCycle * SCR_CYCLE_PER_SECOND / SCR_CYCLE_MAX;
 
 	ASSERT(phase >= 0 && phase < 4, "derived an invalid cursor phase: %d", phase);
 	if (screenCursorStatus) {

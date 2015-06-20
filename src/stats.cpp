@@ -74,15 +74,17 @@ void StatsArea::nextItem()
 /**
  * Update the stats (ztats) box on the upper right of the screen.
  */
-void StatsArea::update(bool avatarOnly)
+void StatsArea::update()
 {
 	clear();
 	/*
 	 * update the upper stats box
 	 */
 	switch (view) {
-	case STATS_PARTY_OVERVIEW: showPartyView(avatarOnly);
+	case STATS_PARTY_OVERVIEW: showPartyView(false);
 		break;
+	case STATS_PARTY_AVATARONLY: showPartyView(true);
+	        break;
 	case STATS_CHAR1: case STATS_CHAR2: case STATS_CHAR3: case STATS_CHAR4: case STATS_CHAR5: case STATS_CHAR6: case STATS_CHAR7: case STATS_CHAR8: showPlayerDetails();
 		break;
 	case STATS_WEAPONS: showWeapons();

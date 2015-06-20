@@ -475,7 +475,7 @@ void Creature::act(CombatController *controller)
 			GameController::flashTile(target->getCoords(), "miss_flash", 1);
 		}
 		break;
-	case CA_CAST_SLEEP: screenMessage("\nSCHLAF\n");
+	case CA_CAST_SLEEP: screenMessage("\nSLIPITUS!\n");
 		gameSpellEffect('s', -1, static_cast<Sound>(SOUND_MAGIC)); /* show the sleep spell effect */
 		/* Apply the sleep spell to party members still in combat */
 		if (!isPartyMember(this)) {

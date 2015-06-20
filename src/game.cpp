@@ -97,6 +97,7 @@ void gameCreatureAttack(Creature *obj);
 /* Functions END */
 /*---------------*/
 // extern Object *party[8];
+extern int quit;
 Context *c = NULL;
 Debug gameDbg("debug/game.txt", "Game");
 MouseArea mouseAreas[] = {
@@ -455,7 +456,7 @@ void gameUpdateScreen()
 		break;
 	case VIEW_DEAD: screenUpdate(&game->mapArea, true, true);
 		break;
-	case VIEW_CODEX: /* the screen updates will be handled elsewhere */
+	case VIEW_CODEX: screenUpdate(&game->mapArea, false, false);
 		break;
 	case VIEW_MIXTURES: /* still testing */
 		break;
@@ -1068,6 +1069,13 @@ bool GameController::keyPressed(int key)
 		case 'e': screenMessage("Ende&Speichern\n%d Z]GE\n", c->saveGame->moves);
 			if (c->location->context & CTX_CAN_SAVE_GAME) {
 				gameSave();
+				screenMessage("Reise Beenden?");
+				int c = ReadChoiceController::get("jn\015 \033");
+				if (c == 'j') {
+					quit = 1;
+					EventHandler::end();
+				}
+				screenMessage("\n");
 			} else {
 				soundPlay(SOUND_ERROR);
 				screenMessage("%cHIER NICHT!%c\n", FG_GREY, FG_WHITE);
@@ -1106,6 +1114,9 @@ bool GameController::keyPressed(int key)
 				c->stats->setView(STATS_ITEMS);
 			}
 			itemUse(gameGetInput().c_str());
+			if (c->location->viewMode == VIEW_CODEX) {
+ 			        break;
+			}
 			if (settings.enhancements) {
 				c->stats->setView(STATS_PARTY_OVERVIEW);
 			}
@@ -1182,7 +1193,6 @@ bool GameController::keyPressed(int key)
 		{
 			// TODO - implement loop in main() and let quit fall back to there
 			// Quit to the main menu
-			extern bool quit;
 			endTurn = false;
 			screenMessage("ZUR]CK INS MEN]?");
 			char choice = ReadChoiceController::get("jn \n\033");
@@ -2680,10 +2690,8 @@ bool GameController::checkMoongates()
 	felucca = c->saveGame->feluccaphase;
 	if (moongateFindActiveGateAt(trammel, felucca, c->location->coords, dest)) {
 		gameSpellEffect(-1, -1, SOUND_MOONGATE); // Default spell effect (screen inversion without 'spell' sound effects)
-		if (c->location->coords != dest) {
-			c->location->coords = dest;
-			gameSpellEffect(-1, -1, SOUND_MOONGATE); // Again, after arriving
-		}
+		c->location->coords = dest;
+		gameSpellEffect(-1, -1, SOUND_MOONGATE); // Again, after arriving
 		if (moongateIsEntryToShrineOfSpirituality(trammel, felucca)) {
 			Shrine *shrine_spirituality;
 			shrine_spirituality = dynamic_cast<Shrine *>(mapMgr->get(MAP_SHRINE_SPIRITUALITY));

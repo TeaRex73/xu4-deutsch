@@ -134,6 +134,17 @@ void useBBC(int item)
 		/* then the candle */
 		else if ((item == ITEM_CANDLE) && (c->saveGame->items & ITEM_BOOK_USED)) {
 			screenMessage("\nALS DU DIE KERZE ENTZ]NDEST, ERBEBT DIE ERDE!\n");
+			screenDisableCursor();
+			soundPlay(SOUND_NPC_STRUCK, false);
+			screenShake(1);
+			EventHandler::sleep(100);
+			soundPlay(SOUND_PC_STRUCK, false);
+			screenShake(1);
+			EventHandler::sleep(100);
+			soundPlay(SOUND_NPC_STRUCK, false);
+			screenShake(1);
+			EventHandler::sleep(100);
+			screenEnableCursor();
 			c->saveGame->items |= ITEM_CANDLE_USED;
 		} else {
 			screenMessage("\nHMM... KEINE WIRKUNG!\n");
@@ -150,6 +161,7 @@ void useBBC(int item)
 void useHorn(int item)
 {
 	screenMessage("\nDAS HORN L[SST EINEN SCHAUERLICHEN KLANG ERSCHALLEN!\n");
+	soundPlay(SOUND_STORM, false);
 	c->aura->set(Aura::HORN, 10);
 }
 /**

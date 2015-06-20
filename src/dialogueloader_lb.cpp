@@ -123,7 +123,7 @@ Response *lordBritishGetHelp(const DynamicResponse *resp)
 	} else if (((c->saveGame->items & ITEM_BELL) == 0) || ((c->saveGame->items & ITEM_BOOK) == 0) || ((c->saveGame->items & ITEM_CANDLE) == 0)) {
 		text = string("Finde die Glocke, das Buch und die Kerze! " "Mit diesen drei Dingen darf man den Gro~en Stygischen Abgrund betreten!\n");
 	} else if (((c->saveGame->items & ITEM_KEY_C) == 0) || ((c->saveGame->items & ITEM_KEY_L) == 0) || ((c->saveGame->items & ITEM_KEY_T) == 0)) {
-		text = string("Bevor du den Abgrund betrittst, ben|tigst du den Dreiteiligen Schl}ssel, und das Wort des Durchlasses.\n\n" "Dann darfst du die Kammer des Kodexes der Ultimativen Weisheit betreten!\n");
+		text = string("Bevor du den Abgrund betrittst, ben|tigst du den Dreiteiligen Schl}ssel, und das Wort des Einlasses.\n\n" "Dann darfst du die Kammer des Kodexes der Ultimativen Weisheit betreten!\n");
 	} else {
 		text = string("Du erscheinst nun bereit, die letzte Reise in den dunklen Abgrund anzutreten! " "Gehe nur mit eine Gruppe von acht!\n\nViel Gl}ck, und m|gen die M{chte des Guten " "}ber dich wachen auf dieser deiner gefahrvollsten Unternehmung!\n\nDie Herzen " "und Seelen von ganz Britannia gehen jetzt mit dir. Sei vorsichtig, ") + ((c->party->member(0)->getSex() == SEX_MALE) ? "mein Freund.\n" : "meine Freundin.\n");
 	}

@@ -246,15 +246,15 @@
         <image name="stoncrcl" filename="stoncrcl.ega" width="320" height="200" depth="4" filetype="image/x-u4rle"/>
 
         <!-- shrine vision images  for EGA -->
-        <image name="rune0"    filename="rune_5.ega"   width="320" height="200" depth="4" filetype="image/x-u4rle"/>
+        <image name="rune0"    filename="rune_0.ega"   width="320" height="200" depth="4" filetype="image/x-u4rle"/>
         <image name="rune1"    filename="rune_1.ega"   width="320" height="200" depth="4" filetype="image/x-u4rle"/>
         <image name="rune2"    filename="rune_2.ega"   width="320" height="200" depth="4" filetype="image/x-u4rle"/>
-        <image name="rune3"    filename="rune_0.ega"   width="320" height="200" depth="4" filetype="image/x-u4rle"/>
-        <image name="rune4"    filename="rune_1.ega"   width="320" height="200" depth="4" filetype="image/x-u4rle"/>
-        <image name="rune5"    filename="rune_2.ega"   width="320" height="200" depth="4" filetype="image/x-u4rle"/>
-        <image name="rune6"    filename="rune_1.ega"   width="320" height="200" depth="4" filetype="image/x-u4rle"/>
-        <image name="rune7"    filename="rune_3.ega"   width="320" height="200" depth="4" filetype="image/x-u4rle"/>
-        <image name="rune8"    filename="rune_4.ega"   width="320" height="200" depth="4" filetype="image/x-u4rle"/>
+        <image name="rune3"    filename="rune_3.ega"   width="320" height="200" depth="4" filetype="image/x-u4rle"/>
+        <image name="rune4"    filename="rune_4.ega"   width="320" height="200" depth="4" filetype="image/x-u4rle"/>
+        <image name="rune5"    filename="rune_5.ega"   width="320" height="200" depth="4" filetype="image/x-u4rle"/>
+        <image name="rune6"    filename="rune_6.ega"   width="320" height="200" depth="4" filetype="image/x-u4rle"/>
+        <image name="rune7"    filename="rune_7.ega"   width="320" height="200" depth="4" filetype="image/x-u4rle"/>
+        <image name="rune8"    filename="rune_8.ega"   width="320" height="200" depth="4" filetype="image/x-u4rle"/>
 
         <!-- gem tiles -->
         <image name="gemtiles" filename="ega/gem.png" tiles="128" xu4Graphic="true"/>

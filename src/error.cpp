@@ -26,7 +26,7 @@ void errorFatal(const char *fmt, ...)
 	vsnprintf(buffer, sizeof(buffer), fmt, args);
 	va_end(args);
 	MessageBox(NULL, buffer, "XU4 Error", MB_OK | MB_ICONERROR);
-	exit(1);
+	exit(EXIT_FAILURE);
 }
 void errorWarning(const char *fmt, ...)
 {
@@ -67,7 +67,7 @@ void errorFatal(const char *fmt, ...)
 	va_end(args);
 	gtk_dialog_run(GTK_DIALOG(dialog));
 	gtk_widget_destroy(dialog);
-	exit(1);
+	exit(EXIT_FAILURE);
 }
 void errorWarning(const char *fmt, ...)
 {
@@ -102,7 +102,7 @@ void errorFatal(const char *fmt, ...)
 	vfprintf(stderr, fmt, args);
 	va_end(args);
 	fprintf(stderr, "\n");
-	exit(1);
+	exit(EXIT_FAILURE);
 }
 void errorWarning(const char *fmt, ...)
 {

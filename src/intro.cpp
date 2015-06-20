@@ -36,7 +36,7 @@
 using namespace std;
 extern bool useProfile;
 extern string profileName;
-extern bool quit;
+extern int quit;
 IntroController *intro = NULL;
 
 #define INTRO_MAP_HEIGHT 5
@@ -367,8 +367,8 @@ bool IntroController::keyPressed(int key)
 		case '}': errorMessage.erase();
 			about();
 			break;
-		case 'q': EventHandler::end();
-			quit = true;
+		case 'q': quit = 1;
+			EventHandler::end();
 			break;
 		case '1': case '2': case '3': case '4': case '5': case '6': case '7': case '8': musicMgr->introSwitch(key - '0');
 			break;

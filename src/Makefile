@@ -17,8 +17,8 @@ LIBS=-L/usr/lib -L/usr/lib/arm-linux-gnueabihf -L/lib/arm-linux-gnueabihf $(UILI
 CC=$(CCPREFIX)gcc
 CXX=$(CCPREFIX)g++
 FEATURES=-DHAVE_BACKTRACE=1 -DHAVE_VARIADIC_MACROS=1
-DEBUGCXXFLAGS=-Ofast -DNPERF -marm -mfpu=vfp -march=native -mtune=native -mfloat-abi=hard -DDEBUG -g -DRASB_PI
-# DEBUGCXXFLAGS=-O3 -march=native -mtune=native -DNDEBUG -URASB_PI -fno-exceptions -fno-non-call-exceptions -fno-common
+DEBUGCXXFLAGS=-Ofast -DNPERF -marm -mfpu=vfp -march=native -mtune=native -mfloat-abi=hard -UDEBUG -DNDEBUG -DRASB_PI -fno-exceptions -fno-non-call-exceptions -fno-common
+# DEBUGCXXFLAGS=-g -Og -DNPERF -march=native -mtune=native -UDEBUG -DNDEBUG -URASB_PI -fno-exceptions -fno-non-call-exceptions -fno-common
 CXXFLAGS=$(FEATURES) -Wall -pipe -I. -I/usr/include/libxml2 -I/usr/include/SDL -I/usr/include -I/usr/local/include -I/include -I/usr/include/arm-linux-gnueabihf $(UIFLAGS) -I/usr/include/libxml2 -DICON_FILE=\"$(datadir)/pixmaps/u4.bmp\" -DVERSION=\"$(VERSION)\" $(DEBUGCXXFLAGS) $(LIBS)
 CFLAGS=$(CXXFLAGS)
 INSTALL=install

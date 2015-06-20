@@ -20,7 +20,7 @@
 
 using namespace std;
 int eventTimerGranularity = 250;
-extern bool quit;
+extern int quit;
 bool EventHandler::controllerDone = false;
 bool EventHandler::ended = false;
 unsigned int TimedEventMgr::instances = 0;

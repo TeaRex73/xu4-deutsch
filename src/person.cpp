@@ -200,6 +200,7 @@ list<string> Person::getConversationText(Conversation *cnv, const char *inquiry)
 						string str = ReadStringController::get(script->getInputMaxLen(), TEXT_AREA_X + c->col, TEXT_AREA_Y + c->line);
 						if (str.size()) {
 							lowercase(str);
+							str = str.substr(0, 4);
 							script->setVar(script->getInputName(), str);
 						} else {
 							script->unsetVar(script->getInputName());

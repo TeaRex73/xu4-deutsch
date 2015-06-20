@@ -26,7 +26,7 @@ using std::string;
 #define STATS_AREA_Y 1
 
 enum StatsView {
-	STATS_PARTY_OVERVIEW, STATS_CHAR1, STATS_CHAR2, STATS_CHAR3, STATS_CHAR4, STATS_CHAR5, STATS_CHAR6, STATS_CHAR7, STATS_CHAR8, STATS_WEAPONS, STATS_ARMOR, STATS_EQUIPMENT, STATS_ITEMS, STATS_REAGENTS, STATS_MIXTURES, MIX_REAGENTS
+  STATS_PARTY_OVERVIEW, STATS_PARTY_AVATARONLY, STATS_CHAR1, STATS_CHAR2, STATS_CHAR3, STATS_CHAR4, STATS_CHAR5, STATS_CHAR6, STATS_CHAR7, STATS_CHAR8, STATS_WEAPONS, STATS_ARMOR, STATS_EQUIPMENT, STATS_ITEMS, STATS_REAGENTS, STATS_MIXTURES, MIX_REAGENTS
 };
 class StatsArea:public Observer<Aura *>, public Observer<Party *, PartyEvent &>, public Observer<Menu *, MenuEvent &>, public Observable<StatsArea *, string>{
 public: StatsArea();
@@ -34,7 +34,7 @@ void setView(StatsView view);
 void clear();
 void prevItem();
 void nextItem();
-void update(bool avatarOnly = false);
+void update();
 virtual void update(Aura *aura);
 virtual void update(Party *party, PartyEvent &event)
 {

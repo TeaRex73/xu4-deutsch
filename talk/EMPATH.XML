@@ -47,7 +47,7 @@
     <topic query="job">Ich bin ein Barde, ich singe Lieder.</topic>
     <topic query="health">Ziemlich gut.</topic>
     <topic query="LIED">Oh, alle Arten.<question type="0">Gefällt dir dies hier?<yes>Danke, ich habe es gerade geschrieben!</yes><no>Leider! Es war neu.</no></question></topic>
-    <topic query="KERZ">Die Kerze der Liebe findet man an einem geheimen Orte, versteckt abseits des Umschlossenen Sees!</topic>
+    <topic query="KERZ">Die Kerze der Liebe findet man an einem geheimen Orte, versteckt abseits des Loch-Sees!</topic>
   </person>
   <person id="7" name="Chinup" pronoun="Er" turnAwayProb="0">
     <description>Ein kleines aber stattliches Kind.</description>

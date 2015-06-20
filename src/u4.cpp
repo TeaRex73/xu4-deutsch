@@ -12,6 +12,7 @@
 
 #include <SDL.h>
 #include "u4.h"
+#include <cstdlib>
 #include <cstring>
 #include "debug.h"
 #include "error.h"
@@ -33,7 +34,7 @@
 #endif
 
 bool verbose = false;
-bool quit = false;
+int quit = 0;
 bool useProfile = false;
 string profileName = "";
 Performance perf("debug/performance.txt");
@@ -153,7 +154,7 @@ int main(int argc, char *argv[])
 	}
 	eventHandler->setControllerDone(false);
 	if (quit) {
-		return 0;
+		return quit > 1 ? EXIT_FAILURE : EXIT_SUCCESS;
 	}
 	perf.reset();
 	/* play the game! */
@@ -172,5 +173,5 @@ int main(int argc, char *argv[])
 	delete musicMgr;
 	soundDelete();
 	screenDelete();
-	return 0;
+	return quit > 1 ? EXIT_FAILURE : EXIT_SUCCESS;
 } // main
