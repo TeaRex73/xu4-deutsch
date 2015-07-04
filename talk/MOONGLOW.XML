@@ -4,7 +4,7 @@
     <description>Eine junge Magierin.</description>
     <topic query="job">Ich suche Abenteuer!</topic>
     <topic query="health">Durchaus gut.</topic>
-    <topic query="ABEN">Ja, ich hoffe auf eine große Queste zu gehen!<question type="0">Bist du auf einer Queste?<yes>Ich wünschte, ich könnte dich begleiten!</yes><no>Ich wünschte, du wärst!</no></question></topic>
+    <topic query="ABEN">Ja, ich hoffe auf große Queste zu gehen!<question type="0">Bist du auf Queste?<yes>Ich wünschte, ich könnte dich begleiten!</yes><no>Ich wünschte, du wärst!</no></question></topic>
     <topic query="QUES">Die Queste des Avatars ist ausgesprochen edel!</topic>
   </person>
   <person id="1" name="Tracie" pronoun="Sie" turnAwayProb="0">

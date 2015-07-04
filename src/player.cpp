@@ -517,10 +517,12 @@ int PartyMember::loseWeapon()
 /**
  * Put the party member to sleep
  */
-void PartyMember::putToSleep()
+void PartyMember::putToSleep(bool sound)
 {
 	if (getStatus() != STAT_DEAD) {
-		soundPlay(SOUND_SLEEP, false);
+		if (sound) {
+			soundPlay(SOUND_SLEEP, false);
+		}
 		addStatus(STAT_SLEEPING);
 		setTile(Tileset::findTileByName("corpse")->getId());
 	}
@@ -912,7 +914,7 @@ void Party::endTurn()
 				adjustFood(-1);
 			}
 			switch (members[i]->getStatus()) {
-			case STAT_SLEEPING: if (xu4_random(5) == 0) {
+			case STAT_SLEEPING: if (xu4_random(8) == 0) {
 					members[i]->wakeUp();
 			}
 				break;

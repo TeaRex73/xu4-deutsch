@@ -4,7 +4,7 @@
     <description>Einen gutaussehenden Kämpfer.</description>
     <topic query="job">Ich bin Anführer der Stadt.</topic>
     <topic query="health">Sehr gut.</topic>
-    <topic query="ANFU">Das ist eine Ehre!<question type="0">Versuchst du, ehrenhaft zu leben?<yes>Es ist eine ständige Queste. Ehre ist wie eine fein polierte Rüstung. Ohne ständige Pflege ist sie bald getrübt!</yes><no>Narr!</no></question></topic>
+    <topic query="ANFU">Das ist eine Ehre!<question type="0">Versuchst du, ehrenhaft zu leben?<yes>Es ist eine ständige Queste. Ehre ist wie eine fein polierte Rüstung. Ohne ständige Pflege läuft sie bald an!</yes><no>Narr!</no></question></topic>
     <topic query="EHRE">Sie gibt dem Leben Bedeutung!</topic>
   </person>
   <person id="1" name="Virgil" pronoun="Er" turnAwayProb="0">

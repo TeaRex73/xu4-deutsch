@@ -57,7 +57,7 @@ void CampController::begin()
 {
 	// make sure everyone's asleep
 	for (int i = 0; i < c->party->size(); i++) {
-		c->party->member(i)->putToSleep();
+		c->party->member(i)->putToSleep(false);
 	}
 	CombatController::begin();
 	musicMgr->pause();
@@ -135,6 +135,10 @@ void InnController::begin()
 		musicMgr->pause();                    /* Stop Music */
 	}
 	// EventHandler::wait_msecs(INN_FADE_OUT_TIME);
+	// make sure everyone's asleep
+	for (int i = 0; i < c->party->size(); i++) {
+		c->party->member(i)->putToSleep(false);
+	}
 	/* show the sleeping avatar */
 	c->party->setTransport(c->location->map->tileset->getByName("corpse")->getId());
 	gameUpdateScreen();
@@ -150,14 +154,23 @@ void InnController::begin()
 	// mwinterrowd suggested code, based on u4dos
 	if (c->party->member(0)->isDead()) {
 		maybeMeetIsaac();
+		/* Wake everyone up! */
+		for (int i = 0; i < c->party->size(); i++) {
+			c->party->member(i)->wakeUp();
+		}
+		screenMessage("\nMORGEN!\n");
 	} else {
 		if (xu4_random(8) != 0) {
 			maybeMeetIsaac();
+			/* Wake everyone up! */
+			for (int i = 0; i < c->party->size(); i++) {
+				c->party->member(i)->wakeUp();
+			}
+			screenMessage("\nMORGEN!\n");
 		} else {
 			maybeAmbush();
 		}
 	}
-	screenMessage("\nMORGEN!\n");
 	screenPrompt();
 	musicMgr->play();
 } // InnController::begin
@@ -207,10 +220,13 @@ void InnController::maybeMeetIsaac()
 } // InnController::maybeMeetIsaac
 void InnController::maybeAmbush()
 {
-	if (settings.innAlwaysCombat || (xu4_random(8) == 0)) {
+//	if (settings.innAlwaysCombat || (xu4_random(8) == 0)) {
+	if (true) {
 		MapId mapid;
 		Creature *creature;
 		bool showMessage = true;
+		/* Wake up the Avatar! */
+		c->party->member(0)->wakeUp();
 		/* Rats seem much more rare than meeting rogues in the streets */
 		if (xu4_random(4) == 0) {
 			/* Rats! */

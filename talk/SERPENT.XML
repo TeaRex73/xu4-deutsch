@@ -67,7 +67,7 @@
     <description>Einen großen Kämpfer.</description>
     <topic query="job">Ich queste um Ruhm!</topic>
     <topic query="health">Ziemlich gut.</topic>
-    <topic query="QUES">Ich fühle, daß, wenn ich auf Queste bin, mein Leben ein Ziel hat!<question type="0">Bist du auf einer Queste?<yes>Dann hat dein Leben Bedeutung!</yes><no>Welch ein Verlust.</no></question></topic>
+    <topic query="QUES">Ich fühle, daß, wenn ich auf Queste bin, mein Leben ein Ziel hat!<question type="0">Bist du auf Queste?<yes>Dann hat dein Leben Bedeutung!</yes><no>Welch ein Verlust.</no></question></topic>
     <topic query="HOEH">Der Altarrraum des Mutes gibt den dritten Teil eines Schlüssels.</topic>
   </person>
   <person id="10" name="Lori" pronoun="Sie" turnAwayProb="0">

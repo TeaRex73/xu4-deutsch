@@ -100,10 +100,10 @@
   </person>
   <person id="14" name="Malchor" pronoun="Er" turnAwayProb="0">
     <description>Einen kühnen Paladin.</description>
-    <topic query="job">Ich löse Questen.</topic>
+    <topic query="job">Ich absolviere Questen.</topic>
     <topic query="health">Gerade ganz geheilt worden!</topic>
-    <topic query="QUES">Meine letzte Queste brachte mich in die Nähe des Geistwaldes.<question type="0">Bist du auf einer Queste?<yes>Viel Glück dabei!</yes><no>Oh.</no></question></topic>
-    <topic query="HORN">Manche sagen, daß das silberne Horn auf einer kleinen Insel abseits der Spitze des Geistwaldes vergraben liegt.</topic>
+    <topic query="QUES">Meine letzte Queste brachte mich in die Nähe des Geisterwaldes.<question type="0">Bist du auf Queste?<yes>Viel Glück dabei!</yes><no>Oh.</no></question></topic>
+    <topic query="HORN">Manche sagen, daß das silberne Horn auf einer kleinen Insel abseits der Spitze des Geisterwaldes vergraben liegt.</topic>
   </person>
   <person id="15" name="Bruder Antos" pronoun="Er" turnAwayProb="0">
     <description>Einen weisen Druiden.</description>

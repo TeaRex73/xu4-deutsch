@@ -81,7 +81,7 @@
     <description>Ein kleines Kind</description>
     <topic query="job">Ich arbeite für Jones.</topic>
     <topic query="health">Mir geht's prima.</topic>
-    <topic query="JONE">Ich glaube Indi ist auf einer Queste!</topic>
+    <topic query="JONE">Ich glaube Indi ist auf Queste!</topic>
     <topic query="QUES">Ich bin mir nicht sicher, aber es sollte Spaß machen!<question type="0">Hast Du Spaß?<yes>Schreib an Lord British und sag's ihm!!!</yes><no>Es tut mir sehr leid, wir alle wünschten, du hättest welchen!</no></question></topic>
   </person>
   <person id="12" name="Frida" pronoun="Sie" turnAwayProb="0">

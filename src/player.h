@@ -106,7 +106,7 @@ virtual const string &getMissTile() const;
 bool isDead();
 bool isDisabled();
 int  loseWeapon();
-virtual void putToSleep();
+virtual void putToSleep(bool sound = true);
 virtual void wakeUp();
 protected: static MapTile tileForClass(int klass);
 SaveGamePlayerRecord *player;
