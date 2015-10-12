@@ -47,7 +47,7 @@
     <topic query="job">Jo ho ho... und 'ne Buddel... voll Rum... hick...</topic>
     <topic query="health">Und 'ne Buddel voll...</topic>
     <topic query="STEI">Der gelbe Stein ist in der Höhle Veracht...</topic>
-    <topic query="RUM ">Rrum... hick...<question type="0">Ggibsse mir Rum?...<yes>Ddankse... mein Freund Joe kann mit den Steinen helfen... hick...</yes><no>Ach, sei ein Joe!</no></question></topic>
+    <topic query="RUM ">Rrum... hick...<question type="0">Ggibße mir Rum?...<yes>Ddankse... mein Freund Joe kann mit den Steinen helfen... hick...</yes><no>Ach, sei ein Joe!</no></question></topic>
   </person>
   <person id="7" name="Cricket" pronoun="Er" turnAwayProb="32">
     <description>Einen Barden in Grün.</description>

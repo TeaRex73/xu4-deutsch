@@ -631,7 +631,7 @@ void IntroController::initiateNewGame()
 	// display name prompt and read name from keyboard
 	menuArea.textAt(3, 3, "Unter welchem Namen wirst du in");
 	menuArea.textAt(3, 4, "dieser Welt und Zeit bekannt sein?");
-	// enable the text cursor after setting it's initial position
+	// enable the text cursor after setting its initial position
 	// this will avoid drawing in undesirable areas like 0,0
 	menuArea.setCursorPos(15, 7, false);
 	menuArea.setCursorFollowsText(true);
@@ -671,7 +671,7 @@ void IntroController::finishInitiateGame(const string &nameBuffer, SexType sex)
 	showStory(sex);
 	// ask questions that determine character class
 	startQuestions(sex);
-	// write out save game an segue into game
+	// write out save game and segue into game
 	SaveGame saveGame;
 	SaveGamePlayerRecord avatar;
 	FILE *saveGameFile = fopen((settings.getUserPath() + PARTY_SAV_BASE_FILENAME).c_str(), "wb");

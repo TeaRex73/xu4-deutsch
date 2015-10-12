@@ -11,7 +11,7 @@
     <description>Ein zähes Mädchen.</description>
     <topic query="job">Ich bin die Stallmagd.</topic>
     <topic query="health">Richtig gut.</topic>
-    <topic query="STAL">Ich hab gesehen, wie du mit dem alten Rotauge umgesprungen bist!<question type="0">Du bist nicht etwa hier um 'n Pferd zu klauen, oder?<yes>Das wird dem Bosse aber gar nicht gefallen!</yes><no>Dann um Smith zu sehen, was!</no></question></topic>
+    <topic query="STAL">Ich hab gesehen, wie du mit dem alten Rotauge umgesprungen bist!<question type="0">Du bist nicht etwa hier um 'n Pferd zu klauen, oder?<yes>Das wird dem Boß aber gar nicht gefallen!</yes><no>Dann um Smith zu sehen, was!</no></question></topic>
     <topic query="SMIT">Das sprechende Pferd!</topic>
   </person>
   <person id="2" name="Sven" pronoun="Er" turnAwayProb="0">

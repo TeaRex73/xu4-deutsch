@@ -96,7 +96,7 @@
     <topic query="job">Ich suche den Stein.</topic>
     <topic query="health">O.K.</topic>
     <topic query="STEI">Den roten Stein.</topic>
-    <topic query="ROTE">Rot steht für Tapferkeit, eine Tugend des Avatars!<question type="1">Hast du die Queste des Avatars vollendet?<yes>Hui!</yes><no>Dann brauchst du den roten stein in &gt;einem&lt; Altarraume, um den dritten Teil eines Schlüssels zu bekommen!</no></question></topic>
+    <topic query="ROTE">Rot steht für Tapferkeit, eine Tugend des Avatars!<question type="1">Hast du die Queste des Avatars vollendet?<yes>Hui!</yes><no>Dann brauchst du den roten Stein in &gt;einem&lt; Altarraume, um den dritten Teil eines Schlüssels zu bekommen!</no></question></topic>
   </person>
   <person id="14" name="Slithe" pronoun="Er" turnAwayProb="0">
     <description>Einen tapferen Krieger.</description>
