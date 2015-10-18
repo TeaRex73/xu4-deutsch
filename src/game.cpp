@@ -98,6 +98,9 @@ void gameCreatureAttack(Creature *obj);
 /*---------------*/
 // extern Object *party[8];
 extern int quit;
+
+const string tmpstr = "/tmp/";
+
 Context *c = NULL;
 Debug gameDbg("debug/game.txt", "Game");
 MouseArea mouseAreas[] = {
@@ -225,7 +228,11 @@ void GameController::init()
 	c->willPassTurn = false;
 	c->lastShip = NULL;
 	/* load in the save game */
-	saveGameFile = fopen((settings.getUserPath() + PARTY_SAV_BASE_FILENAME).c_str(), "rb");
+	
+	saveGameFile = fopen((tmpstr + PARTY_SAV_BASE_FILENAME).c_str(), "rb");
+        if (!saveGameFile) {
+	        saveGameFile = fopen((settings.getUserPath() + PARTY_SAV_BASE_FILENAME).c_str(), "rb");
+	}
 	if (saveGameFile) {
 		c->saveGame->read(saveGameFile);
 		fclose(saveGameFile);
@@ -271,7 +278,10 @@ void GameController::init()
 	}
 	TRACE_LOCAL(gameDbg, "Loading monsters.");                                                                                                           /* ++pb; */
 	/* load in creatures.sav */
-	monstersFile = fopen((settings.getUserPath() + MONSTERS_SAV_BASE_FILENAME).c_str(), "rb");
+monstersFile = fopen((tmpstr + MONSTERS_SAV_BASE_FILENAME).c_str(), "rb");
+        if (!monstersFile) {
+	        monstersFile = fopen((settings.getUserPath() + MONSTERS_SAV_BASE_FILENAME).c_str(), "rb");
+	}
 	if (monstersFile) {
 		saveGameMonstersRead(c->location->map->monsterTable, monstersFile);
 		fclose(monstersFile);

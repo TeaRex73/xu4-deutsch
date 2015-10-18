@@ -409,12 +409,12 @@ int CombatController::initialNumberOfCreatures(const Creature *creature) const
 				ncreatures = 8;
 			}
 		}
-		while (ncreatures > 2 * c->saveGame->members) {
+		while (ncreatures > 2 * c->party->member(0)->getMaxLevel()) {
 			ncreatures = xu4_random(16) + 1;
 		}
 	} else {
 		if (creature && (creature->getId() == GUARD_ID)) {
-			ncreatures = c->saveGame->members * 2;
+		  ncreatures = c->party->member(0)->getMaxLevel() * 2;
 		} else {
 			ncreatures = 1;
 		}

@@ -39,6 +39,8 @@ extern string profileName;
 extern int quit;
 IntroController *intro = NULL;
 
+const string tmpstr = "/tmp/";
+
 #define INTRO_MAP_HEIGHT 5
 #define INTRO_MAP_WIDTH 19
 #define INTRO_TEXT_X 0
@@ -270,7 +272,9 @@ IntroController::IntroController():Controller(1), backgroundArea(), menuArea(1 *
  */
 bool IntroController::init()
 {
-	justInitiatedNewGame = false;
+        remove((tmpstr + PARTY_SAV_BASE_FILENAME).c_str());
+        remove((tmpstr + MONSTERS_SAV_BASE_FILENAME).c_str());
+        justInitiatedNewGame = false;
 	initiatingNewGame = false;
 	// sigData is referenced during Titles initialization
 	binData = new IntroBinData();
@@ -674,7 +678,7 @@ void IntroController::finishInitiateGame(const string &nameBuffer, SexType sex)
 	// write out save game and segue into game
 	SaveGame saveGame;
 	SaveGamePlayerRecord avatar;
-	FILE *saveGameFile = fopen((settings.getUserPath() + PARTY_SAV_BASE_FILENAME).c_str(), "wb");
+	FILE *saveGameFile = fopen((tmpstr + PARTY_SAV_BASE_FILENAME).c_str(), "wb");
 	if (!saveGameFile) {
 		questionArea.disableCursor();
 		errorMessage = "Unable to create save game!";
@@ -696,7 +700,7 @@ void IntroController::finishInitiateGame(const string &nameBuffer, SexType sex)
 	fsync(fileno(saveGameFile));
 	fclose(saveGameFile);
 	sync();
-	saveGameFile = fopen((settings.getUserPath() + MONSTERS_SAV_BASE_FILENAME).c_str(), "wb");
+	saveGameFile = fopen((tmpstr + MONSTERS_SAV_BASE_FILENAME).c_str(), "wb");
 	if (saveGameFile) {
 		saveGameMonstersWrite(NULL, saveGameFile);
 		fsync(fileno(saveGameFile));
@@ -827,7 +831,10 @@ void IntroController::journeyOnward()
 	 * ensure a party.sav file exists, otherwise require user to
 	 * initiate game
 	 */
-	saveGameFile = fopen((settings.getUserPath() + PARTY_SAV_BASE_FILENAME).c_str(), "rb");
+	saveGameFile = fopen((tmpstr + PARTY_SAV_BASE_FILENAME).c_str(), "rb");
+	if (!saveGameFile) {
+	  saveGameFile = fopen((settings.getUserPath() + PARTY_SAV_BASE_FILENAME).c_str(), "rb");
+	}
 	if (saveGameFile) {
 		SaveGame *saveGame = new SaveGame;
 		// Make sure there are players in party.sav --
