@@ -94,7 +94,7 @@ inline void AdjustValue(unsigned short &v, int val, int max, int min)
 		v = min;
 	}
 }
-void xu4_srandom(void);
+void xu4_srandom();
 int xu4_random(int upperval);
 int mytoupper(int c);
 int mytolower(int c);

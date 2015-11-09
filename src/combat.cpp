@@ -201,15 +201,22 @@ void CombatController::initDungeonRoom(int room, Direction from)
 		}
 		/* figure out party start coordinates */
 		switch (from) {
-		case DIR_WEST: offset = 3;
+		case DIR_WEST:
+			offset = 3;
 			break;
-		case DIR_NORTH: offset = 0;
+		case DIR_NORTH:
+			offset = 0;
 			break;
-		case DIR_EAST: offset = 1;
+		case DIR_EAST:
+			offset = 1;
 			break;
-		case DIR_SOUTH: offset = 2;
+		case DIR_SOUTH:
+			offset = 2;
 			break;
-		case DIR_ADVANCE: case DIR_RETREAT: default: offset = 0;
+		case DIR_ADVANCE:
+		case DIR_RETREAT:
+		default:
+			offset = 0;
 			ASSERT(0, "Invalid 'from' direction passed to initDungeonRoom()");
 		}
 		for (i = 0; i < AREA_PLAYERS; i++) {
@@ -319,16 +326,24 @@ void CombatController::end(bool adjustKarma)
 				PortalTriggerAction action = ACTION_NONE;
 				/* when exiting altar rooms, you exit to other dungeons.  Here it goes... */
 				switch (exitDir) {
-				case DIR_NORTH: action = ACTION_EXIT_NORTH;
+				case DIR_NORTH:
+					action = ACTION_EXIT_NORTH;
 					break;
-				case DIR_EAST: action = ACTION_EXIT_EAST;
+				case DIR_EAST:
+					action = ACTION_EXIT_EAST;
 					break;
-				case DIR_SOUTH: action = ACTION_EXIT_SOUTH;
+				case DIR_SOUTH:
+					action = ACTION_EXIT_SOUTH;
 					break;
-				case DIR_WEST: action = ACTION_EXIT_WEST;
+				case DIR_WEST:
+					action = ACTION_EXIT_WEST;
 					break;
-				case DIR_NONE: break;
-				case DIR_ADVANCE: case DIR_RETREAT: default: ASSERT(0, "Invalid exit dir %d", exitDir);
+				case DIR_NONE:
+					break;
+				case DIR_ADVANCE:
+				case DIR_RETREAT:
+				default:
+					ASSERT(0, "Invalid exit dir %d", exitDir);
 					break;
 				}
 				if (action != ACTION_NONE) {
@@ -608,7 +623,8 @@ bool CombatController::rangedAttack(const Coords &coords, Creature *attacker)
 		screenMessage("\n%s\n%cELEKTRISIERT%c\n", uppercase(target->getName()).c_str(), FG_BLUE, FG_WHITE);
 		attacker->dealDamage(target, attacker->getDamage());
 		break;
-	case EFFECT_POISON: case EFFECT_POISONFIELD:
+	case EFFECT_POISON:
+	case EFFECT_POISONFIELD:
 		/* see if the player is poisoned */
 		if ((xu4_random(2) == 0) && (target->getStatus() != STAT_POISONED)) {
 			// POISON_EFFECT, ranged hit
@@ -628,7 +644,8 @@ bool CombatController::rangedAttack(const Coords &coords, Creature *attacker)
 		}
 		// else screenMessage("Failed.\n");
 		break;
-	case EFFECT_LAVA: case EFFECT_FIRE:
+	case EFFECT_LAVA:
+	case EFFECT_FIRE:
 		/* FIXME: are there any special effects here? */
 		soundPlay(SOUND_PC_STRUCK, false);
 		screenMessage("\n%s\n%c%s-GETROFFEN%c\n", uppercase(target->getName()).c_str(), FG_RED, effect == EFFECT_LAVA ? "LAVA" : "FEUER", FG_WHITE);
@@ -798,15 +815,21 @@ bool CombatController::keyPressed(int key)
 		key = mytolower(key);
 	}
 	switch (key) {
-	case U4_UP: case U4_DOWN: case U4_LEFT: case U4_RIGHT: c->location->move(keyToDirection(key), true);
+	case U4_UP:
+	case U4_DOWN:
+	case U4_LEFT:
+	case U4_RIGHT:
+		c->location->move(keyToDirection(key), true);
 		break;
-	case U4_ESC: if (settings.debug) {
+	case U4_ESC:
+		if (settings.debug) {
 			end(false);                  /* don't adjust karma */
-	} else {
+		} else {
 			screenMessage("\n");
-	}
+		}
 		break;
-	case ' ': screenMessage("Aussetzen\n");
+	case ' ':
+		screenMessage("Aussetzen\n");
 		break;
 	case U4_FKEY:
 	{
@@ -819,7 +842,9 @@ bool CombatController::keyPressed(int key)
 		break;
 	}
 	// Change the speed of battle
-	case '+': case '-': case U4_KEYPAD_ENTER:
+	case '+':
+	case '-':
+	case U4_KEYPAD_ENTER:
 	{
 		int old_speed = settings.battleSpeed;
 		if ((key == '+') && (++settings.battleSpeed > MAX_BATTLE_SPEED)) {
@@ -840,10 +865,10 @@ bool CombatController::keyPressed(int key)
 		} else if (settings.battleSpeed == DEFAULT_BATTLE_SPEED) {
 			screenMessage("KAMPFTEMPO:\nNORMAL\n");
 		}
-	}
 		valid = false;
 		break;
-	/* handle music volume adjustments */
+	}
+		/* handle music volume adjustments */
 	case ',':
 		// decrease the volume if possible
 		screenMessage("MUSIK: %d%s\n", musicMgr->decreaseMusicVolume(), "%");
@@ -863,26 +888,32 @@ bool CombatController::keyPressed(int key)
 		screenMessage("SOUND: %d%s\n", musicMgr->increaseSoundVolume(), "%");
 		soundPlay(SOUND_FLEE);
 		break;
-	case 'a': attack();
+	case 'a':
+		attack();
 		break;
-	case 'z': screenMessage("Zaubern, ");
+	case 'z':
+		screenMessage("Zaubern, ");
 		castSpell(focus);
 		break;
-	case 't': getChest(focus);
+	case 't':
+		getChest(focus);
 		break;
-	case 'p': if (settings.debug) {
+	case 'p':
+		if (settings.debug) {
 			Coords coords = getCurrentPlayer()->getCoords();
 			screenMessage("\nORT:\nX:%d\nY:%d\nZ:%d\n", coords.x, coords.y, coords.z);
 			screenPrompt();
 			valid = false;
-	} else {
+		} else {
 			soundPlay(SOUND_ERROR);
 			screenMessage("HIER NICHT!\n");
-	}
+		}
 		break;
-	case 'w': readyWeapon(getFocus());
+	case 'w':
+		readyWeapon(getFocus());
 		break;
-	case 's': if (settings.debug && map->isDungeonRoom()) {
+	case 's':
+		if (settings.debug && map->isDungeonRoom()) {
 			Dungeon *dungeon = dynamic_cast<Dungeon *>(c->location->prev->map);
 			Trigger *triggers = dungeon->rooms[dungeon->currentRoom].triggers;
 			int i;
@@ -893,22 +924,25 @@ bool CombatController::keyPressed(int key)
 			}
 			screenPrompt();
 			valid = false;
-	} else {
+		} else {
 			soundPlay(SOUND_ERROR);
 			screenMessage("HIER NICHT!\n");
-	}
+		}
 		break;
-	case 'v': screenMessage("Verwenden...\nWELCHES DING:\n?");
+	case 'v':
+		screenMessage("Verwenden...\nWELCHES DING:\n?");
 		c->stats->setView(STATS_ITEMS);
 		itemUse(gameGetInput().c_str());
 		break;
-	case 'x': if (musicMgr->toggle()) {
+	case 'x':
+		if (musicMgr->toggle()) {
 			screenMessage("Xound EIN\n");
-	} else {
+		} else {
 			screenMessage("Xound AUS\n");
-	}
+		}
 		break;
-	case 'v' + U4_ALT: screenMessage("XU4G %s\n", VERSION);
+	case 'v' + U4_ALT:
+		screenMessage("XU4G %s\n", VERSION);
 		break;
 	case 'i':
 	{
@@ -922,17 +956,46 @@ bool CombatController::keyPressed(int key)
 		ctrl.waitFor();
 		break;
 	}
-	case 'l': case 'b': case 'y': case 'k': case 'c': case 'f': case 'd': case 'q': case 'm': case 'o': case '|': case 'u': case 'j': case 'e': case 'n': case 'r': case 'g': case 'h': soundPlay(SOUND_ERROR);
+	case 'l':
+	case 'b':
+	case 'y':
+	case 'k':
+	case 'c':
+	case 'f':
+	case 'd':
+	case 'q':
+	case 'm':
+	case 'o':
+	case '|':
+	case 'u':
+	case 'j':
+	case 'e':
+	case 'n':
+	case 'r':
+	case 'g':
+	case 'h':
+		soundPlay(SOUND_ERROR);
 		screenMessage("HIER NICHT!\n");
 		break;
-	case '0': case '1': case '2': case '3': case '4': case '5': case '6': case '7': case '8': case '9': if (settings.enhancements && settings.enhancementsOptions.activePlayer) {
+	case '0':
+	case '1':
+	case '2':
+	case '3':
+	case '4':
+	case '5':
+	case '6':
+	case '7':
+	case '8':
+	case '9':
+		if (settings.enhancements && settings.enhancementsOptions.activePlayer) {
 			gameSetActivePlayer(key - '1');
-	} else {
+		} else {
 			soundPlay(SOUND_ERROR);
 			screenMessage("WAS?\n");
-	}
+		}
 		break;
-	default: valid = false;
+	default:
+		valid = false;
 		break;
 	} // switch
 

@@ -524,16 +524,22 @@ ImageInfo *ImageMgr::get(const string &name, bool returnUnscaled)
 	 * fixup the image before scaling it
 	 */
 	switch (info->fixup) {
-	case FIXUP_NONE: break;
-	case FIXUP_INTRO: fixupIntro(unscaled, info->prescale);
+	case FIXUP_NONE:
 		break;
-	case FIXUP_ABYSS: fixupAbyssVision(unscaled, info->prescale);
+	case FIXUP_INTRO:
+		fixupIntro(unscaled, info->prescale);
 		break;
-	case FIXUP_ABACUS: fixupAbacus(unscaled, info->prescale);
+	case FIXUP_ABYSS:
+		fixupAbyssVision(unscaled, info->prescale);
 		break;
-	case FIXUP_DUNGNS: fixupDungNS(unscaled, info->prescale);
+	case FIXUP_ABACUS:
+		fixupAbacus(unscaled, info->prescale);
 		break;
-	case FIXUP_FMTOWNSSCREEN: fixupFMTowns(unscaled, info->prescale);
+	case FIXUP_DUNGNS:
+		fixupDungNS(unscaled, info->prescale);
+		break;
+	case FIXUP_FMTOWNSSCREEN:
+		fixupFMTowns(unscaled, info->prescale);
 		break;
 	case FIXUP_BLACKTRANSPARENCYHACK:
 		// Apply transparency shadow hack to ultima4 ega and vga upgrade classic graphics.

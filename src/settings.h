@@ -78,86 +78,102 @@ struct SettingsEnhancementOptions {
 	int u4TileTransparencyHackPixelShadowOpacity;
 	int u4TrileTransparencyHackShadowBreadth;
 };
+
 struct MouseOptions {
 	bool enabled;
 };
+
+
 /**
  * SettingsData stores all the settings information.
  */
 class SettingsData {
-public: bool operator==(const SettingsData &) const;
-bool operator!=(const SettingsData &) const;
-int battleSpeed;
-bool campingAlwaysCombat;
-int campTime;
-bool debug;
-bool enhancements;
-SettingsEnhancementOptions enhancementsOptions;
-bool filterMoveMessages;
-bool fullscreen;
-int gameCyclesPerSecond;
-int screenAnimationFramesPerSecond;
-bool innAlwaysCombat;
-int innTime;
-int keydelay;
-int keyinterval;
-MouseOptions mouseOptions;
-int musicVol;
-static const unsigned int scale = 1;
-bool screenShakes;
-int gamma;
-int shakeInterval;
-bool shortcutCommands;
-int shrineTime;
-int soundVol;
-int spellEffectSpeed;
-bool validateXml;
-bool volumeFades;
-int titleSpeedRandom;
-int titleSpeedOther;
-// Settings that aren't in file yet
-int pauseForEachTurn;
-int pauseForEachMovement;
-/**
- * Strings, classes, and other objects that cannot
- * be bitwise-compared must be placed here at the
- * end of the list so that our == and != operators
- * function correctly
- */
-long end_of_bitwise_comparators;
-string filter;
-string gemLayout;
-string lineOfSight;
-string videoType;
-string battleDiff;
-string logging;
-string game;
+public:
+	bool operator==(const SettingsData &) const;
+	bool operator!=(const SettingsData &) const;
+	int battleSpeed;
+	bool campingAlwaysCombat;
+	int campTime;
+	bool debug;
+	bool enhancements;
+	SettingsEnhancementOptions enhancementsOptions;
+	bool filterMoveMessages;
+	bool fullscreen;
+	int gameCyclesPerSecond;
+	int screenAnimationFramesPerSecond;
+	bool innAlwaysCombat;
+	int innTime;
+	int keydelay;
+	int keyinterval;
+	MouseOptions mouseOptions;
+	int musicVol;
+	static const unsigned int scale = 1;
+	bool screenShakes;
+	int gamma;
+	int shakeInterval;
+	bool shortcutCommands;
+	int shrineTime;
+	int soundVol;
+	int spellEffectSpeed;
+	bool validateXml;
+	bool volumeFades;
+	int titleSpeedRandom;
+	int titleSpeedOther;
+	// Settings that aren't in file yet
+	int pauseForEachTurn;
+	int pauseForEachMovement;
+	/**
+	 * Strings, classes, and other objects that cannot
+	 * be bitwise-compared must be placed here at the
+	 * end of the list so that our == and != operators
+	 * function correctly
+	 */
+	long end_of_bitwise_comparators;
+	string filter;
+	string gemLayout;
+	string lineOfSight;
+	string videoType;
+	string battleDiff;
+	string logging;
+	string game;
 };
+
+
 /**
  * The settings class is a singleton that holds all the settings
  * information.  It is dynamically initialized when first accessed.
  */
-class Settings:public SettingsData, public Observable<Settings *>{
-typedef std::map<string, int, std::less<string> > SettingsMap;
+class Settings
+	:public SettingsData,
+	 public Observable<Settings *> {
 public:
-/* Methods */
-void init(const bool useProfile, const string profileName);
-static inline Settings &getInstance()
-{
-	if (__builtin_expect((instance == NULL), false)) { instance = new Settings(); }
-	return *instance;
-}
-void setData(const SettingsData &data);
-bool read();
-bool write();
-const string &getUserPath();
-const std::vector<string> &getBattleDiffs();
-private: Settings();
-static Settings *instance;
-string userPath;
-string filename;
-std::vector<string> battleDiffs;
+
+	void init(const bool useProfile, const string profileName);
+	
+	static Settings &getInstance()
+	{
+		if (__builtin_expect((instance == NULL), false)) {
+			instance = new Settings();
+		}
+		return *instance;
+	}
+
+	void setData(const SettingsData &data);
+	bool read();
+	bool write();
+	const string &getUserPath();
+	const std::vector<string> &getBattleDiffs();
+
+private:
+	typedef std::map<string, int, std::less<string> > SettingsMap;
+	
+	Settings();
+	static Settings *instance;
+	string userPath;
+	string filename;
+	std::vector<string> battleDiffs;
 };
+
 /* the global settings */
 #define settings (Settings::getInstance())
 

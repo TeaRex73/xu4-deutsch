@@ -41,9 +41,9 @@
 typedef void (*WRITE_DECOMP)(unsigned char root, unsigned char *destination, long *position);
 
 typedef struct _lzwDictionaryEntry {
-    unsigned char root;
-    int codeword;
-    unsigned char occupied;
+	unsigned char root;
+	int codeword;
+	unsigned char occupied;
 } lzwDictionaryEntry;
 
 long generalizedDecompress(WRITE_DECOMP outFunc, unsigned char *compressedMem, unsigned char *decompressedMem, long compressedSize);
@@ -68,7 +68,7 @@ unsigned char hashPosFound(int hashCode, unsigned char root, int codeword, lzwDi
  */
 long lzwGetDecompressedSize(unsigned char *compressedMem, long compressedSize)
 {
-    return (generalizedDecompress(&discardRoot, compressedMem, NULL, compressedSize));
+	return generalizedDecompress(&discardRoot, compressedMem, NULL, compressedSize);
 }
 
 /*
@@ -84,7 +84,7 @@ long lzwGetDecompressedSize(unsigned char *compressedMem, long compressedSize)
  */
 long lzwDecompress(unsigned char *compressedMem, unsigned char *decompressedMem, long compressedSize)
 {
-    return (generalizedDecompress(&outputRoot, compressedMem, decompressedMem, compressedSize));
+	return generalizedDecompress(&outputRoot, compressedMem, decompressedMem, compressedSize);
 }
 
 /* --------------------------------------------------------------------------------------
@@ -101,152 +101,152 @@ long lzwDecompress(unsigned char *compressedMem, unsigned char *decompressedMem,
  */
 long generalizedDecompress(WRITE_DECOMP outFunc, unsigned char *compressedMem, unsigned char *decompressedMem, long compressedSize)
 {
-    int i;
+	int i;
 
-    /* re-initialize the dictionary when there are more than 0xccc entries */
-    const int maxDictEntries = 0xccc;
+	/* re-initialize the dictionary when there are more than 0xccc entries */
+	const int maxDictEntries = 0xccc;
 
-    const int lzwStackSize = 0x8000;
-    const int lzwDictionarySize = 0x1000;
+	const int lzwStackSize = 0x8000;
+	const int lzwDictionarySize = 0x1000;
 
-    int old_code;
-    int new_code;
-    unsigned char character;
+	int old_code;
+	int new_code;
+	unsigned char character;
 
-    long bitsRead = 0;
-    long bytesWritten = 0;
+	long bitsRead = 0;
+	long bytesWritten = 0;
 
-    /* newpos: position in the dictionary where new codeword was added                      */
-    /* must be equal to current codeword (if it isn't, the compressed data must be corrupt) */
-    /* unknownCodeword: is the current codeword in the dictionary?                          */
-    int newpos;
-    unsigned char unknownCodeword;
+	/* newpos: position in the dictionary where new codeword was added                      */
+	/* must be equal to current codeword (if it isn't, the compressed data must be corrupt) */
+	/* unknownCodeword: is the current codeword in the dictionary?                          */
+	int newpos;
+	unsigned char unknownCodeword;
 
-    /* initialize the dictionary and the stack */
-    lzwDictionaryEntry *lzwDictionary = (lzwDictionaryEntry *) malloc(sizeof(lzwDictionaryEntry) * lzwDictionarySize);
-    int codewordsInDictionary = 0;
-    unsigned char *lzwStack = (unsigned char *) malloc(sizeof(unsigned char) * lzwStackSize);
-    int elementsInStack = 0;
+	/* initialize the dictionary and the stack */
+	lzwDictionaryEntry *lzwDictionary = (lzwDictionaryEntry *) malloc(sizeof(lzwDictionaryEntry) * lzwDictionarySize);
+	int codewordsInDictionary = 0;
+	unsigned char *lzwStack = (unsigned char *) malloc(sizeof(unsigned char) * lzwStackSize);
+	int elementsInStack = 0;
 
-    /* clear the dictionary */
-    memset(lzwDictionary, 0, sizeof(lzwDictionaryEntry) * lzwDictionarySize);
+	/* clear the dictionary */
+	memset(lzwDictionary, 0, sizeof(lzwDictionaryEntry) * lzwDictionarySize);
 
-    for (i = 0; i < 0x100; i++)
-        lzwDictionary[i].occupied = 1;
+	for (i = 0; i < 0x100; i++)
+		lzwDictionary[i].occupied = 1;
 
-    if (bitsRead + 12 <= compressedSize * 8) {
-        /* read OLD_CODE */
-        old_code = getNextCodeword(&bitsRead, compressedMem);
-        /* CHARACTER = OLD_CODE */
-        character = (unsigned char)old_code;
-        /* output OLD_CODE */
-        outFunc(character, decompressedMem, &bytesWritten);
+	if (bitsRead + 12 <= compressedSize * 8) {
+		/* read OLD_CODE */
+		old_code = getNextCodeword(&bitsRead, compressedMem);
+		/* CHARACTER = OLD_CODE */
+		character = (unsigned char)old_code;
+		/* output OLD_CODE */
+		outFunc(character, decompressedMem, &bytesWritten);
 
-        while (bitsRead + 12 <= compressedSize * 8) { /* WHILE there are still input characters DO */
-            /* read NEW_CODE */
-            new_code = getNextCodeword(&bitsRead, compressedMem);
+		while (bitsRead + 12 <= compressedSize * 8) { /* WHILE there are still input characters DO */
+			/* read NEW_CODE */
+			new_code = getNextCodeword(&bitsRead, compressedMem);
 
-            if (lzwDictionary[new_code].occupied) { /* is the codeword in the dictionary? */
-                /* codeword is present in the dictionary                                               */
-                /* it must either be a root or a non-root that has already been added to the dicionary */
-                unknownCodeword = 0;
+			if (lzwDictionary[new_code].occupied) { /* is the codeword in the dictionary? */
+				/* codeword is present in the dictionary                                               */
+				/* it must either be a root or a non-root that has already been added to the dicionary */
+				unknownCodeword = 0;
 
-                /* STRING = get translation of NEW_CODE */
-                getString(new_code,lzwDictionary,lzwStack,&elementsInStack);
-            } else {
-                /* codeword is yet to be defined */
-                unknownCodeword = 1;
+				/* STRING = get translation of NEW_CODE */
+				getString(new_code,lzwDictionary,lzwStack,&elementsInStack);
+			} else {
+				/* codeword is yet to be defined */
+				unknownCodeword = 1;
 
-                /* STRING = get translation of OLD_CODE */
-                /* STRING = STRING+CHARACTER            */
-                lzwStack[elementsInStack] = character;   /* push character on the stack */
-                elementsInStack++;
+				/* STRING = get translation of OLD_CODE */
+				/* STRING = STRING+CHARACTER            */
+				lzwStack[elementsInStack] = character;   /* push character on the stack */
+				elementsInStack++;
 
-                getString(old_code,lzwDictionary,lzwStack,&elementsInStack);
-            }
+				getString(old_code,lzwDictionary,lzwStack,&elementsInStack);
+			}
 
-            /* CHARACTER = first character in STRING */
-            character = lzwStack[elementsInStack-1];   /* element at top of stack */
+			/* CHARACTER = first character in STRING */
+			character = lzwStack[elementsInStack-1];   /* element at top of stack */
 
-            /* output STRING */
-            while (elementsInStack > 0) {
-                outFunc(lzwStack[elementsInStack-1], decompressedMem, &bytesWritten);
-                elementsInStack--;
-            }
+			/* output STRING */
+			while (elementsInStack > 0) {
+				outFunc(lzwStack[elementsInStack-1], decompressedMem, &bytesWritten);
+				elementsInStack--;
+			}
 
-            /* add OLD_CODE + CHARACTER to the translation table */
-            newpos = getNewHashCode(character,old_code,lzwDictionary);
+			/* add OLD_CODE + CHARACTER to the translation table */
+			newpos = getNewHashCode(character,old_code,lzwDictionary);
 
-            lzwDictionary[newpos].root = character;
-            lzwDictionary[newpos].codeword = old_code;
-            lzwDictionary[newpos].occupied = 1;
-            codewordsInDictionary++;
+			lzwDictionary[newpos].root = character;
+			lzwDictionary[newpos].codeword = old_code;
+			lzwDictionary[newpos].occupied = 1;
+			codewordsInDictionary++;
 
-            /* check for errors */
-            if (unknownCodeword && (newpos != new_code)) {
-                /* clean up */
-                free(lzwStack);
-                free(lzwDictionary);
+			/* check for errors */
+			if (unknownCodeword && (newpos != new_code)) {
+				/* clean up */
+				free(lzwStack);
+				free(lzwDictionary);
 
-                return (-1);
-            }
+				return -1;
+			}
 
-            if (codewordsInDictionary > maxDictEntries) {
-                /* wipe dictionary */
-                codewordsInDictionary = 0;
-                memset(lzwDictionary, 0, sizeof(lzwDictionaryEntry) * lzwDictionarySize);
+			if (codewordsInDictionary > maxDictEntries) {
+				/* wipe dictionary */
+				codewordsInDictionary = 0;
+				memset(lzwDictionary, 0, sizeof(lzwDictionaryEntry) * lzwDictionarySize);
 
-                for (i = 0; i < 0x100; i++)
-                    lzwDictionary[i].occupied = 1;
+				for (i = 0; i < 0x100; i++)
+					lzwDictionary[i].occupied = 1;
 
-                if (bitsRead + 12 <= compressedSize * 8) {
-                    new_code = getNextCodeword(&bitsRead, compressedMem);
-                    character = (unsigned char)new_code;
+				if (bitsRead + 12 <= compressedSize * 8) {
+					new_code = getNextCodeword(&bitsRead, compressedMem);
+					character = (unsigned char)new_code;
 
-                    outFunc(character, decompressedMem, &bytesWritten);
-                } else {
-                    /* clean up */
-                    free(lzwStack);
-                    free(lzwDictionary);
+					outFunc(character, decompressedMem, &bytesWritten);
+				} else {
+					/* clean up */
+					free(lzwStack);
+					free(lzwDictionary);
 
-                    return (bytesWritten);
-                }
-            }
+					return bytesWritten;
+				}
+			}
 
-            /* OLD_CODE = NEW_CODE */
-            old_code = new_code;
-        }
-    }
+			/* OLD_CODE = NEW_CODE */
+			old_code = new_code;
+		}
+	}
 
-    /* clean up */
-    free(lzwStack);
-    free(lzwDictionary);
+	/* clean up */
+	free(lzwStack);
+	free(lzwDictionary);
 
-    return (bytesWritten);
+	return bytesWritten;
 }
 
 /* read the next 12-bit codeword from the compressed data */
 int getNextCodeword(long *bitsRead, unsigned char *compressedMem)
 {
-    int codeword = (compressedMem[(*bitsRead)/8] << 8) + compressedMem[(*bitsRead)/8+1];
-    codeword = codeword >> (4-((*bitsRead)%8));
-    codeword = codeword & 0xfff;
-    (*bitsRead) += 12;
+	int codeword = (compressedMem[(*bitsRead)/8] << 8) + compressedMem[(*bitsRead)/8+1];
+	codeword = codeword >> (4-((*bitsRead)%8));
+	codeword = codeword & 0xfff;
+	(*bitsRead) += 12;
 
-    return (codeword);
+	return codeword;
 }
 
 /* increment position pointer, but do not write root to memory */
 void discardRoot(unsigned char root, unsigned char *destination, long *position)
 {
-    (*position)++;
+	(*position)++;
 }
 
 /* output a root to memory */
 void outputRoot(unsigned char root, unsigned char *destination, long *position)
 {
-    destination[*position] = root;
-    (*position)++;
+	destination[*position] = root;
+	(*position)++;
 }
 
 /* --------------------------------------------------------------------------------------
@@ -256,62 +256,63 @@ void outputRoot(unsigned char root, unsigned char *destination, long *position)
 /* pushes the string associated with codeword onto the stack */
 void getString(int codeword, lzwDictionaryEntry *dictionary, unsigned char *stack, int *elementsInStack)
 {
-    unsigned char root;
-    int currentCodeword = codeword;
+	unsigned char root;
+	int currentCodeword = codeword;
 
-    while (currentCodeword > 0xff) {
-        root = dictionary[currentCodeword].root;
-        currentCodeword = dictionary[currentCodeword].codeword;
-        stack[*elementsInStack] = root;
-        (*elementsInStack)++;
-    }
+	while (currentCodeword > 0xff) {
+		root = dictionary[currentCodeword].root;
+		currentCodeword = dictionary[currentCodeword].codeword;
+		stack[*elementsInStack] = root;
+		(*elementsInStack)++;
+	}
 
-    /* push the root at the leaf */
-    stack[*elementsInStack] = (unsigned char)currentCodeword;
-    (*elementsInStack)++;
+	/* push the root at the leaf */
+	stack[*elementsInStack] = (unsigned char)currentCodeword;
+	(*elementsInStack)++;
 }
 
 int getNewHashCode(unsigned char root, int codeword, lzwDictionaryEntry *dictionary)
 {
-    int hashCode;
+	int hashCode;
 
-    /* probe 1 */
-    hashCode = probe1(root, codeword);
+	/* probe 1 */
+	hashCode = probe1(root, codeword);
 
-    if (hashPosFound(hashCode, root, codeword, dictionary))
-        return (hashCode);
+	if (hashPosFound(hashCode, root, codeword, dictionary))
+		return hashCode;
 
-    /* probe 2 */
-    hashCode = probe2(root, codeword);
+	/* probe 2 */
+	hashCode = probe2(root, codeword);
 
-    if (hashPosFound(hashCode, root, codeword, dictionary))
-        return (hashCode);
+	if (hashPosFound(hashCode, root, codeword, dictionary))
+		return hashCode;
 
-    /* probe 3 */
-    do {
-        hashCode = probe3(hashCode);
-    } while (! hashPosFound(hashCode, root, codeword, dictionary));
+	/* probe 3 */
+	do {
+		hashCode = probe3(hashCode);
+	} while (! hashPosFound(hashCode, root, codeword, dictionary));
 
-    return (hashCode);
+	return hashCode;
 }
 
 unsigned char hashPosFound(int hashCode, unsigned char root, int codeword, lzwDictionaryEntry *dictionary)
 {
-    if (hashCode > 0xff) { /* hash codes must not be roots */
-        unsigned char c1, c2, c3;
+	if (hashCode > 0xff) { /* hash codes must not be roots */
+		unsigned char c1, c2, c3;
 
-        if (dictionary[hashCode].occupied) {
-            /* hash table position is occupied */
-            c1 = 1;
-            /* is our (root,codeword) pair already in the hash table? */
-            c2 = dictionary[hashCode].root == root;
-            c3 = dictionary[hashCode].codeword == codeword;
-        } else {
-            /* hash table position is free */
-            c1 = 0;
-        }
+		if (dictionary[hashCode].occupied) {
+			/* hash table position is occupied */
+			c1 = 1;
+			/* is our (root,codeword) pair already in the hash table? */
+			c2 = dictionary[hashCode].root == root;
+			c3 = dictionary[hashCode].codeword == codeword;
+		} else {
+			/* hash table position is free */
+			c1 = 0;
+		}
 
-        return ((!c1) || (c1 && c2 && c3));
-    } else
-        return (0);
+		return (!c1) || (c1 && c2 && c3);
+	} else {
+		return 0;
+	}
 }

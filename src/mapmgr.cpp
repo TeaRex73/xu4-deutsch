@@ -2,7 +2,7 @@
  * $Id$
  */
 
-#include "vc6.h" // Fixes things if you're using VC6, does nothing if otherwise
+#include "vc6.h" // Fixes things if you're using VC6, does nothing otherwise
 
 #include <vector>
 
@@ -29,9 +29,12 @@
 
 using std::vector;
 using std::pair;
+
 MapMgr *MapMgr::instance = NULL;
+
 extern bool isAbyssOpened(const Portal *p);
 extern bool shrineCanEnter(const Portal *p);
+
 MapMgr *MapMgr::getInstance()
 {
 	if (instance == NULL) {
@@ -39,6 +42,7 @@ MapMgr *MapMgr::getInstance()
 	}
 	return instance;
 }
+
 void MapMgr::destroy()
 {
 	if (instance != NULL) {
@@ -46,6 +50,7 @@ void MapMgr::destroy()
 		instance = NULL;
 	}
 }
+
 MapMgr::MapMgr()
 {
 	logger = new Debug("debug/mapmgr.txt", "MapMgr");
@@ -53,25 +58,33 @@ MapMgr::MapMgr()
 	const Config *config = Config::getInstance();
 	Map *map;
 	vector<ConfigElement> maps = config->getElement("maps").getChildren();
-	for (std::vector<ConfigElement>::iterator i = maps.begin(); i != maps.end(); i++) {
+	for (std::vector<ConfigElement>::iterator i = maps.begin();
+	     i != maps.end();
+	     i++) {
 		map = initMapFromConf(*i);
 		/* map actually gets loaded later, when it's needed */
 		registerMap(map);
 	}
 }
+
 MapMgr::~MapMgr()
 {
-	for (std::vector<Map *>::iterator i = mapList.begin(); i != mapList.end(); i++) {
+	for (std::vector<Map *>::iterator i = mapList.begin();
+	     i != mapList.end();
+	     i++) {
 		delete *i;
 	}
 	delete logger;
 }
+
 void MapMgr::unloadMap(MapId id)
 {
 	delete mapList[id];
 	const Config *config = Config::getInstance();
 	vector<ConfigElement> maps = config->getElement("maps").getChildren();
-	for (std::vector<ConfigElement>::const_iterator i = maps.begin(); i != maps.end(); ++i) {
+	for (std::vector<ConfigElement>::const_iterator i = maps.begin();
+	     i != maps.end();
+	     i++) {
 		if (id == static_cast<MapId>((*i).getInt("id"))) {
 			Map *map = initMapFromConf(*i);
 			mapList[id] = map;
@@ -79,62 +92,93 @@ void MapMgr::unloadMap(MapId id)
 		}
 	}
 }
+
 Map *MapMgr::initMap(Map::Type type)
 {
 	Map *map;
-
 	switch (type) {
-	case Map::WORLD: map = new Map;
+	case Map::WORLD:
+		map = new Map;
 		break;
-	case Map::COMBAT: map = new CombatMap;
+	case Map::COMBAT:
+		map = new CombatMap;
 		break;
-	case Map::SHRINE: map = new Shrine;
+	case Map::SHRINE:
+		map = new Shrine;
 		break;
-	case Map::DUNGEON: map = new Dungeon;
+	case Map::DUNGEON:
+		map = new Dungeon;
 		break;
-	case Map::CITY: map = new City;
+	case Map::CITY:
+		map = new City;
 		break;
-	default: map = NULL;
+	default:
+		map = NULL;
 		errorFatal("Error: invalid map type used");
 		break;
 	}
 	return map;
 }
+
 Map *MapMgr::get(MapId id)
 {
 	/* if the map hasn't been loaded yet, load it! */
 	if (!mapList[id]->data.size()) {
 		MapLoader *loader = MapLoader::getLoader(mapList[id]->type);
 		if (loader == NULL) {
-			errorFatal("can't load map of type \"%d\"", mapList[id]->type);
+			errorFatal("can't load map of type \"%d\"",
+				   mapList[id]->type);
 		}
-		TRACE_LOCAL(*logger, string("loading map data for map \'") + mapList[id]->fname + "\'");
+		TRACE_LOCAL(*logger,
+			    string("loading map data for map \'")
+			    + mapList[id]->fname
+			    + "\'");
 		loader->load(mapList[id]);
 	}
 	return mapList[id];
 }
+
 void MapMgr::registerMap(Map *map)
 {
 	if (mapList.size() <= map->id) {
 		mapList.resize(map->id + 1, NULL);
 	}
 	if (mapList[map->id] != NULL) {
-		errorFatal("Error: A map with id '%d' already exists", map->id);
+		errorFatal("Error: A map with id '%d' already exists",
+			   map->id);
 	}
 	mapList[map->id] = map;
 }
+
 Map *MapMgr::initMapFromConf(const ConfigElement &mapConf)
 {
 	Map *map;
-	static const char *mapTypeEnumStrings[] = { "world", "city", "shrine", "combat", "dungeon", NULL };
-	static const char *borderBehaviorEnumStrings[] = { "wrap", "exit", "fixed", NULL };
-
-	map = initMap(static_cast<Map::Type>(mapConf.getEnum("type", mapTypeEnumStrings)));
+	static const char *mapTypeEnumStrings[] = {
+		"world",
+		"city",
+		"shrine",
+		"combat",
+		"dungeon",
+		NULL
+	};
+	static const char *borderBehaviorEnumStrings[] = {
+		"wrap",
+		"exit",
+		"fixed",
+		NULL
+	};
+	map = initMap(
+		static_cast<Map::Type>(
+			mapConf.getEnum("type", mapTypeEnumStrings)
+		)
+	);
 	if (!map) {
 		return NULL;
 	}
 	map->id = static_cast<MapId>(mapConf.getInt("id"));
-	map->type = static_cast<Map::Type>(mapConf.getEnum("type", mapTypeEnumStrings));
+	map->type = static_cast<Map::Type>(
+		mapConf.getEnum("type", mapTypeEnumStrings)
+	);
 	map->fname = mapConf.getString("fname");
 	map->width = mapConf.getInt("width");
 	map->height = mapConf.getInt("height");
@@ -142,12 +186,19 @@ Map *MapMgr::initMapFromConf(const ConfigElement &mapConf)
 	map->chunk_width = mapConf.getInt("chunkwidth");
 	map->chunk_height = mapConf.getInt("chunkheight");
 	map->offset = mapConf.getInt("offset");
-	map->border_behavior = static_cast<Map::BorderBehavior>(mapConf.getEnum("borderbehavior", borderBehaviorEnumStrings));
+	map->border_behavior =
+		static_cast<Map::BorderBehavior>(
+			mapConf.getEnum("borderbehavior",
+					borderBehaviorEnumStrings)
+		);
 	if (isCombatMap(map)) {
 		CombatMap *cm = dynamic_cast<CombatMap *>(map);
 		cm->setContextual(mapConf.getBool("contextual"));
 	}
-	TRACE_LOCAL(*logger, string("loading configuration for map \'") + map->fname + "\'");
+	TRACE_LOCAL(*logger,
+		    string("loading configuration for map \'")
+		    + map->fname
+		    + "\'");
 	if (mapConf.getBool("showavatar")) {
 		map->flags |= SHOW_AVATAR;
 	}
@@ -161,7 +212,9 @@ Map *MapMgr::initMapFromConf(const ConfigElement &mapConf)
 	map->tileset = Tileset::get(mapConf.getString("tileset"));
 	map->tilemap = TileMap::get(mapConf.getString("tilemap"));
 	vector<ConfigElement> children = mapConf.getChildren();
-	for (std::vector<ConfigElement>::iterator i = children.begin(); i != children.end(); i++) {
+	for (std::vector<ConfigElement>::iterator i = children.begin();
+	     i != children.end();
+	     i++) {
 		if (i->getName() == "city") {
 			City *city = dynamic_cast<City *>(map);
 			initCityFromConf(*i, city);
@@ -176,49 +229,76 @@ Map *MapMgr::initMapFromConf(const ConfigElement &mapConf)
 		} else if (i->getName() == "moongate") {
 			createMoongateFromConf(*i);
 		} else if (i->getName() == "compressedchunk") {
-			map->compressed_chunks.push_back(initCompressedChunkFromConf(*i));
+			map->compressed_chunks.push_back(
+				initCompressedChunkFromConf(*i)
+			);
 		} else if (i->getName() == "label") {
 			map->labels.insert(initLabelFromConf(*i));
 		}
 	}
 	return map;
 } // MapMgr::initMapFromConf
+
 void MapMgr::initCityFromConf(const ConfigElement &cityConf, City *city)
 {
 	city->name = cityConf.getString("name");
 	city->type = cityConf.getString("type");
 	city->tlk_fname = cityConf.getString("tlk_fname");
 	vector<ConfigElement> children = cityConf.getChildren();
-	for (std::vector<ConfigElement>::iterator i = children.begin(); i != children.end(); i++) {
+	for (std::vector<ConfigElement>::iterator i = children.begin();
+	     i != children.end();
+	     i++) {
 		if (i->getName() == "personrole") {
-			city->personroles.push_back(initPersonRoleFromConf(*i));
+			city->personroles.push_back(
+				initPersonRoleFromConf(*i)
+			);
 		}
 	}
 }
+
 PersonRole *MapMgr::initPersonRoleFromConf(const ConfigElement &personRoleConf)
 {
 	PersonRole *personrole;
 	static const char *roleEnumStrings[] = {
-		"companion", "weaponsvendor", "armorvendor", "foodvendor", "tavernkeeper", "reagentsvendor", "healer", "innkeeper", "guildvendor", "horsevendor", "lordbritish", "hawkwind", NULL
+		"companion",
+		"weaponsvendor",
+		"armorvendor",
+		"foodvendor",
+		"tavernkeeper",
+		"reagentsvendor",
+		"healer",
+		"innkeeper",
+		"guildvendor",
+		"horsevendor",
+		"lordbritish",
+		"hawkwind",
+		NULL
 	};
-
 	personrole = new PersonRole;
-	personrole->role = personRoleConf.getEnum("role", roleEnumStrings) + NPC_TALKER_COMPANION;
+	personrole->role =
+		personRoleConf.getEnum("role", roleEnumStrings)
+		+ NPC_TALKER_COMPANION;
 	personrole->id = personRoleConf.getInt("id");
 	return personrole;
 }
+
 Portal *MapMgr::initPortalFromConf(const ConfigElement &portalConf)
 {
 	Portal *portal;
-
 	portal = new Portal;
 	portal->portalConditionsMet = NULL;
 	portal->retroActiveDest = NULL;
-	portal->coords = MapCoords(portalConf.getInt("x"), portalConf.getInt("y"), portalConf.getInt("z", 0));
+	portal->coords = MapCoords(portalConf.getInt("x"),
+				   portalConf.getInt("y"),
+				   portalConf.getInt("z", 0));
 	portal->destid = static_cast<MapId>(portalConf.getInt("destmapid"));
-	portal->start.x = static_cast<unsigned short>(portalConf.getInt("startx"));
-	portal->start.y = static_cast<unsigned short>(portalConf.getInt("starty"));
-	portal->start.z = static_cast<unsigned short>(portalConf.getInt("startlevel", 0));
+	portal->start.x =
+		static_cast<unsigned short>(portalConf.getInt("startx"));
+	portal->start.y =
+		static_cast<unsigned short>(portalConf.getInt("starty"));
+	portal->start.z = static_cast<unsigned short>(
+		portalConf.getInt("startlevel", 0)
+	);
 	string prop = portalConf.getString("action");
 	if (prop == "none") {
 		portal->trigger_action = ACTION_NONE;
@@ -246,7 +326,8 @@ Portal *MapMgr::initPortalFromConf(const ConfigElement &portalConf)
 		} else if (prop == "abyss") {
 			portal->portalConditionsMet = &isAbyssOpened;
 		} else {
-			errorFatal("unknown portalConditionsMet: %s", prop.c_str());
+			errorFatal("unknown portalConditionsMet: %s",
+				   prop.c_str());
 		}
 	}
 	portal->saveLocation = portalConf.getBool("savelocation");
@@ -261,41 +342,71 @@ Portal *MapMgr::initPortalFromConf(const ConfigElement &portalConf)
 	}
 	portal->exitPortal = portalConf.getBool("exits");
 	vector<ConfigElement> children = portalConf.getChildren();
-	for (std::vector<ConfigElement>::iterator i = children.begin(); i != children.end(); i++) {
+	for (std::vector<ConfigElement>::iterator i = children.begin();
+	     i != children.end();
+	     i++) {
 		if (i->getName() == "retroActiveDest") {
 			portal->retroActiveDest = new PortalDestination;
-			portal->retroActiveDest->coords = MapCoords(i->getInt("x"), i->getInt("y"), i->getInt("z", 0));
-			portal->retroActiveDest->mapid = static_cast<MapId>(i->getInt("mapid"));
+			portal->retroActiveDest->coords =
+				MapCoords(i->getInt("x"),
+					  i->getInt("y"),
+					  i->getInt("z", 0));
+			portal->retroActiveDest->mapid =
+				static_cast<MapId>(i->getInt("mapid"));
 		}
 	}
 	return portal;
 } // MapMgr::initPortalFromConf
-void MapMgr::initShrineFromConf(const ConfigElement &shrineConf, Shrine *shrine)
-{
-	static const char *virtues[] = { "HONESTY", "COMPASSION", "VALOR", "JUSTICE", "SACRIFICE", "HONOR", "SPIRITUALITY", "HUMILITY", NULL };
 
-	shrine->setVirtue(static_cast<Virtue>(shrineConf.getEnum("virtue", virtues)));
+void MapMgr::initShrineFromConf(const ConfigElement &shrineConf,
+				Shrine *shrine)
+{
+	static const char *virtues[] = {
+		"HONESTY",
+		"COMPASSION",
+		"VALOR",
+		"JUSTICE",
+		"SACRIFICE",
+		"HONOR",
+		"SPIRITUALITY",
+		"HUMILITY",
+		NULL
+	};
+	shrine->setVirtue(
+		static_cast<Virtue>(shrineConf.getEnum("virtue", virtues))
+	);
 	shrine->setMantra(shrineConf.getString("mantra"));
 }
-void MapMgr::initDungeonFromConf(const ConfigElement &dungeonConf, Dungeon *dungeon)
+
+void MapMgr::initDungeonFromConf(const ConfigElement &dungeonConf,
+				 Dungeon *dungeon)
 {
 	dungeon->n_rooms = dungeonConf.getInt("rooms");
 	dungeon->rooms = NULL;
 	dungeon->roomMaps = NULL;
 	dungeon->name = dungeonConf.getString("name");
 }
+
 void MapMgr::createMoongateFromConf(const ConfigElement &moongateConf)
 {
 	int phase = moongateConf.getInt("phase");
 	Coords coords(moongateConf.getInt("x"), moongateConf.getInt("y"));
-
 	moongateAdd(phase, coords);
 }
-int MapMgr::initCompressedChunkFromConf(const ConfigElement &compressedChunkConf)
+
+int MapMgr::initCompressedChunkFromConf(
+	const ConfigElement &compressedChunkConf
+)
 {
 	return compressedChunkConf.getInt("index");
 }
-pair<string, MapCoords> MapMgr::initLabelFromConf(const ConfigElement &labelConf)
+
+pair<string, MapCoords> MapMgr::initLabelFromConf(
+	const ConfigElement &labelConf
+)
 {
-	return pair<string, MapCoords>(labelConf.getString("name"), MapCoords(labelConf.getInt("x"), labelConf.getInt("y"), labelConf.getInt("z", 0)));
+	return pair<string, MapCoords>(labelConf.getString("name"),
+				       MapCoords(labelConf.getInt("x"),
+						 labelConf.getInt("y"),
+						 labelConf.getInt("z", 0)));
 }

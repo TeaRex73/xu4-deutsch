@@ -92,15 +92,20 @@ MapCoords &MapCoords::putInBounds(const Map *map)
 MapCoords &MapCoords::move(Direction d, const Map *map)
 {
 	switch (d) {
-	case DIR_NORTH: y--;
+	case DIR_NORTH:
+		y--;
 		break;
-	case DIR_EAST: x++;
+	case DIR_EAST:
+		x++;
 		break;
-	case DIR_SOUTH: y++;
+	case DIR_SOUTH:
+		y++;
 		break;
-	case DIR_WEST: x--;
+	case DIR_WEST:
+		x--;
 		break;
-	default: break;
+	default:
+		break;
 	}
 	// Wrap the coordinates if necessary
 	wrap(map);

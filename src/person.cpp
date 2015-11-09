@@ -2,7 +2,7 @@
  * $Id$
  */
 
-#include "vc6.h" // Fixes things if you're using VC6, does nothing if otherwise
+#include "vc6.h" // Fixes things if you're using VC6, does nothing otherwise
 
 #include <cctype>
 #include <string>
@@ -187,7 +187,8 @@ list<string> Person::getConversationText(Conversation *cnv, const char *inquiry)
 						}
 						break;
 					}
-					case Script::INPUT_KEYPRESS: ReadChoiceController::get(" \015\033");
+					case Script::INPUT_KEYPRESS:
+						ReadChoiceController::get(" \015\033");
 						break;
 					case Script::INPUT_NUMBER:
 					{
@@ -220,16 +221,15 @@ list<string> Person::getConversationText(Conversation *cnv, const char *inquiry)
 						}
 						break;
 					}
-					default: break;
-					} // } switch
+					default:
+						break;
+					} // switch
 					  // Continue running the script!
 					c->line++;
 					script->_continue();
-				}
-			}
-			// } if
-			// } while
-		}
+				} // if
+			} // while
+		} // if
 		// Unload the script
 		script->unload();
 		cnv->state = Conversation::DONE;
@@ -240,23 +240,31 @@ list<string> Person::getConversationText(Conversation *cnv, const char *inquiry)
 	else {
 		text = "\n\n\n";
 		switch (cnv->state) {
-		case Conversation::INTRO: text = getIntro(cnv);
+		case Conversation::INTRO:
+			text = getIntro(cnv);
 			break;
-		case Conversation::TALK: text += getResponse(cnv, inquiry) + "\n";
+		case Conversation::TALK:
+			text += getResponse(cnv, inquiry) + "\n";
 			break;
-		case Conversation::CONFIRMATION: ASSERT(npcType == NPC_LORD_BRITISH, "invalid state: %d", cnv->state);
+		case Conversation::CONFIRMATION:
+			ASSERT(npcType == NPC_LORD_BRITISH, "invalid state: %d", cnv->state);
 			text += lordBritishGetQuestionResponse(cnv, inquiry);
 			break;
-		case Conversation::ASK: case Conversation::ASKYESNO: ASSERT(npcType != NPC_HAWKWIND, "invalid state for hawkwind conversation");
+		case Conversation::ASK:
+		case Conversation::ASKYESNO:
+			ASSERT(npcType != NPC_HAWKWIND, "invalid state for hawkwind conversation");
 			text += talkerGetQuestionResponse(cnv, inquiry);
 			break;
-		case Conversation::GIVEBEGGAR: ASSERT(npcType == NPC_TALKER_BEGGAR, "invalid npc type: %d", npcType);
+		case Conversation::GIVEBEGGAR:
+			ASSERT(npcType == NPC_TALKER_BEGGAR, "invalid npc type: %d", npcType);
 			text = beggarGetQuantityResponse(cnv, inquiry);
 			break;
-		case Conversation::FULLHEAL: case Conversation::ADVANCELEVELS:
+		case Conversation::FULLHEAL:
+		case Conversation::ADVANCELEVELS:
 			/* handled elsewhere */
 			break;
-		default: ASSERT(0, "invalid state: %d", cnv->state);
+		default:
+			ASSERT(0, "invalid state: %d", cnv->state);
 		}
 	}
 	return replySplit(text);
@@ -290,9 +298,13 @@ const char *Person::getChoices(Conversation *cnv)
 		return cnv->script->getChoices().c_str();
 	}
 	switch (cnv->state) {
-	case Conversation::CONFIRMATION: case Conversation::CONTINUEQUESTION: return "nj\015 \033";
-	case Conversation::PLAYER: return "012345678\015 \033";
-	default: ASSERT(0, "invalid state: %d", cnv->state);
+	case Conversation::CONFIRMATION:
+	case Conversation::CONTINUEQUESTION:
+		return "nj\015 \033";
+	case Conversation::PLAYER:
+		return "012345678\015 \033";
+	default:
+		ASSERT(0, "invalid state: %d", cnv->state);
 	}
 	return NULL;
 }

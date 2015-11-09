@@ -2,7 +2,7 @@
  * $Id$
  */
 
-#include "vc6.h" // Fixes things if you're using VC6, does nothing if otherwise
+#include "vc6.h" // Fixes things if you're using VC6, does nothing otherwise
 
 #include <vector>
 #include <cstring>
@@ -16,8 +16,11 @@
 
 using std::vector;
 using std::string;
+
 bool Armor::confLoaded = false;
 vector<Armor *> Armor::armors;
+
+
 /**
  * Returns armor by ArmorType.
  */
@@ -30,6 +33,8 @@ const Armor *Armor::get(ArmorType a)
 	}
 	return armors[a];
 }
+
+
 /**
  * Returns armor that has the given name
  */
@@ -44,6 +49,8 @@ const Armor *Armor::get(const string &name)
 	}
 	return NULL;
 }
+
+
 Armor::Armor(const ConfigElement &conf)
 {
 	type = static_cast<ArmorType>(armors.size());
@@ -52,21 +59,30 @@ Armor::Armor(const ConfigElement &conf)
 	defense = conf.getInt("defense");
 	mask = 0;
 	vector<ConfigElement> contraintConfs = conf.getChildren();
-	for (std::vector<ConfigElement>::iterator i = contraintConfs.begin(); i != contraintConfs.end(); i++) {
+	for (std::vector<ConfigElement>::iterator i = contraintConfs.begin();
+	     i != contraintConfs.end();
+	     i++) {
 		unsigned char mask = 0;
 		if (i->getName() != "constraint") {
 			continue;
 		}
 		for (int cl = 0; cl < 8; cl++) {
-			if (strcasecmp(i->getString("class").c_str(), getClassNameEnglish(static_cast<ClassType>(cl))) == 0) {
+			if (strcasecmp(
+				    i->getString("class").c_str(),
+				    getClassNameEnglish(
+					    static_cast<ClassType>(cl))
+			) == 0) {
 				mask = (1 << cl);
 			}
 		}
-		if ((mask == 0) && (strcasecmp(i->getString("class").c_str(), "all") == 0)) {
+		if ((mask == 0) &&
+		    (strcasecmp(i->getString("class").c_str(), "all") == 0)) {
 			mask = 0xFF;
 		}
 		if (mask == 0) {
-			errorFatal("malformed armor.xml file: constraint has unknown class %s", i->getString("class").c_str());
+			errorFatal("malformed armor.xml file: "
+				   "constraint has unknown class %s",
+				   i->getString("class").c_str());
 		}
 		if (i->getBool("canuse")) {
 			canuse |= mask;
@@ -75,6 +91,7 @@ Armor::Armor(const ConfigElement &conf)
 		}
 	}
 }
+
 void Armor::loadConf()
 {
 	if (!confLoaded) {
@@ -83,8 +100,11 @@ void Armor::loadConf()
 		return;
 	}
 	const Config *config = Config::getInstance();
-	vector<ConfigElement> armorConfs = config->getElement("armors").getChildren();
-	for (std::vector<ConfigElement>::iterator i = armorConfs.begin(); i != armorConfs.end(); i++) {
+	vector<ConfigElement> armorConfs =
+		config->getElement("armors").getChildren();
+	for (std::vector<ConfigElement>::iterator i = armorConfs.begin();
+	     i != armorConfs.end();
+	     i++) {
 		if (i->getName() != "armor") {
 			continue;
 		}

@@ -3,16 +3,16 @@
  */
 
 #ifdef RASB_PI
- # define MY_WIDTH 384
- # define MY_HEIGHT 240
- # define FIXUP
+#define MY_WIDTH 384
+#define MY_HEIGHT 240
+#define FIXUP
 #else
- # define MY_WIDTH 320
- # define MY_HEIGHT 200
- # undef FIXUP
+#define MY_WIDTH 320
+#define MY_HEIGHT 200
+#undef FIXUP
 #endif
 
-#include "vc6.h" // Fixes things if you're using VC6, does nothing if otherwise
+#include "vc6.h" // Fixes things if you're using VC6, does nothing otherwise
 
 #include <algorithm>
 #include <functional>
@@ -24,9 +24,9 @@
 #include "context.h"
 
 #if defined(MACOSX)
- # include "macosx/cursors.h"
+#include "macosx/cursors.h"
 #else
- # include "cursors.h"
+#include "cursors.h"
 #endif
 
 #include "debug.h"
@@ -48,37 +48,59 @@
 #include "utils.h"
 
 using std::vector;
+
 SDL_Cursor *cursors[5];
 Scaler filterScaler;
 SDL_Cursor *screenInitCursor(const char *const xpm[]);
 extern bool verbose;
 void screenRefreshThreadInit();
 void screenRefreshThreadEnd();
+
 void screenInit_sys()
 {
 	SDL_Surface *screen, *window;
-
 	/* start SDL */
 	if (u4_SDL_InitSubSystem(SDL_INIT_VIDEO) < 0) {
 		errorFatal("unable to init SDL: %s", SDL_GetError());
 	}
 	SDL_EnableUNICODE(1);
-	SDL_SetGamma(settings.gamma / 100.0f, settings.gamma / 100.0f, settings.gamma / 100.0f);
+	SDL_SetGamma(settings.gamma / 100.0f,
+		     settings.gamma / 100.0f,
+		     settings.gamma / 100.0f);
 	atexit(SDL_Quit);
 	SDL_WM_SetCaption("Ultima IV", NULL);
 #ifdef ICON_FILE
 	SDL_WM_SetIcon(SDL_LoadBMP(ICON_FILE), NULL);
 #endif
-	if (!(screen = SDL_SetVideoMode(MY_WIDTH * settings.scale, MY_HEIGHT * settings.scale, 8, SDL_DOUBLEBUF | SDL_HWSURFACE | SDL_ANYFORMAT | (settings.fullscreen ? SDL_FULLSCREEN : 0)))) {
+	if (!(screen =
+	      SDL_SetVideoMode(MY_WIDTH * settings.scale,
+			       MY_HEIGHT * settings.scale,
+			       8,
+			       SDL_DOUBLEBUF
+			       | SDL_HWSURFACE
+			       | SDL_ANYFORMAT
+			       | (settings.fullscreen ?
+				  SDL_FULLSCREEN :
+				  0)))) {
 		errorFatal("unable to set video: %s", SDL_GetError());
 	}
 	SDL_LockSurface(screen);
-	window = SDL_CreateRGBSurfaceFrom(screen->pixels, MY_WIDTH, MY_HEIGHT, screen->format->BitsPerPixel, screen->pitch, screen->format->Rmask, screen->format->Gmask, screen->format->Bmask, screen->format->Amask);
+	window = SDL_CreateRGBSurfaceFrom(screen->pixels,
+					  MY_WIDTH,
+					  MY_HEIGHT,
+					  screen->format->BitsPerPixel,
+					  screen->pitch,
+					  screen->format->Rmask,
+					  screen->format->Gmask,
+					  screen->format->Bmask,
+					  screen->format->Amask);
 	if (screen->format->palette) {
-		SDL_SetColors(window, screen->format->palette->colors, 0, screen->format->palette->ncolors);
+		SDL_SetColors(window,
+			      screen->format->palette->colors,
+			      0,
+			      screen->format->palette->ncolors);
 	}
 	SDL_UnlockSurface(screen);
-
 #ifdef FIXUP
 	screen->w = 320;
 	screen->h = 200;
@@ -89,7 +111,9 @@ void screenInit_sys()
 #endif
 	if (verbose) {
 		char driver[32];
-		printf("screen initialized [screenInit()], using %s video driver\n", SDL_VideoDriverName(driver, sizeof(driver)));
+		printf("screen initialized [screenInit()], "
+		       "using %s video driver\n",
+		       SDL_VideoDriverName(driver, sizeof(driver)));
 	}
 	/* enable or disable the mouse cursor */
 	if (settings.mouseOptions.enabled) {
@@ -104,10 +128,12 @@ void screenInit_sys()
 	}
 	filterScaler = scalerGet(settings.filter);
 	if (!filterScaler) {
-		errorFatal("%s is not a valid filter", settings.filter.c_str());
+		errorFatal("%s is not a valid filter",
+			   settings.filter.c_str());
 	}
 	screenRefreshThreadInit();
 } // screenInit_sys
+
 void screenDelete_sys()
 {
 	screenRefreshThreadEnd();
@@ -117,6 +143,8 @@ void screenDelete_sys()
 	SDL_FreeCursor(cursors[4]);
 	u4_SDL_QuitSubSystem(SDL_INIT_VIDEO);
 }
+
+
 /**
  * Attempts to iconify the screen.
  */
@@ -124,61 +152,88 @@ void screenIconify()
 {
 	SDL_WM_IconifyWindow();
 }
+
 #if 0
-void screenDeinterlaceCga(unsigned char *data, int width, int height, int tiles, int fudge)
+void screenDeinterlaceCga(unsigned char *data,
+			  int width,
+			  int height,
+			  int tiles,
+			  int fudge)
 {
 	unsigned char *tmp;
 	int t, x, y;
 	int tileheight = height / tiles;
-
 	tmp = new unsigned char[width * tileheight / 4];
 	for (t = 0; t < tiles; t++) {
 		unsigned char *base;
 		base = &(data[t * (width * tileheight / 4)]);
 		for (y = 0; y < (tileheight / 2); y++) {
 			for (x = 0; x < width; x += 4) {
-				tmp[((y * 2) * width + x) / 4] = base[(y * width + x) / 4];
+				tmp[((y * 2) * width + x) / 4] =
+					base[(y * width + x) / 4];
 			}
 		}
 		for (y = tileheight / 2; y < tileheight; y++) {
 			for (x = 0; x < width; x += 4) {
-				tmp[(((y - (tileheight / 2)) * 2 + 1) * width + x) / 4] = base[(y * width + x) / 4 + fudge];
+				tmp[
+					(((y - (tileheight / 2)) * 2 + 1)
+					 * width + x) / 4
+				] = base[(y * width + x) / 4 + fudge];
 			}
 		}
 		for (y = 0; y < tileheight; y++) {
 			for (x = 0; x < width; x += 4) {
-				base[(y * width + x) / 4] = tmp[(y * width + x) / 4];
+				base[(y * width + x) / 4] =
+					tmp[(y * width + x) / 4];
 			}
 		}
 	}
 	delete[] tmp;
 } // screenDeinterlaceCga
+
+
 /**
  * Load an image from an ".pic" CGA image file.
  */
-int screenLoadImageCga(Image **image, int width, int height, U4FILE *file, CompressionType comp, int tiles)
+int screenLoadImageCga(Image **image,
+		       int width,
+		       int height,
+		       U4FILE *file,
+		       CompressionType comp,
+		       int tiles)
 {
 	Image *img;
 	int x, y;
 	unsigned char *compressed_data, *decompressed_data = NULL;
 	long inlen, decompResult;
-
 	inlen = u4flength(file);
 	compressed_data = (Uint8 *)malloc(inlen);
 	u4fread(compressed_data, 1, inlen, file);
 	switch (comp) {
-	case COMP_NONE: decompressed_data = compressed_data;
+	case COMP_NONE:
+		decompressed_data = compressed_data;
 		decompResult = inlen;
 		break;
-	case COMP_RLE: decompResult = rleDecompressMemory(compressed_data, inlen, (void **)&decompressed_data);
+	case COMP_RLE:
+		decompResult = rleDecompressMemory(
+			compressed_data,
+			inlen,
+			(void **)&decompressed_data
+		);
 		free(compressed_data);
 		compressed_data = NULL;
 		break;
-	case COMP_LZW: decompResult = decompress_u4_memory(compressed_data, inlen, (void **)&decompressed_data);
+	case COMP_LZW:
+		decompResult = decompress_u4_memory(
+			compressed_data,
+			inlen,
+			(void **)&decompressed_data
+		);
 		free(compressed_data);
 		compressed_data = NULL;
 		break;
-	default: ASSERT(0, "invalid compression type %d", comp);
+	default:
+		ASSERT(0, "invalid compression type %d", comp);
 	}
 	if (decompResult == -1) {
 		if (decompressed_data) {
@@ -199,10 +254,26 @@ int screenLoadImageCga(Image **image, int width, int height, U4FILE *file, Compr
 	img->setPalette(egaPalette, 16);
 	for (y = 0; y < height; y++) {
 		for (x = 0; x < width; x += 4) {
-			img->putPixelIndex(x, y, decompressed_data[(y * width + x) / 4] >> 6);
-			img->putPixelIndex(x + 1, y, (decompressed_data[(y * width + x) / 4] >> 4) & 0x03);
-			img->putPixelIndex(x + 2, y, (decompressed_data[(y * width + x) / 4] >> 2) & 0x03);
-			img->putPixelIndex(x + 3, y, (decompressed_data[(y * width + x) / 4]) & 0x03);
+			img->putPixelIndex(x,
+					   y,
+					   decompressed_data[
+						   (y * width + x) / 4
+					   ] >> 6);
+			img->putPixelIndex(x + 1,
+					   y,
+					   (decompressed_data[
+						   (y * width + x) / 4
+					   ] >> 4) & 0x03);
+			img->putPixelIndex(x + 2,
+					   y,
+					   (decompressed_data[
+						   (y * width + x) / 4
+					   ] >> 2) & 0x03);
+			img->putPixelIndex(x + 3,
+					   y,
+					   (decompressed_data[
+						   (y * width + x) / 4
+					   ]) & 0x03);
 		}
 	}
 	free(decompressed_data);
@@ -211,37 +282,50 @@ int screenLoadImageCga(Image **image, int width, int height, U4FILE *file, Compr
 	return 1;
 } // screenLoadImageCga
 #endif // if 0
+
+
 /**
  * Force a redraw.
  */
 SDL_mutex *screenLockMutex = NULL;
 int frameDuration = 0;
+
 void screenLock()
 {
 	SDL_mutexP(screenLockMutex);
 }
+
 void screenUnlock()
 {
 	SDL_mutexV(screenLockMutex);
 }
+
 void screenRedrawScreen()
 {
 	screenLock();
 	SDL_UpdateRect(SDL_GetVideoSurface(), 0, 0, 0, 0);
 	screenUnlock();
 }
+
 void screenRedrawTextArea(int x, int y, int width, int height)
 {
 	screenLock();
-	SDL_UpdateRect(SDL_GetVideoSurface(), x * CHAR_WIDTH * settings.scale, y * CHAR_HEIGHT * settings.scale, width * CHAR_WIDTH * settings.scale, height * CHAR_HEIGHT * settings.scale);
+	SDL_UpdateRect(SDL_GetVideoSurface(),
+		       x * CHAR_WIDTH * settings.scale,
+		       y * CHAR_HEIGHT * settings.scale,
+		       width * CHAR_WIDTH * settings.scale,
+		       height * CHAR_HEIGHT * settings.scale);
 	screenUnlock();
 }
+
 void screenWait(int numberOfAnimationFrames)
 {
 	SDL_Delay(numberOfAnimationFrames * frameDuration);
 }
+
 bool continueScreenRefresh = true;
 SDL_Thread *screenRefreshThread = NULL;
+
 int screenRefreshThreadFunction(void *unused)
 {
 	while (continueScreenRefresh) {
@@ -250,6 +334,7 @@ int screenRefreshThreadFunction(void *unused)
 	}
 	return 0;
 }
+
 void screenRefreshThreadInit()
 {
 	screenLockMutex = SDL_CreateMutex();
@@ -259,18 +344,22 @@ void screenRefreshThreadInit()
 		errorWarning("Screen refresh thread already exists.");
 		return;
 	}
-	screenRefreshThread = SDL_CreateThread(screenRefreshThreadFunction, NULL);
+	screenRefreshThread = SDL_CreateThread(screenRefreshThreadFunction,
+					       NULL);
 	if (!screenRefreshThread) {
 		errorWarning("SDL Error: %s", SDL_GetError());
 		return;
 	}
 }
+
 void screenRefreshThreadEnd()
 {
 	continueScreenRefresh = false;
 	SDL_WaitThread(screenRefreshThread, NULL);
 	screenRefreshThread = NULL;
 }
+
+
 /**
  * Scale an image up.  The resulting image will be scale * the
  * original dimensions.  The original image is no longer deleted.
@@ -284,7 +373,6 @@ Image *screenScale(Image *src, int scale, int n, int filter)
 	bool isTransparent;
 	unsigned int transparentIndex;
 	bool alpha = src->isAlphaOn();
-
 	if (n == 0) {
 		n = 1;
 	}
@@ -314,6 +402,8 @@ Image *screenScale(Image *src, int scale, int n, int filter)
 	}
 	return dest;
 } // screenScale
+
+
 /**
  * Scale an image down.  The resulting image will be 1/scale * the
  * original dimensions.  The original image is no longer deleted.
@@ -325,10 +415,12 @@ Image *screenScaleDown(Image *src, int scale)
 	bool isTransparent;
 	unsigned int transparentIndex;
 	bool alpha = src->isAlphaOn();
-
 	isTransparent = src->getTransparentIndex(transparentIndex);
 	src->alphaOff();
-	dest = Image::create(src->width() / scale, src->height() / scale, src->isIndexed(), Image::HARDWARE);
+	dest = Image::create(src->width() / scale,
+			     src->height() / scale,
+			     src->isIndexed(),
+			     Image::HARDWARE);
 	if (!dest) {
 		return NULL;
 	}
@@ -353,22 +445,24 @@ Image *screenScaleDown(Image *src, int scale)
 	}
 	return dest;
 } // screenScaleDown
+
+
 /**
  * Create an SDL cursor object from an xpm.  Derived from example in
  * SDL documentation project.
  */
 #if defined(MACOSX)
- # define CURSORSIZE 16
+#define CURSORSIZE 16
 #else
- # define CURSORSIZE 32
+#define CURSORSIZE 32
 #endif
+
 SDL_Cursor *screenInitCursor(const char *const xpm[])
 {
 	int i, row, col;
 	Uint8 data[(CURSORSIZE / 8) * CURSORSIZE];
 	Uint8 mask[(CURSORSIZE / 8) * CURSORSIZE];
 	int hot_x, hot_y;
-
 	i = -1;
 	for (row = 0; row < CURSORSIZE; row++) {
 		for (col = 0; col < CURSORSIZE; col++) {
@@ -380,22 +474,30 @@ SDL_Cursor *screenInitCursor(const char *const xpm[])
 				data[i] = mask[i] = 0;
 			}
 			switch (xpm[4 + row][col]) {
-			case 'X': data[i] |= 0x01;
+			case 'X':
+				data[i] |= 0x01;
 				mask[i] |= 0x01;
 				break;
-			case '.': mask[i] |= 0x01;
+			case '.':
+				mask[i] |= 0x01;
 				break;
-			case ' ': break;
+			case ' ':
+				break;
 			}
 		}
 	}
 	sscanf(xpm[4 + row], "%d,%d", &hot_x, &hot_y);
-	return SDL_CreateCursor(data, mask, CURSORSIZE, CURSORSIZE, hot_x, hot_y);
+	return SDL_CreateCursor(data,
+				mask,
+				CURSORSIZE,
+				CURSORSIZE,
+				hot_x,
+				hot_y);
 } // screenInitCursor
+
 void screenSetMouseCursor(MouseCursor cursor)
 {
 	static int current = 0;
-
 	if (cursor != current) {
 		SDL_SetCursor(cursors[cursor]);
 		current = cursor;

@@ -2,7 +2,7 @@
  * $Id$
  */
 
-#include "vc6.h" // Fixes things if you're using VC6, does nothing if otherwise
+#include "vc6.h" // Fixes things if you're using VC6, does nothing otherwise
 
 #include <string>
 #include <cstring>
@@ -13,7 +13,12 @@
 #include "utils.h"
 
 using std::string;
-DialogueLoader *U4TlkDialogueLoader::instance = DialogueLoader::registerLoader(new U4TlkDialogueLoader, "application/x-u4tlk");
+
+DialogueLoader *U4TlkDialogueLoader::instance =
+	DialogueLoader::registerLoader(new U4TlkDialogueLoader,
+				       "application/x-u4tlk");
+
+
 /**
  * A dialogue loader for standard u4dos .tlk files.
  */
@@ -21,12 +26,16 @@ Dialogue *U4TlkDialogueLoader::load(void *source)
 {
 	U4FILE *file = static_cast<U4FILE *>(source);
 	enum QTrigger {
-		NONE = 0, JOB = 3, HEALTH = 4, KEYWORD1 = 5, KEYWORD2 = 6
+		NONE = 0,
+		JOB = 3,
+		HEALTH = 4,
+		KEYWORD1 = 5,
+		KEYWORD2 = 6
 	};
 	/* there's no dialogues left in the file */
 	char tlk_buffer[384];
-
-	if (u4fread(tlk_buffer, 1, sizeof(tlk_buffer), file) != sizeof(tlk_buffer)) {
+	if (u4fread(tlk_buffer, 1, sizeof(tlk_buffer), file)
+	    != sizeof(tlk_buffer)) {
 		return NULL;
 	}
 	char *ptr = &tlk_buffer[3];
@@ -43,8 +52,7 @@ Dialogue *U4TlkDialogueLoader::load(void *source)
 	dlg->setName(strings[0]);
 	dlg->setPronoun(strings[1]);
 	dlg->setPrompt("\nDein Begehr:\n?");
-
-#if 0
+#if 0 // Not needed for corrected German files
 	// Fix the actor description string, converting the first character
 	// to lower-case.
 	strings[2][0] = mytolower(strings[2][0]);
@@ -62,40 +70,88 @@ Dialogue *U4TlkDialogueLoader::load(void *source)
 	// ... and finally, a few characters in the game have descriptions
 	// that do not begin with a definite (the) or indefinite (a/an)
 	// article.  On those characters, insert the appropriate article.
-	if ((strings[0] == "Iolo") || (strings[0] == "Tracie") || (strings[0] == "Dupre") || (strings[0] == "Traveling Dan")) {
+	if ((strings[0] == "Iolo")
+	    || (strings[0] == "Tracie")
+	    || (strings[0] == "Dupre")
+	    || (strings[0] == "Traveling Dan")) {
 		strings[2] = string("a ") + strings[2];
 	}
 #endif // if 0
 	string introBase = string("\nDu triffst ") + strings[2] + "\n";
-	Response *intro = new Response(uppercase(introBase) + dlg->getPrompt());
+	Response *intro =
+		new Response(uppercase(introBase) + dlg->getPrompt());
 	intro->add(ResponsePart::STARTMUSIC_SILENCE);
 	dlg->setIntro(intro);
-        Response *longIntro = new Response(uppercase(introBase + "\n" + dlg->getPronoun() + " sagt:\nIch bin " + dlg->getName() + ".\n") + dlg->getPrompt());
+        Response *longIntro =
+		new Response(uppercase(introBase
+				       + "\n"
+				       + dlg->getPronoun()
+				       + " sagt:\nIch bin "
+				       + dlg->getName()
+				       + ".\n")
+			     + dlg->getPrompt());
 	longIntro->add(ResponsePart::STARTMUSIC_SILENCE);
 	dlg->setLongIntro(longIntro);
-	dlg->setDefaultAnswer(new Response(uppercase(dlg->getPronoun() + " sagt:\nDamit kann ich dir nicht helfen.")));
-	Response *yes = new Response(uppercase(dlg->getPronoun() + " sagt:\n" + strings[8]));
-	Response *no = new Response(uppercase(dlg->getPronoun() + " sagt:\n" + strings[9]));
+	dlg->setDefaultAnswer(
+		new Response(
+			uppercase(dlg->getPronoun()
+				  + " sagt:\nDamit kann ich dir "
+				  "nicht helfen.")
+		)
+	);
+	Response *yes =
+		new Response(uppercase(dlg->getPronoun()
+				       + " sagt:\n"
+				       + strings[8]));
+	Response *no =
+		new Response(uppercase(dlg->getPronoun()
+				       + " sagt:\n"
+				       + strings[9]));
 	if (humilityTestQuestion) {
 		yes->add(ResponsePart::BRAGGED);
 		no->add(ResponsePart::HUMBLE);
 	}
-	dlg->setQuestion(new Dialogue::Question(uppercase(dlg->getPronoun() + " fragt:\n" + strings[7]), yes, no));
+	dlg->setQuestion(
+		new Dialogue::Question(
+			uppercase(dlg->getPronoun()
+				  + " fragt:\n"
+				  + strings[7]),
+			yes, no
+		)
+	);
 	// one of the following four keywords triggers the speaker's question
-	Response *job = new Response(uppercase(dlg->getPronoun() + " sagt:\n" + strings[3]));
-	Response *health = new Response(uppercase(dlg->getPronoun() + " sagt:\n" + strings[4]));
-	Response *kw1 = new Response(uppercase(dlg->getPronoun() + " sagt:\n" + strings[5]));
-	Response *kw2 = new Response(uppercase(dlg->getPronoun() + " sagt:\n" + strings[6]));
+	Response *job =
+		new Response(uppercase(dlg->getPronoun()
+				       + " sagt:\n"
+				       + strings[3]));
+	Response *health =
+		new Response(uppercase(dlg->getPronoun()
+				       + " sagt:\n"
+				       + strings[4]));
+	Response *kw1 =
+		new Response(uppercase(dlg->getPronoun()
+				       + " sagt:\n"
+				       + strings[5]));
+	Response *kw2 =
+		new Response(uppercase(dlg->getPronoun()
+				       + " sagt:\n"
+				       + strings[6]));
 	switch (qtrigger) {
-	case JOB: job->add(ResponsePart::ASK);
+	case JOB:
+		job->add(ResponsePart::ASK);
 		break;
-	case HEALTH: health->add(ResponsePart::ASK);
+	case HEALTH:
+		health->add(ResponsePart::ASK);
 		break;
-	case KEYWORD1: kw1->add(ResponsePart::ASK);
+	case KEYWORD1:
+		kw1->add(ResponsePart::ASK);
 		break;
-	case KEYWORD2: kw2->add(ResponsePart::ASK);
+	case KEYWORD2:
+		kw2->add(ResponsePart::ASK);
 		break;
-	case NONE: default: break;
+	case NONE:
+	default:
+		break;
 	}
 	dlg->addKeyword("beru", job);
 	dlg->addKeyword("gesu", health);
@@ -109,10 +165,22 @@ Dialogue *U4TlkDialogueLoader::load(void *source)
 	// more useful than "Fine." for health).
 	string look = string("Du siehst ") + strings[2];
 	dlg->addKeyword("schau", new Response(uppercase(look)));
-	dlg->addKeyword("name", new Response(uppercase(dlg->getPronoun() + " sagt:\nIch bin " + dlg->getName() + ".")));
-	dlg->addKeyword("gebe", new Response(uppercase(dlg->getPronoun() + " sagt:\nIch brauche dein Gold nicht. Behalt es!")));
-	dlg->addKeyword("begl", new Response(uppercase(dlg->getPronoun() + " sagt:\nIch kann dich nicht begleiten.")));
-	Response *bye = new Response(uppercase(dlg->getPronoun() + " sagt:\nAde."));
+	dlg->addKeyword("name",
+			new Response(uppercase(dlg->getPronoun()
+					       + " sagt:\nIch bin "
+					       + dlg->getName()
+					       + ".")));
+	dlg->addKeyword("gebe",
+			new Response(uppercase(dlg->getPronoun()
+					       + " sagt:\nIch brauche "
+					       "dein Gold nicht. "
+					       "Behalt es!")));
+	dlg->addKeyword("begl",
+			new Response(uppercase(dlg->getPronoun()
+					       + " sagt:\nIch kann dich "
+					       "nicht begleiten.")));
+	Response *bye
+		= new Response(uppercase(dlg->getPronoun() + " sagt:\nAde."));
 	bye->add(ResponsePart::STOPMUSIC);
 	bye->add(ResponsePart::END);
 	dlg->addKeyword("ade", bye);
@@ -122,6 +190,10 @@ Dialogue *U4TlkDialogueLoader::load(void *source)
 	 * I've never figured out what the number means.
 	 * "Banjo" Bob Hardy was the programmer for the Amiga version.
 	 */
-	dlg->addKeyword("ojna", new Response(uppercase(dlg->getPronoun() + " sagt:\nHallo Banjo Bob! Deine geheime Zahl ist 4F4A4E0A")));
+	dlg->addKeyword("ojna",
+			new Response(uppercase(dlg->getPronoun()
+					       + " sagt:\nHallo Banjo Bob! "
+					       "Deine geheime Zahl ist "
+					       "4F4A4E0A")));
 	return dlg;
 } // U4TlkDialogueLoader::load

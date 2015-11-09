@@ -4,29 +4,34 @@
  *
  * Copyright 2011 Trenton Schulz. All rights reserved.
  *
- * Redistribution and use in source and binary forms, with or without modification, are
+ * Redistribution and use in source and binary forms,
+ * with or without modification, are
  * permitted provided that the following conditions are met:
  *
- *    1. Redistributions of source code must retain the above copyright notice, this list of
- *       conditions and the following disclaimer.
+ *    1. Redistributions of source code must retain the above
+ *       copyright notice, this list of conditions and the following
+ *       disclaimer.
  *
- *    2. Redistributions in binary form must reproduce the above copyright notice, this list
- *       of conditions and the following disclaimer in the documentation and/or other materials
+ *    2. Redistributions in binary form must reproduce the above
+ *       copyright notice, this list of conditions and the following
+ *       disclaimer in the documentation and/or other materials
  *       provided with the distribution.
  *
- * THIS SOFTWARE IS PROVIDED BY TRENTON SCHULZ ``AS IS'' AND ANY EXPRESS OR IMPLIED
- * WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND
- * FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL <COPYRIGHT HOLDER> OR
- * CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
- * CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
- * SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON
- * ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING
- * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF
- * ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ * THIS SOFTWARE IS PROVIDED BY TRENTON SCHULZ ``AS IS'' AND ANY EXPRESS
+ * OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+ * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+ * ARE DISCLAIMED. IN NO EVENT SHALL <COPYRIGHT HOLDER> OR CONTRIBUTORS
+ * BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
+ * CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
+ * SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
+ * INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
+ * CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
+ * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF
+ * THE POSSIBILITY OF SUCH DAMAGE.
  *
- * The views and conclusions contained in the software and documentation are those of the
- * authors and should not be interpreted as representing official policies, either expressed
- * or implied, of Trenton Schulz.
+ * The views and conclusions contained in the software and documentation
+ * are those of the authors and should not be interpreted as representing
+ * official policies, either expressed or implied, of Trenton Schulz.
  *
  */
 
@@ -42,25 +47,36 @@ typedef Mix_Chunk OSSoundChunk;
 #include "sound.h"
 
 class SoundManager {
-public: ~SoundManager();
-static SoundManager *getInstance();
-int init(void);
-bool load(Sound sound);
-void play(Sound sound, bool onlyOnce = true, int specificDurationInTicks = -1, bool wait = false);
-void stop(int channel = 1);
-private: int init_sys();
-void del()
-{
-	del_sys();
-}
-void del_sys();
-void play_sys(Sound sound, bool onlyOnce, int specificDurationInTicks, bool wait = false);
-bool load_sys(Sound sound, const std::string &soundPathName);
-void stop_sys(int channel);
-std::vector<std::string> soundFilenames;
-std::vector<OSSoundChunk *> soundChunk;
-SoundManager();
-static SoundManager *instance;
+public:
+	~SoundManager();
+	static SoundManager *getInstance();
+	int init();
+	bool load(Sound sound);
+	void play(Sound sound,
+		  bool onlyOnce = true,
+		  int specificDurationInTicks = -1,
+		  bool wait = false);
+	void stop(int channel = 1);
+
+private:
+	int init_sys();
+
+	void del()
+	{
+		del_sys();
+	}
+	
+	void del_sys();
+	void play_sys(Sound sound,
+		      bool onlyOnce,
+		      int specificDurationInTicks,
+		      bool wait = false);
+	bool load_sys(Sound sound, const std::string &soundPathName);
+	void stop_sys(int channel);
+	std::vector<std::string> soundFilenames;
+	std::vector<OSSoundChunk *> soundChunk;
+	SoundManager();
+	static SoundManager *instance;
 };
 
 #endif // SOUND_P_H

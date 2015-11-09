@@ -128,22 +128,31 @@ int PartyMember::getMaxMp() const
 	int max_mp = -1;
 
 	switch (player->klass) {
-	case CLASS_MAGE:        /*  mage: 200% of int */
+	case CLASS_MAGE:
+		/*  mage: 200% of int */
 		max_mp = player->intel * 2;
 		break;
-	case CLASS_DRUID:       /* druid: 150% of int */
+	case CLASS_DRUID:
+		/* druid: 150% of int */
 		max_mp = player->intel * 3 / 2;
 		break;
-	case CLASS_BARD:        /* bard, paladin, ranger: 100% of int */
-	case CLASS_PALADIN: case CLASS_RANGER: max_mp = player->intel;
+	case CLASS_BARD:
+	case CLASS_PALADIN:
+	case CLASS_RANGER:
+		/* bard, paladin, ranger: 100% of int */
+		max_mp = player->intel;
 		break;
-	case CLASS_TINKER:      /* tinker: 50% of int */
+	case CLASS_TINKER:
+		/* tinker: 50% of int */
 		max_mp = player->intel / 2;
 		break;
-	case CLASS_FIGHTER:     /* fighter, shepherd: no mp at all */
-	case CLASS_SHEPHERD: max_mp = 0;
+	case CLASS_FIGHTER:
+	case CLASS_SHEPHERD:
+		/* fighter, shepherd: no mp at all */
+		max_mp = 0;
 		break;
-	default: ASSERT(0, "invalid player class: %d", player->klass);
+	default:
+		ASSERT(0, "invalid player class: %d", player->klass);
 	}
 
 	/* mp always maxes out at 99 */
@@ -262,21 +271,27 @@ void PartyMember::applyEffect(TileEffect effect)
 		return;
 	}
 	switch (effect) {
-	case EFFECT_NONE: break;
-	case EFFECT_LAVA: case EFFECT_FIRE: soundPlay(SOUND_PC_STRUCK, false);
+	case EFFECT_NONE:
+		break;
+	case EFFECT_LAVA:
+	case EFFECT_FIRE:
+		soundPlay(SOUND_PC_STRUCK, false);
 		applyDamage(16 + (xu4_random(32)));
-		/*else if (player == ALL_PLAYERS && xu4_random(2) == 0)
-		    playerApplyDamage(&(c->saveGame->players[i]), 10 + (xu4_random(25)));*/
 		break;
-	case EFFECT_SLEEP: putToSleep();
+	case EFFECT_SLEEP:
+		putToSleep();
 		break;
-	case EFFECT_POISONFIELD: case EFFECT_POISON: if (getStatus() != STAT_POISONED) {
+	case EFFECT_POISONFIELD:
+	case EFFECT_POISON:
+		if (getStatus() != STAT_POISONED) {
 			soundPlay(SOUND_POISON_EFFECT, false);
 			addStatus(STAT_POISONED);
-	}
+		}
 		break;
-	case EFFECT_ELECTRICITY: break;
-	default: ASSERT(0, "invalid effect: %d", effect);
+	case EFFECT_ELECTRICITY:
+		break;
+	default:
+		ASSERT(0, "invalid effect: %d", effect);
 	}
 	if (effect != EFFECT_NONE) {
 		notifyOfChange();
@@ -296,38 +311,46 @@ void PartyMember::awardXp(int xp)
 bool PartyMember::heal(HealType type)
 {
 	switch (type) {
-	case HT_NONE: return true;
-	case HT_CURE: if (getStatus() != STAT_POISONED) {
+	case HT_NONE:
+		return true;
+	case HT_CURE:
+		if (getStatus() != STAT_POISONED) {
 			return false;
-	}
+		}
 		removeStatus(STAT_POISONED);
 		break;
-	case HT_FULLHEAL: if ((getStatus() == STAT_DEAD) || (player->hp == player->hpMax)) {
+	case HT_FULLHEAL:
+		if ((getStatus() == STAT_DEAD) || (player->hp == player->hpMax)) {
 			return false;
-	}
+		}
 		player->hp = player->hpMax;
 		break;
-	case HT_RESURRECT: if (getStatus() != STAT_DEAD) {
+	case HT_RESURRECT:
+		if (getStatus() != STAT_DEAD) {
 			return false;
-	}
+		}
 		setStatus(STAT_GOOD);
 		break;
-	case HT_HEAL: if ((getStatus() == STAT_DEAD) || (player->hp == player->hpMax)) {
+	case HT_HEAL:
+		if ((getStatus() == STAT_DEAD) || (player->hp == player->hpMax)) {
 			return false;
-	}
+		}
 		player->hp += 75 + (xu4_random(0x100) % 0x19);
 		break;
-	case HT_CAMPHEAL: if ((getStatus() == STAT_DEAD) || (player->hp == player->hpMax)) {
+	case HT_CAMPHEAL:
+		if ((getStatus() == STAT_DEAD) || (player->hp == player->hpMax)) {
 			return false;
-	}
+		}
 		player->hp += 99 + (xu4_random(0x100) & 0x77);
 		break;
-	case HT_INNHEAL: if ((getStatus() == STAT_DEAD) || (player->hp == player->hpMax)) {
+	case HT_INNHEAL:
+		if ((getStatus() == STAT_DEAD) || (player->hp == player->hpMax)) {
 			return false;
-	}
+		}
 		player->hp += 100 + (xu4_random(50) * 2);
 		break;
-	default: return false;
+	default:
+		return false;
 	} // switch
 	if (player->hp > player->hpMax) {
 		player->hp = player->hpMax;
@@ -540,23 +563,32 @@ MapTile PartyMember::tileForClass(int klass)
 	const char *name = NULL;
 
 	switch (klass) {
-	case CLASS_MAGE: name = "mage";
+	case CLASS_MAGE:
+		name = "mage";
 		break;
-	case CLASS_BARD: name = "bard";
+	case CLASS_BARD:
+		name = "bard";
 		break;
-	case CLASS_FIGHTER: name = "fighter";
+	case CLASS_FIGHTER:
+		name = "fighter";
 		break;
-	case CLASS_DRUID: name = "druid";
+	case CLASS_DRUID:
+		name = "druid";
 		break;
-	case CLASS_TINKER: name = "tinker";
+	case CLASS_TINKER:
+		name = "tinker";
 		break;
-	case CLASS_PALADIN: name = "paladin";
+	case CLASS_PALADIN:
+		name = "paladin";
 		break;
-	case CLASS_RANGER: name = "ranger";
+	case CLASS_RANGER:
+		name = "ranger";
 		break;
-	case CLASS_SHEPHERD: name = "shepherd";
+	case CLASS_SHEPHERD:
+		name = "shepherd";
 		break;
-	default: ASSERT(0, "invalid class %d in tileForClass", klass);
+	default:
+		ASSERT(0, "invalid class %d in tileForClass", klass);
 	}
 	const Tile *tile = Tileset::get("base")->getByName(name);
 	ASSERT(tile, "no tile found for class %d", klass);
@@ -695,9 +727,11 @@ void Party::adjustKarma(KarmaAction action)
 		maxVal[v] = saveGame->karma[v] == 0 ? 100 : 99;
 	}
 	switch (action) {
-	case KA_FOUND_ITEM: AdjustValueMax(newKarma[VIRT_HONOR], 5, maxVal[VIRT_HONOR]);
+	case KA_FOUND_ITEM:
+		AdjustValueMax(newKarma[VIRT_HONOR], 5, maxVal[VIRT_HONOR]);
 		break;
-	case KA_STOLE_CHEST: AdjustValueMin(newKarma[VIRT_HONESTY], -1, 1);
+	case KA_STOLE_CHEST:
+		AdjustValueMin(newKarma[VIRT_HONESTY], -1, 1);
 		AdjustValueMin(newKarma[VIRT_JUSTICE], -1, 1);
 		AdjustValueMin(newKarma[VIRT_HONOR], -1, 1);
 		break;
@@ -711,42 +745,57 @@ void Party::adjustKarma(KarmaAction action)
 		timeLimited = 1;
 		AdjustValueMax(newKarma[VIRT_COMPASSION], 2, maxVal[VIRT_COMPASSION]);
 		break;
-	case KA_BRAGGED: AdjustValueMin(newKarma[VIRT_HUMILITY], -5, 1);
+	case KA_BRAGGED:
+		AdjustValueMin(newKarma[VIRT_HUMILITY], -5, 1);
 		break;
-	case KA_HUMBLE: timeLimited = 1;
+	case KA_HUMBLE:
+		timeLimited = 1;
 		AdjustValueMax(newKarma[VIRT_HUMILITY], 5, maxVal[VIRT_HUMILITY]);
 		break;
-	case KA_HAWKWIND: case KA_MEDITATION: timeLimited = 1;
+	case KA_HAWKWIND:
+	case KA_MEDITATION:
+		timeLimited = 1;
 		AdjustValueMax(newKarma[VIRT_SPIRITUALITY], 3, maxVal[VIRT_SPIRITUALITY]);
 		break;
-	case KA_BAD_MANTRA: AdjustValueMin(newKarma[VIRT_SPIRITUALITY], -3, 1);
+	case KA_BAD_MANTRA:
+		AdjustValueMin(newKarma[VIRT_SPIRITUALITY], -3, 1);
 		break;
-	case KA_ATTACKED_GOOD: AdjustValueMin(newKarma[VIRT_COMPASSION], -5, 1);
+	case KA_ATTACKED_GOOD:
+		AdjustValueMin(newKarma[VIRT_COMPASSION], -5, 1);
 		AdjustValueMin(newKarma[VIRT_JUSTICE], -5, 1);
 		AdjustValueMin(newKarma[VIRT_HONOR], -5, 1);
 		break;
-	case KA_FLED_EVIL: AdjustValueMin(newKarma[VIRT_VALOR], -2, 1);
+	case KA_FLED_EVIL:
+		AdjustValueMin(newKarma[VIRT_VALOR], -2, 1);
 		break;
-	case KA_HEALTHY_FLED_EVIL: AdjustValueMin(newKarma[VIRT_VALOR], -2, 1);
+	case KA_HEALTHY_FLED_EVIL:
+		AdjustValueMin(newKarma[VIRT_VALOR], -2, 1);
 		AdjustValueMin(newKarma[VIRT_SACRIFICE], -2, 1);
 		break;
-	case KA_KILLED_EVIL: AdjustValueMax(newKarma[VIRT_VALOR], xu4_random(2), maxVal[VIRT_VALOR]); /* gain one valor half the time, zero the rest */
+	case KA_KILLED_EVIL:
+		AdjustValueMax(newKarma[VIRT_VALOR], xu4_random(2), maxVal[VIRT_VALOR]); /* gain one valor half the time, zero the rest */
 		break;
-	case KA_FLED_GOOD: AdjustValueMax(newKarma[VIRT_COMPASSION], 2, maxVal[VIRT_COMPASSION]);
+	case KA_FLED_GOOD:
+		AdjustValueMax(newKarma[VIRT_COMPASSION], 2, maxVal[VIRT_COMPASSION]);
 		AdjustValueMax(newKarma[VIRT_JUSTICE], 2, maxVal[VIRT_JUSTICE]);
 		break;
-	case KA_SPARED_GOOD: AdjustValueMax(newKarma[VIRT_COMPASSION], 1, maxVal[VIRT_COMPASSION]);
+	case KA_SPARED_GOOD:
+		AdjustValueMax(newKarma[VIRT_COMPASSION], 1, maxVal[VIRT_COMPASSION]);
 		AdjustValueMax(newKarma[VIRT_JUSTICE], 1, maxVal[VIRT_JUSTICE]);
 		break;
-	case KA_DONATED_BLOOD: AdjustValueMax(newKarma[VIRT_SACRIFICE], 5, maxVal[VIRT_SACRIFICE]);
+	case KA_DONATED_BLOOD:
+		AdjustValueMax(newKarma[VIRT_SACRIFICE], 5, maxVal[VIRT_SACRIFICE]);
 		break;
-	case KA_DIDNT_DONATE_BLOOD: AdjustValueMin(newKarma[VIRT_SACRIFICE], -5, 1);
+	case KA_DIDNT_DONATE_BLOOD:
+		AdjustValueMin(newKarma[VIRT_SACRIFICE], -5, 1);
 		break;
-	case KA_CHEAT_REAGENTS: AdjustValueMin(newKarma[VIRT_HONESTY], -10, 1);
+	case KA_CHEAT_REAGENTS:
+		AdjustValueMin(newKarma[VIRT_HONESTY], -10, 1);
 		AdjustValueMin(newKarma[VIRT_JUSTICE], -10, 1);
 		AdjustValueMin(newKarma[VIRT_HONOR], -10, 1);
 		break;
-	case KA_DIDNT_CHEAT_REAGENTS: timeLimited = 1;
+	case KA_DIDNT_CHEAT_REAGENTS:
+		timeLimited = 1;
 		AdjustValueMax(newKarma[VIRT_HONESTY], 2, maxVal[VIRT_HONESTY]);
 		AdjustValueMax(newKarma[VIRT_JUSTICE], 2, maxVal[VIRT_JUSTICE]);
 		AdjustValueMax(newKarma[VIRT_HONOR], 2, maxVal[VIRT_HONOR]);
@@ -804,13 +853,20 @@ void Party::applyEffect(TileEffect effect)
 
 	for (i = 0; i < size(); i++) {
 		switch (effect) {
-		case EFFECT_NONE: case EFFECT_ELECTRICITY: members[i]->applyEffect(effect);
-		case EFFECT_LAVA: case EFFECT_FIRE: case EFFECT_SLEEP: case EFFECT_POISONFIELD: if (xu4_random(2) == 0) {
+		case EFFECT_NONE:
+		case EFFECT_ELECTRICITY:
+			members[i]->applyEffect(effect);
+		case EFFECT_LAVA:
+		case EFFECT_FIRE:
+		case EFFECT_SLEEP:
+		case EFFECT_POISONFIELD:
+			if (xu4_random(2) == 0) {
 				members[i]->applyEffect(effect);
-		}
-		case EFFECT_POISON: if (xu4_random(5) == 0) {
+			}
+		case EFFECT_POISON:
+			if (xu4_random(5) == 0) {
 				members[i]->applyEffect(effect);
-		}
+			}
 		}
 	}
 }
@@ -914,9 +970,10 @@ void Party::endTurn()
 				adjustFood(-1);
 			}
 			switch (members[i]->getStatus()) {
-			case STAT_SLEEPING: if (xu4_random(8) == 0) {
+			case STAT_SLEEPING:
+				if (xu4_random(8) == 0) {
 					members[i]->wakeUp();
-			}
+				}
 				break;
 			case STAT_POISONED:
 				/* SOLUS
@@ -928,7 +985,8 @@ void Party::endTurn()
 				soundPlay(SOUND_POISON_DAMAGE, false);
 				members[i]->applyDamage(2);
 				break;
-			default: break;
+			default:
+				break;
 			}
 		}
 		/* regenerate magic points */

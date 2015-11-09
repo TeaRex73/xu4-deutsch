@@ -11,9 +11,14 @@
 
 class Map;
 class Coords;
+
 enum SearchCondition {
-	SC_NONE = 0x00, SC_NEWMOONS = 0x01, SC_FULLAVATAR = 0x02, SC_REAGENTDELAY = 0x04
+	SC_NONE = 0x00,
+	SC_NEWMOONS = 0x01,
+	SC_FULLAVATAR = 0x02,
+	SC_REAGENTDELAY = 0x04
 };
+
 struct ItemLocation {
 	const char *name;
 	const char *shortname;
@@ -24,7 +29,9 @@ struct ItemLocation {
 	int data;
 	unsigned char conditions;
 };
-typedef void (*DestroyAllCreaturesCallback)(void);
+
+typedef void (*DestroyAllCreaturesCallback)();
+
 void itemSetDestroyAllCreaturesCallback(DestroyAllCreaturesCallback callback);
 const ItemLocation *itemAtLocation(const Map *map, const Coords &coords);
 void itemUse(const std::string &shortname);

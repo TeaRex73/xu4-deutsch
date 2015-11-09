@@ -2,7 +2,7 @@
  * $Id$
  */
 
-#include "vc6.h" // Fixes things if you're using VC6, does nothing if otherwise
+#include "vc6.h" // Fixes things if you're using VC6, does nothing otherwise
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -14,18 +14,23 @@
 #include "imageloader.h"
 #include "imageloader_png.h"
 
-ImageLoader *PngImageLoader::instance = ImageLoader::registerLoader(new PngImageLoader, "image/png");
-static void png_read_xu4(png_structp png_ptr, png_bytep data, png_size_t length)
+ImageLoader *PngImageLoader::instance =
+	ImageLoader::registerLoader(new PngImageLoader, "image/png");
+
+static void png_read_xu4(png_structp png_ptr,
+			 png_bytep data,
+			 png_size_t length)
 {
 	png_size_t check;
 	U4FILE *file;
-
 	file = (U4FILE *)png_get_io_ptr(png_ptr);
 	check = file->read(data, (png_size_t)1, length);
 	if (check != length) {
 		png_error(png_ptr, "Read Error");
 	}
 }
+
+
 /**
  * Loads in the PNG with the libpng library.
  */
@@ -39,18 +44,25 @@ Image *PngImageLoader::load(U4FILE *file, int width, int height, int bpp)
 	if (png_sig_cmp((png_byte *)header, 0, sizeof(header)) != 0) {
 		return NULL;
 	}
-	png_structp png_ptr = png_create_read_struct(PNG_LIBPNG_VER_STRING, NULL, NULL, NULL);
+	png_structp png_ptr = png_create_read_struct(PNG_LIBPNG_VER_STRING,
+						     NULL,
+						     NULL,
+						     NULL);
 	if (!png_ptr) {
 		return NULL;
 	}
 	png_infop info_ptr = png_create_info_struct(png_ptr);
 	if (!info_ptr) {
-		png_destroy_read_struct(&png_ptr, (png_infopp)NULL, (png_infopp)NULL);
+		png_destroy_read_struct(&png_ptr,
+					(png_infopp)NULL,
+					(png_infopp)NULL);
 		return NULL;
 	}
 	png_infop end_info = png_create_info_struct(png_ptr);
 	if (!end_info) {
-		png_destroy_read_struct(&png_ptr, &info_ptr, (png_infopp)NULL);
+		png_destroy_read_struct(&png_ptr,
+					&info_ptr,
+					(png_infopp)NULL);
 		return NULL;
 	}
 	if (setjmp(png_jmpbuf(png_ptr))) {
@@ -61,8 +73,17 @@ Image *PngImageLoader::load(U4FILE *file, int width, int height, int bpp)
 	png_set_sig_bytes(png_ptr, sizeof(header));
 	png_read_png(png_ptr, info_ptr, PNG_TRANSFORM_IDENTITY, NULL);
 	png_uint_32 pwidth, pheight;
-	int bit_depth, color_type, interlace_type, compression_type, filter_method;
-	png_get_IHDR(png_ptr, info_ptr, &pwidth, &pheight, &bit_depth, &color_type, &interlace_type, &compression_type, &filter_method);
+	int bit_depth, color_type, interlace_type;
+	int compression_type, filter_method;
+	png_get_IHDR(png_ptr,
+		     info_ptr,
+		     &pwidth,
+		     &pheight,
+		     &bit_depth,
+		     &color_type,
+		     &interlace_type,
+		     &compression_type,
+		     &filter_method);
 	width = pwidth;
 	height = pheight;
 	if (color_type == PNG_COLOR_TYPE_PALETTE) {
@@ -80,7 +101,10 @@ Image *PngImageLoader::load(U4FILE *file, int width, int height, int bpp)
 			*p++ = row_pointers[i][j];
 		}
 	}
-	Image *image = Image::create(width, height, bpp == 4 || bpp == 8, Image::HARDWARE);
+	Image *image = Image::create(width,
+				     height,
+				     bpp == 4 || bpp == 8,
+				     Image::HARDWARE);
 	if (!image) {
 		delete[] raw;
 		png_destroy_read_struct(&png_ptr, &info_ptr, &end_info);

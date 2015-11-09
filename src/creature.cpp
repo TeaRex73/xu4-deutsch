@@ -227,13 +227,17 @@ int Creature::setInitialHp(int points)
 void Creature::setRandomRanged()
 {
 	switch (xu4_random(4)) {
-	case 0: rangedhittile = rangedmisstile = "poison_field";
+	case 0:
+		rangedhittile = rangedmisstile = "poison_field";
 		break;
-	case 1: rangedhittile = rangedmisstile = "energy_field";
+	case 1:
+		rangedhittile = rangedmisstile = "energy_field";
 		break;
-	case 2: rangedhittile = rangedmisstile = "fire_field";
+	case 2:
+		rangedhittile = rangedmisstile = "fire_field";
 		break;
-	case 3: rangedhittile = rangedmisstile = "sleep_field";
+	case 3:
+		rangedhittile = rangedmisstile = "sleep_field";
 		break;
 	}
 }
@@ -277,7 +281,10 @@ bool Creature::specialAction()
 	int broadsidesDirs = 0;
 
 	switch (id) {
-	case LAVA_LIZARD_ID: case SEA_SERPENT_ID: case HYDRA_ID: case DRAGON_ID:
+	case LAVA_LIZARD_ID:
+	case SEA_SERPENT_ID:
+	case HYDRA_ID:
+	case DRAGON_ID:
 		/* A 50/50 chance they try to range attack when you're close enough
 		   and not in a city
 		   Note: Monsters in settlements in U3 do fire on party
@@ -311,7 +318,8 @@ bool Creature::specialAction()
 			retval = false;
 		}
 		break;
-	default: break;
+	default:
+		break;
 	} // switch
 
 	return retval;
@@ -393,7 +401,8 @@ bool Creature::specialEffect()
 			}
 		}
 	}
-	default: break;
+	default:
+		break;
 	} // switch
 
 	return retval;
@@ -452,9 +461,10 @@ void Creature::act(CombatController *controller)
 		return;                             /* creature is hidden -- no action! */
 	}
 	switch (action) {
-	case CA_ATTACK: soundPlay(SOUND_NPC_ATTACK, false);                    // NPC_ATTACK, melee
+	case CA_ATTACK:
+		soundPlay(SOUND_NPC_ATTACK, false); // NPC_ATTACK, melee
 		if (controller->attackHit(this, target)) {
-			soundPlay(SOUND_PC_STRUCK, false);                     // PC_STRUCK, melee and ranged
+			soundPlay(SOUND_PC_STRUCK, false); // PC_STRUCK, melee and ranged
 			GameController::flashTile(target->getCoords(), "hit_flash", 4);
 			if (!dealDamage(target, getDamage())) {
 				target = NULL;
@@ -475,7 +485,8 @@ void Creature::act(CombatController *controller)
 			GameController::flashTile(target->getCoords(), "miss_flash", 1);
 		}
 		break;
-	case CA_CAST_SLEEP: screenMessage("\nSLIPITUS!\n");
+	case CA_CAST_SLEEP:
+		screenMessage("\nSLIPITUS!\n");
 		gameSpellEffect('s', -1, static_cast<Sound>(SOUND_MAGIC)); /* show the sleep spell effect */
 		/* Apply the sleep spell to party members still in combat */
 		if (!isPartyMember(this)) {
@@ -536,7 +547,8 @@ void Creature::act(CombatController *controller)
 		}
 		break;
 	}
-	case CA_FLEE: case CA_ADVANCE:
+	case CA_FLEE:
+	case CA_ADVANCE:
 	{
 		Map *map = getMap();
 		if (moveCombatObject(action, map, this, target->getCoords())) {
@@ -581,7 +593,8 @@ void Creature::applyTileEffect(TileEffect effect)
 				putToSleep();
 			}
 			break;
-		case EFFECT_LAVA: case EFFECT_FIRE:
+		case EFFECT_LAVA:
+		case EFFECT_FIRE:
 			/* deal 0 - 127 damage to the creature if it is not immune to fire damage */
 			if ((resists != EFFECT_FIRE) && (resists != EFFECT_LAVA)) {
 				applyDamage(xu4_random(0x7F), false);
@@ -593,7 +606,9 @@ void Creature::applyTileEffect(TileEffect effect)
 				applyDamage(xu4_random(0x7F), false);
 			}
 			break;
-		case EFFECT_POISON: default: break;
+		case EFFECT_POISON:
+		default:
+			break;
 		} // switch
 	}
 } // Creature::applyTileEffect
@@ -763,11 +778,12 @@ bool Creature::applyDamage(int damage, bool byplayer)
 		AdjustValueMin(hp, -damage, 0);
 	}
 	switch (getState()) {
-	case MSTAT_DEAD: if (byplayer) {
+	case MSTAT_DEAD:
+		if (byplayer) {
 			screenMessage("\n%c%s\nGET\\TET%c\nERF.+%d\n", FG_RED, uppercase(name).c_str(), FG_WHITE, xp);
-	} else {
+		} else {
 			screenMessage("\n%c%s\nGET\\TET%c\n", FG_RED, uppercase(name).c_str(), FG_WHITE);
-	}
+		}
 		/*
 		 * the creature is dead; let it spawns something else on
 		 * death (e.g. a gazer that spawns insects like in u5)
@@ -779,15 +795,20 @@ bool Creature::applyDamage(int damage, bool byplayer)
 		// Remove yourself from the map
 		remove();
 		return false;
-	case MSTAT_FLEEING: screenMessage("\n%c%s\nAUF DER FLUCHT%c\n", FG_YELLOW, uppercase(name).c_str(), FG_WHITE);
+	case MSTAT_FLEEING:
+		screenMessage("\n%c%s\nAUF DER FLUCHT%c\n", FG_YELLOW, uppercase(name).c_str(), FG_WHITE);
 		break;
-	case MSTAT_CRITICAL: screenMessage("\n%s\nKRITISCH\n", uppercase(name).c_str());
+	case MSTAT_CRITICAL:
+		screenMessage("\n%s\nKRITISCH\n", uppercase(name).c_str());
 		break;
-	case MSTAT_HEAVILYWOUNDED: screenMessage("\n%s\nSCHWER VERWUNDET\n", uppercase(name).c_str());
+	case MSTAT_HEAVILYWOUNDED:
+		screenMessage("\n%s\nSCHWER VERWUNDET\n", uppercase(name).c_str());
 		break;
-	case MSTAT_LIGHTLYWOUNDED: screenMessage("\n%s\nLEICHT VERWUNDET\n", uppercase(name).c_str());
+	case MSTAT_LIGHTLYWOUNDED:
+		screenMessage("\n%s\nLEICHT VERWUNDET\n", uppercase(name).c_str());
 		break;
-	case MSTAT_BARELYWOUNDED: screenMessage("\n%s\nKAUM VERWUNDET\n", uppercase(name).c_str());
+	case MSTAT_BARELYWOUNDED:
+		screenMessage("\n%s\nKAUM VERWUNDET\n", uppercase(name).c_str());
 		break;
 	} // switch
 	  /* creature is still alive and has the chance to divide - xu4 enhancement */

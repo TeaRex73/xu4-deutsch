@@ -344,23 +344,29 @@ bool IntroController::keyPressed(int key)
 		// the user pressed a key to abort the sequence
 		skipTitles();
 		break;
-	case INTRO_MAP: mode = INTRO_MENU;
+	case INTRO_MAP:
+		mode = INTRO_MENU;
 		updateScreen();
 		break;
-	case INTRO_MENU: if ((key >= 'A') && (key <= ']')) {
+	case INTRO_MENU:
+		if ((key >= 'A') && (key <= ']')) {
 			key = mytolower(key);
-	}
+		}
 		switch (key) {
-		case 'n': errorMessage.erase();
+		case 'n':
+			errorMessage.erase();
 			initiateNewGame();
 			break;
-		case 'r': journeyOnward();
+		case 'r':
+			journeyOnward();
 			break;
-		case 'z': errorMessage.erase();
+		case 'z':
+			errorMessage.erase();
 			mode = INTRO_MAP;
 			updateScreen();
 			break;
-		case 'k': errorMessage.erase();
+		case 'k':
+			errorMessage.erase();
 			// Make a copy of our settings so we can change them
 			settingsChanged = settings;
 			screenDisableCursor();
@@ -368,19 +374,31 @@ bool IntroController::keyPressed(int key)
 			screenEnableCursor();
 			updateScreen();
 			break;
-		case '}': errorMessage.erase();
+		case '}':
+			errorMessage.erase();
 			about();
 			break;
-		case 'q': quit = 1;
+		case 'q':
+			quit = 1;
 			EventHandler::end();
 			break;
-		case '1': case '2': case '3': case '4': case '5': case '6': case '7': case '8': musicMgr->introSwitch(key - '0');
+		case '1':
+		case '2':
+		case '3':
+		case '4':
+		case '5':
+		case '6':
+		case '7':
+		case '8':
+			musicMgr->introSwitch(key - '0');
 			break;
-		default: valid = false;
+		default:
+			valid = false;
 			break;
 		} // switch
 		break;
-	default: ASSERT(0, "key handler called in wrong mode");
+	default:
+		ASSERT(0, "key handler called in wrong mode");
 		return true;
 	} // switch
 
@@ -397,11 +415,15 @@ void IntroController::drawMap()
 	} else {
 		unsigned char commandNibble;
 		unsigned char dataNibble;
-		do                                                                                                                                               {
+		do {
 			commandNibble = binData->scriptTable[scrPos] >> 4;
 			switch (commandNibble) {
-			/* 0-4 = set object position and tile frame */
-			case 0: case 1: case 2: case 3: case 4:
+				/* 0-4 = set object position and tile frame */
+			case 0:
+			case 1:
+			case 2:
+			case 3:
+			case 4:
 				/* ----------------------------------------------------------
 				   Set object position and tile frame
 				   Format: yi [t(3); x(5)]
@@ -575,7 +597,8 @@ void IntroController::updateScreen()
 {
 	screenHideCursor();
 	switch (mode) {
-	case INTRO_MAP: backgroundArea.draw(BKGD_INTRO);
+	case INTRO_MAP:
+		backgroundArea.draw(BKGD_INTRO);
 		drawMap();
 		drawBeasties();
 		// display the profile name if a local profile is being used
@@ -614,7 +637,8 @@ void IntroController::updateScreen()
 		screenSetCursorPos(24, 17);
 		screenShowCursor();
 		break;
-	default: ASSERT(0, "bad mode in updateScreen");
+	default:
+		ASSERT(0, "bad mode in updateScreen");
 	} // switch
 	screenUpdateCursor();
 	screenRedrawScreen();
@@ -992,25 +1016,33 @@ void IntroController::updateConfMenu(MenuEvent &event)
 		settings.setData(settingsChanged);
 		settings.write();
 		switch (event.getMenuItem()->getId()) {
-		case MI_CONF_VIDEO: runMenu(&videoMenu, &extendedMenuArea, true);
+		case MI_CONF_VIDEO:
+			runMenu(&videoMenu, &extendedMenuArea, true);
 			break;
-		case MI_VIDEO_CONF_GFX: runMenu(&gfxMenu, &extendedMenuArea, true);
+		case MI_VIDEO_CONF_GFX:
+			runMenu(&gfxMenu, &extendedMenuArea, true);
 			break;
-		case MI_CONF_SOUND: runMenu(&soundMenu, &extendedMenuArea, true);
+		case MI_CONF_SOUND:
+			runMenu(&soundMenu, &extendedMenuArea, true);
 			break;
-		case MI_CONF_INPUT: runMenu(&inputMenu, &extendedMenuArea, true);
+		case MI_CONF_INPUT:
+			runMenu(&inputMenu, &extendedMenuArea, true);
 			break;
-		case MI_CONF_SPEED: runMenu(&speedMenu, &extendedMenuArea, true);
+		case MI_CONF_SPEED:
+			runMenu(&speedMenu, &extendedMenuArea, true);
 			break;
-		case MI_CONF_GAMEPLAY: runMenu(&gameplayMenu, &extendedMenuArea, true);
+		case MI_CONF_GAMEPLAY:
+			runMenu(&gameplayMenu, &extendedMenuArea, true);
 			break;
-		case MI_CONF_INTERFACE: runMenu(&interfaceMenu, &extendedMenuArea, true);
+		case MI_CONF_INTERFACE:
+			runMenu(&interfaceMenu, &extendedMenuArea, true);
 			break;
 		case CANCEL:
 			// discard settings
 			settingsChanged = settings;
 			break;
-		default: break;
+		default:
+			break;
 		} // switch
 	}
 	// draw the extended background for all option screens
@@ -1032,13 +1064,15 @@ void IntroController::updateVideoMenu(MenuEvent &event)
 				mode = INTRO_MENU;
 			}
 			break;
-		case MI_VIDEO_CONF_GFX: runMenu(&gfxMenu, &extendedMenuArea, true);
+		case MI_VIDEO_CONF_GFX:
+			runMenu(&gfxMenu, &extendedMenuArea, true);
 			break;
 		case CANCEL:
 			// discard settings
 			settingsChanged = settings;
 			break;
-		default: break;
+		default:
+			break;
 		}
 	}
 	// draw the extended background for all option screens
@@ -1049,9 +1083,11 @@ void IntroController::updateGfxMenu(MenuEvent &event)
 {
 	if ((event.getType() == MenuEvent::ACTIVATE) || (event.getType() == MenuEvent::INCREMENT) || (event.getType() == MenuEvent::DECREMENT)) {
 		switch (event.getMenuItem()->getId()) {
-		case MI_GFX_RETURN: runMenu(&videoMenu, &extendedMenuArea, true);
+		case MI_GFX_RETURN:
+			runMenu(&videoMenu, &extendedMenuArea, true);
 			break;
-		default: break;
+		default:
+			break;
 		}
 	}
 	// draw the extended background for all option screens
@@ -1062,9 +1098,11 @@ void IntroController::updateSoundMenu(MenuEvent &event)
 {
 	if ((event.getType() == MenuEvent::ACTIVATE) || (event.getType() == MenuEvent::INCREMENT) || (event.getType() == MenuEvent::DECREMENT)) {
 		switch (event.getMenuItem()->getId()) {
-		case MI_SOUND_01: musicMgr->setMusicVolume(settingsChanged.musicVol);
+		case MI_SOUND_01:
+			musicMgr->setMusicVolume(settingsChanged.musicVol);
 			break;
-		case MI_SOUND_02: musicMgr->setSoundVolume(settingsChanged.soundVol);
+		case MI_SOUND_02:
+			musicMgr->setSoundVolume(settingsChanged.soundVol);
 			soundPlay(SOUND_FLEE, false);
 			break;
 		case USE_SETTINGS:
@@ -1073,12 +1111,14 @@ void IntroController::updateSoundMenu(MenuEvent &event)
 			settings.write();
 			// musicMgr->intro();
 			break;
-		case CANCEL: musicMgr->setMusicVolume(settings.musicVol);
+		case CANCEL:
+			musicMgr->setMusicVolume(settings.musicVol);
 			musicMgr->setSoundVolume(settings.soundVol);
 			// discard settings
 			settingsChanged = settings;
 			break;
-		default: break;
+		default:
+			break;
 		}
 	}
 	// draw the extended background for all option screens
@@ -1109,7 +1149,8 @@ void IntroController::updateInputMenu(MenuEvent &event)
 			// discard settings
 			settingsChanged = settings;
 			break;
-		default: break;
+		default:
+			break;
 		} // switch
 	}
 	// draw the extended background for all option screens
@@ -1134,7 +1175,8 @@ void IntroController::updateSpeedMenu(MenuEvent &event)
 			// discard settings
 			settingsChanged = settings;
 			break;
-		default: break;
+		default:
+			break;
 		}
 	}
 	// draw the extended background for all option screens
@@ -1154,7 +1196,8 @@ void IntroController::updateGameplayMenu(MenuEvent &event)
 			// discard settings
 			settingsChanged = settings;
 			break;
-		default: break;
+		default:
+			break;
 		}
 	}
 	// draw the extended background for all option screens
@@ -1174,7 +1217,8 @@ void IntroController::updateInterfaceMenu(MenuEvent &event)
 			// discard settings
 			settingsChanged = settings;
 			break;
-		default: break;
+		default:
+			break;
 		}
 	}
 	// draw the extended background for all option screens
@@ -1284,22 +1328,29 @@ void IntroController::initPlayers(SaveGame *saveGame)
 	for (i = 8; i < 15; i++) {
 		saveGame->karma[questionTree[i]] += 5;
 		switch (questionTree[i]) {
-		case VIRT_HONESTY: saveGame->players[0].intel += 3;
+		case VIRT_HONESTY:
+			saveGame->players[0].intel += 3;
 			break;
-		case VIRT_COMPASSION: saveGame->players[0].dex += 3;
+		case VIRT_COMPASSION:
+			saveGame->players[0].dex += 3;
 			break;
-		case VIRT_VALOR: saveGame->players[0].str += 3;
+		case VIRT_VALOR:
+			saveGame->players[0].str += 3;
 			break;
-		case VIRT_JUSTICE: saveGame->players[0].intel++;
+		case VIRT_JUSTICE:
+			saveGame->players[0].intel++;
 			saveGame->players[0].dex++;
 			break;
-		case VIRT_SACRIFICE: saveGame->players[0].dex++;
+		case VIRT_SACRIFICE:
+			saveGame->players[0].dex++;
 			saveGame->players[0].str++;
 			break;
-		case VIRT_HONOR: saveGame->players[0].intel++;
+		case VIRT_HONOR:
+			saveGame->players[0].intel++;
 			saveGame->players[0].str++;
 			break;
-		case VIRT_SPIRITUALITY: saveGame->players[0].intel++;
+		case VIRT_SPIRITUALITY:
+			saveGame->players[0].intel++;
 			saveGame->players[0].dex++;
 			saveGame->players[0].str++;
 			break;
@@ -1462,9 +1513,11 @@ void IntroController::getTitleSourceData()
 			titles[i].animStepMax = titles[i].plotData.size();
 			break;
 		}
-		case BAR: titles[i].animStepMax = titles[i].rw; // image width
+		case BAR:
+			titles[i].animStepMax = titles[i].rw; // image width
 			break;
-		case TITLE: for (int y = 0; y < titles[i].rh; y++) {
+		case TITLE:
+			for (int y = 0; y < titles[i].rh; y++) {
 				for (int x = 0; x < titles[i].rw; x++) {
 					titles[i].srcImage->getPixel(x * info->prescale, y * info->prescale, r, g, b, a);
 					if (r || g || b) {
@@ -1472,7 +1525,7 @@ void IntroController::getTitleSourceData()
 						titles[i].plotData.push_back(plot);
 					}
 				}
-		}
+			}
 			titles[i].animStepMax = titles[i].plotData.size();
 			break;
 		case MAP:
@@ -1490,7 +1543,8 @@ void IntroController::getTitleSourceData()
 			titles[i].animStepMax = 20;
 			break;
 		}
-		default: titles[i].animStepMax = titles[i].rh; // image height
+		default:
+			titles[i].animStepMax = titles[i].rh; // image height
 			break;
 		} // switch
 		  // permanently disable alpha
@@ -1567,11 +1621,12 @@ bool IntroController::updateTitle()
 	animStepTarget = (int)(title->animStepMax * timePercent);
 	// perform the animation
 	switch (title->method) {
-	case SIGNATURE: while (animStepTarget > title->animStep) {
+	case SIGNATURE:
+		while (animStepTarget > title->animStep) {
 			// blit the pixel-pair to the src surface
 			title->destImage->fillRect(title->plotData[title->animStep].x, title->plotData[title->animStep].y, 2, 1, title->plotData[title->animStep].r, title->plotData[title->animStep].g, title->plotData[title->animStep].b);
 			title->animStep++;
-	}
+		}
 		break;
 	case BAR:
 	{
@@ -1589,21 +1644,23 @@ bool IntroController::updateTitle()
 		title->srcImage->drawOn(title->destImage, 1, 1);
 		title->animStep = title->animStepMax;
 		break;
-	case ORIGIN: if (bSkipTitles) {
+	case ORIGIN:
+		if (bSkipTitles) {
 			title->animStep = title->animStepMax;
-	} else {
+		} else {
 			title->animStep++;
 			title->timeDelay = getTicks() - title->timeBase + 100;
-	}
+		}
 		// blit src to the canvas one row at a time, bottom up
 		title->srcImage->drawSubRectOn(title->destImage, 1, title->destImage->height() - 1 - title->animStep, 0, 0, title->srcImage->width(), title->animStep);
 		break;
-	case PRESENT: if (bSkipTitles) {
+	case PRESENT:
+		if (bSkipTitles) {
 			title->animStep = title->animStepMax;
-	} else {
+		} else {
 			title->animStep++;
 			title->timeDelay = getTicks() - title->timeBase + 100;
-	}
+		}
 		// blit src to the canvas one row at a time, top down
 		title->srcImage->drawSubRectOn(title->destImage, 1, 1, 0, title->srcImage->height() - title->animStep, title->srcImage->width(), title->animStep);
 		break;

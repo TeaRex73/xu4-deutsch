@@ -171,13 +171,17 @@ string spellGetErrorMessage(unsigned int spell, SpellCastError error)
 	/* try to find a more specific error message */
 	if (err == CASTERR_WRONGCONTEXT) {
 		switch (spells[spell].context) {
-		case CTX_COMBAT: err = CASTERR_COMBATONLY;
+		case CTX_COMBAT:
+			err = CASTERR_COMBATONLY;
 			break;
-		case CTX_DUNGEON: err = CASTERR_DUNGEONONLY;
+		case CTX_DUNGEON:
+			err = CASTERR_DUNGEONONLY;
 			break;
-		case CTX_WORLDMAP: err = CASTERR_WORLDMAPONLY;
+		case CTX_WORLDMAP:
+			err = CASTERR_WORLDMAPONLY;
 			break;
-		default: break;
+		default:
+			break;
 		}
 	}
 	/* find the message that we're looking for and return it! */
@@ -448,16 +452,20 @@ static int spellEField(int param)
 	dir = param & 0xF;
 	/* Make sure params valid */
 	switch (fieldType) {
-	case ENERGYFIELD_FIRE: fieldTile = c->location->map->tileset->getByName("fire_field")->getId();
+	case ENERGYFIELD_FIRE:
+		fieldTile = c->location->map->tileset->getByName("fire_field")->getId();
 		break;
-	case ENERGYFIELD_LIGHTNING: fieldTile = c->location->map->tileset->getByName("energy_field")->getId();
+	case ENERGYFIELD_LIGHTNING:
+		fieldTile = c->location->map->tileset->getByName("energy_field")->getId();
 		break;
-	case ENERGYFIELD_POISON: fieldTile = c->location->map->tileset->getByName("poison_field")->getId();
+	case ENERGYFIELD_POISON:
+		fieldTile = c->location->map->tileset->getByName("poison_field")->getId();
 		break;
-	case ENERGYFIELD_SLEEP: fieldTile = c->location->map->tileset->getByName("sleep_field")->getId();
+	case ENERGYFIELD_SLEEP:
+		fieldTile = c->location->map->tileset->getByName("sleep_field")->getId();
 		break;
-	default: return 0;
-		break;
+	default:
+		return 0;
 	}
 	c->location->getCurrentPosition(&coords);
 	coords.move((Direction)dir, c->location->map);

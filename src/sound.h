@@ -26,15 +26,24 @@ enum Sound {
 	SOUND_LBHEAL, // LB heals party
 	SOUND_LEVELUP, // PC level up
 	SOUND_MOONGATE, // moongate used
-	SOUND_CANNON, SOUND_RUMBLE, SOUND_PREMAGIC_MANA_JUMBLE, SOUND_MAGIC, SOUND_WHIRLPOOL, SOUND_STORM,
+	SOUND_CANNON,
+	SOUND_RUMBLE,
+	SOUND_PREMAGIC_MANA_JUMBLE,
+	SOUND_MAGIC,
+	SOUND_WHIRLPOOL,
+	SOUND_STORM,
 	SOUND_INTROGATE_OPEN,
 	SOUND_INTROGATE_CLOSE,
 	SOUND_MAX
 };
-int soundInit(void);
-void soundDelete(void);
+
+int soundInit();
+void soundDelete();
 void soundLoad(Sound sound);
-void soundPlay(Sound sound, bool onlyOnce = true, int specificDurationInTicks = -1, bool wait = false);
+void soundPlay(Sound sound,
+	       bool onlyOnce = true,
+	       int specificDurationInTicks = -1,
+	       bool wait = false);
 void soundStop(int channel = 1);
 
 #endif /* SOUND_H */

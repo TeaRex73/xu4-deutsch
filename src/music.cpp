@@ -2,8 +2,9 @@
  * $Id$
  */
 
-#include "vc6.h" // Fixes things if you're using VC6, does nothing if otherwise
-/* FIXME: should this file have all SDL-related stuff extracted and put in music_sdl.c? */
+#include "vc6.h" // Fixes things if you're using VC6, does nothing otherwise
+/* FIXME: should this file have all SDL-related stuff extracted and
+   put in music_sdl.c? */
 // Yes! :)
 
 #include <memory>
@@ -25,6 +26,8 @@
 
 using std::string;
 using std::vector;
+
+
 /*
  * Static variables
  */
@@ -32,13 +35,21 @@ Music *Music::instance = NULL;
 bool Music::fading = false;
 bool Music::on = false;
 bool Music::functional = true;
+
+
 /*
  * Constructors/Destructors
  */
+
+
 /**
- * Initiliaze the music
+ * Initialize the music
  */
-Music::Music():introMid(NONE), current(NONE), playing(NULL), logger(new Debug("debug/music.txt", "Music"))
+Music::Music()
+	:introMid(NONE),
+	 current(NONE),
+	 playing(NULL),
+	 logger(new Debug("debug/music.txt", "Music"))
 {
 	filenames.reserve(MAX);
 	filenames.push_back(""); // filename for MUSIC_NONE;
@@ -48,7 +59,8 @@ Music::Music():introMid(NONE), current(NONE), playing(NULL), logger(new Debug("d
 	 */
 	const Config *config = Config::getInstance();
 	TRACE_LOCAL(*logger, "Loading music tracks");
-	vector<ConfigElement> musicConfs = config->getElement("music").getChildren();
+	vector<ConfigElement> musicConfs =
+		config->getElement("music").getChildren();
 	std::vector<ConfigElement>::const_iterator i = musicConfs.begin();
 	std::vector<ConfigElement>::const_iterator theEnd = musicConfs.end();
 	for (; i != theEnd; ++i) {
@@ -56,16 +68,21 @@ Music::Music():introMid(NONE), current(NONE), playing(NULL), logger(new Debug("d
 			continue;
 		}
 		filenames.push_back(i->getString("file"));
-		TRACE_LOCAL(*logger, string("\tTrack file: ") + filenames.back());
+		TRACE_LOCAL(*logger,
+			    string("\tTrack file: ") + filenames.back());
 	}
 	create_sys(); // Call the Sound System specific creation file.
 	// Set up the volume.
 	on = (settings.musicVol > 0);
 	setMusicVolume(settings.musicVol);
 	setSoundVolume(settings.soundVol);
-	eventHandler->getTimer()->add(&Music::callback, settings.gameCyclesPerSecond);
-	TRACE(*logger, string("Music initialized: volume is ") + (on ? "on" : "off"));
+	eventHandler->getTimer()->add(&Music::callback,
+				      settings.gameCyclesPerSecond);
+	TRACE(*logger,
+	      string("Music initialized: volume is ") + (on ? "on" : "off"));
 }
+
+
 /**
  * Stop playing the music and cleanup
  */
@@ -77,12 +94,17 @@ Music::~Music()
 	TRACE(*logger, "Music uninitialized");
 	delete logger;
 }
+
+
 bool Music::load(Type music)
 {
-	ASSERT(music < MAX, "Attempted to load an invalid piece of music in Music::load()");
+	ASSERT(music < MAX,
+	       "Attempted to load an invalid piece of music in "
+	       "Music::load()");
 	/* music already loaded */
 	if (music == current) {
-		/* tell calling function it didn't load correctly (because it's already playing) */
+		/* tell calling function it didn't load correctly
+		   (because it's already playing) */
 		if (isPlaying()) {
 			return false;
 		}
@@ -101,6 +123,8 @@ bool Music::load(Type music)
 	}
 	return false;
 } // Music::load
+
+
 /**
  * Ensures that the music is playing if it is supposed to be, or off
  * if it is supposed to be turned off.
@@ -113,8 +137,10 @@ void Music::callback(void *data)
 	} else if (!musicMgr->on && isPlaying()) {
 		musicMgr->stop();
 	}
-	eventHandler->getTimer()->add(&Music::callback, settings.gameCyclesPerSecond);
+	eventHandler->getTimer()->add(&Music::callback,
+				      settings.gameCyclesPerSecond);
 }
+
 void Music::playCurrent()
 {
 	if (introMid) {
@@ -127,6 +153,8 @@ void Music::playCurrent()
 		playMid(current);
 	}
 }
+
+
 /**
  * Main music loop
  */
@@ -134,6 +162,8 @@ void Music::play()
 {
 	playMid(c->location->map->music);
 }
+
+
 /**
  * Cycle through the introduction music
  */
@@ -144,6 +174,8 @@ void Music::introSwitch(int n)
 		intro();
 	}
 }
+
+
 /**
  * Toggle the music on/off (usually by pressing 'v')
  */
@@ -156,10 +188,13 @@ bool Music::toggle()
 	} else {
 		fadeIn(1000, true);
 	}
-	eventHandler->getTimer()->add(&Music::callback, settings.gameCyclesPerSecond);
+	eventHandler->getTimer()->add(&Music::callback,
+				      settings.gameCyclesPerSecond);
 	play();
 	return on;
 }
+
+
 /**
  * Fade out the music
  */
@@ -177,6 +212,8 @@ void Music::fadeOut(int msecs)
 		}
 	}
 }
+
+
 /**
  * Fade in the music
  */
@@ -197,6 +234,7 @@ void Music::fadeIn(int msecs, bool loadFromMap)
 		}
 	}
 }
+
 int Music::increaseMusicVolume()
 {
 	if (++settings.musicVol > MAX_VOLUME) {
@@ -204,8 +242,9 @@ int Music::increaseMusicVolume()
 	} else {
 		setMusicVolume(settings.musicVol);
 	}
-	return settings.musicVol * 100 / MAX_VOLUME;                                                                                                               // percentage
+	return settings.musicVol * 100 / MAX_VOLUME; // percentage
 }
+
 int Music::decreaseMusicVolume()
 {
 	if (--settings.musicVol < 0) {
@@ -213,8 +252,9 @@ int Music::decreaseMusicVolume()
 	} else {
 		setMusicVolume(settings.musicVol);
 	}
-	return settings.musicVol * 100 / MAX_VOLUME;                                                                                             // percentage
+	return settings.musicVol * 100 / MAX_VOLUME; // percentage
 }
+
 int Music::increaseSoundVolume()
 {
 	if (++settings.soundVol > MAX_VOLUME) {
@@ -222,8 +262,9 @@ int Music::increaseSoundVolume()
 	} else {
 		setSoundVolume(settings.soundVol);
 	}
-	return settings.soundVol * 100 / MAX_VOLUME;                                                                                                               // percentage
+	return settings.soundVol * 100 / MAX_VOLUME; // percentage
 }
+
 int Music::decreaseSoundVolume()
 {
 	if (--settings.soundVol < 0) {
@@ -231,5 +272,5 @@ int Music::decreaseSoundVolume()
 	} else {
 		setSoundVolume(settings.soundVol);
 	}
-	return settings.soundVol * 100 / MAX_VOLUME;                                                                                             // percentage
+	return settings.soundVol * 100 / MAX_VOLUME; // percentage
 }

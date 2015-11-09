@@ -332,11 +332,15 @@ bool MenuController::keyPressed(int key)
 		view->disableCursor();
 	}
 	switch (key) {
-	case U4_UP: menu->prev();
+	case U4_UP:
+		menu->prev();
 		break;
-	case U4_DOWN: menu->next();
+	case U4_DOWN:
+		menu->next();
 		break;
-	case U4_LEFT: case U4_RIGHT: case U4_ENTER:
+	case U4_LEFT:
+	case U4_RIGHT:
+	case U4_ENTER:
 	{
 		MenuEvent::Type action = MenuEvent::ACTIVATE;
 		if (key == U4_LEFT) {
@@ -347,7 +351,8 @@ bool MenuController::keyPressed(int key)
 		menu->activateItem(-1, action);
 		break;
 	}
-	default: handled = menu->activateItemByShortcut(key, MenuEvent::ACTIVATE);
+	default:
+		handled = menu->activateItemByShortcut(key, MenuEvent::ACTIVATE);
 	}
 	menu->show(view);
 	if (cursorOn) {

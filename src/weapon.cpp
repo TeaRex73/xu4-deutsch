@@ -15,8 +15,11 @@
 
 using std::string;
 using std::vector;
+
 bool Weapon::confLoaded = false;
 vector<Weapon *> Weapon::weapons;
+
+
 /**
  * Returns weapon by WeaponType.
  */
@@ -29,6 +32,8 @@ const Weapon *Weapon::get(WeaponType w)
 	}
 	return weapons[w];
 }
+
+
 /**
  * Returns weapon that has the given name
  */
@@ -43,17 +48,37 @@ const Weapon *Weapon::get(const string &name)
 	}
 	return NULL;
 }
-Weapon::Weapon(const ConfigElement &conf):type(static_cast<WeaponType>(weapons.size())), name(conf.getString("name")), abbr(conf.getString("abbr")), canuse(0xFF), range(0), damage(conf.getInt("damage")), hittile("hit_flash"), misstile("miss_flash"), leavetile(""), flags(0)
+
+
+Weapon::Weapon(const ConfigElement &conf)
+	:type(static_cast<WeaponType>(weapons.size())),
+	 name(conf.getString("name")),
+	 abbr(conf.getString("abbr")),
+	 canuse(0xFF),
+	 range(0),
+	 damage(conf.getInt("damage")),
+	 hittile("hit_flash"),
+	 misstile("miss_flash"),
+	 leavetile(""),
+	 flags(0)
 {
 	static const struct {
 		const char *name;
 		unsigned int flag;
 	} booleanAttributes[] = {
-		{ "lose", WEAP_LOSE }, { "losewhenranged", WEAP_LOSEWHENRANGED }, { "choosedistance", WEAP_CHOOSEDISTANCE }, { "alwayshits", WEAP_ALWAYSHITS }, { "magic", WEAP_MAGIC }, { "attackthroughobjects", WEAP_ATTACKTHROUGHOBJECTS }, { "returns", WEAP_RETURNS }, { "dontshowtravel", WEAP_DONTSHOWTRAVEL }
+		{ "lose", WEAP_LOSE },
+		{ "losewhenranged", WEAP_LOSEWHENRANGED },
+		{ "choosedistance", WEAP_CHOOSEDISTANCE },
+		{ "alwayshits", WEAP_ALWAYSHITS },
+		{ "magic", WEAP_MAGIC },
+		{ "attackthroughobjects", WEAP_ATTACKTHROUGHOBJECTS },
+		{ "returns", WEAP_RETURNS },
+		{ "dontshowtravel", WEAP_DONTSHOWTRAVEL }
 	};
-	/* Get the range of the weapon, whether it is absolute or normal range */
+	
+	/* Get the range of the weapon, whether it is absolute or
+	   normal range */
 	string _range = conf.getString("range");
-
 	if (_range.empty()) {
 		_range = conf.getString("absolute_range");
 		if (!_range.empty()) {
@@ -61,12 +86,17 @@ Weapon::Weapon(const ConfigElement &conf):type(static_cast<WeaponType>(weapons.s
 		}
 	}
 	if (_range.empty()) {
-		errorFatal("malformed weapons.xml file: range or absolute_range not found for weapon %s", name.c_str());
+		errorFatal("malformed weapons.xml file: "
+			   "range or absolute_range not found "
+			   "for weapon %s",
+			   name.c_str());
 	}
 	range = atoi(_range.c_str());
-
+	
 	/* Load weapon attributes */
-	for (unsigned at = 0; at < sizeof(booleanAttributes) / sizeof(booleanAttributes[0]); at++) {
+	for (unsigned at = 0;
+	     at < sizeof(booleanAttributes) / sizeof(booleanAttributes[0]);
+	     at++) {
 		if (conf.getBool(booleanAttributes[at].name)) {
 			flags |= booleanAttributes[at].flag;
 		}
@@ -84,21 +114,31 @@ Weapon::Weapon(const ConfigElement &conf):type(static_cast<WeaponType>(weapons.s
 		leavetile = conf.getString("leavetile");
 	}
 	vector<ConfigElement> contraintConfs = conf.getChildren();
-	for (std::vector<ConfigElement>::iterator i = contraintConfs.begin(); i != contraintConfs.end(); i++) {
+	for (std::vector<ConfigElement>::iterator i = contraintConfs.begin();
+	     i != contraintConfs.end();
+	     i++) {
 		unsigned char mask = 0;
 		if (i->getName() != "constraint") {
 			continue;
 		}
 		for (int cl = 0; cl < 8; cl++) {
-			if (strcasecmp(i->getString("class").c_str(), getClassNameEnglish(static_cast<ClassType>(cl))) == 0) {
+			if (strcasecmp(
+				    i->getString("class").c_str(),
+				    getClassNameEnglish(
+					    static_cast<ClassType>(cl)
+				    )
+			) == 0) {
 				mask = (1 << cl);
 			}
 		}
-		if ((mask == 0) && (strcasecmp(i->getString("class").c_str(), "all") == 0)) {
+		if ((mask == 0) &&
+		    (strcasecmp(i->getString("class").c_str(), "all") == 0)) {
 			mask = 0xFF;
 		}
 		if (mask == 0) {
-			errorFatal("malformed weapons.xml file: constraint has unknown class %s", i->getString("class").c_str());
+			errorFatal("malformed weapons.xml file: "
+				   "constraint has unknown class %s",
+				   i->getString("class").c_str());
 		}
 		if (i->getBool("canuse")) {
 			canuse |= mask;
@@ -107,6 +147,7 @@ Weapon::Weapon(const ConfigElement &conf):type(static_cast<WeaponType>(weapons.s
 		}
 	}
 }
+
 void Weapon::loadConf()
 {
 	if (confLoaded) {
@@ -114,8 +155,11 @@ void Weapon::loadConf()
 	}
 	confLoaded = true;
 	const Config *config = Config::getInstance();
-	vector<ConfigElement> weaponConfs = config->getElement("weapons").getChildren();
-	for (std::vector<ConfigElement>::iterator i = weaponConfs.begin(); i != weaponConfs.end(); i++) {
+	vector<ConfigElement> weaponConfs =
+		config->getElement("weapons").getChildren();
+	for (std::vector<ConfigElement>::iterator i = weaponConfs.begin();
+	     i != weaponConfs.end();
+	     i++) {
 		if (i->getName() != "weapon") {
 			continue;
 		}

@@ -12,8 +12,10 @@
  * algorithm.
  */
 class U5LzwImageLoader:public ImageLoader {
-static ImageLoader *instance;
-public: virtual Image *load(U4FILE *file, int width, int height, int bpp);
+public:
+	virtual Image *load(U4FILE *file, int width, int height, int bpp);
+private:
+	static ImageLoader *instance;
 };
 
 #endif /* IMAGELOADER_U5_H */

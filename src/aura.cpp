@@ -2,17 +2,22 @@
  * $Id$
  */
 
-#include "vc6.h" // Fixes things if you're using VC6, does nothing if otherwise
+#include "vc6.h" // Fixes things if you're using VC6, does nothing otherwise
 
 #include "aura.h"
 
-Aura::Aura():type(NONE), duration(0) {}
+Aura::Aura()
+	:type(NONE), duration(0)
+{
+}
+
 void Aura::setDuration(int d)
 {
 	duration = d;
 	setChanged();
 	notifyObservers(NULL);
 }
+
 void Aura::set(Type t, int d)
 {
 	type = t;
@@ -20,12 +25,14 @@ void Aura::set(Type t, int d)
 	setChanged();
 	notifyObservers(NULL);
 }
+
 void Aura::setType(Type t)
 {
 	type = t;
 	setChanged();
 	notifyObservers(NULL);
 }
+
 void Aura::passTurn()
 {
 	if (duration > 0) {

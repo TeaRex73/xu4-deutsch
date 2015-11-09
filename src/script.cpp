@@ -354,62 +354,85 @@ Script::ReturnCode Script::execute(xmlNodePtr script, xmlNodePtr currentItem, st
 				 * Found it!
 				 */
 				switch (action->second) {
-				case ACTION_SET_CONTEXT: retval = pushContext(script, current);
+				case ACTION_SET_CONTEXT:
+					retval = pushContext(script, current);
 					break;
-				case ACTION_UNSET_CONTEXT: retval = popContext(script, current);
+				case ACTION_UNSET_CONTEXT:
+					retval = popContext(script, current);
 					break;
-				case ACTION_END: retval = end(script, current);
+				case ACTION_END:
+					retval = end(script, current);
 					break;
-				case ACTION_REDIRECT: retval = redirect(script, current);
+				case ACTION_REDIRECT:
+					retval = redirect(script, current);
 					break;
-				case ACTION_WAIT_FOR_KEY: retval = waitForKeypress(script, current);
+				case ACTION_WAIT_FOR_KEY:
+					retval = waitForKeypress(script, current);
 					break;
-				case ACTION_WAIT: retval = wait(script, current);
+				case ACTION_WAIT:
+					retval = wait(script, current);
 					break;
-				case ACTION_STOP: retval = RET_STOP;
+				case ACTION_STOP:
+					retval = RET_STOP;
 					break;
-				case ACTION_INCLUDE: retval = include(script, current);
+				case ACTION_INCLUDE:
+					retval = include(script, current);
 					break;
-				case ACTION_FOR_LOOP: retval = forLoop(script, current);
+				case ACTION_FOR_LOOP:
+					retval = forLoop(script, current);
 					break;
-				case ACTION_RANDOM: retval = random(script, current);
+				case ACTION_RANDOM:
+					retval = random(script, current);
 					break;
-				case ACTION_MOVE: retval = move(script, current);
+				case ACTION_MOVE:
+					retval = move(script, current);
 					break;
-				case ACTION_SLEEP: retval = sleep(script, current);
+				case ACTION_SLEEP:
+					retval = sleep(script, current);
 					break;
-				case ACTION_CURSOR: retval = cursor(script, current);
+				case ACTION_CURSOR:
+					retval = cursor(script, current);
 					break;
-				case ACTION_PAY: retval = pay(script, current);
+				case ACTION_PAY:
+					retval = pay(script, current);
 					break;
-				case ACTION_IF: retval = _if(script, current);
+				case ACTION_IF:
+					retval = _if(script, current);
 					break;
-				case ACTION_INPUT: retval = input(script, current);
+				case ACTION_INPUT:
+					retval = input(script, current);
 					break;
-				case ACTION_ADD: retval = add(script, current);
+				case ACTION_ADD:
+					retval = add(script, current);
 					break;
-				case ACTION_LOSE: retval = lose(script, current);
+				case ACTION_LOSE:
+					retval = lose(script, current);
 					break;
-				case ACTION_HEAL: retval = heal(script, current);
+				case ACTION_HEAL:
+					retval = heal(script, current);
 					break;
-				case ACTION_CAST_SPELL: retval = castSpell(script, current);
+				case ACTION_CAST_SPELL:
+					retval = castSpell(script, current);
 					break;
-				case ACTION_DAMAGE: retval = damage(script, current);
+				case ACTION_DAMAGE:
+					retval = damage(script, current);
 					break;
-				case ACTION_KARMA: retval = karma(script, current);
+				case ACTION_KARMA:
+					retval = karma(script, current);
 					break;
-				case ACTION_MUSIC: retval = music(script, current);
+				case ACTION_MUSIC:
+					retval = music(script, current);
 					break;
-				case ACTION_SET_VARIABLE: retval = setVar(script, current);
+				case ACTION_SET_VARIABLE:
+					retval = setVar(script, current);
 					break;
-				case ACTION_ZTATS: retval = ztats(script, current);
+				case ACTION_ZTATS:
+					retval = ztats(script, current);
 					break;
-				default: break;
+				default:
+					break;
 				} // switch
 			}
-			// switch
-			// switch
-			// switch
 			/**
 			* Didn't find the corresponding action...
 			*/

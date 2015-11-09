@@ -2,7 +2,7 @@
  * $Id$
  */
 
-#include "vc6.h" // Fixes things if you're using VC6, does nothing if otherwise
+#include "vc6.h" // Fixes things if you're using VC6, does nothing otherwise
 
 #include <SDL.h>
 #include "u4_sdl.h"
@@ -11,14 +11,15 @@ static inline int u4_SDL_Init()
 {
 	return SDL_Init(SDL_INIT_VIDEO | SDL_INIT_TIMER | SDL_INIT_AUDIO);
 }
+
 static inline void u4_SDL_Delete()
 {
 	SDL_Quit();
 }
+
 int u4_SDL_InitSubSystem(Uint32 flags)
 {
 	int f = SDL_WasInit(SDL_INIT_EVERYTHING);
-
 	if (f == 0) {
 		u4_SDL_Init();
 	}
@@ -28,6 +29,7 @@ int u4_SDL_InitSubSystem(Uint32 flags)
 		return 0;
 	}
 }
+
 void u4_SDL_QuitSubSystem(Uint32 flags)
 {
 	if (SDL_WasInit(SDL_INIT_EVERYTHING) == flags) {

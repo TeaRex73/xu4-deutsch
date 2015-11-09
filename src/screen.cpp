@@ -211,7 +211,14 @@ void screenMessage(const char *fmt, ...)
 		}
 		/* color-change codes */
 		switch (buffer[i]) {
-		case FG_GREY: case FG_BLUE: case FG_PURPLE: case FG_GREEN: case FG_RED: case FG_YELLOW: case FG_WHITE: screenTextColor(buffer[i]);
+		case FG_GREY:
+		case FG_BLUE:
+		case FG_PURPLE:
+		case FG_GREEN:
+		case FG_RED:
+		case FG_YELLOW:
+		case FG_WHITE:
+			screenTextColor(buffer[i]);
 			continue;
 		}
 		/* check for word wrap */
@@ -452,7 +459,14 @@ void screenTextColor(int color)
 		return;
 	}
 	switch (color) {
-	case FG_GREY: case FG_BLUE: case FG_PURPLE: case FG_GREEN: case FG_RED: case FG_YELLOW: case FG_WHITE: charsetInfo->image->setFontColorFG((ColorFG)color);
+	case FG_GREY:
+	case FG_BLUE:
+	case FG_PURPLE:
+	case FG_GREEN:
+	case FG_RED:
+	case FG_YELLOW:
+	case FG_WHITE:
+		charsetInfo->image->setFontColorFG((ColorFG)color);
 	}
 }
 /**
@@ -731,35 +745,43 @@ void screenFindLineOfSightEnhanced(vector<MapTile> viewportTiles[VIEWPORT_W][VIE
 
 	for (octant = 0; octant < _OCTANTS; octant++) {
 		switch (octant) {
-		case 0: xSign = 1;
+		case 0:
+			xSign = 1;
 			ySign = 1;
 			reflect = false;
 			break; // lower-right
-		case 1: xSign = 1;
+		case 1:
+			xSign = 1;
 			ySign = 1;
 			reflect = true;
 			break;
-		case 2: xSign = 1;
+		case 2:
+			xSign = 1;
 			ySign = -1;
 			reflect = true;
 			break; // lower-left
-		case 3: xSign = -1;
+		case 3:
+			xSign = -1;
 			ySign = 1;
 			reflect = false;
 			break;
-		case 4: xSign = -1;
+		case 4:
+			xSign = -1;
 			ySign = -1;
 			reflect = false;
 			break; // upper-left
-		case 5: xSign = -1;
+		case 5:
+			xSign = -1;
 			ySign = -1;
 			reflect = true;
 			break;
-		case 6: xSign = -1;
+		case 6:
+			xSign = -1;
 			ySign = 1;
 			reflect = true;
 			break; // upper-right
-		case 7: xSign = 1;
+		case 7:
+			xSign = 1;
 			ySign = -1;
 			reflect = false;
 			break;

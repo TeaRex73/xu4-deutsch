@@ -229,13 +229,17 @@ void useStone(int item)
 			if (c->location->context & CTX_ALTAR_ROOM) {
 				needStoneNames--;
 				switch (cm->getAltarRoom()) {
-				case VIRT_TRUTH: attr = &truth;
+				case VIRT_TRUTH:
+					attr = &truth;
 					break;
-				case VIRT_LOVE: attr = &love;
+				case VIRT_LOVE:
+					attr = &love;
 					break;
-				case VIRT_COURAGE: attr = &courage;
+				case VIRT_COURAGE:
+					attr = &courage;
 					break;
-				default: break;
+				default:
+					break;
 				}
 				/* make sure we're in an altar room */
 				if (attr) {
@@ -262,13 +266,17 @@ void useStone(int item)
 				else {
 					unsigned short key = 0xFFFF;
 					switch (cm->getAltarRoom()) {
-					case VIRT_TRUTH: key = ITEM_KEY_T;
+					case VIRT_TRUTH:
+						key = ITEM_KEY_T;
 						break;
-					case VIRT_LOVE: key = ITEM_KEY_L;
+					case VIRT_LOVE:
+						key = ITEM_KEY_L;
 						break;
-					case VIRT_COURAGE: key = ITEM_KEY_C;
+					case VIRT_COURAGE:
+						key = ITEM_KEY_C;
 						break;
-					default: break;
+					default:
+						break;
 					}
 					/* in an altar room, named all of the stones, and don't have the key yet... */
 					if (attr && (stoneMask == *attr) && !(c->saveGame->items & key)) {

@@ -37,10 +37,11 @@ class TileView;
 class Coords;
 
 #if __GNUC__
- # define PRINTF_LIKE(x, y) __attribute__((format(printf, (x), (y))))
+#define PRINTF_LIKE(x, y) __attribute__((format(printf, (x), (y))))
 #else
- # define PRINTF_LIKE(x, y)
+#define PRINTF_LIKE(x, y)
 #endif
+
 /*
  * bitmasks for LOS shadows
  */
@@ -60,8 +61,13 @@ class Coords;
 #define _NV__ 0x84
 
 typedef enum {
-	MC_DEFAULT, MC_WEST, MC_NORTH, MC_EAST, MC_SOUTH
+	MC_DEFAULT,
+	MC_WEST,
+	MC_NORTH,
+	MC_EAST,
+	MC_SOUTH
 } MouseCursor;
+
 typedef struct _MouseArea {
 	int npoints;
 	struct {
@@ -73,44 +79,50 @@ typedef struct _MouseArea {
 
 #define SCR_CYCLE_PER_SECOND 4
 
-void screenInit(void);
-void screenRefreshTimerInit(void);
-void screenDelete(void);
-void screenReInit(void);
+void screenInit();
+void screenRefreshTimerInit();
+void screenDelete();
+void screenReInit();
 void screenLock();
 void screenUnlock();
 void screenWait(int numberOfAnimationFrames);
-void screenIconify(void);
+void screenIconify();
 const std::vector<std::string> &screenGetGemLayoutNames();
 const std::vector<std::string> &screenGetFilterNames();
 const std::vector<std::string> &screenGetLineOfSightStyles();
 void screenDrawImage(const std::string &name, int x = 0, int y = 0);
 void screenDrawImageInMapArea(const std::string &bkgd);
-void screenCycle(void);
-void screenEraseMapArea(void);
+void screenCycle();
+void screenEraseMapArea();
 void screenEraseTextArea(int x, int y, int width, int height);
-void screenGemUpdate(void);
+void screenGemUpdate();
 void screenMessage(const char *fmt, ...) PRINTF_LIKE(1, 2);
-void screenPrompt(void);
-void screenRedrawMapArea(void);
-void screenRedrawScreen(void);
+void screenPrompt();
+void screenRedrawMapArea();
+void screenRedrawScreen();
 void screenRedrawTextArea(int x, int y, int width, int height);
-void screenScrollMessageArea(void);
+void screenScrollMessageArea();
 void screenShake(int iterations);
 void screenShowChar(int chr, int x, int y);
 void screenShowCharMasked(int chr, int x, int y, unsigned char mask);
 void screenTextAt(int x, int y, const char *fmt, ...) PRINTF_LIKE(3, 4);
 void screenTextColor(int color);
-bool screenTileUpdate(TileView *view, const Coords &coords, bool redraw = true); // Returns true if the screen was affected
+bool screenTileUpdate(TileView *view,
+		      const Coords &coords,
+		      bool redraw = true); // whether screen was affected
 void screenUpdate(TileView *view, bool showmap, bool blackout);
-void screenUpdateCursor(void);
-void screenUpdateMoons(void);
-void screenUpdateWind(void);
-std::vector<MapTile> screenViewportTile(unsigned int width, unsigned int height, int x, int y, bool &focus);
-void screenShowCursor(void);
-void screenHideCursor(void);
-void screenEnableCursor(void);
-void screenDisableCursor(void);
+void screenUpdateCursor();
+void screenUpdateMoons();
+void screenUpdateWind();
+std::vector<MapTile> screenViewportTile(unsigned int width,
+					unsigned int height,
+					int x,
+					int y,
+					bool &focus);
+void screenShowCursor();
+void screenHideCursor();
+void screenEnableCursor();
+void screenDisableCursor();
 void screenSetCursorPos(int x, int y);
 void screenSetMouseCursor(MouseCursor cursor);
 int screenPointInMouseArea(int x, int y, MouseArea *area);

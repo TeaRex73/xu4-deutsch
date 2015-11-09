@@ -2,7 +2,7 @@
  * $Id$
  */
 
-#include "vc6.h" // Fixes things if you're using VC6, does nothing if otherwise
+#include "vc6.h" // Fixes things if you're using VC6, does nothing otherwise
 
 #include <cstdio>
 #include <cstdarg>
@@ -17,11 +17,11 @@
 #include <libxml/xpath.h>
 
 #if defined(MACOSX)
- # include <CoreFoundation/CoreFoundation.h>
+#include <CoreFoundation/CoreFoundation.h>
 #endif
 // we rely on xinclude support
 #ifndef LIBXML_XINCLUDE_ENABLED
- # error "xinclude not available: libxml2 must be compiled with xinclude support"
+#error "xinclude not available: libxml2 not compiled with xinclude support"
 #endif
 
 #include "config.h"
@@ -32,40 +32,54 @@
 using namespace std;
 extern bool verbose;
 Config *Config::instance = NULL;
+
 const Config *Config::getInstance()
 {
 	if (!instance) {
-		xmlRegisterInputCallbacks(&xmlFileMatch, &fileOpen, xmlFileRead, xmlFileClose);
+		xmlRegisterInputCallbacks(&xmlFileMatch,
+					  &fileOpen,
+					  xmlFileRead,
+					  xmlFileClose);
 		instance = new Config;
 	}
 	return instance;
 }
+
 ConfigElement Config::getElement(const string &name) const
 {
 	xmlXPathContextPtr context;
 	xmlXPathObjectPtr result;
 	string path = "/config/" + name;
-
 	context = xmlXPathNewContext(doc);
-	result = xmlXPathEvalExpression(reinterpret_cast<const xmlChar *>(path.c_str()), context);
+	result = xmlXPathEvalExpression(
+		reinterpret_cast<const xmlChar *>(path.c_str()),
+		context
+	);
 	if (xmlXPathNodeSetIsEmpty(result->nodesetval)) {
 		errorFatal("no match for xpath %s\n", path.c_str());
 	}
 	xmlXPathFreeContext(context);
 	if (result->nodesetval->nodeNr > 1) {
-		errorWarning("more than one match for xpath %s\n", path.c_str());
+		errorWarning("more than one match for xpath %s\n",
+			     path.c_str());
 	}
 	xmlNodePtr node = result->nodesetval->nodeTab[0];
 	xmlXPathFreeObject(result);
 	return ConfigElement(node);
 }
+
 char DEFAULT_CONFIG_XML_LOCATION[] = "config.xml";
 char *Config::CONFIG_XML_LOCATION_POINTER = &DEFAULT_CONFIG_XML_LOCATION[0];
+
 Config::Config()
 {
-	doc = xmlReadFile(Config::CONFIG_XML_LOCATION_POINTER, NULL, XML_PARSE_NOENT | XML_PARSE_XINCLUDE);
+	doc = xmlReadFile(Config::CONFIG_XML_LOCATION_POINTER,
+			  NULL,
+			  XML_PARSE_NOENT | XML_PARSE_XINCLUDE);
 	if (!doc) {
-		printf("Failed to read core config.xml. Assuming it is located at '%s'", Config::CONFIG_XML_LOCATION_POINTER);
+		printf("Failed to read core config.xml. "
+		       "Assuming it is located at '%s'",
+		       Config::CONFIG_XML_LOCATION_POINTER);
 		errorFatal("error parsing config.xml");
 	}
 	xmlXIncludeProcess(doc);
@@ -78,45 +92,64 @@ Config::Config()
 		cvp.userData = &errorMessage;
 		cvp.error = &accumError;
 		if (!xmlValidateDocument(&cvp, doc)) {
-			errorFatal("xml parse error:\n%s", errorMessage.c_str());
+			errorFatal("xml parse error:\n%s",
+				   errorMessage.c_str());
 		}
 	}
 }
+
 vector<string> Config::getGames()
 {
 	vector<string> result;
 	result.push_back("Ultima IV");
 	return result;
 }
-void Config::setGame(const string &name) {}
+
+void Config::setGame(const string &name)
+{
+}
+
 void *Config::fileOpen(const char *filename)
 {
 	void *result;
 	string pathname(u4find_conf(filename));
-
 	if (pathname.empty()) {
 		return NULL;
 	}
 	result = xmlFileOpen(pathname.c_str());
 	if (verbose) {
-		printf("xml parser opened %s: %s\n", pathname.c_str(), result ? "success" : "failed");
+		printf("xml parser opened %s: %s\n",
+		       pathname.c_str(),
+		       result ? "success" : "failed");
 	}
 	return result;
 }
+
 void Config::accumError(void *l, const char *fmt, ...)
 {
 	string *errorMessage = static_cast<string *>(l);
 	char buffer[1000];
 	va_list args;
-
 	va_start(args, fmt);
 	vsnprintf(buffer, sizeof(buffer), fmt, args);
 	va_end(args);
 	errorMessage->append(buffer);
 }
-ConfigElement::ConfigElement(xmlNodePtr xmlNode):node(xmlNode), name(reinterpret_cast<const char *>(xmlNode->name)) {}
-ConfigElement::ConfigElement(const ConfigElement &e):node(e.node), name(e.name) {}
-ConfigElement::~ConfigElement() {}
+
+ConfigElement::ConfigElement(xmlNodePtr xmlNode)
+	:node(xmlNode), name(reinterpret_cast<const char *>(xmlNode->name))
+{
+}
+
+ConfigElement::ConfigElement(const ConfigElement &e)
+	:node(e.node), name(e.name)
+{
+}
+
+ConfigElement::~ConfigElement()
+{
+}
+
 ConfigElement &ConfigElement::operator=(const ConfigElement &e)
 {
 	if (&e != this) {
@@ -125,21 +158,22 @@ ConfigElement &ConfigElement::operator=(const ConfigElement &e)
 	}
 	return *this;
 }
-/**
- * Returns true if the property exists in the current config element
- */
+
 bool ConfigElement::exists(const std::string &name) const
 {
-	xmlChar *prop = xmlGetProp(node, reinterpret_cast<const xmlChar *>(name.c_str()));
+	xmlChar *prop =
+		xmlGetProp(node,
+			   reinterpret_cast<const xmlChar *>(name.c_str()));
 	bool exists = prop != NULL;
-
 	xmlFree(prop);
 	return exists;
 }
+
 string ConfigElement::getString(const string &name) const
 {
-	xmlChar *prop = xmlGetProp(node, reinterpret_cast<const xmlChar *>(name.c_str()));
-
+	xmlChar *prop =
+		xmlGetProp(node,
+			   reinterpret_cast<const xmlChar *>(name.c_str()));
 	if (!prop) {
 		return "";
 	}
@@ -147,12 +181,13 @@ string ConfigElement::getString(const string &name) const
 	xmlFree(prop);
 	return result;
 }
+
 int ConfigElement::getInt(const string &name, int defaultValue) const
 {
 	long result;
 	xmlChar *prop;
-
-	prop = xmlGetProp(node, reinterpret_cast<const xmlChar *>(name.c_str()));
+	prop = xmlGetProp(node,
+			  reinterpret_cast<const xmlChar *>(name.c_str()));
 	if (!prop) {
 		return defaultValue;
 	}
@@ -160,11 +195,13 @@ int ConfigElement::getInt(const string &name, int defaultValue) const
 	xmlFree(prop);
 	return static_cast<int>(result);
 }
+
 bool ConfigElement::getBool(const string &name) const
 {
 	int result;
-	xmlChar *prop = xmlGetProp(node, reinterpret_cast<const xmlChar *>(name.c_str()));
-
+	xmlChar *prop =
+		xmlGetProp(node,
+			   reinterpret_cast<const xmlChar *>(name.c_str()));
 	if (!prop) {
 		return false;
 	}
@@ -176,26 +213,32 @@ bool ConfigElement::getBool(const string &name) const
 	xmlFree(prop);
 	return result;
 }
+
 int ConfigElement::getEnum(const string &name, const char *enumValues[]) const
 {
 	int result = -1, i;
 	xmlChar *prop;
-
-	prop = xmlGetProp(node, reinterpret_cast<const xmlChar *>(name.c_str()));
+	prop = xmlGetProp(node,
+			  reinterpret_cast<const xmlChar *>(name.c_str()));
 	if (!prop) {
 		return 0;
 	}
 	for (i = 0; enumValues[i]; i++) {
-		if (xmlStrcmp(prop, reinterpret_cast<const xmlChar *>(enumValues[i])) == 0) {
+		if (xmlStrcmp(prop,
+			      reinterpret_cast<const xmlChar *>(enumValues[i]))
+		    == 0) {
 			result = i;
 		}
 	}
 	if (result == -1) {
-		errorFatal("invalid enum value for %s: %s", name.c_str(), prop);
+		errorFatal("invalid enum value for %s: %s",
+			   name.c_str(),
+			   prop);
 	}
 	xmlFree(prop);
 	return result;
 }
+
 vector<ConfigElement> ConfigElement::getChildren() const
 {
 	vector<ConfigElement> result;

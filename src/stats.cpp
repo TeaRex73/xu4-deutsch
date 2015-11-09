@@ -81,25 +81,42 @@ void StatsArea::update()
 	 * update the upper stats box
 	 */
 	switch (view) {
-	case STATS_PARTY_OVERVIEW: showPartyView(false);
+	case STATS_PARTY_OVERVIEW:
+		showPartyView(false);
 		break;
-	case STATS_PARTY_AVATARONLY: showPartyView(true);
+	case STATS_PARTY_AVATARONLY:
+		showPartyView(true);
 	        break;
-	case STATS_CHAR1: case STATS_CHAR2: case STATS_CHAR3: case STATS_CHAR4: case STATS_CHAR5: case STATS_CHAR6: case STATS_CHAR7: case STATS_CHAR8: showPlayerDetails();
+	case STATS_CHAR1:
+	case STATS_CHAR2:
+	case STATS_CHAR3:
+	case STATS_CHAR4:
+	case STATS_CHAR5:
+	case STATS_CHAR6:
+	case STATS_CHAR7:
+	case STATS_CHAR8:
+		showPlayerDetails();
 		break;
-	case STATS_WEAPONS: showWeapons();
+	case STATS_WEAPONS:
+		showWeapons();
 		break;
-	case STATS_ARMOR: showArmor();
+	case STATS_ARMOR:
+		showArmor();
 		break;
-	case STATS_EQUIPMENT: showEquipment();
+	case STATS_EQUIPMENT:
+		showEquipment();
 		break;
-	case STATS_ITEMS: showItems();
+	case STATS_ITEMS:
+		showItems();
 		break;
-	case STATS_REAGENTS: showReagents();
+	case STATS_REAGENTS:
+		showReagents();
 		break;
-	case STATS_MIXTURES: showMixtures();
+	case STATS_MIXTURES:
+		showMixtures();
 		break;
-	case MIX_REAGENTS: showReagents(true);
+	case MIX_REAGENTS:
+		showReagents(true);
 		break;
 	}
 	/*
@@ -123,17 +140,23 @@ void StatsArea::update(Aura *aura)
 		}
 	}
 	switch (aura->getType()) {
-	case Aura::NONE: summary.drawCharMasked(0, STATS_AREA_WIDTH / 2, 0, mask);
+	case Aura::NONE:
+		summary.drawCharMasked(0, STATS_AREA_WIDTH / 2, 0, mask);
 		break;
-	case Aura::HORN: summary.drawChar(CHARSET_REDDOT, STATS_AREA_WIDTH / 2, 0);
+	case Aura::HORN:
+		summary.drawChar(CHARSET_REDDOT, STATS_AREA_WIDTH / 2, 0);
 		break;
-	case Aura::JINX: summary.drawChar('J', STATS_AREA_WIDTH / 2, 0);
+	case Aura::JINX:
+		summary.drawChar('J', STATS_AREA_WIDTH / 2, 0);
 		break;
-	case Aura::NEGATE: summary.drawChar('N', STATS_AREA_WIDTH / 2, 0);
+	case Aura::NEGATE:
+		summary.drawChar('N', STATS_AREA_WIDTH / 2, 0);
 		break;
-	case Aura::PROTECTION: summary.drawChar('P', STATS_AREA_WIDTH / 2, 0);
+	case Aura::PROTECTION:
+		summary.drawChar('P', STATS_AREA_WIDTH / 2, 0);
 		break;
-	case Aura::QUICKNESS: summary.drawChar('Q', STATS_AREA_WIDTH / 2, 0);
+	case Aura::QUICKNESS:
+		summary.drawChar('Q', STATS_AREA_WIDTH / 2, 0);
 		break;
 	}
 	summary.update();
@@ -413,7 +436,14 @@ bool ReagentsMenuController::keyPressed(int key)
 		key = mytolower(key);
 	}
 	switch (key) {
-	case 'a': case 'b': case 'c': case 'd': case 'e': case 'f': case 'g': case 'h':
+	case 'a':
+	case 'b':
+	case 'c':
+	case 'd':
+	case 'e':
+	case 'f':
+	case 'g':
+	case 'h':
 	{
 		/* select the corresponding reagent (if visible) */
 		Menu::MenuItemList::iterator mi = menu->getById(key - 'a');
@@ -423,7 +453,10 @@ bool ReagentsMenuController::keyPressed(int key)
 		}
 		break;
 	}
-	case U4_LEFT: case U4_RIGHT: case U4_SPACE: if (menu->isVisible()) {
+	case U4_LEFT:
+	case U4_RIGHT:
+	case U4_SPACE:
+		if (menu->isVisible()) {
 			MenuItem *item = *menu->getCurrent();
 			/* change whether or not it's selected */
 			item->setSelected(!item->isSelected());
@@ -432,14 +465,17 @@ bool ReagentsMenuController::keyPressed(int key)
 			} else {
 				ingredients->removeReagent((Reagent)item->getId());
 			}
-	}
+		}
 		break;
-	case U4_ENTER: eventHandler->setControllerDone();
-		break;
-	case U4_ESC: ingredients->revert();
+	case U4_ENTER:
 		eventHandler->setControllerDone();
 		break;
-	default: return MenuController::keyPressed(key);
+	case U4_ESC:
+		ingredients->revert();
+		eventHandler->setControllerDone();
+		break;
+	default:
+		return MenuController::keyPressed(key);
 	} // switch
 	return true;
 } // ReagentsMenuController::keyPressed

@@ -14,12 +14,19 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor,
+ * Boston, MA  02110-1301, USA.
  */
 
-#include "vc6.h" // Fixes things if you're using VC6, does nothing if otherwise
+#include "vc6.h" // Fixes things if you're using VC6, does nothing otherwise
 
 #include "context.h"
 
-Context::Context():party(NULL), saveGame(NULL), location(NULL) {}
-Context::~Context() {}
+Context::Context()
+	:party(NULL), saveGame(NULL), location(NULL)
+{
+}
+
+Context::~Context()
+{
+}

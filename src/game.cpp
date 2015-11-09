@@ -104,19 +104,100 @@ const string tmpstr = "/tmp/";
 Context *c = NULL;
 Debug gameDbg("debug/game.txt", "Game");
 MouseArea mouseAreas[] = {
-	{ 3, {
-		  { 8, 8 }, { 8, 184 }, { 96, 96 }
-	  }, MC_WEST, { U4_ENTER, 0, U4_LEFT }
-	}, { 3, {
-		     { 8, 8 }, { 184, 8 }, { 96, 96 }
-	     }, MC_NORTH, { U4_ENTER, 0, U4_UP }
-	}, { 3, {
-		     { 184, 8 }, { 184, 184 }, { 96, 96 }
-	     }, MC_EAST, { U4_ENTER, 0, U4_RIGHT }
-	}, { 3, {
-		     { 8, 184 }, { 184, 184 }, { 96, 96 }
-	     }, MC_SOUTH, { U4_ENTER, 0, U4_DOWN }
-	}, { 0 }
+	{
+		3,
+		{
+			{
+				8,
+				8
+			},
+			{
+				8,
+				184
+			},
+			{
+				96,
+				96
+			}
+		},
+		MC_WEST,
+		{
+			U4_ENTER,
+			0,
+			U4_LEFT
+		}
+	},
+	{
+		3,
+		{
+			{
+				8,
+				8
+			},
+			{
+				184,
+				8
+			},
+			{
+				96,
+				96
+			}
+		},
+		MC_NORTH,
+		{
+			U4_ENTER,
+			0,
+			U4_UP
+		}
+	},
+	{
+		3,
+		{
+			{
+				184,
+				8
+			},
+			{
+				184,
+				184
+			},
+			{
+				96,
+				96
+			}
+		},
+		MC_EAST,
+		{
+			U4_ENTER,
+			0,
+			U4_RIGHT
+		}
+	},
+	{
+		3,
+		{
+			{
+				8,
+				184
+			},
+			{
+				184,
+				184
+			},
+			{
+				96,
+				96
+			}
+		},
+		MC_SOUTH,
+		{
+			U4_ENTER,
+			0,
+			U4_DOWN }
+	},
+	{
+		0
+	}
 };
 ReadPlayerController::ReadPlayerController():ReadChoiceController("012345678 \033\n\r") {}
 ReadPlayerController::~ReadPlayerController() {}
@@ -228,10 +309,10 @@ void GameController::init()
 	c->willPassTurn = false;
 	c->lastShip = NULL;
 	/* load in the save game */
-	
+
 	saveGameFile = fopen((tmpstr + PARTY_SAV_BASE_FILENAME).c_str(), "rb");
         if (!saveGameFile) {
-	        saveGameFile = fopen((settings.getUserPath() + PARTY_SAV_BASE_FILENAME).c_str(), "rb");
+		saveGameFile = fopen((settings.getUserPath() + PARTY_SAV_BASE_FILENAME).c_str(), "rb");
 	}
 	if (saveGameFile) {
 		c->saveGame->read(saveGameFile);
@@ -280,7 +361,7 @@ void GameController::init()
 	/* load in creatures.sav */
 monstersFile = fopen((tmpstr + MONSTERS_SAV_BASE_FILENAME).c_str(), "rb");
         if (!monstersFile) {
-	        monstersFile = fopen((settings.getUserPath() + MONSTERS_SAV_BASE_FILENAME).c_str(), "rb");
+		monstersFile = fopen((settings.getUserPath() + MONSTERS_SAV_BASE_FILENAME).c_str(), "rb");
 	}
 	if (monstersFile) {
 		saveGameMonstersRead(c->location->map->monsterTable, monstersFile);
@@ -456,21 +537,29 @@ void gameSetViewMode(ViewMode newMode)
 void gameUpdateScreen()
 {
 	switch (c->location->viewMode) {
-	case VIEW_NORMAL: screenUpdate(&game->mapArea, true, false);
+	case VIEW_NORMAL:
+		screenUpdate(&game->mapArea, true, false);
 		break;
-	case VIEW_GEM: screenGemUpdate();
+	case VIEW_GEM:
+		screenGemUpdate();
 		break;
-	case VIEW_RUNE: screenUpdate(&game->mapArea, false, false);
+	case VIEW_RUNE:
+		screenUpdate(&game->mapArea, false, false);
 		break;
-	case VIEW_DUNGEON: screenUpdate(&game->mapArea, true, false);
+	case VIEW_DUNGEON:
+		screenUpdate(&game->mapArea, true, false);
 		break;
-	case VIEW_DEAD: screenUpdate(&game->mapArea, true, true);
+	case VIEW_DEAD:
+		screenUpdate(&game->mapArea, true, true);
 		break;
-	case VIEW_CODEX: screenUpdate(&game->mapArea, false, false);
+	case VIEW_CODEX:
+		screenUpdate(&game->mapArea, false, false);
 		break;
-	case VIEW_MIXTURES: /* still testing */
+	case VIEW_MIXTURES:
+		/* still testing */
 		break;
-	default: ASSERT(0, "invalid view mode: %d", c->location->viewMode);
+	default:
+		ASSERT(0, "invalid view mode: %d", c->location->viewMode);
 	}
 }
 void GameController::setMap(Map *map, bool saveLocation, const Portal *portal, TurnCompleter *turnCompleter)
@@ -490,29 +579,35 @@ void GameController::setMap(Map *map, bool saveLocation, const Portal *portal, T
 	}
 
 	/* If we don't want to save the location, then just return to the previous location,
-	   as there may still be ones in the stack we want to keep */
+	 * as there may still be ones in the stack we want to keep */
 	if (!saveLocation) {
 		exitToParentMap();
 	}
 	switch (map->type) {
-	case Map::WORLD: context = CTX_WORLDMAP;
+	case Map::WORLD:
+		context = CTX_WORLDMAP;
 		viewMode = VIEW_NORMAL;
 		break;
-	case Map::DUNGEON: context = CTX_DUNGEON;
+	case Map::DUNGEON:
+		context = CTX_DUNGEON;
 		viewMode = VIEW_DUNGEON;
 		if (portal) {
 			c->saveGame->orientation = DIR_EAST;
 		}
 		break;
-	case Map::COMBAT: coords = MapCoords(-1, -1); /* set these to -1 just to be safe; we don't need them */
+	case Map::COMBAT:
+		coords = MapCoords(-1, -1); /* set these to -1 just to be safe; we don't need them */
 		context = CTX_COMBAT;
 		viewMode = VIEW_NORMAL;
 		activePlayer = -1; /* different active player for combat, defaults to 'None' */
 		break;
-	case Map::SHRINE: context = CTX_SHRINE;
+	case Map::SHRINE:
+		context = CTX_SHRINE;
 		viewMode = VIEW_NORMAL;
 		break;
-	case Map::CITY: default: context = CTX_CITY;
+	case Map::CITY:
+	default:
+		context = CTX_CITY;
 		viewMode = VIEW_NORMAL;
 		break;
 	} // switch
@@ -669,17 +764,20 @@ void GameController::update(Party *party, PartyEvent &event)
 		// inform a player he has lost zero or more eighths of avatarhood.
 		screenMessage("\n %cDU VERLIERST\n  EIN ACHTEL!%c\n", FG_YELLOW, FG_WHITE);
 		break;
-	case PartyEvent::ADVANCED_LEVEL: screenMessage("%c%s, DU BIST JETZT STUFE %d.%c\n", FG_YELLOW, uppercase(event.player->getName()).c_str(), event.player->getRealLevel(), FG_WHITE);
+	case PartyEvent::ADVANCED_LEVEL:
+		screenMessage("%c%s, DU BIST JETZT STUFE %d.%c\n", FG_YELLOW, uppercase(event.player->getName()).c_str(), event.player->getRealLevel(), FG_WHITE);
 		gameSpellEffect('r', -1, SOUND_MAGIC); // Same as resurrect spell
 		break;
-	case PartyEvent::STARVING: screenMessage("\n%cHUNGERN!!!%c\n", FG_YELLOW, FG_WHITE);
+	case PartyEvent::STARVING:
+		screenMessage("\n%cHUNGERN!!!%c\n", FG_YELLOW, FG_WHITE);
 		soundPlay(SOUND_PC_STRUCK, false);
 		// 2 damage to each party member for starving!
 		for (i = 0; i < c->saveGame->members; i++) {
 			c->party->member(i)->applyDamage(2);
 		}
 		break;
-	default: break;
+	default:
+		break;
 	}
 } // GameController::update
 /**
@@ -688,13 +786,15 @@ void GameController::update(Party *party, PartyEvent &event)
 void GameController::update(Location *location, MoveEvent &event)
 {
 	switch (location->map->type) {
-	case Map::DUNGEON: avatarMovedInDungeon(event);
+	case Map::DUNGEON:
+		avatarMovedInDungeon(event);
 		break;
 	case Map::COMBAT:
 		// FIXME: let the combat controller handle it
 		dynamic_cast<CombatController *>(eventHandler->getController())->movePartyMember(event);
 		break;
-	default: avatarMoved(event);
+	default:
+		avatarMoved(event);
 		break;
 	}
 }
@@ -712,20 +812,15 @@ void gameSpellEffect(int spell, int player, Sound sound)
 	soundPlay(sound, false, time);
 
 	///The following effect multipliers are not accurate
-	switch (spell) {
-	case 'g': /* gate */
-	case 'r': /* resurrection */
-		break;
-	case 't': /* tremor */
+	if (spell == 't') {
 		effect = Spell::SFX_TREMOR;
-		break;
-	default:
-		/* default spell effect */
-		break;
 	}
 	switch (effect) {
-	case Spell::SFX_NONE: break;
-	case Spell::SFX_TREMOR: case Spell::SFX_INVERT: gameUpdateScreen();
+	case Spell::SFX_NONE:
+		break;
+	case Spell::SFX_TREMOR:
+	case Spell::SFX_INVERT:
+		gameUpdateScreen();
 		game->mapArea.highlight(0, 0, VIEWPORT_W * TILE_WIDTH, VIEWPORT_H * TILE_HEIGHT);
 		EventHandler::sleep(time);
 		game->mapArea.unhighlight();
@@ -771,7 +866,7 @@ bool GameController::keyPressed(int key)
 	/* Translate context-sensitive action key into a useful command */
 	if ((key == U4_ENTER) && settings.enhancements && settings.enhancementsOptions.smartEnterKey) {
 		/* Attempt to guess based on the character's surroundings etc, what
-		   action they want */
+		 * action they want */
 		/* Do they want to board something? */
 		if (c->transportContext == TRANSPORT_FOOT) {
 			obj = c->location->map->objectAt(c->location->coords);
@@ -832,7 +927,10 @@ bool GameController::keyPressed(int key)
 		screenMessage("%cHIER NICHT!%c\n", FG_GREY, FG_WHITE);
 	} else {
 		switch (key) {
-		case U4_UP: case U4_DOWN: case U4_LEFT: case U4_RIGHT:
+		case U4_UP:
+		case U4_DOWN:
+		case U4_LEFT:
+		case U4_RIGHT:
 		{
 			/* move the avatar */
 			string previous_map = c->location->map->fname;
@@ -847,7 +945,14 @@ bool GameController::keyPressed(int key)
 			endTurn = (retval & MOVE_END_TURN); /* let the movement handler decide to end the turn */
 			break;
 		}
-		case U4_FKEY: case U4_FKEY + 1: case U4_FKEY + 2: case U4_FKEY + 3: case U4_FKEY + 4: case U4_FKEY + 5: case U4_FKEY + 6: case U4_FKEY + 7:
+		case U4_FKEY:
+		case U4_FKEY + 1:
+		case U4_FKEY + 2:
+		case U4_FKEY + 3:
+		case U4_FKEY + 4:
+		case U4_FKEY + 5:
+		case U4_FKEY + 6:
+		case U4_FKEY + 7:
 			/* teleport to dungeon entrances! */
 			if (settings.debug && (c->location->context & CTX_WORLDMAP) && (c->transportContext & TRANSPORT_FOOT_OR_HORSE)) {
 				int portal = 16 + (key - U4_FKEY); /* find dungeon portal */
@@ -856,38 +961,43 @@ bool GameController::keyPressed(int key)
 				valid = false;
 			}
 			break;
-		case U4_FKEY + 8: if (settings.debug && (c->location->context & CTX_WORLDMAP)) {
+		case U4_FKEY + 8:
+			if (settings.debug && (c->location->context & CTX_WORLDMAP)) {
 				setMap(mapMgr->get(MAP_DECEIT), 1, NULL);
 				c->location->coords = MapCoords(1, 0, 7);
 				c->saveGame->orientation = DIR_SOUTH;
-		} else {
+			} else {
 				valid = false;
-		}
+			}
 			break;
-		case U4_FKEY + 9: if (settings.debug && (c->location->context & CTX_WORLDMAP)) {
+		case U4_FKEY + 9:
+			if (settings.debug && (c->location->context & CTX_WORLDMAP)) {
 				setMap(mapMgr->get(MAP_DESPISE), 1, NULL);
 				c->location->coords = MapCoords(3, 2, 7);
 				c->saveGame->orientation = DIR_SOUTH;
-		} else {
+			} else {
 				valid = false;
-		}
+			}
 			break;
-		case U4_FKEY + 10: if (settings.debug && (c->location->context & CTX_WORLDMAP)) {
+		case U4_FKEY + 10:
+			if (settings.debug && (c->location->context & CTX_WORLDMAP)) {
 				setMap(mapMgr->get(MAP_DESTARD), 1, NULL);
 				c->location->coords = MapCoords(7, 6, 7);
 				c->saveGame->orientation = DIR_SOUTH;
-		} else {
+			} else {
 				valid = false;
-		}
+			}
 			break;
-		case U4_FKEY + 11: if (settings.debug) {
+		case U4_FKEY + 11:
+			if (settings.debug) {
 				screenMessage("Torch: %d\n", c->party->getTorchDuration());
 				screenPrompt();
-		} else {
+			} else {
 				valid = false;
-		}
+			}
 			break;
-		case 3:             /* ctrl-C */
+		case 3:
+			/* ctrl-C */
 			if (settings.debug) {
 				screenMessage("Cmd (h = help):");
 				CheatMenuController cheatMenuController(this);
@@ -897,14 +1007,16 @@ bool GameController::keyPressed(int key)
 				valid = false;
 			}
 			break;
-		case 4:             /* ctrl-D */
+		case 4:
+			/* ctrl-D */
 			if (settings.debug) {
 				destroy();
 			} else {
 				valid = false;
 			}
 			break;
-		case 8:             /* ctrl-H */
+		case 8:
+			/* ctrl-H */
 			if (settings.debug) {
 				screenMessage("Help!\n");
 				screenPrompt();
@@ -917,7 +1029,8 @@ bool GameController::keyPressed(int key)
 				valid = false;
 			}
 			break;
-		case 22:            /* ctrl-V */
+		case 22:
+			/* ctrl-V */
 			if (settings.debug && (c->location->context == CTX_DUNGEON)) {
 				screenMessage("3-D view %s\n", DungeonViewer.toggle3DDungeonView() ? "on" : "off");
 				endTurn = 0;
@@ -925,12 +1038,16 @@ bool GameController::keyPressed(int key)
 				valid = false;
 			}
 			break;
-		case ' ': screenMessage("Aussetzen\n");
+		case ' ':
+			screenMessage("Aussetzen\n");
 			break;
-		case 26: /* Ctrl-Z */
+		case 26:
+			/* Ctrl-Z */
 			screenMessage("Zzzzz\n");
 			break;
-		case '+': case '-': case U4_KEYPAD_ENTER:
+		case '+':
+		case '-':
+		case U4_KEYPAD_ENTER:
 		{
 			int old_cycles = settings.gameCyclesPerSecond;
 			if ((key == '+') && (++settings.gameCyclesPerSecond > MAX_CYCLES_PER_SECOND)) {
@@ -953,9 +1070,9 @@ bool GameController::keyPressed(int key)
 			} else if (settings.gameCyclesPerSecond == DEFAULT_CYCLES_PER_SECOND) {
 				screenMessage("Speed: Normal\n");
 			}
-		}
 			endTurn = false;
 			break;
+		}
 		/* handle music volume adjustments */
 		case ',':
 			// decrease the volume if possible
@@ -980,11 +1097,14 @@ bool GameController::keyPressed(int key)
 			soundPlay(SOUND_FLEE);
 			endTurn = false;
 			break;
-		case 'a': attack();
+		case 'a':
+			attack();
 			break;
-		case 'l': board();
+		case 'l':
+			board();
 			break;
-		case 'z': castSpell();
+		case 'z':
+			castSpell();
 			break;
 		case 'y':
 		{
@@ -1015,22 +1135,27 @@ bool GameController::keyPressed(int key)
 			}
 			break;
 		}
-		case 'b': if (!usePortalAt(c->location, c->location->coords, ACTION_ENTER)) {
+		case 'b':
+			if (!usePortalAt(c->location, c->location->coords, ACTION_ENTER)) {
 				if (!c->location->map->portalAt(c->location->coords, ACTION_ENTER)) {
 					soundPlay(SOUND_ERROR);
 					screenMessage("%cBetreten - WAS?%c\n", FG_GREY, FG_WHITE);
 				}
-		} else {
-				endTurn = 0;                                                                                                                                       /* entering a portal doesn't end the turn */
-		}
+			} else {
+				endTurn = 0; /* entering a portal doesn't end the turn */
+			}
 			break;
-		case 'k': fire();
+		case 'k':
+			fire();
 			break;
-		case 't': getChest();
+		case 't':
+			getChest();
 			break;
-		case 'c': holeUp();
+		case 'c':
+			holeUp();
 			break;
-		case 'f': screenMessage("Fackel z}nden\n");
+		case 'f':
+			screenMessage("Fackel z}nden\n");
 			if (c->location->context == CTX_DUNGEON) {
 				if (!c->party->lightTorch()) {
 					soundPlay(SOUND_ERROR);
@@ -1041,9 +1166,11 @@ bool GameController::keyPressed(int key)
 				screenMessage("%cHIER NICHT!%c\n", FG_GREY, FG_WHITE);
 			}
 			break;
-		case 'd': jimmy();
+		case 'd':
+			jimmy();
 			break;
-		case 'q': if (!usePortalAt(c->location, c->location->coords, ACTION_KLIMB)) {
+		case 'q':
+			if (!usePortalAt(c->location, c->location->coords, ACTION_KLIMB)) {
 				if (c->transportContext == TRANSPORT_BALLOON) {
 					c->saveGame->balloonstate = 1;
 					c->opacity = 0;
@@ -1052,7 +1179,7 @@ bool GameController::keyPressed(int key)
 					soundPlay(SOUND_ERROR);
 					screenMessage("%cAufw{rts WOHIN?%c\n", FG_GREY, FG_WHITE);
 				}
-		}
+			}
 			break;
 		case 'p':
 			/* can't use sextant in dungeon or in combat */
@@ -1068,15 +1195,21 @@ bool GameController::keyPressed(int key)
 				screenMessage("%cHIER NICHT!%c\n", FG_GREY, FG_WHITE);
 			}
 			break;
-		case 'm': mixReagents();
+		case 'm':
+			mixReagents();
 			break;
-		case 'o': newOrder();
+		case 'o':
+			newOrder();
 			break;
-		case '|': case 'u': opendoor();
+		case '|':
+		case 'u':
+			opendoor();
 			break;
-		case 'j': peer();
+		case 'j':
+			peer();
 			break;
-		case 'e': screenMessage("Ende&Speichern\n%d Z]GE\n", c->saveGame->moves);
+		case 'e':
+			screenMessage("Ende&Speichern\n%d Z]GE\n", c->saveGame->moves);
 			if (c->location->context & CTX_CAN_SAVE_GAME) {
 				gameSave();
 				screenMessage("Reise Beenden?");
@@ -1091,14 +1224,16 @@ bool GameController::keyPressed(int key)
 				screenMessage("%cHIER NICHT!%c\n", FG_GREY, FG_WHITE);
 			}
 			break;
-		case 'w': readyWeapon();
+		case 'w':
+			readyWeapon();
 			break;
-		case 'n': if (c->location->context == CTX_DUNGEON) {
+		case 'n':
+			if (c->location->context == CTX_DUNGEON) {
 				dungeonSearch();
-		} else if (c->party->isFlying()) {
+			} else if (c->party->isFlying()) {
 				soundPlay(SOUND_ERROR);
 				screenMessage("Nachschauen...\n%cNUR DRIFT!%c\n", FG_GREY, FG_WHITE);
-		} else {
+			} else {
 				screenMessage("Nachschauen...\n");
 				const ItemLocation *item = itemAtLocation(c->location->map, c->location->coords);
 				if (item) {
@@ -1113,11 +1248,13 @@ bool GameController::keyPressed(int key)
 				} else {
 					screenMessage("%cHIER IST NICHTS!%c\n", FG_GREY, FG_WHITE);
 				}
-		}
+			}
 			break;
-		case 's': talk();
+		case 's':
+			talk();
 			break;
-		case 'v': c->willPassTurn = false;
+		case 'v':
+			c->willPassTurn = false;
 			screenMessage("Verwenden...\nWELCHES DING:\n?");
 			if (settings.enhancements) {
 				/* a little xu4 enhancement: show items in inventory when prompted for an item to use */
@@ -1125,7 +1262,7 @@ bool GameController::keyPressed(int key)
 			}
 			itemUse(gameGetInput().c_str());
 			if (c->location->viewMode == VIEW_CODEX) {
- 			        break;
+				break;
 			}
 			if (settings.enhancements) {
 				c->stats->setView(STATS_PARTY_OVERVIEW);
@@ -1133,16 +1270,19 @@ bool GameController::keyPressed(int key)
 			c->lastCommandTime = (long)time(NULL);
 			c->willPassTurn = true;
 			break;
-		case 'x': if (musicMgr->toggle()) {
+		case 'x':
+			if (musicMgr->toggle()) {
 				screenMessage("Xound EIN\n");
-		} else {
+			} else {
 				screenMessage("Xound AUS\n");
-		}
+			}
 			endTurn = false;
 			break;
-		case 'r': wearArmor();
+		case 'r':
+			wearArmor();
 			break;
-		case 'g': if ((c->transportContext != TRANSPORT_FOOT) && !c->party->isFlying()) {
+		case 'g':
+			if ((c->transportContext != TRANSPORT_FOOT) && !c->party->isFlying()) {
 				Object *obj = c->location->map->addObject(c->party->getTransport(), c->party->getTransport(), c->location->coords);
 				if (c->transportContext == TRANSPORT_SHIP) {
 					c->lastShip = obj;
@@ -1152,12 +1292,13 @@ bool GameController::keyPressed(int key)
 				c->party->setTransport(avatar->getId());
 				c->horseSpeed = 0;
 				screenMessage("Gehen\n");
-		} else {
+			} else {
 				soundPlay(SOUND_ERROR);
 				screenMessage("Gehen\n%cHIER NICHT!%c\n", FG_GREY, FG_WHITE);
-		}
+			}
 			break;
-		case 'h': if (c->transportContext == TRANSPORT_HORSE) {
+		case 'h':
+			if (c->transportContext == TRANSPORT_HORSE) {
 				if (c->horseSpeed == 0) {
 					screenMessage("\"H}hott!\"\n");
 					c->horseSpeed = 1;
@@ -1165,14 +1306,16 @@ bool GameController::keyPressed(int key)
 					screenMessage("\"Brrr!\"\n");
 					c->horseSpeed = 0;
 				}
-		} else {
+			} else {
 				soundPlay(SOUND_ERROR);
 				screenMessage("\"H}hott!\"\n%cHIER NICHT!%c\n", FG_GREY, FG_WHITE);
-		}
+			}
 			break;
-		case 'i': ztatsFor();
+		case 'i':
+			ztatsFor();
 			break;
-		case 'c' + U4_ALT: if (settings.debug && c->location->map->isWorldMap()) {
+		case 'c' + U4_ALT:
+			if (settings.debug && c->location->map->isWorldMap()) {
 				/* first teleport to the abyss */
 				c->location->coords.x = 0xe9;
 				c->location->coords.y = 0xe9;
@@ -1181,7 +1324,7 @@ bool GameController::keyPressed(int key)
 				c->location->coords.x = 7;
 				c->location->coords.y = 7;
 				c->location->coords.z = 7;
-		}
+			}
 			break;
 		case 'h' + U4_ALT:
 		{
@@ -1238,7 +1381,8 @@ bool GameController::keyPressed(int key)
 			}
 			break;
 		}
-		case 'v' + U4_ALT: screenMessage("XU4G %s\n", VERSION);
+		case 'v' + U4_ALT:
+			screenMessage("XU4G %s\n", VERSION);
 			endTurn = false;
 			break;
 		// Turn sound effects on/off
@@ -1248,21 +1392,29 @@ bool GameController::keyPressed(int key)
 			screenMessage("Sounds %s!\n", settings.soundVol ? "EIN" : "AUS");
 			endTurn = false;
 			break;
-		case '0': case '1': case '2': case '3': case '4': case '5': case '6': case '7': case '8': case '9': if (settings.enhancements && settings.enhancementsOptions.activePlayer) {
+		case '0':
+		case '1':
+		case '2':
+		case '3':
+		case '4':
+		case '5':
+		case '6':
+		case '7':
+		case '8':
+		case '9':
+			if (settings.enhancements && settings.enhancementsOptions.activePlayer) {
 				gameSetActivePlayer(key - '1');
-		} else {
+			} else {
 				soundPlay(SOUND_ERROR);
 				screenMessage("%cWAS?%c\n", FG_GREY, FG_WHITE);
-		}
+			}
 			endTurn = 0;
 			break;
-		default: valid = false;
+		default:
+			valid = false;
 			break;
 		} // switch
-	}
-	// switch
-	// switch
-	// switch
+	} // switch
 	if (valid && endTurn) {
 		if (eventHandler->getController() == game) {
 			c->location->turnCompleter->finishTurn();
@@ -1370,19 +1522,36 @@ bool gameSpellMixHowMany(int spell, int num, Ingredients *ingredients)
 bool ZtatsController::keyPressed(int key)
 {
 	switch (key) {
-	case U4_UP: case U4_LEFT: c->stats->prevItem();
+	case U4_UP:
+	case U4_LEFT:
+		c->stats->prevItem();
 		return true;
-	case U4_DOWN: case U4_RIGHT: c->stats->nextItem();
+	case U4_DOWN:
+	case U4_RIGHT:
+		c->stats->nextItem();
 		return true;
-	case '1': case '2': case '3': case '4': case '5': case '6': case '7': case '8': if (c->saveGame->members >= key - '0') {
+	case '1':
+	case '2':
+	case '3':
+	case '4':
+	case '5':
+	case '6':
+	case '7':
+	case '8':
+		if (c->saveGame->members >= key - '0') {
 			c->stats->setView(StatsView(STATS_CHAR1 + key - '1'));
-	}
+		}
 		return true;
-	case '0': c->stats->setView(StatsView(STATS_WEAPONS));
+	case '0':
+		c->stats->setView(StatsView(STATS_WEAPONS));
 		return true;
-	case U4_ESC: case U4_SPACE: case U4_ENTER: doneWaiting();
+	case U4_ESC:
+	case U4_SPACE:
+	case U4_ENTER:
+		doneWaiting();
 		return true;
-	default: return KeyHandler::defaultHandler(key, NULL);
+	default:
+		return KeyHandler::defaultHandler(key, NULL);
 	}
 }
 void destroy()
@@ -1471,9 +1640,7 @@ bool attackAt(const Coords &coords)
 		c->location->map->alertGuards();
 	}
 	/* not good karma to be killing the innocent.  Bad avatar! */
-	if (m->isGood() || /* attacking a good creature */
-	    /* attacking a docile (although possibly evil) person in town */
-	    ((m->getType() == Object::PERSON) && (m->getMovementBehavior() != MOVEMENT_ATTACK_AVATAR))) {
+	if (m->isGood() || ((m->getType() == Object::PERSON) && (m->getMovementBehavior() != MOVEMENT_ATTACK_AVATAR))) {
 		c->party->adjustKarma(KA_ATTACKED_GOOD);
 	}
 	CombatController *cc = new CombatController(CombatMap::mapForTile(ground, c->party->getTransport().getTileType(), m));
@@ -1538,7 +1705,8 @@ void castSpell(int player)
 	}
 	// Get the final parameters for the spell
 	switch (spellGetParamType(spell)) {
-	case Spell::PARAM_NONE: gameCastSpell(spell, player, 0);
+	case Spell::PARAM_NONE:
+		gameCastSpell(spell, player, 0);
 		break;
 	case Spell::PARAM_PHASE:
 	{
@@ -1562,15 +1730,16 @@ void castSpell(int player)
 		}
 		break;
 	}
-	case Spell::PARAM_DIR: if (c->location->context == CTX_DUNGEON) {
+	case Spell::PARAM_DIR:
+		if (c->location->context == CTX_DUNGEON) {
 			gameCastSpell(spell, player, c->saveGame->orientation);
-	} else {
+		} else {
 			screenMessage("RICHTUNG");
 			Direction dir = gameGetDirection();
 			if (dir != DIR_NONE) {
 				gameCastSpell(spell, player, (int)dir);
 			}
-	}
+		}
 		break;
 	case Spell::PARAM_TYPEDIR:
 	{
@@ -1578,15 +1747,20 @@ void castSpell(int player)
 		EnergyFieldType fieldType = ENERGYFIELD_NONE;
 		char key = ReadChoiceController::get("flps \033\n\r");
 		switch (key) {
-		case 'f': fieldType = ENERGYFIELD_FIRE;
+		case 'f':
+			fieldType = ENERGYFIELD_FIRE;
 			break;
-		case 'b': fieldType = ENERGYFIELD_LIGHTNING;
+		case 'b':
+			fieldType = ENERGYFIELD_LIGHTNING;
 			break;
-		case 'g': fieldType = ENERGYFIELD_POISON;
+		case 'g':
+			fieldType = ENERGYFIELD_POISON;
 			break;
-		case 's': fieldType = ENERGYFIELD_SLEEP;
+		case 's':
+			fieldType = ENERGYFIELD_SLEEP;
 			break;
-		default: break;
+		default:
+			break;
 		}
 		if (fieldType != ENERGYFIELD_NONE) {
 			screenMessage("\n");
@@ -1770,13 +1944,17 @@ bool getChestTrapHandler(int player)
 	if (passTest) {
 		/* Figure out which trap the chest has */
 		switch (randNum & xu4_random(4)) {
-		case 0: trapType = EFFECT_FIRE;
+		case 0:
+			trapType = EFFECT_FIRE;
 			break; /* acid trap (56% chance - 9/16) */
-		case 1: trapType = EFFECT_SLEEP;
+		case 1:
+			trapType = EFFECT_SLEEP;
 			break; /* sleep trap (19% chance - 3/16) */
-		case 2: trapType = EFFECT_POISON;
+		case 2:
+			trapType = EFFECT_POISON;
 			break; /* poison trap (19% chance - 3/16) */
-		case 3: trapType = EFFECT_LAVA;
+		case 3:
+			trapType = EFFECT_LAVA;
 			break; /* bomb trap (6% chance - 1/16) */
 		}
 		/* apply the effects from the trap */
@@ -1931,20 +2109,25 @@ void GameController::avatarMoved(MoveEvent &event)
 		// is filterMoveMessages even used?  it doesn't look like the option is hooked up in the configuration menu
 		if (!settings.filterMoveMessages) {
 			switch (c->transportContext) {
-			case TRANSPORT_FOOT: case TRANSPORT_HORSE: screenMessage("%s\n", getDirectionName(event.dir));
+			case TRANSPORT_FOOT:
+			case TRANSPORT_HORSE:
+				screenMessage("%s\n", getDirectionName(event.dir));
 				break;
-			case TRANSPORT_SHIP: if (event.result & MOVE_TURNED) {
+			case TRANSPORT_SHIP:
+				if (event.result & MOVE_TURNED) {
 					screenMessage("%s drehen\n", getDirectionName(event.dir));
-			} else if (event.result & MOVE_SLOWED) {
+				} else if (event.result & MOVE_SLOWED) {
 					screenMessage("%cLANGSAM VORAN!%c\n", FG_GREY, FG_WHITE);
-			} else {
+				} else {
 					screenMessage("%s fahren\n", getDirectionName(event.dir));
-			}
+				}
 				break;
-			case TRANSPORT_BALLOON: soundPlay(SOUND_ERROR);
+			case TRANSPORT_BALLOON:
+				soundPlay(SOUND_ERROR);
 				screenMessage("%cNUR DRIFT!%c\n", FG_GREY, FG_WHITE);
 				break;
-			default: ASSERT(0, "bad transportContext %d in avatarMoved()", c->transportContext);
+			default:
+				ASSERT(0, "bad transportContext %d in avatarMoved()", c->transportContext);
 			}
 		}
 		/* movement was blocked */
@@ -2167,12 +2350,15 @@ void readyWeapon(int player)
 		return;
 	}
 	switch (p->setWeapon(w)) {
-	case EQUIP_SUCCEEDED: screenMessage("%s\n", uppercase(w->getName()).c_str());
+	case EQUIP_SUCCEEDED:
+		screenMessage("%s\n", uppercase(w->getName()).c_str());
 		break;
-	case EQUIP_NONE_LEFT: soundPlay(SOUND_ERROR);
+	case EQUIP_NONE_LEFT:
+		soundPlay(SOUND_ERROR);
 		screenMessage("\n%cKEINE ]BRIG!%c\n", FG_GREY, FG_WHITE);
 		break;
-	case EQUIP_CLASS_RESTRICTED: soundPlay(SOUND_ERROR);
+	case EQUIP_CLASS_RESTRICTED:
+		soundPlay(SOUND_ERROR);
 		screenMessage("%s\n", uppercase(w->getName()).c_str());
 		screenMessage("\n%cEIN%s %s DARF DAS NICHT BENUTZEN!%c\n", FG_GREY, (p->getSex() == SEX_FEMALE ? "E" : ""), uppercase(getClassNameTranslated(p->getClass(), p->getSex())).c_str(), FG_WHITE);
 		break;
@@ -2408,7 +2594,7 @@ bool talkAt(const Coords &coords)
 		return false;
 	}
 	/* No response from alerted guards... does any monster both
-	   attack and talk besides Nate the Snake? */
+	 * attack and talk besides Nate the Snake? */
 	if ((talker->getMovementBehavior() == MOVEMENT_ATTACK_AVATAR) && (talker->getId() != PYTHON_ID)) {
 		return false;
 	}
@@ -2484,7 +2670,8 @@ void talkRunConversation(Conversation &conv, Person *talker, bool showPrompt)
 		}
 		int maxlen;
 		switch (conv.getInputRequired(&maxlen)) {
-		case Conversation::INPUT_STRING: conv.playerInput = gameGetInput(maxlen);
+		case Conversation::INPUT_STRING:
+			conv.playerInput = gameGetInput(maxlen);
 			conv.reply = talker->getConversationText(&conv, conv.playerInput.c_str());
 			conv.playerInput.erase();
 			showPrompt = true;
@@ -2500,7 +2687,8 @@ void talkRunConversation(Conversation &conv, Person *talker, bool showPrompt)
 			showPrompt = true;
 			break;
 		}
-		case Conversation::INPUT_NONE: conv.state = Conversation::DONE;
+		case Conversation::INPUT_NONE:
+			conv.state = Conversation::DONE;
 			break;
 		}
 	}
@@ -2538,12 +2726,15 @@ void wearArmor(int player)
 		return;
 	}
 	switch (p->setArmor(a)) {
-	case EQUIP_SUCCEEDED: screenMessage("%s\n", uppercase(a->getName()).c_str());
+	case EQUIP_SUCCEEDED:
+		screenMessage("%s\n", uppercase(a->getName()).c_str());
 		break;
-	case EQUIP_NONE_LEFT: soundPlay(SOUND_ERROR);
+	case EQUIP_NONE_LEFT:
+		soundPlay(SOUND_ERROR);
 		screenMessage("\n%cKEINE ]BRIG!%c\n", FG_GREY, FG_WHITE);
 		break;
-	case EQUIP_CLASS_RESTRICTED: soundPlay(SOUND_ERROR);
+	case EQUIP_CLASS_RESTRICTED:
+		soundPlay(SOUND_ERROR);
 		screenMessage("%s\n", uppercase(a->getName()).c_str());
 		screenMessage("\n%cEIN%s %s DARF DAS NICHT BENUTZEN!%c\n", FG_GREY, (p->getSex() == SEX_FEMALE ? "E" : ""), uppercase(getClassNameTranslated(p->getClass(), p->getSex())).c_str(), FG_WHITE);
 		break;
@@ -2952,7 +3143,7 @@ void GameController::checkRandomCreatures()
 	int spawnDivisor = c->location->context & CTX_DUNGEON ? (32 - (c->location->coords.z << 2)) : 32;
 
 	/* If there are too many creatures already,
-	   or we're not on the world map, don't worry about it! */
+	 * or we're not on the world map, don't worry about it! */
 	if (!canSpawnHere || (c->location->map->getNumberOfCreatures() >= MAX_CREATURES_ON_MAP) || (xu4_random(spawnDivisor) != 0)) {
 		return;
 	}

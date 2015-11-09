@@ -16,6 +16,7 @@
 #include "types.h"
 
 using std::vector;
+
 class Map;
 struct Portal;
 class Creature;
@@ -24,83 +25,127 @@ class MoveEvent;
 class Party;
 class PartyEvent;
 class PartyMember;
+
 typedef enum {
-	VIEW_NORMAL, VIEW_GEM, VIEW_RUNE, VIEW_DUNGEON, VIEW_DEAD, VIEW_CODEX, VIEW_MIXTURES
+	VIEW_NORMAL,
+	VIEW_GEM,
+	VIEW_RUNE,
+	VIEW_DUNGEON,
+	VIEW_DEAD,
+	VIEW_CODEX,
+	VIEW_MIXTURES
 } ViewMode;
+
 /**
  * A controller to read a player number.
  */
 class ReadPlayerController:public ReadChoiceController {
-public: ReadPlayerController();
-~ReadPlayerController();
-virtual bool keyPressed(int key);
-int getPlayer();
-int waitFor();
+public:
+	ReadPlayerController();
+	~ReadPlayerController();
+	virtual bool keyPressed(int key);
+	int getPlayer();
+	int waitFor();
 };
+
+
 /**
  * A controller to handle input for commands requiring a letter
  * argument in the range 'a' - lastValidLetter.
  */
-class AlphaActionController:public WaitableController<int>{
-public: AlphaActionController(char letter, const string &p):lastValidLetter(letter), prompt(p) {}
-bool keyPressed(int key);
-static int get(char lastValidLetter, const string &prompt, EventHandler *eh = NULL);
-private: char lastValidLetter;
-string prompt;
+class AlphaActionController:public WaitableController<int> {
+public:
+	AlphaActionController(char letter, const string &p)
+		:lastValidLetter(letter), prompt(p)
+	{
+	}
+
+	bool keyPressed(int key);
+	static int get(char lastValidLetter,
+		       const string &prompt,
+		       EventHandler *eh = NULL);
+private:
+	char lastValidLetter;
+	string prompt;
 };
+
+
 /**
  * Controls interaction while Ztats are being displayed.
  */
-class ZtatsController:public WaitableController<void *>{
-public: bool keyPressed(int key);
+class ZtatsController:public WaitableController<void *> {
+public:
+	bool keyPressed(int key);
 };
+
+
 class TurnCompleter {
-public: virtual ~TurnCompleter() {}
-virtual void finishTurn() = 0;
+public:
+	virtual ~TurnCompleter() {}
+	virtual void finishTurn() = 0;
 };
+
+
 /**
  * The main game controller that handles basic game flow and keypresses.
  *
  * @todo
  *  <ul>
- *      <li>separate the dungeon specific stuff into another class (subclass?)</li>
+ *      <li>separate the dungeon specific stuff
+ *          into another class (subclass?)</li>
  *  </ul>
  */
-class GameController:public Controller, public Observer<Party *, PartyEvent &>, public Observer<Location *, MoveEvent &>, public TurnCompleter {
-public: GameController();
-/* controller functions */
-virtual bool keyPressed(int key);
-virtual void timerFired();
-/* main game functions */
-void init();
-void initScreen();
-void initScreenWithoutReloadingState();
-void setMap(Map *map, bool saveLocation, const Portal *portal, TurnCompleter *turnCompleter = NULL);
-int exitToParentMap();
-virtual void finishTurn();
-virtual void update(Party *party, PartyEvent &event);
-virtual void update(Location *location, MoveEvent &event);
-void initMoons();
-void updateMoons(bool showmoongates);
-static void flashTile(const Coords &coords, MapTile tile, int timeFactor);
-static void flashTile(const Coords &coords, const std::string &tilename, int timeFactor);
-static void doScreenAnimationsWhilePausing(int timeFactor);
-TileView mapArea;
-bool paused;
-int pausedTimer;
-private: void avatarMoved(MoveEvent &event);
-void avatarMovedInDungeon(MoveEvent &event);
-void creatureCleanup();
-void checkBridgeTrolls();
-void checkRandomCreatures();
-void checkSpecialCreatures(Direction dir);
-bool checkMoongates();
-bool createBalloon(Map *map);
+class GameController
+	:public Controller,
+	 public Observer<Party *, PartyEvent &>,
+	 public Observer<Location *, MoveEvent &>,
+	 public TurnCompleter {
+public:
+	GameController();
+	/* controller functions */
+	virtual bool keyPressed(int key);
+	virtual void timerFired();
+	/* main game functions */
+	void init();
+	void initScreen();
+	void initScreenWithoutReloadingState();
+	void setMap(Map *map,
+		    bool saveLocation,
+		    const Portal *portal,
+		    TurnCompleter *turnCompleter = NULL);
+	int exitToParentMap();
+	virtual void finishTurn();
+	virtual void update(Party *party, PartyEvent &event);
+	virtual void update(Location *location, MoveEvent &event);
+	void initMoons();
+	void updateMoons(bool showmoongates);
+	static void flashTile(const Coords &coords,
+			      MapTile tile,
+			      int timeFactor);
+	static void flashTile(const Coords &coords,
+			      const std::string &tilename,
+			      int timeFactor);
+	static void doScreenAnimationsWhilePausing(int timeFactor);
+	TileView mapArea;
+	bool paused;
+	int pausedTimer;
+
+private:
+	void avatarMoved(MoveEvent &event);
+	void avatarMovedInDungeon(MoveEvent &event);
+	void creatureCleanup();
+	void checkBridgeTrolls();
+	void checkRandomCreatures();
+	void checkSpecialCreatures(Direction dir);
+	bool checkMoongates();
+	bool createBalloon(Map *map);
 };
+
+
 extern GameController *game;
 /* map and screen functions */
 void gameSetViewMode(ViewMode newMode);
-void gameUpdateScreen(void);
+void gameUpdateScreen();
 /* spell functions */
 void castSpell(int player = -1);
 void gameSpellEffect(int spell, int player, Sound sound);
@@ -120,18 +165,30 @@ bool fireAt(const Coords &coords, bool originAvatar);
 Direction gameGetDirection();
 void readyWeapon(int player = -1);
 /* checking functions */
-void gameCheckHullIntegrity(void);
+void gameCheckHullIntegrity();
 /* creature functions */
 bool creatureRangeAttack(const Coords &coords, Creature *m);
-void gameCreatureCleanup(void);
+void gameCreatureCleanup();
 bool gameSpawnCreature(const class Creature *m);
 /* etc */
 string gameGetInput(int maxlen = 32);
-int gameGetPlayer(bool canBeDisabled, bool canBeActivePlayer, bool zeroIsValid);
-void gameGetPlayerForCommand(bool (*commandFn)(int player), bool canBeDisabled, bool canBeActivePlayer);
+int gameGetPlayer(bool canBeDisabled,
+		  bool canBeActivePlayer,
+		  bool zeroIsValid);
+void gameGetPlayerForCommand(bool (*commandFn)(int player),
+			     bool canBeDisabled,
+			     bool canBeActivePlayer);
 void gameDamageParty(int minDamage, int maxDamage);
 void gameDamageShip(int minDamage, int maxDamage);
 void gameSetActivePlayer(int player);
-vector<Coords> gameGetDirectionalActionPath(int dirmask, int validDirections, const Coords &origin, int minDistance, int maxDistance, bool (*blockedPredicate)(const Tile *tile), bool includeBlocked);
+vector<Coords> gameGetDirectionalActionPath(
+	int dirmask,
+	int validDirections,
+	const Coords &origin,
+	int minDistance,
+	int maxDistance,
+	bool (*blockedPredicate)(const Tile *tile),
+	bool includeBlocked
+);
 
 #endif // ifndef GAME_H

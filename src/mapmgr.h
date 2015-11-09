@@ -17,6 +17,7 @@ class Dungeon;
 struct PersonRole;
 struct Portal;
 class Shrine;
+
 /*
  * The map manager is responsible for loading and keeping track of the
  * various maps.
@@ -79,31 +80,42 @@ class Shrine;
 #define MAP_SHORE_CON 53
 #define MAP_SHORSHIP_CON 54
 #define MAP_CAMP_DNG 55
+
+
 /**
  * The map manager singleton that keeps track of all the maps.
  */
 class MapMgr {
-public: static MapMgr *getInstance();
-static void destroy();
-Map *get(MapId id);
-Map *initMap(Map::Type type);
-void unloadMap(MapId id);
-private: MapMgr();
-~MapMgr();
-void registerMap(Map *map);
-Map *initMapFromConf(const ConfigElement &mapConf);
-void initCityFromConf(const ConfigElement &cityConf, City *city);
-PersonRole *initPersonRoleFromConf(const ConfigElement &cityConf);
-Portal *initPortalFromConf(const ConfigElement &portalConf);
-void initShrineFromConf(const ConfigElement &shrineConf, Shrine *shrine);
-void initDungeonFromConf(const ConfigElement &dungeonConf, Dungeon *dungeon);
-void initDungeonRoom(Dungeon *dng, int room);
-void createMoongateFromConf(const ConfigElement &moongateConf);
-int initCompressedChunkFromConf(const ConfigElement &compressedChunkConf);
-std::pair<std::string, MapCoords> initLabelFromConf(const ConfigElement &labelConf);
-static MapMgr *instance;
-std::vector<Map *> mapList;
-Debug *logger;
+public:
+	static MapMgr *getInstance();
+	static void destroy();
+	Map *get(MapId id);
+	Map *initMap(Map::Type type);
+	void unloadMap(MapId id);
+
+private:
+	MapMgr();
+	~MapMgr();
+	void registerMap(Map *map);
+	Map *initMapFromConf(const ConfigElement &mapConf);
+	void initCityFromConf(const ConfigElement &cityConf, City *city);
+	PersonRole *initPersonRoleFromConf(const ConfigElement &cityConf);
+	Portal *initPortalFromConf(const ConfigElement &portalConf);
+	void initShrineFromConf(const ConfigElement &shrineConf,
+				Shrine *shrine);
+	void initDungeonFromConf(const ConfigElement &dungeonConf,
+				 Dungeon *dungeon);
+	void initDungeonRoom(Dungeon *dng, int room);
+	void createMoongateFromConf(const ConfigElement &moongateConf);
+	int initCompressedChunkFromConf(
+		const ConfigElement &compressedChunkConf
+	);
+	std::pair<std::string, MapCoords> initLabelFromConf(
+		const ConfigElement &labelConf
+	);
+	static MapMgr *instance;
+	std::vector<Map *> mapList;
+	Debug *logger;
 };
 
 #define mapMgr (MapMgr::getInstance())

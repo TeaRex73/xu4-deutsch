@@ -10,8 +10,10 @@
  * The dialogue loader for u4dos .tlk files
  */
 class U4TlkDialogueLoader:public DialogueLoader {
-static DialogueLoader *instance;
-public: virtual Dialogue *load(void *source);
+public:
+	virtual Dialogue *load(void *source);
+private:
+	static DialogueLoader *instance;
 };
 
 #endif

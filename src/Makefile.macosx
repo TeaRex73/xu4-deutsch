@@ -24,7 +24,7 @@ UILIBS=-L/Library/Frameworks \
 	-framework SDL \
 	-framework SDL_mixer \
 	-framework libpng
-	
+
 UIFLAGS=-F/Library/Frameworks \
 	-I/Library/Frameworks/SDL.framework/Headers \
 	-I/Library/Frameworks/SDL_mixer.framework/Headers \
@@ -110,7 +110,7 @@ bundle: u4
 	# cp $(ULTIMA4) $(bundle_name)/Contents/Resources
 	cp $(U4UPGRADE) $(bundle_name)/Contents/Resources
 	cp $< $(bundle_name)/Contents/MacOS
-	
+
 
 # This will make a disk image with the app bundle (and the needed text files)
 # The frameworks are copied into the bundle so the app bundle on the image
@@ -139,6 +139,6 @@ install: bundle
 clean-local:
 	-rm -f xu4-MacOSX.dmg
 	-rm -rf $(bundle_name)
-		
+
 -include .depends
 

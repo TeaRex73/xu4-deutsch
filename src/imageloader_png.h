@@ -12,8 +12,10 @@
  * channel.
  */
 class PngImageLoader:public ImageLoader {
-static ImageLoader *instance;
-public: virtual Image *load(U4FILE *file, int width, int height, int bpp);
+public:
+	virtual Image *load(U4FILE *file, int width, int height, int bpp);
+private:
+	static ImageLoader *instance;
 };
 
 #endif /* IMAGELOADER_PNG_H */

@@ -78,9 +78,12 @@ void moveAvatar(MoveEvent &event)
 			// travel over
 			slowed = slowedByTile(c->location->map->tileTypeAt(newCoords, WITH_OBJECTS));
 			break;
-		case SLOWED_BY_WIND: slowed = slowedByWind(event.dir);
+		case SLOWED_BY_WIND:
+			slowed = slowedByWind(event.dir);
 			break;
-		case SLOWED_BY_NOTHING: default: break;
+		case SLOWED_BY_NOTHING:
+		default:
+			break;
 		}
 		if (slowed) {
 			event.result = (MoveResult)(MOVE_SLOWED | MOVE_END_TURN);
@@ -158,7 +161,8 @@ int moveObject(Map *map, Creature *obj, MapCoords avatar)
 	/* determine a direction depending on the object's movement behavior */
 	dir = DIR_NONE;
 	switch (obj->getMovementBehavior()) {
-	case MOVEMENT_FIXED: break;
+	case MOVEMENT_FIXED:
+		break;
 	case MOVEMENT_WANDER:
 		/* World map wandering creatures always move, whereas
 		   town creatures that wander sometimes stay put */
@@ -166,7 +170,9 @@ int moveObject(Map *map, Creature *obj, MapCoords avatar)
 			dir = dirRandomDir(map->getValidMoves(new_coords, obj->getTile(), true), obj->getLastDir());
 		}
 		break;
-	case MOVEMENT_FOLLOW_AVATAR: case MOVEMENT_ATTACK_AVATAR: dirmask = map->getValidMoves(new_coords, obj->getTile());
+	case MOVEMENT_FOLLOW_AVATAR:
+	case MOVEMENT_ATTACK_AVATAR:
+		dirmask = map->getValidMoves(new_coords, obj->getTile());
 		/* If the pirate ship turned last move instead of moving, this time it must
 		   try to move, not turn again */
 		if (obj->getTile().getTileType()->isPirateShip() && DIR_IN_MASK(obj->getTile().getDirection(), dirmask) && (obj->getTile() != obj->getPrevTile()) && (obj->getPrevCoords() == obj->getCoords())) {
@@ -190,11 +196,15 @@ int moveObject(Map *map, Creature *obj, MapCoords avatar)
 	}
 	/* is the object slowed by terrain or by wind direction? */
 	switch (slowedType) {
-	case SLOWED_BY_TILE: slowed = slowedByTile(map->tileTypeAt(new_coords, WITHOUT_OBJECTS));
+	case SLOWED_BY_TILE:
+		slowed = slowedByTile(map->tileTypeAt(new_coords, WITHOUT_OBJECTS));
 		break;
-	case SLOWED_BY_WIND: slowed = slowedByWind(obj->getTile().getDirection());
+	case SLOWED_BY_WIND:
+		slowed = slowedByWind(obj->getTile().getDirection());
 		break;
-	case SLOWED_BY_NOTHING: default: break;
+	case SLOWED_BY_NOTHING:
+	default:
+		break;
 	}
 	obj->setPrevCoords(obj->getCoords());
 	/* see if the object needed to turn instead of move */
@@ -259,13 +269,17 @@ int moveCombatObject(int act, Map *map, Creature *obj, MapCoords target)
 	}
 	/* is the object slowed by terrain or by wind direction? */
 	switch (slowedType) {
-	case SLOWED_BY_TILE: slowed = slowedByTile(map->tileTypeAt(new_coords, WITHOUT_OBJECTS));
+	case SLOWED_BY_TILE:
+		slowed = slowedByTile(map->tileTypeAt(new_coords, WITHOUT_OBJECTS));
 		break;
-	case SLOWED_BY_WIND: slowed = slowedByWind(obj->getTile().getDirection());
+	case SLOWED_BY_WIND:
+		slowed = slowedByWind(obj->getTile().getDirection());
 		break;
-	case SLOWED_BY_NOTHING: default: break;
+	case SLOWED_BY_NOTHING:
+	default:
+		break;
 	}
-	/* if the object wan't slowed... */
+	/* if the object wasn't slowed... */
 	if (!slowed) {
 		// Set the new coordinates
 		obj->setCoords(new_coords);
@@ -365,13 +379,18 @@ bool slowedByTile(const Tile *tile)
 	bool slow;
 
 	switch (tile->getSpeed()) {
-	case SLOW: slow = xu4_random(8) == 0;
+	case SLOW:
+		slow = xu4_random(8) == 0;
 		break;
-	case VSLOW: slow = xu4_random(4) == 0;
+	case VSLOW:
+		slow = xu4_random(4) == 0;
 		break;
-	case VVSLOW: slow = xu4_random(2) == 0;
+	case VVSLOW:
+		slow = xu4_random(2) == 0;
 		break;
-	case FAST: default: slow = false;
+	case FAST:
+	default:
+		slow = false;
 		break;
 	}
 	return slow;

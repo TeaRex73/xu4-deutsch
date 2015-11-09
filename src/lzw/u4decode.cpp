@@ -34,87 +34,87 @@
  */
 long decompress_u4_file(FILE *in, long filesize, void **out)
 {
-    unsigned char *compressed_mem, *decompressed_mem;
-    long compressed_filesize, decompressed_filesize;
-    long errorCode;
+	unsigned char *compressed_mem, *decompressed_mem;
+	long compressed_filesize, decompressed_filesize;
+	long errorCode;
 
-    /* size of the compressed input file */
-    compressed_filesize = filesize;
+	/* size of the compressed input file */
+	compressed_filesize = filesize;
 
-    /* input file should be longer than 0 bytes */
-    if (compressed_filesize == 0)
-        return (-1);
+	/* input file should be longer than 0 bytes */
+	if (compressed_filesize == 0)
+		return -1;
 
-    /* check if the input file is _not_ a valid LZW-compressed file */
-    if (!mightBeValidCompressedFile(in))
-        return (-1);
+	/* check if the input file is _not_ a valid LZW-compressed file */
+	if (!mightBeValidCompressedFile(in))
+		return -1;
 
-    /* load compressed file into compressed_mem[] */
-    compressed_mem = (unsigned char *) malloc(compressed_filesize);
+	/* load compressed file into compressed_mem[] */
+	compressed_mem = (unsigned char *) malloc(compressed_filesize);
 
-    if (fread(compressed_mem, 1, compressed_filesize, in) != (size_t) compressed_filesize) perror("fread failed");
+	if (fread(compressed_mem, 1, compressed_filesize, in) != (size_t) compressed_filesize) perror("fread failed");
 
-    /*
-     * determine decompressed file size
-     * if lzw_get_decompressed_size() can't determine the decompressed size (i.e. the compressed
-     * data is corrupt), it returns -1
-     */
-    decompressed_filesize = lzwGetDecompressedSize(compressed_mem,compressed_filesize);
+	/*
+	 * determine decompressed file size
+	 * if lzw_get_decompressed_size() can't determine the decompressed size (i.e. the compressed
+	 * data is corrupt), it returns -1
+	 */
+	decompressed_filesize = lzwGetDecompressedSize(compressed_mem,compressed_filesize);
 
-    if (decompressed_filesize <= 0)
-        return (-1);
+	if (decompressed_filesize <= 0)
+		return -1;
 
-    /* decompress file from compressed_mem[] into decompressed_mem[] */
-    decompressed_mem = (unsigned char *) malloc(decompressed_filesize);
+	/* decompress file from compressed_mem[] into decompressed_mem[] */
+	decompressed_mem = (unsigned char *) malloc(decompressed_filesize);
 
-    /* testing: clear destination mem */
-    memset(decompressed_mem, 0, decompressed_filesize);
+	/* testing: clear destination mem */
+	memset(decompressed_mem, 0, decompressed_filesize);
 
-    errorCode = lzwDecompress(compressed_mem, decompressed_mem, compressed_filesize);
+	errorCode = lzwDecompress(compressed_mem, decompressed_mem, compressed_filesize);
 
-    free(compressed_mem);
+	free(compressed_mem);
 
-    *out = decompressed_mem;
+	*out = decompressed_mem;
 
-    return (errorCode);
+	return errorCode;
 }
 
 long decompress_u4_memory(void *in, long inlen, void **out)
 {
-    unsigned char *compressed_mem, *decompressed_mem;
-    long compressed_filesize, decompressed_filesize;
-    long errorCode;
+	unsigned char *compressed_mem, *decompressed_mem;
+	long compressed_filesize, decompressed_filesize;
+	long errorCode;
 
-    /* size of the compressed input */
-    compressed_filesize = inlen;
+	/* size of the compressed input */
+	compressed_filesize = inlen;
 
-    /* input file should be longer than 0 bytes */
-    if (compressed_filesize == 0)
-        return (-1);
+	/* input file should be longer than 0 bytes */
+	if (compressed_filesize == 0)
+		return -1;
 
-    compressed_mem = (unsigned char *) in;
+	compressed_mem = (unsigned char *) in;
 
-    /*
-     * determine decompressed data size
-     * if lzw_get_decompressed_size() can't determine the decompressed size (i.e. the compressed
-     * data is corrupt), it returns -1
-     */
-    decompressed_filesize = lzwGetDecompressedSize(compressed_mem,compressed_filesize);
+	/*
+	 * determine decompressed data size
+	 * if lzw_get_decompressed_size() can't determine the decompressed size (i.e. the compressed
+	 * data is corrupt), it returns -1
+	 */
+	decompressed_filesize = lzwGetDecompressedSize(compressed_mem,compressed_filesize);
 
-    if (decompressed_filesize <= 0)
-        return (-1);
+	if (decompressed_filesize <= 0)
+		return -1;
 
-    /* decompress file from compressed_mem[] into decompressed_mem[] */
-    decompressed_mem = (unsigned char *) malloc(decompressed_filesize);
+	/* decompress file from compressed_mem[] into decompressed_mem[] */
+	decompressed_mem = (unsigned char *) malloc(decompressed_filesize);
 
-    /* testing: clear destination mem */
-    memset(decompressed_mem, 0, decompressed_filesize);
+	/* testing: clear destination mem */
+	memset(decompressed_mem, 0, decompressed_filesize);
 
-    errorCode = lzwDecompress(compressed_mem, decompressed_mem, compressed_filesize);
+	errorCode = lzwDecompress(compressed_mem, decompressed_mem, compressed_filesize);
 
-    *out = decompressed_mem;
+	*out = decompressed_mem;
 
-    return (errorCode);
+	return errorCode;
 }
 
 /*
@@ -123,11 +123,11 @@ long decompress_u4_memory(void *in, long inlen, void **out)
  */
 long getFilesize(FILE *input_file)
 {
-    long file_length;
-    fseek(input_file, 0, SEEK_END);   /* move file pointer to file end */
-    file_length = ftell(input_file);
-    fseek(input_file, 0, SEEK_SET);   /* move file pointer to file start */
-    return (file_length);
+	long file_length;
+	fseek(input_file, 0, SEEK_END);   /* move file pointer to file end */
+	file_length = ftell(input_file);
+	fseek(input_file, 0, SEEK_SET);   /* move file pointer to file start */
+	return file_length;
 }
 
 /*
@@ -136,26 +136,25 @@ long getFilesize(FILE *input_file)
  */
 unsigned char mightBeValidCompressedFile(FILE *input_file)
 {
-    unsigned char firstByte;
-    unsigned char c1, c2, c3;   /* booleans */
-    long input_filesize;
+	unsigned char firstByte;
+	unsigned char c1, c2, c3;   /* booleans */
+	long input_filesize;
 
-    /*  check if the input file has a valid size             */
-    /*  the compressed file is made up of 12-bit codewords,  */
-    /*  so there are either 0 or 4 bits of wasted space      */
-    input_filesize = getFilesize(input_file);
-    c1 = (input_filesize * 8) % 12 == 0;
-    c2 = (input_filesize * 8 - 4) % 12 == 0;
+	/*  check if the input file has a valid size             */
+	/*  the compressed file is made up of 12-bit codewords,  */
+	/*  so there are either 0 or 4 bits of wasted space      */
+	input_filesize = getFilesize(input_file);
+	c1 = (input_filesize * 8) % 12 == 0;
+	c2 = (input_filesize * 8 - 4) % 12 == 0;
 
-    /* read first byte */
-    fseek(input_file, 0, SEEK_SET);   /* move file pointer to file start */
+	/* read first byte */
+	fseek(input_file, 0, SEEK_SET);   /* move file pointer to file start */
 
-    if (fread(&firstByte, 1, 1, input_file) != 1) perror("fread failed");
+	if (fread(&firstByte, 1, 1, input_file) != 1) perror("fread failed");
 
-    fseek(input_file, 0, SEEK_SET);   /* move file pointer to file start */
-    c3 = (firstByte >> 4) == 0;
+	fseek(input_file, 0, SEEK_SET);   /* move file pointer to file start */
+	c3 = (firstByte >> 4) == 0;
 
-    /* check if upper 4 bits are 0 */
-    return ((c1 || c2) && c3);
+	/* check if upper 4 bits are 0 */
+	return (c1 || c2) && c3;
 }
-

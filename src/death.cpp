@@ -2,7 +2,7 @@
  * $Id$
  */
 
-#include "vc6.h" // Fixes things if you're using VC6, does nothing if otherwise
+#include "vc6.h" // Fixes things if you're using VC6, does nothing otherwise
 
 #include <ctime>
 #include "u4.h"
@@ -33,13 +33,23 @@
 int timerCount;
 unsigned int timerMsg;
 int deathSequenceRunning = 0;
+
 void deathTimer(void *data);
 void deathRevive(void);
+
 const struct {
-	int timeout;            /* pause in seconds */
+	int timeout; /* pause in seconds */
 	const char *text; /* text of message */
 } deathMsgs[] = {
-	{ 5, "\n\nAber warte..." }, { 5, "\nWo bin ich?..." }, { 5, "\nBin ich tot?..." }, { 5, "\nJenseits?..." }, { 5, "\nDU H\\RST:\n    %s" }, { 5, "\nIch f}hle Bewegung..." }, { 5, "\n\n\nLORD BRITISH SAGT:\nICH HABE DEINEN GEIST UND EINIGE BESITZT]MER AUS DER LEERE GEZOGEN. SEI IN ZUKUNFT VORSICHTIGER!\n\n\020" }
+	{ 5, "\n\nAber warte..." },
+	{ 5, "\nWo bin ich?..." },
+	{ 5, "\nBin ich tot?..." },
+	{ 5, "\nJenseits?..." },
+	{ 5, "\nDU H\\RST:\n    %s" },
+	{ 5, "\nIch f}hle Bewegung..." },
+	{ 5, "\n\n\nLORD BRITISH SAGT:\n"
+	  "ICH HABE DEINEN GEIST UND EINIGE BESITZT]MER "
+	  "AUS DER LEERE GEZOGEN. SEI IN ZUKUNFT VORSICHTIGER!\n\n\020" }
 };
 
 #define N_MSGS (sizeof(deathMsgs) / sizeof(deathMsgs[0]))
@@ -62,13 +72,19 @@ void deathStart(int delay)
 	waitCtrl.wait();
 	eventHandler->pushKeyHandler(&KeyHandler::ignoreKeys);
 	screenDisableCursor();
-	eventHandler->getTimer()->add(&deathTimer, settings.gameCyclesPerSecond);
+	eventHandler->getTimer()->add(&deathTimer,
+				      settings.gameCyclesPerSecond);
 }
+
 void deathTimer(void *data)
 {
 	timerCount++;
-	if ((timerMsg < N_MSGS) && (timerCount > deathMsgs[timerMsg].timeout)) {
-		screenMessage(deathMsgs[timerMsg].text, uppercase(c->party->member(0)->getName()).c_str());
+	if ((timerMsg < N_MSGS)
+	    && (timerCount > deathMsgs[timerMsg].timeout)) {
+		screenMessage(deathMsgs[timerMsg].text,
+			      uppercase(
+				      c->party->member(0)->getName()
+			      ).c_str());
 		screenHideCursor();
 		timerCount = 0;
 		timerMsg++;
@@ -78,6 +94,7 @@ void deathTimer(void *data)
 		}
 	}
 }
+
 void deathRevive()
 {
 	while (!c->location->map->isWorldMap() && c->location->prev != NULL) {

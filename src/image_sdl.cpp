@@ -174,9 +174,10 @@ bool Image::setFontColor(ColorFG fg, ColorBG bg)
 bool Image::setFontColorFG(ColorFG fg)
 {
 	switch (fg) {
-	case FG_GREY: if (!setPaletteIndex(TEXT_FG_PRIMARY_INDEX, setColor(153, 153, 153))) {
+	case FG_GREY:
+		if (!setPaletteIndex(TEXT_FG_PRIMARY_INDEX, setColor(153, 153, 153))) {
 			return false;
-	}
+		}
 		if (!setPaletteIndex(TEXT_FG_SECONDARY_INDEX, setColor(102, 102, 102))) {
 			return false;
 		}
@@ -184,9 +185,10 @@ bool Image::setFontColorFG(ColorFG fg)
 			return false;
 		}
 		break;
-	case FG_BLUE: if (!setPaletteIndex(TEXT_FG_PRIMARY_INDEX, setColor(102, 102, 255))) {
+	case FG_BLUE:
+		if (!setPaletteIndex(TEXT_FG_PRIMARY_INDEX, setColor(102, 102, 255))) {
 			return false;
-	}
+		}
 		if (!setPaletteIndex(TEXT_FG_SECONDARY_INDEX, setColor(51, 51, 204))) {
 			return false;
 		}
@@ -194,9 +196,10 @@ bool Image::setFontColorFG(ColorFG fg)
 			return false;
 		}
 		break;
-	case FG_PURPLE: if (!setPaletteIndex(TEXT_FG_PRIMARY_INDEX, setColor(255, 102, 255))) {
+	case FG_PURPLE:
+		if (!setPaletteIndex(TEXT_FG_PRIMARY_INDEX, setColor(255, 102, 255))) {
 			return false;
-	}
+		}
 		if (!setPaletteIndex(TEXT_FG_SECONDARY_INDEX, setColor(204, 51, 204))) {
 			return false;
 		}
@@ -204,9 +207,10 @@ bool Image::setFontColorFG(ColorFG fg)
 			return false;
 		}
 		break;
-	case FG_GREEN: if (!setPaletteIndex(TEXT_FG_PRIMARY_INDEX, setColor(102, 255, 102))) {
+	case FG_GREEN:
+		if (!setPaletteIndex(TEXT_FG_PRIMARY_INDEX, setColor(102, 255, 102))) {
 			return false;
-	}
+		}
 		if (!setPaletteIndex(TEXT_FG_SECONDARY_INDEX, setColor(0, 153, 0))) {
 			return false;
 		}
@@ -214,9 +218,10 @@ bool Image::setFontColorFG(ColorFG fg)
 			return false;
 		}
 		break;
-	case FG_RED: if (!setPaletteIndex(TEXT_FG_PRIMARY_INDEX, setColor(255, 102, 102))) {
+	case FG_RED:
+		if (!setPaletteIndex(TEXT_FG_PRIMARY_INDEX, setColor(255, 102, 102))) {
 			return false;
-	}
+		}
 		if (!setPaletteIndex(TEXT_FG_SECONDARY_INDEX, setColor(204, 51, 51))) {
 			return false;
 		}
@@ -224,9 +229,10 @@ bool Image::setFontColorFG(ColorFG fg)
 			return false;
 		}
 		break;
-	case FG_YELLOW: if (!setPaletteIndex(TEXT_FG_PRIMARY_INDEX, setColor(255, 255, 51))) {
+	case FG_YELLOW:
+		if (!setPaletteIndex(TEXT_FG_PRIMARY_INDEX, setColor(255, 255, 51))) {
 			return false;
-	}
+		}
 		if (!setPaletteIndex(TEXT_FG_SECONDARY_INDEX, setColor(204, 153, 51))) {
 			return false;
 		}
@@ -234,9 +240,10 @@ bool Image::setFontColorFG(ColorFG fg)
 			return false;
 		}
 		break;
-	default: if (!setPaletteIndex(TEXT_FG_PRIMARY_INDEX, setColor(255, 255, 255))) {
+	default:
+		if (!setPaletteIndex(TEXT_FG_PRIMARY_INDEX, setColor(255, 255, 255))) {
 			return false;
-	}
+		}
 		if (!setPaletteIndex(TEXT_FG_SECONDARY_INDEX, setColor(204, 204, 204))) {
 			return false;
 		}
@@ -250,13 +257,15 @@ bool Image::setFontColorFG(ColorFG fg)
 bool Image::setFontColorBG(ColorBG bg)
 {
 	switch (bg) {
-	case BG_BRIGHT: if (!setPaletteIndex(TEXT_BG_INDEX, setColor(0, 0, 102))) {
+	case BG_BRIGHT:
+		if (!setPaletteIndex(TEXT_BG_INDEX, setColor(0, 0, 102))) {
 			return false;
-	}
+		}
 		break;
-	default: if (!setPaletteIndex(TEXT_BG_INDEX, setColor(0, 0, 0))) {
+	default:
+		if (!setPaletteIndex(TEXT_BG_INDEX, setColor(0, 0, 0))) {
 			return false;
-	}
+		}
 	}
 	return true;
 }
@@ -379,21 +388,25 @@ void Image::putPixelIndex(int x, int y, unsigned int index, bool anyway)
 	bpp = surface->format->BytesPerPixel;
 	p = static_cast<Uint8 *>(surface->pixels) + y * surface->pitch + x * bpp;
 	switch (bpp) {
-	case 1: *p = index;
+	case 1:
+		*p = index;
 		break;
-	case 2: *reinterpret_cast<Uint16 *>(p) = index;
+	case 2:
+		*reinterpret_cast<Uint16 *>(p) = index;
 		break;
-	case 3: if (SDL_BYTEORDER == SDL_BIG_ENDIAN) {
+	case 3:
+		if (SDL_BYTEORDER == SDL_BIG_ENDIAN) {
 			p[0] = (index >> 16) & 0xff;
 			p[1] = (index >> 8) & 0xff;
 			p[2] = index & 0xff;
-	} else {
+		} else {
 			p[0] = index & 0xff;
 			p[1] = (index >> 8) & 0xff;
 			p[2] = (index >> 16) & 0xff;
-	}
+		}
 		break;
-	case 4: *reinterpret_cast<Uint32 *>(p) = index;
+	case 4:
+		*reinterpret_cast<Uint32 *>(p) = index;
 		break;
 	}
 } // Image::putPixelIndex
@@ -440,18 +453,23 @@ void Image::getPixelIndex(int x, int y, unsigned int &index) const
 	Uint8 *p = static_cast<Uint8 *>(surface->pixels) + y * surface->pitch + x * bpp;
 
 	switch (bpp) {
-	case 1: index = *p;
+	case 1:
+		index = *p;
 		break;
-	case 2: index = *reinterpret_cast<Uint16 *>(p);
+	case 2:
+		index = *reinterpret_cast<Uint16 *>(p);
 		break;
-	case 3: if (SDL_BYTEORDER == SDL_BIG_ENDIAN) {
+	case 3:
+		if (SDL_BYTEORDER == SDL_BIG_ENDIAN) {
 			index = p[0] << 16 | p[1] << 8 | p[2];
-	} else {
+		} else {
 			index = p[0] | p[1] << 8 | p[2] << 16;
-	}
+		}
 		break;
-	case 4: index = *reinterpret_cast<Uint32 *>(p);
-	default: return;
+	case 4:
+		index = *reinterpret_cast<Uint32 *>(p);
+	default:
+		return;
 	}
 }
 /**
