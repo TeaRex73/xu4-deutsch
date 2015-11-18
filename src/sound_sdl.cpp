@@ -24,69 +24,68 @@
 
 bool SoundManager::load_sys(Sound sound, const string &pathname)
 {
-	soundChunk[sound] = Mix_LoadWAV(pathname.c_str());
-	if (!soundChunk[sound]) {
-		errorWarning("Unable to load sound effect file %s: %s",
-			     soundFilenames[sound].c_str(),
-			     Mix_GetError());
-		return false;
-	}
-	return true;
+    soundChunk[sound] = Mix_LoadWAV(pathname.c_str());
+    if (!soundChunk[sound]) {
+        errorWarning(
+            "Unable to load sound effect file %s: %s",
+            soundFilenames[sound].c_str(),
+            Mix_GetError()
+        );
+        return false;
+    }
+    return true;
 }
 
 static volatile bool finished = false;
 
 void channel_finished(int channel)
 {
-	finished = true;
+    finished = true;
 }
 
-void SoundManager::play_sys(Sound sound,
-			    bool onlyOnce,
-			    int specificDurationInTicks,
-			    bool wait)
+void SoundManager::play_sys(
+    Sound sound, bool onlyOnce, int specificDurationInTicks, bool wait
+)
 {
-	/**
-	 * Use Channel 1 for sound effects
-	 */
-	finished = true;
-	if (Mix_Playing(1)) {
-		finished = false;
-		Mix_ChannelFinished(*channel_finished);
-		if (!Mix_Playing(1)) finished = true;
-	}
-	while (!onlyOnce && !finished) continue;
-	if (!onlyOnce || !Mix_Playing(1)) {
-		if (Mix_PlayChannelTimed(
-			    1,
-			    soundChunk[sound],
-			    (specificDurationInTicks == -1) ? 0 : -1,
-			    specificDurationInTicks
-		) == -1) {
-			fprintf(stderr,
-				"Error playing sound %d: %s\n",
-				sound,
-				Mix_GetError());
-		}
-		while(wait && !finished) continue;
-	}
+    /**
+     * Use Channel 1 for sound effects
+     */
+    finished = true;
+    if (Mix_Playing(1)) {
+        finished = false;
+        Mix_ChannelFinished(*channel_finished);
+        if (!Mix_Playing(1)) finished = true;
+    }
+    while (!onlyOnce && !finished) continue;
+    if (!onlyOnce || !Mix_Playing(1)) {
+        if (Mix_PlayChannelTimed(
+                1,
+                soundChunk[sound],
+                (specificDurationInTicks == -1) ? 0 : -1,
+                specificDurationInTicks
+            ) == -1) {
+            fprintf(
+                stderr, "Error playing sound %d: %s\n", sound, Mix_GetError()
+            );
+        }
+        while(wait && !finished) continue;
+    }
 }
 
 void SoundManager::stop_sys(int channel)
 {
-	// If music didn't initialize correctly, then we shouldn't try
-	// to stop it
-	if (!musicMgr->functional || !settings.soundVol) {
-		return;
-	}
-	if (Mix_Playing(channel)) {
-		Mix_HaltChannel(channel);
-	}
+    // If music didn't initialize correctly, then we shouldn't try to stop it
+    if (!musicMgr->functional || !settings.soundVol) {
+        return;
+    }
+    if (Mix_Playing(channel)) {
+        Mix_HaltChannel(channel);
+    }
 }
 
 int SoundManager::init_sys()
 {
-	return 1;
+    return 1;
 }
 
 void SoundManager::del_sys()

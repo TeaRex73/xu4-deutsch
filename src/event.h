@@ -49,38 +49,38 @@ class TextView;
  */
 class KeyHandler {
 public:
-	virtual ~KeyHandler()
-	{
-	}
+    virtual ~KeyHandler()
+    {
+    }
 
-	typedef bool (*Callback)(int, void *);
+    typedef bool (*Callback)(int, void *);
 
-	typedef struct ReadBuffer {
-		int (*handleBuffer)(string *);
-		string *buffer;
-		int bufferLen;
-		int screenX, screenY;
-	} ReadBuffer;
-	
-	typedef struct GetChoice {
-		string choices;
-		int (*handleChoice)(int);
-	} GetChoice;
-	
-	KeyHandler(Callback func, void *data = NULL, bool asyncronous = true);
+    typedef struct ReadBuffer {
+        int (*handleBuffer)(string *);
+        string *buffer;
+        int bufferLen;
+        int screenX, screenY;
+    } ReadBuffer;
+    
+    typedef struct GetChoice {
+        string choices;
+        int (*handleChoice)(int);
+    } GetChoice;
+    
+    KeyHandler(Callback func, void *data = NULL, bool asyncronous = true);
 
-	static int setKeyRepeat(int delay, int interval);
-	static bool globalHandler(int key);
-	static bool defaultHandler(int key, void *data);
-	static bool ignoreKeys(int key, void *data);
-	bool operator==(Callback cb) const;
-	bool handle(int key);
-	virtual bool isKeyIgnored(int key);
+    static int setKeyRepeat(int delay, int interval);
+    static bool globalHandler(int key);
+    static bool defaultHandler(int key, void *data);
+    static bool ignoreKeys(int key, void *data);
+    bool operator==(Callback cb) const;
+    bool handle(int key);
+    virtual bool isKeyIgnored(int key);
 
 protected:
-	Callback handler;
-	bool async;
-	void *data;
+    Callback handler;
+    bool async;
+    void *data;
 };
 
 
@@ -90,13 +90,13 @@ protected:
  */
 class KeyHandlerController:public Controller {
 public:
-	KeyHandlerController(KeyHandler *handler);
-	~KeyHandlerController();
-	virtual bool keyPressed(int key);
-	KeyHandler *getKeyHandler();
+    KeyHandlerController(KeyHandler *handler);
+    ~KeyHandlerController();
+    virtual bool keyPressed(int key);
+    KeyHandler *getKeyHandler();
 
 private:
-	KeyHandler *handler;
+    KeyHandler *handler;
 };
 
 
@@ -105,35 +105,33 @@ private:
  */
 class ReadStringController:public WaitableController<string> {
 public:
-	ReadStringController(int maxlen,
-			     int screenX, int
-			     screenY,
-			     const string &accepted_chars =
-			     "abcdefghijklmnopqrstuvwxyz{|}~"
-			     "ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]"
-			     "1234567890 \n\r\010");
-	
-	ReadStringController(int maxlen,
-			     TextView *view,
-			     const string &accepted_chars =
-			     "abcdefghijklmnopqrstuvwxyz{|}~"
-			     "ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]"
-			     "1234567890 \n\r\010");
-	
-	virtual bool keyPressed(int key);
-	static string get(int maxlen,
-			  int screenX,
-			  int screenY,
-			  EventHandler *eh = NULL);
-	
-	static string get(int maxlen,
-			  TextView *view,
-			  EventHandler *eh = NULL);
+    ReadStringController(
+        int maxlen,
+        int screenX, int
+        screenY,
+        const string &accepted_chars =
+        "abcdefghijklmnopqrstuvwxyz{|}~"
+        "ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]"
+        "1234567890 \n\r\010"
+    );
+    ReadStringController(
+        int maxlen,
+        TextView *view,
+        const string &accepted_chars =
+        "abcdefghijklmnopqrstuvwxyz{|}~"
+        "ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]"
+        "1234567890 \n\r\010"
+    );
+    virtual bool keyPressed(int key);
+    static string get(
+        int maxlen, int screenX, int screenY, EventHandler *eh = NULL
+    );
+    static string get(int maxlen, TextView *view, EventHandler *eh = NULL);
 
 protected:
-	int maxlen, screenX, screenY;
-	TextView *view;
-	string accepted;
+    int maxlen, screenX, screenY;
+    TextView *view;
+    string accepted;
 };
 
 
@@ -143,12 +141,11 @@ protected:
  */
 class ReadIntController:public ReadStringController {
 public:
-	ReadIntController(int maxlen, int screenX, int screenY);
-	static int get(int maxlen,
-		       int screenX,
-		       int screenY,
-		       EventHandler *eh = NULL);
-	int getInt() const;
+    ReadIntController(int maxlen, int screenX, int screenY);
+    static int get(
+        int maxlen, int screenX, int screenY, EventHandler *eh = NULL
+    );
+    int getInt() const;
 };
 
 
@@ -157,12 +154,12 @@ public:
  */
 class ReadChoiceController:public WaitableController<int> {
 public:
-	ReadChoiceController(const string &choices);
-	virtual bool keyPressed(int key);
-	static char get(const string &choices, EventHandler *eh = NULL);
+    ReadChoiceController(const string &choices);
+    virtual bool keyPressed(int key);
+    static char get(const string &choices, EventHandler *eh = NULL);
 
 protected:
-	string choices;
+    string choices;
 };
 
 
@@ -171,8 +168,8 @@ protected:
  */
 class ReadDirController:public WaitableController<Direction> {
 public:
-	ReadDirController();
-	virtual bool keyPressed(int key);
+    ReadDirController();
+    virtual bool keyPressed(int key);
 };
 
 
@@ -182,14 +179,15 @@ public:
  */
 class WaitController:public Controller {
 public:
-	WaitController(unsigned int cycles);
-	virtual bool keyPressed(int key);
-	virtual void timerFired();
-	void wait();
-	void setCycles(int c);
+    WaitController(unsigned int cycles);
+    virtual bool keyPressed(int key);
+    virtual void timerFired();
+    void wait();
+    void setCycles(int c);
+
 private:
-	unsigned int cycles;
-	unsigned int current;
+    unsigned int cycles;
+    unsigned int current;
 };
 
 
@@ -198,19 +196,19 @@ private:
  */
 class TimedEvent {
 public:
-	typedef std::list<TimedEvent *> List;
-	typedef void (*Callback)(void *);
+    typedef std::list<TimedEvent *> List;
+    typedef void (*Callback)(void *);
 
-	TimedEvent(Callback callback, int interval, void *data = NULL);
-	Callback getCallback() const;
-	void *getData();
-	void tick();
+    TimedEvent(Callback callback, int interval, void *data = NULL);
+    Callback getCallback() const;
+    void *getData();
+    void tick();
 
 protected:
-	Callback callback;
-	void *data;
-	int interval;
-	int current;
+    Callback callback;
+    void *data;
+    int interval;
+    int current;
 };
 
 
@@ -219,34 +217,32 @@ protected:
  */
 class TimedEventMgr {
 public:
-	typedef TimedEvent::List List;
+    typedef TimedEvent::List List;
 
-	TimedEventMgr(int baseInterval);
-	~TimedEventMgr();
-	static unsigned int callback(unsigned int interval, void *param);
-	bool isLocked() const; /**< Returns true if event list is in use */
-	void add(TimedEvent::Callback callback,
-		 int interval,
-		 void *data = NULL);
-	List::iterator remove(List::iterator i);
-	void remove(TimedEvent *event);
-	void remove(TimedEvent::Callback callback, void *data = NULL);
-	void tick();
-	void stop();
-	void start();
-	void reset(unsigned int interval); /**< sets new base interval */
+    TimedEventMgr(int baseInterval);
+    ~TimedEventMgr();
+    static unsigned int callback(unsigned int interval, void *param);
+    bool isLocked() const; /**< Returns true if event list is in use */
+    void add(TimedEvent::Callback callback, int interval, void *data = NULL);
+    List::iterator remove(List::iterator i);
+    void remove(TimedEvent *event);
+    void remove(TimedEvent::Callback callback, void *data = NULL);
+    void tick();
+    void stop();
+    void start();
+    void reset(unsigned int interval); /**< sets new base interval */
 
 protected:
-	static unsigned int instances;
-	void *id;
-	int baseInterval;
-	bool locked;
-	List events;
-	List deferredRemovals;
+    static unsigned int instances;
+    void *id;
+    int baseInterval;
+    bool locked;
+    List events;
+    List deferredRemovals;
 
 private:
-	void lock(); /**< Locks the event list */
-	void unlock(); /**< Unlocks the event list */
+    void lock(); /**< Locks the event list */
+    void unlock(); /**< Unlocks the event list */
 };
 
 typedef void (*updateScreenCallback)();
@@ -257,44 +253,43 @@ typedef void (*updateScreenCallback)();
  */
 class EventHandler {
 public:
-	typedef std::list<_MouseArea *> MouseAreaList;
-	
-	EventHandler();
-	static EventHandler *getInstance();
-	static void sleep(unsigned int usec);
-	static void wait_msecs(unsigned int msecs);
-	static void wait_cycles(unsigned int cycles);
-	static void setControllerDone(bool exit = true);
-	static bool getControllerDone();
-	static void end();
-	static bool timerQueueEmpty();
-
-	TimedEventMgr *getTimer();
-	void run();
-	void setScreenUpdate(void (*updateScreen)());
-	Controller *pushController(Controller *c);
-	Controller *popController();
-	Controller *getController() const;
-	void setController(Controller *c);
-	void pushKeyHandler(KeyHandler kh);
-	void popKeyHandler();
-	KeyHandler *getKeyHandler() const;
-	void setKeyHandler(KeyHandler kh);
-	void pushMouseAreaSet(_MouseArea *mouseAreas);
-	void popMouseAreaSet();
-	_MouseArea *getMouseAreaSet() const;
-	_MouseArea *mouseAreaForPoint(int x, int y);
+    typedef std::list<_MouseArea *> MouseAreaList;
+    
+    EventHandler();
+    static EventHandler *getInstance();
+    static void sleep(unsigned int usec);
+    static void wait_msecs(unsigned int msecs);
+    static void wait_cycles(unsigned int cycles);
+    static void setControllerDone(bool exit = true);
+    static bool getControllerDone();
+    static void end();
+    static bool timerQueueEmpty();
+    TimedEventMgr *getTimer();
+    void run();
+    void setScreenUpdate(void (*updateScreen)());
+    Controller *pushController(Controller *c);
+    Controller *popController();
+    Controller *getController() const;
+    void setController(Controller *c);
+    void pushKeyHandler(KeyHandler kh);
+    void popKeyHandler();
+    KeyHandler *getKeyHandler() const;
+    void setKeyHandler(KeyHandler kh);
+    void pushMouseAreaSet(_MouseArea *mouseAreas);
+    void popMouseAreaSet();
+    _MouseArea *getMouseAreaSet() const;
+    _MouseArea *mouseAreaForPoint(int x, int y);
 
 protected:
-	static bool controllerDone;
-	static bool ended;
-	TimedEventMgr timer;
-	std::vector<Controller *> controllers;
-	MouseAreaList mouseAreaSets;
-	updateScreenCallback updateScreen;
+    static bool controllerDone;
+    static bool ended;
+    TimedEventMgr timer;
+    std::vector<Controller *> controllers;
+    MouseAreaList mouseAreaSets;
+    updateScreenCallback updateScreen;
 
 private:
-	static EventHandler *instance;
+    static EventHandler *instance;
 };
 
 #endif // ifndef EVENT_H

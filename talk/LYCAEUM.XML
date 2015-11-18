@@ -26,7 +26,7 @@
     <topic query="job">Ich bin ein alter Zauberer, aber habe viel zu zeigen!</topic>
     <topic query="health">Meine Knochen schmerzen, aber mein Geist ist noch scharf!</topic>
     <topic query="ZEIG">Hier in meinem Teleskope!</topic>
-    <topic query="TELE">Such da am Ende, du wirst einen Drehknopf finden.<question type="0">Siehst du wo?<yes>Stell das Ziffernblatt ein und du wirst sehen!</yes><no>Schau!!!</no></question></topic>
+    <topic query="TELE">Such da am Ende, du wirst einen Drehknopf finden.<question type="0">Siehst du wo?<yes>Stell das Ziffernblatt ein und du wirst sehen!</yes><no>Schau nach!!!</no></question></topic>
   </person>
   <person id="4" name="Vater Antos" pronoun="Er" turnAwayProb="0">
     <description>Einen alten Druiden, der dir seltsam bekannt vorkommt.</description>

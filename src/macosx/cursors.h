@@ -4,6 +4,7 @@
  * cursors used by windows/linux/etc)
  */
 
+
 /* XPM */
 static const char *const n_xpm[] = {
     "16 16 3 1",
@@ -28,6 +29,7 @@ static const char *const n_xpm[] = {
     "      XXXX      ",
     "7,0"
 };
+
 
 /* XPM */
 static const char *const e_xpm[] = {
@@ -54,6 +56,7 @@ static const char *const e_xpm[] = {
     "15,7"
 };
 
+
 /* XPM */
 static const char *const s_xpm[] = {
     "16 16 3 1",
@@ -78,6 +81,7 @@ static const char *const s_xpm[] = {
     "       XX       ",
     "7,15"
 };
+
 
 /* XPM */
 static const char *const w_xpm[] = {

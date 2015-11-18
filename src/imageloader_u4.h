@@ -9,6 +9,7 @@
 
 struct RGBA;
 
+
 /**
  * Loader for U4 raw images.  Raw images are just an uncompressed
  * stream of pixel data with no palette information (e.g. shapes.ega,
@@ -17,10 +18,10 @@ struct RGBA;
  */
 class U4RawImageLoader:public ImageLoader {
 public:
-	virtual Image *load(U4FILE *file, int width, int height, int bpp);
+    virtual Image *load(U4FILE *file, int width, int height, int bpp);
 
 private:
-	static ImageLoader *instance;
+    static ImageLoader *instance;
 };
 
 
@@ -32,10 +33,10 @@ private:
  */
 class U4RleImageLoader:public ImageLoader {
 public:
-	virtual Image *load(U4FILE *file, int width, int height, int bpp);
+    virtual Image *load(U4FILE *file, int width, int height, int bpp);
 
 private:
-	static ImageLoader *instance;
+    static ImageLoader *instance;
 };
 
 
@@ -47,25 +48,23 @@ private:
  */
 class U4LzwImageLoader:public ImageLoader {
 public:
-	virtual Image *load(U4FILE *file, int width, int height, int bpp);
+    virtual Image *load(U4FILE *file, int width, int height, int bpp);
 
 private:
-	static ImageLoader *instance;
+    static ImageLoader *instance;
 };
-
 
 class U4PaletteLoader {
 public:
-	RGBA *loadBWPalette();
-	RGBA *loadEgaPalette();
-	RGBA *loadVgaPalette();
+    RGBA *loadBWPalette();
+    RGBA *loadEgaPalette();
+    RGBA *loadVgaPalette();
 
 private:
-	static RGBA *bwPalette;
-	static RGBA *egaPalette;
-	static RGBA *vgaPalette;
+    static RGBA *bwPalette;
+    static RGBA *egaPalette;
+    static RGBA *vgaPalette;
 
 };
-
 
 #endif /* IMAGELOADER_U4_H */

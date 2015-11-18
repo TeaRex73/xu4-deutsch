@@ -8,6 +8,7 @@
 #include "savegame.h"
 #include "direction.h"
 
+
 /*
  * These routines convert the various enumerations for classes, reagents,
  * etc. into the textual representations used in the game.

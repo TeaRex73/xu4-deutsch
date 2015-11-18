@@ -27,13 +27,13 @@ class PartyEvent;
 class PartyMember;
 
 typedef enum {
-	VIEW_NORMAL,
-	VIEW_GEM,
-	VIEW_RUNE,
-	VIEW_DUNGEON,
-	VIEW_DEAD,
-	VIEW_CODEX,
-	VIEW_MIXTURES
+    VIEW_NORMAL,
+    VIEW_GEM,
+    VIEW_RUNE,
+    VIEW_DUNGEON,
+    VIEW_DEAD,
+    VIEW_CODEX,
+    VIEW_MIXTURES
 } ViewMode;
 
 /**
@@ -41,11 +41,11 @@ typedef enum {
  */
 class ReadPlayerController:public ReadChoiceController {
 public:
-	ReadPlayerController();
-	~ReadPlayerController();
-	virtual bool keyPressed(int key);
-	int getPlayer();
-	int waitFor();
+    ReadPlayerController();
+    ~ReadPlayerController();
+    virtual bool keyPressed(int key);
+    int getPlayer();
+    int waitFor();
 };
 
 
@@ -55,18 +55,19 @@ public:
  */
 class AlphaActionController:public WaitableController<int> {
 public:
-	AlphaActionController(char letter, const string &p)
-		:lastValidLetter(letter), prompt(p)
-	{
-	}
+    AlphaActionController(char letter, const string &p)
+        :lastValidLetter(letter), prompt(p)
+    {
+    }
 
-	bool keyPressed(int key);
-	static int get(char lastValidLetter,
-		       const string &prompt,
-		       EventHandler *eh = NULL);
+    bool keyPressed(int key);
+    static int get(
+        char lastValidLetter, const string &prompt, EventHandler *eh = NULL
+    );
+
 private:
-	char lastValidLetter;
-	string prompt;
+    char lastValidLetter;
+    string prompt;
 };
 
 
@@ -75,14 +76,14 @@ private:
  */
 class ZtatsController:public WaitableController<void *> {
 public:
-	bool keyPressed(int key);
+    bool keyPressed(int key);
 };
 
 
 class TurnCompleter {
 public:
-	virtual ~TurnCompleter() {}
-	virtual void finishTurn() = 0;
+    virtual ~TurnCompleter() {}
+    virtual void finishTurn() = 0;
 };
 
 
@@ -96,51 +97,52 @@ public:
  *  </ul>
  */
 class GameController
-	:public Controller,
-	 public Observer<Party *, PartyEvent &>,
-	 public Observer<Location *, MoveEvent &>,
-	 public TurnCompleter {
+    :public Controller,
+     public Observer<Party *, PartyEvent &>,
+     public Observer<Location *, MoveEvent &>,
+     public TurnCompleter {
 public:
-	GameController();
-	/* controller functions */
-	virtual bool keyPressed(int key);
-	virtual void timerFired();
-	/* main game functions */
-	void init();
-	void initScreen();
-	void initScreenWithoutReloadingState();
-	void setMap(Map *map,
-		    bool saveLocation,
-		    const Portal *portal,
-		    TurnCompleter *turnCompleter = NULL);
-	int exitToParentMap();
-	virtual void finishTurn();
-	virtual void update(Party *party, PartyEvent &event);
-	virtual void update(Location *location, MoveEvent &event);
-	void initMoons();
-	void updateMoons(bool showmoongates);
-	static void flashTile(const Coords &coords,
-			      MapTile tile,
-			      int timeFactor);
-	static void flashTile(const Coords &coords,
-			      const std::string &tilename,
-			      int timeFactor);
-	static void doScreenAnimationsWhilePausing(int timeFactor);
-	TileView mapArea;
-	bool paused;
-	int pausedTimer;
+    GameController();
+    /* controller functions */
+    virtual bool keyPressed(int key);
+    virtual void timerFired();
+    /* main game functions */
+    void init();
+    void initScreen();
+    void initScreenWithoutReloadingState();
+    void setMap(
+        Map *map,
+        bool saveLocation,
+        const Portal *portal,
+        TurnCompleter *turnCompleter = NULL
+    );
+    int exitToParentMap();
+    virtual void finishTurn();
+    virtual void update(Party *party, PartyEvent &event);
+    virtual void update(Location *location, MoveEvent &event);
+    void initMoons();
+    void updateMoons(bool showmoongates);
+    static void flashTile(
+        const Coords &coords, MapTile tile, int timeFactor
+    );
+    static void flashTile(
+        const Coords &coords, const std::string &tilename, int timeFactor
+    );
+    static void doScreenAnimationsWhilePausing(int timeFactor);
+    TileView mapArea;
+    bool paused;
+    int pausedTimer;
 
 private:
-	void avatarMoved(MoveEvent &event);
-	void avatarMovedInDungeon(MoveEvent &event);
-	void creatureCleanup();
-	void checkBridgeTrolls();
-	void checkRandomCreatures();
-	void checkSpecialCreatures(Direction dir);
-	bool checkMoongates();
-	bool createBalloon(Map *map);
+    void avatarMoved(MoveEvent &event);
+    void avatarMovedInDungeon(MoveEvent &event);
+    void creatureCleanup();
+    void checkBridgeTrolls();
+    void checkRandomCreatures();
+    void checkSpecialCreatures(Direction dir);
+    bool checkMoongates();
+    bool createBalloon(Map *map);
 };
-
 
 extern GameController *game;
 /* map and screen functions */
@@ -172,23 +174,23 @@ void gameCreatureCleanup();
 bool gameSpawnCreature(const class Creature *m);
 /* etc */
 string gameGetInput(int maxlen = 32);
-int gameGetPlayer(bool canBeDisabled,
-		  bool canBeActivePlayer,
-		  bool zeroIsValid);
-void gameGetPlayerForCommand(bool (*commandFn)(int player),
-			     bool canBeDisabled,
-			     bool canBeActivePlayer);
+int gameGetPlayer(
+    bool canBeDisabled, bool canBeActivePlayer, bool zeroIsValid
+);
+void gameGetPlayerForCommand(
+    bool (*commandFn)(int player), bool canBeDisabled, bool canBeActivePlayer
+);
 void gameDamageParty(int minDamage, int maxDamage);
 void gameDamageShip(int minDamage, int maxDamage);
 void gameSetActivePlayer(int player);
 vector<Coords> gameGetDirectionalActionPath(
-	int dirmask,
-	int validDirections,
-	const Coords &origin,
-	int minDistance,
-	int maxDistance,
-	bool (*blockedPredicate)(const Tile *tile),
-	bool includeBlocked
+    int dirmask,
+    int validDirections,
+    const Coords &origin,
+    int minDistance,
+    int maxDistance,
+    bool (*blockedPredicate)(const Tile *tile),
+    bool includeBlocked
 );
 
 #endif // ifndef GAME_H

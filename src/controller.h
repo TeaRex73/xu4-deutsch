@@ -12,31 +12,32 @@
  */
 class Controller {
 public:
-	Controller(int timerInterval = 1);
-	virtual ~Controller();
+    Controller(int timerInterval = 1);
+    virtual ~Controller();
 
-        /* methods for interacting with event manager */
-	virtual bool  isCombatController() const
-	{
-		return false;
-	}
+    /* methods for interacting with event manager */
+    virtual bool  isCombatController() const
+    {
+        return false;
+    }
 
-	bool notifyKeyPressed(int key);
-	int getTimerInterval();
-	static void timerCallback(void *data);
-
-        /* control methods subclasses may want to override */
-	virtual bool keyPressed(int key) = 0;
-	virtual void timerFired();
+    bool notifyKeyPressed(int key);
+    int getTimerInterval();
+    static void timerCallback(void *data);
+    /* control methods subclasses may want to override */
+    virtual bool keyPressed(int key) = 0;
+    virtual void timerFired();
 
 private:
-	int timerInterval;
+    int timerInterval;
 };
+
 
 // helper functions for the waitable controller; they just avoid
 // having eventhandler dependencies in this header file
 void Controller_startWait();
 void Controller_endWait();
+
 
 /**
  * Class template for controllers that can be "waited for".
@@ -45,34 +46,34 @@ void Controller_endWait();
  */
 template<class T> class WaitableController:public Controller {
 public:
-	WaitableController():exitWhenDone(false)
-	{
-	}
+    WaitableController():exitWhenDone(false)
+    {
+    }
 
-	virtual T getValue()
-	{
-		return value;
-	}
+    virtual T getValue()
+    {
+        return value;
+    }
 
-	virtual T waitFor()
-	{
-		exitWhenDone = true;
-		Controller_startWait();
-		return getValue();
-	}
+    virtual T waitFor()
+    {
+        exitWhenDone = true;
+        Controller_startWait();
+        return getValue();
+    }
 
 protected:
-	T value;
-	
-	void doneWaiting()
-	{
-		if (exitWhenDone) {
-			Controller_endWait();
-		}
-	}
-	
+    T value;
+    
+    void doneWaiting()
+    {
+        if (exitWhenDone) {
+            Controller_endWait();
+        }
+    }
+    
 private:
-	bool exitWhenDone;
+    bool exitWhenDone;
 };
 
 #endif /* CONTROLLER_H */

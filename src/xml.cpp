@@ -29,26 +29,28 @@ int ioRegistered = 0;
 
 void *xmlXu4FileOpen(const char *filename)
 {
-	void *result;
-	string pathname(u4find_conf(filename));
-	if (pathname.empty()) {
-		return NULL;
-	}
-	result = xmlFileOpen(pathname.c_str());
-	if (verbose) {
-		printf("xml parser opened %s: %s\n",
-		       pathname.c_str(),
-		       result ? "success" : "failed");
-	}
-	return result;
+    void *result;
+    string pathname(u4find_conf(filename));
+    if (pathname.empty()) {
+        return NULL;
+    }
+    result = xmlFileOpen(pathname.c_str());
+    if (verbose) {
+        printf(
+            "xml parser opened %s: %s\n",
+            pathname.c_str(),
+            result ? "success" : "failed"
+        );
+    }
+    return result;
 }
 
 void xmlRegisterIO()
 {
-	xmlRegisterInputCallbacks(&xmlFileMatch,
-				  &xmlXu4FileOpen,
-				  xmlFileRead,
-				  xmlFileClose);
+    xmlRegisterInputCallbacks(&xmlFileMatch,
+                              &xmlXu4FileOpen,
+                              xmlFileRead,
+                              xmlFileClose);
 }
 
 
@@ -58,67 +60,66 @@ void xmlRegisterIO()
  */
 xmlDocPtr xmlParse(const char *filename)
 {
-	xmlDocPtr doc;
-	if (!ioRegistered) {
-		xmlRegisterIO();
-	}
-	doc = xmlReadFile(filename,
-			  NULL,
-			  XML_PARSE_NOENT | XML_PARSE_XINCLUDE);
-	if (!doc) {
-		errorFatal("error parsing %s", filename);
-	}
-	if (settings.validateXml && doc->intSubset) {
-		string errorMessage;
-		xmlValidCtxt cvp;
-		if (verbose) {
-			printf("validating %s\n", filename);
-		}
-		cvp.userData = &errorMessage;
-		cvp.error = &xmlAccumError;
-		if (!xmlValidateDocument(&cvp, doc)) {
-			errorFatal("xml parse error:\n%s",
-				   errorMessage.c_str());
-		}
-	}
-	return doc;
+    xmlDocPtr doc;
+    if (!ioRegistered) {
+        xmlRegisterIO();
+    }
+    doc = xmlReadFile(
+        filename, NULL, XML_PARSE_NOENT | XML_PARSE_XINCLUDE
+    );
+    if (!doc) {
+        errorFatal("error parsing %s", filename);
+    }
+    if (settings.validateXml && doc->intSubset) {
+        string errorMessage;
+        xmlValidCtxt cvp;
+        if (verbose) {
+            printf("validating %s\n", filename);
+        }
+        cvp.userData = &errorMessage;
+        cvp.error = &xmlAccumError;
+        if (!xmlValidateDocument(&cvp, doc)) {
+            errorFatal("xml parse error:\n%s",
+                       errorMessage.c_str());
+        }
+    }
+    return doc;
 } // xmlParse
 
 void xmlAccumError(void *l, const char *fmt, ...)
 {
-	string *errorMessage = (string *)l;
-	char buffer[1000];
-	va_list args;
-	va_start(args, fmt);
-	vsnprintf(buffer, sizeof(buffer), fmt, args);
-	va_end(args);
-	errorMessage->append(buffer);
+    string *errorMessage = (string *)l;
+    char buffer[1000];
+    va_list args;
+    va_start(args, fmt);
+    vsnprintf(buffer, sizeof(buffer), fmt, args);
+    va_end(args);
+    errorMessage->append(buffer);
 }
 
 bool xmlPropExists(xmlNodePtr node, const char *name)
 {
-	xmlChar *prop = xmlGetProp(node, (const xmlChar *)name);
-	bool exists = (prop != NULL);
-	if (prop) {
-		xmlFree(prop);
-	}
-	return exists;
+    xmlChar *prop = xmlGetProp(node, (const xmlChar *)name);
+    bool exists = (prop != NULL);
+    if (prop) {
+        xmlFree(prop);
+    }
+    return exists;
 }
 
 string xmlGetPropAsString(xmlNodePtr node, const char *name)
 {
-	xmlChar *prop;
-	if (settings.validateXml
-	    && !xmlHasProp(node, (const xmlChar *)name)) {
-		return "";
-	}
-	prop = xmlGetProp(node, (const xmlChar *)name);
-	if (!prop) {
-		return "";
-	}
-	string result((char *)prop);
-	xmlFree(prop);
-	return result;
+    xmlChar *prop;
+    if (settings.validateXml && !xmlHasProp(node, (const xmlChar *)name)) {
+        return "";
+    }
+    prop = xmlGetProp(node, (const xmlChar *)name);
+    if (!prop) {
+        return "";
+    }
+    string result((char *)prop);
+    xmlFree(prop);
+    return result;
 }
 
 
@@ -129,25 +130,24 @@ string xmlGetPropAsString(xmlNodePtr node, const char *name)
  */
 int xmlGetPropAsBool(xmlNodePtr node, const char *name)
 {
-	int result;
-	xmlChar *prop;
-	if (settings.validateXml
-	    && !xmlHasProp(node, (const xmlChar *)name)) {
-		return 0;
-	}
-	prop = xmlGetProp(node, (const xmlChar *)name);
-	if (!prop) {
-		return 0;
-	}
-	if (xmlStrcmp(prop, (const xmlChar *)"true") == 0) {
-		result = 1;
-	} else if (xmlStrcmp(prop, (const xmlChar *)"true") == 0) {
-		result = 0;
-	} else {
-		result = 0;
-	}
-	xmlFree(prop);
-	return result;
+    int result;
+    xmlChar *prop;
+    if (settings.validateXml && !xmlHasProp(node, (const xmlChar *)name)) {
+        return 0;
+    }
+    prop = xmlGetProp(node, (const xmlChar *)name);
+    if (!prop) {
+        return 0;
+    }
+    if (xmlStrcmp(prop, (const xmlChar *)"true") == 0) {
+        result = 1;
+    } else if (xmlStrcmp(prop, (const xmlChar *)"true") == 0) {
+        result = 0;
+    } else {
+        result = 0;
+    }
+    xmlFree(prop);
+    return result;
 } // xmlGetPropAsBool
 
 
@@ -157,45 +157,43 @@ int xmlGetPropAsBool(xmlNodePtr node, const char *name)
  */
 int xmlGetPropAsInt(xmlNodePtr node, const char *name)
 {
-	long result;
-	xmlChar *prop;
-	if (settings.validateXml
-	    && !xmlHasProp(node, (const xmlChar *)name)) {
-		return 0;
-	}
-	prop = xmlGetProp(node, (const xmlChar *)name);
-	if (!prop) {
-		return 0;
-	}
-	result = strtol((const char *)prop, NULL, 0);
-	xmlFree(prop);
-	return (int)result;
+    long result;
+    xmlChar *prop;
+    if (settings.validateXml && !xmlHasProp(node, (const xmlChar *)name)) {
+        return 0;
+    }
+    prop = xmlGetProp(node, (const xmlChar *)name);
+    if (!prop) {
+        return 0;
+    }
+    result = strtol((const char *)prop, NULL, 0);
+    xmlFree(prop);
+    return (int)result;
 }
 
-int xmlGetPropAsEnum(xmlNodePtr node,
-		     const char *name,
-		     const char *enumValues[])
+int xmlGetPropAsEnum(
+    xmlNodePtr node, const char *name, const char *enumValues[]
+)
 {
-	int result = -1, i;
-	xmlChar *prop;
-	if (settings.validateXml
-	    && !xmlHasProp(node, (const xmlChar *)name)) {
-		return 0;
-	}
-	prop = xmlGetProp(node, (const xmlChar *)name);
-	if (!prop) {
-		return 0;
-	}
-	for (i = 0; enumValues[i]; i++) {
-		if (xmlStrcmp(prop, (const xmlChar *)enumValues[i]) == 0) {
-			result = i;
-		}
-	}
-	if (result == -1) {
-		errorFatal("invalid enum value for %s: %s", name, prop);
-	}
-	xmlFree(prop);
-	return result;
+    int result = -1, i;
+    xmlChar *prop;
+    if (settings.validateXml && !xmlHasProp(node, (const xmlChar *)name)) {
+        return 0;
+    }
+    prop = xmlGetProp(node, (const xmlChar *)name);
+    if (!prop) {
+        return 0;
+    }
+    for (i = 0; enumValues[i]; i++) {
+        if (xmlStrcmp(prop, (const xmlChar *)enumValues[i]) == 0) {
+            result = i;
+        }
+    }
+    if (result == -1) {
+        errorFatal("invalid enum value for %s: %s", name, prop);
+    }
+    xmlFree(prop);
+    return result;
 } // xmlGetPropAsEnum
 
 
@@ -205,12 +203,12 @@ int xmlGetPropAsEnum(xmlNodePtr node,
  */
 int xmlPropCmp(xmlNodePtr node, const char *name, const char *s)
 {
-	int result;
-	xmlChar *prop;
-	prop = xmlGetProp(node, (const xmlChar *)name);
-	result = xmlStrcmp(prop, (const xmlChar *)s);
-	xmlFree(prop);
-	return result;
+    int result;
+    xmlChar *prop;
+    prop = xmlGetProp(node, (const xmlChar *)name);
+    result = xmlStrcmp(prop, (const xmlChar *)s);
+    xmlFree(prop);
+    return result;
 }
 
 
@@ -220,10 +218,10 @@ int xmlPropCmp(xmlNodePtr node, const char *name, const char *s)
  */
 int xmlPropCaseCmp(xmlNodePtr node, const char *name, const char *s)
 {
-	int result;
-	xmlChar *prop;
-	prop = xmlGetProp(node, (const xmlChar *)name);
-	result = xmlStrcasecmp(prop, (const xmlChar *)s);
-	xmlFree(prop);
-	return result;
+    int result;
+    xmlChar *prop;
+    prop = xmlGetProp(node, (const xmlChar *)name);
+    result = xmlStrcasecmp(prop, (const xmlChar *)s);
+    xmlFree(prop);
+    return result;
 }

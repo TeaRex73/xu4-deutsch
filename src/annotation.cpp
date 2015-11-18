@@ -23,7 +23,7 @@
  * Constructors
  */
 Annotation::Annotation(const Coords &c, MapTile t, bool v, bool coverUp)
-	:coords(c), tile(t), visual(v), ttl(-1), coverUp(coverUp)
+    :coords(c), tile(t), visual(v), ttl(-1), coverUp(coverUp)
 {
 }
 
@@ -33,11 +33,11 @@ Annotation::Annotation(const Coords &c, MapTile t, bool v, bool coverUp)
  */
 void Annotation::debug_output() const
 {
-	printf("x: %d\n", coords.x);
-	printf("y: %d\n", coords.y);
-	printf("z: %d\n", coords.z);
-	printf("kachel: %d\n", tile.getId());
-	printf("sichtbar: %s\n", visual ? "Ja" : "Nein");
+    printf("x: %d\n", coords.x);
+    printf("y: %d\n", coords.y);
+    printf("z: %d\n", coords.z);
+    printf("kachel: %d\n", tile.getId());
+    printf("sichtbar: %s\n", visual ? "Ja" : "Nein");
 }
 
 
@@ -46,7 +46,7 @@ void Annotation::debug_output() const
  */
 bool Annotation::operator==(const Annotation &a) const
 {
-	return ((coords == a.getCoords()) && (tile == a.tile)) ? true : false;
+    return ((coords == a.getCoords()) && (tile == a.tile)) ? true : false;
 }
 
 
@@ -71,14 +71,13 @@ AnnotationMgr::AnnotationMgr()
 /**
  * Adds an annotation to the current map
  */
-Annotation *AnnotationMgr::add(Coords coords,
-			       MapTile tile,
-			       bool visual,
-			       bool isCoverUp)
+Annotation *AnnotationMgr::add(
+    Coords coords, MapTile tile, bool visual, bool isCoverUp
+)
 {
-	/* new annotations go to the front so they're handled "on top" */
-	annotations.push_front(Annotation(coords, tile, visual, isCoverUp));
-	return &annotations.front();
+    /* new annotations go to the front so they're handled "on top" */
+    annotations.push_front(Annotation(coords, tile, visual, isCoverUp));
+    return &annotations.front();
 }
 
 
@@ -87,13 +86,13 @@ Annotation *AnnotationMgr::add(Coords coords,
  */
 Annotation::List AnnotationMgr::allAt(Coords coords)
 {
-	Annotation::List list;
-	for (i = annotations.begin(); i != annotations.end(); i++) {
-		if (i->getCoords() == coords) {
-			list.push_back(*i);
-		}
-	}
-	return list;
+    Annotation::List list;
+    for (i = annotations.begin(); i != annotations.end(); i++) {
+        if (i->getCoords() == coords) {
+            list.push_back(*i);
+        }
+    }
+    return list;
 }
 
 
@@ -102,13 +101,13 @@ Annotation::List AnnotationMgr::allAt(Coords coords)
  */
 std::list<Annotation *> AnnotationMgr::ptrsToAllAt(Coords coords)
 {
-	std::list<Annotation *> list;
-	for (i = annotations.begin(); i != annotations.end(); i++) {
-		if (i->getCoords() == coords) {
-			list.push_back(&(*i));
-		}
-	}
-	return list;
+    std::list<Annotation *> list;
+    for (i = annotations.begin(); i != annotations.end(); i++) {
+        if (i->getCoords() == coords) {
+            list.push_back(&(*i));
+        }
+    }
+    return list;
 }
 
 
@@ -117,7 +116,7 @@ std::list<Annotation *> AnnotationMgr::ptrsToAllAt(Coords coords)
  */
 void AnnotationMgr::clear()
 {
-	annotations.clear();
+    annotations.clear();
 }
 
 
@@ -127,16 +126,16 @@ void AnnotationMgr::clear()
  */
 void AnnotationMgr::passTurn()
 {
-	for (i = annotations.begin(); i != annotations.end(); i++) {
-		if (i->getTTL() == 0) {
-			i = annotations.erase(i);
-			if (i == annotations.end()) {
-				break;
-			}
-		} else if (i->getTTL() > 0) {
-			i->passTurn();
-		}
-	}
+    for (i = annotations.begin(); i != annotations.end(); i++) {
+        if (i->getTTL() == 0) {
+            i = annotations.erase(i);
+            if (i == annotations.end()) {
+                break;
+            }
+        } else if (i->getTTL() > 0) {
+            i->passTurn();
+        }
+    }
 }
 
 
@@ -145,18 +144,18 @@ void AnnotationMgr::passTurn()
  */
 void AnnotationMgr::remove(Coords coords, MapTile tile)
 {
-	Annotation look_for(coords, tile);
-	remove(look_for);
+    Annotation look_for(coords, tile);
+    remove(look_for);
 }
 
 void AnnotationMgr::remove(Annotation &a)
 {
-	for (i = annotations.begin(); i != annotations.end(); i++) {
-		if (*i == a) {
-			i = annotations.erase(i);
-			break;
-		}
-	}
+    for (i = annotations.begin(); i != annotations.end(); i++) {
+        if (*i == a) {
+            i = annotations.erase(i);
+            break;
+        }
+    }
 }
 
 
@@ -165,10 +164,10 @@ void AnnotationMgr::remove(Annotation &a)
  */
 void AnnotationMgr::remove(Annotation::List l)
 {
-	Annotation::List::iterator i;
-	for (i = l.begin(); i != l.end(); i++) {
-		remove(*i);
-	}
+    Annotation::List::iterator i;
+    for (i = l.begin(); i != l.end(); i++) {
+        remove(*i);
+    }
 }
 
 
@@ -177,5 +176,5 @@ void AnnotationMgr::remove(Annotation::List l)
  */
 int AnnotationMgr::size()
 {
-	return annotations.size();
+    return annotations.size();
 }

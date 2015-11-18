@@ -9,7 +9,7 @@
 
 Controller::Controller(int timerInterval)
 {
-	this->timerInterval = timerInterval;
+    this->timerInterval = timerInterval;
 }
 
 Controller::~Controller()
@@ -24,16 +24,16 @@ Controller::~Controller()
  */
 bool Controller::notifyKeyPressed(int key)
 {
-	bool processed = KeyHandler::globalHandler(key);
-	if (!processed) {
-		processed = keyPressed(key);
-	}
-	return processed;
+    bool processed = KeyHandler::globalHandler(key);
+    if (!processed) {
+        processed = keyPressed(key);
+    }
+    return processed;
 }
 
 int Controller::getTimerInterval()
 {
-	return timerInterval;
+    return timerInterval;
 }
 
 
@@ -53,18 +53,18 @@ void Controller::timerFired()
  */
 void Controller::timerCallback(void *data)
 {
-	Controller *controller = static_cast<Controller *>(data);
-	controller->timerFired();
+    Controller *controller = static_cast<Controller *>(data);
+    controller->timerFired();
 }
 
 void Controller_startWait()
 {
-	eventHandler->run();
-	eventHandler->setControllerDone(false);
-	eventHandler->popController();
+    eventHandler->run();
+    eventHandler->setControllerDone(false);
+    eventHandler->popController();
 }
 
 void Controller_endWait()
 {
-	eventHandler->setControllerDone();
+    eventHandler->setControllerDone();
 }

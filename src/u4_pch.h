@@ -14,7 +14,7 @@
 #include "u4.h"
 #include "u4file.h"
 #include "utils.h"
-/*
+#if 0
 #include "combat.h"
 #include "context.h"
 #include "creature.h"
@@ -38,5 +38,5 @@
 #include "settings.h"
 #include "stats.h"
 #include "tileset.h"
-*/
+#endif
 #endif

@@ -22,129 +22,122 @@ const ResponsePart ResponsePart::ADVANCELEVELS("<ADVANCELEVELS>", "", true);
 const ResponsePart ResponsePart::HEALCONFIRM("<HEALCONFIRM>", "", true);
 const ResponsePart ResponsePart::STARTMUSIC_LB("<STARTMUSIC_LB>", "", true);
 const ResponsePart ResponsePart::STARTMUSIC_HW("<STARTMUSIC_HW>", "", true);
-const ResponsePart ResponsePart::STARTMUSIC_SILENCE("<STARTMUSIC_SILENCE>",
-						    "",
-						    true);
+const ResponsePart ResponsePart::STARTMUSIC_SILENCE(
+    "<STARTMUSIC_SILENCE>", "", true
+);
 const ResponsePart ResponsePart::STOPMUSIC("<STOPMUSIC>", "", true);
 const ResponsePart ResponsePart::HAWKWIND("<HAWKWIND>", "", true);
 const unsigned int Conversation::BUFFERLEN = 16;
 
 
-Response::Response(const string &response):references(0)
+Response::Response(const string &response)
+    :references(0)
 {
-	add(response);
+    add(response);
 }
 
 void Response::add(const ResponsePart &part)
 {
-	parts.push_back(part);
+    parts.push_back(part);
 }
 
 const vector<ResponsePart> &Response::getParts() const
 {
-	return parts;
+    return parts;
 }
 
 Response::operator string() const
 {
-	string result;
-
-	for (vector<ResponsePart>::const_iterator i = parts.begin();
-	     i != parts.end();
-	     i++) {
-		result += *i;
-	}
-	return result;
+    string result;
+    for (vector<ResponsePart>::const_iterator i = parts.begin();
+         i != parts.end();
+         i++) {
+        result += *i;
+    }
+    return result;
 }
 
 Response *Response::addref()
 {
-	references++;
-	return this;
+    references++;
+    return this;
 }
 
 void Response::release()
 {
-	references--;
-	if (references <= 0) {
-		delete this;
-	}
+    references--;
+    if (references <= 0) {
+        delete this;
+    }
 }
 
-ResponsePart::ResponsePart(const string &value,
-			   const string &arg,
-			   bool command)
+ResponsePart::ResponsePart(
+    const string &value, const string &arg, bool command
+)
 {
-	this->value = value;
-	this->arg = arg;
-	this->command = command;
+    this->value = value;
+    this->arg = arg;
+    this->command = command;
 }
 
 ResponsePart::operator string() const
 {
-	return value;
+    return value;
 }
 
 bool ResponsePart::operator==(const ResponsePart &rhs) const
 {
-	return value == rhs.value;
+    return value == rhs.value;
 }
 
 bool ResponsePart::isCommand() const
 {
-	return command;
+    return command;
 }
 
 DynamicResponse::DynamicResponse(
-	Response *(*generator)(const DynamicResponse *),
-	const string &param
+    Response *(*generator)(const DynamicResponse *), const string &param
 )
-	:Response(""),
-	 param(param)
+    :Response(""), param(param)
 {
-	this->generator = generator;
-	currentResponse = NULL;
+    this->generator = generator;
+    currentResponse = NULL;
 }
 
 DynamicResponse::~DynamicResponse()
 {
-	if (currentResponse) {
-		delete currentResponse;
-	}
+    if (currentResponse) {
+        delete currentResponse;
+    }
 }
 
 const vector<ResponsePart> &DynamicResponse::getParts() const
 {
-	// blah, must cast away constness
-	const_cast<DynamicResponse *>(this)->currentResponse =
-		(*generator)(this);
-	return currentResponse->getParts();
+    // blah, must cast away constness
+    const_cast<DynamicResponse *>(this)->currentResponse = (*generator)(this);
+    return currentResponse->getParts();
 }
 
 
 /*
  * Dialogue::Question class
  */
-Dialogue::Question::Question(const string &txt,
-			     Response *yes,
-			     Response *no)
-	:text(txt),
-	 yesresp(yes->addref()),
-	 noresp(no->addref())
+Dialogue::Question::Question(const string &txt, Response *yes, Response *no)
+    :text(txt), yesresp(yes->addref()), noresp(no->addref())
 {
 }
 
 string Dialogue::Question::getText()
 {
-	return text;
+    return text;
 }
 
 Response *Dialogue::Question::getResponse(bool yes)
 {
-	if (yes) {
-		return yesresp;
-	}
-	return noresp;
+    if (yes) {
+        return yesresp;
+    }
+    return noresp;
 }
 
 
@@ -152,37 +145,37 @@ Response *Dialogue::Question::getResponse(bool yes)
  * Dialogue::Keyword class
  */
 Dialogue::Keyword::Keyword(const string &kw, Response *resp)
-	:keyword(kw), response(resp->addref())
+    :keyword(kw), response(resp->addref())
 {
-	trim(keyword);
-	lowercase(keyword);
+    trim(keyword);
+    lowercase(keyword);
 }
 
 Dialogue::Keyword::Keyword(const string &kw, const string &resp)
-	:keyword(kw), response((new Response(resp))->addref())
+    :keyword(kw), response((new Response(resp))->addref())
 {
-	trim(keyword);
-	lowercase(keyword);
+    trim(keyword);
+    lowercase(keyword);
 }
 
 Dialogue::Keyword::~Keyword()
 {
-	response->release();
+    response->release();
 }
 
 bool Dialogue::Keyword::operator==(const string &kw) const
 {
-	// minimum 4-character "guessing"
-	int testLen = (keyword.size() < 4) ? keyword.size() : 4;
-	// exception: empty keyword only matches
-	// empty string (alias for 'bye')
-	if ((testLen == 0) && (kw.size() > 0)) {
-		return false;
-	}
-	if (strncasecmp(kw.c_str(), keyword.c_str(), testLen) == 0) {
-		return true;
-	}
-	return false;
+    // minimum 4-character "guessing"
+    int testLen = (keyword.size() < 4) ? keyword.size() : 4;
+    // exception: empty keyword only matches
+    // empty string (alias for 'bye')
+    if ((testLen == 0) && (kw.size() > 0)) {
+        return false;
+    }
+    if (strncasecmp(kw.c_str(), keyword.c_str(), testLen) == 0) {
+        return true;
+    }
+    return false;
 }
 
 
@@ -190,76 +183,76 @@ bool Dialogue::Keyword::operator==(const string &kw) const
  * Dialogue class
  */
 Dialogue::Dialogue()
-	:intro(NULL), longIntro(NULL), defaultAnswer(NULL), question(NULL)
+    :intro(NULL), longIntro(NULL), defaultAnswer(NULL), question(NULL)
 {
 }
 
 Dialogue::~Dialogue()
 {
-	for (KeywordMap::iterator i = keywords.begin();
-	     i != keywords.end();
-	     i++) {
-		delete i->second;
-	}
+    for (KeywordMap::iterator i = keywords.begin();
+         i != keywords.end();
+         i++) {
+        delete i->second;
+    }
 }
 
 void Dialogue::addKeyword(const string &kw, Response *response)
 {
-	if (keywords.find(kw) != keywords.end()) {
-		delete keywords[kw];
-	}
-	keywords[kw] = new Keyword(kw, response);
+    if (keywords.find(kw) != keywords.end()) {
+        delete keywords[kw];
+    }
+    keywords[kw] = new Keyword(kw, response);
 }
 
 Dialogue::Keyword *Dialogue::operator[](const string &kw)
 {
-	KeywordMap::iterator i = keywords.find(kw);
-	// If they entered the keyword verbatim, return it!
-	if (i != keywords.end()) {
-		return i->second;
-	}
-	// Otherwise, go find one that fits the description.
-	else {
-		for (i = keywords.begin(); i != keywords.end(); i++) {
-			if ((*i->second) == kw) {
-				return i->second;
-			}
-		}
-	}
-	return NULL;
+    KeywordMap::iterator i = keywords.find(kw);
+    // If they entered the keyword verbatim, return it!
+    if (i != keywords.end()) {
+        return i->second;
+    }
+    // Otherwise, go find one that fits the description.
+    else {
+        for (i = keywords.begin(); i != keywords.end(); i++) {
+            if ((*i->second) == kw) {
+                return i->second;
+            }
+        }
+    }
+    return NULL;
 }
 
 const ResponsePart &Dialogue::getAction() const
 {
-	int prob = xu4_random(0x100);
-	/* Does the person turn away from/attack you? */
-	if (prob >= turnAwayProb) {
-		return ResponsePart::NONE;
-	} else {
-		musicMgr->play();
-		if (attackProb - prob < 0x40) {
-			return ResponsePart::END;
-		} else {
-			return ResponsePart::ATTACK;
-		}
-	}
+    int prob = xu4_random(0x100);
+    /* Does the person turn away from/attack you? */
+    if (prob >= turnAwayProb) {
+        return ResponsePart::NONE;
+    } else {
+        musicMgr->play();
+        if (attackProb - prob < 0x40) {
+            return ResponsePart::END;
+        } else {
+            return ResponsePart::ATTACK;
+        }
+    }
 }
 
 string Dialogue::dump(const string &arg)
 {
-	string result;
+    string result;
 
-	if (arg == "") {
-		result = "keywords:\n";
-		for (KeywordMap::iterator i = keywords.begin();
-		     i != keywords.end();
-		     i++) {
-			result += i->first + "\n";
-		}
-	} else if (keywords.find(arg) != keywords.end()) {
-		result = static_cast<string>(*keywords[arg]->getResponse());
-	}
-	return result;
+    if (arg == "") {
+        result = "keywords:\n";
+        for (KeywordMap::iterator i = keywords.begin();
+             i != keywords.end();
+             i++) {
+            result += i->first + "\n";
+        }
+    } else if (keywords.find(arg) != keywords.end()) {
+        result = static_cast<string>(*keywords[arg]->getResponse());
+    }
+    return result;
 }
 
 
@@ -267,51 +260,51 @@ string Dialogue::dump(const string &arg)
  * Conversation class
  */
 Conversation::Conversation()
-	:state(INTRO), script(new Script()), logger(0)
+    :state(INTRO), script(new Script()), logger(0)
 {
-	logger = new Debug("debug/conversation.txt", "Conversation");
+    logger = new Debug("debug/conversation.txt", "Conversation");
 }
 
 Conversation::~Conversation()
 {
-	delete logger;
-	delete script;
+    delete logger;
+    delete script;
 }
 
 Conversation::InputType Conversation::getInputRequired(int *bufferlen)
 {
-	switch (state) {
-	case BUY_QUANTITY:
-	case SELL_QUANTITY:
-		*bufferlen = 2;
-		return INPUT_STRING;
-	case TALK:
-	case BUY_PRICE:
-	case TOPIC:
-		*bufferlen = BUFFERLEN;
-		return INPUT_STRING;
-	case GIVEBEGGAR:
-		*bufferlen = 2;
-		return INPUT_STRING;
-	case ASK:
-	case ASKYESNO:
-	case CONFIRMATION:
-		*bufferlen = 4;
-		return INPUT_STRING;
-	case VENDORQUESTION:
-	case BUY_ITEM:
-	case SELL_ITEM:
-	case CONTINUEQUESTION:
-	case PLAYER:
-		return INPUT_CHARACTER;
-	case ATTACK:
-	case DONE:
-	case INTRO:
-	case FULLHEAL:
-	case ADVANCELEVELS:
-		return INPUT_NONE;
-	default:
-		ASSERT(0, "invalid state: %d", state);
-	} // switch
-	return INPUT_NONE;
+    switch (state) {
+    case BUY_QUANTITY:
+    case SELL_QUANTITY:
+        *bufferlen = 2;
+        return INPUT_STRING;
+    case TALK:
+    case BUY_PRICE:
+    case TOPIC:
+        *bufferlen = BUFFERLEN;
+        return INPUT_STRING;
+    case GIVEBEGGAR:
+        *bufferlen = 2;
+        return INPUT_STRING;
+    case ASK:
+    case ASKYESNO:
+    case CONFIRMATION:
+        *bufferlen = 4;
+        return INPUT_STRING;
+    case VENDORQUESTION:
+    case BUY_ITEM:
+    case SELL_ITEM:
+    case CONTINUEQUESTION:
+    case PLAYER:
+        return INPUT_CHARACTER;
+    case ATTACK:
+    case DONE:
+    case INTRO:
+    case FULLHEAL:
+    case ADVANCELEVELS:
+        return INPUT_NONE;
+    default:
+        ASSERT(0, "invalid state: %d", state);
+    } // switch
+    return INPUT_NONE;
 }

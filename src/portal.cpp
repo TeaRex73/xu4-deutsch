@@ -22,28 +22,28 @@
 /**
  * Creates a dungeon ladder portal based on the action given
  */
-void createDngLadder(Location *location,
-		     PortalTriggerAction action,
-		     Portal *p)
+void createDngLadder(
+    Location *location, PortalTriggerAction action, Portal *p
+)
 {
-	if (!p) {
-		return;
-	} else {
-		p->destid = location->map->id;
-		if ((action == ACTION_KLIMB) && (location->coords.z == 0)) {
-			p->exitPortal = true;
-			p->destid = 1;
-		} else {
-			p->exitPortal = false;
-		}
-		p->message = "";
-		p->portalConditionsMet = NULL;
-		p->portalTransportRequisites = TRANSPORT_FOOT_OR_HORSE;
-		p->retroActiveDest = NULL;
-		p->saveLocation = false;
-		p->start = location->coords;
-		p->start.z += (action == ACTION_KLIMB) ? -1 : 1;
-	}
+    if (!p) {
+        return;
+    } else {
+        p->destid = location->map->id;
+        if ((action == ACTION_KLIMB) && (location->coords.z == 0)) {
+            p->exitPortal = true;
+            p->destid = 1;
+        } else {
+            p->exitPortal = false;
+        }
+        p->message = "";
+        p->portalConditionsMet = NULL;
+        p->portalTransportRequisites = TRANSPORT_FOOT_OR_HORSE;
+        p->retroActiveDest = NULL;
+        p->saveLocation = false;
+        p->start = location->coords;
+        p->start.z += (action == ACTION_KLIMB) ? -1 : 1;
+    }
 }
 
 
@@ -52,139 +52,131 @@ void createDngLadder(Location *location,
  * given and uses it.  If in a dungeon and trying to use a ladder, it creates
  * a portal based on the ladder and uses it.
  */
-int usePortalAt(Location *location,
-		MapCoords coords,
-		PortalTriggerAction action)
+int usePortalAt(
+    Location *location, MapCoords coords, PortalTriggerAction action
+)
 {
-	Map *destination;
-	char msg[32] = { 0 };
-	const Portal *portal = location->map->portalAt(coords, action);
-	Portal dngLadder;
-	
-	/* didn't find a portal there */
-	if (!portal) {
-		/* if it's a dungeon, then ladders are predictable.
-		   Create one! */
-		if (location->context == CTX_DUNGEON) {
-			Dungeon *dungeon =
-				dynamic_cast<Dungeon *>(location->map);
-			if ((action & ACTION_KLIMB)
-			    && dungeon->ladderUpAt(coords)) {
-				createDngLadder(location, action, &dngLadder);
-			} else if ((action & ACTION_DESCEND)
-				   && dungeon->ladderDownAt(coords)) {
-				createDngLadder(location, action, &dngLadder);
-			} else {
-				return 0;
-			}
-			portal = &dngLadder;
-		} else {
-			return 0;
-		}
-	}
-	/* conditions not met for portal to work */
-	if (portal
-	    && portal->portalConditionsMet
-	    && !(*portal->portalConditionsMet)(portal)) {
-		return 0;
-	}
-	/* must klimb or descend on foot! */
-	else if (c->transportContext & ~TRANSPORT_FOOT
-		 && ((action == ACTION_KLIMB)
-		     || (action == ACTION_DESCEND))) {
-		screenMessage("NUR ZU FUSS!\n");
-		return 1;
-	}
-	destination = mapMgr->get(portal->destid);
-	if (portal->message.empty()) {
-		switch (action) {
-		case ACTION_DESCEND:
-			sprintf(msg,
-				"Abw{rts\nauf Ebene %d\n",
-				portal->start.z + 1);
-			break;
-		case ACTION_KLIMB:
-			if (portal->exitPortal) {
-				sprintf(msg, "Aufw{rts\nVERLASSE...\n");
-			} else {
-				sprintf(msg,
-					"Aufw{rts\nauf Ebene %d\n",
-					portal->start.z + 1);
-			}
-			break;
-		case ACTION_ENTER:
-			switch (destination->type) {
-			case Map::CITY:
-			{
-				City *city =
-					dynamic_cast<City *>(destination);
-				screenMessage("%s Betreten\n\n",
-					      city->type.c_str());
-				break;
-			}
-			case Map::SHRINE:
-				screenMessage("Schrein betreten\n\n");
-				break;
-			case Map::DUNGEON:
-				screenMessage("H|hle betreten\n\n");
-				break;
-			default:
-				break;
-			}
-			if ((destination->type == Map::CITY)
-			    || (destination->type == Map::DUNGEON)) {
-				string name;
-				name = destination->getName();
-				for (unsigned int i = 0;
-				     i < (16 - name.length()) / 2;
-				     i++) {
-					screenMessage(" ");
-				}
-				screenMessage("%s\n\n", name.c_str());
-			}
-			break;
-		case ACTION_NONE:
-		default:
-			break;
-		} // switch
-	}
-	/* check the transportation requisites of the portal */
-	if (c->transportContext & ~portal->portalTransportRequisites) {
-		screenMessage("NUR ZU FUSS!\n");
-		return 1;
-	}
-	/* ok, we know the portal is going to work -- now display the
-	   custom message, if any */
-	else if (!portal->message.empty() || strlen(msg)) {
-		screenMessage("%s",
-			      portal->message.empty() ?
-			      msg :
-			      portal->message.c_str());
-	}
-	/* portal just exits to parent map */
-	if (portal->exitPortal) {
-		game->exitToParentMap();
-		musicMgr->play();
-		return 1;
-	} else if (portal->destid == location->map->id) {
-		location->coords = portal->start;
-	} else {
-		game->setMap(destination, portal->saveLocation, portal);
-		musicMgr->play();
-	}
-	/* if the portal changes the map retroactively, do it here */
-	/*
-	 * note that we use c->location instead of location, since
-	 * location has probably been invalidated above
-	 */
-	if (portal->retroActiveDest && c->location->prev) {
-		c->location->prev->coords = portal->retroActiveDest->coords;
-		c->location->prev->map =
-			mapMgr->get(portal->retroActiveDest->mapid);
-	}
-	if (destination->type == Map::SHRINE) {
-		Shrine *shrine = dynamic_cast<Shrine *>(destination);
-		shrine->enter();
-	}
-	return 1;
+    Map *destination;
+    char msg[32] = { 0 };
+    const Portal *portal = location->map->portalAt(coords, action);
+    Portal dngLadder;
+    /* didn't find a portal there */
+    if (!portal) {
+        /* if it's a dungeon, then ladders are predictable.
+           Create one! */
+        if (location->context == CTX_DUNGEON) {
+            Dungeon *dungeon = dynamic_cast<Dungeon *>(location->map);
+            if ((action & ACTION_KLIMB) && dungeon->ladderUpAt(coords)) {
+                createDngLadder(location, action, &dngLadder);
+            } else if ((action & ACTION_DESCEND)
+                       && dungeon->ladderDownAt(coords)) {
+                createDngLadder(location, action, &dngLadder);
+            } else {
+                return 0;
+            }
+            portal = &dngLadder;
+        } else {
+            return 0;
+        }
+    }
+    /* conditions not met for portal to work */
+    if (portal
+        && portal->portalConditionsMet
+        && !(*portal->portalConditionsMet)(portal)) {
+        return 0;
+    }
+    /* must klimb or descend on foot! */
+    else if (c->transportContext & ~TRANSPORT_FOOT
+             && ((action == ACTION_KLIMB)
+                 || (action == ACTION_DESCEND))) {
+        screenMessage("NUR ZU FUSS!\n");
+        return 1;
+    }
+    destination = mapMgr->get(portal->destid);
+    if (portal->message.empty()) {
+        switch (action) {
+        case ACTION_DESCEND:
+            sprintf(
+                msg, "Abw{rts\nauf Ebene %d\n", portal->start.z + 1
+            );
+            break;
+        case ACTION_KLIMB:
+            if (portal->exitPortal) {
+                sprintf(msg, "Aufw{rts\nVERLASSE...\n");
+            } else {
+                sprintf(
+                    msg, "Aufw{rts\nauf Ebene %d\n", portal->start.z + 1
+                );
+            }
+            break;
+        case ACTION_ENTER:
+            switch (destination->type) {
+            case Map::CITY:
+            {
+                City *city = dynamic_cast<City *>(destination);
+                screenMessage("%s Betreten\n\n", city->type.c_str());
+                break;
+            }
+            case Map::SHRINE:
+                screenMessage("Schrein betreten\n\n");
+                break;
+            case Map::DUNGEON:
+                screenMessage("H|hle betreten\n\n");
+                break;
+            default:
+                break;
+            }
+            if ((destination->type == Map::CITY)
+                || (destination->type == Map::DUNGEON)) {
+                string name;
+                name = destination->getName();
+                for (unsigned int i = 0; i < (16 - name.length()) / 2; i++) {
+                    screenMessage(" ");
+                }
+                screenMessage("%s\n\n", name.c_str());
+            }
+            break;
+        case ACTION_NONE:
+        default:
+            break;
+        } // switch
+    }
+    /* check the transportation requisites of the portal */
+    if (c->transportContext & ~portal->portalTransportRequisites) {
+        screenMessage("NUR ZU FUSS!\n");
+        return 1;
+    }
+    /* ok, we know the portal is going to work -- now display the
+       custom message, if any */
+    else if (!portal->message.empty() || strlen(msg)) {
+        screenMessage(
+            "%s", portal->message.empty() ? msg : portal->message.c_str()
+        );
+    }
+    /* portal just exits to parent map */
+    if (portal->exitPortal) {
+        game->exitToParentMap();
+        musicMgr->play();
+        return 1;
+    } else if (portal->destid == location->map->id) {
+        location->coords = portal->start;
+    } else {
+        game->setMap(destination, portal->saveLocation, portal);
+        musicMgr->play();
+    }
+    /* if the portal changes the map retroactively, do it here */
+    /*
+     * note that we use c->location instead of location, since
+     * location has probably been invalidated above
+     */
+    if (portal->retroActiveDest && c->location->prev) {
+        c->location->prev->coords = portal->retroActiveDest->coords;
+        c->location->prev->map =
+            mapMgr->get(portal->retroActiveDest->mapid);
+    }
+    if (destination->type == Map::SHRINE) {
+        Shrine *shrine = dynamic_cast<Shrine *>(destination);
+        shrine->enter();
+    }
+    return 1;
 } // usePortalAt

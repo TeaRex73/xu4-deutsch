@@ -5,7 +5,7 @@
 #include "vc6.h" // Fixes things if you're using VC6, does nothing otherwise
 
 #if (defined(__unix__) || defined(unix)) && !defined(USG)
- # include <sys/param.h>
+#include <sys/param.h>
 #endif
 
 #include "utils.h"
@@ -20,9 +20,9 @@
 void xu4_srandom()
 {
 #if (defined(BSD) && (BSD >= 199103)) || defined(MACOSX)
-	srandom(time(NULL));
+    srandom(time(NULL));
 #else
-	srand((unsigned int)time(NULL));
+    srand((unsigned int)time(NULL));
 #endif
 }
 
@@ -36,11 +36,11 @@ void xu4_srandom()
 int xu4_random(int upperRange)
 {
 #if (defined(BSD) && (BSD >= 199103)) || defined(MACOSX)
-	int r = random();
+    int r = random();
 #else
-	int r = rand();
+    int r = rand();
 #endif
-	return (int)((((double)upperRange) * r) / (RAND_MAX + 1.0));
+    return (int)((((double)upperRange) * r) / (RAND_MAX + 1.0));
 }
 
 
@@ -51,38 +51,38 @@ int xu4_random(int upperRange)
  */
 string &trim(string &val, const string &chars_to_trim)
 {
-	using namespace std;
-	string::iterator i;
-	if (val.size()) {
-		string::size_type pos;
-		for (i = val.begin();
-		     (i != val.end()) &&
-			     (pos = chars_to_trim.find(*i)) != string::npos;) {
-			i = val.erase(i);
-		}
-		for (i = val.end() - 1;
-		     (i != val.begin()) &&
-			     (pos = chars_to_trim.find(*i)) != string::npos;) {
-			i = val.erase(i) - 1;
-		}
-	}
-	return val;
+    using namespace std;
+    string::iterator i;
+    if (val.size()) {
+        string::size_type pos;
+        for (i = val.begin();
+             (i != val.end()) &&
+                 (pos = chars_to_trim.find(*i)) != string::npos;) {
+            i = val.erase(i);
+        }
+        for (i = val.end() - 1;
+             (i != val.begin()) &&
+                 (pos = chars_to_trim.find(*i)) != string::npos;) {
+            i = val.erase(i) - 1;
+        }
+    }
+    return val;
 }
 
 int mytoupper(int c)
 {
-	if ((c >= 'a') && (c <= '}')) {
-		return c - 32;
-	}
-	return c;
+    if ((c >= 'a') && (c <= '}')) {
+        return c - 32;
+    }
+    return c;
 }
 
 int mytolower(int c)
 {
-	if ((c >= 'A') && (c <= ']')) {
-		return c + 32;
-	}
-	return c;
+    if ((c >= 'A') && (c <= ']')) {
+        return c + 32;
+    }
+    return c;
 }
 
 
@@ -91,12 +91,12 @@ int mytolower(int c)
  */
 string lowercase(string val)
 {
-	using namespace std;
-	string::iterator i;
-	for (i = val.begin(); i != val.end(); i++) {
-		*i = mytolower(*i);
-	}
-	return val;
+    using namespace std;
+    string::iterator i;
+    for (i = val.begin(); i != val.end(); i++) {
+        *i = mytolower(*i);
+    }
+    return val;
 }
 
 
@@ -105,52 +105,52 @@ string lowercase(string val)
  */
 string uppercase(string val)
 {
-	using namespace std;
-	string ret = "";
-	string::iterator i;
-	for (i = val.begin(); i != val.end(); i++) {
-		if (*i == '~') {
-			ret += "SS";
-		} else {
-			ret += string(1, (char)mytoupper(*i));
-		}
-	}
-	return ret;
+    using namespace std;
+    string ret = "";
+    string::iterator i;
+    for (i = val.begin(); i != val.end(); i++) {
+        if (*i == '~') {
+            ret += "SS";
+        } else {
+            ret += string(1, (char)mytoupper(*i));
+        }
+    }
+    return ret;
 }
 
 string deumlaut(string val)
 {
-	using namespace std;
-	string ret = "";
-	string::iterator i;
-	for (i = val.begin(); i != val.end(); i++) {
-		switch (*i) {
-		case '[':
-			ret += "AE";
-			break;
-		case '\\':
-			ret += "OE";
-			break;
-		case ']':
-			ret += "UE";
-			break;
-		case '{':
-			ret += "ae";
-			break;
-		case '|':
-			ret += "oe";
-			break;
-		case '}':
-			ret += "ue";
-			break;
-		case '~':
-			ret += "ss";
-			break;
-		default:
-			ret += string(1, (char)mytoupper(*i));
-		}
-	}
-	return ret;
+    using namespace std;
+    string ret = "";
+    string::iterator i;
+    for (i = val.begin(); i != val.end(); i++) {
+        switch (*i) {
+        case '[':
+            ret += "AE";
+            break;
+        case '\\':
+            ret += "OE";
+            break;
+        case ']':
+            ret += "UE";
+            break;
+        case '{':
+            ret += "ae";
+            break;
+        case '|':
+            ret += "oe";
+            break;
+        case '}':
+            ret += "ue";
+            break;
+        case '~':
+            ret += "ss";
+            break;
+        default:
+            ret += string(1, (char)mytoupper(*i));
+        }
+    }
+    return ret;
 } // deumlaut
 
 
@@ -159,9 +159,9 @@ string deumlaut(string val)
  */
 string to_string(int val)
 {
-	char buffer[16];
-	sprintf(buffer, "%d", val);
-	return buffer;
+    char buffer[16];
+    sprintf(buffer, "%d", val);
+    return buffer;
 }
 
 
@@ -171,20 +171,20 @@ string to_string(int val)
  */
 std::vector<string> split(const string &s, const string &separators)
 {
-	std::vector<string> result;
-	string current;
-	for (unsigned i = 0; i < s.length(); i++) {
-		if (separators.find(s[i]) != string::npos) {
-			if (current.length() > 0) {
-				result.push_back(current);
-			}
-			current.erase();
-		} else {
-			current += s[i];
-		}
-	}
-	if (current.length() > 0) {
-		result.push_back(current);
-	}
-	return result;
+    std::vector<string> result;
+    string current;
+    for (unsigned i = 0; i < s.length(); i++) {
+        if (separators.find(s[i]) != string::npos) {
+            if (current.length() > 0) {
+                result.push_back(current);
+            }
+            current.erase();
+        } else {
+            current += s[i];
+        }
+    }
+    if (current.length() > 0) {
+        result.push_back(current);
+    }
+    return result;
 }

@@ -4,7 +4,7 @@
 // VC6 Compiler issues
 #if defined(_MSC_VER)
 // Disable "decorated name length exceeded,
-// name was trancated" compiler warning
+// name was truncated" compiler warning
 #pragma warning(disable:4503)
 // Disable "symbol truncated to 255 characters" compiler warning
 #pragma warning(disable:4786)

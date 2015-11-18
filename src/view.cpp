@@ -10,19 +10,19 @@
 Image *View::screen = NULL;
 
 View::View(int x, int y, int width, int height)
-	:x(x),
-	 y(y),
-	 width(width),
-	 height(height),
-	 highlighted(false),
-	 highlightX(0),
-	 highlightY(0),
-	 highlightW(0),
-	 highlightH(0)
+    :x(x),
+     y(y),
+     width(width),
+     height(height),
+     highlighted(false),
+     highlightX(0),
+     highlightY(0),
+     highlightW(0),
+     highlightH(0)
 {
-	if (screen == NULL) {
-		screen = imageMgr->get("screen")->image;
-	}
+    if (screen == NULL) {
+        screen = imageMgr->get("screen")->image;
+    }
 }
 
 
@@ -31,7 +31,7 @@ View::View(int x, int y, int width, int height)
  */
 void View::reinit()
 {
-	screen = imageMgr->get("screen")->image;
+    screen = imageMgr->get("screen")->image;
 }
 
 
@@ -40,14 +40,10 @@ void View::reinit()
  */
 void View::clear()
 {
-	unhighlight();
-	screen->fillRect(SCALED(x),
-			 SCALED(y),
-			 SCALED(width),
-			 SCALED(height),
-			 0,
-			 0,
-			 0);
+    unhighlight();
+    screen->fillRect(
+        SCALED(x), SCALED(y), SCALED(width), SCALED(height), 0, 0, 0
+    );
 }
 
 
@@ -56,9 +52,9 @@ void View::clear()
  */
 void View::update()
 {
-	if (highlighted) {
-		drawHighlighted();
-	}
+    if (highlighted) {
+        drawHighlighted();
+    }
 }
 
 
@@ -67,9 +63,9 @@ void View::update()
  */
 void View::update(int x, int y, int width, int height)
 {
-	if (highlighted) {
-		drawHighlighted();
-	}
+    if (highlighted) {
+        drawHighlighted();
+    }
 }
 
 
@@ -78,39 +74,40 @@ void View::update(int x, int y, int width, int height)
  */
 void View::highlight(int x, int y, int width, int height)
 {
-	highlighted = true;
-	highlightX = x;
-	highlightY = y;
-	highlightW = width;
-	highlightH = height;
-	update(x, y, width, height);
+    highlighted = true;
+    highlightX = x;
+    highlightY = y;
+    highlightW = width;
+    highlightH = height;
+    update(x, y, width, height);
 }
 
 void View::unhighlight()
 {
-	highlighted = false;
-	update(highlightX, highlightY, highlightW, highlightH);
-	highlightX = highlightY = highlightW = highlightH = 0;
+    highlighted = false;
+    update(highlightX, highlightY, highlightW, highlightH);
+    highlightX = highlightY = highlightW = highlightH = 0;
 }
 
 void View::drawHighlighted()
 {
-	Image *screen = imageMgr->get("screen")->image;
-	Image *tmp = Image::create(SCALED(highlightW),
-				   SCALED(highlightH),
-				   false,
-				   Image::HARDWARE); /* was SOFTWARE */
-	if (!tmp) {
-		return;
-	}
-	screen->drawSubRectOn(tmp,
-			      0,
-			      0,
-			      SCALED(this->x + highlightX),
-			      SCALED(this->y + highlightY),
-			      SCALED(highlightW),
-			      SCALED(highlightH));
-	tmp->drawHighlighted();
-	tmp->draw(SCALED(this->x + highlightX), SCALED(this->y + highlightY));
-	delete tmp;
+    Image *screen = imageMgr->get("screen")->image;
+    Image *tmp = Image::create(
+        SCALED(highlightW), SCALED(highlightH), false, Image::HARDWARE
+    ); /* was SOFTWARE */
+    if (!tmp) {
+        return;
+    }
+    screen->drawSubRectOn(
+        tmp,
+        0,
+        0,
+        SCALED(this->x + highlightX),
+        SCALED(this->y + highlightY),
+        SCALED(highlightW),
+        SCALED(highlightH)
+    );
+    tmp->drawHighlighted();
+    tmp->draw(SCALED(this->x + highlightX), SCALED(this->y + highlightY));
+    delete tmp;
 }

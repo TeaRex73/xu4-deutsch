@@ -11,56 +11,57 @@
 
 using std::string;
 
+
 /**
  * Aura class
  */
 class Aura:public Observable<Aura *> {
 public:
-	enum Type {
-		NONE,
-		HORN,
-		JINX,
-		NEGATE,
-		PROTECTION,
-		QUICKNESS
-	};
+    enum Type {
+        NONE,
+        HORN,
+        JINX,
+        NEGATE,
+        PROTECTION,
+        QUICKNESS
+    };
 
-	Aura();
+    Aura();
 
-	int getDuration() const
-	{
-		return duration;
-	}
+    int getDuration() const
+    {
+        return duration;
+    }
 
-	Aura::Type getType() const
-	{
-		return type;
-	}
+    Aura::Type getType() const
+    {
+        return type;
+    }
 
-	bool isActive() const
-	{
-		return duration > 0;
-	}
+    bool isActive() const
+    {
+        return duration > 0;
+    }
 
-	void setDuration(int d);
-	void set(Type = NONE, int d = 0);
-	void setType(Type t);
+    void setDuration(int d);
+    void set(Type = NONE, int d = 0);
+    void setType(Type t);
 
-	bool operator==(const Type &t) const
-	{
-		return type == t;
-	}
+    bool operator==(const Type &t) const
+    {
+        return type == t;
+    }
 
-	bool operator!=(const Type &t) const
-	{
-		return !operator==(t);
-	}
+    bool operator!=(const Type &t) const
+    {
+        return !operator==(t);
+    }
 
-	void passTurn();
+    void passTurn();
 
 private:
-	Type type;
-	int duration;
+    Type type;
+    int duration;
 };
 
 #endif // ifndef AURA_H

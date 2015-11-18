@@ -61,20 +61,20 @@ class Coords;
 #define _NV__ 0x84
 
 typedef enum {
-	MC_DEFAULT,
-	MC_WEST,
-	MC_NORTH,
-	MC_EAST,
-	MC_SOUTH
+    MC_DEFAULT,
+    MC_WEST,
+    MC_NORTH,
+    MC_EAST,
+    MC_SOUTH
 } MouseCursor;
 
 typedef struct _MouseArea {
-	int npoints;
-	struct {
-		int x, y;
-	} point[4];
-	MouseCursor cursor;
-	int command[3];
+    int npoints;
+    struct {
+        int x, y;
+    } point[4];
+    MouseCursor cursor;
+    int command[3];
 } MouseArea;
 
 #define SCR_CYCLE_PER_SECOND 4
@@ -107,18 +107,16 @@ void screenShowChar(int chr, int x, int y);
 void screenShowCharMasked(int chr, int x, int y, unsigned char mask);
 void screenTextAt(int x, int y, const char *fmt, ...) PRINTF_LIKE(3, 4);
 void screenTextColor(int color);
-bool screenTileUpdate(TileView *view,
-		      const Coords &coords,
-		      bool redraw = true); // whether screen was affected
+bool screenTileUpdate(
+    TileView *view, const Coords &coords, bool redraw = true
+); // whether screen was affected
 void screenUpdate(TileView *view, bool showmap, bool blackout);
 void screenUpdateCursor();
 void screenUpdateMoons();
 void screenUpdateWind();
-std::vector<MapTile> screenViewportTile(unsigned int width,
-					unsigned int height,
-					int x,
-					int y,
-					bool &focus);
+std::vector<MapTile> screenViewportTile(
+    unsigned int width, unsigned int height, int x, int y, bool &focus
+);
 void screenShowCursor();
 void screenHideCursor();
 void screenEnableCursor();

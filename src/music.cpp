@@ -46,40 +46,41 @@ bool Music::functional = true;
  * Initialize the music
  */
 Music::Music()
-	:introMid(NONE),
-	 current(NONE),
-	 playing(NULL),
-	 logger(new Debug("debug/music.txt", "Music"))
+    :introMid(NONE),
+     current(NONE),
+     playing(NULL),
+     logger(new Debug("debug/music.txt", "Music"))
 {
-	filenames.reserve(MAX);
-	filenames.push_back(""); // filename for MUSIC_NONE;
-	TRACE(*logger, "Initializing music");
-	/*
-	 * load music track filenames from xml config file
-	 */
-	const Config *config = Config::getInstance();
-	TRACE_LOCAL(*logger, "Loading music tracks");
-	vector<ConfigElement> musicConfs =
-		config->getElement("music").getChildren();
-	std::vector<ConfigElement>::const_iterator i = musicConfs.begin();
-	std::vector<ConfigElement>::const_iterator theEnd = musicConfs.end();
-	for (; i != theEnd; ++i) {
-		if (i->getName() != "track") {
-			continue;
-		}
-		filenames.push_back(i->getString("file"));
-		TRACE_LOCAL(*logger,
-			    string("\tTrack file: ") + filenames.back());
-	}
-	create_sys(); // Call the Sound System specific creation file.
-	// Set up the volume.
-	on = (settings.musicVol > 0);
-	setMusicVolume(settings.musicVol);
-	setSoundVolume(settings.soundVol);
-	eventHandler->getTimer()->add(&Music::callback,
-				      settings.gameCyclesPerSecond);
-	TRACE(*logger,
-	      string("Music initialized: volume is ") + (on ? "on" : "off"));
+    filenames.reserve(MAX);
+    filenames.push_back(""); // filename for MUSIC_NONE;
+    TRACE(*logger, "Initializing music");
+    /*
+     * load music track filenames from xml config file
+     */
+    const Config *config = Config::getInstance();
+    TRACE_LOCAL(*logger, "Loading music tracks");
+    vector<ConfigElement> musicConfs =
+        config->getElement("music").getChildren();
+    std::vector<ConfigElement>::const_iterator i = musicConfs.begin();
+    std::vector<ConfigElement>::const_iterator theEnd = musicConfs.end();
+    for (; i != theEnd; ++i) {
+        if (i->getName() != "track") {
+            continue;
+        }
+        filenames.push_back(i->getString("file"));
+        TRACE_LOCAL(*logger, string("\tTrack file: ") + filenames.back());
+    }
+    create_sys(); // Call the Sound System specific creation file.
+    // Set up the volume.
+    on = (settings.musicVol > 0);
+    setMusicVolume(settings.musicVol);
+    setSoundVolume(settings.soundVol);
+    eventHandler->getTimer()->add(
+        &Music::callback, settings.gameCyclesPerSecond
+    );
+    TRACE(
+        *logger, string("Music initialized: volume is ") + (on ? "on" : "off")
+    );
 }
 
 
@@ -88,40 +89,41 @@ Music::Music()
  */
 Music::~Music()
 {
-	TRACE(*logger, "Uninitializing music");
-	eventHandler->getTimer()->remove(&Music::callback);
-	destroy_sys(); // Call the Sound System specific destruction file.
-	TRACE(*logger, "Music uninitialized");
-	delete logger;
+    TRACE(*logger, "Uninitializing music");
+    eventHandler->getTimer()->remove(&Music::callback);
+    destroy_sys(); // Call the Sound System specific destruction file.
+    TRACE(*logger, "Music uninitialized");
+    delete logger;
 }
 
 
 bool Music::load(Type music)
 {
-	ASSERT(music < MAX,
-	       "Attempted to load an invalid piece of music in "
-	       "Music::load()");
-	/* music already loaded */
-	if (music == current) {
-		/* tell calling function it didn't load correctly
-		   (because it's already playing) */
-		if (isPlaying()) {
-			return false;
-		}
-		/* it loaded correctly */
-		else {
-			return true;
-		}
-	}
-	string pathname(u4find_music(filenames[music]));
-	if (!pathname.empty()) {
-		bool status = load_sys(pathname);
-		if (status) {
-			current = music;
-		}
-		return status;
-	}
-	return false;
+    ASSERT(
+        music < MAX,
+        "Attempted to load an invalid piece of music in Music::load()"
+    );
+    /* music already loaded */
+    if (music == current) {
+        /* tell calling function it didn't load correctly
+           (because it's already playing) */
+        if (isPlaying()) {
+            return false;
+        }
+        /* it loaded correctly */
+        else {
+            return true;
+        }
+    }
+    string pathname(u4find_music(filenames[music]));
+    if (!pathname.empty()) {
+        bool status = load_sys(pathname);
+        if (status) {
+            current = music;
+        }
+        return status;
+    }
+    return false;
 } // Music::load
 
 
@@ -131,27 +133,27 @@ bool Music::load(Type music)
  */
 void Music::callback(void *data)
 {
-	eventHandler->getTimer()->remove(&Music::callback);
-	if (musicMgr->on && !isPlaying()) {
-		musicMgr->playCurrent();
-	} else if (!musicMgr->on && isPlaying()) {
-		musicMgr->stop();
-	}
-	eventHandler->getTimer()->add(&Music::callback,
-				      settings.gameCyclesPerSecond);
+    eventHandler->getTimer()->remove(&Music::callback);
+    if (musicMgr->on && !isPlaying()) {
+        musicMgr->playCurrent();
+    } else if (!musicMgr->on && isPlaying()) {
+        musicMgr->stop();
+    }
+    eventHandler->getTimer()->add(&Music::callback,
+                                  settings.gameCyclesPerSecond);
 }
 
 void Music::playCurrent()
 {
-	if (introMid) {
-		int next = (int)introMid + 1;
-		if (next >= (int)MAX) next = 1;
-		introSwitch(next);
-		return;
-	}
-	if (current) {
-		playMid(current);
-	}
+    if (introMid) {
+        int next = (int)introMid + 1;
+        if (next >= (int)MAX) next = 1;
+        introSwitch(next);
+        return;
+    }
+    if (current) {
+        playMid(current);
+    }
 }
 
 
@@ -160,7 +162,7 @@ void Music::playCurrent()
  */
 void Music::play()
 {
-	playMid(c->location->map->music);
+    playMid(c->location->map->music);
 }
 
 
@@ -169,10 +171,10 @@ void Music::play()
  */
 void Music::introSwitch(int n)
 {
-	if ((n > NONE) && (n < MAX)) {
-		introMid = static_cast<Type>(n);
-		intro();
-	}
+    if ((n > NONE) && (n < MAX)) {
+        introMid = static_cast<Type>(n);
+        intro();
+    }
 }
 
 
@@ -181,17 +183,18 @@ void Music::introSwitch(int n)
  */
 bool Music::toggle()
 {
-	eventHandler->getTimer()->remove(&Music::callback);
-	on = !on;
-	if (!on) {
-		fadeOut(1000);
-	} else {
-		fadeIn(1000, true);
-	}
-	eventHandler->getTimer()->add(&Music::callback,
-				      settings.gameCyclesPerSecond);
-	play();
-	return on;
+    eventHandler->getTimer()->remove(&Music::callback);
+    on = !on;
+    if (!on) {
+        fadeOut(1000);
+    } else {
+        fadeIn(1000, true);
+    }
+    eventHandler->getTimer()->add(
+        &Music::callback, settings.gameCyclesPerSecond
+    );
+    play();
+    return on;
 }
 
 
@@ -200,17 +203,17 @@ bool Music::toggle()
  */
 void Music::fadeOut(int msecs)
 {
-	// fade the music out even if 'on' is false
-	if (!functional) {
-		return;
-	}
-	if (isPlaying()) {
-		if (!settings.volumeFades) {
-			stop();
-		} else {
-			fadeOut_sys(msecs);
-		}
-	}
+    // fade the music out even if 'on' is false
+    if (!functional) {
+        return;
+    }
+    if (isPlaying()) {
+        if (!settings.volumeFades) {
+            stop();
+        } else {
+            fadeOut_sys(msecs);
+        }
+    }
 }
 
 
@@ -219,58 +222,58 @@ void Music::fadeOut(int msecs)
  */
 void Music::fadeIn(int msecs, bool loadFromMap)
 {
-	if (!functional || on) {
-		return;
-	}
-	if (!isPlaying()) {
-		/* make sure we've got something loaded to play */
-		if (loadFromMap || !playing) {
-			load(c->location->map->music);
-		}
-		if (!settings.volumeFades) {
-			play();
-		} else {
-			fadeIn_sys(msecs, loadFromMap);
-		}
-	}
+    if (!functional || on) {
+        return;
+    }
+    if (!isPlaying()) {
+        /* make sure we've got something loaded to play */
+        if (loadFromMap || !playing) {
+            load(c->location->map->music);
+        }
+        if (!settings.volumeFades) {
+            play();
+        } else {
+            fadeIn_sys(msecs, loadFromMap);
+        }
+    }
 }
 
 int Music::increaseMusicVolume()
 {
-	if (++settings.musicVol > MAX_VOLUME) {
-		settings.musicVol = MAX_VOLUME;
-	} else {
-		setMusicVolume(settings.musicVol);
-	}
-	return settings.musicVol * 100 / MAX_VOLUME; // percentage
+    if (++settings.musicVol > MAX_VOLUME) {
+        settings.musicVol = MAX_VOLUME;
+    } else {
+        setMusicVolume(settings.musicVol);
+    }
+    return settings.musicVol * 100 / MAX_VOLUME; // percentage
 }
 
 int Music::decreaseMusicVolume()
 {
-	if (--settings.musicVol < 0) {
-		settings.musicVol = 0;
-	} else {
-		setMusicVolume(settings.musicVol);
-	}
-	return settings.musicVol * 100 / MAX_VOLUME; // percentage
+    if (--settings.musicVol < 0) {
+        settings.musicVol = 0;
+    } else {
+        setMusicVolume(settings.musicVol);
+    }
+    return settings.musicVol * 100 / MAX_VOLUME; // percentage
 }
 
 int Music::increaseSoundVolume()
 {
-	if (++settings.soundVol > MAX_VOLUME) {
-		settings.soundVol = MAX_VOLUME;
-	} else {
-		setSoundVolume(settings.soundVol);
-	}
-	return settings.soundVol * 100 / MAX_VOLUME; // percentage
+    if (++settings.soundVol > MAX_VOLUME) {
+        settings.soundVol = MAX_VOLUME;
+    } else {
+        setSoundVolume(settings.soundVol);
+    }
+    return settings.soundVol * 100 / MAX_VOLUME; // percentage
 }
 
 int Music::decreaseSoundVolume()
 {
-	if (--settings.soundVol < 0) {
-		settings.soundVol = 0;
-	} else {
-		setSoundVolume(settings.soundVol);
-	}
-	return settings.soundVol * 100 / MAX_VOLUME; // percentage
+    if (--settings.soundVol < 0) {
+        settings.soundVol = 0;
+    } else {
+        setSoundVolume(settings.soundVol);
+    }
+    return settings.soundVol * 100 / MAX_VOLUME; // percentage
 }

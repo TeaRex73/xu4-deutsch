@@ -6,14 +6,17 @@
 #define DIALOGUELOADER_HW_H
 
 #include "dialogueloader.h"
+
+
 /**
  * The dialogue loader for Hawkwind.
  */
 class U4HWDialogueLoader:public DialogueLoader {
 public:
-	virtual Dialogue *load(void *source);
-private:
-	static DialogueLoader *instance;
+    virtual Dialogue *load(void *source);
+
+ private:
+    static DialogueLoader *instance;
 };
 
 #endif

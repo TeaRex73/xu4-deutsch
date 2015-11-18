@@ -14,7 +14,6 @@
 using std::string;
 
 #define MIN_SHAKE_INTERVAL 50
-
 #define MAX_BATTLE_SPEED 10
 #define MAX_KEY_DELAY 1000
 #define MAX_KEY_INTERVAL 100
@@ -56,7 +55,6 @@ using std::string;
 #define DEFAULT_LOGGING ""
 #define DEFAULT_TITLE_SPEED_RANDOM 150
 #define DEFAULT_TITLE_SPEED_OTHER 30
-
 #define DEFAULT_PAUSE_FOR_EACH_TURN 100
 #define DEFAULT_PAUSE_FOR_EACH_MOVEMENT 10
 // --Tile transparency stuff
@@ -64,23 +62,23 @@ using std::string;
 #define DEFAULT_SHADOW_PIXEL_SIZE 2
 
 struct SettingsEnhancementOptions {
-	bool activePlayer;
-	bool u5spellMixing;
-	bool u5shrines;
-	bool u5combat;
-	bool slimeDivides;
-	bool gazerSpawnsInsects;
-	bool textColorization;
-	bool c64chestTraps;
-	bool smartEnterKey;
-	bool peerShowsObjects;
-	bool u4TileTransparencyHack;
-	int u4TileTransparencyHackPixelShadowOpacity;
-	int u4TrileTransparencyHackShadowBreadth;
+    bool activePlayer;
+    bool u5spellMixing;
+    bool u5shrines;
+    bool u5combat;
+    bool slimeDivides;
+    bool gazerSpawnsInsects;
+    bool textColorization;
+    bool c64chestTraps;
+    bool smartEnterKey;
+    bool peerShowsObjects;
+    bool u4TileTransparencyHack;
+    int u4TileTransparencyHackPixelShadowOpacity;
+    int u4TileTransparencyHackShadowBreadth;
 };
 
 struct MouseOptions {
-	bool enabled;
+    bool enabled;
 };
 
 
@@ -89,53 +87,53 @@ struct MouseOptions {
  */
 class SettingsData {
 public:
-	bool operator==(const SettingsData &) const;
-	bool operator!=(const SettingsData &) const;
-	int battleSpeed;
-	bool campingAlwaysCombat;
-	int campTime;
-	bool debug;
-	bool enhancements;
-	SettingsEnhancementOptions enhancementsOptions;
-	bool filterMoveMessages;
-	bool fullscreen;
-	int gameCyclesPerSecond;
-	int screenAnimationFramesPerSecond;
-	bool innAlwaysCombat;
-	int innTime;
-	int keydelay;
-	int keyinterval;
-	MouseOptions mouseOptions;
-	int musicVol;
-	static const unsigned int scale = 1;
-	bool screenShakes;
-	int gamma;
-	int shakeInterval;
-	bool shortcutCommands;
-	int shrineTime;
-	int soundVol;
-	int spellEffectSpeed;
-	bool validateXml;
-	bool volumeFades;
-	int titleSpeedRandom;
-	int titleSpeedOther;
-	// Settings that aren't in file yet
-	int pauseForEachTurn;
-	int pauseForEachMovement;
-	/**
-	 * Strings, classes, and other objects that cannot
-	 * be bitwise-compared must be placed here at the
-	 * end of the list so that our == and != operators
-	 * function correctly
-	 */
-	long end_of_bitwise_comparators;
-	string filter;
-	string gemLayout;
-	string lineOfSight;
-	string videoType;
-	string battleDiff;
-	string logging;
-	string game;
+    bool operator==(const SettingsData &) const;
+    bool operator!=(const SettingsData &) const;
+    int battleSpeed;
+    bool campingAlwaysCombat;
+    int campTime;
+    bool debug;
+    bool enhancements;
+    SettingsEnhancementOptions enhancementsOptions;
+    bool filterMoveMessages;
+    bool fullscreen;
+    int gameCyclesPerSecond;
+    int screenAnimationFramesPerSecond;
+    bool innAlwaysCombat;
+    int innTime;
+    int keydelay;
+    int keyinterval;
+    MouseOptions mouseOptions;
+    int musicVol;
+    static const unsigned int scale = 1;
+    bool screenShakes;
+    int gamma;
+    int shakeInterval;
+    bool shortcutCommands;
+    int shrineTime;
+    int soundVol;
+    int spellEffectSpeed;
+    bool validateXml;
+    bool volumeFades;
+    int titleSpeedRandom;
+    int titleSpeedOther;
+    // Settings that aren't in file yet
+    int pauseForEachTurn;
+    int pauseForEachMovement;
+    /**
+     * Strings, classes, and other objects that cannot
+     * be bitwise-compared must be placed here at the
+     * end of the list so that our == and != operators
+     * function correctly
+     */
+    long end_of_bitwise_comparators;
+    string filter;
+    string gemLayout;
+    string lineOfSight;
+    string videoType;
+    string battleDiff;
+    string logging;
+    string game;
 };
 
 
@@ -144,34 +142,33 @@ public:
  * information.  It is dynamically initialized when first accessed.
  */
 class Settings
-	:public SettingsData,
-	 public Observable<Settings *> {
+    :public SettingsData,
+     public Observable<Settings *> {
 public:
+    void init(const bool useProfile, const string profileName);
+    
+    static Settings &getInstance()
+    {
+        if (__builtin_expect((instance == NULL), false)) {
+            instance = new Settings();
+        }
+        return *instance;
+    }
 
-	void init(const bool useProfile, const string profileName);
-	
-	static Settings &getInstance()
-	{
-		if (__builtin_expect((instance == NULL), false)) {
-			instance = new Settings();
-		}
-		return *instance;
-	}
-
-	void setData(const SettingsData &data);
-	bool read();
-	bool write();
-	const string &getUserPath();
-	const std::vector<string> &getBattleDiffs();
+    void setData(const SettingsData &data);
+    bool read();
+    bool write();
+    const string &getUserPath();
+    const std::vector<string> &getBattleDiffs();
 
 private:
-	typedef std::map<string, int, std::less<string> > SettingsMap;
-	
-	Settings();
-	static Settings *instance;
-	string userPath;
-	string filename;
-	std::vector<string> battleDiffs;
+    typedef std::map<string, int, std::less<string> > SettingsMap;
+    
+    Settings();
+    static Settings *instance;
+    string userPath;
+    string filename;
+    std::vector<string> battleDiffs;
 };
 
 /* the global settings */

@@ -14,12 +14,14 @@ class GameController;
 
 class CheatMenuController:public WaitableController<void *> {
 public:
-	CheatMenuController(GameController *game);
-	bool keyPressed(int key);
+    CheatMenuController(GameController *game);
+    bool keyPressed(int key);
+
 private:
-	void summonCreature(const string &name);
-	GameController *game;
+    void summonCreature(const string &name);
+    GameController *game;
 };
+
 
 /**
  * This class controls the wind option from the cheat menu.  It
@@ -28,7 +30,7 @@ private:
  */
 class WindCmdController:public WaitableController<void *> {
 public:
-	bool keyPressed(int key);
+    bool keyPressed(int key);
 };
 
 #endif /* CHEAT_H */

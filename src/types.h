@@ -12,31 +12,31 @@ typedef unsigned int TileId;
 typedef unsigned char MapId;
 
 typedef enum {
-	FAST,
-	SLOW,
-	VSLOW,
-	VVSLOW
+    FAST,
+    SLOW,
+    VSLOW,
+    VVSLOW
 } TileSpeed;
 
 typedef enum {
-	EFFECT_NONE,
-	EFFECT_FIRE,
-	EFFECT_SLEEP,
-	EFFECT_POISON,
-	EFFECT_POISONFIELD,
-	EFFECT_ELECTRICITY,
-	EFFECT_LAVA
+    EFFECT_NONE,
+    EFFECT_FIRE,
+    EFFECT_SLEEP,
+    EFFECT_POISON,
+    EFFECT_POISONFIELD,
+    EFFECT_ELECTRICITY,
+    EFFECT_LAVA
 } TileEffect;
 
 typedef enum {
-	ANIM_NONE,
-	ANIM_SCROLL,
-	ANIM_CAMPFIRE,
-	ANIM_CITYFLAG,
-	ANIM_CASTLEFLAG,
-	ANIM_SHIPFLAG,
-	ANIM_LCBFLAG,
-	ANIM_FRAMES
+    ANIM_NONE,
+    ANIM_SCROLL,
+    ANIM_CAMPFIRE,
+    ANIM_CITYFLAG,
+    ANIM_CASTLEFLAG,
+    ANIM_SHIPFLAG,
+    ANIM_LCBFLAG,
+    ANIM_FRAMES
 } TileAnimationStyle;
 
 
@@ -45,72 +45,72 @@ typedef enum {
  */
 class MapTile {
 public:
-	MapTile()
-		:id(0), frame(0), freezeAnimation(false)
-	{
-	}
-	
-	MapTile(const TileId &i, unsigned char f = 0)
-		:id(i), frame(f), freezeAnimation(false)
-	{
-	}
+    MapTile()
+        :id(0), frame(0), freezeAnimation(false)
+    {
+    }
+    
+    MapTile(const TileId &i, unsigned char f = 0)
+        :id(i), frame(f), freezeAnimation(false)
+    {
+    }
 
-	MapTile(const MapTile &t)
-		:id(t.id), frame(t.frame), freezeAnimation(t.freezeAnimation)
-	{
-	}
+    MapTile(const MapTile &t)
+        :id(t.id), frame(t.frame), freezeAnimation(t.freezeAnimation)
+    {
+    }
 
-	TileId getId() const
-	{
-		return id;
-	}
+    TileId getId() const
+    {
+        return id;
+    }
 
-	unsigned char getFrame() const
-	{
-		return frame;
-	}
+    unsigned char getFrame() const
+    {
+        return frame;
+    }
 
-	bool getFreezeAnimation() const
-	{
-		return freezeAnimation;
-	}
+    bool getFreezeAnimation() const
+    {
+        return freezeAnimation;
+    }
 
-	bool operator==(const MapTile &m) const
-	{
-		return id == m.id;
-	}
+    bool operator==(const MapTile &m) const
+    {
+        return id == m.id;
+    }
 
-	bool operator==(const TileId &i) const
-	{
-		return id == i;
-	}
+    bool operator==(const TileId &i) const
+    {
+        return id == i;
+    }
 
-	bool operator!=(const MapTile &m) const
-	{
-		return id != m.id;
-	}
+    bool operator!=(const MapTile &m) const
+    {
+        return id != m.id;
+    }
 
-	bool operator!=(const TileId &i) const
-	{
-		return id != i;
-	}
+    bool operator!=(const TileId &i) const
+    {
+        return id != i;
+    }
 
-	bool operator<(const MapTile &m) const
-	{
-		return id < m.id; /* for std::less */
-	}
+    bool operator<(const MapTile &m) const
+    {
+        return id < m.id; /* for std::less */
+    }
 
-	Direction getDirection() const;
-	bool setDirection(Direction d);
-	const Tile *getTileType() const;
-	TileId id;
-	unsigned char frame;
-	bool freezeAnimation;
+    Direction getDirection() const;
+    bool setDirection(Direction d);
+    const Tile *getTileType() const;
+    TileId id;
+    unsigned char frame;
+    bool freezeAnimation;
 };
 
 
 /**
- * An Uncopyable has no default copy constructor or operator=. 
+ * An Uncopyable has no default copy constructor or operator=.
  * A subclass may derive from Uncopyable at any level of visibility,
  * even private, and subclasses will not have a default copy
  * constructor or operator=. See also, boost::noncopyable
@@ -119,17 +119,17 @@ public:
  */
 class Uncopyable {
 protected:
-	Uncopyable()
-	{
-	}
+    Uncopyable()
+    {
+    }
 
-	~Uncopyable()
-	{
-	}
-	
+    ~Uncopyable()
+    {
+    }
+    
 private:
-	Uncopyable(const Uncopyable &);
-	const Uncopyable &operator=(const Uncopyable &);
+    Uncopyable(const Uncopyable &);
+    const Uncopyable &operator=(const Uncopyable &);
 };
 
 #endif // ifndef TYPEDEFS_H
