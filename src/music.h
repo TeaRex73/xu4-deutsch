@@ -33,6 +33,7 @@ public:
         OUTSIDE,
         COMBAT,
         SHRINES,
+	EXTRA,
         MAX
     };
     
@@ -97,6 +98,11 @@ public:
     void gem()
     {
         playMid(SHRINES); /**< Music when peering */
+    }
+
+    void create_or_win()
+    {
+	playMid(EXTRA); /**< Music when starting a new game of ending */
     }
     
     void intro()

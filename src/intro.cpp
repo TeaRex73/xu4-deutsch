@@ -843,6 +843,7 @@ bool IntroController::keyPressed(int key)
         case '6':
         case '7':
         case '8':
+	case '9':
             musicMgr->introSwitch(key - '0');
             break;
         default:
@@ -1304,7 +1305,7 @@ void IntroController::showStory(SexType sex)
         } else if (storyInd == 12) {
             backgroundArea.draw(BKGD_TREE);
         } else if (storyInd == 15) {
-            musicMgr->intro();
+            musicMgr->create_or_win();
         } else if (storyInd == 16) {
             backgroundArea.draw(BKGD_OUTSIDE);
         } else if (storyInd == 18) {

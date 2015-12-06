@@ -29,8 +29,8 @@ extern "C" {
 
 /* info for loading image data from shapes.ega */
 #define N_TILES 256
-#define TILE_WIDTH (2 * CHAR_WIDTH)
-#define TILE_HEIGHT (2 * CHAR_HEIGHT)
+#define TILE_WIDTH 16
+#define TILE_HEIGHT 16
 
 /* info for loading image data from charset.ega */
 #define CHAR_WIDTH 8

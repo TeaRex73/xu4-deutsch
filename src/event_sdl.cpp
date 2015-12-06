@@ -424,7 +424,7 @@ void EventHandler::sleep(unsigned int usec)
     // to sleep from user input.
     // Make this static so that all instance stop.
     // (e.g., sleep calling sleep).
-    static bool stopUserInput = true;
+    static volatile bool stopUserInput = true;
     SDL_TimerID sleepingTimer = SDL_AddTimer(usec, sleepTimerCallback, 0);
     stopUserInput = true;
     while (stopUserInput) {

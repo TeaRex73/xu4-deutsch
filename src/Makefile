@@ -17,8 +17,8 @@ LIBS=-L/usr/lib -L/usr/lib/arm-linux-gnueabihf -L/lib/arm-linux-gnueabihf $(UILI
 CC=$(CCPREFIX)gcc
 CXX=$(CCPREFIX)g++
 FEATURES=-DHAVE_BACKTRACE=1 -DHAVE_VARIADIC_MACROS=1
-DEBUGCXXFLAGS=-Og -g -DNPERF -marm -mfpu=vfp -march=armv6zk -mtune=arm1176jzf-s -mfloat-abi=hard -UNDEBUG -DDEBUG -DRASB_PI -fno-exceptions -fno-non-call-exceptions -fno-common
-#DEBUGCXXFLAGS=-g -Og -DNPERF -march=native -mtune=native -UNDEBUG -DDEBUG -URASB_PI -fno-exceptions -fno-non-call-exceptions -fno-common
+DEBUGCXXFLAGS=-Ofast -flto -DNPERF -marm -mfpu=vfp -march=armv6zk -mtune=arm1176jzf-s -mfloat-abi=hard -UDEBUG -DNEBUG -DRASB_PI -fno-exceptions -fno-non-call-exceptions -fno-common
+#DEBUGCXXFLAGS=-Ofast -flto -DNPERF -march=native -mtune=native -UNDEBUG -DDEBUG -URASB_PI -fno-exceptions -fno-non-call-exceptions -fno-common
 CXXFLAGS=$(FEATURES) -Wall -pipe -I. -I/usr/include/libxml2 -I/usr/include/SDL -I/usr/include -I/usr/local/include -I/include -I/usr/include/arm-linux-gnueabihf $(UIFLAGS) -I/usr/include/libxml2 -DICON_FILE=\"$(datadir)/pixmaps/u4.bmp\" -DVERSION=\"$(VERSION)\" $(DEBUGCXXFLAGS) $(LIBS)
 CFLAGS=$(CXXFLAGS)
 INSTALL=install
@@ -44,7 +44,7 @@ install:: install-prog
 	mkdir -p $(libdir)/u4g/music
 #	$(INSTALL) ../mid/*.mid $(libdir)/u4g/music
 #	$(INSTALL) ../mid/*.it $(libdir)/u4g/music
-	$(INSTALL) ../mid/*.wav $(libdir)/u4g/music
+	$(INSTALL) ../music/*.wav $(libdir)/u4g/music
 	mkdir -p $(libdir)/u4g/sound
 #	$(INSTALL) ../sound/*.ogg $(libdir)/u4g/sound
 	$(INSTALL) ../sound/*.wav $(libdir)/u4g/sound

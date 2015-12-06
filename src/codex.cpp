@@ -436,7 +436,7 @@ static bool codexHandleEndgameAnyKey(int key, void *data)
         } else if (index == 7) {
             screenDrawImageInMapArea(BKGD_STONCRCL);
             screenRedrawMapArea();
-            musicMgr->intro();
+            musicMgr->create_or_win();
             screenMessage("\n\n%s", codexEndgameText2[0].c_str());
         } else if (index > 7) {
             screenMessage("%s", codexEndgameText2[index - 7].c_str());

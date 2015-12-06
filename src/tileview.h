@@ -8,6 +8,7 @@
 #include <vector>
 
 #include "view.h"
+#include "u4.h"
 
 class Tile;
 class Tileset;
@@ -36,7 +37,8 @@ public:
 
 protected:
     int columns, rows;
-    int tileWidth, tileHeight;
+    static const int tileWidth = TILE_WIDTH;
+	static const int tileHeight = TILE_HEIGHT;
     Tileset *tileset;
     Image *animated; /**< a scratchpad image for drawing animations */
 };

@@ -23,8 +23,10 @@ TileView::TileView(int x, int y, int columns, int rows)
 {
     this->columns = columns;
     this->rows = rows;
+#if 0
     this->tileWidth = TILE_WIDTH;
     this->tileHeight = TILE_HEIGHT;
+#endif
     this->tileset = Tileset::get("base");
     animated = Image::create(
         SCALED(tileWidth), SCALED(tileHeight), false, Image::HARDWARE
@@ -36,8 +38,10 @@ TileView::TileView(int x, int y, int columns, int rows, const string &tileset)
 {
     this->columns = columns;
     this->rows = rows;
+#if 0
     this->tileWidth = TILE_WIDTH;
     this->tileHeight = TILE_HEIGHT;
+#endif
     this->tileset = Tileset::get(tileset);
     animated = Image::create(
         SCALED(tileWidth), SCALED(tileHeight), false, Image::HARDWARE

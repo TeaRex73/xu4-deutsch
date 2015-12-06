@@ -324,7 +324,7 @@ Object *Map::objectAt(const Coords &coords)
     Object *objAt = NULL;
     for (i = objects.begin(); i != objects.end(); i++) {
         Object *obj = *i;
-        if (obj->getCoords() == coords) {
+        if (__builtin_expect(obj->getCoords() == coords, false)) {
             /* get the most visible object */
             if (objAt
                 && (objAt->getType() == Object::UNKNOWN)

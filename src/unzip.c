@@ -13,6 +13,7 @@ extern "C" {
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <stdbool.h>
 #include "zlib.h"
 #include "unzip.h"
 
@@ -126,11 +127,11 @@ typedef struct {
    for end of file.
    IN assertion: the stream s has been sucessfully opened for reading.
 */
-local int unzlocal_getByte(FILE *fin, int *pi)
+local inline int unzlocal_getByte(FILE *fin, int *pi)
 {
     unsigned char c;
     int err = fread(&c, 1, 1, fin);
-    if (err == 1) {
+    if (__builtin_expect(err == 1, true)) {
         *pi = (int)c;
         return UNZ_OK;
     } else {
@@ -146,18 +147,18 @@ local int unzlocal_getByte(FILE *fin, int *pi)
 /* ===========================================================================
    Reads a long in LSB order from the given gz_stream.
 */
-local int unzlocal_getShort(FILE *fin, uLong *pX)
+local inline int unzlocal_getShort(FILE *fin, uLong *pX)
 {
     uLong x;
     int i = 0;
     int err;
     err = unzlocal_getByte(fin, &i);
     x = (uLong)i;
-    if (err == UNZ_OK) {
+    if (__builtin_expect(err == UNZ_OK, true)) {
         err = unzlocal_getByte(fin, &i);
     }
     x |= ((uLong)i) << 8;
-    if (err == UNZ_OK) {
+    if (__builtin_expect(err == UNZ_OK, true)) {
         *pX = x;
     } else {
         *pX = 0;
@@ -165,26 +166,26 @@ local int unzlocal_getShort(FILE *fin, uLong *pX)
     return err;
 }
 
-local int unzlocal_getLong(FILE *fin, uLong *pX)
+local inline int unzlocal_getLong(FILE *fin, uLong *pX)
 {
     uLong x;
     int i = 0;
     int err;
     err = unzlocal_getByte(fin, &i);
     x = (uLong)i;
-    if (err == UNZ_OK) {
+    if (__builtin_expect(err == UNZ_OK, true)) {
         err = unzlocal_getByte(fin, &i);
     }
     x |= ((uLong)i) << 8;
-    if (err == UNZ_OK) {
+    if (__builtin_expect(err == UNZ_OK, true)) {
         err = unzlocal_getByte(fin, &i);
     }
     x |= ((uLong)i) << 16;
-    if (err == UNZ_OK) {
+    if (__builtin_expect(err == UNZ_OK, true)) {
         err = unzlocal_getByte(fin, &i);
     }
     x |= ((uLong)i) << 24;
-    if (err == UNZ_OK) {
+    if (__builtin_expect(err == UNZ_OK, true)) {
         *pX = x;
     } else {
         *pX = 0;
