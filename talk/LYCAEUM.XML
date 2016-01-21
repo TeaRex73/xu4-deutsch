@@ -26,14 +26,14 @@
     <topic query="job">Ich bin ein alter Zauberer, aber habe viel zu zeigen!</topic>
     <topic query="health">Meine Knochen schmerzen, aber mein Geist ist noch scharf!</topic>
     <topic query="ZEIG">Hier in meinem Teleskope!</topic>
-    <topic query="TELE">Such da am Ende, du wirst einen Drehknopf finden.<question type="0">Siehst du wo?<yes>Stell das Ziffernblatt ein und du wirst sehen!</yes><no>Schau nach!!!</no></question></topic>
+    <topic query="TELE">Schau da am Ende nach, du wirst einen Drehknopf finden.<question type="0">Siehst du wo?<yes>Stell das Ziffernblatt ein und du wirst sehen!</yes><no>Schau nach!!!</no></question></topic>
   </person>
   <person id="4" name="Vater Antos" pronoun="Er" turnAwayProb="0">
     <description>Einen alten Druiden, der dir seltsam bekannt vorkommt.</description>
     <topic query="job">Ich bewahre großes Wissen.</topic>
     <topic query="health">Alt und schwach, habe ich viele Questen gesehen!<question type="0">Bist du auf der Queste?<yes>Mögest du Erfolg haben!</yes><no>Oh.</no></question></topic>
     <topic query="WISS">Was ist es, das du suchst?</topic>
-    <topic query="BUCH">Such das Buch der Wahrheit, wo andere Bücher liegen.</topic>
+    <topic query="BUCH">Schau nach dem Buch der Wahrheit, wo andere Bücher liegen.</topic>
   </person>
   <person id="5" name="Jon" pronoun="Er" turnAwayProb="0">
     <description>Eine bullige Wache.</description>
@@ -54,7 +54,7 @@
     <topic query="job">Recherche.</topic>
     <topic query="health">Oh es geht mir prima, dir auch, hoffe ich.</topic>
     <topic query="RECH">Ich suche nach dem Buche der Gerechtigkeit!</topic>
-    <topic query="GERE">Es muß hier irgendwo sein!<question type="1">Hast du niemals auch nur &gt;ein&lt; Verbrechen begangen!?<yes>Ich glaube, du lügst und gibst an!</yes><no>Dann sprich mit dem Richter in Yew!</no></question></topic>
+    <topic query="GERE">Es muß hier irgendwo sein!<question type="1">Kannst du sagen, dass du niemals auch nur &gt;ein&lt; Verbrechen begangen hast!?<yes>Ich glaube, du lügst und gibst an!</yes><no>Dann sprich mit dem Richter in Yew!</no></question></topic>
   </person>
   <person id="8" name="Tymus" pronoun="Er" turnAwayProb="0">
     <description>Einen stattlichen Zauberer.</description>
@@ -77,12 +77,12 @@
     <topic query="KRIE">Jetzt nicht mehr!</topic>
     <topic query="WUND">Ich verlor in einem Altarraume der Höhlen!<question type="0">Hast du einen gesehen?<yes>Bemerke, daß jeder der drei Räume mit je vier Höhlen verbunden ist!</yes><no>Sie verbinden die Höhlen miteinander!</no></question></topic>
   </person>
-  <person id="11" name="Lord Terence" pronoun="Er" turnAwayProb="0">
+  <person id="11" name="Sir Terence" pronoun="Er" turnAwayProb="0">
     <description>Einen großen, wendigen Mann.</description>
     <topic query="job">Ich bin der Bibliothekar.</topic>
     <topic query="health">Mir geht es gut.</topic>
     <topic query="BIBL">In diesen Räumen befindet sich der größte Schatz an Wissen in Britannia, außer dem Kodexe!<question type="0">Suchst du ein bestimmtes Buch?<yes>Welches Buch?</yes><no>Du darfst gerne stöbern.</no></question></topic>
-    <topic query="WAHR">Schau unter 'W'.</topic>
+    <topic query="WAHR">Schau unter 'W' nach.</topic>
   </person>
   <person id="12" name="Zajac" pronoun="Er" turnAwayProb="0">
     <description>Einen flatterhaften Narren.</description>

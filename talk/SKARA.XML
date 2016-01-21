@@ -89,7 +89,7 @@
     <topic query="job">Ich bewahre das Geheimnis der Rune.</topic>
     <topic query="health">Stark.</topic>
     <topic query="RUNE">Mantra?</topic>
-    <topic query="OM  ">Such nach der Rune der Spiritualität in der Schatzkammer von Britannia!<question type="0">Hast du den Schrein gefunden?<yes>Gut!</yes><no>Betritt das Tor der Vollmonde!</no></question></topic>
+    <topic query="OM  ">Schau nach der Rune der Spiritualität in der Schatzkammer von Britannia!<question type="0">Hast du den Schrein gefunden?<yes>Gut!</yes><no>Betritt das Tor der Vollmonde!</no></question></topic>
   </person>
   <person id="13" name="Ambule" pronoun="Sie" turnAwayProb="0">
     <description>Eine rußige Bettlerin.</description>

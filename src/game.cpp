@@ -1314,10 +1314,10 @@ bool GameController::keyPressed(int key)
             peer();
             break;
         case 'e':
-            screenMessage("Ende&Speichern\n%d Z]GE\n", c->saveGame->moves);
+            screenMessage("Ende&Speichern\n%d Z]GE...\n", c->saveGame->moves);
             if (c->location->context & CTX_CAN_SAVE_GAME) {
                 gameSave();
-                screenMessage("Reise Beenden?");
+                screenMessage("\nGESPEICHERT!\n\nReise beenden?");
                 int c = ReadChoiceController::get("jn\015 \033");
                 if (c == 'j') {
                     quit = 1;

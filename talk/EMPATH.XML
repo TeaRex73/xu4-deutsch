@@ -1,13 +1,13 @@
 <?xml version="1.0"?>
 <dialogue xml:space="preserve">
-  <person id="0" name="Lord Robert" pronoun="Er" turnAwayProb="0">
+  <person id="0" name="Fürst Robert" pronoun="Er" turnAwayProb="0">
     <description>Einen stattlichen Freiherrn.</description>
     <topic query="job">Ich regiere diese Provinz.</topic>
     <topic query="health">Sehr gut.</topic>
     <topic query="PROV">Meine Frau Marcy kann dir mehr erzählen!</topic>
     <topic query="WORT">Ich kenne nur eine von drei Silben.<question type="0">Willst du sie jetzt wissen?<yes>Sie lautet 'amo', such nun die anderen Teile!</yes><no>Vielleicht ein andermal.</no></question></topic>
   </person>
-  <person id="1" name="Lady Marcy" pronoun="Sie" turnAwayProb="0">
+  <person id="1" name="Fürstin Marcy" pronoun="Sie" turnAwayProb="0">
     <description>Eine charmante Freifrau.</description>
     <topic query="job">Ich regiere mit meinem Herrn.</topic>
     <topic query="health">Gut.</topic>

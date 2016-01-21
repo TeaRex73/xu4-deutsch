@@ -11,7 +11,7 @@
     <description>Ein zähes Mädchen.</description>
     <topic query="job">Ich bin die Stallmagd.</topic>
     <topic query="health">Richtig gut.</topic>
-    <topic query="STAL">Ich hab gesehen, wie du mit dem alten Rotauge umgesprungen bist!<question type="0">Du bist nicht etwa hier um 'n Pferd zu klauen, oder?<yes>Das wird dem Boß aber gar nicht gefallen!</yes><no>Dann um Smith zu sehen, was!</no></question></topic>
+    <topic query="STAL">Ich hab gesehen, wie du mit dem alten Spitzhorn umgesprungen bist!<question type="0">Du bist nicht etwa hier um 'n Pferd zu klauen, oder?<yes>Das wird dem Boß aber gar nicht gefallen!</yes><no>Dann um Smith zu sehen, was!</no></question></topic>
     <topic query="SMIT">Das sprechende Pferd!</topic>
   </person>
   <person id="2" name="Sven" pronoun="Er" turnAwayProb="0">
@@ -68,7 +68,7 @@
     <topic query="job">Ich bereise das Land.</topic>
     <topic query="health">Mir geht es gut.</topic>
     <topic query="LAND">Britannia.<question type="0">Bist du deppert?<yes>Dachte ich mir.</yes><no>Werden wir ja sehen.</no></question></topic>
-    <topic query="RUNE">Durchsuche die Hügel in der Süd-Ost-Ecke des Dorfes!</topic>
+    <topic query="RUNE">Schau in den Hügeln in der Süd-Ost-Ecke des Dorfes nach!</topic>
   </person>
   <person id="10" name="Pix" pronoun="Sie" turnAwayProb="0">
     <description>Ein kleines Mädchen.</description>
@@ -78,7 +78,7 @@
     <topic query="A   ">A</topic>
   </person>
   <person id="11" name="Sir Simon" pronoun="Er" turnAwayProb="0">
-    <description>Einen weisen Fürsten.</description>
+    <description>Einen weisen Edelmann.</description>
     <topic query="job">Ich bin der Bewahrer.</topic>
     <topic query="health">Mir geht es prima.</topic>
     <topic query="BEWA">Wovon, darf ich nicht sagen!</topic>

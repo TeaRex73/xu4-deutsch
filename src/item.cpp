@@ -469,14 +469,14 @@ void useBBC(int item)
     if (c->location->coords == abyssEntrance) {
         /* must use bell first */
         if (item == ITEM_BELL) {
-            screenMessage("\nDIE GLOCKE L[UTET FORT UND FORT!\n");
+            screenMessage("\n\nDIE GLOCKE L[UTET FORT UND FORT!\n");
             c->saveGame->items |= ITEM_BELL_USED;
         }
         /* then the book */
         else if ((item == ITEM_BOOK)
                  && (c->saveGame->items & ITEM_BELL_USED)) {
             screenMessage(
-                "\nDIE WORTE HALLEN MIT DEM L[UTEN MIT!\n"
+                "\n\nDIE WORTE HALLEN MIT DEM L[UTEN MIT!\n"
             );
             c->saveGame->items |= ITEM_BOOK_USED;
         }
@@ -484,7 +484,7 @@ void useBBC(int item)
         else if ((item == ITEM_CANDLE)
                  && (c->saveGame->items & ITEM_BOOK_USED)) {
             screenMessage(
-                "\nALS DU DIE KERZE ENTZ]NDEST, ERBEBT DIE ERDE!\n"
+                "\n\nALS DU DIE KERZE ENTZ]NDEST, ERBEBT DIE ERDE!\n"
             );
             // play abyss opening sound effect
             // taken from C64 version
@@ -501,12 +501,12 @@ void useBBC(int item)
             screenEnableCursor();
             c->saveGame->items |= ITEM_CANDLE_USED;
         } else {
-            screenMessage("\nHMM... KEINE WIRKUNG!\n");
+            screenMessage("\n\nHMM... KEINE WIRKUNG!\n");
         }
     }
     /* somewhere else */
     else {
-        screenMessage("\nHMM... KEINE WIRKUNG!\n");
+        screenMessage("\n\nHMM... KEINE WIRKUNG!\n");
     }
 } // useBBC
 
@@ -516,7 +516,7 @@ void useBBC(int item)
  */
 void useHorn(int item)
 {
-    screenMessage("\nDAS HORN L[SST EINEN SCHAUERLICHEN KLANG ERSCHALLEN!\n");
+    screenMessage("\n\nDAS HORN L[SST EINEN SCHAUERLICHEN KLANG ERSCHALLEN!\n");
     soundPlay(SOUND_STORM, false);
     c->aura->set(Aura::HORN, 10);
 }
@@ -530,11 +530,11 @@ void useWheel(int item)
     if ((c->transportContext == TRANSPORT_SHIP)
         && (c->saveGame->shiphull == 50)) {
         screenMessage(
-            "\nNACH DEM EINBAU ERGL]HT DAS STEUER IN BLAUEM LICHTE!\n"
+            "\n\nNACH DEM EINBAU ERGL]HT DAS STEUER IN BLAUEM LICHTE!\n"
         );
         c->party->setShipHull(99);
     } else {
-        screenMessage("\nHMM... KEINE WIRKUNG!\n");
+        screenMessage("\n\nHMM... KEINE WIRKUNG!\n");
     }
 }
 
@@ -550,7 +550,7 @@ void useSkull(int item)
        because we need to distinguish between a
        never-found skull and a destroyed skull. */
     if (c->saveGame->items & ITEM_SKULL_DESTROYED) {
-        screenMessage("\nBESITZT DU NICHT!\n");
+        screenMessage("\n\nBESITZT DU NICHT!\n");
         return;
     }
     /* destroy the skull! pat yourself on the back */
@@ -659,12 +659,12 @@ void useStone(int item)
                         && (stoneMask == *attr)
                         && !(c->saveGame->items & key)) {
                         screenMessage(
-                            "\nDU FINDEST EIN DRITTEL DES DREITEILIGEN "
+                            "\n\nDU FINDEST EIN DRITTEL DES DREITEILIGEN "
                             "SCHL]SSELS!\n"
                         );
                         c->saveGame->items |= key;
                     } else {
-                        screenMessage("\nHMM... KEINE WIRKUNG!\n");
+                        screenMessage("\n\nHMM... KEINE WIRKUNG!\n");
                     }
                     /* reset the mask so you can try again */
                     stoneMask = 0;
@@ -695,11 +695,11 @@ void useStone(int item)
                         codexStart();
                     }
                 } else {
-                    screenMessage("\nHMM... KEINE WIRKUNG!\n");
+                    screenMessage("\n\nHMM... KEINE WIRKUNG!\n");
                 }
             }
         } else {
-            screenMessage("\nKEIN NUTZBARER GEGENSTAND!\n");
+            screenMessage("\n\nKEIN NUTZBARER GEGENSTAND!\n");
             /* reset the mask so you can try again */
             stoneMask = 0;
         }
@@ -735,7 +735,7 @@ void useStone(int item)
             needStoneNames = 1;
             itemHandleStones(gameGetInput());
         } else {
-            screenMessage("\nHMM... KEINE WIRKUNG!\n");
+            screenMessage("\n\nHMM... KEINE WIRKUNG!\n");
         }
     }
     /**
@@ -815,7 +815,7 @@ void putWeaponInInventory(int weapon)
 void useTelescope(int notused)
 {
     screenMessage(
-        "DU SIEHST EIN DREHRAD AM TELESKOPE, MIT MARKIERUNGEN VON A BIS P.\n"
+        "\n\nDU SIEHST EIN DREHRAD AM TELESKOPE, MIT MARKIERUNGEN VON A BIS P.\n"
         "DU W[HLST:"
     );
     int choice = AlphaActionController::get('p', "DU W[HLST:");
@@ -910,13 +910,13 @@ void itemUse(const string &shortname)
                 /* use the item, if we can! */
                 if (!item || !item->useItem) {
                     soundPlay(SOUND_ERROR);
-                    screenMessage("\nKEIN NUTZBARER GEGENSTAND!\n");
+                    screenMessage("\n\nKEIN NUTZBARER GEGENSTAND!\n");
                 } else {
                     (*item->useItem)(items[i].data);
                 }
             } else {
                 soundPlay(SOUND_ERROR);
-                screenMessage("\nBESITZT DU NICHT!\n");
+                screenMessage("\n\nBESITZT DU NICHT!\n");
             }
             /* we found the item, no need to keep searching */
             break;
@@ -924,7 +924,7 @@ void itemUse(const string &shortname)
     }
     /* item was not found */
     if (!item) {
-        screenMessage("\nKEIN NUTZBARER GEGENSTAND!\n");
+        screenMessage("\n\nKEIN NUTZBARER GEGENSTAND!\n");
     }
 } // itemUse
 
@@ -966,7 +966,7 @@ void itemHandleStones(const string &color)
     }
     if (!found) {
         soundPlay(SOUND_ERROR);
-        screenMessage("\nBESITZT DU NICHT!\n");
+        screenMessage("\n\nBESITZT DU NICHT!\n");
         stoneMask = 0; /* make sure stone mask is reset */
     }
 }

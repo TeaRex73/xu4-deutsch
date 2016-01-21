@@ -4,7 +4,7 @@
     <description>Einen großen Magier.</description>
     <topic query="job">Wir heißen dich wilkommen in Vesper.</topic>
     <topic query="health">Gut.</topic>
-    <topic query="VESP">Ja, Vesper ist ein hübsches Städtchen.<question type="0">Kommst du von weit her?<yes>Der Besuch von einem auf der Queste ehrt uns!</yes><no>Der Besuch von einem auf der Queste ehrt uns!</no></question></topic>
+    <topic query="VESP">Ja, Vesper ist ein hübsches Städtchen.<question type="0">Kommst du von weit her?<yes>Der Besuch von jemand auf der Queste ehrt uns!</yes><no>Der Besuch von jemand auf der Queste ehrt uns!</no></question></topic>
     <topic query="WILK">Wilkommen, in Vesper!</topic>
   </person>
   <person id="1" name="Wache" pronoun="Er" turnAwayProb="0">

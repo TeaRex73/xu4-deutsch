@@ -103,7 +103,7 @@
     <topic query="job">Oh, nicht viel.</topic>
     <topic query="health">Ganz ordentlich.</topic>
     <topic query="SAND">Erdnußbutter und Traubengelee auf leicht getoastetem Brote!<question type="0">Möchtest du mal beißen?<yes>Lecker, was!</yes><no>Es ist furchtbar lecker!</no></question></topic>
-    <topic query="RUNE">Such nach der Rune der Ehrlichkeit bei Mariahs Golde!</topic>
+    <topic query="RUNE">Schau nach der Rune der Ehrlichkeit bei Mariahs Golde!</topic>
   </person>
   <person id="15" name="Tyrone" pronoun="Er" turnAwayProb="0">
     <description>Einen ramponierten Magier.</description>

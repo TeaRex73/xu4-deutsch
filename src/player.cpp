@@ -242,6 +242,18 @@ void PartyMember::addStatus(StatusType s)
 {
     Creature::addStatus(s);
     player->status = status.back();
+    switch (player->status) {
+    case STAT_GOOD:
+    case STAT_POISONED:
+        setTile(tileForClass(getClass()));
+	break;
+    case STAT_SLEEPING:
+    case STAT_DEAD:
+	setTile(Tileset::findTileByName("corpse")->getId());
+	break;
+    default:
+        ASSERT(0, "Invalid Status %d in PartyMember::addStatus", (int)player->status);
+    }
     notifyOfChange();
 }
 
@@ -312,7 +324,7 @@ void PartyMember::applyEffect(TileEffect effect)
     case EFFECT_POISONFIELD:
     case EFFECT_POISON:
         if (getStatus() != STAT_POISONED) {
-            soundPlay(SOUND_POISON_EFFECT, false);
+	    soundPlay(SOUND_POISON_EFFECT, false);
             addStatus(STAT_POISONED);
         }
         break;
@@ -399,6 +411,18 @@ void PartyMember::removeStatus(StatusType s)
 {
     Creature::removeStatus(s);
     player->status = status.back();
+    switch (player->status) {
+    case STAT_GOOD:
+    case STAT_POISONED:
+	setTile(tileForClass(getClass()));
+	break;
+    case STAT_SLEEPING:
+    case STAT_DEAD:
+	setTile(Tileset::findTileByName("corpse")->getId());
+	break;
+    default:
+        ASSERT(0, "Invalid Status %d in PartyMember::removeStatus", (int)player->status);
+    }
     notifyOfChange();
 }
 
@@ -601,7 +625,6 @@ void PartyMember::putToSleep(bool sound)
             soundPlay(SOUND_SLEEP, false);
         }
         addStatus(STAT_SLEEPING);
-        setTile(Tileset::findTileByName("corpse")->getId());
     }
 }
 
@@ -612,7 +635,6 @@ void PartyMember::putToSleep(bool sound)
 void PartyMember::wakeUp()
 {
     removeStatus(STAT_SLEEPING);
-    setTile(tileForClass(getClass()));
 }
 
 MapTile PartyMember::tileForClass(int klass)

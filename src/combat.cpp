@@ -734,7 +734,8 @@ bool CombatController::rangedAttack(const Coords &coords, Creature *attacker)
         /* see if the player is poisoned */
         if ((xu4_random(2) == 0)
             && (target->getStatus() != STAT_POISONED)) {
-            // POISON_EFFECT, ranged hit
+		target->wakeUp(); // can't sleep and be pois. at the same time
+	    // POISON_EFFECT, ranged hit
             soundPlay(SOUND_POISON_EFFECT, false);
             screenMessage(
                 "\n%s\n%cVERGIFTET%c\n",

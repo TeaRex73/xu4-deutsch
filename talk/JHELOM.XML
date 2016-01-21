@@ -7,7 +7,7 @@
     <topic query="KRIE">Ein großer Krieger ist ein tapferer Krieger!<question type="0">Bist du tapfer?<yes>Vielleicht könnte ich dich eines Tages begleiten!</yes><no>Die Schlacht zu fliehen zeigt Feigheit!</no></question></topic>
     <topic query="SCHL">Ich will wieder in der Schlacht kämpfen!</topic>
   </person>
-  <person id="1" name="Lord Robert" pronoun="Er" turnAwayProb="0">
+  <person id="1" name="Sir Robert" pronoun="Er" turnAwayProb="0">
     <description>Einen geheimnisvollen Krieger.</description>
     <topic query="job">Ich schlage Schlachten für Lord British!<question type="0">Bist du ein tapferer Krieger?<yes>Du verdienst die Rune, frag Nostro!</yes><no>Du bist ein Schwächling!</no></question></topic>
     <topic query="health">Hervorragend!</topic>

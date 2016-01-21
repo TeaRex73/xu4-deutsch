@@ -103,7 +103,7 @@
     <topic query="job">Ich schwimme in den Meeren!</topic>
     <topic query="health">Schön naß!</topic>
     <topic query="MEER">Es gibt viele Wracks auf dem Grunde!</topic>
-    <topic query="WRAC">Ein Überlebender würde wissen, wo man suchen muß.<question type="0">Hast du von Seiner Majestät Schiff 'Kap' gehört?<yes>Sie hatte ein magisches Steuerrad, das ihren Rumpf stärker machte!</yes><no>Ein großartiges Schiff!</no></question></topic>
+    <topic query="WRAC">Ein Überlebender würde wissen, wo man nachschauen muß.<question type="0">Hast du von Seiner Majestät Schiff 'Kap' gehört?<yes>Sie hatte ein magisches Steuerrad, das ihren Rumpf stärker machte!</yes><no>Ein großartiges Schiff!</no></question></topic>
   </person>
   <person id="15" name="Michelle" pronoun="Sie" turnAwayProb="0">
     <description>Eine schöne Paladinin!</description>

@@ -33,7 +33,7 @@
     <topic query="job">Ich entscheide Gerechtigkeit.</topic>
     <topic query="health">Gut.</topic>
     <topic query="GERE">Gerechtigkeit ist Wahrheit in Aktion!</topic>
-    <topic query="RUNE">Sie ist gut versteckt!<question type="1">Kannst Du ehrlich behaupten, niemals eine Straftat begangen zu haben?<yes>Zweifelhaft.</yes><no>Dann tue Buße in einer Zelle, und beim Verbrecher suchst du recht.</no></question></topic>
+    <topic query="RUNE">Sie ist gut versteckt!<question type="1">Kannst Du ehrlich behaupten, niemals eine Straftat begangen zu haben?<yes>Zweifelhaft.</yes><no>Dann tue Buße in einer Zelle, und beim Verbrecher schau gut nach.</no></question></topic>
   </person>
   <person id="5" name="Flamis" pronoun="Es" turnAwayProb="0">
     <description>Ein brennendes Feuer.</description>

@@ -671,13 +671,27 @@ void Creature::act(CombatController *controller)
  */
 void Creature::addStatus(StatusType s)
 {
+    StatusType new_status;
     if (status.size() && (status.back() > s)) {
         StatusType prev = status.back();
         status.pop_back();
         status.push_back(s);
-        status.push_back(prev);
+	new_status = prev;
     } else {
-        status.push_back(s);
+        new_status = s;
+    }
+    status.push_back(new_status);
+    switch (new_status) {
+    case STAT_GOOD:
+    case STAT_POISONED:
+        setAnimated(); /* animate creature */
+	break;
+    case STAT_SLEEPING:
+    case STAT_DEAD:
+	setAnimated(false); /* freeze creature */
+	break;
+    default:
+	    ASSERT(0, "Invalid status %d in Creature::addStatus", (int)new_status);
     }
 }
 
@@ -704,7 +718,8 @@ void Creature::applyTileEffect(TileEffect effect)
             /* deal 0 - 127 damage to the creature
                if it is not immune to poison field damage */
             if (resists != EFFECT_POISONFIELD) {
-                applyDamage(xu4_random(0x7F), false);
+		wakeUp(); /* just to be fair - poison wakes up players too */
+		applyDamage(xu4_random(0x7F), false);
             }
             break;
         case EFFECT_POISON:
@@ -846,13 +861,13 @@ void Creature::putToSleep(bool sound)
 {
     if (getStatus() != STAT_DEAD) {
         addStatus(STAT_SLEEPING);
-        setAnimated(false); /* freeze creature */
     }
 }
 
 void Creature::removeStatus(StatusType s)
 {
     StatusList::iterator i;
+    StatusType new_status;
     for (i = status.begin(); i != status.end();) {
         if (*i == s) {
             i = status.erase(i);
@@ -865,6 +880,19 @@ void Creature::removeStatus(StatusType s)
     if (status.empty()) {
         addStatus(STAT_GOOD);
     }
+    new_status = status.back();
+    switch (new_status) {
+    case STAT_GOOD:
+    case STAT_POISONED:
+        setAnimated(); /* animate creature */
+	break;
+    case STAT_SLEEPING:
+    case STAT_DEAD:
+	setAnimated(false); /* freeze creature */
+	break;
+    default:
+	    ASSERT(0, "Invalid status %d in Creature::removeStatus", (int)new_status);
+    }
 }
 
 void Creature::setStatus(StatusType s)
@@ -876,7 +904,6 @@ void Creature::setStatus(StatusType s)
 void Creature::wakeUp()
 {
     removeStatus(STAT_SLEEPING);
-    setAnimated(); /* reanimate creature */
 }
 
 /**

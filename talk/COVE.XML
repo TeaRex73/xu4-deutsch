@@ -54,7 +54,7 @@
     <topic query="job">Ich verwende Magie.<question type="0">Studierst du Magie?<yes>Viel Glück bei deinen Studien!</yes><no>Schade.</no></question></topic>
     <topic query="health">Prima.</topic>
     <topic query="STEI">Der schwarze Stein ist in einem Mondtore gefangen!</topic>
-    <topic query="MOND">Steh dort, wo das Tor der dunklen Monde erscheinen wird. Such, wenn die Monde sich verdunkeln!</topic>
+    <topic query="MOND">Steh dort, wo das Tor der dunklen Monde erscheinen wird. Schau nach, wenn die Monde sich verdunkeln!</topic>
   </person>
   <person id="8" name="Draconian" pronoun="Er" turnAwayProb="0">
     <description>Einen alten Druiden.</description>
