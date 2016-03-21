@@ -11,7 +11,7 @@
     <weapon name="H[NDE" abbr="HND" range="1" damage="8"/>
     <weapon name="STAB" abbr="STB" range="1" damage="16"/>
     <weapon name="DOLCH" abbr="DOL" range="10" damage="24" losewhenranged="true"/>
-    <weapon name="SCHLEUDER" abbr="SLD" range="10" damage="32"/>
+    <weapon name="SCHLEUDER" abbr="SLD" range="10" damage="32" rangedonly="true"/>
     <weapon name="STREITKOLBEN" abbr="SKO" range="1" damage="40">
         <constraint canuse="false" class="mage"/>
     </weapon>
@@ -23,11 +23,11 @@
         <constraint canuse="false" class="mage"/>
         <constraint canuse="false" class="druid"/>
     </weapon>
-    <weapon name="BOGEN" abbr="BOG" range="10" damage="40">
+    <weapon name="BOGEN" abbr="BOG" range="10" damage="40" rangedonly="true">
         <constraint canuse="false" class="mage"/>
         <constraint canuse="false" class="shepherd"/>
     </weapon>
-    <weapon name="ARMBRUST" abbr="ABR" range="10" damage="56">
+    <weapon name="ARMBRUST" abbr="ABR" range="10" damage="56" rangedonly="true">
         <constraint canuse="false" class="mage"/>
         <constraint canuse="false" class="shepherd"/>
     </weapon>
@@ -40,28 +40,28 @@
         <constraint canuse="true" class="tinker"/>
         <constraint canuse="true" class="paladin"/>
     </weapon>
-    <weapon name="MAG. AXT" abbr="+AX" range="10" returns="true" damage="96" magic="true">
+    <weapon name="MAG. AXT" abbr="+AX" range="10" returns="true" damage="96">
         <constraint canuse="false" class="all"/>
         <constraint canuse="true" class="tinker"/>
         <constraint canuse="true" class="paladin"/>
     </weapon>
-    <weapon name="MAG. SCHWERT" abbr="+SW" range="1" damage="128" magic="true">
+    <weapon name="MAG. SCHWERT" abbr="+SW" range="1" damage="128">
         <constraint canuse="false" class="all"/>
         <constraint canuse="true" class="fighter"/>
         <constraint canuse="true" class="tinker"/>
         <constraint canuse="true" class="paladin"/>
         <constraint canuse="true" class="ranger"/>
     </weapon>
-    <weapon name="MAG. BOGEN" abbr="+BO" range="10" damage="80" magic="true">
+    <weapon name="MAG. BOGEN" abbr="+BO" range="10" rangedonly="true" damage="80">
         <constraint canuse="false" class="mage"/>
         <constraint canuse="false" class="fighter"/>
         <constraint canuse="false" class="shepherd"/>
     </weapon>
-    <weapon name="MAG. STAB" abbr="+ST" range="10" damage="160" magic="true" hittile="magic_flash" misstile="magic_flash">
+    <weapon name="MAG. STAB" abbr="+ST" range="10" damage="160" hittile="magic_flash" misstile="magic_flash">
         <constraint canuse="false" class="all"/>
         <constraint canuse="true" class="mage"/>
         <constraint canuse="true" class="bard"/>
         <constraint canuse="true" class="druid"/>
     </weapon>
-    <weapon name="MYST. SCHWERT" abbr="^SW" range="1" damage="255" magic="true"/>
+    <weapon name="MYST. SCHWERT" abbr="^SW" range="1" damage="255" mystic="true"/>
 </weapons>

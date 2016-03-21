@@ -533,7 +533,7 @@ void Creature::act(CombatController *controller)
     switch (action) {
     case CA_ATTACK:
         soundPlay(SOUND_NPC_ATTACK, false); // NPC_ATTACK, melee
-        if (controller->attackHit(this, target)) {
+        if (controller->attackHit(this, target, false)) {
             // PC_STRUCK, melee and ranged
             soundPlay(SOUND_PC_STRUCK, false);
             GameController::flashTile(target->getCoords(), "hit_flash", 4);
@@ -718,8 +718,8 @@ void Creature::applyTileEffect(TileEffect effect)
             /* deal 0 - 127 damage to the creature
                if it is not immune to poison field damage */
             if (resists != EFFECT_POISONFIELD) {
-		wakeUp(); /* just to be fair - poison wakes up players too */
-		applyDamage(xu4_random(0x7F), false);
+				wakeUp(); /* just to be fair - poison wakes up players too */
+				applyDamage(xu4_random(0x7F), false);
             }
             break;
         case EFFECT_POISON:
@@ -735,7 +735,7 @@ int Creature::getAttackBonus() const
     return 0;
 }
 
-int Creature::getDefense() const
+int Creature::getDefense(bool needsMystic) const
 {
     return 128;
 }

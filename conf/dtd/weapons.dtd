@@ -8,6 +8,7 @@
                  range                  NMTOKEN #IMPLIED
                  absolute_range         NMTOKEN #IMPLIED
                  damage                 NMTOKEN #REQUIRED
+                 rangedonly             %bool;  #IMPLIED
                  attackthroughobjects   %bool;  #IMPLIED
                  choosedistance         %bool;  #IMPLIED
                  dontshowtravel         %bool;  #IMPLIED
@@ -15,6 +16,6 @@
                  leavetile              NMTOKEN #IMPLIED
                  lose                   %bool;  #IMPLIED
                  losewhenranged         %bool;  #IMPLIED
-                 magic                  %bool;  #IMPLIED
+                 mystic                 %bool;  #IMPLIED
                  misstile               NMTOKEN #IMPLIED
                  returns                %bool;  #IMPLIED>

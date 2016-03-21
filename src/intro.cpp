@@ -831,7 +831,7 @@ bool IntroController::keyPressed(int key)
             errorMessage.erase();
             about();
             break;
-        case 'q':
+        case 'e':
             quit = 1;
             EventHandler::end();
             break;
@@ -1166,7 +1166,13 @@ void IntroController::updateScreen()
         menuArea.textAt(
             10,
             9,
-            "%s", menuArea.colorizeString("]ber...", FG_YELLOW, 0, 1).c_str()
+            "%s",
+			menuArea.colorizeString(
+				"Ende und abschalten",
+				FG_YELLOW,
+				0,
+				1
+			).c_str()
         );
         drawBeasties();
         // draw the cursor last
@@ -1998,7 +2004,6 @@ void IntroController::initPlayers(SaveGame *saveGame)
     saveGame->players[0].mp = player.getMaxMp();
     p = 1;
     for (i = 0; i < VIRT_MAX; i++) {
-        player = PartyMember(NULL, &saveGame->players[i]);
         /* Initial setup for party members that aren't in your group yet... */
         if (i != saveGame->players[0].klass) {
             saveGame->players[p].klass = static_cast<ClassType>(i);
@@ -2012,7 +2017,9 @@ void IntroController::initPlayers(SaveGame *saveGame)
             saveGame->players[p].sex = initValuesForNpcClass[i].sex;
             saveGame->players[p].hp = saveGame->players[p].hpMax =
                 initValuesForClass[i].level * 100;
+			player = PartyMember(NULL, &saveGame->players[p]);
             saveGame->players[p].mp = player.getMaxMp();
+			fprintf(stderr, "%i: %i %i %i\n", p, (int) saveGame->players[p].klass, saveGame->players[p].intel, saveGame->players[p].mp);
             p++;
         }
     }

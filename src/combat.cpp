@@ -640,13 +640,20 @@ void CombatController::awardLoot()
     }
 }
 
-bool CombatController::attackHit(Creature *attacker, Creature *defender)
+bool CombatController::attackHit(
+	Creature *attacker, Creature *defender,	bool harder
+)
 {
     ASSERT(attacker != NULL, "attacker must not be NULL");
     ASSERT(defender != NULL, "defender must not be NULL");
-    int attackValue = xu4_random(0x100) + attacker->getAttackBonus();
-    int defenseValue = defender->getDefense();
-    return attackValue > defenseValue;
+    int attackValue =
+		xu4_random(0x100) + attacker->getAttackBonus();
+    int defenseValue =
+		defender->getDefense((c->location->prev->map->id == MAP_ABYSS));
+    bool naturalHit = (attackValue > defenseValue);
+	if (!naturalHit) return false;
+	if (!harder) return true;
+	return xu4_random(2) == 0 ? true : false;
 }
 
 bool CombatController::attackAt(
@@ -659,6 +666,7 @@ bool CombatController::attackAt(
 {
     const Weapon *weapon = attacker->getWeapon();
     bool wrongRange = weapon->rangeAbsolute() && (distance != range);
+	bool harder = weapon->rangedOnly() && (distance == 1);
     MapTile hittile = map->tileset->getByName(weapon->getHitTile())->getId();
     MapTile misstile = map->tileset->getByName(weapon->getMissTile())->getId();
     // Check to see if something hit
@@ -675,9 +683,9 @@ bool CombatController::attackAt(
     }
     /* Did the weapon miss? */
      /* non-magical weapon in the Abyss */
-    if (((c->location->prev->map->id == MAP_ABYSS) && !weapon->isMagic())
+    if (((c->location->prev->map->id == MAP_ABYSS) && !weapon->isMystic())
         /* player naturally missed */
-        || !attackHit(attacker, creature)) {
+        || !attackHit(attacker, creature, harder)) {
         screenMessage("VERFEHLT\n");
         /* show the 'miss' tile */
         GameController::flashTile(coords, misstile, 1);

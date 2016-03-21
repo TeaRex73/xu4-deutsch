@@ -28,12 +28,13 @@ public:
     {
         return name;  /**< Returns the name of the armor */
     }
-    
-    int getDefense() const
+
+	/** Returns the defense value of the armor */
+    int getDefense(bool needsMystic) const
     {
-        return defense; /**< Returns the def. value of the armor */
-    }
-    
+        return needsMystic ? (mystic ? defense : 96) : defense;
+	}
+
     /** Returns true if the class given can wear the armor */
     bool canWear(ClassType klass) const
     {
@@ -50,6 +51,7 @@ private:
     unsigned char canuse;
     int defense;
     unsigned short mask;
+	bool mystic;
 };
 
 #endif // ifndef ARMOR_H

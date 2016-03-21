@@ -78,7 +78,7 @@ public:
     void placeCreatures();
     void placePartyMembers();
     bool setActivePlayer(int player);
-    bool attackHit(Creature *attacker, Creature *defender);
+    bool attackHit(Creature *attacker, Creature *defender, bool harder);
     virtual void awardLoot();
     void attack();
     bool attackAt(

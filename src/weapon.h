@@ -20,11 +20,12 @@ public:
         WEAP_LOSEWHENRANGED = 0x0002,
         WEAP_CHOOSEDISTANCE = 0x0004,
         WEAP_ALWAYSHITS = 0x0008,
-        WEAP_MAGIC = 0x0010,
+        WEAP_MYSTIC = 0x0010,
         WEAP_ATTACKTHROUGHOBJECTS = 0x0040,
         WEAP_ABSOLUTERANGE = 0x0080,
         WEAP_RETURNS = 0x0100,
-        WEAP_DONTSHOWTRAVEL = 0x0200
+        WEAP_DONTSHOWTRAVEL = 0x0200,
+		WEAP_RANGEDONLY = 0x0400
     };
     
     static const Weapon *get(WeaponType w);
@@ -100,11 +101,16 @@ public:
         return flags & WEAP_ALWAYSHITS;
     }
     
-    bool isMagic() const
+    bool isMystic() const
     {
-        return flags & WEAP_MAGIC;
+        return flags & WEAP_MYSTIC;
     }
-    
+
+	bool rangedOnly() const
+	{
+		return flags & WEAP_RANGEDONLY;
+	}
+	
     bool canAttackThroughObjects() const
     {
         return flags & WEAP_ATTACKTHROUGHOBJECTS;

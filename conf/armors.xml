@@ -34,5 +34,5 @@
         <constraint canuse="false" class="all"/>
         <constraint canuse="true" class="paladin"/>
     </armor>
-    <armor name="MYST. ROBE" defense="248"/>    
+    <armor name="MYST. ROBE" defense="248" mystic="true"/>    
 </armors>

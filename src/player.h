@@ -150,7 +150,7 @@ public:
     EquipError setWeapon(const Weapon *w);
     virtual bool applyDamage(int damage, bool byplayer = false);
     virtual int getAttackBonus() const;
-    virtual int getDefense() const;
+    virtual int getDefense(bool needsMystic) const;
     virtual bool dealDamage(Creature *m, int damage);
     int getDamage();
     virtual const string &getHitTile() const;

@@ -382,7 +382,7 @@ public:
     virtual void addStatus(StatusType status);
     void applyTileEffect(TileEffect effect);
     virtual int getAttackBonus() const;
-    virtual int getDefense() const;
+    virtual int getDefense(bool needsMystic) const;
     bool divide();
     bool spawnOnDeath();
     virtual CreatureStatus getState() const;

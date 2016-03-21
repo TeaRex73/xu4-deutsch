@@ -140,22 +140,22 @@ int PartyMember::getMaxMp() const
     int max_mp = -1;
     switch (player->klass) {
     case CLASS_MAGE:
-        /*  mage: 200% of int */
-        max_mp = player->intel * 2;
+        /*  mage: 100% of int */
+        max_mp = player->intel;
         break;
     case CLASS_DRUID:
-        /* druid: 150% of int */
-        max_mp = player->intel * 3 / 2;
+        /* druid: 75% of int */
+        max_mp = player->intel * 3 / 4;
         break;
     case CLASS_BARD:
     case CLASS_PALADIN:
     case CLASS_RANGER:
-        /* bard, paladin, ranger: 100% of int */
-        max_mp = player->intel;
+        /* bard, paladin, ranger: 50% of int */
+        max_mp = player->intel / 2;
         break;
     case CLASS_TINKER:
-        /* tinker: 50% of int */
-        max_mp = player->intel / 2;
+        /* tinker: 25% of int */
+        max_mp = player->intel / 4;
         break;
     case CLASS_FIGHTER:
     case CLASS_SHEPHERD:
@@ -166,9 +166,9 @@ int PartyMember::getMaxMp() const
         ASSERT(0, "invalid player class: %d", player->klass);
     }
 
-    /* mp always maxes out at 99 */
-    if (max_mp > 99) {
-        max_mp = 99;
+    /* mp always maxes out at 50 */
+    if (max_mp > 50) {
+        max_mp = 50;
     }
     return max_mp;
 } // PartyMember::getMaxMp
@@ -524,15 +524,17 @@ bool PartyMember::applyDamage(int damage, bool)
 
 int PartyMember::getAttackBonus() const
 {
-    if (Weapon::get(player->weapon)->alwaysHits() || (player->dex >= 40)) {
+    if (
+		Weapon::get(player->weapon)->alwaysHits() /* || (player->dex >= 40) */
+	) {
         return 255;
     }
     return player->dex;
 }
 
-int PartyMember::getDefense() const
+int PartyMember::getDefense(bool needsMystic) const
 {
-    return Armor::get(player->armor)->getDefense();
+    return Armor::get(player->armor)->getDefense(needsMystic);
 }
 
 bool PartyMember::dealDamage(Creature *m, int damage)
@@ -557,7 +559,9 @@ int PartyMember::getDamage()
 {
     int maxDamage;
     maxDamage = Weapon::get(player->weapon)->getDamage();
-    maxDamage += player->str;
+	if (!Weapon::get(player->weapon)->rangedOnly()) {
+		maxDamage += player->str;
+	}
     if (maxDamage > 255) {
         maxDamage = 255;
     }

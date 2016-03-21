@@ -57,6 +57,7 @@ Armor::Armor(const ConfigElement &conf)
     name = conf.getString("name");
     canuse = 0xFF;
     defense = conf.getInt("defense");
+	mystic = conf.getBool("mystic");
     mask = 0;
     vector<ConfigElement> contraintConfs = conf.getChildren();
     for (std::vector<ConfigElement>::iterator i = contraintConfs.begin();
