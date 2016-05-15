@@ -51,7 +51,7 @@ Script::Variable::Variable(const string &v):set(true)
 Script::Variable::Variable(const int &v):set(true)
 {
     i_val = v;
-    s_val = to_string(v);
+    s_val = std::to_string(v);
 }
 
 int &Script::Variable::getInt()
@@ -700,7 +700,7 @@ void Script::translate(string *text)
         }
         // Get the current iterator for our loop
         else if (item == "iterator") {
-            prop = to_string(this->iterator);
+            prop = std::to_string(this->iterator);
         } else if ((pos = item.find("show_inventory:")) < item.length()) {
             pos = item.find(":");
             string itemScript = item.substr(pos + 1);
@@ -797,7 +797,7 @@ void Script::translate(string *text)
                     if (content.empty()) {
                         errorWarning("Error: empty math() function");
                     }
-                    prop = to_string(mathValue(content));
+                    prop = std::to_string(mathValue(content));
                 }
                 /**
                  * Does a true/false comparison on the content.
@@ -833,7 +833,7 @@ void Script::translate(string *text)
                 }
                 /* generate a random number */
                 else if (funcName == "random") {
-                    prop = to_string(
+                    prop = std::to_string(
                         xu4_random((int)strtol(content.c_str(), NULL, 10))
                     );
                 }
@@ -1698,7 +1698,7 @@ void Script::mathParseChildren(xmlNodePtr math, string *result)
         } else if (xmlStrcmp(current->name, (const xmlChar *)"math") == 0) {
             string children_results;
             mathParseChildren(current, &children_results);
-            *result = to_string(mathValue(children_results));
+            *result = std::to_string(mathValue(children_results));
         }
     }
 }

@@ -257,7 +257,7 @@ list<string> Person::getConversationText(
                         eventHandler->pushController(&getPlayerCtrl);
                         int player = getPlayerCtrl.waitFor();
                         if (player != -1) {
-                            string player_str = to_string(player + 1);
+                            string player_str = std::to_string(player + 1);
                             script->setVar(script->getInputName(), player_str);
                         } else {
                             script->unsetVar(script->getInputName());

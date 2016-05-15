@@ -2019,7 +2019,6 @@ void IntroController::initPlayers(SaveGame *saveGame)
                 initValuesForClass[i].level * 100;
 			player = PartyMember(NULL, &saveGame->players[p]);
             saveGame->players[p].mp = player.getMaxMp();
-			fprintf(stderr, "%i: %i %i %i\n", p, (int) saveGame->players[p].klass, saveGame->players[p].intel, saveGame->players[p].mp);
             p++;
         }
     }
