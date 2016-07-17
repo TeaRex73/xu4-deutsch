@@ -2148,9 +2148,12 @@ void getChest(int player)
             c->location->map->annotations->add(coords, newTile, false, true);
         }
         // see if the chest is trapped and handle it
-        getChestTrapHandler(player);
-        screenMessage("\nSIE ENTH[LT:\n%02d-GOLD!\n", c->party->getChest());
-        screenPrompt();
+        if (getChestTrapHandler(player)) {
+			screenMessage("\nSIE ENTH[LT:\n%02d-GOLD!\n", c->party->getChest(player == -2));
+		} else {
+			screenMessage("%cTRUHE ZERST\\RT!%c\n", FG_RED, FG_WHITE);
+		}
+		screenPrompt();
         if (isCity(c->location->map) && (obj == NULL)) {
             c->party->adjustKarma(KA_STOLE_CHEST);
         }
@@ -2163,6 +2166,8 @@ void getChest(int player)
 
 /**
  * Called by getChest() to handle possible traps on chests
+ * Returns true if trap was either not there or avoided
+ * Returns false if trap was set off (destroying gold along with chest)
  **/
 bool getChestTrapHandler(int player)
 {
@@ -2188,13 +2193,13 @@ bool getChestTrapHandler(int player)
         }
         /* apply the effects from the trap */
         if (trapType == EFFECT_FIRE) {
-            screenMessage("%cS[URE%cFALLE!\n", FG_BLUE, FG_WHITE);
+            screenMessage("\n%cS[URE%cFALLE!\n", FG_BLUE, FG_WHITE);
         } else if (trapType == EFFECT_POISON) {
-            screenMessage("%cGIFT%cFALLE!\n", FG_GREEN, FG_WHITE);
+            screenMessage("\n%cGIFT%cFALLE!\n", FG_GREEN, FG_WHITE);
         } else if (trapType == EFFECT_SLEEP) {
-            screenMessage("%cSCHLAF%cFALLE!\n", FG_PURPLE, FG_WHITE);
+            screenMessage("\n%cSCHLAF%cFALLE!\n", FG_PURPLE, FG_WHITE);
         } else if (trapType == EFFECT_LAVA) {
-            screenMessage("%cBOMBEN%cFALLE!\n", FG_RED, FG_WHITE);
+            screenMessage("\n%cBOMBEN%cFALLE!\n", FG_RED, FG_WHITE);
         }
         // player is < 0 during the 'O'pen spell (immune to traps)
         //
@@ -2211,10 +2216,11 @@ bool getChestTrapHandler(int player)
         } else {
             soundPlay(SOUND_FLEE);
             screenMessage("VERMIEDEN!\n");
+			return true;
         }
-        return true;
+        return false;
     }
-    return false;
+    return true;
 } // getChestTrapHandler
 
 void holeUp()
@@ -3173,7 +3179,7 @@ void GameController::timerFired()
     }
     if (!paused && !pausedTimer) {
         if (++c->windCounter >= MOON_SECONDS_PER_PHASE * 4) {
-            if ((xu4_random(4) == 1) && !c->windLock) {
+            if ((xu4_random(8) == 0) && !c->windLock) {
                 c->windDirection = dirRandomDir(MASK_DIR_ALL);
             }
             c->windCounter = 0;

@@ -648,8 +648,7 @@ static int spellBlink(int dir)
     /* Blink doesn't work near the mouth of the abyss */
     /* Note: This means you can teleport to Hythloth from the top of the
        map, and that you can teleport to the abyss from the left edge of
-       the map. Unfortunately, this matches the bugs in the game. :(
-       Consider fixing. */
+       the map. At least in the original. This is now fixed. */
     if ((coords.x >= 192) && (coords.y >= 192)) {
         return 0;
     }
@@ -857,7 +856,7 @@ static int spellIceball(int dir)
 
 static int spellJinx(int unused)
 {
-    c->aura->set(Aura::JINX, 10);
+    c->aura->set(Aura::JINX, 20);
     return 1;
 }
 
@@ -875,25 +874,27 @@ static int spellLight(int unused)
 
 static int spellMMissle(int dir)
 {
-    spellMagicAttack("miss_flash", (Direction)dir, 64, 16);
+    spellMagicAttack("miss_flash", (Direction)dir, 16, 64);
     return 1;
 }
 
 static int spellNegate(int unused)
 {
-    c->aura->set(Aura::NEGATE, 10);
+    c->aura->set(Aura::NEGATE, 20);
     return 1;
 }
 
 static int spellOpen(int unused)
 {
-    getChest(-2); // HACK: -2 will not prompt for opener
+    getChest(-2);
+	// HACK: -2 will not prompt for opener
+	// CHANGE: And double the gold
     return 1;
 }
 
 static int spellProtect(int unused)
 {
-    c->aura->set(Aura::PROTECTION, 10);
+    c->aura->set(Aura::PROTECTION, 20);
     return 1;
 }
 
@@ -905,7 +906,7 @@ static int spellRez(int player)
 
 static int spellQuick(int unused)
 {
-    c->aura->set(Aura::QUICKNESS, 10);
+    c->aura->set(Aura::QUICKNESS, 20);
     return 1;
 }
 
@@ -973,7 +974,7 @@ static int spellUndead(int unused)
     CreatureVector::iterator i;
     for (i = creatures.begin(); i != creatures.end(); i++) {
         Creature *m = *i;
-        if (m && m->isUndead() && (xu4_random(2) == 0)) {
+        if (m && m->isUndead()) {
             if (m->getHp() > 23) {
                 m->setHp(23);
             }
@@ -1020,7 +1021,7 @@ static int spellYup(int unused)
     }
     /* staying in the dungeon */
     else if (coords.z > 0) {
-        for (int i = 0; i < 0x20; i++) {
+        for (int i = 0; i < 0x80; i++) {
             coords = MapCoords(
                 xu4_random(8), xu4_random(8), c->location->coords.z - 1
             );
@@ -1053,7 +1054,7 @@ static int spellZdown(int unused)
     else if (coords.z >= 7) {
         return 0;
     } else {
-        for (int i = 0; i < 0x20; i++) {
+        for (int i = 0; i < 0x80; i++) {
             coords = MapCoords(
                 xu4_random(8), xu4_random(8), c->location->coords.z + 1
             );

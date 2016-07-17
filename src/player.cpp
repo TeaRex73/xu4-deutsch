@@ -316,7 +316,7 @@ void PartyMember::applyEffect(TileEffect effect)
     case EFFECT_LAVA:
     case EFFECT_FIRE:
         soundPlay(SOUND_PC_STRUCK, false);
-        applyDamage(16 + (xu4_random(32)));
+        applyDamage(32 + (xu4_random(64)));
         break;
     case EFFECT_SLEEP:
         putToSleep();
@@ -324,7 +324,7 @@ void PartyMember::applyEffect(TileEffect effect)
     case EFFECT_POISONFIELD:
     case EFFECT_POISON:
         if (getStatus() != STAT_POISONED) {
-	    soundPlay(SOUND_POISON_EFFECT, false);
+	        soundPlay(SOUND_POISON_EFFECT, false);
             addStatus(STAT_POISONED);
         }
         break;
@@ -534,7 +534,12 @@ int PartyMember::getAttackBonus() const
 
 int PartyMember::getDefense(bool needsMystic) const
 {
-    return Armor::get(player->armor)->getDefense(needsMystic);
+    int res = Armor::get(player->armor)->getDefense(needsMystic);
+	if (*c->aura == Aura::PROTECTION) {
+		return res / 2 + 128;
+	} else {
+		return res;
+	}
 }
 
 bool PartyMember::dealDamage(Creature *m, int damage)
@@ -1141,9 +1146,9 @@ void Party::endTurn()
 /**
  * Adds a chest worth of gold to the party's inventory
  */
-int Party::getChest()
+int Party::getChest(int more)
 {
-    int gold = xu4_random(50) + xu4_random(8) + 10;
+    int gold = xu4_random(50) + xu4_random(8) + (more ? 20 : 10);
     adjustGold(gold);
     return gold;
 }
