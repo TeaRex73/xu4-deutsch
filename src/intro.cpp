@@ -120,8 +120,11 @@ bool IntroBinData::load()
 {
     int i;
     U4FILE *introger = u4fopen("introm.ger");
+	if (!introger) {
+		return false;
+	}
     U4FILE *title = u4fopen("title.exe");
-    if (!introger || !title) {
+    if (!title) {
         return false;
     }
     introQuestions[0] = u4read_stringtable(introger, 0, 28);
@@ -129,9 +132,14 @@ bool IntroBinData::load()
     introGypsy[0] = u4read_stringtable(introger, -1, 14);
     u4fclose(introger);
     introger = u4fopen("introf.ger");
+	if (!introger) {
+		return false;
+	}
     introQuestions[1] = u4read_stringtable(introger, 0, 28);
     introText[1] = u4read_stringtable(introger, -1, 25);
     introGypsy[1] = u4read_stringtable(introger, -1, 14);
+    u4fclose(introger);
+
     /* clean up stray newlines at end of strings */
     for (i = 0; i < 14; i++) {
         trim(introGypsy[0][i]);
@@ -178,7 +186,6 @@ bool IntroBinData::load()
     for (i = 0; i < BEASTIE2_FRAMES; i++) {
         beastie2FrameTable[i] = u4fgetc(title);
     }
-    u4fclose(introger);
     u4fclose(title);
     return true;
 } // IntroBinData::load

@@ -181,8 +181,11 @@ bool CityMapLoader::load(Map *map)
     DialogueLoader *dlgLoader =
         DialogueLoader::getLoader("application/x-u4tlk");
     U4FILE *ult = u4fopen(city->fname);
+    if (!ult) {
+        errorFatal("unable to load map data");
+    }
     U4FILE *tlk = u4fopen(city->tlk_fname);
-    if (!ult || !tlk) {
+    if (!tlk) {
         errorFatal("unable to load map data");
     }
     /* the map must be 32x32 to be read from an .ULT file */

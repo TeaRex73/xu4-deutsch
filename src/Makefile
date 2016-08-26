@@ -14,8 +14,6 @@ UIFLAGS=-I/usr/local/include/SDL -D_REENTRANT
 LIBS=-L/usr/lib -L/usr/lib/arm-linux-gnueabihf -L/lib/arm-linux-gnueabihf $(UILIBS) -lxml2 -lpng -lz
 # CCPREFIX=~/raspberry/tools/arm-bcm2708/arm-bcm2708hardfp-linux-gnueabi/bin/arm-bcm2708hardfp-linux-gnueabi-
 # CCPREFIX=~/raspberry/tools/arm-bcm2708/gcc-linaro-arm-linux-gnueabihf-raspbian/bin/arm-linux-gnueabihf-
-CC=$(CCPREFIX)gcc-6
-CXX=$(CCPREFIX)g++-6
 FEATURES=-DHAVE_BACKTRACE=1 -DHAVE_VARIADIC_MACROS=1
 DEBUGCXXFLAGS=-O3 -flto -DNPERF -marm -mfpu=vfp -march=armv6zk -mtune=arm1176jzf-s -mfloat-abi=hard -UDEBUG -DNEBUG -DRASB_PI -fno-exceptions -fno-non-call-exceptions -fno-common
 #DEBUGCXXFLAGS=-O3 -flto -DNPERF -march=native -mtune=native -UNDEBUG -DDEBUG -URASB_PI -fno-exceptions -fno-non-call-exceptions -fno-common

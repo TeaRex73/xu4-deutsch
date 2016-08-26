@@ -8,6 +8,7 @@
 #include <cstdarg>
 #include <cstdlib>
 #include <cctype>
+#include <cstring>
 
 #include <libxml/xmlmemory.h>
 #include <libxml/parser.h>
@@ -32,6 +33,8 @@
 using namespace std;
 extern bool verbose;
 Config *Config::instance = NULL;
+char DEFAULT_CONFIG_XML_LOCATION[] = "config.xml";
+char *Config::CONFIG_XML_LOCATION_POINTER = &DEFAULT_CONFIG_XML_LOCATION[0];
 
 const Config *Config::getInstance()
 {
@@ -67,9 +70,6 @@ ConfigElement Config::getElement(const string &name) const
     return ConfigElement(node);
 }
 
-char DEFAULT_CONFIG_XML_LOCATION[] = "config.xml";
-char *Config::CONFIG_XML_LOCATION_POINTER = &DEFAULT_CONFIG_XML_LOCATION[0];
-
 Config::Config()
 {
     doc = xmlReadFile(
@@ -88,6 +88,7 @@ Config::Config()
     if (settings.validateXml && doc->intSubset) {
         string errorMessage;
         xmlValidCtxt cvp;
+		memset(&cvp, 0, sizeof cvp);
         if (verbose) {
             printf("validating config.xml\n");
         }

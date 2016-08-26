@@ -33,12 +33,17 @@ DialogueLoader *U4LBDialogueLoader::instance = DialogueLoader::registerLoader(
 Dialogue *U4LBDialogueLoader::load(void *source)
 {
     U4FILE *britkey = u4fopen("britkey.ger");
+	if (!britkey) {
+		return NULL;
+	}
     U4FILE *britansw = u4fopen("britansw.ger");
-    if (!britkey || !britansw) {
+    if (!britansw) {
         return NULL;
     }
     vector<string> lbKeywords = u4read_stringtable(britkey, 0, 27);
     vector<string> lbText = u4read_stringtable(britansw, 0, 27);
+	u4fclose(britkey);
+	u4fclose(britansw);
     /* There's a \0 in the 19th string so we get a
        spurious 20th entry.
        No we don't in the fixed German translation.

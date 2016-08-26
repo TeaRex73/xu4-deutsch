@@ -19,7 +19,7 @@
     <topic query="job">Singen.</topic>
     <topic query="health">Sehr froh.</topic>
     <topic query="SING">Das Lied geht so: Ho eyo he hum!</topic>
-    <topic query="HO E">Es bedeutet: Liebe für einen und alle!<question type="0">Magst Du das Lied?<yes>Dann hilf uns, die Nachricht zu verbreiten!</yes><no>Zu schade.</no></question></topic>
+    <topic query="HO E">Es bedeutet: Liebe für alle miteinander!<question type="0">Magst Du das Lied?<yes>Dann hilf uns, die Nachricht zu verbreiten!</yes><no>Zu schade.</no></question></topic>
   </person>
   <person id="3" name="eine Wache" pronoun="Er" turnAwayProb="0">
     <description>Eine Wache.</description>

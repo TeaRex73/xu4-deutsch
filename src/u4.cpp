@@ -43,11 +43,12 @@ using namespace std;
 
 int main(int argc, char *argv[])
 {
+	U4FILE *avatar;
     Debug::initGlobal("debug/global.txt");
 #if defined(MACOSX)
     osxInit(argv[0]);
 #endif
-    if (!u4fopen("AVATAR.EXE")) {
+    if (!(avatar = u4fopen("AVATAR.EXE"))) {
         errorFatal(
             "xu4 erfordert die MS-DOS-Version von Ultima IV. "
             "Diese muss sich im gleichen Verzeichnis befinden "
@@ -62,6 +63,7 @@ int main(int argc, char *argv[])
             "Informationen.\n\thttp://xu4.sourceforge.net/"
         );
     }
+	u4fclose(avatar);
     unsigned int i;
     int skipIntro = 0;
     /*

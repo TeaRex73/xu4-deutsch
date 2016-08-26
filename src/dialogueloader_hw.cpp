@@ -61,6 +61,7 @@ Dialogue *U4HWDialogueLoader::load(void *source)
         return NULL;
     }
     hawkwindText = u4read_stringtable(hawkwind, 0, 53);
+	u4fclose(hawkwind);
     Dialogue *dlg = new Dialogue();
     dlg->setTurnAwayProb(0);
     dlg->setName(uppercase("Hawkwind"));
