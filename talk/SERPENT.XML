@@ -24,7 +24,7 @@
   <person id="3" name="Roark" pronoun="Er" turnAwayProb="0">
     <description>Einen altbewährten Kämpfer.</description>
     <topic query="job">Ich kämpfe für Britannia!</topic>
-    <topic query="health">Gerade geheilt.<question type="0">Geht es dir gut?<yes>Dann strebe danach, die Geheimnisse des Abgrunds zu finden.</yes><no>Du bist an den richtigen Ort gekommen.</no></question></topic>
+    <topic query="health">Gerade geheilt.<question type="0">Geht es dir gut?<yes>Dann strebe danach, die Geheimnisse des Abgrundes zu finden.</yes><no>Du bist an den richtigen Ort gekommen.</no></question></topic>
     <topic query="ABGR">Der Große Stygische Abgrund verbirgt den Kodex der Ultimativen Weisheit!</topic>
     <topic query="KODE">Ich weiß nur wenig.</topic>
   </person>

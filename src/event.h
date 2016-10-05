@@ -10,6 +10,7 @@
 #include <vector>
 
 #include "controller.h"
+#include "screen.h"
 #include "types.h"
 
 using std::string;
@@ -39,7 +40,6 @@ using std::string;
 #define U4_LEFT_META 310
 
 extern int eventTimerGranularity;
-struct _MouseArea;
 class EventHandler;
 class TextView;
 
@@ -253,7 +253,7 @@ typedef void (*updateScreenCallback)();
  */
 class EventHandler {
 public:
-    typedef std::list<_MouseArea *> MouseAreaList;
+    typedef std::list<MouseArea *> MouseAreaList;
     
     EventHandler();
     static EventHandler *getInstance();
@@ -275,10 +275,10 @@ public:
     void popKeyHandler();
     KeyHandler *getKeyHandler() const;
     void setKeyHandler(KeyHandler kh);
-    void pushMouseAreaSet(_MouseArea *mouseAreas);
+    void pushMouseAreaSet(MouseArea *mouseAreas);
     void popMouseAreaSet();
-    _MouseArea *getMouseAreaSet() const;
-    _MouseArea *mouseAreaForPoint(int x, int y);
+    MouseArea *getMouseAreaSet() const;
+    MouseArea *mouseAreaForPoint(int x, int y);
 
 protected:
     static bool controllerDone;

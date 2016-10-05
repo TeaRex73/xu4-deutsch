@@ -322,7 +322,7 @@ Object *Map::objectAt(const Coords &coords)
     /* FIXME: return a list instead of one object */
     ObjectDeque::const_iterator i;
     Object *objAt = NULL;
-    for (i = objects.begin(); i != objects.end(); i++) {
+    for (i = objects.cbegin(); i != objects.cend(); i++) {
         Object *obj = *i;
         if (__builtin_expect(obj->getCoords() == coords, false)) {
             /* get the most visible object */
@@ -434,7 +434,9 @@ bool Map::isEnclosed(const Coords &party)
         return true;
     }
     path_data = new int[width * height];
-    memset(path_data, -1, sizeof(int) * width * height);
+    for (unsigned int i = 0; i < width * height; i++) {
+        path_data[i] = -1;
+    }
     // Determine what's walkable (1), and what's border-walkable (2)
     findWalkability(party, path_data);
     // Find two connecting pathways where the avatar can reach both
@@ -562,8 +564,8 @@ void Map::removeObject(const Object *rem, bool deleteObject)
         if (*i == rem) {
             /* Party members persist through different maps,
                so don't delete them! */
-            if (!isPartyMember(*i) && deleteObject) {
-                delete (*i);
+            if (deleteObject && !isPartyMember(*i)) {
+                delete *i;
             }
             objects.erase(i);
             return;
@@ -576,11 +578,12 @@ ObjectDeque::iterator Map::removeObject(
 )
 {
     /* Party members persist through different maps, so don't delete them! */
-    if (!isPartyMember(*rem) && deleteObject) {
-        delete (*rem);
+    if (deleteObject && !isPartyMember(*rem)) {
+        delete *rem;
     }
     return objects.erase(rem);
 }
+
 
 
 /**
@@ -647,9 +650,8 @@ void Map::resetObjectAnimations()
     }
 }
 
-
 /**
- * Removes all objects from the given map
+ * Removes all objects from the given map, deleting them if not Party Members
  */
 void Map::clearObjects()
 {
@@ -858,7 +860,8 @@ void Map::alertGuards()
 
 const MapCoords &Map::getLabel(const string &name) const
 {
-    std::map<string, MapCoords>::const_iterator i = labels.find(name);
+    std::unordered_map<string, MapCoords>::const_iterator i =
+        labels.find(name);
     if (i == labels.end()) {
         return MapCoords::nowhere;
     }
@@ -876,7 +879,9 @@ bool Map::fillMonsterTable()
     int nCreatures = 0;
     int nObjects = 0;
     int i;
-    memset(monsterTable, 0, MONSTERTABLE_SIZE * sizeof(SaveGameMonsterRecord));
+    for (i = 0; i < MONSTERTABLE_SIZE; i++) {
+        monsterTable[i] = {};
+    }
     /**
      * First, categorize all the objects we have
      */

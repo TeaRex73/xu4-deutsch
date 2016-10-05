@@ -5,7 +5,7 @@
 #include "vc6.h" // Fixes things if you're using VC6, does nothing otherwise
 
 #include <cstdlib>
-#include <map>
+#include <unordered_map>
 
 #include "error.h"
 #include "coords.h"
@@ -13,7 +13,7 @@
 #include "types.h"
 
 /* map moon phase to map coordinates */
-typedef std::map<int, Coords> MoongateList;
+typedef std::unordered_map<int, Coords> MoongateList;
 
 MoongateList gates;
 

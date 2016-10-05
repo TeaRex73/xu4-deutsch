@@ -8,7 +8,7 @@
 #include "image.h"
 #include "imageloader.h"
 
-std::map<std::string, ImageLoader *> *ImageLoader::loaderMap = NULL;
+std::unordered_map<std::string, ImageLoader *> *ImageLoader::loaderMap = NULL;
 
 
 /**
@@ -37,12 +37,22 @@ ImageLoader *ImageLoader::registerLoader(
 )
 {
     if (loaderMap == NULL) {
-        loaderMap = new std::map<std::string, ImageLoader *>;
+        loaderMap = new std::unordered_map<std::string, ImageLoader *>;
     }
     (*loaderMap)[type] = loader;
     return loader;
 }
 
+void ImageLoader::cleanup()
+{
+    for (std::unordered_map<std::string, ImageLoader *>::iterator i =
+             loaderMap->begin();
+         i != loaderMap->end();
+         i++) {
+        delete i->second;
+    }
+    delete loaderMap;
+}
 
 /**
  * Fill in the image pixel data from an uncompressed string of bytes.
@@ -52,7 +62,7 @@ void ImageLoader::setFromRawData(
 )
 {
     int x, y;
-    switch (bpp) {
+    switch (__builtin_expect(bpp, 4)) {
     case 32:
         for (y = 0; y < height; y++) {
             for (x = 0; x < width; x++) {

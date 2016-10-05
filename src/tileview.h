@@ -38,7 +38,7 @@ public:
 protected:
     int columns, rows;
     static const int tileWidth = TILE_WIDTH;
-	static const int tileHeight = TILE_HEIGHT;
+    static const int tileHeight = TILE_HEIGHT;
     Tileset *tileset;
     Image *animated; /**< a scratchpad image for drawing animations */
 };

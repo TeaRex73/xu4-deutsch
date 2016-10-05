@@ -35,7 +35,7 @@ static void png_read_xu4(
 /**
  * Loads in the PNG with the libpng library.
  */
-Image *PngImageLoader::load(U4FILE *file, int width, int height, int bpp)
+Image *PngImageLoader::load(U4FILE *file, int width, int height, volatile int bpp)
 {
     if ((width != -1) || (height != -1) || (bpp != -1)) {
         errorWarning("dimensions set for PNG image, will be ignored");

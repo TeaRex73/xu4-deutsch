@@ -5,6 +5,7 @@
 #include "vc6.h" // Fixes things if you're using VC6, does nothing otherwise
 
 #include <vector>
+#include <typeinfo>
 
 #include "config.h"
 #include "direction.h"
@@ -52,7 +53,7 @@ TileAnimTransform *TileAnimTransform::create(const ConfigElement &conf)
              i++) {
             if (i->getName() == "color") {
                 RGBA *rgba = loadColorFromConf(*i);
-                ((TileAnimPixelTransform *)transform)->colors.push_back(rgba);
+                ((TileAnimPixelTransform *) transform)->colors.push_back(rgba);
             }
         }
         break;
@@ -86,6 +87,7 @@ TileAnimTransform *TileAnimTransform::create(const ConfigElement &conf)
                 }
             }
         }
+        break;
     }
     case 5:
         transform = new TileAnimScrambleTransform();
@@ -101,7 +103,6 @@ TileAnimTransform *TileAnimTransform::create(const ConfigElement &conf)
     }
     return transform;
 } // TileAnimTransform::create
-
 
 /**
  * Loads a color from a config element
@@ -147,6 +148,16 @@ TileAnimPixelTransform::TileAnimPixelTransform(int x, int y)
 {
     this->x = x;
     this->y = y;
+    this->colors.clear();
+}
+
+TileAnimPixelTransform::~TileAnimPixelTransform()
+{
+    std::vector<RGBA *>::iterator i;
+    for (i = colors.begin(); i != colors.end(); i++) {
+        delete (*i);
+    }
+    colors.clear();
 }
 
 bool TileAnimPixelTransform::drawsTile() const
@@ -273,6 +284,14 @@ TileAnimPixelColorTransform::TileAnimPixelColorTransform(
     this->y = y;
     this->w = w;
     this->h = h;
+    this->start = NULL;
+    this->end = NULL;
+}
+
+TileAnimPixelColorTransform::~TileAnimPixelColorTransform()
+{
+    delete start;
+    delete end;
 }
 
 bool TileAnimPixelColorTransform::drawsTile() const
@@ -365,8 +384,7 @@ TileAnimContext *TileAnimContext::create(const ConfigElement &conf)
              i != children.end();
              i++) {
             if (i->getName() == "transform") {
-                TileAnimTransform *transform =
-                    TileAnimTransform::create(*i);
+                TileAnimTransform *transform = TileAnimTransform::create(*i);
                 context->add(transform);
             }
         }
@@ -374,6 +392,16 @@ TileAnimContext *TileAnimContext::create(const ConfigElement &conf)
     return context;
 } // TileAnimContext::create
 
+
+TileAnimContext::~TileAnimContext()
+{
+    for (TileAnimTransformList::iterator i = animTransforms.begin();
+         i != animTransforms.end();
+         i++) {
+        delete (*i);
+        (*i) = NULL;
+    }
+}
 
 /**
  * Adds a tile transform to the context
@@ -434,6 +462,14 @@ TileAnimSet::TileAnimSet(const ConfigElement &conf)
     }
 }
 
+TileAnimSet::~TileAnimSet()
+{
+    TileAnimMap::iterator i;
+    for (i = tileanims.begin(); i != tileanims.end(); i++) {
+        delete (i->second);
+    }
+}
+
 
 /**
  * Returns the tile animation with the given name from the current set
@@ -447,7 +483,8 @@ TileAnim *TileAnimSet::getByName(const std::string &name)
     return i->second;
 }
 
-TileAnim::TileAnim(const ConfigElement &conf):random(0)
+TileAnim::TileAnim(const ConfigElement &conf)
+    :random(0)
 {
     name = conf.getString("name");
     if (conf.exists("random")) {
@@ -466,6 +503,20 @@ TileAnim::TileAnim(const ConfigElement &conf):random(0)
         }
     }
 }
+
+TileAnim::~TileAnim()
+{
+    for(std::vector<TileAnimTransform *>::iterator i = transforms.begin();
+        i != transforms.end();
+        i++) {
+        delete (*i);
+    }
+    for(std::vector<TileAnimContext *>::iterator i = contexts.begin();
+        i != contexts.end();
+        i++) {
+        delete (*i);
+    }
+}   
 
 void TileAnim::draw(Image *dest, Tile *tile, MapTile &mapTile, Direction dir)
 {

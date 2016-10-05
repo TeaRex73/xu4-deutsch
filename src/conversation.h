@@ -6,7 +6,7 @@
 #define CONVERSATION_H
 
 #include <list>
-#include <map>
+#include <unordered_map>
 #include <string>
 #include <vector>
 
@@ -117,6 +117,7 @@ public:
     class Question {
     public:
         Question(const string &txt, Response *yes, Response *no);
+        ~Question();
         string getText();
         Response *getResponse(bool yes);
 
@@ -161,7 +162,7 @@ public:
     /**
      * A mapping of keywords to the Keyword object that represents them
      */
-    typedef std::map<string, Keyword *> KeywordMap;
+    typedef std::unordered_map<string, Keyword *> KeywordMap;
 
     
     /*
@@ -271,6 +272,7 @@ private:
     Response *longIntro;
     Response *defaultAnswer;
     KeywordMap keywords;
+    std::vector<Response *> responses;
     union {
         int turnAwayProb;
         int attackProb;

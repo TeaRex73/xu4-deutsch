@@ -6,7 +6,7 @@
 #define TILEANIM_H
 
 #include <string>
-#include <map>
+#include <unordered_map>
 #include <vector>
 
 #include "direction.h"
@@ -29,7 +29,7 @@ public:
     virtual ~TileAnimTransform()
     {
     }
-
+    
     virtual bool drawsTile() const = 0;
     int random;
 
@@ -61,6 +61,7 @@ private:
 class TileAnimPixelTransform:public TileAnimTransform {
 public:
     TileAnimPixelTransform(int x, int y);
+    virtual ~TileAnimPixelTransform();
     virtual void draw(Image *dest, Tile *tile, MapTile &mapTile);
     virtual bool drawsTile() const;
     int x, y;
@@ -125,6 +126,7 @@ protected:
 class TileAnimPixelColorTransform:public TileAnimTransform {
 public:
     TileAnimPixelColorTransform(int x, int y, int w, int h);
+    virtual ~TileAnimPixelColorTransform();
     virtual void draw(Image *dest, Tile *tile, MapTile &mapTile);
     virtual bool drawsTile() const;
     int x, y, w, h;
@@ -155,7 +157,7 @@ public:
                                     context. */
     }
 
-    virtual ~TileAnimContext() {}
+    virtual ~TileAnimContext();
 
 private:
     TileAnimTransformList animTransforms;
@@ -198,6 +200,7 @@ private:
 class TileAnim {
 public:
     TileAnim(const ConfigElement &conf);
+    ~TileAnim();
     std::string name;
     std::vector<TileAnimTransform *> transforms;
     std::vector<TileAnimContext *> contexts;
@@ -214,10 +217,11 @@ public:
  */
 class TileAnimSet {
 private:
-    typedef std::map<std::string, TileAnim *> TileAnimMap;
+    typedef std::unordered_map<std::string, TileAnim *> TileAnimMap;
 
 public:
     TileAnimSet(const ConfigElement &conf);
+    ~TileAnimSet();
     TileAnim *getByName(const std::string &name);
     std::string name;
     TileAnimMap tileanims;

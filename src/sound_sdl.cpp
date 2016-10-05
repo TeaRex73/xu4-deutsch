@@ -56,11 +56,11 @@ void SoundManager::play_sys(
         finished = false;
         Mix_ChannelFinished(*channel_finished);
         if (!Mix_Playing(1)) {
-		finished = true;
-	}
+        finished = true;
+    }
     }
     while (!onlyOnce && !finished) {
-	    EventHandler::sleep(10);
+        EventHandler::sleep(10);
     }
     if (!onlyOnce || !Mix_Playing(1)) {
         if (Mix_PlayChannelTimed(
@@ -95,4 +95,10 @@ int SoundManager::init_sys()
 
 void SoundManager::del_sys()
 {
+    for (int i = 0; i < SOUND_MAX; i++) {
+        if (soundChunk[i] != NULL) {
+            Mix_FreeChunk(soundChunk[i]);
+            soundChunk[i] = NULL;
+        }
+    }
 }

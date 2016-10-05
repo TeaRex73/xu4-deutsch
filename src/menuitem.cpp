@@ -77,7 +77,7 @@ bool MenuItem::isVisible() const
     return visible;
 }
 
-const set<int> &MenuItem::getShortcutKeys() const
+const unordered_set<int> &MenuItem::getShortcutKeys() const
 {
     return shortcutKeys;
 }

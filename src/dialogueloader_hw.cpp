@@ -50,18 +50,18 @@ Dialogue *U4HWDialogueLoader::load(void *source)
     switch (c->party->member(0)->getSex()) {
     case SEX_MALE:
         hawkwind = u4fopen("hawkwinm.ger");
-	break;
+        break;
     case SEX_FEMALE:
         hawkwind = u4fopen("hawkwinf.ger");
-	break;
+        break;
     default:
-	    ASSERT(0, "Invalid Sex %d!", c->party->member(0)->getSex());
+        ASSERT(0, "Invalid Sex %d!", c->party->member(0)->getSex());
     }
     if (!hawkwind) {
         return NULL;
     }
     hawkwindText = u4read_stringtable(hawkwind, 0, 53);
-	u4fclose(hawkwind);
+    u4fclose(hawkwind);
     Dialogue *dlg = new Dialogue();
     dlg->setTurnAwayProb(0);
     dlg->setName(uppercase("Hawkwind"));

@@ -5,7 +5,9 @@
 #ifndef OBJECT_H
 #define OBJECT_H
 
+#include <cstdlib>
 #include <deque>
+#include <unordered_set>
 #include "coords.h"
 #include "tile.h"
 #include "types.h"
@@ -27,21 +29,10 @@ public:
         PERSON
     };
     
-    Object(Type type = UNKNOWN)
-        :tile(0),
-         prevTile(0),
-         movement_behavior(MOVEMENT_FIXED),
-         objType(type),
-         focused(false),
-         visible(true),
-         animated(true)
-    {
-    }
-
-    virtual ~Object()
-    {
-    }
-
+    Object(Type type = UNKNOWN);
+    virtual ~Object();
+    static void cleanup();
+    
     MapTile &getTile()
     {
         return tile;
@@ -153,6 +144,7 @@ protected:
     bool focused;
     bool visible;
     bool animated;
+    static std::unordered_set<Object *> all_objects;
 };
 
 #endif // ifndef OBJECT_H

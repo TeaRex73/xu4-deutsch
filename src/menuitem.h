@@ -6,11 +6,11 @@
 #define MENUITEM_H
 
 #include <string>
-#include <set>
+#include <unordered_set>
 #include <vector>
 
 using std::string;
-using std::set;
+using std::unordered_set;
 using std::vector;
 
 class MenuEvent;
@@ -50,7 +50,7 @@ public:
     bool isHighlighted() const;
     bool isSelected() const;
     bool isVisible() const;
-    const set<int> &getShortcutKeys() const;
+    const unordered_set<int> &getShortcutKeys() const;
     bool getClosesMenu() const;
     void setId(int id);
     void setX(int xpos);
@@ -70,7 +70,7 @@ protected:
     bool selected;
     bool visible;
     int scOffset;
-    set<int> shortcutKeys;
+    unordered_set<int> shortcutKeys;
     bool closesMenu;
 };
 

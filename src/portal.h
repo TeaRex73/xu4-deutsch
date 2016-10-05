@@ -26,18 +26,20 @@ typedef enum {
 
 typedef bool (*PortalConditionsMet)(const Portal *p);
 
-typedef struct _PortalDestination {
+struct PortalDestination {
     MapCoords coords;
     MapId mapid;
-} PortalDestination;
+};
 
-struct Portal {
+class Portal {
+public:
+    ~Portal();
     MapCoords coords;
     MapId destid;
     MapCoords start;
     PortalTriggerAction trigger_action;
     PortalConditionsMet portalConditionsMet;
-    struct _PortalDestination *retroActiveDest;
+    PortalDestination *retroActiveDest;
     bool saveLocation;
     std::string message;
     TransportContext portalTransportRequisites;

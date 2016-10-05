@@ -10,9 +10,9 @@ extern "C" {
 #endif
 
 /* Microsoft VC port */
-#if defined(_MSC_VER)
+// #if defined(_MSC_VER)
 #define VERSION "0.5.0"
-#endif
+// #endif
 
 /* info for loading city data from *.ult and *.tlk */
 #define CITY_HEIGHT 32
@@ -84,5 +84,5 @@ extern "C" {
 #ifdef __cplusplus
 }
 #endif
-    
+
 #endif // ifndef U4_H

@@ -46,6 +46,11 @@ Creature::Creature(MapTile tile):Object(Object::CREATURE)
     }
 }
 
+Creature::~Creature()
+{
+    status.clear();
+}
+
 void Creature::load(const ConfigElement &conf)
 {
     unsigned int idx;
@@ -657,6 +662,7 @@ void Creature::act(CombatController *controller)
                 }
                 soundPlay(SOUND_FLEE, false);
                 map->removeObject(this);
+                return;
             }
         }
         break;
@@ -676,7 +682,7 @@ void Creature::addStatus(StatusType s)
         StatusType prev = status.back();
         status.pop_back();
         status.push_back(s);
-	new_status = prev;
+        new_status = prev;
     } else {
         new_status = s;
     }
@@ -685,13 +691,13 @@ void Creature::addStatus(StatusType s)
     case STAT_GOOD:
     case STAT_POISONED:
         setAnimated(); /* animate creature */
-	break;
+        break;
     case STAT_SLEEPING:
     case STAT_DEAD:
-	setAnimated(false); /* freeze creature */
-	break;
+        setAnimated(false); /* freeze creature */
+        break;
     default:
-	    ASSERT(0, "Invalid status %d in Creature::addStatus", (int)new_status);
+        ASSERT(0, "Invalid status %d in Creature::addStatus", (int)new_status);
     }
 }
 
@@ -718,8 +724,8 @@ void Creature::applyTileEffect(TileEffect effect)
             /* deal 0 - 127 damage to the creature
                if it is not immune to poison field damage */
             if (resists != EFFECT_POISONFIELD) {
-				wakeUp(); /* just to be fair - poison wakes up players too */
-				applyDamage(xu4_random(0x7F), false);
+                wakeUp(); /* just to be fair - poison wakes up players too */
+                applyDamage(xu4_random(0x7F), false);
             }
             break;
         case EFFECT_POISON:
@@ -885,13 +891,13 @@ void Creature::removeStatus(StatusType s)
     case STAT_GOOD:
     case STAT_POISONED:
         setAnimated(); /* animate creature */
-	break;
+    break;
     case STAT_SLEEPING:
     case STAT_DEAD:
-	setAnimated(false); /* freeze creature */
-	break;
+        setAnimated(false); /* freeze creature */
+    break;
     default:
-	    ASSERT(0, "Invalid status %d in Creature::removeStatus", (int)new_status);
+        ASSERT(0, "Invalid status %d in Creature::removeStatus", (int)new_status);
     }
 }
 
@@ -994,6 +1000,11 @@ CreatureMgr *CreatureMgr::getInstance()
         instance->loadAll();
     }
     return instance;
+}
+
+CreatureMgr::~CreatureMgr()
+{
+    creatures.clear();
 }
 
 void CreatureMgr::loadAll()

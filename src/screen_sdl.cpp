@@ -56,6 +56,8 @@ extern bool verbose;
 void screenRefreshThreadInit();
 void screenRefreshThreadEnd();
 
+static SDL_Surface *icon;
+
 void screenInit_sys()
 {
     SDL_Surface *screen, *window;
@@ -72,7 +74,10 @@ void screenInit_sys()
     atexit(SDL_Quit);
     SDL_WM_SetCaption("Ultima IV", NULL);
 #ifdef ICON_FILE
-    SDL_WM_SetIcon(SDL_LoadBMP(ICON_FILE), NULL);
+    icon = SDL_LoadBMP(ICON_FILE);
+    if (icon) {
+        SDL_WM_SetIcon(icon, NULL);
+    }
 #endif
     if (!(screen = SDL_SetVideoMode(
               MY_WIDTH * settings.scale,
@@ -105,6 +110,7 @@ void screenInit_sys()
             screen->format->palette->ncolors
         );
     }
+    SDL_FreeSurface(window);
     SDL_UnlockSurface(screen);
 #ifdef FIXUP
     screen->w = 320;
@@ -147,6 +153,8 @@ void screenDelete_sys()
     SDL_FreeCursor(cursors[3]);
     SDL_FreeCursor(cursors[4]);
     u4_SDL_QuitSubSystem(SDL_INIT_VIDEO);
+    SDL_FreeSurface(icon);
+    icon = NULL;
 }
 
 
@@ -357,6 +365,8 @@ void screenRefreshThreadEnd()
     continueScreenRefresh = false;
     SDL_WaitThread(screenRefreshThread, NULL);
     screenRefreshThread = NULL;
+    SDL_UnlockMutex(screenLockMutex);
+    SDL_DestroyMutex(screenLockMutex);
 }
 
 

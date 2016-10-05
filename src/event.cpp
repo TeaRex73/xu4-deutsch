@@ -35,7 +35,6 @@ EventHandler *EventHandler::getInstance()
     return instance;
 }
 
-
 /**
  * Waits a given number of milliseconds before continuing
  */

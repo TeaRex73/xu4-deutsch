@@ -5,7 +5,7 @@
 #ifndef TILEMAP_H
 #define TILEMAP_H
 
-#include <map>
+#include <unordered_map>
 #include <string>
 #include "types.h"
 
@@ -18,7 +18,7 @@ using std::string;
  */
 class TileMap {
 public:
-    typedef std::map<string, TileMap *> TileIndexMapMap;
+    typedef std::unordered_map<string, TileMap *> TileIndexMapMap;
 
     MapTile translate(unsigned int index);
     unsigned int untranslate(MapTile &tile);
@@ -29,7 +29,7 @@ public:
 private:
     static void load(const ConfigElement &tilemapConf);
     static TileIndexMapMap tileMaps;
-    std::map<unsigned int, MapTile> tilemap;
+    std::unordered_map<unsigned int, MapTile> tilemap;
 };
 
 #endif // ifndef TILEMAP_H

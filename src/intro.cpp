@@ -93,21 +93,11 @@ IntroBinData::IntroBinData()
 
 IntroBinData::~IntroBinData()
 {
-    if (sigData) {
-        delete[] sigData;
-    }
-    if (scriptTable) {
-        delete[] scriptTable;
-    }
-    if (baseTileTable) {
-        delete[] baseTileTable;
-    }
-    if (beastie1FrameTable) {
-        delete[] beastie1FrameTable;
-    }
-    if (beastie2FrameTable) {
-        delete[] beastie2FrameTable;
-    }
+    delete[] sigData;
+    delete[] scriptTable;
+    delete[] baseTileTable;
+    delete[] beastie1FrameTable;
+    delete[] beastie2FrameTable;
     introQuestions[0].clear();
     introQuestions[1].clear();
     introText[0].clear();
@@ -120,9 +110,9 @@ bool IntroBinData::load()
 {
     int i;
     U4FILE *introger = u4fopen("introm.ger");
-	if (!introger) {
-		return false;
-	}
+    if (!introger) {
+        return false;
+    }
     U4FILE *title = u4fopen("title.exe");
     if (!title) {
         return false;
@@ -132,9 +122,9 @@ bool IntroBinData::load()
     introGypsy[0] = u4read_stringtable(introger, -1, 14);
     u4fclose(introger);
     introger = u4fopen("introf.ger");
-	if (!introger) {
-		return false;
-	}
+    if (!introger) {
+        return false;
+    }
     introQuestions[1] = u4read_stringtable(introger, 0, 28);
     introText[1] = u4read_stringtable(introger, -1, 25);
     introGypsy[1] = u4read_stringtable(introger, -1, 14);
@@ -144,9 +134,7 @@ bool IntroBinData::load()
     for (i = 0; i < 14; i++) {
         trim(introGypsy[0][i]);
     }
-    if (sigData) {
-        delete sigData;
-    }
+    delete sigData;
     sigData = new unsigned char[533];
     u4fseek(title, INTRO_FIXUPDATA_OFFSET, SEEK_SET);
     u4fread(sigData, 1, 533, title);
@@ -719,6 +707,12 @@ IntroController::IntroController()
     interfaceMenu.setClosesMenu(CANCEL);
 }
 
+IntroController::AnimElement::~AnimElement()
+{
+    delete srcImage;
+    delete destImage;
+}
+
 
 /**
  * Initializes intro state and loads in introduction graphics, text
@@ -850,7 +844,7 @@ bool IntroController::keyPressed(int key)
         case '6':
         case '7':
         case '8':
-	case '9':
+    case '9':
             musicMgr->introSwitch(key - '0');
             break;
         default:
@@ -1174,12 +1168,12 @@ void IntroController::updateScreen()
             10,
             9,
             "%s",
-			menuArea.colorizeString(
-				"Ende und abschalten",
-				FG_YELLOW,
-				0,
-				1
-			).c_str()
+            menuArea.colorizeString(
+                "Ende und abschalten",
+                FG_YELLOW,
+                0,
+                1
+            ).c_str()
         );
         drawBeasties();
         // draw the cursor last
@@ -2024,7 +2018,7 @@ void IntroController::initPlayers(SaveGame *saveGame)
             saveGame->players[p].sex = initValuesForNpcClass[i].sex;
             saveGame->players[p].hp = saveGame->players[p].hpMax =
                 initValuesForClass[i].level * 100;
-			player = PartyMember(NULL, &saveGame->players[p]);
+            player = PartyMember(NULL, &saveGame->players[p]);
             saveGame->players[p].mp = player.getMaxMp();
             p++;
         }
@@ -2336,20 +2330,21 @@ bool IntroController::updateTitle()
     int timeCurrent = getTicks();
     double timePercent = 0;
     if ((title->animStep == 0) && !bSkipTitles) {
-        if (title->timeBase == 0) {
-            // reset the base time
-            title->timeBase = timeCurrent;
-        }
         if (title == titles.begin()) {
             // clear the screen
             Image *screen = imageMgr->get("screen")->image;
             screen->fillRect(
                 0, 0, screen->width(), screen->height(), 0, 0, 0
             );
+			timeCurrent = getTicks();
         }
         if (title->method == TITLE) {
             // assume this is the first frame of "Ultima IV" and begin sound
             soundPlay(SOUND_TITLE_FADE);
+        }
+		if (title->timeBase == 0) {
+            // reset the base time
+            title->timeBase = timeCurrent;
         }
     }
     // abort after processing all elements
@@ -2590,10 +2585,8 @@ bool IntroController::updateTitle()
 //
 void IntroController::compactTitle()
 {
-    if (title->srcImage) {
-        delete title->srcImage;
-        title->srcImage = NULL;
-    }
+    delete title->srcImage;
+    title->srcImage = NULL;
     title->plotData.clear();
 }
 

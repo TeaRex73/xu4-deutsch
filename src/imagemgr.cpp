@@ -16,9 +16,11 @@
 #include "settings.h"
 #include "u4file.h"
 
-using std::map;
+using std::unordered_map;
 using std::string;
 using std::vector;
+
+ImageInfo *ImageMgr::screenInfo = NULL;
 
 Image *screenScale(Image *src, int scale, int n, int filter);
 
@@ -33,7 +35,7 @@ public:
     string name;
     string location;
     string extends;
-    map<string, ImageInfo *> info;
+    unordered_map<string, ImageInfo *> info;
 };
 
 ImageMgr *ImageMgr::instance = NULL;
@@ -49,10 +51,8 @@ ImageMgr *ImageMgr::getInstance()
 
 void ImageMgr::destroy()
 {
-    if (instance != NULL) {
-        delete instance;
-        instance = NULL;
-    }
+    delete instance;
+    instance = NULL;
 }
 
 ImageMgr::ImageMgr()
@@ -65,12 +65,14 @@ ImageMgr::ImageMgr()
 ImageMgr::~ImageMgr()
 {
     settings.deleteObserver(this);
-    for (std::map<string, ImageSet *>::iterator i = imageSets.begin();
+    for (std::unordered_map<string, ImageSet *>::iterator i =
+             imageSets.begin();
          i != imageSets.end();
          i++) {
         delete i->second;
     }
     delete logger;
+    delete screenInfo;
 }
 
 void ImageMgr::init()
@@ -80,7 +82,7 @@ void ImageMgr::init()
      * register the "screen" image representing the entire screen
      */
     Image *screen = Image::createScreenImage();
-    ImageInfo *screenInfo = new ImageInfo;
+    screenInfo = new ImageInfo;
     screenInfo->name = "screen";
     screenInfo->filename = "";
     screenInfo->width = screen->width();
@@ -111,7 +113,7 @@ void ImageMgr::init()
         }
     }
     imageSetNames.clear();
-    for (std::map<string, ImageSet *>::const_iterator set =
+    for (std::unordered_map<string, ImageSet *>::const_iterator set =
              imageSets.begin();
          set != imageSets.end();
          set++) {
@@ -134,7 +136,7 @@ ImageSet *ImageMgr::loadImageSetFromConf(const ConfigElement &conf)
          i++) {
         if (i->getName() == "image") {
             ImageInfo *info = loadImageInfoFromConf(*i);
-            std::map<string, ImageInfo *>::iterator dup =
+            std::unordered_map<string, ImageInfo *>::iterator dup =
                 set->info.find(info->name);
             if (dup != set->info.end()) {
                 delete dup->second;
@@ -642,7 +644,8 @@ void ImageMgr::fixupFMTowns(Image *im, int prescale)
  */
 ImageSet *ImageMgr::getSet(const string &setname)
 {
-    std::map<string, ImageSet *>::iterator i = imageSets.find(setname);
+    std::unordered_map<string, ImageSet *>::iterator i =
+        imageSets.find(setname);
     if (i != imageSets.end()) {
         return i->second;
     } else {
@@ -670,7 +673,8 @@ ImageInfo *ImageMgr::getInfoFromSet(const string &name, ImageSet *imageset)
     }
     /* if the image set contains the image we want,
        AND IT EXISTS we are done */
-    std::map<string, ImageInfo *>::iterator i = imageset->info.find(name);
+    std::unordered_map<string, ImageInfo *>::iterator i =
+        imageset->info.find(name);
     if (i != imageset->info.end()) {
         if (imageExists(i->second)) {
             return i->second;
@@ -896,12 +900,12 @@ SubImage *ImageMgr::getSubImage(const string &name)
     string setname;
     ImageSet *set = baseSet;
     while (set != NULL) {
-        for (std::map<string, ImageInfo *>::iterator i =
+        for (std::unordered_map<string, ImageInfo *>::iterator i =
                  set->info.begin();
              i != set->info.end();
              i++) {
             ImageInfo *info = (ImageInfo *)i->second;
-            std::map<string, SubImage *>::iterator j =
+            std::unordered_map<string, SubImage *>::iterator j =
                 info->subImages.find(name);
             if (j != info->subImages.end()) {
                 return j->second;
@@ -918,11 +922,12 @@ SubImage *ImageMgr::getSubImage(const string &name)
  */
 void ImageMgr::freeIntroBackgrounds()
 {
-    for (std::map<string, ImageSet *>::iterator i = imageSets.begin();
+    for (std::unordered_map<string, ImageSet *>::iterator i =
+             imageSets.begin();
          i != imageSets.end();
          i++) {
         ImageSet *set = i->second;
-        for (std::map<string, ImageInfo *>::iterator j =
+        for (std::unordered_map<string, ImageInfo *>::iterator j =
                  set->info.begin();
              j != set->info.end();
              j++) {
@@ -954,7 +959,7 @@ void ImageMgr::update(Settings *newSettings)
 
 ImageSet::~ImageSet()
 {
-    for (std::map<string, ImageInfo *>::iterator i = info.begin();
+    for (std::unordered_map<string, ImageInfo *>::iterator i = info.begin();
          i != info.end();
          i++) {
         ImageInfo *imageInfo = i->second;
@@ -966,12 +971,11 @@ ImageSet::~ImageSet()
 
 ImageInfo::~ImageInfo()
 {
-    for (std::map<string, SubImage *>::iterator i = subImages.begin();
+    for (std::unordered_map<string, SubImage *>::iterator i =
+             subImages.begin();
          i != subImages.end();
          i++) {
         delete i->second;
     }
-    if (image != NULL) {
-        delete image;
-    }
+    delete image;
 }

@@ -40,7 +40,7 @@
     <topic query="job">Ich spiele von der Liebe.<question type="0">Willst du zuhören?<yes>Über Liebe.</yes><no>Schade.</no></question></topic>
     <topic query="health">Mir geht es gut.</topic>
     <topic query="LIEB">Ich entzünde eine Kerze auf unsere Liebe, in Liebe verschwinden unsere Schwierigkeiten.</topic>
-    <topic query="SCHW">Aber alles in allem entdecken wir bald, daß eins und eins alles ist, was wir hören möchten!</topic>
+    <topic query="SCHW">Aber alles in allem entdecken wir bald, daß eins und eins alles ist, was wir uns sehnen zu hören!</topic>
   </person>
   <person id="6" name="Linda" pronoun="Sie" turnAwayProb="0">
     <description>Eine Sängerin.</description>

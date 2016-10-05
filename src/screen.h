@@ -68,14 +68,14 @@ typedef enum {
     MC_SOUTH
 } MouseCursor;
 
-typedef struct _MouseArea {
+struct MouseArea {
     int npoints;
     struct {
         int x, y;
     } point[4];
     MouseCursor cursor;
     int command[3];
-} MouseArea;
+};
 
 #define SCR_CYCLE_PER_SECOND 4
 
@@ -127,7 +127,7 @@ int screenPointInMouseArea(int x, int y, MouseArea *area);
 Image *screenScale(Image *src, int scale, int n, int filter);
 Image *screenScaleDown(Image *src, int scale);
 extern int screenCurrentCycle;
-extern volatile bool screenStill;
+extern volatile bool screenMoving;
 
 #define SCR_CYCLE_MAX 16
 

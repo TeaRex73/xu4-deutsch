@@ -34,10 +34,20 @@ City::~City()
          j++) {
         delete *j;
     }
-    for (std::vector<Dialogue *>::iterator k = extraDialogues.begin();
-         k != extraDialogues.end();
+    for (std::vector<Dialogue *>::iterator k = normalDialogues.begin();
+         k != normalDialogues.end();
          k++) {
         delete *k;
+    }
+    for (std::vector<Dialogue *>::iterator l = extraDialogues.begin();
+         l != extraDialogues.end();
+         l++) {
+        delete *l;
+    }
+    for (std::vector<Person *>::iterator m = personObjects.begin();
+         m != personObjects.end();
+         m++) {
+        removeObject(*m);
     }
 }
 
@@ -63,6 +73,7 @@ Person *City::addPerson(Person *person)
     /* set the start coordinates for the person */
     p->setMap(this);
     p->goToStartLocation();
+    personObjects.push_back(p);
     objects.push_back(p);
     return p;
 }

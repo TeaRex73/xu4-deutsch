@@ -6,7 +6,7 @@
 #define U4FILE_H
 
 #include "vc6.h" // Fixes things if you're using VC6, does nothing otherwise
-#include <map>
+#include <unordered_map>
 #include <string>
 #include <vector>
 #include <list>
@@ -45,9 +45,8 @@ private:
                     where resources are located */
     bool extension; /**< whether this zipfile is an
                        extension with config information */
-    std::map<string, string> translations; /**< mapping from
-                                              standard resource names
-                                              to internal names */
+    std::unordered_map<string, string> translations;
+    /**< mapping from standard resource names to internal names */
 };
 
 
@@ -103,7 +102,8 @@ public:
         :defaultsHaveBeenInitd(false)
     {
     }
-
+    
+    ~U4PATH();
     void initDefaultPaths();
     static U4PATH *instance;
     static U4PATH *getInstance();

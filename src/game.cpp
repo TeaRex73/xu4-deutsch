@@ -140,7 +140,7 @@ MouseArea mouseAreas[] = {
         MC_SOUTH,
         { U4_ENTER, 0, U4_DOWN }
     },
-    { 0 }
+    {}
 };
 
 ReadPlayerController::ReadPlayerController()
@@ -217,6 +217,16 @@ GameController::GameController()
      paused(false),
      pausedTimer(0)
 {
+}
+
+GameController::~GameController()
+{
+    delete c->saveGame;
+    delete c->stats;
+    delete c->aura;
+    delete c->party;
+    delete c->location;
+    delete c;
 }
 
 void GameController::initScreen()
@@ -442,7 +452,7 @@ int gameSave()
      */
     if (c->location->context & CTX_DUNGEON) {
         unsigned int x, y, z;
-        typedef std::map<const Creature *, int> DngCreatureIdMap;
+        typedef std::unordered_map<const Creature *, int> DngCreatureIdMap;
         static DngCreatureIdMap id_map;
         /**
          * Map creatures to u4dos dungeon creature Ids
@@ -2149,11 +2159,11 @@ void getChest(int player)
         }
         // see if the chest is trapped and handle it
         if (getChestTrapHandler(player)) {
-			screenMessage("\nSIE ENTH[LT:\n%02d-GOLD!\n", c->party->getChest(player == -2));
-		} else {
-			screenMessage("%cTRUHE ZERST\\RT!%c\n", FG_RED, FG_WHITE);
-		}
-		screenPrompt();
+            screenMessage("\nSIE ENTH[LT:\n%02d-GOLD!\n", c->party->getChest(player == -2));
+        } else {
+            screenMessage("%cTRUHE ZERST\\RT!%c\n", FG_RED, FG_WHITE);
+        }
+        screenPrompt();
         if (isCity(c->location->map) && (obj == NULL)) {
             c->party->adjustKarma(KA_STOLE_CHEST);
         }
@@ -2216,7 +2226,7 @@ bool getChestTrapHandler(int player)
         } else {
             soundPlay(SOUND_FLEE);
             screenMessage("VERMIEDEN!\n");
-			return true;
+            return true;
         }
         return false;
     }

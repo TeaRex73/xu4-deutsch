@@ -150,9 +150,9 @@ Script::~Script()
     // clean up the providers though, it seems the providers map doesn't own
     // its pointers. Smart pointers anyone?
     // Clean variables
-    std::map<string, Script::Variable *>::iterator variableItem =
+    std::unordered_map<string, Script::Variable *>::iterator variableItem =
         variables.begin();
-    std::map<string, Script::Variable *>::iterator variablesEnd =
+    std::unordered_map<string, Script::Variable *>::iterator variablesEnd =
         variables.end();
     while (variableItem != variablesEnd) {
         delete variableItem->second;
@@ -162,7 +162,8 @@ Script::~Script()
 
 void Script::removeCurrentVariable(const string &name)
 {
-    std::map<string, Script::Variable *>::iterator dup = variables.find(name);
+    std::unordered_map<string, Script::Variable *>::iterator dup =
+        variables.find(name);
     if (dup != variables.end()) {
         delete dup->second;
         variables.erase(dup); // not strictly necessary, but correct.
@@ -1551,7 +1552,8 @@ Script::ReturnCode Script::karma(xmlNodePtr script, xmlNodePtr current)
     if (debug) {
         fprintf(debug, "\nKarma: adjusting - '%s'", action.c_str());
     }
-    typedef std::map<string, KarmaAction, std::less<string> > KarmaActionMap;
+    typedef std::unordered_map<string, KarmaAction>
+        KarmaActionMap;
     static KarmaActionMap action_map;
     if (action_map.size() == 0) {
         action_map["found_item"] = KA_FOUND_ITEM;
@@ -1641,7 +1643,8 @@ Script::ReturnCode Script::setVar(xmlNodePtr script, xmlNodePtr current)
  */
 Script::ReturnCode Script::ztats(xmlNodePtr script, xmlNodePtr current)
 {
-    typedef std::map<string, StatsView, std::less<string> > StatsViewMap;
+    typedef std::unordered_map<string, StatsView>
+        StatsViewMap;
     static StatsViewMap view_map;
     if (view_map.size() == 0) {
         view_map["party"] = STATS_PARTY_OVERVIEW;

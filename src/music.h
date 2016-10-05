@@ -7,6 +7,7 @@
 
 #include <string>
 #include <vector>
+#include <SDL_mixer.h>
 
 #include "debug.h"
 
@@ -17,9 +18,6 @@
 #define INN_FADE_OUT_TIME 1000
 #define INN_FADE_IN_TIME 5000
 #define NLOOPS 1
-
-struct _Mix_Music;
-typedef _Mix_Music OSMusicMixer;
 
 class Music {
 public:
@@ -33,7 +31,7 @@ public:
         OUTSIDE,
         COMBAT,
         SHRINES,
-	EXTRA,
+    EXTRA,
         MAX
     };
     
@@ -102,7 +100,7 @@ public:
 
     void create_or_win()
     {
-	playMid(EXTRA); /**< Music when starting a new game of ending */
+    playMid(EXTRA); /**< Music when starting a new game of ending */
     }
     
     void intro()
@@ -135,7 +133,7 @@ public:
     std::vector<std::string> filenames;
     Type introMid;
     Type current;
-    OSMusicMixer *playing;
+    Mix_Music *playing;
     Debug *logger;
 
 private:

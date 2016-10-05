@@ -7,7 +7,7 @@
 
 #include <cstdio>
 #include <ctime>
-#include <map>
+#include <unordered_map>
 #include <string>
 #include <vector>
 
@@ -117,7 +117,7 @@ string  to_string(int val);
 std::vector<string> split(const string &s, const string &separators);
 class Performance {
 private:
-    typedef std::map<string, clock_t> TimeMap;
+    typedef std::unordered_map<string, clock_t> TimeMap;
 
 public:
     Performance(const string &s)
@@ -175,8 +175,8 @@ public:
         static const double msec = double(CLOCKS_PER_SEC) / double(1000);
         TimeMap::const_iterator i;
         clock_t total = 0;
-        std::map<double, string> percentages;
-        std::map<double, string>::iterator perc;
+        std::unordered_map<double, string> percentages;
+        std::unordered_map<double, string>::iterator perc;
         if (pre) { fprintf(log, "%s", pre); }
         for (i = times.begin(); i != times.end(); i++) {
             fprintf(

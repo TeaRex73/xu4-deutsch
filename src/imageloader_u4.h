@@ -56,6 +56,7 @@ private:
 
 class U4PaletteLoader {
 public:
+    static void cleanup();
     RGBA *loadBWPalette();
     RGBA *loadEgaPalette();
     RGBA *loadVgaPalette();

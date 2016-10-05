@@ -11,12 +11,14 @@
 #include <utility>
 #include "debug.h"
 #include "image.h"
+#include "imagemgr.h"
 #include "screen.h"
 #include "settings.h"
 #include "error.h"
 
 Image::Image()
-    :surface(NULL)
+    :surface(NULL),
+     isScreen(false)
 {
 }
 
@@ -84,6 +86,7 @@ Image *Image::createScreenImage()
     screen->w = screen->surface->w;
     screen->h = screen->surface->h;
     screen->indexed = screen->surface->format->palette != NULL;
+    screen->isScreen = true;
     return screen;
 }
 
@@ -113,7 +116,9 @@ Image *Image::duplicate(Image *image)
  */
 Image::~Image()
 {
-    SDL_FreeSurface(surface);
+    if (!isScreen) {
+        SDL_FreeSurface(surface);
+    }
 }
 
 
@@ -144,11 +149,10 @@ void Image::setPaletteFromImage(const Image *src)
         indexed && src->indexed,
         "imageSetPaletteFromImage called on non-indexed image"
     );
-    memcpy(
-        surface->format->palette->colors,
-        src->surface->format->palette->colors,
-        sizeof(SDL_Color) * src->surface->format->palette->ncolors
-    );
+    for (int i = 0; i < src->surface->format->palette->ncolors; i++) {
+        surface->format->palette->colors[i] =
+            src->surface->format->palette->colors[i];
+    }
 }
 
 
@@ -507,11 +511,13 @@ void Image::putPixelIndex(int x, int y, unsigned int index, bool anyway)
 {
     int bpp;
     Uint8 *p;
-    if (__builtin_expect(!screenStill, false) && !anyway) {
+    if (!__builtin_expect(screenMoving, true) && !anyway) {
         return;
     }
     bpp = surface->format->BytesPerPixel;
-    p = static_cast<Uint8 *>(surface->pixels) + y * surface->pitch + x * bpp;
+    p = static_cast<Uint8 *>(surface->pixels)
+        + y * surface->pitch
+        + x * __builtin_expect(bpp, 1);
     switch (__builtin_expect(bpp, 1)) {
     case 1:
         *p = index;
@@ -557,7 +563,7 @@ void Image::fillRect(
     dest.y = y;
     dest.w = w;
     dest.h = h;
-    if (__builtin_expect(screenStill, true) || anyway) {
+    if (__builtin_expect(screenMoving, true) || anyway) {
         SDL_FillRect(surface, &dest, pixel);
     }
 }
@@ -612,8 +618,9 @@ void Image::getPixelIndex(int x, int y, unsigned int &index) const
         break;
     case 4:
         index = *reinterpret_cast<Uint32 *>(p);
+        break;
     default:
-        return;
+        index = 0;
     }
 }
 
@@ -634,7 +641,7 @@ void Image::drawOn(Image *d, int x, int y, bool anyway) const
     r.y = y;
     r.w = w;
     r.h = h;
-    if (__builtin_expect(screenStill, true) || anyway) {
+    if (__builtin_expect(screenMoving, true) || anyway) {
         SDL_BlitSurface(surface, NULL, destSurface, &r);
     }
 }
@@ -668,7 +675,7 @@ void Image::drawSubRectOn(
     dest.x = x;
     dest.y = y;
     /* dest w & h unused */
-    if (__builtin_expect(screenStill, true) || anyway) {
+    if (__builtin_expect(screenMoving, true) || anyway) {
         SDL_BlitSurface(surface, &src, destSurface, &dest);
     }
 } // Image::drawSubRectOn
@@ -704,7 +711,7 @@ void Image::drawSubRectInvertedOn(
         dest.x = x;
         dest.y = y + rh - i - 1;
         /* dest w & h unused */
-        if (__builtin_expect(screenStill, true) || anyway) {
+        if (__builtin_expect(screenMoving, true) || anyway) {
             SDL_BlitSurface(surface, &src, destSurface, &dest);
         }
     }

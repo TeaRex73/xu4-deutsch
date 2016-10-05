@@ -36,10 +36,169 @@ Settings *Settings::instance = NULL;
 #define SETTINGS_BASE_FILENAME "xu4rc"
 #endif
 
+bool SettingsEnhancementOptions::operator==(
+    const SettingsEnhancementOptions &s
+) const
+{
+    if (activePlayer != s.activePlayer) {
+        return false;
+    }
+    if (u5spellMixing != s.u5spellMixing) {
+        return false;
+    }
+    if (u5shrines != s.u5shrines) {
+        return false;
+    }
+    if (u5combat != s.u5combat) {
+        return false;
+    }
+    if (slimeDivides != s.slimeDivides) {
+        return false;
+    }
+    if (gazerSpawnsInsects != s.gazerSpawnsInsects) {
+        return false;
+    }
+    if (textColorization != s.textColorization) {
+        return false;
+    }
+    if (c64chestTraps != s.c64chestTraps) {
+        return false;
+    }
+    if (smartEnterKey != s.smartEnterKey) {
+        return false;
+    }
+    if (peerShowsObjects != s.peerShowsObjects) {
+        return false;
+    }
+    if (u4TileTransparencyHack != s.u4TileTransparencyHack) {
+        return false;
+    }
+    if (u4TileTransparencyHack != s.u4TileTransparencyHack) {
+        return false;
+    }
+    if (u4TileTransparencyHackPixelShadowOpacity
+        != s.u4TileTransparencyHackPixelShadowOpacity) {
+        return false;
+    }
+    if (u4TileTransparencyHackShadowBreadth
+        != s.u4TileTransparencyHackShadowBreadth) {
+        return false;
+    }
+    return true;
+}
+
+bool SettingsEnhancementOptions::operator!=(
+    const SettingsEnhancementOptions &s
+) const
+{
+    return !operator==(s);
+}
+
+
+bool MouseOptions::operator==(const struct MouseOptions &s) const
+{
+    if (enabled != s.enabled) {
+        return false;
+    }
+    return true;
+}
+
+bool MouseOptions::operator!=(const struct MouseOptions &s) const
+{
+    return !operator==(s);
+}
+
 bool SettingsData::operator==(const SettingsData &s) const
 {
-    long offset = (long)&end_of_bitwise_comparators - (long)this;
-    if (memcmp(this, &s, offset) != 0) {
+    if (battleSpeed != s.battleSpeed) {
+        return false;
+    }
+    if (campTime != s.campTime) {
+        return false;
+    }
+    if (debug != s.debug) {
+        return false;
+    }
+    if (enhancements != s.enhancements) {
+        return false;
+    }
+    if (enhancementsOptions != s.enhancementsOptions) {
+        return false;
+    }
+    if (filterMoveMessages != s.filterMoveMessages) {
+        return false;
+    }
+    if (fullscreen != s.fullscreen) {
+        return false;
+    }
+    if (gameCyclesPerSecond != s.gameCyclesPerSecond) {
+        return false;
+    }
+    if (screenAnimationFramesPerSecond
+        != s.screenAnimationFramesPerSecond) {
+        return false;
+    }
+    if (innAlwaysCombat != s.innAlwaysCombat) {
+        return false;
+    }
+    if (innTime != s.innTime) {
+        return false;
+    }
+    if (keydelay != s.keydelay) {
+        return false;
+    }
+    if (keyinterval != s.keyinterval) {
+        return false;
+    }
+    if (mouseOptions != s.mouseOptions) {
+        return false;
+    }
+    if (musicVol != s.musicVol) {
+        return false;
+    }
+    if (scale != s.scale) {
+        return false;
+    }
+    if (screenShakes != s.screenShakes) {
+        return false;
+    }
+    if (gamma != s.gamma) {
+        return false;
+    }
+    if (shakeInterval != s.shakeInterval) {
+        return false;
+    }
+    if (shortcutCommands != s.shortcutCommands) {
+        return false;
+    }
+    if (shrineTime != s.shrineTime) {
+        return false;
+    }
+    if (soundVol != s.soundVol) {
+        return false;
+    }
+    if (spellEffectSpeed != s.spellEffectSpeed) {
+        return false;
+    }
+    if (validateXml != s.validateXml) {
+        return false;
+    }
+    if (volumeFades != s.volumeFades) {
+        return false;
+    }
+    if (titleSpeedRandom != s.titleSpeedRandom) {
+        return false;
+    }
+    if (titleSpeedOther != s.titleSpeedOther) {
+        return false;
+    }
+    if (soundVol != s.soundVol) {
+        return false;
+    }
+    if (pauseForEachTurn != s.pauseForEachTurn) {
+        return false;
+    }
+    if (pauseForEachMovement != s.pauseForEachMovement) {
         return false;
     }
     if (filter != s.filter) {

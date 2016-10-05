@@ -5,6 +5,7 @@
 #ifndef WEAPON_H
 #define WEAPON_H
 
+#include <memory>
 #include <string>
 #include <vector>
 #include "savegame.h"
@@ -25,7 +26,7 @@ public:
         WEAP_ABSOLUTERANGE = 0x0080,
         WEAP_RETURNS = 0x0100,
         WEAP_DONTSHOWTRAVEL = 0x0200,
-		WEAP_RANGEDONLY = 0x0400
+        WEAP_RANGEDONLY = 0x0400
     };
     
     static const Weapon *get(WeaponType w);
@@ -106,11 +107,11 @@ public:
         return flags & WEAP_MYSTIC;
     }
 
-	bool rangedOnly() const
-	{
-		return flags & WEAP_RANGEDONLY;
-	}
-	
+    bool rangedOnly() const
+    {
+        return flags & WEAP_RANGEDONLY;
+    }
+    
     bool canAttackThroughObjects() const
     {
         return flags & WEAP_ATTACKTHROUGHOBJECTS;
@@ -135,7 +136,7 @@ private:
     Weapon(const ConfigElement &conf);
     static void loadConf();
     static bool confLoaded;
-    static std::vector<Weapon *> weapons;
+    static std::vector<Weapon> weapons;
     WeaponType type;
     string name;
     string abbr; /**< abbreviation for the weapon */

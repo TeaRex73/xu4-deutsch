@@ -6,6 +6,7 @@
 #define SHRINE_H
 
 #include "map.h"
+#include "portal.h"
 #include "savegame.h"
 
 #define SHRINE_MEDITATION_INTERVAL 100
@@ -32,7 +33,7 @@ private:
     string mantra;
 };
 
-bool shrineCanEnter(const struct _Portal *p);
+bool shrineCanEnter(const Portal *p);
 bool isShrine(Map *punknown);
 
 #endif // ifndef SHRINE_H

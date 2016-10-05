@@ -5,7 +5,7 @@
 #ifndef CREATURE_H
 #define CREATURE_H
 
-#include <map>
+#include <unordered_map>
 #include <vector>
 
 #include "direction.h"
@@ -19,7 +19,7 @@ class ConfigElement;
 class Tile;
 
 typedef unsigned short CreatureId;
-typedef std::map<CreatureId, class Creature *> CreatureMap;
+typedef std::unordered_map<CreatureId, class Creature *> CreatureMap;
 typedef std::vector<class Creature *> CreatureVector;
 
 #define MAX_CREATURES 128
@@ -142,6 +142,7 @@ public:
     typedef std::list<StatusType> StatusList;
 
     Creature(MapTile tile = MapTile(0));
+    virtual ~Creature();
     void load(const ConfigElement &conf);
     
     virtual string getName() const
@@ -426,6 +427,7 @@ protected:
  */
 class CreatureMgr {
 public:
+    ~CreatureMgr();
     static CreatureMgr *getInstance();
     void loadAll();
     Creature *getByTile(MapTile tile);

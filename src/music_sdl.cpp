@@ -40,7 +40,7 @@ void Music::create_sys()
     if (Mix_OpenAudio(
             audio_rate, audio_format, audio_channels, audio_buffers
         )) {
-	errorWarning("Unable to open audio!");
+    errorWarning("Unable to open audio!");
         this->functional = false;
         return;
     }

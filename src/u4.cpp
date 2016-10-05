@@ -14,18 +14,28 @@
 #include "u4.h"
 #include <cstdlib>
 #include <cstring>
+#include "config.h"
+#include "creature.h"
 #include "debug.h"
+#include "dialogueloader.h"
+#include "dungeonview.h"
 #include "error.h"
 #include "event.h"
 #include "game.h"
+#include "imageloader.h"
+#include "imageloader_u4.h"
 #include "intro.h"
+#include "maploader.h"
+#include "mapmgr.h"
 #include "music.h"
+#include "object.h"
 #include "person.h"
 #include "progress_bar.h"
 #include "screen.h"
 #include "settings.h"
 #include "sound.h"
 #include "tileset.h"
+#include "u4file.h"
 #include "utils.h"
 
 #if defined(MACOSX)
@@ -43,7 +53,7 @@ using namespace std;
 
 int main(int argc, char *argv[])
 {
-	U4FILE *avatar;
+    U4FILE *avatar;
     Debug::initGlobal("debug/global.txt");
 #if defined(MACOSX)
     osxInit(argv[0]);
@@ -52,18 +62,18 @@ int main(int argc, char *argv[])
         errorFatal(
             "xu4 erfordert die MS-DOS-Version von Ultima IV. "
             "Diese muss sich im gleichen Verzeichnis befinden "
-            "wie die ausführbare Datei, oder in einem "
+            "wie die ausfuehrbare Datei, oder in einem "
             "Unterverzeichnisse davon namens \"ultima4\"."
             "\n\nDies kannst Du erreichen, indem Du"
             "\n - \"UltimaIV.zip\" von www.ultimaforever.com "
-            "herunterlädtst\n - Den Inhalt von UltimaIV.zip "
+            "herunterlaedtst\n - Den Inhalt von UltimaIV.zip "
             "entpackst\n - Den Ordner \"ultima4\" an den Ort "
-            "der ausführbaren Datei xu4 kopierst."
-            "\n\nBesuche die xu4-Webseite für weitere "
+            "der ausfuehrbaren Datei xu4 kopierst."
+            "\n\nBesuche die xu4-Webseite fuer weitere "
             "Informationen.\n\thttp://xu4.sourceforge.net/"
         );
     }
-	u4fclose(avatar);
+    u4fclose(avatar);
     unsigned int i;
     int skipIntro = 0;
     /*
@@ -168,6 +178,24 @@ int main(int argc, char *argv[])
     }
     eventHandler->setControllerDone(false);
     if (quit) {
+        Tileset::unloadAll();
+        MapMgr::destroy();
+        U4ZipPackageMgr::destroy();
+        delete musicMgr;
+        soundDelete();
+        screenDelete();
+        Config::destroy();
+        Object::cleanup();
+        DialogueLoader::cleanup();
+        ImageLoader::cleanup();
+        MapLoader::cleanup();
+        DungeonView::cleanup();
+        delete creatureMgr;
+        delete intro;
+        delete eventHandler;
+        U4PaletteLoader::cleanup();
+        delete &settings;
+        delete &u4Path;
         return quit > 1 ? EXIT_FAILURE : EXIT_SUCCESS;
     }
     perf.reset();
@@ -184,8 +212,23 @@ int main(int argc, char *argv[])
     eventHandler->run();
     eventHandler->popController();
     Tileset::unloadAll();
+    MapMgr::destroy();
+    U4ZipPackageMgr::destroy();
     delete musicMgr;
     soundDelete();
     screenDelete();
+    Config::destroy();
+    Object::cleanup();
+    DialogueLoader::cleanup();
+    ImageLoader::cleanup();
+    MapLoader::cleanup();
+    DungeonView::cleanup();
+    delete creatureMgr;
+    delete intro;
+    delete game;
+    delete eventHandler;
+    U4PaletteLoader::cleanup();
+    delete &settings;
+    delete &u4Path;
     return quit > 1 ? EXIT_FAILURE : EXIT_SUCCESS;
 } // main

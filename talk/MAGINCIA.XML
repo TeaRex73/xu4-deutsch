@@ -67,8 +67,8 @@
     <description>Ein klapperndes Knochengestell.</description>
     <topic query="job">Ich spuke, und spuke, und spuke!</topic>
     <topic query="health">Spukhaft.</topic>
-    <topic query="SPUK">Der Spuk-Beruf dauert länger als ein Leben, er dauert für immer!</topic>
-    <topic query="SCHR">Ja, ich war einst am Schreine, er liegt am Nordufer auf der Insel des Abgrunds!</topic>
+    <topic query="SPUK">Der Spuk-Beruf dauert nicht ein ganzes Leben lang, er dauert für immer!</topic>
+    <topic query="SCHR">Ja, ich war einst am Schreine, er liegt am Nordufer auf der Insel des Abgrundes!</topic>
   </person>
   <person id="10" name="Boozer" pronoun="Es" turnAwayProb="0">
     <description>Ein plumpes Gespenst.</description>

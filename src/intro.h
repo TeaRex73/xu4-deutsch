@@ -230,7 +230,9 @@ private:
         uint8_t r, g, b, a;
     };
     
-    struct AnimElement {
+    class AnimElement {
+    public:
+        ~AnimElement();
         int rx, ry; // screen/source x and y
         int rw, rh; // source width and height
         AnimType method; // render method

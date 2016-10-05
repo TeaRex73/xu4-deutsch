@@ -17,7 +17,7 @@ using std::string;
 using std::vector;
 
 bool Weapon::confLoaded = false;
-vector<Weapon *> Weapon::weapons;
+vector<Weapon> Weapon::weapons;
 
 
 /**
@@ -30,7 +30,7 @@ const Weapon *Weapon::get(WeaponType w)
     if (static_cast<unsigned>(w) >= weapons.size()) {
         return NULL;
     }
-    return weapons[w];
+    return &weapons[w];
 }
 
 
@@ -42,8 +42,8 @@ const Weapon *Weapon::get(const string &name)
     // Load in XML if it hasn't been already
     loadConf();
     for (unsigned i = 0; i < weapons.size(); i++) {
-        if (strcasecmp(name.c_str(), weapons[i]->name.c_str()) == 0) {
-            return weapons[i];
+        if (strcasecmp(name.c_str(), weapons[i].name.c_str()) == 0) {
+            return &weapons[i];
         }
     }
     return NULL;
@@ -74,7 +74,7 @@ Weapon::Weapon(const ConfigElement &conf)
         { "attackthroughobjects", WEAP_ATTACKTHROUGHOBJECTS },
         { "returns", WEAP_RETURNS },
         { "dontshowtravel", WEAP_DONTSHOWTRAVEL },
-		{ "rangedonly", WEAP_RANGEDONLY }
+        { "rangedonly", WEAP_RANGEDONLY }
     };
     /* Get the range of the weapon, whether it is absolute or
        normal range */
@@ -162,6 +162,6 @@ void Weapon::loadConf()
         if (i->getName() != "weapon") {
             continue;
         }
-        weapons.push_back(new Weapon(*i));
+        weapons.push_back(Weapon(*i));
     }
 }

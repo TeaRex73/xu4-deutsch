@@ -176,6 +176,13 @@ Dialogue *U4TlkDialogueLoader::load(void *source)
                      ))
     );
     dlg->addKeyword(
+        "gib",
+        new Response(uppercase(
+                         dlg->getPronoun()
+                         + " sagt:\nIch brauche dein Gold nicht. Behalt es!"
+                     ))
+    );
+    dlg->addKeyword(
         "begl",
         new Response(uppercase(
                          dlg->getPronoun()

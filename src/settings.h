@@ -5,7 +5,7 @@
 #ifndef SETTINGS_H
 #define SETTINGS_H
 
-#include <map>
+#include <unordered_map>
 #include <string>
 #include <vector>
 #include "observable.h"
@@ -62,6 +62,8 @@ using std::string;
 #define DEFAULT_SHADOW_PIXEL_SIZE 2
 
 struct SettingsEnhancementOptions {
+    bool operator==(const struct SettingsEnhancementOptions &) const;
+    bool operator!=(const struct SettingsEnhancementOptions &) const;
     bool activePlayer;
     bool u5spellMixing;
     bool u5shrines;
@@ -78,6 +80,8 @@ struct SettingsEnhancementOptions {
 };
 
 struct MouseOptions {
+    bool operator==(const struct MouseOptions &) const;
+    bool operator!=(const struct MouseOptions &) const;
     bool enabled;
 };
 
@@ -126,7 +130,6 @@ public:
      * end of the list so that our == and != operators
      * function correctly
      */
-    long end_of_bitwise_comparators;
     string filter;
     string gemLayout;
     string lineOfSight;
@@ -162,7 +165,7 @@ public:
     const std::vector<string> &getBattleDiffs();
 
 private:
-    typedef std::map<string, int, std::less<string> > SettingsMap;
+    typedef std::unordered_map<string, int, std::less<string> > SettingsMap;
     
     Settings();
     static Settings *instance;

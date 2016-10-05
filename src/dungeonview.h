@@ -50,6 +50,7 @@ private:
 public:
     static DungeonView *instance;
     static DungeonView *getInstance();
+    static void cleanup();
     void drawInDungeon(
         Tile *tile,
         int x_offset,

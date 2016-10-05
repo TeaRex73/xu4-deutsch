@@ -36,6 +36,13 @@ Config *Config::instance = NULL;
 char DEFAULT_CONFIG_XML_LOCATION[] = "config.xml";
 char *Config::CONFIG_XML_LOCATION_POINTER = &DEFAULT_CONFIG_XML_LOCATION[0];
 
+void Config::destroy()
+{
+    xmlFreeDoc(getInstance()->doc);
+    xmlCleanupParser();
+    delete instance;
+}
+
 const Config *Config::getInstance()
 {
     if (!instance) {
@@ -87,8 +94,7 @@ Config::Config()
     xmlXIncludeProcess(doc);
     if (settings.validateXml && doc->intSubset) {
         string errorMessage;
-        xmlValidCtxt cvp;
-		memset(&cvp, 0, sizeof cvp);
+        xmlValidCtxt cvp = {}; // makes valgrind happy
         if (verbose) {
             printf("validating config.xml\n");
         }

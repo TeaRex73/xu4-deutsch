@@ -18,7 +18,7 @@ using std::vector;
 using std::string;
 
 bool Armor::confLoaded = false;
-vector<Armor *> Armor::armors;
+vector<Armor> Armor::armors;
 
 
 /**
@@ -31,7 +31,7 @@ const Armor *Armor::get(ArmorType a)
     if (static_cast<unsigned>(a) >= armors.size()) {
         return NULL;
     }
-    return armors[a];
+    return &armors[a];
 }
 
 
@@ -43,8 +43,8 @@ const Armor *Armor::get(const string &name)
     // Load in XML if it hasn't been already
     loadConf();
     for (unsigned i = 0; i < armors.size(); i++) {
-        if (strcasecmp(name.c_str(), armors[i]->name.c_str()) == 0) {
-            return armors[i];
+        if (strcasecmp(name.c_str(), armors[i].name.c_str()) == 0) {
+            return &armors[i];
         }
     }
     return NULL;
@@ -57,7 +57,7 @@ Armor::Armor(const ConfigElement &conf)
     name = conf.getString("name");
     canuse = 0xFF;
     defense = conf.getInt("defense");
-	mystic = conf.getBool("mystic");
+    mystic = conf.getBool("mystic");
     mask = 0;
     vector<ConfigElement> contraintConfs = conf.getChildren();
     for (std::vector<ConfigElement>::iterator i = contraintConfs.begin();
@@ -110,6 +110,6 @@ void Armor::loadConf()
         if (i->getName() != "armor") {
             continue;
         }
-        armors.push_back(new Armor(*i));
+        armors.push_back(Armor(*i));
     }
 }

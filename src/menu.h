@@ -6,7 +6,6 @@
 #define MENU_H
 
 #include <list>
-#include <set>
 #include <string>
 #include "event.h"
 #include "menuitem.h"
@@ -14,7 +13,6 @@
 #include "types.h"
 
 using std::string;
-using std::set;
 
 class Menu;
 class TextView;

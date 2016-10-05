@@ -332,7 +332,9 @@ void spellSetEffectCallback(SpellEffectCallback callback)
 
 Ingredients::Ingredients()
 {
-    memset(reagents, 0, sizeof(reagents));
+    for (int i = 0; i < REAG_MAX; i++) {
+        reagents[i] = 0;
+    }
 }
 
 bool Ingredients::addReagent(Reagent reagent)
@@ -887,8 +889,8 @@ static int spellNegate(int unused)
 static int spellOpen(int unused)
 {
     getChest(-2);
-	// HACK: -2 will not prompt for opener
-	// CHANGE: And double the gold
+    // HACK: -2 will not prompt for opener
+    // CHANGE: And double the gold
     return 1;
 }
 

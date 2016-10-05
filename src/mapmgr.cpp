@@ -45,10 +45,8 @@ MapMgr *MapMgr::getInstance()
 
 void MapMgr::destroy()
 {
-    if (instance != NULL) {
-        delete instance;
-        instance = NULL;
-    }
+    delete instance;
+    instance = NULL;
 }
 
 MapMgr::MapMgr()

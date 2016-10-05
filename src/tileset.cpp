@@ -37,6 +37,15 @@ TileRule *TileRule::findByName(const string &name)
     return NULL;
 }
 
+void TileRule::unloadAll()
+{
+    TileRuleMap::iterator i;
+    for (i = rules.begin(); i != rules.end(); i++) {
+        delete i->second;
+    }
+    rules.clear();
+}
+
 
 /**
  * Load tile information from xml.
@@ -58,6 +67,8 @@ void TileRule::load()
         errorFatal("no 'default' rule found in tile rules");
     }
 }
+
+
 
 
 /**
@@ -227,6 +238,8 @@ void Tileset::unloadAll()
     TilesetMap::iterator i;
     // unload all tilemaps
     TileMap::unloadAll();
+    TileRule::unloadAll();
+    unloadAllImages();
     for (i = tilesets.begin(); i != tilesets.end(); i++) {
         i->second->unload();
         delete i->second;

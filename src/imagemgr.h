@@ -5,7 +5,7 @@
 #ifndef IMAGEMGR_H
 #define IMAGEMGR_H
 
-#include <map>
+#include <unordered_map>
 #include <string>
 #include <vector>
 
@@ -104,7 +104,7 @@ public:
     ImageFixup fixup; /**< a routine to do miscellaneous
                          fixes to the image */
     Image *image; /**< the image we're describing */
-    std::map<string, SubImage *> subImages;
+    std::unordered_map<string, SubImage *> subImages;
     bool hasBlackBackground();
 };
 
@@ -143,7 +143,8 @@ private:
     void fixupFMTowns(Image *im, int prescale);
     void update(Settings *newSettings);
     static ImageMgr *instance;
-    std::map<string, ImageSet *> imageSets;
+    static ImageInfo *screenInfo;
+    std::unordered_map<string, ImageSet *> imageSets;
     std::vector<string> imageSetNames;
     ImageSet *baseSet;
     Debug *logger;

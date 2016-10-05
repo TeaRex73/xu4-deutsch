@@ -6,7 +6,7 @@
 #define MAP_H
 
 #include <list>
-#include <map>
+#include <unordered_map>
 #include <string>
 #include <vector>
 
@@ -36,7 +36,6 @@ class Creature;
 class TileMap;
 class Tileset;
 struct Portal;
-struct _Dungeon;
 
 typedef std::vector<Portal *> PortalList;
 typedef std::list<int> CompressedChunkList;
@@ -106,6 +105,15 @@ public:
     static MapCoords nowhere;
 };
 
+namespace std
+{
+    template<> struct hash<MapCoords> {
+        std::size_t operator()(MapCoords const &s) const
+        {
+            return s.x ^ (s.y << 8) ^ (s.z << 16);
+        }
+    };
+} 
 
 /**
  * Map class
@@ -183,7 +191,6 @@ public:
     unsigned int chunk_width, chunk_height;
     unsigned int offset;
     Source baseSource;
-    std::list<Source> extraSources;
     CompressedChunkList compressed_chunks;
     BorderBehavior border_behavior;
     PortalList portals;
@@ -192,7 +199,7 @@ public:
     Music::Type music;
     MapData data;
     ObjectDeque objects;
-    std::map<string, MapCoords> labels;
+    std::unordered_map<string, MapCoords> labels;
     Tileset *tileset;
     TileMap *tilemap;
     // u4dos compatibility

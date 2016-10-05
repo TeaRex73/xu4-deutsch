@@ -103,6 +103,7 @@ class GameController
      public TurnCompleter {
 public:
     GameController();
+    ~GameController();
     /* controller functions */
     virtual bool keyPressed(int key);
     virtual void timerFired();

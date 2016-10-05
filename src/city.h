@@ -37,6 +37,8 @@ public:
     PersonList persons;
     string tlk_fname;
     PersonRoleList personroles;
+    std::vector<Person *> personObjects;
+    std::vector<Dialogue *> normalDialogues;
     std::vector<Dialogue *> extraDialogues;
 };
 

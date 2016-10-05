@@ -32,7 +32,7 @@
 #include "image.h"
 #include "imagemgr.h"
 
-std::map<Map::Type, MapLoader *> *MapLoader::loaderMap = NULL;
+std::unordered_map<Map::Type, MapLoader *> *MapLoader::loaderMap = NULL;
 
 MapLoader *CityMapLoader::instance = MapLoader::registerLoader(
     new CityMapLoader, Map::CITY
@@ -43,6 +43,7 @@ MapLoader *ConMapLoader::instance = MapLoader::registerLoader(
         new ConMapLoader, Map::COMBAT
     ), Map::SHRINE
 );
+
 
 MapLoader *DngMapLoader::instance = MapLoader::registerLoader(
     new DngMapLoader, Map::DUNGEON
@@ -75,13 +76,26 @@ MapLoader *MapLoader::getLoader(Map::Type type)
 MapLoader *MapLoader::registerLoader(MapLoader *loader, Map::Type type)
 {
     if (loaderMap == NULL) {
-        loaderMap = new std::map<Map::Type, MapLoader *>;
+        loaderMap = new std::unordered_map<Map::Type, MapLoader *>;
     }
     if (loaderMap->find(type) != loaderMap->end()) {
         errorFatal("map loader already registered for type %d", type);
     }
     (*loaderMap)[type] = loader;
     return loader;
+}
+
+void MapLoader::cleanup()
+{
+    for (std::unordered_map<Map::Type, MapLoader *>::iterator i =
+             loaderMap->begin();
+         i != loaderMap->end();
+         i++) {
+        if (i->first != Map::SHRINE) {
+            delete i->second;
+        }
+    }
+    delete loaderMap;
 }
 
 
@@ -262,7 +276,9 @@ bool CityMapLoader::load(Map *map)
          * to the city; Isaac the ghost in Skara Brae is handled like
          * this
          */
-        if (!found) {
+        if (found) {
+            city->normalDialogues.push_back(dialogues[i]);
+        } else {
             city->extraDialogues.push_back(dialogues[i]);
         }
     }
@@ -276,15 +292,17 @@ bool CityMapLoader::load(Map *map)
              current++) {
             if ((unsigned)(*current)->id == (i + 1)) {
                 if ((*current)->role == NPC_LORD_BRITISH) {
-                    people[i]->setDialogue(
+                    Dialogue *dlg =
                         DialogueLoader::getLoader("application/x-u4lbtlk")
-                        ->load(NULL)
-                    );
+                        ->load(NULL);
+                    people[i]->setDialogue(dlg);
+                    city->normalDialogues.push_back(dlg);
                 } else if ((*current)->role == NPC_HAWKWIND) {
-                    people[i]->setDialogue(
+                    Dialogue *dlg =
                         DialogueLoader::getLoader("application/x-u4hwtlk")
-                        ->load(NULL)
-                    );
+                        ->load(NULL);
+                    people[i]->setDialogue(dlg);
+                    city->normalDialogues.push_back(dlg);
                 }
                 people[i]->setNpcType(
                     static_cast<PersonNpcType>((*current)->role)
@@ -516,8 +534,10 @@ bool DngMapLoader::load(Map *map)
                 }, y1[8] = {
                     0x3, 0x2, 0x3, 0x2, 0x1, 0x3, 0x2, 0x1
                 };
-                memcpy(dungeon->rooms[i].party_east_start_x, x1, sizeof(x1));
-                memcpy(dungeon->rooms[i].party_east_start_y, y1, sizeof(y1));
+                for (int j = 0; j < 8; j++) {
+                    dungeon->rooms[i].party_east_start_x[j] = x1[j];
+                    dungeon->rooms[i].party_east_start_y[j] = y1[j];
+                }
                 // update party start positions when
                 // entering from the south
                 const unsigned char x2[8] = {
@@ -525,8 +545,10 @@ bool DngMapLoader::load(Map *map)
                 }, y2[8] = {
                     0x8, 0x8, 0x9, 0x9, 0x9, 0xA, 0xA, 0xA
                 };
-                memcpy(dungeon->rooms[i].party_south_start_x, x2, sizeof(x2));
-                memcpy(dungeon->rooms[i].party_south_start_y, y2, sizeof(y2));
+                for (int j = 0; j < 8; j++) {
+                    dungeon->rooms[i].party_east_start_x[j] = x2[j];
+                    dungeon->rooms[i].party_east_start_y[j] = y2[j];
+                }
             } else if (i == 0x9) {
                 // update the starting position of
                 // monsters 7, 8, and 9
@@ -535,8 +557,10 @@ bool DngMapLoader::load(Map *map)
                 }, y1[3] = {
                     0x5, 0x5, 0x6
                 };
-                memcpy(dungeon->rooms[i].creature_start_x + 7, x1, sizeof(x1));
-                memcpy(dungeon->rooms[i].creature_start_y + 7, y1, sizeof(y1));
+                for (int j = 0; j < 3; j++) {
+                    dungeon->rooms[i].creature_start_x[j] = x1[j];
+                    dungeon->rooms[i].creature_start_y[j] = y1[j];
+                }
                 // update party start positions
                 // when entering from the west
                 const unsigned char x2[8] = {
@@ -544,8 +568,10 @@ bool DngMapLoader::load(Map *map)
                 }, y2[8] = {
                     0x9, 0x8, 0x9, 0x8, 0x7, 0x9, 0x8, 0x7
                 };
-                memcpy(dungeon->rooms[i].party_west_start_x, x2, sizeof(x2));
-                memcpy(dungeon->rooms[i].party_west_start_y, y2, sizeof(y2));
+                for (int j = 0; j < 8; j++) {
+                    dungeon->rooms[i].party_west_start_x[j] = x2[j];
+                    dungeon->rooms[i].party_west_start_y[j] = y2[j];
+                }
                 // update the map data, moving the chest to
                 // the center of the room,
                 // and removing the walls at the lower-left

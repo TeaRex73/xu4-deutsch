@@ -65,7 +65,7 @@ vector<string> gemLayoutNames;
 vector<string> filterNames;
 vector<string> lineOfSightStyles;
 Layout *gemlayout = NULL;
-std::map<string, int> dungeonTileChars;
+std::unordered_map<string, int> dungeonTileChars;
 TileAnimSet *tileanims = NULL;
 ImageInfo *charsetInfo = NULL;
 ImageInfo *gemTilesInfo = NULL;
@@ -87,7 +87,7 @@ int screenCursorEnabled = 1;
 int screenLos[VIEWPORT_W][VIEWPORT_H];
 static const int BufferSize = 1024;
 extern bool verbose;
-volatile bool screenStill;
+volatile bool screenMoving;
 // Just extern the system functions here. That way people aren't
 // tempted to call them as part of the public API.
 extern void screenInit_sys();
@@ -95,7 +95,7 @@ extern void screenDelete_sys();
 
 void screenInit()
 {
-    screenStill = true;
+    screenMoving = true;
     filterNames.clear();
     filterNames.push_back("point");
     filterNames.push_back("2xBi");
@@ -164,6 +164,10 @@ void screenDelete()
         delete (*i);
     }
     layouts.clear();
+    std::vector<TileAnimSet *>::const_iterator j;
+    for (j = tileanimSets.begin(); j != tileanimSets.end(); j++) {
+        delete (*j);
+    }
     screenDelete_sys();
     ImageMgr::destroy();
 }
@@ -1528,7 +1532,7 @@ void screenShake(int iterations)
         // disable all screen updates except our own
         // otherwise image will get messed up because things aren't in their
         // usual places
-        screenStill = false;
+        screenMoving = false;
         // do the actual shaking
         for (i = 0; i < iterations; i++) {
             // store the bottom row
@@ -1567,7 +1571,7 @@ void screenShake(int iterations)
         // free the bottom row image
         delete bottom;
         // re-enable screen updates
-        screenStill = true;
+        screenMoving = true;
         screenRedrawScreen();
         EventHandler::sleep(settings.shakeInterval);
     }
@@ -1590,7 +1594,7 @@ void screenShowGemTile(
     unsigned int tile = map->ttrti(t);
     if (map->type == Map::DUNGEON) {
         ASSERT(charsetInfo, "charset not initialized");
-        std::map<string, int>::iterator charIndex =
+        std::unordered_map<string, int>::iterator charIndex =
             dungeonTileChars.find(t.getTileType()->getName());
         if (charIndex != dungeonTileChars.end()) {
             charsetInfo->image->drawSubRect(

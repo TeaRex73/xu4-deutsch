@@ -72,6 +72,7 @@ public:
     {
     }
 
+    virtual ~Dungeon();
     virtual string getName();
     DungeonToken tokenForTile(MapTile tile);
     DungeonToken currentToken();

@@ -19,6 +19,7 @@ class ConfigElement;
  */
 class Config {
 public:
+    static void destroy();
     static const Config *getInstance();
     ConfigElement getElement(const std::string &name) const;
     static std::vector<std::string> getGames();

@@ -246,11 +246,11 @@ void PartyMember::addStatus(StatusType s)
     case STAT_GOOD:
     case STAT_POISONED:
         setTile(tileForClass(getClass()));
-	break;
+    break;
     case STAT_SLEEPING:
     case STAT_DEAD:
-	setTile(Tileset::findTileByName("corpse")->getId());
-	break;
+    setTile(Tileset::findTileByName("corpse")->getId());
+    break;
     default:
         ASSERT(0, "Invalid Status %d in PartyMember::addStatus", (int)player->status);
     }
@@ -324,7 +324,7 @@ void PartyMember::applyEffect(TileEffect effect)
     case EFFECT_POISONFIELD:
     case EFFECT_POISON:
         if (getStatus() != STAT_POISONED) {
-	        soundPlay(SOUND_POISON_EFFECT, false);
+            soundPlay(SOUND_POISON_EFFECT, false);
             addStatus(STAT_POISONED);
         }
         break;
@@ -414,12 +414,12 @@ void PartyMember::removeStatus(StatusType s)
     switch (player->status) {
     case STAT_GOOD:
     case STAT_POISONED:
-	setTile(tileForClass(getClass()));
-	break;
+    setTile(tileForClass(getClass()));
+    break;
     case STAT_SLEEPING:
     case STAT_DEAD:
-	setTile(Tileset::findTileByName("corpse")->getId());
-	break;
+    setTile(Tileset::findTileByName("corpse")->getId());
+    break;
     default:
         ASSERT(0, "Invalid Status %d in PartyMember::removeStatus", (int)player->status);
     }
@@ -525,8 +525,8 @@ bool PartyMember::applyDamage(int damage, bool)
 int PartyMember::getAttackBonus() const
 {
     if (
-		Weapon::get(player->weapon)->alwaysHits() /* || (player->dex >= 40) */
-	) {
+        Weapon::get(player->weapon)->alwaysHits() /* || (player->dex >= 40) */
+    ) {
         return 255;
     }
     return player->dex;
@@ -535,11 +535,11 @@ int PartyMember::getAttackBonus() const
 int PartyMember::getDefense(bool needsMystic) const
 {
     int res = Armor::get(player->armor)->getDefense(needsMystic);
-	if (*c->aura == Aura::PROTECTION) {
-		return res / 2 + 128;
-	} else {
-		return res;
-	}
+    if (*c->aura == Aura::PROTECTION) {
+        return res / 2 + 128;
+    } else {
+        return res;
+    }
 }
 
 bool PartyMember::dealDamage(Creature *m, int damage)
@@ -564,9 +564,9 @@ int PartyMember::getDamage()
 {
     int maxDamage;
     maxDamage = Weapon::get(player->weapon)->getDamage();
-	if (!Weapon::get(player->weapon)->rangedOnly()) {
-		maxDamage += player->str;
-	}
+    if (!Weapon::get(player->weapon)->rangedOnly()) {
+        maxDamage += player->str;
+    }
     if (maxDamage > 255) {
         maxDamage = 255;
     }

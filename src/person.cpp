@@ -8,6 +8,7 @@
 #include <string>
 #include <cstring>
 #include <vector>
+#include <cstdio>
 
 #include "u4.h"
 
@@ -465,7 +466,7 @@ string Person::getResponse(Conversation *cnv, const char *inquiry)
             reply = dialogue->getPronoun()
                 + " sagt:\nEs ist mir eine Ehre, dich zu begleiten!";
             c->location->map->removeObject(this);
-	    musicMgr->play();
+        musicMgr->play();
             cnv->state = Conversation::DONE;
         } else {
             reply = dialogue->getPronoun() + " sagt:\nDu bist nicht ";

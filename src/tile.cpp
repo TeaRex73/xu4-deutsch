@@ -204,10 +204,8 @@ void Tile::loadImage()
 
 void Tile::deleteImage()
 {
-    if (image) {
-        delete image;
-        image = NULL;
-    }
+    delete image;
+    image = NULL;
     scale = settings.scale;
 }
 

@@ -23,6 +23,7 @@ ImageLoader *U4RleImageLoader::instance =
     ImageLoader::registerLoader(new U4RleImageLoader, "image/x-u4rle");
 ImageLoader *U4LzwImageLoader::instance =
     ImageLoader::registerLoader(new U4LzwImageLoader, "image/x-u4lzw");
+
 RGBA *U4PaletteLoader::bwPalette = NULL;
 RGBA *U4PaletteLoader::egaPalette = NULL;
 RGBA *U4PaletteLoader::vgaPalette = NULL;
@@ -177,6 +178,12 @@ Image *U4LzwImageLoader::load(U4FILE *file, int width, int height, int bpp)
     return image;
 } // U4LzwImageLoader::load
 
+void U4PaletteLoader::cleanup()
+{
+    delete[] bwPalette;
+    delete[] egaPalette;
+    delete[] vgaPalette;
+}
 
 /**
  * Loads a simple black & white palette

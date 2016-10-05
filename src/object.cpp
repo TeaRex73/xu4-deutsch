@@ -12,6 +12,40 @@
 
 using namespace std;
 
+std::unordered_set<Object *> Object::all_objects;
+
+Object::Object(Type type)
+    :tile(0),
+     prevTile(0),
+     movement_behavior(MOVEMENT_FIXED),
+     objType(type),
+     focused(false),
+     visible(true),
+     animated(true)
+{
+    all_objects.insert(this);
+}
+
+Object::~Object()
+{
+    all_objects.erase(this);
+}
+
+void Object::cleanup()
+{
+    std::unordered_set<Object *>::iterator tmp;
+
+    for (std::unordered_set<Object *>::iterator i = all_objects.begin();
+         i != all_objects.end();
+         /* nothing */ ) {
+        tmp = i; /* save iterator so deletion doesn't affect it */
+        ++tmp;
+        delete (*i);
+        i = tmp;
+    }
+    all_objects.clear();
+}
+
 bool Object::setDirection(Direction d)
 {
     return tile.setDirection(d);

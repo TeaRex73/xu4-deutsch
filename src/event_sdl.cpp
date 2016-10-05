@@ -205,8 +205,17 @@ TimedEventMgr::~TimedEventMgr()
     if (instances > 0) {
         instances--;
     }
+    for (List::iterator i = deferredRemovals.begin();
+         i != deferredRemovals.end();
+         /* nothing */) {
+        List::iterator tmp;
+        tmp = i;
+        ++tmp;
+        delete (*i);
+        i = tmp;
+    }
+    deferredRemovals.clear();
 }
-
 
 /**
  * Adds an SDL timer event to the message queue.

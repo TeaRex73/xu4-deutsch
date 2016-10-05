@@ -106,9 +106,7 @@ DynamicResponse::DynamicResponse(
 
 DynamicResponse::~DynamicResponse()
 {
-    if (currentResponse) {
-        delete currentResponse;
-    }
+    delete currentResponse;
 }
 
 const vector<ResponsePart> &DynamicResponse::getParts() const
@@ -125,6 +123,12 @@ const vector<ResponsePart> &DynamicResponse::getParts() const
 Dialogue::Question::Question(const string &txt, Response *yes, Response *no)
     :text(txt), yesresp(yes->addref()), noresp(no->addref())
 {
+}
+
+Dialogue::Question::~Question()
+{
+    yesresp->release();
+    noresp->release();
 }
 
 string Dialogue::Question::getText()
@@ -189,11 +193,17 @@ Dialogue::Dialogue()
 
 Dialogue::~Dialogue()
 {
+    delete intro;
+    if (longIntro != intro) {
+        delete longIntro;
+    }
+    delete defaultAnswer;
     for (KeywordMap::iterator i = keywords.begin();
          i != keywords.end();
          i++) {
         delete i->second;
     }
+    delete question;
 }
 
 void Dialogue::addKeyword(const string &kw, Response *response)

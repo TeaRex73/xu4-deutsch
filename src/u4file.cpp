@@ -18,7 +18,7 @@
 #include <libgen.h>
 #endif
 
-using std::map;
+using std::unordered_map;
 using std::string;
 using std::vector;
 
@@ -63,6 +63,17 @@ private:
 extern bool verbose;
 
 U4PATH *U4PATH::instance = NULL;
+
+U4PATH::~U4PATH()
+{
+    rootResourcePaths.clear();
+    u4ForDOSPaths.clear();
+    u4ZipPaths.clear();
+    musicPaths.clear();
+    soundPaths.clear();
+    configPaths.clear();
+    graphicsPaths.clear();
+}
 
 U4PATH *U4PATH::getInstance()
 {
@@ -178,7 +189,7 @@ void U4ZipPackage::addTranslation(
 
 const string &U4ZipPackage::translate(const string &name) const
 {
-    std::map<string, string>::const_iterator i = translations.find(name);
+    unordered_map<string, string>::const_iterator i = translations.find(name);
     if (i != translations.end()) {
         return i->second;
     } else {
@@ -198,10 +209,8 @@ U4ZipPackageMgr *U4ZipPackageMgr::getInstance()
 
 void U4ZipPackageMgr::destroy()
 {
-    if (instance != NULL) {
-        delete instance;
-        instance = NULL;
-    }
+    delete instance;
+    instance = NULL;
 }
 
 void U4ZipPackageMgr::add(U4ZipPackage *package)

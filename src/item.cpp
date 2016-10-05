@@ -314,14 +314,15 @@ static const ItemLocation items[] = {
         SC_FULLAVATAR
     },
     {
-        "die schwefligen ]berreste einer uralten sosarischen "
+        "die verschwelten ]berreste einer uralten sosarischen "
         "Laserpistole. Sie zerf{llt in deinen Fingern zu Asche",
         NULL,
         "lasergun",
         &isWeaponInInventory,
         &putWeaponInInventory,
         0,
-        16
+        16,
+        0
     },
     {
         "die Rune der Ehrlichkeit",

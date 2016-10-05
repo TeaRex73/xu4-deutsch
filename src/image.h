@@ -233,6 +233,7 @@ private:
     Image(const Image &);
     const Image &operator=(const Image &);
     BackendSurface surface;
+    bool isScreen;
 };
 
 #endif /* IMAGE_H */

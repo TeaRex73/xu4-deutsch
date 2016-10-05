@@ -35,6 +35,17 @@ bool isDungeon(Map *punknown)
 }
 
 
+Dungeon::~Dungeon()
+{
+    if (roomMaps) {
+        for (unsigned int i = 0; i < n_rooms; i++) {
+            delete roomMaps[i];
+        }
+    }
+    delete[] rooms;
+    delete[] roomMaps;
+}
+
 /**
  * Returns the name of the dungeon
  */

@@ -641,19 +641,19 @@ void CombatController::awardLoot()
 }
 
 bool CombatController::attackHit(
-	Creature *attacker, Creature *defender,	bool harder
+    Creature *attacker, Creature *defender, bool harder
 )
 {
     ASSERT(attacker != NULL, "attacker must not be NULL");
     ASSERT(defender != NULL, "defender must not be NULL");
     int attackValue =
-		xu4_random(0x100) + attacker->getAttackBonus();
+        xu4_random(0x100) + attacker->getAttackBonus();
     int defenseValue =
-		defender->getDefense((c->location->prev->map->id == MAP_ABYSS));
+        defender->getDefense((c->location->prev->map->id == MAP_ABYSS));
     bool naturalHit = (attackValue > defenseValue);
-	if (!naturalHit) return false;
-	if (!harder) return true;
-	return xu4_random(2) == 0 ? true : false;
+    if (!naturalHit) return false;
+    if (!harder) return true;
+    return xu4_random(2) == 0 ? true : false;
 }
 
 bool CombatController::attackAt(
@@ -666,7 +666,7 @@ bool CombatController::attackAt(
 {
     const Weapon *weapon = attacker->getWeapon();
     bool wrongRange = weapon->rangeAbsolute() && (distance != range);
-	bool harder = weapon->rangedOnly() && (distance == 1);
+    bool harder = weapon->rangedOnly() && (distance == 1);
     MapTile hittile = map->tileset->getByName(weapon->getHitTile())->getId();
     MapTile misstile = map->tileset->getByName(weapon->getMissTile())->getId();
     // Check to see if something hit
@@ -742,8 +742,8 @@ bool CombatController::rangedAttack(const Coords &coords, Creature *attacker)
         /* see if the player is poisoned */
         if ((xu4_random(2) == 0)
             && (target->getStatus() != STAT_POISONED)) {
-		target->wakeUp(); // can't sleep and be pois. at the same time
-	    // POISON_EFFECT, ranged hit
+        target->wakeUp(); // can't sleep and be pois. at the same time
+        // POISON_EFFECT, ranged hit
             soundPlay(SOUND_POISON_EFFECT, false);
             screenMessage(
                 "\n%s\n%cVERGIFTET%c\n",
@@ -1382,7 +1382,7 @@ MapId CombatMap::mapForTile(
 {
     bool fromShip = false, toShip = false;
     Object *objUnder = c->location->map->objectAt(c->location->coords);
-    static std::map<const Tile *, MapId> tileMap;
+    static std::unordered_map<const Tile *, MapId> tileMap;
     if (!tileMap.size()) {
         tileMap[Tileset::get("base")->getByName("horse")] = MAP_GRASS_CON;
         tileMap[Tileset::get("base")->getByName("swamp")] = MAP_MARSH_CON;
@@ -1410,7 +1410,7 @@ MapId CombatMap::mapForTile(
         tileMap[Tileset::get("base")->getByName("dungeon_floor")] =
             MAP_GRASS_CON;
     }
-    static std::map<const Tile *, MapId> dungeontileMap;
+    static std::unordered_map<const Tile *, MapId> dungeontileMap;
     if (!dungeontileMap.size()) {
         dungeontileMap[Tileset::get("dungeon")->getByName("brick_floor")] =
             MAP_DNG0_CON;

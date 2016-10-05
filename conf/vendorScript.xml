@@ -602,7 +602,7 @@
     <script id="Tavern">
         <intro>
             <music type="shopping"/>
-            {owner} SAGT: WILLKOMMEN I{name}. <redirect target="whatll_it_be"/>
+            {owner} SAGT: WILLKOMMEN {name}. <redirect target="whatll_it_be"/>
         </intro>
 
         <end>
@@ -613,7 +613,7 @@
         <ask choice="j" redirect="whatll_it_be"/>        
         <whatll_it_be>
 
-            {owner} SAGT: WAS SOLL'S SEIN, WAS ZU FUTTERN ODER 'N BIER?<input type="choice" options="fb" target="buy"/>
+            {owner} SAGT: WAS SOLL'S DENN SEIN, WAS ZU FUTTERN ODER 'N BIER?<input type="choice" options="fb" target="buy"/>
         </whatll_it_be>
 
         <bye>            
@@ -626,7 +626,7 @@
             UNSERE SPEZIALIT[T IST {specialty}, KOSTET {spec_price}gs.<redirect target="how_many_plates"/>
         </buy>       
 
-        <how_many_plates>WIE VIELE TELLER WILLST'N DAVON?<input name="quantity" type="number" target="food_buy"/>
+        <how_many_plates>WIE VIELE TELLER DAVON SOLL ICH BRINGEN?<input name="quantity" type="number" target="food_buy"/>
         </how_many_plates>
 
         <food_buy choice="null" redirect="bye"/>
@@ -639,16 +639,16 @@
         </food_buy>
 
         <cantpay_food>
-            MANN, DU KANNST DIR DOCH NUR {math({party:gold}/{spec_price})} TELLER LEISTEN.
+            MENSCH, DU KANNST DIR DOCH NUR {math({party:gold}/{spec_price})} TELLER LEISTEN.
             <redirect target="how_many_plates"/>
         </cantpay_food>
 
         <something_else>
-            NOCH WAS?<input type="choice" options="jn" target="ask"/>
+            NOCH WAS ANDRES?<input type="choice" options="jn" target="ask"/>
         </something_else>
 
         <buy choice="b">
-            HIER HASTE 'N HUMPEN VOM BESTEN. DAS MACHT {ale_price}gs.
+            HIER HAST'N HUMPEN VOM BESTEN. DAS MACHT DANN {ale_price}gs.
             
             Du Zahlst-<input name="price" type="number" maxlen="2" target="ale_buy"/>            
         </buy>
@@ -674,7 +674,7 @@
 
         <topic default="true">
             <if test="{isempty({$choice})}" redirect="something_else"/>            
-            F]RCHTE ICH KANN DIR DA NICHT HELFEN, MEIN FREUND!
+            F]RCHTE, ICH KANN DIR DA NICHT HELFEN, MEIN FREUND!
             <redirect target="something_else"/>
         </topic>        
 
@@ -694,7 +694,7 @@
         </reply>
 
         <reply choice="ALRA">
-            {owner} SAGT: DER LETZTE, VON DEM ICH WEISS, DASS ER ALRAUNE HATTE, WAR SO'N ALTER ALCHIMIST NAMENS CALUMNY.
+            {owner} SAGT: DER LETZTE, VON DEM ICH WEISS, DASS ER NOCH ALRAUNE HATTE, WAR SO'N ALTER ALCHIMIST NAMENS CALUMNY.
             <redirect target="something_else"/>
         </reply>        
 
@@ -704,7 +704,7 @@
         </reply>
         
         <reply choice="SCHA">
-            {owner} SAGT: VON SCHATTEN WEISS ICH NUR SOVIEL... FRAG VIRGIL, SONST FINDSTE KEINEN STIEL. VERSUCHS IN TRINSIC!
+            {owner} SAGT: VON SCHATTEN WEISS ICH NUR SOVIEL... FRAG VIRGIL, SONST FINDS'TE KEINEN STIEL. VERSUCH'S IN TRINSIC!
             <redirect target="something_else"/>
         </reply>
         
@@ -721,7 +721,7 @@
 
         <foggy choice="null" redirect="sorry"/>
         <foggy>
-            <pay price="payment" quantity="1" cantpay="cantpay_topic"/>
+            <pay price="{$payment}" quantity="1" cantpay="cantpay_topic"/>
             <var name="tip_total" value="{math({$tip_total}+{$payment})}"/>
             <if test="{price}&lt;={$tip_total}" choice="{$topic}" redirect="reply"/>
             DAS THEMA IST GERADE 'N BISSCHEN TR]BE, VIELLEICHT ERFRISCHT MEHR GOLD JA MEIN GED[CHTNIS.
@@ -732,30 +732,30 @@
         </foggy>
 
         <cantpay_topic>
-            SOVIEL HASTE GAR NICHT, KUMPEL!<redirect target="sorry"/>
+            SOVIEL HAST DU DOCH GAR NICHT, KUMPEL!<redirect target="sorry"/>
         </cantpay_topic>
 
-        <vendor id="BRITAIN" name="N DEN LAUNIGEN GEISTERN" owner="SAM" specialty="LAMMKOTLETTS" spec_price="4" ale_price="2">
+        <vendor id="BRITAIN" name="BEI DEN LAUNIGEN GEISTERN" owner="SAM" specialty="LAMMKOTLETTS" spec_price="4" ale_price="2">
             <topic choice="SCHW" price="20" redirect="save"/>
         </vendor>
         
-        <vendor id="JHELOM" name="N DER BLUTIGEN PINTE" owner="CELESTIAL" specialty="DRACHENTARTAR" spec_price="2" ale_price="2">
+        <vendor id="JHELOM" name="IN DER BLUTIGEN PINTE" owner="CELESTIAL" specialty="DRACHENTARTAR" spec_price="2" ale_price="2">
             <topic choice="SEXT" price="30" redirect="save"/>
         </vendor>
 
-        <vendor id="TRINSIC" name="M ZAPFHAHNE" owner="TERRAN" specialty="BRAUNE BOHNEN" spec_price="3" ale_price="2">
+        <vendor id="TRINSIC" name="IM ZAPFHAHNE" owner="TERRAN" specialty="BRAUNE BOHNEN" spec_price="3" ale_price="2">
             <topic choice="WEIS" price="10" redirect="save"/>
         </vendor>
 
-        <vendor id="PAWS" name="N FOLLEYS KNEIPE" owner="GREG &amp; ROB" specialty="FOLLEY-FILET" spec_price="2" ale_price="2">
+        <vendor id="PAWS" name="IN FOLLEYS KNEIPE" owner="GREG &amp; ROB" specialty="FOLLEY-FILET" spec_price="2" ale_price="2">
             <topic choice="ALRA" price="40" redirect="save"/>
         </vendor>
         
-        <vendor id="BUKANIER-NEST" name="N DER SPELUNKE ZUM KORSAREN" owner="DER CAP'N" specialty="HUNDEPASTETE" spec_price="4" ale_price="2">
+        <vendor id="BUKANIER-NEST" name="IN DER SPELUNKE ZUM KORSAREN" owner="DER CAP'N" specialty="HUNDEPASTETE" spec_price="4" ale_price="2">
             <topic choice="SCH[" price="99" redirect="save"/>
         </vendor>
 
-        <vendor id="VESPER" name="M AXT &amp; ALE" owner="ARRON" specialty="GR]NER GRANUKIT" spec_price="2" ale_price="2">
+        <vendor id="VESPER" name="IM AXT &amp; ALE" owner="ARRON" specialty="GR]NER GRANUKIT" spec_price="2" ale_price="2">
             <topic choice="SCHA" price="25" redirect="save"/>
         </vendor>
     </script>
@@ -1053,7 +1053,7 @@
     <script id="Inn" noun="room">
         <intro>
             <music type="shopping"/>
-            DER GASTWIRT SAGT: <if test="{party:transport}=horse" redirect="nohorse"/>WILKOMMEN I{name}.
+            DER GASTWIRT SAGT: <if test="{party:transport}=horse" redirect="nohorse"/>WILKOMMEN {name}.
         
             ICH BIN {innkeeper}. BRAUCHST DU UNTERKUNFT?<input type="choice" options="jn" target="ask"/>
         </intro>
@@ -1100,7 +1100,7 @@
         </cantpay>
 
         <!-- MOONGLOW -->
-        <vendor id="MOONGLOW" name="M EHRLICHEN GASTHOFE" innkeeper="SCATU">
+        <vendor id="MOONGLOW" name="IM EHRLICHEN GASTHOFE" innkeeper="SCATU">
             <room choice="j" price="20" x="28" y="6"/>
             <ask choice="j">
                 WIR VERMIETEN EINEN RAUM MIT 2 BETTEN F]R 20gs.
@@ -1110,7 +1110,7 @@
         </vendor>
 
         <!-- BRITAIN -->
-        <vendor id="BRITAIN" name="M CHATEAU BRITANNIA" innkeeper="JASON">
+        <vendor id="BRITAIN" name="IM CHATEAU BRITANNIA" innkeeper="JASON">
             <room choice="j" price="15" x="29" y="6"/>
             <ask choice="j">
                 WIR HABEN EINEN RAUM BESCHEIDENER GR\SSE MIT 1 BETT F]R 15gs.
@@ -1120,7 +1120,7 @@
         </vendor>
 
         <!-- JHELOM -->
-        <vendor id="JHELOM" name="M GASTHOFE DER ENDEN" innkeeper="SMIRK">
+        <vendor id="JHELOM" name="IM GASTHOFE DER ENDEN" innkeeper="SMIRK">
             <room choice="j" price="10" x="10" y="26"/>
             <ask choice="j">
                 WIR HABEN EINEN SEHR SICHEREN RAUM, MIT BESCHEIDENER GR\SSE UND 1 BETT, F]R 10gs.
@@ -1130,7 +1130,7 @@
         </vendor>        
         
         <!-- MINOC -->
-        <vendor id="MINOC" name="N DES WEGEFAHRERS GASTHOF" innkeeper="ESTRO" rooms="3">
+        <vendor id="MINOC" name="IN DES WEGEFAHRERS GASTHOF" innkeeper="ESTRO" rooms="3">
             <room choice="1" price="30" x="2" y="6"/>
             <room choice="2" price="60" x="2" y="2"/>
             <room choice="3" price="90" x="8" y="2"/>
@@ -1142,7 +1142,7 @@
         </vendor>
 
         <!-- TRINSIC -->
-        <vendor id="TRINSIC" name="M HOTEL HONORIG" innkeeper="ZAJAC">
+        <vendor id="TRINSIC" name="IM HOTEL HONORIG" innkeeper="ZAJAC">
             <room choice="j" price="15" x="29" y="2"/>
             <ask choice="j">
                 WIR HABEN NUR EINEN RAUM, MIT HINTERT]R, F]R 15gs.
@@ -1152,7 +1152,7 @@
         </vendor>
 
         <!-- SKARA BRAE -->
-        <vendor id="SKARA BRAE" name="M HOFE DER GEISTER" innkeeper="TYRONE">
+        <vendor id="SKARA BRAE" name="IM HOFE DER GEISTER" innkeeper="TYRONE">
             <room choice="j" price="5" x="28" y="11"/>
             <ask choice="j">
                 LEIDER HABE ICH NUR EINEN SEHR KLEINEN RAUM MIT 1 BETT; NOCH SCHLIMMER, ES SPUKT DORT! WENN DU BLEIBEN WILLST, KOSTET ES 5gs.
@@ -1162,7 +1162,7 @@
         </vendor>
 
         <!-- VESPER -->
-        <vendor id="VESPER" name="M TRAUMLADEN" innkeeper="TYMUS">
+        <vendor id="VESPER" name="IM TRAUMLADEN" innkeeper="TYMUS">
             <room choice="j" price="1" x="25" y="23"/>
             <ask choice="j">
                 ALLES, WAS WIR HABEN, IST DAS FELDBETT DA DR]BEN. ABER ES IST BEQUEM UND KOSTET NUR 1gs.
@@ -1181,7 +1181,7 @@
         <intro>
             <music type="shopping"/>
             <ztats screen="equipment"/>
-            WARSCHAU, KAMERAD! SICHER WILLSTE VOM ALTEN {owner} KAUFEN!
+            WARSCHAU, KAMERAD! DU WILLST DOCH BESTIMMT VOM ALTEN {owner} KAUFEN!
 
             {owner} SAGT: WILKOMMEN BEI{name}.
             WILLST DU MEINE BEUTE SEHEN?<input type="choice" options="jn" target="show_goods"/>

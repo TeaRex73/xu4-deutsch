@@ -24,6 +24,9 @@ Menu::~Menu()
 
 void Menu::removeAll()
 {
+    for (MenuItemList::iterator i = items.begin(); i != items.end(); i++) {
+        delete *i;
+    }
     items.clear();
 }
 
@@ -341,7 +344,7 @@ bool Menu::activateItemByShortcut(int key, MenuEvent::Type action)
     for (MenuItemList::iterator i = items.begin();
          i != items.end();
          i++) {
-        const set<int> &shortcuts = (*i)->getShortcutKeys();
+        const unordered_set<int> &shortcuts = (*i)->getShortcutKeys();
         if (shortcuts.find(key) != shortcuts.end()) {
             activateItem((*i)->getId(), action);
             // if the selection doesn't close the menu,

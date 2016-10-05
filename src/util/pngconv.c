@@ -71,26 +71,6 @@ int writePngFromEga(
     png_color *palette = NULL;
     png_byte **row_pointers;
     int i, j;
-    if (bits == 1) {
-        palette_size = 2;
-    } else if (bits == 4) {
-        palette_size = 16;
-    } else if (bits == 8) {
-        palette_size = 256;
-    } else {
-        palette_size = 0;
-    }
-    if (palette_size != 0) {
-        palette = (png_color *)malloc(sizeof(png_color) * palette_size);
-        printf("palette size = %d\n", palette_size);
-        if (palette_size == 2) {
-            setBWPalette(palette);
-        } else if (palette_size == 16) {
-            setEgaPalette(palette);
-        } else {
-            setVgaPalette(palette);
-        }
-    }
     row_pointers = (png_byte **)malloc(height * sizeof(png_byte *));
     for (i = 0; i < height; i++)
         row_pointers[i] =
@@ -122,6 +102,28 @@ int writePngFromEga(
         fclose(fp);
         fprintf(stderr, "longjump error\n");
         exit(1);
+    }
+    if (bits == 1) {
+        palette_size = 2;
+    } else if (bits == 4) {
+        palette_size = 16;
+    } else if (bits == 8) {
+        palette_size = 256;
+    } else {
+        palette_size = 0;
+    }
+    if (palette_size != 0) {
+        palette = (png_color *)malloc(sizeof(png_color) * palette_size);
+        printf("palette size = %d\n", palette_size);
+        if (palette_size == 2) {
+            setBWPalette(palette);
+        } else if (palette_size == 16) {
+            setEgaPalette(palette);
+        } else {
+            setVgaPalette(palette);
+        }
+    } else {
+        palette = NULL;
     }
     png_init_io(png_ptr, fp);
     switch (bits) {

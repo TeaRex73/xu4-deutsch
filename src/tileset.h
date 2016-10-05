@@ -6,7 +6,7 @@
 #define TILESET_H
 
 #include <string>
-#include <map>
+#include <unordered_map>
 #include "types.h"
 
 using std::string;
@@ -14,7 +14,7 @@ using std::string;
 class ConfigElement;
 class Tile;
 
-typedef std::map<string, class TileRule *> TileRuleMap;
+typedef std::unordered_map<string, class TileRule *> TileRuleMap;
 
 
 /**
@@ -24,6 +24,7 @@ class TileRule {
 public:
     static TileRule *findByName(const string &name);
     static void load();
+    static void unloadAll();
     static TileRuleMap rules; // A map of rule names to rules
     bool initFromConf(const ConfigElement &tileRuleConf);
     string name;
@@ -41,9 +42,9 @@ public:
  */
 class Tileset {
 public:
-    typedef std::map<string, Tileset *> TilesetMap;
-    typedef std::map<TileId, Tile *> TileIdMap;
-    typedef std::map<string, Tile *> TileStrMap;
+    typedef std::unordered_map<string, Tileset *> TilesetMap;
+    typedef std::unordered_map<TileId, Tile *> TileIdMap;
+    typedef std::unordered_map<string, Tile *> TileStrMap;
     static void loadAll();
     static void unloadAll();
     static void unloadAllImages();

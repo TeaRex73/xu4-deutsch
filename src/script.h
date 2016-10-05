@@ -6,7 +6,7 @@
 #define SCRIPT_H
 
 #include <list>
-#include <map>
+#include <unordered_map>
 #include <string>
 #include <vector>
 
@@ -222,7 +222,7 @@ private:
     void funcParse(const string &str, string *funcName, string *contents);
 
 private:
-    typedef std::map<string, Action> ActionMap;
+    typedef std::unordered_map<string, Action> ActionMap;
 
     static ActionMap action_map;
     void removeCurrentVariable(const string &name);
@@ -247,8 +247,8 @@ private:
                           translation context */
     string choices;
     int iterator;
-    std::map<string, Variable *> variables;
-    std::map<string, Provider *> providers;
+    std::unordered_map<string, Variable *> variables;
+    std::unordered_map<string, Provider *> providers;
 };
 
 #endif // ifndef SCRIPT_H

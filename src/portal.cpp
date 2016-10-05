@@ -18,6 +18,11 @@
 #include "shrine.h"
 #include "tile.h"
 
+Portal::~Portal()
+{
+    delete retroActiveDest;
+}
+
 
 /**
  * Creates a dungeon ladder portal based on the action given
@@ -57,9 +62,9 @@ int usePortalAt(
 )
 {
     Map *destination;
-    char msg[32] = { 0 };
+    char msg[32] = {};
     const Portal *portal = location->map->portalAt(coords, action);
-    Portal dngLadder;
+    Portal dngLadder = {};
     /* didn't find a portal there */
     if (!portal) {
         /* if it's a dungeon, then ladders are predictable.
