@@ -6,14 +6,14 @@
 #define SCRIPT_H
 
 #include <list>
-#include <unordered_map>
+#include <map>
 #include <string>
 #include <vector>
 
 #include "types.h"
 #include "xml.h"
 
-using std::string;
+
 
 
 /**
@@ -44,7 +44,7 @@ public:
         {
         }
         
-        virtual string translate(std::vector<string> &parts) = 0;
+        virtual std::string translate(std::vector<std::string> &parts) = 0;
     };
 
 private:
@@ -54,19 +54,19 @@ private:
     class Variable {
     public:
         Variable();
-        Variable(const string &v);
+        Variable(const std::string &v);
         Variable(const int &v);
         int &getInt();
-        string &getString();
+        std::string &getString();
         void setValue(const int &v);
-        void setValue(const string &v);
+        void setValue(const std::string &v);
         void unset();
         bool isInt() const;
         bool isString() const;
         bool isSet() const;
 
     private: int i_val;
-        string s_val;
+        std::string s_val;
         bool set;
     };
     
@@ -138,54 +138,56 @@ public:
     
     Script();
     ~Script();
-    void addProvider(const string &name, Provider *p);
+    void addProvider(const std::string &name, Provider *p);
     bool load(
-        const string &filename,
-        const string &baseId,
-        const string &subNodeName = "",
-        const string &subNodeId = ""
+        const std::string &filename,
+        const std::string &baseId,
+        const std::string &subNodeName = "",
+        const std::string &subNodeId = ""
     );
     void unload();
-    void run(const string &script);
+    void run(const std::string &script);
     ReturnCode execute(
-        xmlNodePtr script, xmlNodePtr currentItem = NULL, string *output = NULL
+        xmlNodePtr script,
+        xmlNodePtr currentItem = NULL,
+        std::string *output = NULL
     );
     void _continue();
     void resetState();
     void setState(State state);
     State getState();
-    void setTarget(const string &val);
-    void setChoices(const string &val);
-    void setVar(const string &name, const string &val);
-    void setVar(const string &name, int val);
-    void unsetVar(const string &name);
-    string getTarget();
+    void setTarget(const std::string &val);
+    void setChoices(const std::string &val);
+    void setVar(const std::string &name, const std::string &val);
+    void setVar(const std::string &name, int val);
+    void unsetVar(const std::string &name);
+    std::string getTarget();
     InputType getInputType();
-    string getInputName();
-    string getChoices();
+    std::string getInputName();
+    std::string getChoices();
     int getInputMaxLen();
 
 private:
-    void translate(string *script);
+    void translate(std::string *script);
     xmlNodePtr find(
         xmlNodePtr node,
-        const string &script,
-        const string &choice = "",
+        const std::string &script,
+        const std::string &choice = "",
         bool _default = false
     );
-    string getPropAsStr(
-        std::list<xmlNodePtr> &nodes, const string &prop, bool recursive
+    std::string getPropAsStr(
+        std::list<xmlNodePtr> &nodes, const std::string &prop, bool recursive
     );
-    string getPropAsStr(
-        xmlNodePtr node, const string &prop, bool recursive = false
-    );
-    int getPropAsInt(
-        std::list<xmlNodePtr> &nodes, const string &prop, bool recursive
+    std::string getPropAsStr(
+        xmlNodePtr node, const std::string &prop, bool recursive = false
     );
     int getPropAsInt(
-        xmlNodePtr node, const string &prop, bool recursive = false
+        std::list<xmlNodePtr> &nodes, const std::string &prop, bool recursive
     );
-    string getContent(xmlNodePtr node);
+    int getPropAsInt(
+        xmlNodePtr node, const std::string &prop, bool recursive = false
+    );
+    std::string getContent(xmlNodePtr node);
     ReturnCode pushContext(xmlNodePtr script, xmlNodePtr current);
     ReturnCode popContext(xmlNodePtr script, xmlNodePtr current);
     ReturnCode end(xmlNodePtr script, xmlNodePtr current);
@@ -211,44 +213,51 @@ private:
     ReturnCode setVar(xmlNodePtr script, xmlNodePtr current);
     ReturnCode setId(xmlNodePtr script, xmlNodePtr current);
     ReturnCode ztats(xmlNodePtr script, xmlNodePtr current);
-    void mathParseChildren(xmlNodePtr math, string *result);
-    int mathValue(const string &str);
-    int math(int lval, int rval, string &op);
-    bool mathParse(const string &str, int *lval, int *rval, string *op);
-    void parseOperation(
-        const string &str, string *lval, string *rval, string *op
+    void mathParseChildren(xmlNodePtr math, std::string *result);
+    int mathValue(const std::string &str);
+    int math(int lval, int rval, std::string &op);
+    bool mathParse(
+        const std::string &str, int *lval, int *rval, std::string *op
     );
-    bool compare(const string &str);
-    void funcParse(const string &str, string *funcName, string *contents);
+    void parseOperation(
+        const std::string &str,
+        std::string *lval,
+        std::string *rval,
+        std::string *op
+    );
+    bool compare(const std::string &str);
+    void funcParse(
+        const std::string &str, std::string *funcName, std::string *contents
+    );
 
 private:
-    typedef std::unordered_map<string, Action> ActionMap;
+    typedef std::map<std::string, Action> ActionMap;
 
     static ActionMap action_map;
-    void removeCurrentVariable(const string &name);
+    void removeCurrentVariable(const std::string &name);
     xmlDocPtr vendorScriptDoc;
     xmlNodePtr scriptNode;
-    FILE *debug;
+    std::FILE *debug;
     State state; /**< The state the script is in */
     xmlNodePtr currentScript; /**< The currently running script */
     xmlNodePtr currentItem; /**< The current position in the script */
     std::list<xmlNodePtr> translationContext; /**< A list of nodes that
                                                  make up our translation
                                                  context */
-    string target; /**< The name of a target script */
+    std::string target; /**< The name of a target script */
     InputType inputType; /**< The type of input required */
-    string inputName; /**< The variable in which to place
+    std::string inputName; /**< The variable in which to place
                          the input (by default, "input") */
     int inputMaxLen; /**< The maximum length allowed for input */
-    string nounName; /**< The name that identifies a node name of noun
+    std::string nounName; /**< The name that identifies a node name of noun
                         nodes */
-    string idPropName; /**< The name of the property that uniquely
+    std::string idPropName; /**< The name of the property that uniquely
                           identifies a noun node and is used to find a new
                           translation context */
-    string choices;
+    std::string choices;
     int iterator;
-    std::unordered_map<string, Variable *> variables;
-    std::unordered_map<string, Provider *> providers;
+    std::map<std::string, Variable *> variables;
+    std::map<std::string, Provider *> providers;
 };
 
 #endif // ifndef SCRIPT_H

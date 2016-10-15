@@ -20,20 +20,20 @@
 void errorFatal(const char *fmt, ...)
 {
     char buffer[1000];
-    va_list args;
+    std::va_list args;
     va_start(args, fmt);
-    vsnprintf(buffer, sizeof(buffer), fmt, args);
+    std::vsnprintf(buffer, sizeof(buffer), fmt, args);
     va_end(args);
     MessageBox(NULL, buffer, "XU4 Error", MB_OK | MB_ICONERROR);
-    exit(EXIT_FAILURE);
+    std::exit(EXIT_FAILURE);
 }
 
 void errorWarning(const char *fmt, ...)
 {
     char buffer[1000];
-    va_list args;
+    std::va_list args;
     va_start(args, fmt);
-    vsnprintf(buffer, sizeof(buffer), fmt, args);
+    std::vsnprintf(buffer, sizeof(buffer), fmt, args);
     va_end(args);
     MessageBox(NULL, buffer, "XU4 Warning", MB_OK | MB_ICONWARNING);
 }
@@ -55,34 +55,34 @@ int need_gtk_init = 1;
 void errorFatal(const char *fmt, ...)
 {
     char buffer[1000];
-    va_list args;
+    std::va_list args;
     GtkWidget *dialog;
     if (need_gtk_init) {
         gtk_init(NULL, 0);
         need_gtk_init = 0;
     }
     va_start(args, fmt);
-    vsnprintf(buffer, sizeof(buffer), fmt, args);
+    std::vsnprintf(buffer, sizeof(buffer), fmt, args);
     dialog = gtk_message_dialog_new(
         NULL, 0, GTK_MESSAGE_ERROR, GTK_BUTTONS_OK, "xu4: %s", buffer
     );
     va_end(args);
     gtk_dialog_run(GTK_DIALOG(dialog));
     gtk_widget_destroy(dialog);
-    exit(EXIT_FAILURE);
+    std::exit(EXIT_FAILURE);
 }
 
 void errorWarning(const char *fmt, ...)
 {
     char buffer[1000];
-    va_list args;
+    std::va_list args;
     GtkWidget *dialog;
     if (need_gtk_init) {
         gtk_init(NULL, 0);
         need_gtk_init = 0;
     }
     va_start(args, fmt);
-    vsnprintf(buffer, sizeof(buffer), fmt, args);
+    std::vsnprintf(buffer, sizeof(buffer), fmt, args);
     dialog = gtk_message_dialog_new(
         NULL, 0, GTK_MESSAGE_WARNING, GTK_BUTTONS_OK, "xu4: %s", buffer
     );
@@ -101,23 +101,23 @@ void errorWarning(const char *fmt, ...)
  */
 void errorFatal(const char *fmt, ...)
 {
-    va_list args;
-    fprintf(stderr, "xu4: error: ");
+    std::va_list args;
+    std::fprintf(stderr, "xu4: error: ");
     va_start(args, fmt);
-    vfprintf(stderr, fmt, args);
+    std::vfprintf(stderr, fmt, args);
     va_end(args);
-    fprintf(stderr, "\n");
-    exit(EXIT_FAILURE);
+    std::fprintf(stderr, "\n");
+    std::exit(EXIT_FAILURE);
 }
 
 void errorWarning(const char *fmt, ...)
 {
-    va_list args;
-    fprintf(stderr, "xu4: warning: ");
+    std::va_list args;
+    std::fprintf(stderr, "xu4: warning: ");
     va_start(args, fmt);
-    vfprintf(stderr, fmt, args);
+    std::vfprintf(stderr, fmt, args);
     va_end(args);
-    fprintf(stderr, "\n");
+    std::fprintf(stderr, "\n");
 }
 
 #endif // if defined(_WIN32) || defined(__CYGWIN__)

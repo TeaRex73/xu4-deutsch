@@ -15,7 +15,7 @@
 #include "person.h"
 #include "player.h"
 
-using std::string;
+
 
 City::City()
     :Map()
@@ -55,7 +55,7 @@ City::~City()
 /**
  * Returns the name of the city
  */
-string City::getName()
+std::string City::getName()
 {
     return name;
 }

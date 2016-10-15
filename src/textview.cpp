@@ -4,7 +4,7 @@
 
 #include "vc6.h" // Fixes things if you're using VC6, does nothing otherwise
 
-#include <stdarg.h>
+#include <cstdarg>
 #include <cstring>
 
 #include "debug.h"
@@ -108,9 +108,9 @@ void TextView::textSelectedAt(int x, int y, const char *text)
 
 
 /* depending on the status type, apply colorization to the character */
-string TextView::colorizeStatus(char statustype)
+std::string TextView::colorizeStatus(char statustype)
 {
-    string output;
+    std::string output;
     if (!settings.enhancements
         || !settings.enhancementsOptions.textColorization) {
         output = statustype;
@@ -137,8 +137,8 @@ string TextView::colorizeStatus(char statustype)
 
 
 /* depending on the status type, apply colorization to the character */
-string TextView::colorizeString(
-    string input,
+std::string TextView::colorizeString(
+    std::string input,
     ColorFG color,
     unsigned int colorstart,
     unsigned int colorlength
@@ -148,11 +148,11 @@ string TextView::colorizeString(
         || !settings.enhancementsOptions.textColorization) {
         return input;
     }
-    string output = "";
-    string::size_type length = input.length();
-    string::size_type i;
+    std::string output = "";
+    std::string::size_type length = input.length();
+    std::string::size_type i;
     bool colorization = false;
-    // loop through the entire string
+    // loop through the entire std::string
     for (i = 0; i < length; i++) {
         if (i == colorstart) {
             output += color;
@@ -201,11 +201,11 @@ void TextView::textAt(int x, int y, const char *fmt, ...)
         disableCursor();
         reenableCursor = true;
     }
-    va_list args;
+    std::va_list args;
     va_start(args, fmt);
-    vsnprintf(buffer, sizeof(buffer), fmt, args);
+    std::vsnprintf(buffer, sizeof(buffer), fmt, args);
     va_end(args);
-    for (i = 0; i < strlen(buffer); i++) {
+    for (i = 0; i < std::strlen(buffer); i++) {
         switch (buffer[i]) {
         case FG_GREY:
         case FG_BLUE:

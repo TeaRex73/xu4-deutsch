@@ -5,7 +5,7 @@
 #ifndef IMAGELOADER_H
 #define IMAGELOADER_H
 
-#include <unordered_map>
+#include <map>
 #include <string>
 
 class Image;
@@ -50,7 +50,7 @@ protected:
     );
 
 private:
-    static std::unordered_map<std::string, ImageLoader *> *loaderMap;
+    static std::map<std::string, ImageLoader *> *loaderMap;
 };
 
 #endif /* IMAGELOADER_H */

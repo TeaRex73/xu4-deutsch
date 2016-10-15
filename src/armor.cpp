@@ -13,12 +13,12 @@
 #include "error.h"
 #include "names.h"
 #include "tile.h"
+#include "utils.h"
 
-using std::vector;
-using std::string;
+
 
 bool Armor::confLoaded = false;
-vector<Armor> Armor::armors;
+std::vector<Armor> Armor::armors;
 
 
 /**
@@ -28,7 +28,7 @@ const Armor *Armor::get(ArmorType a)
 {
     // Load in XML if it hasn't been already
     loadConf();
-    if (static_cast<unsigned>(a) >= armors.size()) {
+    if (static_cast<unsigned int>(a) >= armors.size()) {
         return NULL;
     }
     return &armors[a];
@@ -38,12 +38,12 @@ const Armor *Armor::get(ArmorType a)
 /**
  * Returns armor that has the given name
  */
-const Armor *Armor::get(const string &name)
+const Armor *Armor::get(const std::string &name)
 {
     // Load in XML if it hasn't been already
     loadConf();
-    for (unsigned i = 0; i < armors.size(); i++) {
-        if (strcasecmp(name.c_str(), armors[i].name.c_str()) == 0) {
+    for (unsigned int i = 0; i < armors.size(); i++) {
+        if (xu4_strcasecmp(name.c_str(), armors[i].name.c_str()) == 0) {
             return &armors[i];
         }
     }
@@ -59,7 +59,7 @@ Armor::Armor(const ConfigElement &conf)
     defense = conf.getInt("defense");
     mystic = conf.getBool("mystic");
     mask = 0;
-    vector<ConfigElement> contraintConfs = conf.getChildren();
+    std::vector<ConfigElement> contraintConfs = conf.getChildren();
     for (std::vector<ConfigElement>::iterator i = contraintConfs.begin();
          i != contraintConfs.end();
          i++) {
@@ -68,7 +68,7 @@ Armor::Armor(const ConfigElement &conf)
             continue;
         }
         for (int cl = 0; cl < 8; cl++) {
-            if (strcasecmp(
+            if (xu4_strcasecmp(
                     i->getString("class").c_str(),
                     getClassNameEnglish(
                         static_cast<ClassType>(cl))
@@ -77,7 +77,7 @@ Armor::Armor(const ConfigElement &conf)
             }
         }
         if ((mask == 0)
-            && (strcasecmp(i->getString("class").c_str(), "all") == 0)) {
+            && (xu4_strcasecmp(i->getString("class").c_str(), "all") == 0)) {
             mask = 0xFF;
         }
         if (mask == 0) {
@@ -102,7 +102,7 @@ void Armor::loadConf()
         return;
     }
     const Config *config = Config::getInstance();
-    vector<ConfigElement> armorConfs =
+    std::vector<ConfigElement> armorConfs =
         config->getElement("armors").getChildren();
     for (std::vector<ConfigElement>::iterator i = armorConfs.begin();
          i != armorConfs.end();

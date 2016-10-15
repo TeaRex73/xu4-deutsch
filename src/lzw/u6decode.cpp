@@ -29,7 +29,7 @@
 
 #include "../vc6.h" // Fixes things if you're using VC6, does nothing otherwise
 
-#include <stdio.h>
+#include <cstdio>
 #include <cstdlib>
 
 #include "u6decode.h"
@@ -42,25 +42,25 @@ Dict dict;
 
 unsigned char U6Decode::read1(FILE *f)
 {
-    return fgetc(f);
+    return std::fgetc(f);
 }
 
 long U6Decode::read4(FILE *f)
 {
     unsigned char b0, b1, b2, b3;
-    b0 = fgetc(f);
-    b1 = fgetc(f);
-    b2 = fgetc(f);
-    b3 = fgetc(f);
+    b0 = std::fgetc(f);
+    b1 = std::fgetc(f);
+    b2 = std::fgetc(f);
+    b3 = std::fgetc(f);
     return b0 + (b1 << 8) + (b2 << 16) + (b3 << 24);
 }
 
 long U6Decode::get_filesize(FILE *input_file)
 {
     long file_length;
-    fseek(input_file, 0, SEEK_END);
-    file_length = ftell(input_file);
-    fseek(input_file, 0, SEEK_SET);
+    std::fseek(input_file, 0, SEEK_END);
+    file_length = std::ftell(input_file);
+    std::fseek(input_file, 0, SEEK_SET);
     return file_length;
 }
 
@@ -75,17 +75,17 @@ bool U6Decode::is_valid_lzw_file(FILE *input_file)
     }
     // the last byte of the size header must be 0
     // (U6's files aren't *that* big)
-    fseek(input_file, 3, SEEK_SET);
-    unsigned char byte3 = fgetc(input_file);
-    fseek(input_file, 0, SEEK_SET);
+    std::fseek(input_file, 3, SEEK_SET);
+    unsigned char byte3 = std::fgetc(input_file);
+    std::fseek(input_file, 0, SEEK_SET);
     if (byte3 != 0) {
         return false;
     }
     // the 9 bits after the size header must be 0x100
-    fseek(input_file, 4, SEEK_SET);
-    unsigned char b0 = fgetc(input_file);
-    unsigned char b1 = fgetc(input_file);
-    fseek(input_file, 0, SEEK_SET);
+    std::fseek(input_file, 4, SEEK_SET);
+    unsigned char b0 = std::fgetc(input_file);
+    unsigned char b1 = std::fgetc(input_file);
+    std::fseek(input_file, 0, SEEK_SET);
     if ((b0 != 0) || ((b1 & 1) != 1)) {
         return false;
     }
@@ -96,9 +96,9 @@ long U6Decode::get_uncompressed_size(FILE *input_file)
 {
     long uncompressed_file_length;
     if (is_valid_lzw_file(input_file)) {
-        fseek(input_file, 0, SEEK_SET);
+        std::fseek(input_file, 0, SEEK_SET);
         uncompressed_file_length = read4(input_file);
-        fseek(input_file, 0, SEEK_SET);
+        std::fseek(input_file, 0, SEEK_SET);
         return uncompressed_file_length;
     } else {
         return -1;
@@ -277,10 +277,10 @@ int U6Decode::lzw_decompress(FILE *input_file, FILE *output_file)
         source_buffer = new unsigned char[source_buffer_size];
         destination_buffer = new unsigned char[destination_buffer_size];
         // read the input file into the source buffer
-        fseek(input_file, 4, SEEK_SET);
-        if (fread(source_buffer, 1, source_buffer_size, input_file)
+        std::fseek(input_file, 4, SEEK_SET);
+        if (std::fread(source_buffer, 1, source_buffer_size, input_file)
             != (size_t) source_buffer_size) {
-            perror("fread failed");
+            perror("std::fread failed");
         }
         // decompress the input file
         error_code = lzw_decompress(
@@ -295,7 +295,9 @@ int U6Decode::lzw_decompress(FILE *input_file, FILE *output_file)
             return error_code;
         }
         // write the destination buffer to the output file
-        fwrite(destination_buffer, 1, destination_buffer_size, output_file);
+        std::fwrite(
+            destination_buffer, 1, destination_buffer_size, output_file
+        );
         // destroy the buffers
         delete[] source_buffer;
         delete[] destination_buffer;
@@ -315,7 +317,7 @@ int one_argument(char *file_name)
 {
     FILE *compressed_file;
     long uncompressed_size;
-    compressed_file = fopen(file_name,"rb");
+    compressed_file = std::fopen(file_name,"rb");
     if (compressed_file == NULL) {
         printf("Couldn't open the file.\n");
         return EXIT_FAILURE;
@@ -330,7 +332,7 @@ int one_argument(char *file_name)
                 file_name,
                 get_uncompressed_size(compressed_file)
             );
-            fclose(compressed_file);
+            std::fclose(compressed_file);
             return EXIT_SUCCESS;
         }
     }
@@ -349,8 +351,8 @@ int two_arguments(char *source_file_name, char *destination_file_name)
         printf("Source and destination must not be identical.\n");
         return EXIT_FAILURE;
     } else {
-        if (!(source=fopen(source_file_name,"rb"))
-            || !(destination=fopen(destination_file_name,"wb"))) {
+        if (!(source=std::fopen(source_file_name,"rb"))
+            || !(destination=std::fopen(destination_file_name,"wb"))) {
             printf(
                 "Couldn't open '%s' or '%s' or both.\n.",
                 source_file_name,

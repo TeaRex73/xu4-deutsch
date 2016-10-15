@@ -4,11 +4,14 @@
 
 #include "vc6.h" // Fixes things if you're using VC6, does nothing otherwise
 
-#include <SDL.h>
-
+#include <cstdint>
+#include <cstdlib>
 #include <memory>
 #include <list>
 #include <utility>
+
+#include <SDL.h>
+
 #include "debug.h"
 #include "image.h"
 #include "imagemgr.h"
@@ -125,11 +128,11 @@ Image::~Image()
 /**
  * Sets the palette
  */
-void Image::setPalette(const RGBA *colors, unsigned n_colors)
+void Image::setPalette(const RGBA *colors, unsigned int n_colors)
 {
     ASSERT(indexed, "imageSetPalette called on non-indexed image");
     SDL_Color *sdlcolors = new SDL_Color[n_colors];
-    for (unsigned i = 0; i < n_colors; i++) {
+    for (unsigned int i = 0; i < n_colors; i++) {
         sdlcolors[i].r = colors[i].r;
         sdlcolors[i].g = colors[i].g;
         sdlcolors[i].b = colors[i].b;
@@ -187,7 +190,9 @@ int Image::getPaletteIndex(RGBA color)
     return -1;
 }
 
-RGBA Image::setColor(uint8_t r, uint8_t g, uint8_t b, uint8_t a)
+RGBA Image::setColor(
+    std::uint8_t r, std::uint8_t g, std::uint8_t b, std::uint8_t a
+)
 {
     RGBA color = RGBA(r, g, b, a);
     return color;
@@ -474,7 +479,10 @@ void Image::performTransparencyHack(
             unsigned int y_finish = std::min(int(bottom), oy + span + 1);
             for (y = y_start; y < y_finish; ++y) {
                 int divisor =
-                    1 + span * 2 - abs((int)(ox - x)) - abs((int)(oy - y));
+                    1
+                    + span * 2
+                    - std::abs((int)(ox - x))
+                    - std::abs((int)(oy - y));
                 unsigned int r, g, b, a;
                 getPixel(x, y, r, g, b, a);
                 if (a != IM_OPAQUE) {
@@ -722,7 +730,7 @@ void Image::drawSubRectInvertedOn(
  * Dumps the image to a file.  The file is always saved in .bmp
  * format.  This is mainly used for debugging.
  */
-void Image::save(const string &filename)
+void Image::save(const std::string &filename)
 {
     SDL_SaveBMP(surface, filename.c_str());
 }
@@ -731,8 +739,8 @@ void Image::save(const string &filename)
 void Image::drawHighlighted()
 {
     RGBA c;
-    for (unsigned i = 0; i < h; i++) {
-        for (unsigned j = 0; j < w; j++) {
+    for (unsigned int i = 0; i < h; i++) {
+        for (unsigned int j = 0; j < w; j++) {
             getPixel(j, i, c.r, c.g, c.b, c.a);
             putPixel(j, i, 0xff - c.r, 0xff - c.g, 0xff - c.b, c.a);
         }

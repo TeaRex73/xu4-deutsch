@@ -5,6 +5,10 @@
 #ifndef INTRO_H
 #define INTRO_H
 
+#include <cstdint>
+#include <cstdio>
+#include <cstdlib>
+#include <cstring>
 #include <string>
 #include <vector>
 
@@ -103,7 +107,7 @@ private:
     void drawMapAnimated();
     void drawBeasties(bool musicon = true);
     void drawBeastie(int beast, int vertoffset, int frame);
-    void animateTree(const string &frame);
+    void animateTree(const std::string &frame);
     void drawCard(int pos, int card);
     void drawAbacusBeads(int row, int selectedVirtue, int rejectedVirtue);
     void initQuestionTree();
@@ -111,12 +115,12 @@ private:
     void initPlayers(SaveGame *saveGame);
     std::string getQuestion(SexType sex, int v1, int v2);
     void initiateNewGame();
-    void finishInitiateGame(const string &nameBuffer, SexType sex);
+    void finishInitiateGame(const std::string &nameBuffer, SexType sex);
     void startQuestions(SexType sex);
     void showStory(SexType sex);
     void journeyOnward();
     void about();
-    void showText(const string &text);
+    void showText(const std::string &text);
     void runMenu(Menu *menu, TextView *view, bool withBeasties);
 
     
@@ -226,8 +230,8 @@ private:
     };
 
     struct AnimPlot {
-        uint8_t x, y;
-        uint8_t r, g, b, a;
+        std::uint8_t x, y;
+        std::uint8_t r, g, b, a;
     };
     
     class AnimElement {

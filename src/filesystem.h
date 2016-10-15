@@ -8,7 +8,7 @@
 #include <list>
 #include <string>
 
-using std::string;
+
 
 /**
  * The following code was taken from the Boost filesystem libraries
@@ -29,32 +29,32 @@ using std::string;
  */
 class Path {
 public:
-    Path(const string &p);
+    Path(const std::string &p);
     bool exists() const;
     bool isFile() const;
     bool isDir() const;
 
-    string getPath() const
+    std::string getPath() const
     {
         return path; /**< Returns the full translated path */
     }
     
-    std::list<string> *getDirTree()
+    std::list<std::string> *getDirTree()
     {
         return &dirs; /**< Returns the list of directories in path */
     }
 
-    string getDir() const;
-    string getFilename() const;
-    string getBaseFilename() const;
-    string getExt() const;
-    static bool exists(const string &path);
+    std::string getDir() const;
+    std::string getFilename() const;
+    std::string getBaseFilename() const;
+    std::string getExt() const;
+    static bool exists(const std::string &path);
     static const char delim;
 
 private:
-    string path;
-    std::list<string> dirs;
-    string file, ext;
+    std::string path;
+    std::list<std::string> dirs;
+    std::string file, ext;
 };
 
 
@@ -65,11 +65,11 @@ private:
  */
 class FileSystem {
 public:
-    static FILE *openFile(
-        const string &filepath, const char *mode = "wrb"
+    static std::FILE *openFile(
+        const std::string &filepath, const char *mode = "wrb"
     );
     static void createDirectory(Path &path);
-    static void createDirectory(const string &filepath);
+    static void createDirectory(const std::string &filepath);
 };
 
 #endif // ifndef FILESYSTEM_H

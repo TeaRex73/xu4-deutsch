@@ -4,9 +4,10 @@
 
 #include "vc6.h" // Fixes things if you're using VC6, does nothing otherwise
 
-#include "creature.h"
-
+#include <cstdlib>
 #include <cstring>
+
+#include "creature.h"
 #include "combat.h"
 #include "config.h"
 #include "context.h"
@@ -314,8 +315,8 @@ CreatureStatus Creature::getState() const
 bool Creature::specialAction()
 {
     bool retval = false;
-    int dx = abs(c->location->coords.x - coords.x);
-    int dy = abs(c->location->coords.y - coords.y);
+    int dx = std::abs(c->location->coords.x - coords.x);
+    int dy = std::abs(c->location->coords.y - coords.y);
     int mapdist = c->location->coords.distance(coords, c->location->map);
     /* find out which direction the avatar is
        in relation to the creature */
@@ -338,10 +339,10 @@ bool Creature::specialAction()
             && (xu4_random(2) == 0)
             && ((c->location->context & CTX_CITY) == 0)) {
             soundPlay(SOUND_NPC_ATTACK);
-            vector<Coords> path = gameGetDirectionalActionPath(
+            std::vector<Coords> path = gameGetDirectionalActionPath(
                 dir, MASK_DIR_ALL, coords, 1, 3, NULL, false
             );
-            for (vector<Coords>::iterator i = path.begin();
+            for (std::vector<Coords>::iterator i = path.begin();
                  i != path.end();
                  i++) {
                 if (creatureRangeAttack(*i, this)) {
@@ -363,10 +364,10 @@ bool Creature::specialAction()
             ((broadsidesDirs & dir) > 0)) {
             // nothing (not even mountains!) can block cannonballs
             soundPlay(SOUND_NPC_ATTACK);
-            vector<Coords> path = gameGetDirectionalActionPath(
+            std::vector<Coords> path = gameGetDirectionalActionPath(
                 dir, broadsidesDirs, coords, 1, 3, NULL, false
             );
-            for (vector<Coords>::iterator i = path.begin();
+            for (std::vector<Coords>::iterator i = path.begin();
                  i != path.end();
                  i++) {
                 if (fireAt(*i, false)) {
@@ -568,7 +569,7 @@ void Creature::act(CombatController *controller)
     case CA_CAST_SLEEP:
         screenMessage("\nSLIPITUS!\n");
         /* show the sleep spell effect */
-        gameSpellEffect('s', -1, static_cast<Sound>(SOUND_MAGIC));
+        gameSpellEffect('s', -1, SOUND_MAGIC);
         /* Apply the sleep spell to party members still in combat */
         if (!isPartyMember(this)) {
             PartyMemberVector party =
@@ -622,7 +623,7 @@ void Creature::act(CombatController *controller)
         int dir = m_coords.getRelativeDirection(p_coords);
         // NPC_ATTACK, ranged
         soundPlay(SOUND_NPC_ATTACK, false);
-        vector<Coords> path = gameGetDirectionalActionPath(
+        std::vector<Coords> path = gameGetDirectionalActionPath(
             dir,
             MASK_DIR_ALL,
             m_coords,
@@ -632,7 +633,9 @@ void Creature::act(CombatController *controller)
             false
         );
         bool hit = false;
-        for (vector<Coords>::iterator i = path.begin(); i != path.end(); i++) {
+        for (std::vector<Coords>::iterator i = path.begin();
+             i != path.end();
+             i++) {
             if (controller->rangedAttack(*i, this)) {
                 hit = true;
                 break;
@@ -697,7 +700,9 @@ void Creature::addStatus(StatusType s)
         setAnimated(false); /* freeze creature */
         break;
     default:
-        ASSERT(0, "Invalid status %d in Creature::addStatus", (int)new_status);
+        ASSERT(
+            0, "Invalid status %d in Creature::addStatus", (int)new_status
+        );
     }
 }
 
@@ -897,7 +902,9 @@ void Creature::removeStatus(StatusType s)
         setAnimated(false); /* freeze creature */
     break;
     default:
-        ASSERT(0, "Invalid status %d in Creature::removeStatus", (int)new_status);
+        ASSERT(
+            0, "Invalid status %d in Creature::removeStatus", (int)new_status
+        );
     }
 }
 
@@ -1010,7 +1017,7 @@ CreatureMgr::~CreatureMgr()
 void CreatureMgr::loadAll()
 {
     const Config *config = Config::getInstance();
-    vector<ConfigElement> creatureConfs =
+    std::vector<ConfigElement> creatureConfs =
         config->getElement("creatures").getChildren();
     for (std::vector<ConfigElement>::iterator i = creatureConfs.begin();
          i != creatureConfs.end();
@@ -1063,11 +1070,11 @@ Creature *CreatureMgr::getById(CreatureId id)
  * or returns NULL if no creature can be found with
  * that name (case insensitive)
  */
-Creature *CreatureMgr::getByName(string name)
+Creature *CreatureMgr::getByName(std::string name)
 {
     CreatureMap::const_iterator i;
     for (i = creatures.begin(); i != creatures.end(); i++) {
-        if (strcasecmp(
+        if (xu4_strcasecmp(
                 i->second->getName().c_str(),
                 name.c_str()
             ) == 0) {
@@ -1148,7 +1155,7 @@ Creature *CreatureMgr::randomForDungeon(int dngLevel)
  */
 Creature *CreatureMgr::randomForDungeon(int dngLevel)
 {
-    size_t range = dngLevel < 5 ? 3 : 4;
+    std::size_t range = dngLevel < 5 ? 3 : 4;
     CreatureId monster = RAT_ID + dngLevel + xu4_random(range);
     if (monster >= MIMIC_ID) {
         ++monster;

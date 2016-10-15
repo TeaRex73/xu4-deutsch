@@ -15,8 +15,6 @@
 #include "imageloader_u5.h"
 #include "lzw/u6decode.h"
 
-using std::vector;
-
 ImageLoader *U5LzwImageLoader::instance =
     ImageLoader::registerLoader(new U5LzwImageLoader, "image/x-u5lzw");
 

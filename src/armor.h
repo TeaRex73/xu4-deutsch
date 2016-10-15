@@ -10,21 +10,21 @@
 
 #include "savegame.h"
 
-using std::string;
+
 
 class ConfigElement;
 
 class Armor {
 public:
     static const Armor *get(ArmorType a);
-    static const Armor *get(const string &name);
+    static const Armor *get(const std::string &name);
 
     ArmorType getType() const
     {
         return type; /**< Returns the ArmorType of the armor */
     }
     
-    const string &getName() const
+    const std::string &getName() const
     {
         return name;  /**< Returns the name of the armor */
     }
@@ -47,7 +47,7 @@ private:
     static bool confLoaded;
     static std::vector<Armor> armors;
     ArmorType type;
-    string name;
+    std::string name;
     unsigned char canuse;
     int defense;
     unsigned short mask;

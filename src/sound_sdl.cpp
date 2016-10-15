@@ -23,7 +23,7 @@
 #include "music_sdl.h"
 #include "event.h"
 
-bool SoundManager::load_sys(Sound sound, const string &pathname)
+bool SoundManager::load_sys(Sound sound, const std::string &pathname)
 {
     soundChunk[sound] = Mix_LoadWAV(pathname.c_str());
     if (!soundChunk[sound]) {
@@ -69,7 +69,7 @@ void SoundManager::play_sys(
                 (specificDurationInTicks == -1) ? 0 : -1,
                 specificDurationInTicks
             ) == -1) {
-            fprintf(
+            std::fprintf(
                 stderr, "Error playing sound %d: %s\n", sound, Mix_GetError()
             );
         }

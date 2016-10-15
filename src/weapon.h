@@ -10,7 +10,7 @@
 #include <vector>
 #include "savegame.h"
 
-using std::string;
+
 
 class ConfigElement;
 
@@ -30,19 +30,19 @@ public:
     };
     
     static const Weapon *get(WeaponType w);
-    static const Weapon *get(const string &name);
+    static const Weapon *get(const std::string &name);
 
     WeaponType getType() const
     {
         return type;
     }
     
-    const string &getName() const
+    const std::string &getName() const
     {
         return name;
     }
     
-    const string &getAbbrev() const
+    const std::string &getAbbrev() const
     {
         return abbr;
     }
@@ -62,17 +62,17 @@ public:
         return damage;
     }
     
-    const string &getHitTile() const
+    const std::string &getHitTile() const
     {
         return hittile;
     }
     
-    const string &getMissTile() const
+    const std::string &getMissTile() const
     {
         return misstile;
     }
     
-    const string &leavesTile() const
+    const std::string &leavesTile() const
     {
         return leavetile;
     }
@@ -138,14 +138,14 @@ private:
     static bool confLoaded;
     static std::vector<Weapon> weapons;
     WeaponType type;
-    string name;
-    string abbr; /**< abbreviation for the weapon */
+    std::string name;
+    std::string abbr; /**< abbreviation for the weapon */
     unsigned char canuse; /**< bitmask of classes that can use */
     int range; /**< range of weapon */
     int damage; /**< damage of weapon */
-    string hittile; /**< tile to display a hit */
-    string misstile; /**< tile to display a miss */
-    string leavetile; /**< the tile #, zero if nothing left */
+    std::string hittile; /**< tile to display a hit */
+    std::string misstile; /**< tile to display a miss */
+    std::string leavetile; /**< the tile #, zero if nothing left */
     unsigned short flags;
 };
 

@@ -6,15 +6,13 @@
 #define CONVERSATION_H
 
 #include <list>
-#include <unordered_map>
+#include <map>
 #include <string>
 #include <vector>
 
 #include "utils.h"
 
-using std::list;
-using std::string;
-using std::vector;
+
 
 class Debug;
 class Person;
@@ -41,14 +39,16 @@ public:
     static const ResponsePart STOPMUSIC;
     static const ResponsePart HAWKWIND;
     ResponsePart(
-        const string &value, const string &arg = "", bool command = false
+        const std::string &value,
+        const std::string &arg = "",
+        bool command = false
     );
-    operator string() const;
+    operator std::string() const;
     bool operator==(const ResponsePart &rhs) const;
     bool isCommand() const;
 
 private:
-    string value, arg;
+    std::string value, arg;
     bool command;
 };
 
@@ -59,21 +59,21 @@ private:
  */
 class Response {
 public:
-    Response(const string &response);
+    Response(const std::string &response);
     
     virtual ~Response()
     {
     }
     
     void add(const ResponsePart &part);
-    virtual const vector<ResponsePart> &getParts() const;
-    operator string() const;
+    virtual const std::vector<ResponsePart> &getParts() const;
+    operator std::string() const;
     Response *addref();
     void release();
 
 private:
     int references;
-    vector<ResponsePart> parts;
+    std::vector<ResponsePart> parts;
 };
 
 
@@ -86,12 +86,12 @@ class DynamicResponse:public Response {
 public:
     DynamicResponse(
         Response *(*generator)(const DynamicResponse *),
-        const string &param = ""
+        const std::string &param = ""
     );
     virtual ~DynamicResponse();
-    virtual const vector<ResponsePart> &getParts() const;
+    virtual const std::vector<ResponsePart> &getParts() const;
 
-    const string &getParam() const
+    const std::string &getParam() const
     {
         return param;
     }
@@ -99,7 +99,7 @@ public:
 private:
     Response *(*generator)(const DynamicResponse *);
     Response *currentResponse;
-    string param;
+    std::string param;
 };
 
 
@@ -116,13 +116,13 @@ public:
      */
     class Question {
     public:
-        Question(const string &txt, Response *yes, Response *no);
+        Question(const std::string &txt, Response *yes, Response *no);
         ~Question();
-        string getText();
+        std::string getText();
         Response *getResponse(bool yes);
 
     private:
-        string text;
+        std::string text;
         Response *yesresp, *noresp;
     };
 
@@ -134,16 +134,16 @@ public:
      */
     class Keyword {
     public:
-        Keyword(const string &kw, Response *resp);
-        Keyword(const string &kw, const string &resp);
+        Keyword(const std::string &kw, Response *resp);
+        Keyword(const std::string &kw, const std::string &resp);
         ~Keyword();
-        bool operator==(const string &kw) const;
+        bool operator==(const std::string &kw) const;
 
         
         /*
          * Accessor methods
          */
-        const string &getKeyword()
+        const std::string &getKeyword()
         {
             return keyword;
         }
@@ -154,7 +154,7 @@ public:
         }
         
     private:
-        string keyword;
+        std::string keyword;
         Response *response;
     };
 
@@ -162,7 +162,7 @@ public:
     /**
      * A mapping of keywords to the Keyword object that represents them
      */
-    typedef std::unordered_map<string, Keyword *> KeywordMap;
+    typedef std::map<std::string, Keyword *> KeywordMap;
 
     
     /*
@@ -175,17 +175,17 @@ public:
     /*
      * Accessor methods
      */
-    const string &getName() const
+    const std::string &getName() const
     {
         return name;
     }
     
-    const string &getPronoun() const
+    const std::string &getPronoun() const
     {
         return pronoun;
     }
     
-    const string &getPrompt() const
+    const std::string &getPrompt() const
     {
         return prompt;
     }
@@ -214,17 +214,17 @@ public:
     /*
      * Getters
      */
-    void setName(const string &n)
+    void setName(const std::string &n)
     {
         name = n;
     }
     
-    void setPronoun(const string &pn)
+    void setPronoun(const std::string &pn)
     {
         pronoun = pn;
     }
     
-    void setPrompt(const string &prompt)
+    void setPrompt(const std::string &prompt)
     {
         this->prompt = prompt;
     }
@@ -254,20 +254,20 @@ public:
         question = q;
     }
     
-    void addKeyword(const string &kw, Response *response);
+    void addKeyword(const std::string &kw, Response *response);
     const ResponsePart &getAction() const;
-    string dump(const string &arg);
+    std::string dump(const std::string &arg);
 
     
     /*
      * Operators
      */
-    Keyword *operator[](const string &kw);
+    Keyword *operator[](const std::string &kw);
 
 private:
-    string name;
-    string pronoun;
-    string prompt;
+    std::string name;
+    std::string pronoun;
+    std::string prompt;
     Response *intro;
     Response *longIntro;
     Response *defaultAnswer;
@@ -335,8 +335,9 @@ public:
 
 public:
     State state; /**< The state of the conversation */
-    string playerInput; /**< A string holding the text the player inputs */
-    list<string> reply; /**< What the talker says */
+    std::string playerInput; /**< A std::string holding the text
+                                the player inputs */
+    std::list<std::string> reply; /**< What the talker says */
     class Script *script; /**< A script that this person
                              follows during the
                              conversation (may be NULL) */

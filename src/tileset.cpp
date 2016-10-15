@@ -16,8 +16,6 @@
 #include "tile.h"
 #include "tilemap.h"
 
-using std::vector;
-
 
 /**
  * TileRule Class Implementation
@@ -28,7 +26,7 @@ TileRuleMap TileRule::rules;
 /**
  * Returns the tile rule with the given name, or NULL if none could be found
  */
-TileRule *TileRule::findByName(const string &name)
+TileRule *TileRule::findByName(const std::string &name)
 {
     TileRuleMap::iterator i = rules.find(name);
     if (i != rules.end()) {
@@ -53,7 +51,7 @@ void TileRule::unloadAll()
 void TileRule::load()
 {
     const Config *config = Config::getInstance();
-    vector<ConfigElement> rules =
+    std::vector<ConfigElement> rules =
         config->getElement("tileRules").getChildren();
     for (std::vector<ConfigElement>::iterator i = rules.begin();
          i != rules.end();
@@ -144,7 +142,7 @@ bool TileRule::initFromConf(const ConfigElement &conf)
             this->movementMask |= movementBooleanAttr[i].mask;
         }
     }
-    string cantwalkon = conf.getString("cantwalkon");
+    std::string cantwalkon = conf.getString("cantwalkon");
     if (cantwalkon == "all") {
         this->walkonDirs = 0;
     } else if (cantwalkon == "west") {
@@ -160,7 +158,7 @@ bool TileRule::initFromConf(const ConfigElement &conf)
     } else if (cantwalkon == "retreat") {
         this->walkonDirs = DIR_REMOVE_FROM_MASK(DIR_RETREAT, this->walkonDirs);
     }
-    string cantwalkoff = conf.getString("cantwalkoff");
+    std::string cantwalkoff = conf.getString("cantwalkoff");
     if (cantwalkoff == "all") {
         this->walkoffDirs = 0;
     } else if (cantwalkoff == "west") {
@@ -202,7 +200,7 @@ void Tileset::loadAll()
 {
     Debug dbg("debug/tileset.txt", "Tileset");
     const Config *config = Config::getInstance();
-    vector<ConfigElement> conf;
+    std::vector<ConfigElement> conf;
     TRACE(dbg, "Unloading all tilesets");
     unloadAll();
     // get the config element for all tilesets
@@ -265,7 +263,7 @@ void Tileset::unloadAllImages()
 /**
  * Returns the tileset with the given name, if it exists
  */
-Tileset *Tileset::get(const string &name)
+Tileset *Tileset::get(const std::string &name)
 {
     if (tilesets.find(name) != tilesets.end()) {
         return tilesets[name];
@@ -278,7 +276,7 @@ Tileset *Tileset::get(const string &name)
 /**
  * Returns the tile that has the given name from any tileset, if there is one
  */
-Tile *Tileset::findTileByName(const string &name)
+Tile *Tileset::findTileByName(const std::string &name)
 {
     TilesetMap::iterator i;
     for (i = tilesets.begin(); i != tilesets.end(); i++) {
@@ -320,7 +318,7 @@ void Tileset::load(const ConfigElement &tilesetConf)
     }
     TRACE_LOCAL(dbg, "\tLoading Tiles...");
     int index = 0;
-    vector<ConfigElement> children = tilesetConf.getChildren();
+    std::vector<ConfigElement> children = tilesetConf.getChildren();
     for (std::vector<ConfigElement>::iterator i = children.begin();
          i != children.end();
          i++) {
@@ -329,7 +327,7 @@ void Tileset::load(const ConfigElement &tilesetConf)
         }
         Tile *tile = new Tile(this);
         tile->loadProperties(*i);
-        TRACE_LOCAL(dbg, string("\t\tLoaded '") + tile->getName() + "'");
+        TRACE_LOCAL(dbg, std::string("\t\tLoaded '") + tile->getName() + "'");
         /* add the tile to our tileset */
         tiles[tile->getId()] = tile;
         nameMap[tile->getName()] = tile;
@@ -381,7 +379,7 @@ Tile *Tileset::get(TileId id)
 /**
  * Returns the tile with the given name from the tileset, if it exists
  */
-Tile *Tileset::getByName(const string &name)
+Tile *Tileset::getByName(const std::string &name)
 {
     if (nameMap.find(name) != nameMap.end()) {
         return nameMap[name];
@@ -396,7 +394,7 @@ Tile *Tileset::getByName(const string &name)
 /**
  * Returns the image name for the tileset, if it exists
  */
-string Tileset::getImageName() const
+std::string Tileset::getImageName() const
 {
     if (imageName.empty() && extends) {
         return extends->getImageName();

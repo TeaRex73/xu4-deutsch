@@ -9,7 +9,7 @@
 #include "debug.h"
 #include "person.h"
 #include "script.h"
-
+#include "utils.h"
 
 /* Static variable initialization */
 const ResponsePart ResponsePart::NONE("<NONE>", "", true);
@@ -30,7 +30,7 @@ const ResponsePart ResponsePart::HAWKWIND("<HAWKWIND>", "", true);
 const unsigned int Conversation::BUFFERLEN = 16;
 
 
-Response::Response(const string &response)
+Response::Response(const std::string &response)
     :references(0)
 {
     add(response);
@@ -41,15 +41,15 @@ void Response::add(const ResponsePart &part)
     parts.push_back(part);
 }
 
-const vector<ResponsePart> &Response::getParts() const
+const std::vector<ResponsePart> &Response::getParts() const
 {
     return parts;
 }
 
-Response::operator string() const
+Response::operator std::string() const
 {
-    string result;
-    for (vector<ResponsePart>::const_iterator i = parts.begin();
+    std::string result;
+    for (std::vector<ResponsePart>::const_iterator i = parts.begin();
          i != parts.end();
          i++) {
         result += *i;
@@ -72,7 +72,7 @@ void Response::release()
 }
 
 ResponsePart::ResponsePart(
-    const string &value, const string &arg, bool command
+    const std::string &value, const std::string &arg, bool command
 )
 {
     this->value = value;
@@ -80,7 +80,7 @@ ResponsePart::ResponsePart(
     this->command = command;
 }
 
-ResponsePart::operator string() const
+ResponsePart::operator std::string() const
 {
     return value;
 }
@@ -96,7 +96,7 @@ bool ResponsePart::isCommand() const
 }
 
 DynamicResponse::DynamicResponse(
-    Response *(*generator)(const DynamicResponse *), const string &param
+    Response *(*generator)(const DynamicResponse *), const std::string &param
 )
     :Response(""), param(param)
 {
@@ -109,7 +109,7 @@ DynamicResponse::~DynamicResponse()
     delete currentResponse;
 }
 
-const vector<ResponsePart> &DynamicResponse::getParts() const
+const std::vector<ResponsePart> &DynamicResponse::getParts() const
 {
     // blah, must cast away constness
     const_cast<DynamicResponse *>(this)->currentResponse = (*generator)(this);
@@ -120,7 +120,9 @@ const vector<ResponsePart> &DynamicResponse::getParts() const
 /*
  * Dialogue::Question class
  */
-Dialogue::Question::Question(const string &txt, Response *yes, Response *no)
+Dialogue::Question::Question(
+    const std::string &txt, Response *yes, Response *no
+)
     :text(txt), yesresp(yes->addref()), noresp(no->addref())
 {
 }
@@ -131,7 +133,7 @@ Dialogue::Question::~Question()
     noresp->release();
 }
 
-string Dialogue::Question::getText()
+std::string Dialogue::Question::getText()
 {
     return text;
 }
@@ -148,14 +150,14 @@ Response *Dialogue::Question::getResponse(bool yes)
 /*
  * Dialogue::Keyword class
  */
-Dialogue::Keyword::Keyword(const string &kw, Response *resp)
+Dialogue::Keyword::Keyword(const std::string &kw, Response *resp)
     :keyword(kw), response(resp->addref())
 {
     trim(keyword);
     lowercase(keyword);
 }
 
-Dialogue::Keyword::Keyword(const string &kw, const string &resp)
+Dialogue::Keyword::Keyword(const std::string &kw, const std::string &resp)
     :keyword(kw), response((new Response(resp))->addref())
 {
     trim(keyword);
@@ -167,16 +169,16 @@ Dialogue::Keyword::~Keyword()
     response->release();
 }
 
-bool Dialogue::Keyword::operator==(const string &kw) const
+bool Dialogue::Keyword::operator==(const std::string &kw) const
 {
     // minimum 4-character "guessing"
     int testLen = (keyword.size() < 4) ? keyword.size() : 4;
     // exception: empty keyword only matches
-    // empty string (alias for 'bye')
+    // empty std::string (alias for 'bye')
     if ((testLen == 0) && (kw.size() > 0)) {
         return false;
     }
-    if (strncasecmp(kw.c_str(), keyword.c_str(), testLen) == 0) {
+    if (xu4_strncasecmp(kw.c_str(), keyword.c_str(), testLen) == 0) {
         return true;
     }
     return false;
@@ -206,7 +208,7 @@ Dialogue::~Dialogue()
     delete question;
 }
 
-void Dialogue::addKeyword(const string &kw, Response *response)
+void Dialogue::addKeyword(const std::string &kw, Response *response)
 {
     if (keywords.find(kw) != keywords.end()) {
         delete keywords[kw];
@@ -214,7 +216,7 @@ void Dialogue::addKeyword(const string &kw, Response *response)
     keywords[kw] = new Keyword(kw, response);
 }
 
-Dialogue::Keyword *Dialogue::operator[](const string &kw)
+Dialogue::Keyword *Dialogue::operator[](const std::string &kw)
 {
     KeywordMap::iterator i = keywords.find(kw);
     // If they entered the keyword verbatim, return it!
@@ -248,9 +250,9 @@ const ResponsePart &Dialogue::getAction() const
     }
 }
 
-string Dialogue::dump(const string &arg)
+std::string Dialogue::dump(const std::string &arg)
 {
-    string result;
+    std::string result;
 
     if (arg == "") {
         result = "keywords:\n";
@@ -260,7 +262,7 @@ string Dialogue::dump(const string &arg)
             result += i->first + "\n";
         }
     } else if (keywords.find(arg) != keywords.end()) {
-        result = static_cast<string>(*keywords[arg]->getResponse());
+        result = static_cast<std::string>(*keywords[arg]->getResponse());
     }
     return result;
 }

@@ -18,8 +18,6 @@
 #include "textview.h"
 #include "utils.h"
 
-using namespace std;
-
 int eventTimerGranularity = 250;
 extern int quit;
 bool EventHandler::controllerDone = false;
@@ -261,10 +259,10 @@ MouseArea *EventHandler::getMouseAreaSet() const
  * @param maxlen the maximum length of the string
  * @param screenX the screen column where to begin input
  * @param screenY the screen row where to begin input
- * @param accepted_chars a string characters to be accepted for input
+ * @param accepted_chars a string of characters to be accepted for input
  */
 ReadStringController::ReadStringController(
-    int maxlen, int screenX, int screenY, const string &accepted_chars
+    int maxlen, int screenX, int screenY, const std::string &accepted_chars
 )
 {
     this->maxlen = maxlen;
@@ -275,7 +273,7 @@ ReadStringController::ReadStringController(
 }
 
 ReadStringController::ReadStringController(
-    int maxlen, TextView *view, const string &accepted_chars
+    int maxlen, TextView *view, const std::string &accepted_chars
 )
 {
     this->maxlen = maxlen;
@@ -288,11 +286,11 @@ ReadStringController::ReadStringController(
 bool ReadStringController::keyPressed(int key)
 {
     int valid = true, len = value.length();
-    string::size_type pos = string::npos;
+    std::string::size_type pos = std::string::npos;
     if (key < U4_ALT) {
         pos = accepted.find_first_of(key);
     }
-    if (pos != string::npos) {
+    if (pos != std::string::npos) {
         if (key == U4_BACKSPACE) {
             if (len > 0) {
                 /* remove the last character */
@@ -328,7 +326,7 @@ bool ReadStringController::keyPressed(int key)
     return valid || KeyHandler::defaultHandler(key, NULL);
 } // ReadStringController::keyPressed
 
-string ReadStringController::get(
+std::string ReadStringController::get(
     int maxlen, int screenX, int screenY, EventHandler *eh
 )
 {
@@ -340,7 +338,9 @@ string ReadStringController::get(
     return deumlaut(ctrl.waitFor());
 }
 
-string ReadStringController::get(int maxlen, TextView *view, EventHandler *eh)
+std::string ReadStringController::get(
+    int maxlen, TextView *view, EventHandler *eh
+)
 {
     if (!eh) {
         eh = eventHandler;
@@ -370,22 +370,22 @@ int ReadIntController::get(
 
 int ReadIntController::getInt() const
 {
-    return static_cast<int>(strtol(value.c_str(), NULL, 10));
+    return static_cast<int>(std::strtol(value.c_str(), NULL, 10));
 }
 
-ReadChoiceController::ReadChoiceController(const string &choices)
+ReadChoiceController::ReadChoiceController(const std::string &choices)
 {
     this->choices = choices;
 }
 
 bool ReadChoiceController::keyPressed(int key)
 {
-    key = mytolower(key);
+    key = xu4_tolower(key);
     value = key;
     if (choices.empty() || (choices.find_first_of(value) < choices.length())) {
         // If the value is printable, display it
-        if (!choices.empty() && isgraph(key)) {
-            screenMessage("%c", mytoupper(key));
+        if (!choices.empty() && std::isgraph(key)) {
+            screenMessage("%c", xu4_toupper(key));
         } else {
             screenMessage("%c", ' ');
         }
@@ -395,7 +395,7 @@ bool ReadChoiceController::keyPressed(int key)
     return false;
 }
 
-char ReadChoiceController::get(const string &choices, EventHandler *eh)
+char ReadChoiceController::get(const std::string &choices, EventHandler *eh)
 {
     if (!eh) {
         eh = eventHandler;

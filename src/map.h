@@ -6,7 +6,7 @@
 #define MAP_H
 
 #include <list>
-#include <unordered_map>
+#include <map>
 #include <string>
 #include <vector>
 
@@ -18,7 +18,7 @@
 #include "types.h"
 #include "u4file.h"
 
-using std::string;
+
 
 #define MAP_IS_OOB(mapptr, c)                               \
     (((c).x) < 0                                            \
@@ -110,10 +110,13 @@ namespace std
     template<> struct hash<MapCoords> {
         std::size_t operator()(MapCoords const &s) const
         {
-            return s.x ^ (s.y << 8) ^ (s.z << 16);
+            unsigned int x = static_cast<unsigned int>(s.x);
+            unsigned int y = static_cast<unsigned int>(s.y);
+            unsigned int z = static_cast<unsigned int>(s.z);            
+            return x ^ (y << 8 | y >> 24) ^ (z << 16 | z >> 16);
         }
     };
-} 
+}
 
 /**
  * Map class
@@ -140,18 +143,18 @@ public:
         {
         }
 
-        Source(const string &f, Type t)
+        Source(const std::string &f, Type t)
             :fname(f), type(t)
         {
         }
         
-        string fname;
+        std::string fname;
         Type type;
     };
 
     Map();
     virtual ~Map();
-    virtual string getName();
+    virtual std::string getName();
     class Object *objectAt(const Coords &coords);
     const Portal *portalAt(const Coords &coords, int actionFlags);
     MapTile *getTileFromData(const Coords &coords);
@@ -177,7 +180,7 @@ public:
     );
     bool move(Object *obj, Direction d);
     void alertGuards();
-    const MapCoords &getLabel(const string &name) const;
+    const MapCoords &getLabel(const std::string &name) const;
     // u4dos compatibility
     bool fillMonsterTable();
     /* Translate from raw tile index */
@@ -185,7 +188,7 @@ public:
     /* Translate to raw tile index */
     unsigned int ttrti(MapTile &tile) const;
     MapId id;
-    string fname;
+    std::string fname;
     Type type;
     unsigned int width, height, levels;
     unsigned int chunk_width, chunk_height;
@@ -199,7 +202,7 @@ public:
     Music::Type music;
     MapData data;
     ObjectDeque objects;
-    std::unordered_map<string, MapCoords> labels;
+    std::map<std::string, MapCoords> labels;
     Tileset *tileset;
     TileMap *tilemap;
     // u4dos compatibility

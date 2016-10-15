@@ -19,7 +19,7 @@ class MenuEvent;
 class Party;
 class PartyEvent;
 
-using std::string;
+
 
 #define STATS_AREA_WIDTH 15
 #define STATS_AREA_HEIGHT 8
@@ -50,7 +50,7 @@ class StatsArea
     :public Observer<Aura *>,
      public Observer<Party *, PartyEvent &>,
      public Observer<Menu *, MenuEvent &>,
-     public Observable<StatsArea *, string> {
+     public Observable<StatsArea *, std::string> {
 public:
     StatsArea();
     void setView(StatsView view);
@@ -94,7 +94,7 @@ private:
     void showItems();
     void showReagents(bool active = false);
     void showMixtures();
-    void setTitle(const string &s);
+    void setTitle(const std::string &s);
     TextView title;
     TextView mainArea;
     TextView summary;

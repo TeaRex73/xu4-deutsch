@@ -5,13 +5,13 @@
 #ifndef SETTINGS_H
 #define SETTINGS_H
 
-#include <unordered_map>
+#include <map>
 #include <string>
 #include <vector>
 #include "observable.h"
 #include "types.h"
 
-using std::string;
+
 
 #define MIN_SHAKE_INTERVAL 50
 #define MAX_BATTLE_SPEED 10
@@ -130,13 +130,13 @@ public:
      * end of the list so that our == and != operators
      * function correctly
      */
-    string filter;
-    string gemLayout;
-    string lineOfSight;
-    string videoType;
-    string battleDiff;
-    string logging;
-    string game;
+    std::string filter;
+    std::string gemLayout;
+    std::string lineOfSight;
+    std::string videoType;
+    std::string battleDiff;
+    std::string logging;
+    std::string game;
 };
 
 
@@ -148,7 +148,7 @@ class Settings
     :public SettingsData,
      public Observable<Settings *> {
 public:
-    void init(const bool useProfile, const string profileName);
+    void init(const bool useProfile, const std::string profileName);
     
     static Settings &getInstance()
     {
@@ -161,17 +161,17 @@ public:
     void setData(const SettingsData &data);
     bool read();
     bool write();
-    const string &getUserPath();
-    const std::vector<string> &getBattleDiffs();
+    const std::string &getUserPath();
+    const std::vector<std::string> &getBattleDiffs();
 
 private:
-    typedef std::unordered_map<string, int, std::less<string> > SettingsMap;
+    typedef std::map<std::string, int, std::less<std::string> > SettingsMap;
     
     Settings();
     static Settings *instance;
-    string userPath;
-    string filename;
-    std::vector<string> battleDiffs;
+    std::string userPath;
+    std::string filename;
+    std::vector<std::string> battleDiffs;
 };
 
 /* the global settings */

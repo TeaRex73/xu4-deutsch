@@ -5,6 +5,7 @@
 #include "vc6.h" // Fixes things if you're using VC6, does nothing otherwise
 
 #include <string>
+#include <cstdlib>
 #include <cstring>
 
 #include "weapon.h"
@@ -12,12 +13,11 @@
 #include "config.h"
 #include "error.h"
 #include "names.h"
+#include "utils.h"
 
-using std::string;
-using std::vector;
 
 bool Weapon::confLoaded = false;
-vector<Weapon> Weapon::weapons;
+std::vector<Weapon> Weapon::weapons;
 
 
 /**
@@ -27,7 +27,7 @@ const Weapon *Weapon::get(WeaponType w)
 {
     // Load in XML if it hasn't been already
     loadConf();
-    if (static_cast<unsigned>(w) >= weapons.size()) {
+    if (static_cast<unsigned int>(w) >= weapons.size()) {
         return NULL;
     }
     return &weapons[w];
@@ -37,12 +37,12 @@ const Weapon *Weapon::get(WeaponType w)
 /**
  * Returns weapon that has the given name
  */
-const Weapon *Weapon::get(const string &name)
+const Weapon *Weapon::get(const std::string &name)
 {
     // Load in XML if it hasn't been already
     loadConf();
-    for (unsigned i = 0; i < weapons.size(); i++) {
-        if (strcasecmp(name.c_str(), weapons[i].name.c_str()) == 0) {
+    for (unsigned int i = 0; i < weapons.size(); i++) {
+        if (xu4_strcasecmp(name.c_str(), weapons[i].name.c_str()) == 0) {
             return &weapons[i];
         }
     }
@@ -78,23 +78,23 @@ Weapon::Weapon(const ConfigElement &conf)
     };
     /* Get the range of the weapon, whether it is absolute or
        normal range */
-    string _range = conf.getString("range");
-    if (_range.empty()) {
-        _range = conf.getString("absolute_range");
-        if (!_range.empty()) {
+    std::string wrange = conf.getString("range");
+    if (wrange.empty()) {
+        wrange = conf.getString("absolute_range");
+        if (!wrange.empty()) {
             flags |= WEAP_ABSOLUTERANGE;
         }
     }
-    if (_range.empty()) {
+    if (wrange.empty()) {
         errorFatal(
             "malformed weapons.xml file: range or absolute_range not found "
             "for weapon %s",
             name.c_str()
         );
     }
-    range = atoi(_range.c_str());
+    range = std::atoi(wrange.c_str());
     /* Load weapon attributes */
-    for (unsigned at = 0;
+    for (unsigned int at = 0;
          at < sizeof(booleanAttributes) / sizeof(booleanAttributes[0]);
          at++) {
         if (conf.getBool(booleanAttributes[at].name)) {
@@ -113,7 +113,7 @@ Weapon::Weapon(const ConfigElement &conf)
     if (conf.exists("leavetile")) {
         leavetile = conf.getString("leavetile");
     }
-    vector<ConfigElement> contraintConfs = conf.getChildren();
+    std::vector<ConfigElement> contraintConfs = conf.getChildren();
     for (std::vector<ConfigElement>::iterator i = contraintConfs.begin();
          i != contraintConfs.end();
          i++) {
@@ -122,7 +122,7 @@ Weapon::Weapon(const ConfigElement &conf)
             continue;
         }
         for (int cl = 0; cl < 8; cl++) {
-            if (strcasecmp(
+            if (xu4_strcasecmp(
                     i->getString("class").c_str(),
                     getClassNameEnglish(static_cast<ClassType>(cl))
                 ) == 0) {
@@ -130,7 +130,7 @@ Weapon::Weapon(const ConfigElement &conf)
             }
         }
         if ((mask == 0) &&
-            (strcasecmp(i->getString("class").c_str(), "all") == 0)) {
+            (xu4_strcasecmp(i->getString("class").c_str(), "all") == 0)) {
             mask = 0xFF;
         }
         if (mask == 0) {
@@ -154,7 +154,7 @@ void Weapon::loadConf()
     }
     confLoaded = true;
     const Config *config = Config::getInstance();
-    vector<ConfigElement> weaponConfs =
+    std::vector<ConfigElement> weaponConfs =
         config->getElement("weapons").getChildren();
     for (std::vector<ConfigElement>::iterator i = weaponConfs.begin();
          i != weaponConfs.end();

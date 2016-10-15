@@ -24,8 +24,7 @@
 #include "u4.h"
 #include "u4file.h"
 
-using std::string;
-using std::vector;
+
 
 
 /*
@@ -59,7 +58,7 @@ Music::Music()
      */
     const Config *config = Config::getInstance();
     TRACE_LOCAL(*logger, "Loading music tracks");
-    vector<ConfigElement> musicConfs =
+    std::vector<ConfigElement> musicConfs =
         config->getElement("music").getChildren();
     std::vector<ConfigElement>::const_iterator i = musicConfs.begin();
     std::vector<ConfigElement>::const_iterator theEnd = musicConfs.end();
@@ -68,7 +67,7 @@ Music::Music()
             continue;
         }
         filenames.push_back(i->getString("file"));
-        TRACE_LOCAL(*logger, string("\tTrack file: ") + filenames.back());
+        TRACE_LOCAL(*logger, std::string("\tTrack file: ") + filenames.back());
     }
     create_sys(); // Call the Sound System specific creation file.
     // Set up the volume.
@@ -79,7 +78,8 @@ Music::Music()
         &Music::callback, settings.gameCyclesPerSecond
     );
     TRACE(
-        *logger, string("Music initialized: volume is ") + (on ? "on" : "off")
+        *logger,
+        std::string("Music initialized: volume is ") + (on ? "on" : "off")
     );
 }
 
@@ -115,7 +115,7 @@ bool Music::load(Type music)
             return true;
         }
     }
-    string pathname(u4find_music(filenames[music]));
+    std::string pathname(u4find_music(filenames[music]));
     if (!pathname.empty()) {
         bool status = load_sys(pathname);
         if (status) {

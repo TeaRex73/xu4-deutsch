@@ -33,11 +33,11 @@ Annotation::Annotation(const Coords &c, MapTile t, bool v, bool coverUp)
  */
 void Annotation::debug_output() const
 {
-    printf("x: %d\n", coords.x);
-    printf("y: %d\n", coords.y);
-    printf("z: %d\n", coords.z);
-    printf("kachel: %d\n", tile.getId());
-    printf("sichtbar: %s\n", visual ? "Ja" : "Nein");
+    std::printf("x: %d\n", coords.x);
+    std::printf("y: %d\n", coords.y);
+    std::printf("z: %d\n", coords.z);
+    std::printf("kachel: %d\n", tile.getId());
+    std::printf("sichtbar: %s\n", visual ? "Ja" : "Nein");
 }
 
 

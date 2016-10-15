@@ -6,14 +6,14 @@
 #define IMAGE_H
 
 #include <string>
-#include <stdint.h>
+#include <cstdint>
 #include "types.h"
 #include "u4file.h"
 #include "textcolor.h"
 
 struct SDL_Surface;
 typedef SDL_Surface *BackendSurface;
-using std::string;
+
 
 #define DARK_GRAY_HALO RGBA(14, 15, 16, 255)
 
@@ -37,8 +37,8 @@ bool operator==(const RGBA &lhs, const RGBA &rhs);
 class Image;
 
 struct SubImage {
-    string name;
-    string srcImageName;
+    std::string name;
+    std::string srcImageName;
     int x, y, width, height;
 };
 
@@ -66,7 +66,7 @@ public:
     static Image *duplicate(Image *image);
     ~Image();
     /* palette handling */
-    void setPalette(const RGBA *colors, unsigned n_colors);
+    void setPalette(const RGBA *colors, unsigned int n_colors);
     void setPaletteFromImage(const Image *src);
     bool getTransparentIndex(unsigned int &index) const;
     void performTransparencyHack(
@@ -86,7 +86,12 @@ public:
     bool setPaletteIndex(unsigned int index, RGBA color);
     // returns the palette index of the specified RGB color
     int getPaletteIndex(RGBA color);
-    RGBA setColor(uint8_t r, uint8_t g, uint8_t b, uint8_t a = IM_OPAQUE);
+    RGBA setColor(
+        std::uint8_t r,
+        std::uint8_t g,
+        std::uint8_t b,
+        std::uint8_t a = IM_OPAQUE
+    );
     /* alpha handling */
     bool isAlphaOn() const;
     void alphaOn();
@@ -221,7 +226,7 @@ public:
         return surface;
     }
     
-    void save(const string &filename);
+    void save(const std::string &filename);
     void drawHighlighted();
 
 private:

@@ -5,7 +5,7 @@
 #ifndef PORTAL_H
 #define PORTAL_H
 
-#include <string.h>
+#include <string>
 #include "context.h"
 #include "map.h"
 

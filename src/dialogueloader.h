@@ -5,7 +5,7 @@
 #ifndef DIALOGUELOADER_H
 #define DIALOGUELOADER_H
 
-#include <unordered_map>
+#include <map>
 #include <string>
 
 class Dialogue;
@@ -36,7 +36,7 @@ protected:
     );
 
 private:
-    static std::unordered_map<std::string, DialogueLoader *> *loaderMap;
+    static std::map<std::string, DialogueLoader *> *loaderMap;
 };
 
 #endif

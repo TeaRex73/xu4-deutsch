@@ -15,7 +15,7 @@
 /**
  * MenuItem class
  */
-MenuItem::MenuItem(string t, short xpos, short ypos, int sc)
+MenuItem::MenuItem(std::string t, short xpos, short ypos, int sc)
     :id(-1),
      x(xpos),
      y(ypos),
@@ -26,14 +26,14 @@ MenuItem::MenuItem(string t, short xpos, short ypos, int sc)
      scOffset(sc),
      closesMenu(false)
 {
-    // if the sc/scOffset is outside the range of the text string, assert
+    // if the sc/scOffset is outside the range of the text std::string, assert
     ASSERT(
         sc == -1 || (sc >= 0 && sc <= (int)text.length()),
         "sc value of %d out of range!",
         sc
     );
     if (sc != -1) {
-        addShortcutKey(mytolower(text[sc]));
+        addShortcutKey(xu4_tolower(text[sc]));
     }
 }
 
@@ -57,7 +57,7 @@ int MenuItem::getScOffset() const
     return scOffset;
 }
 
-string MenuItem::getText() const
+std::string MenuItem::getText() const
 {
     return text;
 }
@@ -77,7 +77,7 @@ bool MenuItem::isVisible() const
     return visible;
 }
 
-const unordered_set<int> &MenuItem::getShortcutKeys() const
+const std::set<int> &MenuItem::getShortcutKeys() const
 {
     return shortcutKeys;
 }
@@ -102,7 +102,7 @@ void MenuItem::setY(int ypos)
     y = ypos;
 }
 
-void MenuItem::setText(string t)
+void MenuItem::setText(std::string t)
 {
     text = t;
 }
@@ -133,14 +133,14 @@ void MenuItem::setClosesMenu(bool closesMenu)
 }
 
 BoolMenuItem::BoolMenuItem(
-    string text, short x, short y, int shortcutKey, bool *val
+    std::string text, short x, short y, int shortcutKey, bool *val
 )
     :MenuItem(text, x, y, shortcutKey), val(val), on("On"), off("Off")
 {
 }
 
 BoolMenuItem *BoolMenuItem::setValueStrings(
-    const string &onString, const string &offString
+    const std::string &onString, const std::string &offString
 )
 {
     on = onString;
@@ -148,10 +148,10 @@ BoolMenuItem *BoolMenuItem::setValueStrings(
     return this;
 }
 
-string BoolMenuItem::getText() const
+std::string BoolMenuItem::getText() const
 {
     char buffer[64];
-    snprintf(
+    std::snprintf(
         buffer, sizeof(buffer), text.c_str(), *val ? on.c_str() : off.c_str()
     );
     return buffer;
@@ -167,30 +167,30 @@ void BoolMenuItem::activate(MenuEvent &event)
 }
 
 StringMenuItem::StringMenuItem(
-    string text,
+    std::string text,
     short x,
     short y,
     int shortcutKey,
-    string *val,
-    const vector<string> &validSettings
+    std::string *val,
+    const std::vector<std::string> &validSettings
 )
     :MenuItem(text, x, y, shortcutKey), val(val), validSettings(validSettings)
 {
 }
 
-string StringMenuItem::getText() const
+std::string StringMenuItem::getText() const
 {
     char buffer[64];
-    snprintf(buffer, sizeof(buffer), text.c_str(), val->c_str());
+    std::snprintf(buffer, sizeof(buffer), text.c_str(), val->c_str());
     return buffer;
 }
 
 void StringMenuItem::activate(MenuEvent &event)
 {
-    vector<string>::const_iterator current =
+    std::vector<std::string>::const_iterator current =
         find(validSettings.begin(), validSettings.end(), *val);
     if (current == validSettings.end()) {
-        errorFatal("Error: menu string '%s' not a valid choice",
+        errorFatal("Error: menu std::string '%s' not a valid choice",
                    val->c_str());
     }
     if ((event.getType() == MenuEvent::INCREMENT)
@@ -212,7 +212,7 @@ void StringMenuItem::activate(MenuEvent &event)
 } // StringMenuItem::activate
 
 IntMenuItem::IntMenuItem(
-    string text,
+    std::string text,
     short x,
     short y,
     int shortcutKey,
@@ -231,14 +231,14 @@ IntMenuItem::IntMenuItem(
 {
 }
 
-string IntMenuItem::getText() const
+std::string IntMenuItem::getText() const
 {
     // do custom formatting for some menu entries,
     // and generate a string of the results
     char outputBuffer[10];
     switch (output) {
     case MENU_OUTPUT_REAGENT:
-        snprintf(
+        std::snprintf(
             outputBuffer,
             sizeof(outputBuffer),
             "%2d",
@@ -246,17 +246,17 @@ string IntMenuItem::getText() const
         );
         break;
     case MENU_OUTPUT_GAMMA:
-        snprintf(
+        std::snprintf(
             outputBuffer,
             sizeof(outputBuffer),
             "%.1f",
             static_cast<double>(*val) / 100);
         break;
     case MENU_OUTPUT_SHRINE:
-        snprintf(outputBuffer, sizeof(outputBuffer), "%d sec", *val);
+        std::snprintf(outputBuffer, sizeof(outputBuffer), "%d sec", *val);
         break;
     case MENU_OUTPUT_SPELL:
-        snprintf(
+        std::snprintf(
             outputBuffer,
             sizeof(outputBuffer),
             "%3g sec",
@@ -265,12 +265,14 @@ string IntMenuItem::getText() const
         break;
     case MENU_OUTPUT_VOLUME:
         if (*val == 0) {
-            snprintf(
+            std::snprintf(
                 outputBuffer, sizeof(outputBuffer), "Disabled");
         } else if (*val == MAX_VOLUME) {
-            snprintf(outputBuffer, sizeof(outputBuffer), "Full");
+            std::snprintf(outputBuffer, sizeof(outputBuffer), "Full");
         } else {
-            snprintf(outputBuffer, sizeof(outputBuffer), "%d%%", *val * 10);
+            std::snprintf(
+                outputBuffer, sizeof(outputBuffer), "%d%%", *val * 10
+            );
         }
         break;
     default:
@@ -281,9 +283,9 @@ string IntMenuItem::getText() const
     // %d, whereas all others use %s
     char buffer[64];
     if (output != MENU_OUTPUT_INT) {
-        snprintf(buffer, sizeof(buffer), text.c_str(), outputBuffer);
+        std::snprintf(buffer, sizeof(buffer), text.c_str(), outputBuffer);
     } else {
-        snprintf(buffer, sizeof(buffer), text.c_str(), *val);
+        std::snprintf(buffer, sizeof(buffer), text.c_str(), *val);
     }
     return buffer;
 } // IntMenuItem::getText

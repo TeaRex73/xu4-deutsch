@@ -4,6 +4,8 @@
 
 #include "vc6.h" // Fixes things if you're using VC6, does nothing otherwise
 
+#include <cstring>
+
 #include "player.h"
 
 #include "annotation.h"
@@ -63,7 +65,7 @@ void PartyMember::notifyOfChange()
 /**
  * Provides some translation information for scripts
  */
-string PartyMember::translate(std::vector<string> &parts)
+std::string PartyMember::translate(std::vector<std::string> &parts)
 {
     if (parts.size() == 0) {
         return "";
@@ -91,7 +93,7 @@ string PartyMember::translate(std::vector<string> &parts)
         } else if (parts[0] == "armor") {
             return getArmor()->getName();
         } else if (parts[0] == "sex") {
-            string var = " ";
+            std::string var = " ";
             var[0] = getSex();
             return var;
         } else if (parts[0] == "class") {
@@ -140,22 +142,22 @@ int PartyMember::getMaxMp() const
     int max_mp = -1;
     switch (player->klass) {
     case CLASS_MAGE:
-        /*  mage: 100% of int */
-        max_mp = player->intel;
+        /*  mage: 200% of int */
+        max_mp = player->intel * 2;
         break;
     case CLASS_DRUID:
-        /* druid: 75% of int */
-        max_mp = player->intel * 3 / 4;
+        /* druid: 150% of int */
+        max_mp = player->intel * 3 / 2;
         break;
     case CLASS_BARD:
     case CLASS_PALADIN:
     case CLASS_RANGER:
-        /* bard, paladin, ranger: 50% of int */
-        max_mp = player->intel / 2;
+        /* bard, paladin, ranger: 100% of int */
+        max_mp = player->intel;
         break;
     case CLASS_TINKER:
-        /* tinker: 25% of int */
-        max_mp = player->intel / 4;
+        /* tinker: 50% of int */
+        max_mp = player->intel / 2;
         break;
     case CLASS_FIGHTER:
     case CLASS_SHEPHERD:
@@ -167,8 +169,8 @@ int PartyMember::getMaxMp() const
     }
 
     /* mp always maxes out at 50 */
-    if (max_mp > 50) {
-        max_mp = 50;
+    if (max_mp > 99) {
+        max_mp = 99;
     }
     return max_mp;
 } // PartyMember::getMaxMp
@@ -183,7 +185,7 @@ const Armor *PartyMember::getArmor() const
     return Armor::get(player->armor);
 }
 
-string PartyMember::getName() const
+std::string PartyMember::getName() const
 {
     return player->name;
 }
@@ -252,7 +254,11 @@ void PartyMember::addStatus(StatusType s)
     setTile(Tileset::findTileByName("corpse")->getId());
     break;
     default:
-        ASSERT(0, "Invalid Status %d in PartyMember::addStatus", (int)player->status);
+        ASSERT(
+            0,
+            "Invalid Status %d in PartyMember::addStatus",
+            (int)player->status
+        );
     }
     notifyOfChange();
 }
@@ -421,7 +427,11 @@ void PartyMember::removeStatus(StatusType s)
     setTile(Tileset::findTileByName("corpse")->getId());
     break;
     default:
-        ASSERT(0, "Invalid Status %d in PartyMember::removeStatus", (int)player->status);
+        ASSERT(
+            0,
+            "Invalid Status %d in PartyMember::removeStatus",
+            (int)player->status
+        );
     }
     notifyOfChange();
 }
@@ -578,7 +588,7 @@ int PartyMember::getDamage()
  * Returns the tile that will be displayed when the party
  * member's attack hits
  */
-const string &PartyMember::getHitTile() const
+const std::string &PartyMember::getHitTile() const
 {
     return getWeapon()->getHitTile();
 }
@@ -588,7 +598,7 @@ const string &PartyMember::getHitTile() const
  * Returns the tile that will be displayed when the party
  * member's attack fails
  */
-const string &PartyMember::getMissTile() const
+const std::string &PartyMember::getMissTile() const
 {
     return getWeapon()->getMissTile();
 }
@@ -717,7 +727,7 @@ void Party::notifyOfChange(PartyMember *pm, PartyEvent::Type eventType)
     notifyObservers(event);
 }
 
-string Party::translate(std::vector<string> &parts)
+std::string Party::translate(std::vector<std::string> &parts)
 {
     if (parts.size() == 0) {
         return "";
@@ -762,14 +772,14 @@ string Party::translate(std::vector<string> &parts)
     } else if (parts.size() >= 2) {
         if (parts[0].find_first_of("member") == 0) {
             // Make a new parts list, but remove the first item
-            std::vector<string> new_parts = parts;
+            std::vector<std::string> new_parts = parts;
             new_parts.erase(new_parts.begin());
             // Find the member we'll be working with
-            string str = parts[0];
-            string::size_type pos = str.find_first_of("1234567890");
-            if (pos != string::npos) {
+            std::string str = parts[0];
+            std::string::size_type pos = str.find_first_of("1234567890");
+            if (pos != std::string::npos) {
                 str = str.substr(pos);
-                int p_member = (int)strtol(str.c_str(), NULL, 10);
+                int p_member = (int)std::strtol(str.c_str(), NULL, 10);
                 // Make the party member translate its
                 // own stuff
                 if (p_member > 0) {
@@ -1037,7 +1047,7 @@ bool Party::canEnterShrine(Virtue virtue)
 /**
  * Returns true if the person can join the party
  */
-bool Party::canPersonJoin(string name, Virtue *v)
+bool Party::canPersonJoin(std::string name, Virtue *v)
 {
     int i;
     if (name.empty()) {
@@ -1224,7 +1234,7 @@ bool Party::isDead()
  * Returns true if the person with that name
  * is already in the party
  */
-bool Party::isPersonJoined(string name)
+bool Party::isPersonJoined(std::string name)
 {
     int i;
     if (name.empty()) {
@@ -1243,7 +1253,7 @@ bool Party::isPersonJoined(string name)
  * Attempts to add the person to the party.
  * Returns JOIN_SUCCEEDED if successful.
  */
-CannotJoinError Party::join(string name)
+CannotJoinError Party::join(std::string name)
 {
     int i;
     SaveGamePlayerRecord tmp;

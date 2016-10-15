@@ -8,14 +8,14 @@
 #include "image.h"
 #include "scale.h"
 
-using std::string;
+
 
 Image *scalePoint(Image *src, int scale, int n);
 Image *scale2xBilinear(Image *src, int scale, int n);
 Image *scale2xSaI(Image *src, int scale, int N);
 Image *scaleScale2x(Image *src, int scale, int N);
 
-Scaler scalerGet(const string &filter)
+Scaler scalerGet(const std::string &filter)
 {
     if (1 /* filter == "point" */) {
         return &scalePoint;
@@ -34,7 +34,7 @@ Scaler scalerGet(const string &filter)
 /**
  * Returns true if the given scaler can scale by 3 (as well as by 2).
  */
-int scaler3x(const string &filter)
+int scaler3x(const std::string &filter)
 {
     return filter == "Scale2x";
 }

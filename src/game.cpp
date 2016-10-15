@@ -5,9 +5,10 @@
 #include "vc6.h" // Fixes things if you're using VC6, does nothing otherwise
 
 #include <cctype>
+#include <cstring>
 #include <ctime>
-#include <map>
-
+#include <unordered_map>
+#include <unistd.h>
 #include "u4.h"
 
 #include "game.h"
@@ -58,7 +59,7 @@
 
 #define sync()
 
-using namespace std;
+
 
 GameController *game = NULL;
 
@@ -111,7 +112,7 @@ void gameCreatureAttack(Creature *obj);
 
 extern int quit;
 
-const string tmpstr = "/tmp/";
+const std::string tmpstr = "/tmp/";
 
 Context *c = NULL;
 Debug gameDbg("debug/game.txt", "Game");
@@ -182,10 +183,10 @@ int ReadPlayerController::waitFor()
 
 bool AlphaActionController::keyPressed(int key)
 {
-    if (islower(key)) {
-        key = mytoupper(key);
+    if (xu4_islower(key)) {
+        key = xu4_toupper(key);
     }
-    if ((key >= 'A') && (key <= mytoupper(lastValidLetter))) {
+    if ((key >= 'A') && (key <= xu4_toupper(lastValidLetter))) {
         value = key - 'A';
         doneWaiting();
     } else if ((key == U4_SPACE) || (key == U4_ESC) || (key == U4_ENTER)) {
@@ -201,7 +202,7 @@ bool AlphaActionController::keyPressed(int key)
 }
 
 int AlphaActionController::get(
-    char lastValidLetter, const string &prompt, EventHandler *eh
+    char lastValidLetter, const std::string &prompt, EventHandler *eh
 )
 {
     if (!eh) {
@@ -248,7 +249,7 @@ void GameController::initScreenWithoutReloadingState()
 
 void GameController::init()
 {
-    FILE *saveGameFile, *monstersFile;
+    std::FILE *saveGameFile, *monstersFile;
     TRACE(gameDbg, "gameInit() running.");
     initScreen();
 #if 0
@@ -273,21 +274,23 @@ void GameController::init()
     c->aura = new Aura();
     c->horseSpeed = 0;
     c->opacity = 1;
-    c->lastCommandTime = (long)time(NULL);
+    c->lastCommandTime = std::time(NULL);
     c->willPassTurn = false;
     c->lastShip = NULL;
     /* load in the save game */
     // First the temporary just-inited save game...
-    saveGameFile = fopen((tmpstr + PARTY_SAV_BASE_FILENAME).c_str(), "rb");
+    saveGameFile = std::fopen(
+        (tmpstr + PARTY_SAV_BASE_FILENAME).c_str(), "rb"
+    );
     if (!saveGameFile) {
         // ...and if that fails the real, main save game
-        saveGameFile = fopen(
+        saveGameFile = std::fopen(
             (settings.getUserPath() + PARTY_SAV_BASE_FILENAME).c_str(), "rb"
         );
     }
     if (saveGameFile) {
         c->saveGame->read(saveGameFile);
-        fclose(saveGameFile);
+        std::fclose(saveGameFile);
     } else {
         errorFatal("no savegame found!");
     }
@@ -344,27 +347,29 @@ void GameController::init()
     ++pb;
 #endif
     /* load in creatures.sav */
-    monstersFile = fopen((tmpstr + MONSTERS_SAV_BASE_FILENAME).c_str(), "rb");
+    monstersFile = std::fopen(
+        (tmpstr + MONSTERS_SAV_BASE_FILENAME).c_str(), "rb"
+    );
     if (!monstersFile) {
-        monstersFile = fopen(
+        monstersFile = std::fopen(
             (settings.getUserPath() + MONSTERS_SAV_BASE_FILENAME).c_str(), "rb"
         );
     }
     if (monstersFile) {
         saveGameMonstersRead(c->location->map->monsterTable, monstersFile);
-        fclose(monstersFile);
+        std::fclose(monstersFile);
     }
     gameFixupObjects(c->location->map);
     /* we have previous creature information as well, load it! */
     if (c->location->prev) {
-        monstersFile = fopen(
+        monstersFile = std::fopen(
             (settings.getUserPath() + OUTMONST_SAV_BASE_FILENAME).c_str(), "rb"
         );
         if (monstersFile) {
             saveGameMonstersRead(
                 c->location->prev->map->monsterTable, monstersFile
             );
-            fclose(monstersFile);
+            std::fclose(monstersFile);
         }
         gameFixupObjects(c->location->prev->map);
     }
@@ -388,7 +393,7 @@ void GameController::init()
  */
 int gameSave()
 {
-    FILE *saveGameFile, *monstersFile, *dngMapFile;
+    std::FILE *saveGameFile, *monstersFile, *dngMapFile;
     SaveGame save = *c->saveGame;
     /*************************************************/
     /* Make sure the savegame struct is accurate now */
@@ -409,7 +414,7 @@ int gameSave()
     save.orientation = (Direction)(c->saveGame->orientation - DIR_WEST);
     /* Done making sure the savegame struct is accurate */
     /****************************************************/
-    saveGameFile = fopen(
+    saveGameFile = std::fopen(
         (settings.getUserPath() + PARTY_SAV_BASE_FILENAME).c_str(), "wb"
     );
     if (!saveGameFile) {
@@ -419,14 +424,14 @@ int gameSave()
     if (!save.write(saveGameFile)) {
         screenMessage("Error writing to " PARTY_SAV_BASE_FILENAME "\n");
         fsync(fileno(saveGameFile));
-        fclose(saveGameFile);
+        std::fclose(saveGameFile);
         sync();
         return 0;
     }
     fsync(fileno(saveGameFile));
-    fclose(saveGameFile);
+    std::fclose(saveGameFile);
     sync();
-    monstersFile = fopen(
+    monstersFile = std::fopen(
         (settings.getUserPath() + MONSTERS_SAV_BASE_FILENAME).c_str(), "wb"
     );
     if (!monstersFile) {
@@ -440,12 +445,12 @@ int gameSave()
     if (!saveGameMonstersWrite(c->location->map->monsterTable, monstersFile)) {
         screenMessage("Error opening creatures.sav\n");
         fsync(fileno(monstersFile));
-        fclose(monstersFile);
+        std::fclose(monstersFile);
         sync();
         return 0;
     }
     fsync(fileno(monstersFile));
-    fclose(monstersFile);
+    std::fclose(monstersFile);
     sync();
     /**
      * Write dungeon info
@@ -475,7 +480,7 @@ int gameSave()
             id_map[creatureMgr->getById(ROGUE_ID)] = 15;
         }
         dngMapFile =
-            fopen((settings.getUserPath() + "dngmap.sav").c_str(), "wb");
+            std::fopen((settings.getUserPath() + "dngmap.sav").c_str(), "wb");
         if (!dngMapFile) {
             screenMessage("Error opening dngmap.sav\n");
             return 0;
@@ -499,17 +504,17 @@ int gameSave()
                         }
                     }
                     // Write the tile
-                    fputc(tile, dngMapFile);
+                    std::fputc(tile, dngMapFile);
                 }
             }
         }
         fsync(fileno(dngMapFile));
-        fclose(dngMapFile);
+        std::fclose(dngMapFile);
         sync();
         /**
          * Write outmonst.sav
          */
-        monstersFile = fopen(
+        monstersFile = std::fopen(
             (settings.getUserPath() + OUTMONST_SAV_BASE_FILENAME).c_str(), "wb"
         );
         if (!monstersFile) {
@@ -525,12 +530,12 @@ int gameSave()
             )) {
             screenMessage("Error opening %s\n", OUTMONST_SAV_BASE_FILENAME);
             fsync(fileno(monstersFile));
-            fclose(monstersFile);
+            std::fclose(monstersFile);
             sync();
             return 0;
         }
         fsync(fileno(monstersFile));
-        fclose(monstersFile);
+        std::fclose(monstersFile);
         sync();
     }
     return 1;
@@ -683,7 +688,7 @@ int GameController::exitToParentMap()
  */
 void GameController::finishTurn()
 {
-    c->lastCommandTime = (long)time(NULL);
+    c->lastCommandTime = std::time(NULL);
     Creature *attacker = NULL;
     while (1) {
         /* adjust food and moves */
@@ -787,7 +792,7 @@ void GameController::flashTile(const Coords &coords, MapTile tile, int frames)
 }
 
 void GameController::flashTile(
-    const Coords &coords, const string &tilename, int timeFactor
+    const Coords &coords, const std::string &tilename, int timeFactor
 )
 {
     Tile *tile = c->location->map->tileset->getByName(tilename);
@@ -893,7 +898,7 @@ void gameSpellEffect(int spell, int player, Sound sound)
 void gameCastSpell(unsigned int spell, int caster, int param)
 {
     SpellCastError spellError;
-    string msg;
+    std::string msg;
     if (!spellCast(spell, caster, param, &spellError, true)) {
         msg = spellGetErrorMessage(spell, spellError);
         if (!msg.empty()) {
@@ -915,7 +920,7 @@ bool GameController::keyPressed(int key)
     Object *obj;
     MapTile *tile;
     if ((key >= 'A') && (key <= ']')) {
-        key = mytolower(key);
+        key = xu4_tolower(key);
     }
 
     /* Translate context-sensitive action key into a useful command */
@@ -991,7 +996,8 @@ bool GameController::keyPressed(int key)
             key = 'n';
         }
     }
-    if ((c->location->context & CTX_DUNGEON) && strchr("albkdp|usgh", key)) {
+    if ((c->location->context & CTX_DUNGEON)
+        && std::strchr("albkdp|usgh", key)) {
         soundPlay(SOUND_ERROR);
         screenMessage("%cHIER NICHT!%c\n", FG_GREY, FG_WHITE);
     } else {
@@ -1002,7 +1008,7 @@ bool GameController::keyPressed(int key)
         case U4_RIGHT:
         {
             /* move the avatar */
-            string previous_map = c->location->map->fname;
+            std::string previous_map = c->location->map->fname;
             MoveResult retval = c->location->move(keyToDirection(key), true);
             /* horse doubles speed (make sure we're on the same map
                as the previous move first) */
@@ -1393,7 +1399,7 @@ bool GameController::keyPressed(int key)
             if (settings.enhancements) {
                 c->stats->setView(STATS_PARTY_OVERVIEW);
             }
-            c->lastCommandTime = (long)time(NULL);
+            c->lastCommandTime = std::time(NULL);
             c->willPassTurn = true;
             break;
         case 'x':
@@ -1615,7 +1621,7 @@ bool GameController::keyPressed(int key)
     return valid || KeyHandler::defaultHandler(key, NULL);
 } // GameController::keyPressed
 
-string gameGetInput(int maxlen)
+std::string gameGetInput(int maxlen)
 {
     screenEnableCursor();
     screenShowCursor();
@@ -1747,7 +1753,7 @@ bool ZtatsController::keyPressed(int key)
         }
         return true;
     case '0':
-        c->stats->setView(StatsView(STATS_WEAPONS));
+        c->stats->setView(STATS_WEAPONS);
         return true;
     case U4_ESC:
     case U4_SPACE:
@@ -1766,10 +1772,12 @@ void destroy()
     if (dir == DIR_NONE) {
         return;
     }
-    vector<Coords> path = gameGetDirectionalActionPath(
+    std::vector<Coords> path = gameGetDirectionalActionPath(
         MASK_DIR(dir), MASK_DIR_ALL, c->location->coords, 1, 1, NULL, true
     );
-    for (vector<Coords>::iterator i = path.begin(); i != path.end(); i++) {
+    for (std::vector<Coords>::iterator i = path.begin();
+         i != path.end();
+         i++) {
         if (destroyAt(*i)) {
             return;
         }
@@ -1808,10 +1816,12 @@ void attack()
     if (dir == DIR_NONE) {
         return;
     }
-    vector<Coords> path = gameGetDirectionalActionPath(
+    std::vector<Coords> path = gameGetDirectionalActionPath(
         MASK_DIR(dir), MASK_DIR_ALL, c->location->coords, 1, 1, NULL, true
     );
-    for (vector<Coords>::iterator i = path.begin(); i != path.end(); i++) {
+    for (std::vector<Coords>::iterator i = path.begin();
+         i != path.end();
+         i++) {
         if (attackAt(*i)) {
             return;
         }
@@ -2046,10 +2056,12 @@ void fire()
         return;
     }
     // nothing (not even mountains!) can block cannonballs
-    vector<Coords> path = gameGetDirectionalActionPath(
+    std::vector<Coords> path = gameGetDirectionalActionPath(
         MASK_DIR(dir), broadsidesDirs, c->location->coords, 1, 3, NULL, false
     );
-    for (vector<Coords>::iterator i = path.begin(); i != path.end(); i++) {
+    for (std::vector<Coords>::iterator i = path.begin();
+         i != path.end();
+         i++) {
         if (fireAt(*i, true)) {
             return;
         }
@@ -2159,7 +2171,10 @@ void getChest(int player)
         }
         // see if the chest is trapped and handle it
         if (getChestTrapHandler(player)) {
-            screenMessage("\nSIE ENTH[LT:\n%02d-GOLD!\n", c->party->getChest(player == -2));
+            screenMessage(
+                "\nSIE ENTH[LT:\n%02d-GOLD!\n",
+                c->party->getChest(player == -2)
+            );
         } else {
             screenMessage("%cTRUHE ZERST\\RT!%c\n", FG_RED, FG_WHITE);
         }
@@ -2563,10 +2578,12 @@ void jimmy()
     if (dir == DIR_NONE) {
         return;
     }
-    vector<Coords> path = gameGetDirectionalActionPath(
+    std::vector<Coords> path = gameGetDirectionalActionPath(
         MASK_DIR(dir), MASK_DIR_ALL, c->location->coords, 1, 1, NULL, true
     );
-    for (vector<Coords>::iterator i = path.begin(); i != path.end(); i++) {
+    for (std::vector<Coords>::iterator i = path.begin();
+         i != path.end();
+         i++) {
         if (jimmyAt(*i)) {
             return;
         }
@@ -2613,10 +2630,12 @@ void opendoor()
     if (dir == DIR_NONE) {
         return;
     }
-    vector<Coords> path = gameGetDirectionalActionPath(
+    std::vector<Coords> path = gameGetDirectionalActionPath(
         MASK_DIR(dir), MASK_DIR_ALL, c->location->coords, 1, 1, NULL, true
     );
-    for (vector<Coords>::iterator i = path.begin(); i != path.end(); i++) {
+    for (std::vector<Coords>::iterator i = path.begin();
+         i != path.end();
+         i++) {
         if (openAt(*i)) {
             return;
         }
@@ -2716,7 +2735,7 @@ void talk()
     if (dir == DIR_NONE) {
         return;
     }
-    vector<Coords> path = gameGetDirectionalActionPath(
+    std::vector<Coords> path = gameGetDirectionalActionPath(
         MASK_DIR(dir),
         MASK_DIR_ALL,
         c->location->coords,
@@ -2725,7 +2744,9 @@ void talk()
         &Tile::canTalkOverTile,
         true
     );
-    for (vector<Coords>::iterator i = path.begin(); i != path.end(); i++) {
+    for (std::vector<Coords>::iterator i = path.begin();
+         i != path.end();
+         i++) {
         if (talkAt(*i)) {
             return;
         }
@@ -3051,7 +3072,7 @@ void talkRunConversation(Conversation &conv, Person *talker, bool showPrompt)
             conv.state = Conversation::TALK;
         }
         if (showPrompt) {
-            string prompt = talker->getPrompt(&conv);
+            std::string prompt = talker->getPrompt(&conv);
             if (!prompt.empty()) {
                 if ((conv.state == Conversation::ASK)
                     || (conv.state == Conversation::CONFIRMATION)
@@ -3091,7 +3112,7 @@ void talkRunConversation(Conversation &conv, Person *talker, bool showPrompt)
     if (conv.reply.size() > 0) {
         screenMessage("%s", uppercase(conv.reply.front()).c_str());
     }
-    c->lastCommandTime = (long)time(NULL);
+    c->lastCommandTime = std::time(NULL);
     c->willPassTurn = true;
 } // talkRunConversation
 
@@ -3390,7 +3411,7 @@ void gameFixupObjects(Map *map)
                 if (creature) {
                     obj = map->addCreature(creature, coords);
                 } else {
-                    fprintf(
+                    std::fprintf(
                         stderr,
                         "Error: A non-creature object was found in the "
                         "creature section of the monster table. (Tile: %s)\n",
@@ -3407,9 +3428,9 @@ void gameFixupObjects(Map *map)
     }
 } // gameFixupObjects
 
-long gameTimeSinceLastCommand()
+std::time_t gameTimeSinceLastCommand()
 {
-    return (long)time(NULL) - c->lastCommandTime;
+    return std::time(NULL) - c->lastCommandTime;
 }
 
 
@@ -3494,7 +3515,7 @@ bool creatureRangeAttack(const Coords &coords, Creature *m)
  * fails.  If a tile is blocked, that tile is included in the path
  * only if includeBlocked is true.
  */
-vector<Coords> gameGetDirectionalActionPath(
+std::vector<Coords> gameGetDirectionalActionPath(
     int dirmask,
     int validDirections,
     const Coords &origin,
@@ -3504,7 +3525,7 @@ vector<Coords> gameGetDirectionalActionPath(
     bool includeBlocked
 )
 {
-    vector<Coords> path;
+    std::vector<Coords> path;
     Direction dirx = DIR_NONE, diry = DIR_NONE;
     /* Figure out which direction the action is going */
     if (DIR_IN_MASK(DIR_WEST, dirmask)) {
@@ -3896,7 +3917,7 @@ void showMixturesSuper(int page = 0)
         const Spell *s = getSpell(i + 13 * page);
         int line = i + 8;
         screenTextAt(2, line, "%s", s->name);
-        snprintf(buf, 4, "%3d", c->saveGame->mixtures[i + 13 * page]);
+        std::snprintf(buf, 4, "%3d", c->saveGame->mixtures[i + 13 * page]);
         screenTextAt(6, line, "%s", buf);
         screenShowChar(32, 9, line);
         int comp = s->components;
@@ -3907,7 +3928,7 @@ void showMixturesSuper(int page = 0)
             );
         }
         screenTextColor(FG_WHITE);
-        snprintf(buf, 3, "%2d", s->mp);
+        std::snprintf(buf, 3, "%2d", s->mp);
         screenTextAt(19, line, "%s", buf);
     }
 }
@@ -3932,7 +3953,7 @@ void mixReagentsSuper()
     c->location->viewMode = VIEW_MIXTURES;
     screenUpdate(&game->mapArea, true, true);
     screenTextAt(16, 2, "%s", "<-L{den");
-    c->stats->setView(StatsView(STATS_REAGENTS));
+    c->stats->setView(STATS_REAGENTS);
     screenTextColor(FG_PURPLE);
     screenTextAt(2, 7, "%s", "SPELL # Reagenz  MP");
     for (int i = 0; i < shopcount; i++) {
@@ -4011,7 +4032,7 @@ void mixReagentsSuper()
                 screenMessage("\nERFOLG!\n\n");
             }
         }
-        c->stats->setView(StatsView(STATS_REAGENTS));
+        c->stats->setView(STATS_REAGENTS);
     }
     c->location->viewMode = oldlocation;
 } // mixReagentsSuper

@@ -14,8 +14,7 @@
 #include "savegame.h"
 #include "u4file.h"
 
-using std::string;
-using std::vector;
+
 
 Response *lordBritishGetHelp(const DynamicResponse *resp);
 Response *lordBritishGetIntro(const DynamicResponse *resp);
@@ -40,11 +39,11 @@ Dialogue *U4LBDialogueLoader::load(void *source)
     if (!britansw) {
         return NULL;
     }
-    vector<string> lbKeywords = u4read_stringtable(britkey, 0, 27);
-    vector<string> lbText = u4read_stringtable(britansw, 0, 27);
+    std::vector<std::string> lbKeywords = u4read_stringtable(britkey, 0, 27);
+    std::vector<std::string> lbText = u4read_stringtable(britansw, 0, 27);
     u4fclose(britkey);
     u4fclose(britansw);
-    /* There's a \0 in the 19th string so we get a
+    /* There's a \0 in the 19th std::string so we get a
        spurious 20th entry.
        No we don't in the fixed German translation.
        for (int i = 20; i < 24; i++) {
@@ -64,7 +63,7 @@ Dialogue *U4LBDialogueLoader::load(void *source)
         (new Response("Er sagt:\nDamit kann ich dir nicht helfen.\n"))
         ->addref()
     );
-    for (unsigned i = 0; i < lbKeywords.size(); i++) {
+    for (unsigned int i = 0; i < lbKeywords.size(); i++) {
         dlg->addKeyword(lbKeywords[i], new Response(lbText[i] + "\n"));
     }
     /* since the original game files are a bit sketchy on
@@ -122,7 +121,7 @@ Response *lordBritishGetHelp(const DynamicResponse *resp)
 {
     int v;
     bool fullAvatar, partialAvatar;
-    string text;
+    std::string text;
     /*
      * check whether player is full avatar (in all virtues) or partial
      * avatar (in at least one virtue)
@@ -134,7 +133,7 @@ Response *lordBritishGetHelp(const DynamicResponse *resp)
         partialAvatar |= (c->saveGame->karma[v] == 0);
     }
     if (c->saveGame->moves <= 1000) {
-        text = string(
+        text = std::string(
             "Um in diesem feindlichen Lande zu "
             "}berleben, mu~t Du dich zuerst selbst "
             "kennen! Versuche, deine Waffen und deine "
@@ -145,7 +144,7 @@ Response *lordBritishGetHelp(const DynamicResponse *resp)
             "der St{dte!\n"
         );
     } else if (c->saveGame->members == 1) {
-        text = string(
+        text = std::string(
             "Reise nicht allein durchs offene Land.\n\n"
             "Es gibt viele w}rdige Leute in den "
             "verschiedenen St{dten, bei denen es weise "
@@ -154,11 +153,11 @@ Response *lordBritishGetHelp(const DynamicResponse *resp)
             "denn nur "
         )
             + ((c->party->member(0)->getSex() == SEX_MALE) ?
-               string("ein wahrer Anf}hrer") :
-               string("eine wahre Anf}hrerin"))
-            + string(" kann die Queste gewinnen!\n");
+               std::string("ein wahrer Anf}hrer") :
+               std::string("eine wahre Anf}hrerin"))
+            + std::string(" kann die Queste gewinnen!\n");
     } else if (c->saveGame->runes == 0) {
-        text = string(
+        text = std::string(
             "Lerne die Pfade der Tugend. Versuche, "
             "Zutritt zu den acht Schreinen zu erlangen!"
             "\n\nFinde die Runen, die man zum Eintritte "
@@ -172,7 +171,7 @@ Response *lordBritishGetHelp(const DynamicResponse *resp)
             "dich aufzuhalten!\n"
         );
     } else if (!partialAvatar) {
-        text = string(
+        text = std::string(
             "Besuche h{ufig den Seher Hawkwind und "
             "verwende seine Weisheit, um dir zu helfen, "
             "deine Tugend zu erweisen.\n\nWenn du bereit "
@@ -184,7 +183,7 @@ Response *lordBritishGetHelp(const DynamicResponse *resp)
             "suchen!\n"
         );
     } else if (c->saveGame->stones == 0) {
-        text = string(
+        text = std::string(
             "Gehe nun in die Tiefen der H|hlen. Nimm dort "
             "die 8 farbigen Steine von den Altar-Podesten "
             "in den G{ngen der H|hlen an dich.\n\nFinde "
@@ -192,7 +191,7 @@ Response *lordBritishGetHelp(const DynamicResponse *resp)
             "sie k|nnen dir im Abgrunde helfen!\n"
         );
     } else if (!fullAvatar) {
-        text = string(
+        text = std::string(
             "Du kommst wirklich sehr gut voran auf dem "
             "Pfad zum Avatartume! Versuche, die Erh|hung "
             "in allen acht Tugenden zu erlangen!\n"
@@ -200,7 +199,7 @@ Response *lordBritishGetHelp(const DynamicResponse *resp)
     } else if (((c->saveGame->items & ITEM_BELL) == 0)
                || ((c->saveGame->items & ITEM_BOOK) == 0)
                || ((c->saveGame->items & ITEM_CANDLE) == 0)) {
-        text = string(
+        text = std::string(
             "Finde die Glocke, das Buch und die Kerze! "
             "Mit diesen drei Dingen darf man den Gro~en "
             "Stygischen Abgrund betreten!\n"
@@ -208,7 +207,7 @@ Response *lordBritishGetHelp(const DynamicResponse *resp)
     } else if (((c->saveGame->items & ITEM_KEY_C) == 0)
                || ((c->saveGame->items & ITEM_KEY_L) == 0)
                || ((c->saveGame->items & ITEM_KEY_T) == 0)) {
-        text = string(
+        text = std::string(
             "Bevor du den Abgrund betrittst, ben|tigst "
             "du den Dreiteiligen Schl}ssel, und das Wort "
             "des Einlasses.\n\n Dann darfst du die Kammer "
@@ -216,7 +215,7 @@ Response *lordBritishGetHelp(const DynamicResponse *resp)
             "betreten!\n"
         );
     } else {
-        text = string(
+        text = std::string(
             "Du erscheinst nun bereit, die letzte Reise "
             "in den dunklen Abgrund anzutreten! Gehe nur "
             "mit eine Gruppe von acht!\n\nViel Gl}ck, und "
@@ -227,10 +226,10 @@ Response *lordBritishGetHelp(const DynamicResponse *resp)
             "vorsichtig, "
         )
             + ((c->party->member(0)->getSex() == SEX_MALE) ?
-               string("mein Freund.\n") :
-               string("meine Freundin.\n"));
+               std::string("mein Freund.\n") :
+               std::string("meine Freundin.\n"));
     }
-    return new Response(string("Er sagt:\n") + text);
+    return new Response(std::string("Er sagt:\n") + text);
 } // lordBritishGetHelp
 
 Response *lordBritishGetIntro(const DynamicResponse *resp)
@@ -240,13 +239,17 @@ Response *lordBritishGetIntro(const DynamicResponse *resp)
     if (c->saveGame->lbintro) {
         if (c->saveGame->members == 1) {
             intro->add(
-                string("\n\nDu triffst Lord British.\n\nEr sagt:\nWilkommen\n")
+                std::string(
+                    "\n\nDu triffst Lord British.\n\nEr sagt:\nWilkommen\n"
+                )
                 + c->party->member(0)->getName()
                 + "!\n"
             );
         } else if (c->saveGame->members == 2) {
             intro->add(
-                string("\n\nDu triffst Lord British.\n\nEr sagt:\nWilkommen\n")
+                std::string(
+                    "\n\nDu triffst Lord British.\n\nEr sagt:\nWilkommen\n"
+                )
                 + c->party->member(0)->getName()
                 + ", und auch du "
                 + c->party->member(1)->getName()
@@ -254,7 +257,9 @@ Response *lordBritishGetIntro(const DynamicResponse *resp)
             );
         } else {
             intro->add(
-                string("\n\nDu triffst Lord British.\n\nEr sagt:\nWilkommen\n")
+                std::string(
+                    "\n\nDu triffst Lord British.\n\nEr sagt:\nWilkommen\n"
+                )
                 + c->party->member(0)->getName()
                 + " und deine gesch{tzten Abenteurer!\n"
             );
@@ -264,9 +269,9 @@ Response *lordBritishGetIntro(const DynamicResponse *resp)
         intro->add(ResponsePart::ADVANCELEVELS);
     } else {
         intro->add(
-            string("\n\nLord British erhebt sich und sagt: Endlich! ")
+            std::string("\n\nLord British erhebt sich und sagt: Endlich! ")
             + c->party->member(0)->getName()
-            + string(
+            + std::string(
                 ", du bist gekommen! Wir haben so eine "
                 "lange, lange Zeit gewartet...\n\nEr "
                 "setzt sich und sagt: Ein neues "
@@ -277,13 +282,13 @@ Response *lordBritishGetIntro(const DynamicResponse *resp)
                 "...\n\n"
             )
             + ((c->party->member(0)->getSex() == SEX_MALE) ?
-               string("Ein Vork{mpfer") :
-               string("Eine Vork{mpferin"))
-            + string(" der Tugend wird gebraucht. Du k|nntest ")
+               std::string("Ein Vork{mpfer") :
+               std::string("Eine Vork{mpferin"))
+            + std::string(" der Tugend wird gebraucht. Du k|nntest ")
             + ((c->party->member(0)->getSex() == SEX_MALE) ?
-               string("dieser Vork{mpfer") :
-               string("diese Vork{mpferin"))
-            + string(
+               std::string("dieser Vork{mpfer") :
+               std::string("diese Vork{mpferin"))
+            + std::string(
                 " sein, aber nur die Zukunft wird es "
                 "zeigen.\n\nIch werde dir in jeder "
                 "Weise beistehen, in der ich kann!\n\n"

@@ -5,7 +5,7 @@
 #ifndef CREATURE_H
 #define CREATURE_H
 
-#include <unordered_map>
+#include <map>
 #include <vector>
 
 #include "direction.h"
@@ -19,7 +19,7 @@ class ConfigElement;
 class Tile;
 
 typedef unsigned short CreatureId;
-typedef std::unordered_map<CreatureId, class Creature *> CreatureMap;
+typedef std::map<CreatureId, class Creature *> CreatureMap;
 typedef std::vector<class Creature *> CreatureVector;
 
 #define MAX_CREATURES 128
@@ -145,17 +145,17 @@ public:
     virtual ~Creature();
     void load(const ConfigElement &conf);
     
-    virtual string getName() const
+    virtual std::string getName() const
     {
         return name;
     }
     
-    virtual const string &getHitTile() const
+    virtual const std::string &getHitTile() const
     {
         return rangedhittile;
     }
     
-    virtual const string &getMissTile() const
+    virtual const std::string &getMissTile() const
     {
         return rangedmisstile;
     }
@@ -180,7 +180,7 @@ public:
         return xp;
     }
     
-    virtual const string &getWorldrangedtile() const
+    virtual const std::string &getWorldrangedtile() const
     {
         return worldrangedtile;
     }
@@ -205,17 +205,17 @@ public:
         return lastDir;
     }
 
-    void setName(string s)
+    void setName(std::string s)
     {
         name = s;
     }
     
-    void setHitTile(const string &t)
+    void setHitTile(const std::string &t)
     {
         rangedhittile = t;
     }
     
-    void setMissTile(const string &t)
+    void setMissTile(const std::string &t)
     {
         rangedmisstile = t;
     }
@@ -369,7 +369,7 @@ public:
     
     int getDamage() const;
     
-    const string &getCamouflageTile() const
+    const std::string &getCamouflageTile() const
     {
         return camouflageTile;
     }
@@ -399,18 +399,18 @@ public:
     virtual bool dealDamage(Creature *m, int damage);
 
 protected:
-    string name;
-    string rangedhittile;
-    string rangedmisstile;
+    std::string name;
+    std::string rangedhittile;
+    std::string rangedmisstile;
     CreatureId id;
-    string camouflageTile;
+    std::string camouflageTile;
     CreatureId leader;
     int basehp;
     int hp;
     StatusList status;
     int xp;
     unsigned char ranged;
-    string worldrangedtile;
+    std::string worldrangedtile;
     bool leavestile;
     CreatureAttrib mattr;
     CreatureMovementAttrib movementAttr;
@@ -432,7 +432,7 @@ public:
     void loadAll();
     Creature *getByTile(MapTile tile);
     Creature *getById(CreatureId id);
-    Creature *getByName(string name);
+    Creature *getByName(std::string name);
     Creature *randomForTile(const Tile *tile);
     Creature *randomForDungeon(int dnglevel);
     Creature *randomAmbushing();

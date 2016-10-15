@@ -30,11 +30,10 @@
 #include "types.h"
 #include "utils.h"
 
-using std::string;
-using std::vector;
+
 
 int cycles, completedCycles;
-vector<string> shrineAdvice;
+std::vector<std::string> shrineAdvice;
 
 
 /**
@@ -77,7 +76,7 @@ Shrine::Shrine()
 {
 }
 
-string Shrine::getName()
+std::string Shrine::getName()
 {
     if (name.empty()) {
         name = "SCHREIN DE";
@@ -111,7 +110,7 @@ Virtue Shrine::getVirtue() const
     return virtue;
 }
 
-string Shrine::getMantra() const
+std::string Shrine::getMantra() const
 {
     return mantra;
 }
@@ -121,7 +120,7 @@ void Shrine::setVirtue(Virtue v)
     virtue = v;
 }
 
-void Shrine::setMantra(string m)
+void Shrine::setMantra(std::string m)
 {
     mantra = m;
 }
@@ -150,7 +149,7 @@ void Shrine::enter()
         );
     }
     screenMessage("\n]BER WELCHE TUGEND MEDITIERST DU?\n?");
-    string virtue;
+    std::string virtue;
     virtue = ReadStringController::get(
         32, TEXT_AREA_X + c->col, TEXT_AREA_Y + c->line
     );
@@ -171,7 +170,7 @@ void Shrine::enter()
         eject();
         return;
     }
-    if (strncasecmp(virtue.c_str(), getVirtueName(getVirtue()), 6) != 0) {
+    if (xu4_strncasecmp(virtue.c_str(), getVirtueName(getVirtue()), 6) != 0) {
         screenMessage(
             "ES GELINGT DIR NICHT, DEINE GEDANKEN AUF DIESES THEMA ZU "
             "FOKUSSIEREN!\n"
@@ -256,12 +255,12 @@ void Shrine::askMantra()
     screenEnableCursor();
     screenMessage("\nMANTRA?");
     screenRedrawScreen();   // FIXME: needed?
-    string mantra;
+    std::string mantra;
     mantra = ReadStringController::get(
         4, TEXT_AREA_X + c->col, TEXT_AREA_Y + c->line
     );
     screenMessage("\n");
-    if (strcasecmp(mantra.c_str(), getMantra().c_str()) != 0) {
+    if (xu4_strcasecmp(mantra.c_str(), getMantra().c_str()) != 0) {
         c->party->adjustKarma(KA_BAD_MANTRA);
         screenMessage(
             "\nES GELINGT DIR NICHT, DEINE GEDANKEN MIT DIESEM MANTRA ZU "

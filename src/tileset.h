@@ -6,15 +6,15 @@
 #define TILESET_H
 
 #include <string>
-#include <unordered_map>
+#include <map>
 #include "types.h"
 
-using std::string;
+
 
 class ConfigElement;
 class Tile;
 
-typedef std::unordered_map<string, class TileRule *> TileRuleMap;
+typedef std::map<std::string, class TileRule *> TileRuleMap;
 
 
 /**
@@ -22,12 +22,12 @@ typedef std::unordered_map<string, class TileRule *> TileRuleMap;
  */
 class TileRule {
 public:
-    static TileRule *findByName(const string &name);
+    static TileRule *findByName(const std::string &name);
     static void load();
     static void unloadAll();
     static TileRuleMap rules; // A map of rule names to rules
     bool initFromConf(const ConfigElement &tileRuleConf);
-    string name;
+    std::string name;
     unsigned short mask;
     unsigned short movementMask;
     TileSpeed speed;
@@ -42,30 +42,30 @@ public:
  */
 class Tileset {
 public:
-    typedef std::unordered_map<string, Tileset *> TilesetMap;
-    typedef std::unordered_map<TileId, Tile *> TileIdMap;
-    typedef std::unordered_map<string, Tile *> TileStrMap;
+    typedef std::map<std::string, Tileset *> TilesetMap;
+    typedef std::map<TileId, Tile *> TileIdMap;
+    typedef std::map<std::string, Tile *> TileStrMap;
     static void loadAll();
     static void unloadAll();
     static void unloadAllImages();
-    static Tileset *get(const string &name);
-    static Tile *findTileByName(const string &name);
+    static Tileset *get(const std::string &name);
+    static Tile *findTileByName(const std::string &name);
     static Tile *findTileById(TileId id);
     void load(const ConfigElement &tilesetConf);
     void unload();
     void unloadImages();
     Tile *get(TileId id);
-    Tile *getByName(const string &name);
-    string getImageName() const;
+    Tile *getByName(const std::string &name);
+    std::string getImageName() const;
     unsigned int numTiles() const;
     unsigned int numFrames() const;
 
 private:
     static TilesetMap tilesets;
-    string name;
+    std::string name;
     TileIdMap tiles;
     unsigned int totalFrames;
-    string imageName;
+    std::string imageName;
     Tileset *extends;
     TileStrMap nameMap;
 };

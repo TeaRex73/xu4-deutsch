@@ -16,8 +16,7 @@
 #include "utils.h"
 #include "tile.h"
 
-using std::string;
-using std::vector;
+
 
 TileAnimTransform *TileAnimTransform::create(const ConfigElement &conf)
 {
@@ -47,7 +46,7 @@ TileAnimTransform *TileAnimTransform::create(const ConfigElement &conf)
             conf.getInt("x"),
             conf.getInt("y")
         );
-        vector<ConfigElement> children = conf.getChildren();
+        std::vector<ConfigElement> children = conf.getChildren();
         for (std::vector<ConfigElement>::iterator i = children.begin();
              i != children.end();
              i++) {
@@ -74,7 +73,7 @@ TileAnimTransform *TileAnimTransform::create(const ConfigElement &conf)
             conf.getInt("width"),
             conf.getInt("height")
         );
-        vector<ConfigElement> children = conf.getChildren();
+        std::vector<ConfigElement> children = conf.getChildren();
         for (std::vector<ConfigElement>::iterator i = children.begin();
              i != children.end();
              i++) {
@@ -379,7 +378,7 @@ TileAnimContext *TileAnimContext::create(const ConfigElement &conf)
      * Add the transforms to the context
      */
     if (context) {
-        vector<ConfigElement> children = conf.getChildren();
+        std::vector<ConfigElement> children = conf.getChildren();
         for (std::vector<ConfigElement>::iterator i = children.begin();
              i != children.end();
              i++) {
@@ -451,7 +450,7 @@ bool TileAnimPlayerDirContext::isInContext(
 TileAnimSet::TileAnimSet(const ConfigElement &conf)
 {
     name = conf.getString("name");
-    vector<ConfigElement> children = conf.getChildren();
+    std::vector<ConfigElement> children = conf.getChildren();
     for (std::vector<ConfigElement>::iterator i = children.begin();
          i != children.end();
          i++) {
@@ -490,7 +489,7 @@ TileAnim::TileAnim(const ConfigElement &conf)
     if (conf.exists("random")) {
         random = conf.getInt("random");
     }
-    vector<ConfigElement> children = conf.getChildren();
+    std::vector<ConfigElement> children = conf.getChildren();
     for (std::vector<ConfigElement>::iterator i = children.begin();
          i != children.end();
          i++) {

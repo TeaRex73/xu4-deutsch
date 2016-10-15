@@ -12,7 +12,7 @@
 /**
  * Decompress an RLE encoded file.
  */
-long rleDecompressFile(FILE *in, long inlen, void **out)
+long rleDecompressFile(std::FILE *in, long inlen, void **out)
 {
     long check;
     void *indata;
@@ -22,13 +22,13 @@ long rleDecompressFile(FILE *in, long inlen, void **out)
         return -1;
     }
     /* load compressed file into memory */
-    indata = malloc(inlen);
-    check = fread(indata, 1, inlen, in);
+    indata = std::malloc(inlen);
+    check = std::fread(indata, 1, inlen, in);
     if (check != inlen) {
-        perror("fread failed");
+        std::perror("fread failed");
     }
     outlen = rleDecompressMemory(indata, inlen, out);
-    free(indata);
+    std::free(indata);
     return outlen;
 }
 
@@ -47,7 +47,7 @@ long rleDecompressMemory(void *in, long inlen, void **out)
         return -1;
     }
     /* decompress file from inlen to outlen */
-    outdata = (unsigned char *)malloc(outlen);
+    outdata = (unsigned char *)std::malloc(outlen);
     rleDecompress(indata, inlen, outdata, outlen);
     *out = outdata;
     return outlen;

@@ -1,16 +1,16 @@
-/**
+#/**
  * $Id$
  */
 
 #ifndef TILEMAP_H
 #define TILEMAP_H
 
-#include <unordered_map>
+#include <map>
 #include <string>
 #include "types.h"
 
 class ConfigElement;
-using std::string;
+
 
 
 /**
@@ -18,18 +18,18 @@ using std::string;
  */
 class TileMap {
 public:
-    typedef std::unordered_map<string, TileMap *> TileIndexMapMap;
+    typedef std::map<std::string, TileMap *> TileIndexMapMap;
 
     MapTile translate(unsigned int index);
     unsigned int untranslate(MapTile &tile);
     static void loadAll();
     static void unloadAll();
-    static TileMap *get(string name);
+    static TileMap *get(std::string name);
 
 private:
     static void load(const ConfigElement &tilemapConf);
     static TileIndexMapMap tileMaps;
-    std::unordered_map<unsigned int, MapTile> tilemap;
+    std::map<unsigned int, MapTile> tilemap;
 };
 
 #endif // ifndef TILEMAP_H

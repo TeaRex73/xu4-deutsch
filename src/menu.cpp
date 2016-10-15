@@ -34,7 +34,7 @@ void Menu::removeAll()
 /**
  * Adds an item to the menu list and returns the menu
  */
-void Menu::add(int id, string text, short x, short y, int sc)
+void Menu::add(int id, std::string text, short x, short y, int sc)
 {
     MenuItem *item = new MenuItem(text, x, y, sc);
     item->setId(id);
@@ -103,7 +103,7 @@ void Menu::show(TextView *view)
     for (current = items.begin(); current != items.end(); current++) {
         MenuItem *mi = *current;
         if (mi->isVisible()) {
-            string text(mi->getText());
+            std::string text(mi->getText());
             if (mi->isSelected()) {
                 text[0] = '\010';
             }
@@ -328,7 +328,7 @@ void Menu::activateItem(int id, MenuEvent::Type action)
     if (mi->getClosesMenu()) {
         setClosed(true);
     }
-    MenuEvent event(this, (MenuEvent::Type)action, mi);
+    MenuEvent event(this, action, mi);
     mi->activate(event);
     setChanged();
     notifyObservers(event);
@@ -344,7 +344,7 @@ bool Menu::activateItemByShortcut(int key, MenuEvent::Type action)
     for (MenuItemList::iterator i = items.begin();
          i != items.end();
          i++) {
-        const unordered_set<int> &shortcuts = (*i)->getShortcutKeys();
+        const std::set<int> &shortcuts = (*i)->getShortcutKeys();
         if (shortcuts.find(key) != shortcuts.end()) {
             activateItem((*i)->getId(), action);
             // if the selection doesn't close the menu,
@@ -376,7 +376,7 @@ void Menu::setClosed(bool closed)
     this->closed = closed;
 }
 
-void Menu::setTitle(const string &text, int x, int y)
+void Menu::setTitle(const std::string &text, int x, int y)
 {
     title = text;
     titleX = x;

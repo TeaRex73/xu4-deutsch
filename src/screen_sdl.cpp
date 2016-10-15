@@ -15,6 +15,8 @@
 #include "vc6.h" // Fixes things if you're using VC6, does nothing otherwise
 
 #include <algorithm>
+#include <cstdio>
+#include <cstdlib>
 #include <functional>
 #include <vector>
 #include <map>
@@ -47,8 +49,6 @@
 #include "u4file.h"
 #include "utils.h"
 
-using std::vector;
-
 SDL_Cursor *cursors[5];
 Scaler filterScaler;
 SDL_Cursor *screenInitCursor(const char *const xpm[]);
@@ -71,7 +71,7 @@ void screenInit_sys()
         settings.gamma / 100.0f,
         settings.gamma / 100.0f
     );
-    atexit(SDL_Quit);
+    std::atexit(SDL_Quit);
     SDL_WM_SetCaption("Ultima IV", NULL);
 #ifdef ICON_FILE
     icon = SDL_LoadBMP(ICON_FILE);
@@ -122,7 +122,7 @@ void screenInit_sys()
 #endif
     if (verbose) {
         char driver[32];
-        printf(
+        std::printf(
             "screen initialized [screenInit()], using %s video driver\n",
             SDL_VideoDriverName(driver, sizeof(driver))
         );
@@ -216,7 +216,7 @@ int screenLoadImageCga(
     unsigned char *compressed_data, *decompressed_data = NULL;
     long inlen, decompResult;
     inlen = u4flength(file);
-    compressed_data = (Uint8 *)malloc(inlen);
+    compressed_data = (Uint8 *)std::malloc(inlen);
     u4fread(compressed_data, 1, inlen, file);
     switch (comp) {
     case COMP_NONE:
@@ -227,14 +227,14 @@ int screenLoadImageCga(
         decompResult = rleDecompressMemory(
             compressed_data, inlen, (void **)&decompressed_data
         );
-        free(compressed_data);
+        std::free(compressed_data);
         compressed_data = NULL;
         break;
     case COMP_LZW:
         decompResult = decompress_u4_memory(
             compressed_data, inlen, (void **)&decompressed_data
         );
-        free(compressed_data);
+        std::free(compressed_data);
         compressed_data = NULL;
         break;
     default:
@@ -242,7 +242,7 @@ int screenLoadImageCga(
     }
     if (decompResult == -1) {
         if (decompressed_data) {
-            free(decompressed_data);
+            std::free(decompressed_data);
         }
         compressed_data = NULL;
         return 0;
@@ -251,7 +251,7 @@ int screenLoadImageCga(
     img = Image::create(width, height, true, Image::HARDWARE);
     if (!img) {
         if (decompressed_data) {
-            free(decompressed_data);
+            std::free(decompressed_data);
         }
         compressed_data = NULL;
         return 0;
@@ -281,7 +281,7 @@ int screenLoadImageCga(
             );
         }
     }
-    free(decompressed_data);
+    std::free(decompressed_data);
     compressed_data = NULL;
     (*image) = img;
     return 1;
@@ -498,7 +498,7 @@ SDL_Cursor *screenInitCursor(const char *const xpm[])
             }
         }
     }
-    sscanf(xpm[4 + row], "%d,%d", &hot_x, &hot_y);
+    std::sscanf(xpm[4 + row], "%d,%d", &hot_x, &hot_y);
     return SDL_CreateCursor(data, mask, CURSORSIZE, CURSORSIZE, hot_x, hot_y);
 } // screenInitCursor
 

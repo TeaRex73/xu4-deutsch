@@ -27,9 +27,6 @@
 #include "u4file.h"
 #include "config.h"
 
-using std::vector;
-using std::pair;
-
 MapMgr *MapMgr::instance = NULL;
 
 extern bool isAbyssOpened(const Portal *p);
@@ -55,7 +52,7 @@ MapMgr::MapMgr()
     TRACE(*logger, "creating MapMgr");
     const Config *config = Config::getInstance();
     Map *map;
-    vector<ConfigElement> maps = config->getElement("maps").getChildren();
+    std::vector<ConfigElement> maps = config->getElement("maps").getChildren();
     for (std::vector<ConfigElement>::iterator i = maps.begin();
          i != maps.end();
          i++) {
@@ -79,7 +76,7 @@ void MapMgr::unloadMap(MapId id)
 {
     delete mapList[id];
     const Config *config = Config::getInstance();
-    vector<ConfigElement> maps = config->getElement("maps").getChildren();
+    std::vector<ConfigElement> maps = config->getElement("maps").getChildren();
     for (std::vector<ConfigElement>::const_iterator i = maps.begin();
          i != maps.end();
          i++) {
@@ -128,7 +125,9 @@ Map *MapMgr::get(MapId id)
         }
         TRACE_LOCAL(
             *logger,
-            string("loading map data for map \'") + mapList[id]->fname + "\'"
+            std::string("loading map data for map \'")
+            + mapList[id]->fname
+            + "\'"
         );
         loader->load(mapList[id]);
     }
@@ -189,7 +188,7 @@ Map *MapMgr::initMapFromConf(const ConfigElement &mapConf)
     }
     TRACE_LOCAL(
         *logger,
-        string("loading configuration for map \'") + map->fname + "\'"
+        std::string("loading configuration for map \'") + map->fname + "\'"
     );
     if (mapConf.getBool("showavatar")) {
         map->flags |= SHOW_AVATAR;
@@ -203,7 +202,7 @@ Map *MapMgr::initMapFromConf(const ConfigElement &mapConf)
     map->music = static_cast<Music::Type>(mapConf.getInt("music"));
     map->tileset = Tileset::get(mapConf.getString("tileset"));
     map->tilemap = TileMap::get(mapConf.getString("tilemap"));
-    vector<ConfigElement> children = mapConf.getChildren();
+    std::vector<ConfigElement> children = mapConf.getChildren();
     for (std::vector<ConfigElement>::iterator i = children.begin();
          i != children.end();
          i++) {
@@ -236,7 +235,7 @@ void MapMgr::initCityFromConf(const ConfigElement &cityConf, City *city)
     city->name = cityConf.getString("name");
     city->type = cityConf.getString("type");
     city->tlk_fname = cityConf.getString("tlk_fname");
-    vector<ConfigElement> children = cityConf.getChildren();
+    std::vector<ConfigElement> children = cityConf.getChildren();
     for (std::vector<ConfigElement>::iterator i = children.begin();
          i != children.end();
          i++) {
@@ -289,7 +288,7 @@ Portal *MapMgr::initPortalFromConf(const ConfigElement &portalConf)
         static_cast<unsigned short>(portalConf.getInt("starty"));
     portal->start.z =
         static_cast<unsigned short>(portalConf.getInt("startlevel", 0));
-    string prop = portalConf.getString("action");
+    std::string prop = portalConf.getString("action");
     if (prop == "none") {
         portal->trigger_action = ACTION_NONE;
     } else if (prop == "enter") {
@@ -330,7 +329,7 @@ Portal *MapMgr::initPortalFromConf(const ConfigElement &portalConf)
         errorFatal("unknown transport: %s", prop.c_str());
     }
     portal->exitPortal = portalConf.getBool("exits");
-    vector<ConfigElement> children = portalConf.getChildren();
+    std::vector<ConfigElement> children = portalConf.getChildren();
     for (std::vector<ConfigElement>::iterator i = children.begin();
          i != children.end();
          i++) {
@@ -390,11 +389,11 @@ int MapMgr::initCompressedChunkFromConf(
     return compressedChunkConf.getInt("index");
 }
 
-pair<string, MapCoords> MapMgr::initLabelFromConf(
+std::pair<std::string, MapCoords> MapMgr::initLabelFromConf(
     const ConfigElement &labelConf
 )
 {
-    return pair<string, MapCoords>(
+    return std::pair<std::string, MapCoords>(
         labelConf.getString("name"),
         MapCoords(
             labelConf.getInt("x"),

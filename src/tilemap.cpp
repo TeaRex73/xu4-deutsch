@@ -15,8 +15,6 @@
 #include "tileset.h"
 #include "utils.h"
 
-using std::vector;
-
 Debug dbg("debug/tilemap.txt", "TileMap");
 
 
@@ -32,7 +30,7 @@ TileMap::TileIndexMapMap TileMap::tileMaps;
 void TileMap::loadAll()
 {
     const Config *config = Config::getInstance();
-    vector<ConfigElement> conf;
+    std::vector<ConfigElement> conf;
     /* FIXME: make sure tilesets are loaded by now */
     TRACE_LOCAL(dbg, "Unloading all tilemaps");
     unloadAll();
@@ -76,11 +74,11 @@ void TileMap::unloadAll()
 void TileMap::load(const ConfigElement &tilemapConf)
 {
     TileMap *tm = new TileMap;
-    string name = tilemapConf.getString("name");
-    TRACE_LOCAL(dbg, string("Tilemap name is: ") + name);
-    string tileset = tilemapConf.getString("tileset");
+    std::string name = tilemapConf.getString("name");
+    TRACE_LOCAL(dbg, std::string("Tilemap name is: ") + name);
+    std::string tileset = tilemapConf.getString("tileset");
     int index = 0;
-    vector<ConfigElement> children = tilemapConf.getChildren();
+    std::vector<ConfigElement> children = tilemapConf.getChildren();
     for (std::vector<ConfigElement>::iterator i = children.begin();
          i != children.end();
          i++) {
@@ -90,8 +88,8 @@ void TileMap::load(const ConfigElement &tilemapConf)
         /* we assume tiles have already been loaded at this point,
            so let's do some translations! */
         int frames = 1;
-        string tile = i->getString("tile");
-        TRACE_LOCAL(dbg, string("\tLoading '") + tile + "'");
+        std::string tile = i->getString("tile");
+        TRACE_LOCAL(dbg, std::string("\tLoading '") + tile + "'");
         /* find the tile this references */
         Tile *t = Tileset::get(tileset)->getByName(tile);
         if (!t) {
@@ -131,7 +129,7 @@ void TileMap::load(const ConfigElement &tilemapConf)
 /**
  * Returns the Tile index map with the specified name
  */
-TileMap *TileMap::get(string name)
+TileMap *TileMap::get(std::string name)
 {
     if (tileMaps.find(name) != tileMaps.end()) {
         return tileMaps[name];
@@ -152,7 +150,7 @@ MapTile TileMap::translate(unsigned int index)
 unsigned int TileMap::untranslate(MapTile &tile)
 {
     unsigned int index = 0;
-    for (std::unordered_map<unsigned int, MapTile>::iterator i =
+    for (std::map<unsigned int, MapTile>::iterator i =
              tilemap.begin();
          i != tilemap.end();
          i++) {

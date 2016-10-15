@@ -4,8 +4,8 @@
 
 #include "vc6.h" // Fixes things if you're using VC6, does nothing otherwise
 
-#include <stdio.h>
-#include <stdlib.h>
+#include <cstdio>
+#include <cstdlib>
 #include <png.h>
 
 #include "debug.h"
@@ -35,7 +35,9 @@ static void png_read_xu4(
 /**
  * Loads in the PNG with the libpng library.
  */
-Image *PngImageLoader::load(U4FILE *file, int width, int height, volatile int bpp)
+Image *PngImageLoader::load(
+    U4FILE *file, int width, int height, volatile int bpp
+)
 {
     if ((width != -1) || (height != -1) || (bpp != -1)) {
         errorWarning("dimensions set for PNG image, will be ignored");

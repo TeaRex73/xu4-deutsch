@@ -10,7 +10,7 @@
 
 #include "map.h"
 
-using namespace std;
+
 
 std::unordered_set<Object *> Object::all_objects;
 

@@ -194,7 +194,7 @@ local inline int unzlocal_getLong(FILE *fin, uLong *pX)
 } /* unzlocal_getLong */
 
 
-/* My own strcmpi / strcasecmp */
+/* My own strcmpi / xu4_strcasecmp */
 local int strcmpcasenosensitive_internal(
     const char *fileName1, const char *fileName2
 )
@@ -238,7 +238,7 @@ local int strcmpcasenosensitive_internal(
   Compare two filename (fileName1,fileName2).
   If iCaseSenisivity = 1, comparision is case sensitivity (like strcmp)
   If iCaseSenisivity = 2, comparision is not case sensitivity (like strcmpi
-  or strcasecmp)
+  or xu4_strcasecmp)
   If iCaseSenisivity = 0, case sensitivity is defaut of your operating system
   (like 1 on Unix, 2 on Windows)
 
@@ -990,7 +990,9 @@ extern int ZEXPORT unzOpenCurrentFile(unzFile file)
   return <0 with error code if there is an error
   (UNZ_ERRNO for IO error, or zLib error for uncompress error)
 */
-extern int ZEXPORT unzReadCurrentFile(unzFile file, voidp buf, unsigned len)
+extern int ZEXPORT unzReadCurrentFile(
+    unzFile file, voidp buf, unsigned int len
+)
 {
     int err = UNZ_OK;
     uInt iRead = 0;
@@ -1156,7 +1158,9 @@ extern int ZEXPORT unzeof(unzFile file)
   the return value is the number of bytes copied in buf, or (if <0)
   the error code
 */
-extern int ZEXPORT unzGetLocalExtrafield(unzFile file, voidp buf, unsigned len)
+extern int ZEXPORT unzGetLocalExtrafield(
+    unzFile file, voidp buf, unsigned int len
+)
 {
     unz_s *s;
     file_in_zip_read_info_s *pfile_in_zip_read_info;

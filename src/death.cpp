@@ -123,6 +123,6 @@ void deathRevive()
     screenShowCursor();
     c->stats->setView(STATS_PARTY_OVERVIEW);
     screenRedrawScreen();
-    c->lastCommandTime = (long)time(NULL);
+    c->lastCommandTime = std::time(NULL);
     c->willPassTurn = true;
 } // deathRevive

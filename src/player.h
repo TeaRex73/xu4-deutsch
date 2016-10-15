@@ -21,7 +21,7 @@ class Armor;
 class Party;
 class Weapon;
 
-using std::string;
+
 
 typedef std::vector<class PartyMember *> PartyMemberVector;
 
@@ -94,7 +94,7 @@ public:
     virtual ~PartyMember();
     void notifyOfChange();
     // Used to translate script values into something useful
-    virtual string translate(std::vector<string> &parts);
+    virtual std::string translate(std::vector<std::string> &parts);
 
     virtual int getHp() const;
     
@@ -131,7 +131,7 @@ public:
     int getMaxMp() const;
     const Weapon *getWeapon() const;
     const Armor *getArmor() const;
-    virtual string getName() const;
+    virtual std::string getName() const;
     SexType getSex() const;
     ClassType getClass() const;
     virtual CreatureStatus getState() const;
@@ -153,8 +153,8 @@ public:
     virtual int getDefense(bool needsMystic) const;
     virtual bool dealDamage(Creature *m, int damage);
     int getDamage();
-    virtual const string &getHitTile() const;
-    virtual const string &getMissTile() const;
+    virtual const std::string &getHitTile() const;
+    virtual const std::string &getMissTile() const;
     bool isDead();
     bool isDisabled();
     int  loseWeapon();
@@ -209,7 +209,7 @@ public:
         PartyMember *partyMember = 0, PartyEvent::Type = PartyEvent::GENERIC
     );
     // Used to translate script values into something useful
-    virtual string translate(std::vector<string> &parts);
+    virtual std::string translate(std::vector<std::string> &parts);
     void adjustFood(int food);
     void adjustGold(int gold);
     void adjustKarma(KarmaAction action);
@@ -217,7 +217,7 @@ public:
     bool attemptElevation(Virtue virtue);
     void burnTorch(int turns = 1);
     bool canEnterShrine(Virtue virtue);
-    bool canPersonJoin(string name, Virtue *v);
+    bool canPersonJoin(std::string name, Virtue *v);
     void damageShip(unsigned int pts);
     bool donate(int quantity);
     void endTurn();
@@ -227,8 +227,8 @@ public:
     bool isFlying() const;
     bool isImmobilized();
     bool isDead();
-    bool isPersonJoined(string name);
-    CannotJoinError join(string name);
+    bool isPersonJoined(std::string name);
+    CannotJoinError join(std::string name);
     bool lightTorch(int duration = 100, bool loseTorch = true);
     void quenchTorch();
     void reviveParty();

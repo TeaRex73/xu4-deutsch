@@ -10,7 +10,7 @@
 #include "conversation.h"
 #include "dialogueloader.h"
 
-std::unordered_map<std::string, DialogueLoader *> *DialogueLoader::loaderMap = NULL;
+std::map<std::string, DialogueLoader *> *DialogueLoader::loaderMap = NULL;
 
 DialogueLoader *DialogueLoader::getLoader(const std::string &mimeType)
 {
@@ -29,7 +29,7 @@ DialogueLoader *DialogueLoader::registerLoader(
 )
 {
     if (loaderMap == NULL) {
-        loaderMap = new std::unordered_map<std::string, DialogueLoader *>;
+        loaderMap = new std::map<std::string, DialogueLoader *>;
     }
     (*loaderMap)[mimeType] = loader;
     return loader;
@@ -37,7 +37,7 @@ DialogueLoader *DialogueLoader::registerLoader(
 
 void DialogueLoader::cleanup()
 {
-    for (std::unordered_map<std::string, DialogueLoader *>::iterator i =
+    for (std::map<std::string, DialogueLoader *>::iterator i =
              loaderMap->begin();
          i != loaderMap->end();
          i++) {

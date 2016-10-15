@@ -9,7 +9,7 @@
 
 #include "controller.h"
 
-using std::string;
+
 class GameController;
 
 class CheatMenuController:public WaitableController<void *> {
@@ -18,7 +18,7 @@ public:
     bool keyPressed(int key);
 
 private:
-    void summonCreature(const string &name);
+    void summonCreature(const std::string &name);
     GameController *game;
 };
 

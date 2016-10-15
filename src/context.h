@@ -5,6 +5,7 @@
 #ifndef CONTEXT_H
 #define CONTEXT_H
 
+#include <ctime>
 #include <vector>
 
 #include "location.h"
@@ -51,7 +52,7 @@ public:
     int horseSpeed;
     int opacity;
     TransportContext transportContext;
-    long lastCommandTime;
+    std::time_t lastCommandTime;
     bool willPassTurn;
     class Object *lastShip;
 
@@ -59,7 +60,7 @@ public:
     /**
      * Provides scripts with information
      */
-    virtual string translate(std::vector<string> &parts)
+    virtual std::string translate(std::vector<std::string> &parts)
     {
         if (parts.size() == 1 && parts[0] == "wind") {
             return getDirectionName(static_cast<Direction>(windDirection));

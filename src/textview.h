@@ -68,9 +68,9 @@ public:
     void setFontColorBG(ColorBG bg);
     // functions to add color to strings
     void textSelectedAt(int x, int y, const char *text);
-    string colorizeStatus(char statustype);
-    string colorizeString(
-        string input,
+    std::string colorizeStatus(char statustype);
+    std::string colorizeString(
+        std::string input,
         ColorFG color,
         unsigned int colorstart,
         unsigned int colorlength = 0

@@ -16,13 +16,13 @@ int main(int argc, char *argv[])
     SaveGame sg;
     FILE *in;
     if (argc != 2) {
-        fprintf(stderr, "usage: %s party.sav\n", argv[0]);
+        std::fprintf(stderr, "usage: %s party.sav\n", argv[0]);
         exit(1);
     }
-    in = fopen(argv[1], "rb");
+    in = std::fopen(argv[1], "rb");
     if (!in) {
-        perror(argv[1]);
-        exit(1);
+        std::perror(argv[1]);
+        std::exit(1);
     }
     sg.read(in);
     showSaveGame(&sg);
@@ -32,72 +32,74 @@ int main(int argc, char *argv[])
 void showSaveGame(SaveGame *sg)
 {
     int i;
-    printf("???: %x\n", sg->unknown1);
-    printf(
+    std::printf("???: %x\n", sg->unknown1);
+    std::printf(
         "moves: %-4d food: %-5g gold: %d\n",
         sg->moves,
         ((double)sg->food) / 100.0,
         sg->gold
     );
-    printf("karma: [ ");
+    std::printf("karma: [ ");
     for (i = 0; i < 8; i++) {
-        printf("%d ", sg->karma[i]);
+        std::printf("%d ", sg->karma[i]);
     }
-    printf("]\n");
-    printf(
+    std::printf("]\n");
+    std::printf(
         "torches: %-2d gems: %-5d keys: %-5d sextants: %d\n",
         sg->torches,
         sg->gems,
         sg->keys,
         sg->sextants
     );
-    printf("armor: [ ");
+    std::printf("armor: [ ");
     for (i = 0; i < ARMR_MAX; i++) {
-        printf("%d ", sg->armor[i]);
+        std::printf("%d ", sg->armor[i]);
     }
-    printf("]\n");
-    printf("weapons: [ ");
+    std::printf("]\n");
+    std::printf("weapons: [ ");
     for (i = 0; i < WEAP_MAX; i++) {
-        printf("%d ", sg->weapons[i]);
+        std::printf("%d ", sg->weapons[i]);
     }
-    printf("]\n");
-    printf("reagents: [ ");
+    std::printf("]\n");
+    std::printf("reagents: [ ");
     for (i = 0; i < REAG_MAX; i++) {
-        printf("%d ", sg->reagents[i]);
+        std::printf("%d ", sg->reagents[i]);
     }
-    printf("]\n");
-    printf("mixtures: [ ");
+    std::printf("]\n");
+    std::printf("mixtures: [ ");
     for (i = 0; i < 26; i++) {
-        printf("%d ", sg->mixtures[i]);
+        std::printf("%d ", sg->mixtures[i]);
     }
-    printf("]\n");
-    printf("items: %s\n", itemsString(sg->items));
-    printf("x: %-8d y: %d\n", sg->x, sg->y);
-    printf("stones: %-3x runes %x\n", sg->stones, sg->runes);
-    printf("party members: %d\n", sg->members);
-    printf("transport: %x\n", sg->transport);
-    printf("balloon state/torch duration: %x\n", sg->balloonstate);
-    printf("trammel: %d  felucca: %d\n", sg->trammelphase, sg->feluccaphase);
-    printf("shiphull: %d\n", sg->shiphull);
-    printf("lbintro: %d\n", sg->lbintro);
-    printf(
+    std::printf("]\n");
+    std::printf("items: %s\n", itemsString(sg->items));
+    std::printf("x: %-8d y: %d\n", sg->x, sg->y);
+    std::printf("stones: %-3x runes %x\n", sg->stones, sg->runes);
+    std::printf("party members: %d\n", sg->members);
+    std::printf("transport: %x\n", sg->transport);
+    std::printf("balloon state/torch duration: %x\n", sg->balloonstate);
+    std::printf(
+        "trammel: %d  felucca: %d\n", sg->trammelphase, sg->feluccaphase
+    );
+    std::printf("shiphull: %d\n", sg->shiphull);
+    std::printf("lbintro: %d\n", sg->lbintro);
+    std::printf(
         "lastcamp: %d       lastreagent: %d\n", sg->lastcamp, sg->lastreagent
     );
-    printf(
+    std::printf(
         "lastmeditation: %d lastvirtue: %d\n",
         sg->lastmeditation,
         sg->lastvirtue
     );
-    printf(
+    std::printf(
         "dngx: %-5d dngy: %-5d orientation: %d dnglevel: %d\n",
         sg->dngx,
         sg->dngy,
         sg->orientation,
         sg->dnglevel
     );
-    printf("location: %x\n", sg->location);
+    std::printf("location: %x\n", sg->location);
     for (i = 0; i < 8; i++) {
-        printf("player %d\n", i);
+        std::printf("player %d\n", i);
         showSaveGamePlayerRecord(&(sg->players[i]));
     }
 }
@@ -132,14 +134,14 @@ void showSaveGamePlayerRecord(SaveGamePlayerRecord *rec)
         "Magic Plate",
         "Mystic Robe"
     };
-    printf(
+    std::printf(
         "  name: %-17s hp: %-7d hpMax: %-4d xp: %d\n",
         rec->name,
         rec->hp,
         rec->hpMax,
         rec->xp
     );
-    printf(
+    std::printf(
         "  str: %-6d dex: %-6d intel: %-4d mp: %-7d ???: %d\n",
         rec->str,
         rec->dex,
@@ -147,12 +149,12 @@ void showSaveGamePlayerRecord(SaveGamePlayerRecord *rec)
         rec->mp,
         rec->unknown
     );
-    printf(
+    std::printf(
         "  weapon: %-15s armor: %s\n",
         weapNames[rec->weapon],
         armorNames[rec->armor]
     );
-    printf(
+    std::printf(
         "  sex: %-6s class: %-16s status: %c\n",
         rec->sex == 11 ? "M" : "F",
         getClassNameEnglish(rec->klass),
@@ -166,67 +168,79 @@ char *itemsString(unsigned short items)
     int first = 1;
     buffer[0] = '\0';
     if (items & ITEM_SKULL) {
-        strcat(strcat(buffer, first ? "" : ", "), getItemName(ITEM_SKULL));
+        std::strcat(
+            std::strcat(buffer, first ? "" : ", "), getItemName(ITEM_SKULL)
+        );
         first = 0;
     }
     if (items & ITEM_SKULL_DESTROYED) {
-        strcat(strcat(buffer, first ? "" : ", "), "skull destroyed");
+        std::strcat(std::strcat(buffer, first ? "" : ", "), "skull destroyed");
         first = 0;
     }
     if (items & ITEM_CANDLE) {
-        strcat(strcat(buffer, first ? "" : ", "), getItemName(ITEM_CANDLE));
+        std::strcat(
+            std::strcat(buffer, first ? "" : ", "), getItemName(ITEM_CANDLE)
+        );
         first = 0;
     }
     if (items & ITEM_BOOK) {
-        strcat(strcat(buffer, first ? "" : ", "), getItemName(ITEM_BOOK));
+        std::strcat(
+            std::strcat(buffer, first ? "" : ", "), getItemName(ITEM_BOOK)
+        );
         first = 0;
     }
     if (items & ITEM_BELL) {
-        strcat(strcat(buffer, first ? "" : ", "), getItemName(ITEM_BELL));
+        std::strcat(
+            std::strcat(buffer, first ? "" : ", "), getItemName(ITEM_BELL)
+        );
         first = 0;
     }
     if (items & ITEM_KEY_C) {
-        strcat(strcat(buffer, first ? "" : ", "), "key c");
+        std::strcat(std::strcat(buffer, first ? "" : ", "), "key c");
         first = 0;
     }
     if (items & ITEM_KEY_L) {
-        strcat(strcat(buffer, first ? "" : ", "), "key l");
+        std::strcat(std::strcat(buffer, first ? "" : ", "), "key l");
         first = 0;
     }
     if (items & ITEM_KEY_T) {
-        strcat(strcat(buffer, first ? "" : ", "), "key t");
+        std::strcat(std::strcat(buffer, first ? "" : ", "), "key t");
         first = 0;
     }
     if (items & ITEM_HORN) {
-        strcat(strcat(buffer, first ? "" : ", "), getItemName(ITEM_HORN));
+        std::strcat(
+            std::strcat(buffer, first ? "" : ", "), getItemName(ITEM_HORN)
+        );
         first = 0;
     }
     if (items & ITEM_WHEEL) {
-        strcat(strcat(buffer, first ? "" : ", "), getItemName(ITEM_WHEEL));
+        std::strcat(
+            std::strcat(buffer, first ? "" : ", "), getItemName(ITEM_WHEEL)
+        );
         first = 0;
     }
     if (items & ITEM_CANDLE_USED) {
-        strcat(strcat(buffer, first ? "" : ", "), "candle used");
+        std::strcat(std::strcat(buffer, first ? "" : ", "), "candle used");
         first = 0;
     }
     if (items & ITEM_BOOK_USED) {
-        strcat(strcat(buffer, first ? "" : ", "), "book used");
+        std::strcat(std::strcat(buffer, first ? "" : ", "), "book used");
         first = 0;
     }
     if (items & ITEM_BELL_USED) {
-        strcat(strcat(buffer, first ? "" : ", "), "bell used");
+        std::strcat(std::strcat(buffer, first ? "" : ", "), "bell used");
         first = 0;
     }
     if (items & 0x2000) {
-        strcat(strcat(buffer, first ? "" : ", "), "(bit 14)");
+        std::strcat(std::strcat(buffer, first ? "" : ", "), "(bit 14)");
         first = 0;
     }
     if (items & 0x4000) {
-        strcat(strcat(buffer, first ? "" : ", "), "(bit 15)");
+        std::strcat(std::strcat(buffer, first ? "" : ", "), "(bit 15)");
         first = 0;
     }
     if (items & 0x8000) {
-        strcat(strcat(buffer, first ? "" : ", "), "(bit 16)");
+        std::strcat(std::strcat(buffer, first ? "" : ", "), "(bit 16)");
         first = 0;
     }
     return buffer;

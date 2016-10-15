@@ -26,7 +26,7 @@
 #include "utils.h"
 #include "weapon.h"
 
-using std::string;
+
 
 DestroyAllCreaturesCallback destroyAllCreaturesCallback;
 
@@ -58,7 +58,7 @@ void useTelescope(int notused);
 bool isReagentInInventory(int reag);
 void putReagentInInventory(int reag);
 bool isAbyssOpened(const Portal *p);
-void itemHandleStones(const string &color);
+void itemHandleStones(const std::string &color);
 
 static const ItemLocation items[] = {
     {
@@ -517,7 +517,9 @@ void useBBC(int item)
  */
 void useHorn(int item)
 {
-    screenMessage("\n\nDAS HORN L[SST EINEN SCHAUERLICHEN KLANG ERSCHALLEN!\n");
+    screenMessage(
+        "\n\nDAS HORN L[SST EINEN SCHAUERLICHEN KLANG ERSCHALLEN!\n"
+    );
     soundPlay(SOUND_STORM, false);
     c->aura->set(Aura::HORN, 10);
 }
@@ -725,8 +727,8 @@ void useStone(int item)
                 "der Wahrheit, der Liebe und dem Mute?\n\n"
             );
         }
-        string virtue = gameGetInput();
-        if (strncasecmp(
+        std::string virtue = gameGetInput();
+        if (xu4_strncasecmp(
                 virtue.c_str(), getVirtueName((Virtue)c->location->coords.z), 6
             ) == 0) {
             /* now ask for stone */
@@ -816,8 +818,8 @@ void putWeaponInInventory(int weapon)
 void useTelescope(int notused)
 {
     screenMessage(
-        "\n\nDU SIEHST EIN DREHRAD AM TELESKOPE, MIT MARKIERUNGEN VON A BIS P.\n"
-        "DU W[HLST:"
+        "\n\nDU SIEHST EIN DREHRAD AM TELESKOPE, MIT MARKIERUNGEN VON "
+        "A BIS P.\nDU W[HLST:"
     );
     int choice = AlphaActionController::get('p', "DU W[HLST:");
     if (choice == -1) {
@@ -893,13 +895,13 @@ const ItemLocation *itemAtLocation(const Map *map, const Coords &coords)
 /**
  * Uses the item indicated by 'shortname'
  */
-void itemUse(const string &shortname)
+void itemUse(const std::string &shortname)
 {
     unsigned int i;
     const ItemLocation *item = NULL;
     for (i = 0; i < N_ITEMS; i++) {
         if (items[i].shortname
-            && (strcasecmp(
+            && (xu4_strcasecmp(
                     deumlaut(items[i].shortname).c_str(),
                     deumlaut(shortname).c_str()
                 ) == 0)) {
@@ -951,12 +953,12 @@ bool isAbyssOpened(const Portal *p)
 /**
  * Handles naming of stones when used
  */
-void itemHandleStones(const string &color)
+void itemHandleStones(const std::string &color)
 {
     bool found = false;
 
     for (int i = 0; i < 8; i++) {
-        if ((strcasecmp(
+        if ((xu4_strcasecmp(
                  deumlaut(color).c_str(),
                  deumlaut(getStoneName((Virtue)i)).c_str()
              ) == 0)

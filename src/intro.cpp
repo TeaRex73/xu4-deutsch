@@ -10,7 +10,11 @@
 #include "vc6.h" // Fixes things if you're using VC6, does nothing otherwise
 
 #include <algorithm>
+#include <cstdint>
+#include <cstdio>
+#include <cstdlib>
 #include <cstring>
+#include <unistd.h>
 
 #include "u4.h"
 
@@ -33,13 +37,13 @@
 #include "u4file.h"
 #include "utils.h"
 
-using namespace std;
+
 
 extern bool useProfile;
-extern string profileName;
+extern std::string profileName;
 extern int quit;
 IntroController *intro = NULL;
-const string tmpstr = "/tmp/";
+const std::string tmpstr = "/tmp/";
 
 #define INTRO_MAP_HEIGHT 5
 #define INTRO_MAP_WIDTH 19
@@ -720,8 +724,8 @@ IntroController::AnimElement::~AnimElement()
  */
 bool IntroController::init()
 {
-    remove((tmpstr + PARTY_SAV_BASE_FILENAME).c_str());
-    remove((tmpstr + MONSTERS_SAV_BASE_FILENAME).c_str());
+    std::remove((tmpstr + PARTY_SAV_BASE_FILENAME).c_str());
+    std::remove((tmpstr + MONSTERS_SAV_BASE_FILENAME).c_str());
     justInitiatedNewGame = false;
     initiatingNewGame = false;
     // sigData is referenced during Titles initialization
@@ -804,7 +808,7 @@ bool IntroController::keyPressed(int key)
         break;
     case INTRO_MENU:
         if ((key >= 'A') && (key <= ']')) {
-            key = mytolower(key);
+            key = xu4_tolower(key);
         }
         switch (key) {
         case 'n':
@@ -1027,7 +1031,7 @@ void IntroController::drawBeastie(int beast, int vertoffset, int frame)
     char buffer[128];
     int destx;
     ASSERT(beast == 0 || beast == 1, "invalid beast: %d", beast);
-    sprintf(buffer, "beast%dframe%02d", beast, frame);
+    std::sprintf(buffer, "beast%dframe%02d", beast, frame);
     destx = beast ? (320 - 48) : 0;
     backgroundArea.draw(buffer, destx, vertoffset);
 }
@@ -1041,7 +1045,7 @@ void IntroController::drawBeastie(int beast, int vertoffset, int frame)
  * painted: the circle without the moongate, but with a small white
  * dot representing the anhk and history book.
  */
-void IntroController::animateTree(const string &frame)
+void IntroController::animateTree(const std::string &frame)
 {
     backgroundArea.draw(frame, 47, 43);
 }
@@ -1211,7 +1215,7 @@ void IntroController::initiateNewGame()
     menuArea.enableCursor();
     drawBeasties(false);
     screenRedrawScreen();
-    string nameBuffer = ReadStringController::get(8, &menuArea);
+    std::string nameBuffer = ReadStringController::get(8, &menuArea);
     if (nameBuffer.length() == 0) {
         // the user didn't enter a name
         menuArea.disableCursor();
@@ -1237,7 +1241,9 @@ void IntroController::initiateNewGame()
     finishInitiateGame(nameBuffer, sex);
 } // IntroController::initiateNewGame
 
-void IntroController::finishInitiateGame(const string &nameBuffer, SexType sex)
+void IntroController::finishInitiateGame(
+    const std::string &nameBuffer, SexType sex
+)
 {
     // no more text entry, so disable the text cursor
     menuArea.disableCursor();
@@ -1248,8 +1254,8 @@ void IntroController::finishInitiateGame(const string &nameBuffer, SexType sex)
     // write out save game and segue into game
     SaveGame saveGame;
     SaveGamePlayerRecord avatar;
-    FILE *saveGameFile =
-        fopen((tmpstr + PARTY_SAV_BASE_FILENAME).c_str(), "wb");
+    std::FILE *saveGameFile =
+        std::fopen((tmpstr + PARTY_SAV_BASE_FILENAME).c_str(), "wb");
     if (!saveGameFile) {
         questionArea.disableCursor();
         errorMessage = "Unable to create save game!";
@@ -1257,7 +1263,7 @@ void IntroController::finishInitiateGame(const string &nameBuffer, SexType sex)
         return;
     }
     avatar.init();
-    strcpy(avatar.name, nameBuffer.c_str());
+    std::strcpy(avatar.name, nameBuffer.c_str());
     avatar.sex = sex;
     saveGame.init(&avatar);
     screenHideCursor();
@@ -1269,13 +1275,14 @@ void IntroController::finishInitiateGame(const string &nameBuffer, SexType sex)
     saveGame.torches = 2;
     saveGame.write(saveGameFile);
     fsync(fileno(saveGameFile));
-    fclose(saveGameFile);
+    std::fclose(saveGameFile);
     sync();
-    saveGameFile = fopen((tmpstr + MONSTERS_SAV_BASE_FILENAME).c_str(), "wb");
+    saveGameFile =
+        std::fopen((tmpstr + MONSTERS_SAV_BASE_FILENAME).c_str(), "wb");
     if (saveGameFile) {
         saveGameMonstersWrite(NULL, saveGameFile);
         fsync(fileno(saveGameFile));
-        fclose(saveGameFile);
+        std::fclose(saveGameFile);
         sync();
     }
     justInitiatedNewGame = true;
@@ -1408,7 +1415,7 @@ void IntroController::startQuestions(SexType sex)
  * Get the text for the question giving a choice between virtue v1 and
  * virtue v2 (zero based virtue index, starting at honesty).
  */
-string IntroController::getQuestion(SexType sex, int v1, int v2)
+std::string IntroController::getQuestion(SexType sex, int v1, int v2)
 {
     int i = 0;
     int d = 7;
@@ -1432,17 +1439,18 @@ string IntroController::getQuestion(SexType sex, int v1, int v2)
  */
 void IntroController::journeyOnward()
 {
-    FILE *saveGameFile;
+    std::FILE *saveGameFile;
     bool validSave = false;
     /*
      * ensure a party.sav file exists, otherwise require user to
      * initiate game
      */
     // First try loading the (temporary) just-inited savegame...
-    saveGameFile = fopen((tmpstr + PARTY_SAV_BASE_FILENAME).c_str(), "rb");
+    saveGameFile =
+        std::fopen((tmpstr + PARTY_SAV_BASE_FILENAME).c_str(), "rb");
     if (!saveGameFile) {
         // ...and if that doesn't work load the real main savegame
-        saveGameFile = fopen(
+        saveGameFile = std::fopen(
             (settings.getUserPath() + PARTY_SAV_BASE_FILENAME).c_str(), "rb"
         );
     }
@@ -1463,7 +1471,7 @@ void IntroController::journeyOnward()
         screenRedrawScreen();
         return;
     }
-    fclose(saveGameFile);
+    std::fclose(saveGameFile);
     EventHandler::setControllerDone();
 } // IntroController::journeyOnward
 
@@ -1496,9 +1504,9 @@ void IntroController::about()
 /**
  * Shows text in the question area.
  */
-void IntroController::showText(const string &text)
+void IntroController::showText(const std::string &text)
 {
-    string current = text;
+    std::string current = text;
     int lineNo = 0;
     questionArea.clear();
     unsigned long pos = current.find("\n");
@@ -2014,7 +2022,9 @@ void IntroController::initPlayers(SaveGame *saveGame)
             saveGame->players[p].intel = initValuesForNpcClass[i].intel;
             saveGame->players[p].weapon = initValuesForClass[i].weapon;
             saveGame->players[p].armor = initValuesForClass[i].armor;
-            strcpy(saveGame->players[p].name, initValuesForNpcClass[i].name);
+            std::strcpy(
+                saveGame->players[p].name, initValuesForNpcClass[i].name
+            );
             saveGame->players[p].sex = initValuesForNpcClass[i].sex;
             saveGame->players[p].hp = saveGame->players[p].hpMax =
                 initValuesForClass[i].level * 100;
@@ -2135,7 +2145,7 @@ void IntroController::getTitleSourceData()
     bool alpha = info->image->isAlphaOn();
     info->image->alphaOff();
     // for each element, get the source data
-    for (unsigned i = 0; i < titles.size(); i++) {
+    for (unsigned int i = 0; i < titles.size(); i++) {
         if ((titles[i].method != SIGNATURE) && (titles[i].method != BAR)) {
             // create a place to store the source image
             titles[i].srcImage = Image::create(
@@ -2196,12 +2206,12 @@ void IntroController::getTitleSourceData()
                     );
                 }
                 AnimPlot plot = {
-                    (uint8_t)x,
-                    (uint8_t)y,
-                    (uint8_t)color.r,
-                    (uint8_t)color.g,
-                    (uint8_t)color.b,
-                    (uint8_t)255
+                    (std::uint8_t)x,
+                    (std::uint8_t)y,
+                    (std::uint8_t)color.r,
+                    (std::uint8_t)color.g,
+                    (std::uint8_t)color.b,
+                    (std::uint8_t)255
                 };
                 titles[i].plotData.push_back(plot);
                 titles[i].animStepMax += 2;
@@ -2225,12 +2235,12 @@ void IntroController::getTitleSourceData()
                     );
                     if (r || g || b) {
                         AnimPlot plot = {
-                            (uint8_t)(x + 1),
-                            (uint8_t)(y + 1),
-                            (uint8_t)r,
-                            (uint8_t)g,
-                            (uint8_t)b,
-                            (uint8_t)a
+                            (std::uint8_t)(x + 1),
+                            (std::uint8_t)(y + 1),
+                            (std::uint8_t)r,
+                            (std::uint8_t)g,
+                            (std::uint8_t)b,
+                            (std::uint8_t)a
                         };
                         titles[i].plotData.push_back(plot);
                     }
@@ -2336,13 +2346,13 @@ bool IntroController::updateTitle()
             screen->fillRect(
                 0, 0, screen->width(), screen->height(), 0, 0, 0
             );
-			timeCurrent = getTicks();
+            timeCurrent = getTicks();
         }
         if (title->method == TITLE) {
             // assume this is the first frame of "Ultima IV" and begin sound
             soundPlay(SOUND_TITLE_FADE);
         }
-		if (title->timeBase == 0) {
+        if (title->timeBase == 0) {
             // reset the base time
             title->timeBase = timeCurrent;
         }
@@ -2477,7 +2487,7 @@ bool IntroController::updateTitle()
             title->timeDelay = getTicks() - title->timeBase + 100;
         }
         // blit src to the canvas one row at a time, center out
-        int y = int(title->rh / 2) - title->animStep + 1;
+        int y = title->rh / 2 - title->animStep + 1;
         title->srcImage->drawSubRectOn(
             title->destImage,
             1,

@@ -4,6 +4,8 @@
 
 #include "vc6.h" // Fixes things if you're using VC6, does nothing otherwise
 
+#include <cstring>
+
 #include "portal.h"
 
 #include "annotation.h"
@@ -101,15 +103,15 @@ int usePortalAt(
     if (portal->message.empty()) {
         switch (action) {
         case ACTION_DESCEND:
-            sprintf(
+            std::sprintf(
                 msg, "Abw{rts\nauf Ebene %d\n", portal->start.z + 1
             );
             break;
         case ACTION_KLIMB:
             if (portal->exitPortal) {
-                sprintf(msg, "Aufw{rts\nVERLASSE...\n");
+                std::sprintf(msg, "Aufw{rts\nVERLASSE...\n");
             } else {
-                sprintf(
+                std::sprintf(
                     msg, "Aufw{rts\nauf Ebene %d\n", portal->start.z + 1
                 );
             }
@@ -133,7 +135,7 @@ int usePortalAt(
             }
             if ((destination->type == Map::CITY)
                 || (destination->type == Map::DUNGEON)) {
-                string name;
+                std::string name;
                 name = destination->getName();
                 for (unsigned int i = 0; i < (16 - name.length()) / 2; i++) {
                     screenMessage(" ");
@@ -153,7 +155,7 @@ int usePortalAt(
     }
     /* ok, we know the portal is going to work -- now display the
        custom message, if any */
-    else if (!portal->message.empty() || strlen(msg)) {
+    else if (!portal->message.empty() || std::strlen(msg)) {
         screenMessage(
             "%s", portal->message.empty() ? msg : portal->message.c_str()
         );

@@ -13,7 +13,7 @@
 #include "screen.h"
 #include "types.h"
 
-using std::string;
+
 
 #define eventHandler (EventHandler::getInstance())
 
@@ -56,14 +56,14 @@ public:
     typedef bool (*Callback)(int, void *);
 
     typedef struct ReadBuffer {
-        int (*handleBuffer)(string *);
-        string *buffer;
+        int (*handleBuffer)(std::string *);
+        std::string *buffer;
         int bufferLen;
         int screenX, screenY;
     } ReadBuffer;
     
     typedef struct GetChoice {
-        string choices;
+        std::string choices;
         int (*handleChoice)(int);
     } GetChoice;
     
@@ -103,13 +103,13 @@ private:
 /**
  * A controller to read a string, terminated by the enter key.
  */
-class ReadStringController:public WaitableController<string> {
+class ReadStringController:public WaitableController<std::string> {
 public:
     ReadStringController(
         int maxlen,
         int screenX, int
         screenY,
-        const string &accepted_chars =
+        const std::string &accepted_chars =
         "abcdefghijklmnopqrstuvwxyz{|}~"
         "ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]"
         "1234567890 \n\r\010"
@@ -117,21 +117,23 @@ public:
     ReadStringController(
         int maxlen,
         TextView *view,
-        const string &accepted_chars =
+        const std::string &accepted_chars =
         "abcdefghijklmnopqrstuvwxyz{|}~"
         "ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]"
         "1234567890 \n\r\010"
     );
     virtual bool keyPressed(int key);
-    static string get(
+    static std::string get(
         int maxlen, int screenX, int screenY, EventHandler *eh = NULL
     );
-    static string get(int maxlen, TextView *view, EventHandler *eh = NULL);
+    static std::string get(
+        int maxlen, TextView *view, EventHandler *eh = NULL
+    );
 
 protected:
     int maxlen, screenX, screenY;
     TextView *view;
-    string accepted;
+    std::string accepted;
 };
 
 
@@ -154,12 +156,12 @@ public:
  */
 class ReadChoiceController:public WaitableController<int> {
 public:
-    ReadChoiceController(const string &choices);
+    ReadChoiceController(const std::string &choices);
     virtual bool keyPressed(int key);
-    static char get(const string &choices, EventHandler *eh = NULL);
+    static char get(const std::string &choices, EventHandler *eh = NULL);
 
 protected:
-    string choices;
+    std::string choices;
 };
 
 

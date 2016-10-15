@@ -80,19 +80,19 @@ void Tile::loadProperties(const ConfigElement &conf)
     if (conf.exists("image")) {
         imageName = conf.getString("image");
     } else {
-        imageName = string("tile_") + name;
+        imageName = std::string("tile_") + name;
     }
     tiledInDungeon = conf.getBool("tiledInDungeon");
     if (conf.exists("directions")) {
-        string dirs = conf.getString("directions");
-        if (dirs.length() != (unsigned)frames) {
+        std::string dirs = conf.getString("directions");
+        if (dirs.length() != (unsigned int)frames) {
             errorFatal(
                 "Error: %ld directions for tile but only %d frames",
                 (long)dirs.length(),
                 frames
             );
         }
-        for (unsigned i = 0; i < dirs.length(); i++) {
+        for (unsigned int i = 0; i < dirs.length(); i++) {
             if (dirs[i] == 'w') {
                 directions.push_back(DIR_WEST);
             } else if (dirs[i] == 'n') {
@@ -260,7 +260,7 @@ bool Tile::isForeground() const
 
 Direction Tile::directionForFrame(int frame) const
 {
-    if (static_cast<unsigned>(frame) >= directions.size()) {
+    if (static_cast<unsigned int>(frame) >= directions.size()) {
         return DIR_NONE;
     } else {
         return directions[frame];
@@ -269,7 +269,7 @@ Direction Tile::directionForFrame(int frame) const
 
 int Tile::frameForDirection(Direction d) const
 {
-    for (int i = 0; (unsigned)i < directions.size() && i < frames; i++) {
+    for (int i = 0; (unsigned int)i < directions.size() && i < frames; i++) {
         if (directions[i] == d) {
             return i;
         }

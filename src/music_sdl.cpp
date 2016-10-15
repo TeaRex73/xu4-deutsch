@@ -62,7 +62,7 @@ void Music::destroy_sys()
     u4_SDL_QuitSubSystem(SDL_INIT_AUDIO);
 }
 
-bool Music::load_sys(const string &pathname)
+bool Music::load_sys(const std::string &pathname)
 {
     if (playing) {
         Mix_FreeMusic(playing);

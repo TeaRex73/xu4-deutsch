@@ -46,7 +46,7 @@ void DungeonView::display(Context *c, TileView *view)
         // Note: This shouldn't go above 4, unless we check
         //opaque tiles each step of the way.
         const int frthst_nw_vis = 4;
-        vector<MapTile> tiles;
+        std::vector<MapTile> tiles;
         screenEraseMapArea();
         if (c->party->getTorchDuration() > 0) {
             for (y = 3; y >= 0; y--) {
@@ -65,7 +65,7 @@ void DungeonView::display(Context *c, TileView *view)
                 // y==3 is opaque
                 if ((y == 3) && !tiles.front().getTileType()->isOpaque()) {
                     for (int y_obj = frthst_nw_vis; y_obj > y; y_obj--) {
-                        vector<MapTile> dts = getTiles(y_obj, 0);
+                        std::vector<MapTile> dts = getTiles(y_obj, 0);
                         DungeonGraphicType dt = tilesToGraphic(dts);
                         if ((dt == DNGGRAPHIC_DNGTILE)
                             || (dt == DNGGRAPHIC_BASETILE)) {
@@ -93,7 +93,7 @@ void DungeonView::display(Context *c, TileView *view)
     }
     /* 3rd-person perspective */
     else {
-        vector<MapTile> tiles;
+        std::vector<MapTile> tiles;
         static MapTile black =
             c->location->map->tileset->getByName("black")->getId();
         static MapTile avatar =

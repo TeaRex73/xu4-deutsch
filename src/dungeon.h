@@ -73,7 +73,7 @@ public:
     }
 
     virtual ~Dungeon();
-    virtual string getName();
+    virtual std::string getName();
     DungeonToken tokenForTile(MapTile tile);
     DungeonToken currentToken();
     unsigned char currentSubToken();
@@ -82,7 +82,7 @@ public:
     bool ladderUpAt(MapCoords coords);
     bool ladderDownAt(MapCoords coords);
     bool validTeleportLocation(MapCoords coords);
-    string name;
+    std::string name;
     unsigned int n_rooms;
     std::vector<unsigned char> dataSubTokens;
     DngRoom *rooms;

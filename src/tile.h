@@ -13,8 +13,7 @@
 #include "types.h"
 #include "tileset.h"
 
-using std::string;
-using std::vector;
+
 
 class ConfigElement;
 class Image;
@@ -59,7 +58,7 @@ public:
         return id;
     }
     
-    const string &getName() const
+    const std::string &getName() const
     {
         return name;
     }
@@ -91,7 +90,7 @@ public:
     
     Image *getImage();
     
-    const string &getLooksLike() const
+    const std::string &getLooksLike() const
     {
         return looks_like;
     }
@@ -274,7 +273,7 @@ public:
 private:
     void loadImage();
     TileId id;     /**< an id that is unique across all tilesets */
-    string name; /**< The name of this tile */
+    std::string name; /**< The name of this tile */
     Tileset *tileset; /**< The tileset this tile belongs to */
     int w, h; /**< width and height of the tile */
     int frames; /**< The number of frames this tile has */
@@ -288,15 +287,15 @@ private:
                              search neighbour maptiles for a water-based
                              background replacement. ex: chests */
     TileRule *rule; /**< The rules that govern the behavior of the tile */
-    string imageName; /**< The name of the image that belongs to this
+    std::string imageName; /**< The name of the image that belongs to this
                          tile */
-    string looks_like; /**< The name of the tile that this tile looks
+    std::string looks_like; /**< The name of the tile that this tile looks
                           exactly like (if any) */
     Image *image; /**< The original image for this tile (with all of its
                      frames) */
     bool tiledInDungeon;
-    vector<Direction> directions;
-    string animationRule;
+    std::vector<Direction> directions;
+    std::string animationRule;
     static TileId nextId;
 };
 

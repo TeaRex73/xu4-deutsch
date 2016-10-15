@@ -15,8 +15,6 @@
 #include "tileview.h"
 #include "types.h"
 
-using std::vector;
-
 class Map;
 struct Portal;
 class Creature;
@@ -55,19 +53,21 @@ public:
  */
 class AlphaActionController:public WaitableController<int> {
 public:
-    AlphaActionController(char letter, const string &p)
+    AlphaActionController(char letter, const std::string &p)
         :lastValidLetter(letter), prompt(p)
     {
     }
 
     bool keyPressed(int key);
     static int get(
-        char lastValidLetter, const string &prompt, EventHandler *eh = NULL
+        char lastValidLetter,
+        const std::string &prompt,
+        EventHandler *eh = NULL
     );
 
 private:
     char lastValidLetter;
-    string prompt;
+    std::string prompt;
 };
 
 
@@ -174,7 +174,7 @@ bool creatureRangeAttack(const Coords &coords, Creature *m);
 void gameCreatureCleanup();
 bool gameSpawnCreature(const class Creature *m);
 /* etc */
-string gameGetInput(int maxlen = 32);
+std::string gameGetInput(int maxlen = 32);
 int gameGetPlayer(
     bool canBeDisabled, bool canBeActivePlayer, bool zeroIsValid
 );
@@ -184,7 +184,7 @@ void gameGetPlayerForCommand(
 void gameDamageParty(int minDamage, int maxDamage);
 void gameDamageShip(int minDamage, int maxDamage);
 void gameSetActivePlayer(int player);
-vector<Coords> gameGetDirectionalActionPath(
+std::vector<Coords> gameGetDirectionalActionPath(
     int dirmask,
     int validDirections,
     const Coords &origin,

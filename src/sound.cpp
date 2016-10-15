@@ -14,8 +14,7 @@
 
 #include "sound_p.h"
 
-using std::string;
-using std::vector;
+
 
 int soundInit(void)
 {
@@ -75,10 +74,10 @@ int SoundManager::init()
     const Config *config = Config::getInstance();
     soundFilenames.reserve(SOUND_MAX);
     soundChunk.resize(SOUND_MAX, NULL);
-    vector<ConfigElement> soundConfs =
+    std::vector<ConfigElement> soundConfs =
         config->getElement("sound").getChildren();
-    vector<ConfigElement>::const_iterator i = soundConfs.begin();
-    vector<ConfigElement>::const_iterator theEnd = soundConfs.end();
+    std::vector<ConfigElement>::const_iterator i = soundConfs.begin();
+    std::vector<ConfigElement>::const_iterator theEnd = soundConfs.end();
     for (; i != theEnd; ++i) {
         if (i->getName() != "track") {
             continue;
@@ -98,8 +97,8 @@ bool SoundManager::load(Sound sound)
         return false;
     }
     if (soundChunk[sound] == NULL) {
-        string pathname(u4find_sound(soundFilenames[sound]));
-        string basename =
+        std::string pathname(u4find_sound(soundFilenames[sound]));
+        std::string basename =
             pathname.substr(pathname.find_last_of("/") + 1);
         if (!basename.empty()) {
             return load_sys(sound, pathname);

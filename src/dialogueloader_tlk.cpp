@@ -12,8 +12,6 @@
 #include "u4file.h"
 #include "utils.h"
 
-using std::string;
-
 DialogueLoader *U4TlkDialogueLoader::instance =
     DialogueLoader::registerLoader(
         new U4TlkDialogueLoader, "application/x-u4tlk"
@@ -40,10 +38,10 @@ Dialogue *U4TlkDialogueLoader::load(void *source)
         return NULL;
     }
     char *ptr = &tlk_buffer[3];
-    vector<string> strings;
+    std::vector<std::string> strings;
     for (int i = 0; i < 12; i++) {
         strings.push_back(ptr);
-        ptr += strlen(ptr) + 1;
+        ptr += std::strlen(ptr) + 1;
     }
     Dialogue *dlg = new Dialogue();
     unsigned char prob = tlk_buffer[2];
@@ -56,17 +54,17 @@ Dialogue *U4TlkDialogueLoader::load(void *source)
 #if 0 // Not needed for corrected German files
     // Fix the actor description string, converting the first character
     // to lower-case.
-    strings[2][0] = mytolower(strings[2][0]);
+    strings[2][0] = xu4_tolower(strings[2][0]);
     // ... then replace any newlines in the string with spaces
-    size_t index = strings[2].find("\n");
-    while (index != string::npos) {
+    std::size_t index = strings[2].find("\n");
+    while (index != std::string::npos) {
         strings[2][index] = ' ';
         index = strings[2].find("\n");
     }
     // ... then append a period to the end of the string if one does
     // not already exist
-    if (!ispunct(strings[2][strings[2].length() - 1])) {
-        strings[2] = strings[2] + string(".");
+    if (!std::ispunct(strings[2][strings[2].length() - 1])) {
+        strings[2] = strings[2] + std::string(".");
     }
     // ... and finally, a few characters in the game have descriptions
     // that do not begin with a definite (the) or indefinite (a/an)
@@ -75,10 +73,10 @@ Dialogue *U4TlkDialogueLoader::load(void *source)
         || (strings[0] == "Tracie")
         || (strings[0] == "Dupre")
         || (strings[0] == "Traveling Dan")) {
-        strings[2] = string("a ") + strings[2];
+        strings[2] = std::string("a ") + strings[2];
     }
 #endif // if 0
-    string introBase = string("\nDu triffst ") + strings[2] + "\n";
+    std::string introBase = std::string("\nDu triffst ") + strings[2] + "\n";
     Response *intro = new Response(uppercase(introBase) + dlg->getPrompt());
     intro->add(ResponsePart::STARTMUSIC_SILENCE);
     dlg->setIntro(intro);
@@ -157,7 +155,7 @@ Dialogue *U4TlkDialogueLoader::load(void *source)
     // conflict with the standard ones (e.g. Calabrini in Moonglow has
     // HEAL for healer, which is unreachable in u4dos, but clearly
     // more useful than "Fine." for health).
-    string look = string("Du siehst ") + strings[2];
+    std::string look = std::string("Du siehst ") + strings[2];
     dlg->addKeyword("schau", new Response(uppercase(look)));
     dlg->addKeyword(
         "name",

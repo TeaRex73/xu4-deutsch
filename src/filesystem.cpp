@@ -26,7 +26,7 @@ const char Path::delim = '/';
 /**
  * Creates a path to a directory or file
  */
-Path::Path(const string &p)
+Path::Path(const std::string &p)
     :path(p)
 {
     struct stat path_stat;
@@ -52,7 +52,7 @@ Path::Path(const string &p)
         isDir = (path_stat.st_mode & S_IFDIR);
     }
     /* find the elements of the path that involve directory structure */
-    string dir_path =
+    std::string dir_path =
         isDir ? path : path.substr(0, path.find_last_of(dest_char));
     /* Add the trailing / or \ to the end, if it doesn't exist */
     if (dir_path[dir_path.size() - 1] != dest_char) {
@@ -117,10 +117,10 @@ bool Path::isDir() const
 /**
  * Returns the directory indicated in the path.
  */
-string Path::getDir() const
+std::string Path::getDir() const
 {
-    std::list<string>::const_iterator i;
-    string dir;
+    std::list<std::string>::const_iterator i;
+    std::string dir;
     for (i = dirs.begin(); i != dirs.end(); i++) {
         dir += *i + delim;
     }
@@ -129,17 +129,17 @@ string Path::getDir() const
 
 
 /** Returns the full filename of the file designated in the path */
-string Path::getFilename() const
+std::string Path::getFilename() const
 {
-    return (ext.empty()) ? file : file + string(".") + ext;
+    return (ext.empty()) ? file : file + std::string(".") + ext;
 }
 
-string Path::getBaseFilename() const
+std::string Path::getBaseFilename() const
 {
     return file; /**< Returns the base filename of the file */
 }
 
-string Path::getExt() const
+std::string Path::getExt() const
 {
     return ext; /**< Returns the extension of the file (if it exists) */
 }
@@ -148,7 +148,7 @@ string Path::getExt() const
 /**
  * Returns true if the given path exists in the filesystem
  */
-bool Path::exists(const string &path)
+bool Path::exists(const std::string &path)
 {
     struct stat path_stat;
     return stat(path.c_str(), &path_stat) == 0;
@@ -159,11 +159,11 @@ bool Path::exists(const string &path)
  * Opens a file and attempts to create the directory structure beneath it
  * before opening the file.
  */
-FILE *FileSystem::openFile(const string &filepath, const char *mode)
+std::FILE *FileSystem::openFile(const std::string &filepath, const char *mode)
 {
     Path path(filepath);
     createDirectory(filepath);
-    return fopen(path.getPath().c_str(), mode);
+    return std::fopen(path.getPath().c_str(), mode);
 }
 
 
@@ -174,9 +174,9 @@ FILE *FileSystem::openFile(const string &filepath, const char *mode)
  */
 void FileSystem::createDirectory(Path &path)
 {
-    std::list<string>::iterator i;
-    std::list<string> *dirs = path.getDirTree();
-    string dir;
+    std::list<std::string>::iterator i;
+    std::list<std::string> *dirs = path.getDirTree();
+    std::string dir;
     for (i = dirs->begin(); i != dirs->end(); i++) {
         dir += *i;
         /* create each directory leading up to our path */
@@ -195,7 +195,7 @@ void FileSystem::createDirectory(Path &path)
 /**
  * Create a directory that composes the path
  */
-void FileSystem::createDirectory(const string &filepath)
+void FileSystem::createDirectory(const std::string &filepath)
 {
     Path path(filepath);
     createDirectory(path);

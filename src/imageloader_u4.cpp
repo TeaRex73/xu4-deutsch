@@ -15,8 +15,6 @@
 #include "rle.h"
 #include "lzw/u4decode.h"
 
-using std::vector;
-
 ImageLoader *U4RawImageLoader::instance =
     ImageLoader::registerLoader(new U4RawImageLoader, "image/x-u4raw");
 ImageLoader *U4RleImageLoader::instance =
@@ -44,12 +42,12 @@ Image *U4RawImageLoader::load(U4FILE *file, int width, int height, int bpp)
         bpp
     );
     long rawLen = file->length();
-    unsigned char *raw = (unsigned char *)malloc(rawLen);
+    unsigned char *raw = (unsigned char *)std::malloc(rawLen);
     file->read(raw, 1, rawLen);
     long requiredLength = (width * height * bpp / 8);
     if (rawLen < requiredLength) {
         if (raw) {
-            free(raw);
+            std::free(raw);
         }
         errorWarning(
             "u4Raw Image of size %ld does not fit anticipated size %ld",
@@ -61,7 +59,7 @@ Image *U4RawImageLoader::load(U4FILE *file, int width, int height, int bpp)
     Image *image = Image::create(width, height, bpp <= 8, Image::HARDWARE);
     if (!image) {
         if (raw) {
-            free(raw);
+            std::free(raw);
         }
         return NULL;
     }
@@ -74,7 +72,7 @@ Image *U4RawImageLoader::load(U4FILE *file, int width, int height, int bpp)
         image->setPalette(paletteLoader.loadBWPalette(), 2);
     }
     setFromRawData(image, width, height, bpp, raw);
-    free(raw);
+    std::free(raw);
     return image;
 } // U4RawImageLoader::load
 
@@ -94,24 +92,24 @@ Image *U4RleImageLoader::load(U4FILE *file, int width, int height, int bpp)
         bpp
     );
     long compressedLen = file->length();
-    unsigned char *compressed = (unsigned char *)malloc(compressedLen);
+    unsigned char *compressed = (unsigned char *)std::malloc(compressedLen);
     file->read(compressed, 1, compressedLen);
     unsigned char *raw = NULL;
     long rawLen = rleDecompressMemory(
         compressed, compressedLen, (void **)&raw
     );
-    free(compressed);
+    std::free(compressed);
     compressed = NULL;
     if (rawLen != (width * height * bpp / 8)) {
         if (raw) {
-            free(raw);
+            std::free(raw);
         }
         return NULL;
     }
     Image *image = Image::create(width, height, bpp <= 8, Image::HARDWARE);
     if (!image) {
         if (raw) {
-            free(raw);
+            std::free(raw);
         }
         return NULL;
     }
@@ -124,7 +122,7 @@ Image *U4RleImageLoader::load(U4FILE *file, int width, int height, int bpp)
         image->setPalette(paletteLoader.loadBWPalette(), 2);
     }
     setFromRawData(image, width, height, bpp, raw);
-    free(raw);
+    std::free(raw);
     return image;
 } // U4RleImageLoader::load
 
@@ -144,24 +142,24 @@ Image *U4LzwImageLoader::load(U4FILE *file, int width, int height, int bpp)
         bpp
     );
     long compressedLen = file->length();
-    unsigned char *compressed = (unsigned char *)malloc(compressedLen);
+    unsigned char *compressed = (unsigned char *)std::malloc(compressedLen);
     file->read(compressed, 1, compressedLen);
     unsigned char *raw = NULL;
     long rawLen = decompress_u4_memory(
         compressed, compressedLen, (void **)&raw
     );
-    free(compressed);
+    std::free(compressed);
     compressed = NULL;
     if (rawLen != (width * height * bpp / 8)) {
         if (raw) {
-            free(raw);
+            std::free(raw);
         }
         return NULL;
     }
     Image *image = Image::create(width, height, bpp <= 8, Image::HARDWARE);
     if (!image) {
         if (raw) {
-            free(raw);
+            std::free(raw);
         }
         return NULL;
     }
@@ -174,7 +172,7 @@ Image *U4LzwImageLoader::load(U4FILE *file, int width, int height, int bpp)
         image->setPalette(paletteLoader.loadBWPalette(), 2);
     }
     setFromRawData(image, width, height, bpp, raw);
-    free(raw);
+    std::free(raw);
     return image;
 } // U4LzwImageLoader::load
 
@@ -212,7 +210,7 @@ RGBA *U4PaletteLoader::loadEgaPalette()
         int index = 0;
         const Config *config = Config::getInstance();
         egaPalette = new RGBA[16];
-        vector<ConfigElement> paletteConf =
+        std::vector<ConfigElement> paletteConf =
             config->getElement("egaPalette").getChildren();
         for (std::vector<ConfigElement>::iterator i = paletteConf.begin();
              i != paletteConf.end();

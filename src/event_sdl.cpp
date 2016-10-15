@@ -67,7 +67,7 @@ bool KeyHandler::defaultHandler(int key, void *data)
     switch (key) {
     case '`':
         if (c && c->location) {
-            printf(
+            std::printf(
                 "x = %d, y = %d, level = %d, tile = %d (%s)\n",
                 c->location->coords.x,
                 c->location->coords.y,
@@ -389,7 +389,7 @@ static void handleKeyDownEvent(
         key = U4_FKEY + (event.key.keysym.sym - SDLK_F1);
     }
     if (verbose) {
-        printf(
+        std::printf(
             "key event: unicode = %d, sym = %d, mod = %d; translated = %d\n",
             event.key.keysym.unicode,
             event.key.keysym.sym,
@@ -399,7 +399,7 @@ static void handleKeyDownEvent(
     }
     /* handle the keypress */
     if ((key >= 'a') && (key <= '}')) {
-        key = mytoupper(key);
+        key = xu4_toupper(key);
     }
     processed = controller->notifyKeyPressed(key);
     if (processed) {
@@ -461,7 +461,7 @@ void EventHandler::sleep(unsigned int usec)
             }
             break;
         case SDL_QUIT:
-            exit(EXIT_FAILURE);
+            std::exit(EXIT_FAILURE);
             break;
         default:
             break;
@@ -495,7 +495,7 @@ void EventHandler::run()
             handleActiveEvent(event, updateScreen);
             break;
         case SDL_QUIT:
-            exit(EXIT_FAILURE);
+            std::exit(EXIT_FAILURE);
             break;
         default:
             break;

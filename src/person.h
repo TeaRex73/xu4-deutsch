@@ -11,8 +11,7 @@
 #include "creature.h"
 #include "types.h"
 
-using std::list;
-using std::string;
+
 
 class Conversation;
 class Dialogue;
@@ -45,7 +44,7 @@ public:
     Person(const Person *p);
     bool canConverse() const;
     bool isVendor() const;
-    virtual string getName() const;
+    virtual std::string getName() const;
     void goToStartLocation();
     void setDialogue(Dialogue *d);
 
@@ -60,25 +59,25 @@ public:
     }
     
     void setNpcType(PersonNpcType t);
-    list<string> getConversationText(
+    std::list<std::string> getConversationText(
         Conversation *cnv, const char *inquiry
     );
-    string getPrompt(Conversation *cnv);
+    std::string getPrompt(Conversation *cnv);
     const char *getChoices(Conversation *cnv);
-    string getIntro(Conversation *cnv);
-    string processResponse(Conversation *cnv, Response *response);
+    std::string getIntro(Conversation *cnv);
+    std::string processResponse(Conversation *cnv, Response *response);
     void runCommand(Conversation *cnv, const ResponsePart &command);
-    string getResponse(Conversation *cnv, const char *inquiry);
-    string talkerGetQuestionResponse(
+    std::string getResponse(Conversation *cnv, const char *inquiry);
+    std::string talkerGetQuestionResponse(
         Conversation *cnv, const char *inquiry
     );
-    string beggarGetQuantityResponse(
+    std::string beggarGetQuantityResponse(
         Conversation *cnv, const char *response
     );
-    string lordBritishGetQuestionResponse(
+    std::string lordBritishGetQuestionResponse(
         Conversation *cnv, const char *answer
     );
-    string getQuestion(Conversation *cnv);
+    std::string getQuestion(Conversation *cnv);
 
 private:
     Dialogue *dialogue;
@@ -87,7 +86,7 @@ private:
 };
 
 bool isPerson(Object *punknown);
-list<string> replySplit(const string &text);
-int linecount(const string &s, int columnmax);
+std::list<std::string> replySplit(const std::string &text);
+int linecount(const std::string &s, int columnmax);
 
 #endif // ifndef PERSON_H

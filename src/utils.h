@@ -7,7 +7,7 @@
 
 #include <cstdio>
 #include <ctime>
-#include <unordered_map>
+#include <map>
 #include <string>
 #include <vector>
 
@@ -15,7 +15,7 @@
 
 #include "filesystem.h"
 
-using std::string;
+
 
 
 /* The AdjustValue functions used to be #define'd macros, but these are
@@ -107,33 +107,42 @@ inline void AdjustValue(unsigned short &v, int val, int max, int min)
 
 void xu4_srandom();
 int xu4_random(int upperval);
-int mytoupper(int c);
-int mytolower(int c);
-string &trim(string &val, const string &chars_to_trim = "\t\013\014 \n\r");
-string lowercase(string val);
-string uppercase(string val);
-string deumlaut(string val);
-string  to_string(int val);
-std::vector<string> split(const string &s, const string &separators);
+int xu4_islower(int c);
+int xu4_toupper(int c);
+int xu4_tolower(int c);
+int xu4_strcasecmp(const char *s1, const char *s2);
+int xu4_strncasecmp(const char *s1, const char *s2, std::size_t n);
+char *xu4_strdup(const char *s);
+std::string &trim(
+    std::string &val, const std::string &chars_to_trim = "\t\013\014 \n\r"
+);
+std::string lowercase(std::string val);
+std::string uppercase(std::string val);
+std::string deumlaut(std::string val);
+std::string to_string(int val);
+std::vector<std::string> split(
+    const std::string &s, const std::string &separators
+);
+
 class Performance {
 private:
-    typedef std::unordered_map<string, clock_t> TimeMap;
+    typedef std::map<std::string, std::clock_t> TimeMap;
 
 public:
-    Performance(const string &s)
+    Performance(const std::string &s)
     {
 #ifndef NPERF
         init(s);
 #endif
     }
     
-    void init(const string &s)
+    void init(const std::string &s)
     {
 #ifndef NPERF
         Path path(s);
         FileSystem::createDirectory(path);
         filename = path.getPath();
-        log = fopen(filename.c_str(), "wt");
+        log = std::fopen(filename.c_str(), "wt");
         if (!log) {
             // FIXME: throw exception
             return;
@@ -145,7 +154,7 @@ public:
     {
 #ifndef NPERF
         if (!log) {
-            log = fopen(filename.c_str(), "at");
+            log = std::fopen(filename.c_str(), "at");
             if (!log) {
                 // FIXME: throw exception
                 return;
@@ -157,14 +166,14 @@ public:
     void start()
     {
 #ifndef NPERF
-        s = clock();
+        s = std::clock();
 #endif
     }
     
-    void end(const string &funcName)
+    void end(const std::string &funcName)
     {
 #ifndef NPERF
-        e = clock();
+        e = std::clock();
         times[funcName] = e - s;
 #endif
     }
@@ -174,12 +183,12 @@ public:
 #ifndef NPERF
         static const double msec = double(CLOCKS_PER_SEC) / double(1000);
         TimeMap::const_iterator i;
-        clock_t total = 0;
-        std::unordered_map<double, string> percentages;
-        std::unordered_map<double, string>::iterator perc;
-        if (pre) { fprintf(log, "%s", pre); }
+        std::clock_t total = 0;
+        std::map<double, std::string> percentages;
+        std::map<double, std::string>::iterator perc;
+        if (pre) { std::fprintf(log, "%s", pre); }
         for (i = times.begin(); i != times.end(); i++) {
-            fprintf(
+            std::fprintf(
                 log,
                 "%s [%0.2f msecs]\n",
                 i->first.c_str(),
@@ -191,13 +200,15 @@ public:
             double perc = 100.0 * double(i->second) / total;
             percentages[perc] = i->first;
         }
-        fprintf(log, "\n");
+        std::fprintf(log, "\n");
         for (perc = percentages.begin(); perc != percentages.end(); perc++) {
-            fprintf(log, "%0.1f%% - %s\n", perc->first, perc->second.c_str());
+            std::fprintf(
+                log, "%0.1f%% - %s\n", perc->first, perc->second.c_str()
+            );
         }
-        fprintf(log, "\nTotal [%0.2f msecs]\n", double(total) / msec);
+        std::fprintf(log, "\nTotal [%0.2f msecs]\n", double(total) / msec);
         fsync(fileno(log));
-        fclose(log);
+        std::fclose(log);
         sync();
         log = NULL;
         times.clear();
@@ -205,9 +216,9 @@ public:
     } // report
 
 private:
-    FILE *log;
-    string filename;
-    clock_t s, e;
+    std::FILE *log;
+    std::string filename;
+    std::clock_t s, e;
     TimeMap times;
 };
 

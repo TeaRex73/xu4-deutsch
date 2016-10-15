@@ -4,6 +4,9 @@
 
 #include "vc6.h" // Fixes things if you're using VC6, does nothing otherwise
 
+#include <cstdlib>
+#include <cstring>
+
 #include "cheat.h"
 #include "location.h"
 #include "map.h"
@@ -29,7 +32,7 @@ bool CheatMenuController::keyPressed(int key)
     int i;
     bool valid = true;
     if ((key >= 'A') && (key <= ']')) {
-        key = mytolower(key);
+        key = xu4_tolower(key);
     }
     switch (key) {
     case '1':
@@ -99,12 +102,13 @@ bool CheatMenuController::keyPressed(int key)
     case 'g':
     {
         screenMessage("GEH ZU: ");
-        string dest = lowercase(gameGetInput(8));
+        std::string dest = lowercase(gameGetInput(8));
         bool found = false;
-        for (unsigned p = 0; p < c->location->map->portals.size(); p++) {
+        for (unsigned int p = 0; p < c->location->map->portals.size(); p++) {
             MapId destid = c->location->map->portals[p]->destid;
-            string destNameLower = lowercase(mapMgr->get(destid)->getName());
-            if (destNameLower.find(dest) != string::npos) {
+            std::string destNameLower =
+                lowercase(mapMgr->get(destid)->getName());
+            if (destNameLower.find(dest) != std::string::npos) {
                 screenMessage(
                     "\n%s\n", mapMgr->get(destid)->getName().c_str()
                 );
@@ -207,7 +211,7 @@ bool CheatMenuController::keyPressed(int key)
             unsigned int j;
             screenMessage("%s:", getVirtueName(static_cast<Virtue>(i)));
             for (j = 13;
-                 j > strlen(getVirtueName(static_cast<Virtue>(i)));
+                 j > std::strlen(getVirtueName(static_cast<Virtue>(i)));
                  j--) {
                 screenMessage(" ");
             }
@@ -429,17 +433,17 @@ bool CheatMenuController::keyPressed(int key)
  * as the creature's name, or the creature's id.  Once it finds the
  * creature to be summoned, it calls gameSpawnCreature() to spawn it.
  */
-void CheatMenuController::summonCreature(const string &name)
+void CheatMenuController::summonCreature(const std::string &name)
 {
     const Creature *m = NULL;
-    string creatureName = name;
+    std::string creatureName = name;
     trim(creatureName);
     if (creatureName.empty()) {
         screenMessage("\n");
         return;
     }
     /* find the creature by its id and spawn it */
-    unsigned int id = atoi(creatureName.c_str());
+    unsigned int id = std::atoi(creatureName.c_str());
     if (id > 0) {
         m = creatureMgr->getById(id);
     }

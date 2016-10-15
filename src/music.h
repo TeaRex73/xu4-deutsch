@@ -147,7 +147,7 @@ private:
     static Music *instance;
     static bool fading;
     static bool on;
-    bool load_sys(const string &pathname);
+    bool load_sys(const std::string &pathname);
     void playMid(Type music);
     void stopMid();
     bool load(Type music);

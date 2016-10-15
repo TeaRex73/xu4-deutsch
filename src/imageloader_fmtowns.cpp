@@ -15,8 +15,6 @@
 #include "imageloader_u4.h"
 #include "lzw/u4decode.h"
 
-using std::vector;
-
 ImageLoader *FMTOWNSImageLoader::instance_tif = ImageLoader::registerLoader(
     new FMTOWNSImageLoader(510), "image/fmtowns-tif"
 );
@@ -33,12 +31,12 @@ Image *FMTOWNSImageLoader::load(U4FILE *file, int width, int height, int bpp)
     ASSERT((bpp == 16) | (bpp == 4), "invalid bpp: %d", bpp);
     long rawLen = file->length() - offset;
     file->seek(offset, 0);
-    unsigned char *raw = (unsigned char *)malloc(rawLen);
+    unsigned char *raw = (unsigned char *)std::malloc(rawLen);
     file->read(raw, 1, rawLen);
     long requiredLength = (width * height * bpp / 8);
     if (rawLen < requiredLength) {
         if (raw) {
-            free(raw);
+            std::free(raw);
         }
         errorWarning(
             "FMTOWNS Image of size %ld does not fit anticipated size %ld",
@@ -52,7 +50,7 @@ Image *FMTOWNSImageLoader::load(U4FILE *file, int width, int height, int bpp)
     );
     if (!image) {
         if (raw) {
-            free(raw);
+            std::free(raw);
         }
         return NULL;
     }
@@ -86,6 +84,6 @@ Image *FMTOWNSImageLoader::load(U4FILE *file, int width, int height, int bpp)
             }
         }
     }
-    free(raw);
+    std::free(raw);
     return image;
 } // FMTOWNSImageLoader::load

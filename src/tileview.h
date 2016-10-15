@@ -26,7 +26,7 @@ class MapTile;
 class TileView:public View {
 public:
     TileView(int x, int y, int columns, int rows);
-    TileView(int x, int y, int columns, int rows, const string &tileset);
+    TileView(int x, int y, int columns, int rows, const std::string &tileset);
     virtual ~TileView();
     void reinit();
     void drawTile(MapTile &mapTile, bool focus, int x, int y);

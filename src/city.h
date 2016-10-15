@@ -9,7 +9,7 @@
 #include <string>
 #include <vector>
 
-using std::string;
+
 class Person;
 class Dialogue;
 
@@ -27,15 +27,15 @@ class City:public Map {
 public:
     City();
     ~City();
-    virtual string getName();
+    virtual std::string getName();
     Person *addPerson(Person *p);
     void addPeople();
     void removeAllPeople();
     Person *personAt(const Coords &coords);
-    string name;
-    string type;
+    std::string name;
+    std::string type;
     PersonList persons;
-    string tlk_fname;
+    std::string tlk_fname;
     PersonRoleList personroles;
     std::vector<Person *> personObjects;
     std::vector<Dialogue *> normalDialogues;

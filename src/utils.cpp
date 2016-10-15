@@ -11,7 +11,10 @@
 #include "utils.h"
 #include <cctype>
 #include <cstdlib>
+#include <cstring>
 #include <ctime>
+
+
 
 
 /**
@@ -19,57 +22,54 @@
  */
 void xu4_srandom()
 {
-#if (defined(BSD) && (BSD >= 199103)) || defined(MACOSX)
-    srandom(time(NULL));
-#else
-    srand((unsigned int)time(NULL));
-#endif
+    std::srand((unsigned int)std::time(NULL));
 }
 
 
 /**
- * Generate a random number between 0 and (upperRange - 1).  This
- * routine uses the upper bits of the random number provided by rand()
- * to compensate for older generators that have low entropy in the
- * lower bits (e.g. MacOS X).
+ * Generate a random number between 0 and (upperRange - 1).
  */
 int xu4_random(int upperRange)
 {
-#if (defined(BSD) && (BSD >= 199103)) || defined(MACOSX)
-    int r = random();
-#else
-    int r = rand();
-#endif
-    return (int)((((double)upperRange) * r) / (RAND_MAX + 1.0));
+    int r;
+    int rand_limit = RAND_MAX - (((RAND_MAX % upperRange) + 1) % upperRange);
+    do {
+        r = std::rand();
+    } while (r > rand_limit);
+    return r % upperRange; 
 }
 
 
 /**
- * Trims whitespace from a std::string
+ * Trims whitespace from a string
  * @param val The string you are trimming
  * @param chars_to_trim A list of characters that will be trimmed
  */
-string &trim(string &val, const string &chars_to_trim)
+std::string &trim(std::string &val, const std::string &chars_to_trim)
 {
-    using namespace std;
-    string::iterator i;
+    std::string::iterator i;
     if (val.size()) {
-        string::size_type pos;
+        std::string::size_type pos;
         for (i = val.begin();
              (i != val.end()) &&
-                 (pos = chars_to_trim.find(*i)) != string::npos;) {
+                 (pos = chars_to_trim.find(*i)) != std::string::npos;) {
             i = val.erase(i);
         }
         for (i = val.end() - 1;
              (i != val.begin()) &&
-                 (pos = chars_to_trim.find(*i)) != string::npos;) {
+                 (pos = chars_to_trim.find(*i)) != std::string::npos;) {
             i = val.erase(i) - 1;
         }
     }
     return val;
 }
 
-int mytoupper(int c)
+int xu4_islower(int c)
+{
+    return ((c >= 'a') && (c <= '~'));
+}
+
+int xu4_toupper(int c)
 {
     if ((c >= 'a') && (c <= '}')) {
         return c - 32;
@@ -77,7 +77,7 @@ int mytoupper(int c)
     return c;
 }
 
-int mytolower(int c)
+int xu4_tolower(int c)
 {
     if ((c >= 'A') && (c <= ']')) {
         return c + 32;
@@ -85,16 +85,56 @@ int mytolower(int c)
     return c;
 }
 
+int xu4_strcasecmp(const char *s1, const char *s2)
+{
+    unsigned char c1,c2;
+    if (s1 == s2) {
+        return 0;
+    }
+    do {
+        c1 = xu4_tolower(*s1++);
+        c2 = xu4_tolower(*s2++);
+        if (c1 == '\0') {
+            break;
+        }
+    } while (c1 == c2);
+    return c1 - c2;
+}
+
+int xu4_strncasecmp(const char *s1, const char *s2, std::size_t n)
+{
+    unsigned char c1,c2;
+    if (s1 == s2 || n == 0) {
+        return 0;
+    }
+    do {
+        c1 = xu4_tolower(*s1++);
+        c2 = xu4_tolower(*s2++);
+        if (--n == 0 || c1 == '\0') {
+            break;
+        }
+    } while (c1 == c2);
+    return c1 - c2;
+}
+
+char *xu4_strdup(const char *s)
+{
+    std::size_t length = std::strlen(s) + 1;
+    void *copy = std::malloc(length);
+    if (copy == NULL) {
+        return NULL;
+    }
+    return (char *)std::memcpy(copy, s, length);
+}
 
 /**
  * Converts the string to lowercase
  */
-string lowercase(string val)
+std::string lowercase(std::string val)
 {
-    using namespace std;
-    string::iterator i;
+    std::string::iterator i;
     for (i = val.begin(); i != val.end(); i++) {
-        *i = mytolower(*i);
+        *i = xu4_tolower(*i);
     }
     return val;
 }
@@ -103,26 +143,24 @@ string lowercase(string val)
 /**
  * Converts the string to uppercase
  */
-string uppercase(string val)
+std::string uppercase(std::string val)
 {
-    using namespace std;
-    string ret = "";
-    string::iterator i;
+    std::string ret = "";
+    std::string::iterator i;
     for (i = val.begin(); i != val.end(); i++) {
         if (*i == '~') {
             ret += "SS";
         } else {
-            ret += string(1, (char)mytoupper(*i));
+            ret += std::string(1, (char)xu4_toupper(*i));
         }
     }
     return ret;
 }
 
-string deumlaut(string val)
+std::string deumlaut(std::string val)
 {
-    using namespace std;
-    string ret = "";
-    string::iterator i;
+    std::string ret = "";
+    std::string::iterator i;
     for (i = val.begin(); i != val.end(); i++) {
         switch (*i) {
         case '[':
@@ -147,7 +185,7 @@ string deumlaut(string val)
             ret += "ss";
             break;
         default:
-            ret += string(1, (char)mytoupper(*i));
+            ret += std::string(1, (char)xu4_toupper(*i));
         }
     }
     return ret;
@@ -157,24 +195,26 @@ string deumlaut(string val)
 /**
  * Converts an integer value to a string
  */
-string to_string(int val)
+std::string to_string(int val)
 {
     char buffer[16];
-    sprintf(buffer, "%d", val);
+    std::sprintf(buffer, "%d", val);
     return buffer;
 }
 
 
 /**
- * Splits a string into substrings, divided by the charactars in
+ * Splits a string into substrings, divided by the characters in
  * separators.  Multiple adjacent seperators are treated as one.
  */
-std::vector<string> split(const string &s, const string &separators)
+std::vector<std::string> split(
+    const std::string &s, const std::string &separators
+)
 {
-    std::vector<string> result;
-    string current;
-    for (unsigned i = 0; i < s.length(); i++) {
-        if (separators.find(s[i]) != string::npos) {
+    std::vector<std::string> result;
+    std::string current;
+    for (unsigned int i = 0; i < s.length(); i++) {
+        if (separators.find(s[i]) != std::string::npos) {
             if (current.length() > 0) {
                 result.push_back(current);
             }

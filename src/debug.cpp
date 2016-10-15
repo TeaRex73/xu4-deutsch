@@ -20,9 +20,6 @@
 #include "settings.h"
 #include "utils.h"
 
-using std::vector;
-
-
 #if HAVE_BACKTRACE
 #include <execinfo.h>
 
@@ -31,21 +28,21 @@ using std::vector;
  * the -rdynamic flag to have access to the actual backtrace symbols;
  * otherwise they will be simple hex offsets.
  */
-void print_trace(FILE *file)
+void print_trace(std::FILE *file)
 {
     /* Code Taken from GNU C Library manual */
     void *array[10];
-    size_t size;
+    std::size_t size;
     char **strings;
-    size_t i;
+    std::size_t i;
     size = backtrace(array, 10);
     strings = backtrace_symbols(array, size);
-    fprintf(file, "Stack trace:\n");
+    std::fprintf(file, "Stack trace:\n");
     /* start at one to omit print_trace */
     for (i = 1; i < size; i++) {
-        fprintf(file, "%s\n", strings[i]);
+        std::fprintf(file, "%s\n", strings[i]);
     }
-    free(strings);
+    std::free(strings);
 }
 
 #else // if HAVE_BACKTRACE
@@ -53,9 +50,9 @@ void print_trace(FILE *file)
 /**
  * Stub for systems without access to the stack backtrace.
  */
-void print_trace(FILE *file)
+void print_trace(std::FILE *file)
 {
-    fprintf(file, "Stack trace not available\n");
+    std::fprintf(file, "Stack trace not available\n");
 }
 
 #endif // if HAVE_BACKTRACE
@@ -71,13 +68,13 @@ void print_trace(FILE *file)
 void ASSERT(bool exp, const char *desc, ...)
 {
 #ifndef NDEBUG
-    va_list args;
+    std::va_list args;
     va_start(args, desc);
     if (!exp) {
-        fprintf(stderr, "Assert fehlgeschlagen: ");
-        vfprintf(stderr, desc, args);
-        fprintf(stderr, "\n");
-        abort();
+        std::fprintf(stderr, "Assert fehlgeschlagen: ");
+        std::vfprintf(stderr, desc, args);
+        std::fprintf(stderr, "\n");
+        std::abort();
     }
     va_end(args);
 #endif
@@ -86,7 +83,7 @@ void ASSERT(bool exp, const char *desc, ...)
 #endif // if !HAVE_VARIADIC_MACROS
 
 
-FILE *Debug::global = NULL;
+std::FILE *Debug::global = NULL;
 
 
 /**
@@ -101,7 +98,7 @@ FILE *Debug::global = NULL;
  * @param append    If true, appends to the debug file
  *                  instead of overwriting it.
  */
-Debug::Debug(const string &fn, const string &nm, bool append)
+Debug::Debug(const std::string &fn, const std::string &nm, bool append)
     :disabled(false), filename(fn), name(nm)
 {
     if (!loggingEnabled(name)) {
@@ -131,7 +128,7 @@ Debug::Debug(const string &fn, const string &nm, bool append)
     {
         // FIXME: throw exception here
     } else if (!name.empty()) {
-        fprintf(file, "=== %s ===\n", name.c_str());
+        std::fprintf(file, "=== %s ===\n", name.c_str());
     }
 }
 
@@ -142,17 +139,17 @@ Debug::Debug(const string &fn, const string &nm, bool append)
  * macro used, whereas TRACE_LOCAL() only captures
  * the debug info in its own debug file.
  */
-void Debug::initGlobal(const string &filename)
+void Debug::initGlobal(const std::string &filename)
 {
     if (settings.logging.empty()) {
         return;
     }
     if (global) {
-        fclose(global);
+        std::fclose(global);
     }
 #ifdef MACOSX
     /* In Mac OS X store debug files in a user-specific location */
-    string osxfname;
+    std::string osxfname;
     osxfname.reserve(2048);
     FSRef folder;
     OSErr err = FSFindFolder(
@@ -182,9 +179,9 @@ void Debug::initGlobal(const string &filename)
  * macros to provide trace functionality.
  */
 void Debug::trace(
-    const string &msg,
-    const string &fn,
-    const string &func,
+    const std::string &msg,
+    const std::string &fn,
+    const std::string &func,
     const int line,
     bool glbl
 )
@@ -193,7 +190,7 @@ void Debug::trace(
         return;
     }
     bool brackets = false;
-    string message, filename;
+    std::string message, filename;
     Path path(fn);
     filename = path.getFilename();
     if (!file) {
@@ -226,7 +223,7 @@ void Debug::trace(
         if (line > 0) {
             l_line = line;
             char ln[8];
-            sprintf(ln, "%d", line);
+            std::sprintf(ln, "%d", line);
             message += "line ";
             message += ln;
         } else {
@@ -237,9 +234,9 @@ void Debug::trace(
         message += "]";
     }
     message += "\n";
-    fprintf(file, "%s", message.c_str());
+    std::fprintf(file, "%s", message.c_str());
     if (global && glbl) {
-        fprintf(global, "%12s: %s", name.c_str(), message.c_str());
+        std::fprintf(global, "%12s: %s", name.c_str(), message.c_str());
     }
 } // Debug::trace
 
@@ -248,12 +245,12 @@ void Debug::trace(
  * Determines whether or not this debug element is enabled in our
  * game settings.
  */
-bool Debug::loggingEnabled(const string &name)
+bool Debug::loggingEnabled(const std::string &name)
 {
     if (settings.logging == "all") {
         return true;
     }
-    vector<string> enabledLogs = split(settings.logging, ", ");
+    std::vector<std::string> enabledLogs = split(settings.logging, ", ");
     if (std::find(enabledLogs.begin(), enabledLogs.end(), name)
         != enabledLogs.end()) {
         return true;

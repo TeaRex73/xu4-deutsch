@@ -5,7 +5,10 @@
 #include "vc6.h" // Fixes things if you're using VC6, does nothing otherwise
 
 #include <cctype>
+#include <cstdlib>
+#include <cstdio>
 #include <cstring>
+#include <unistd.h>
 
 #include "settings.h"
 
@@ -22,7 +25,7 @@
 #include <CoreServices/CoreServices.h>
 #endif
 
-using namespace std;
+
 
 
 /*
@@ -246,7 +249,7 @@ Settings::Settings()
 /**
  * Initialize the settings.
  */
-void Settings::init(const bool useProfile, const string profileName)
+void Settings::init(const bool useProfile, const std::string profileName)
 {
     if (useProfile) {
         userPath = "./profiles/";
@@ -266,7 +269,7 @@ void Settings::init(const bool useProfile, const string profileName)
             }
         }
         if (userPath.empty()) {
-            char *home = getenv("HOME");
+            char *home = std::getenv("HOME");
             if (home && home[0]) {
                 if (userPath.size() == 0) {
                     userPath += home;
@@ -279,7 +282,7 @@ void Settings::init(const bool useProfile, const string profileName)
         }
 
 #elif defined(__unix__)
-        char *home = getenv("HOME");
+        char *home = std::getenv("HOME");
         if (home && home[0]) {
             userPath += home;
             userPath += "/.xu4";
@@ -344,7 +347,7 @@ void Settings::setData(const SettingsData &data)
 bool Settings::read()
 {
     char buffer[256];
-    FILE *settingsFile;
+    std::FILE *settingsFile;
     extern int eventTimerGranularity;
     /* default settings */
 #if 0
@@ -403,197 +406,202 @@ bool Settings::read()
     mouseOptions.enabled = 0;
     logging = DEFAULT_LOGGING;
     game = "Ultima IV";
-    settingsFile = fopen(filename.c_str(), "rt");
+    settingsFile = std::fopen(filename.c_str(), "rt");
     if (!settingsFile) {
         return false;
     }
-    while (fgets(buffer, sizeof(buffer), settingsFile) != NULL) {
-        while (isspace(buffer[strlen(buffer) - 1])) {
-            buffer[strlen(buffer) - 1] = '\0';
+    while (std::fgets(buffer, sizeof(buffer), settingsFile) != NULL) {
+        while (std::isspace(buffer[std::strlen(buffer) - 1])) {
+            buffer[std::strlen(buffer) - 1] = '\0';
         }
-        if (strstr(buffer, "scale=") == buffer) {
+        if (std::strstr(buffer, "scale=") == buffer) {
             /* do nothing */
             /* scale =
-               (unsigned int) strtoul(buffer + strlen("scale="), NULL, 0); */
+                (unsigned int) std::strtoul(
+                    buffer + std::strlen("scale="), NULL, 0
+               ); */
         }
-        else if (strstr(buffer, "fullscreen=") == buffer) {
-            fullscreen = (int)strtoul(buffer + strlen("fullscreen="), NULL, 0);
-        } else if (strstr(buffer, "filter=") == buffer) {
-            filter = buffer + strlen("filter=");
-        } else if (strstr(buffer, "video=") == buffer) {
-            videoType = buffer + strlen("video=");
-        } else if (strstr(buffer, "gemLayout=") == buffer) {
-            gemLayout = buffer + strlen("gemLayout=");
-        } else if (strstr(buffer, "lineOfSight=") == buffer) {
-            lineOfSight = buffer + strlen("lineOfSight=");
-        } else if (strstr(buffer, "screenShakes=") == buffer) {
-            screenShakes = (int)strtoul(
-                buffer + strlen("screenShakes="), NULL, 0
+        else if (std::strstr(buffer, "fullscreen=") == buffer) {
+            fullscreen = (int)std::strtoul(
+                buffer + std::strlen("fullscreen="), NULL, 0
             );
-        } else if (strstr(buffer, "gamma=") == buffer) {
-            gamma = (int)strtoul(
-                buffer + strlen("gamma="), NULL, 0
+        } else if (std::strstr(buffer, "filter=") == buffer) {
+            filter = buffer + std::strlen("filter=");
+        } else if (std::strstr(buffer, "video=") == buffer) {
+            videoType = buffer + std::strlen("video=");
+        } else if (std::strstr(buffer, "gemLayout=") == buffer) {
+            gemLayout = buffer + std::strlen("gemLayout=");
+        } else if (std::strstr(buffer, "lineOfSight=") == buffer) {
+            lineOfSight = buffer + std::strlen("lineOfSight=");
+        } else if (std::strstr(buffer, "screenShakes=") == buffer) {
+            screenShakes = (int)std::strtoul(
+                buffer + std::strlen("screenShakes="), NULL, 0
             );
-        } else if (strstr(buffer, "musicVol=") == buffer) {
-            musicVol = (int)strtoul(
-                buffer + strlen("musicVol="), NULL, 0
+        } else if (std::strstr(buffer, "gamma=") == buffer) {
+            gamma = (int)std::strtoul(
+                buffer + std::strlen("gamma="), NULL, 0
             );
-        } else if (strstr(buffer, "soundVol=") == buffer) {
-            soundVol = (int)strtoul(
-                buffer + strlen("soundVol="), NULL, 0
+        } else if (std::strstr(buffer, "musicVol=") == buffer) {
+            musicVol = (int)std::strtoul(
+                buffer + std::strlen("musicVol="), NULL, 0
             );
-        } else if (strstr(buffer, "volumeFades=") == buffer) {
-            volumeFades = (int)strtoul(
-                buffer + strlen("volumeFades="), NULL, 0
+        } else if (std::strstr(buffer, "soundVol=") == buffer) {
+            soundVol = (int)std::strtoul(
+                buffer + std::strlen("soundVol="), NULL, 0
             );
-        } else if (strstr(buffer, "shortcutCommands=") == buffer) {
-            shortcutCommands = (int)strtoul(
-                buffer + strlen("shortcutCommands="), NULL, 0
+        } else if (std::strstr(buffer, "volumeFades=") == buffer) {
+            volumeFades = (int)std::strtoul(
+                buffer + std::strlen("volumeFades="), NULL, 0
             );
-        } else if (strstr(buffer, "keydelay=") == buffer) {
-            keydelay = (int)strtoul(
-                buffer + strlen("keydelay="), NULL, 0
+        } else if (std::strstr(buffer, "shortcutCommands=") == buffer) {
+            shortcutCommands = (int)std::strtoul(
+                buffer + std::strlen("shortcutCommands="), NULL, 0
             );
-        } else if (strstr(buffer, "keyinterval=") == buffer) {
-            keyinterval = (int)strtoul(
-                buffer + strlen("keyinterval="), NULL, 0
+        } else if (std::strstr(buffer, "keydelay=") == buffer) {
+            keydelay = (int)std::strtoul(
+                buffer + std::strlen("keydelay="), NULL, 0
             );
-        } else if (strstr(buffer, "filterMoveMessages=") == buffer) {
-            filterMoveMessages = (int)strtoul(
-                buffer + strlen("filterMoveMessages="),
+        } else if (std::strstr(buffer, "keyinterval=") == buffer) {
+            keyinterval = (int)std::strtoul(
+                buffer + std::strlen("keyinterval="), NULL, 0
+            );
+        } else if (std::strstr(buffer, "filterMoveMessages=") == buffer) {
+            filterMoveMessages = (int)std::strtoul(
+                buffer + std::strlen("filterMoveMessages="),
                 NULL,
                 0
             );
-        } else if (strstr(buffer, "battlespeed=") == buffer) {
-            battleSpeed = (int)strtoul(
-                buffer + strlen("battlespeed="), NULL, 0
+        } else if (std::strstr(buffer, "battlespeed=") == buffer) {
+            battleSpeed = (int)std::strtoul(
+                buffer + std::strlen("battlespeed="), NULL, 0
             );
-        } else if (strstr(buffer, "enhancements=") == buffer) {
-            enhancements = (int)strtoul(
-                buffer + strlen("enhancements="), NULL, 0
+        } else if (std::strstr(buffer, "enhancements=") == buffer) {
+            enhancements = (int)std::strtoul(
+                buffer + std::strlen("enhancements="), NULL, 0
             );
-        } else if (strstr(buffer, "gameCyclesPerSecond=") == buffer) {
-            gameCyclesPerSecond = (int)strtoul(
-                buffer + strlen("gameCyclesPerSecond="), NULL, 0
+        } else if (std::strstr(buffer, "gameCyclesPerSecond=") == buffer) {
+            gameCyclesPerSecond = (int)std::strtoul(
+                buffer + std::strlen("gameCyclesPerSecond="), NULL, 0
             );
-        } else if (strstr(buffer, "debug=") == buffer) {
-            debug = (int)strtoul(
-                buffer + strlen("debug="), NULL, 0
+        } else if (std::strstr(buffer, "debug=") == buffer) {
+            debug = (int)std::strtoul(
+                buffer + std::strlen("debug="), NULL, 0
             );
-        } else if (strstr(buffer, "battleDiff=") == buffer) {
-            battleDiff = buffer + strlen("battleDiff=");
-        } else if (strstr(buffer, "validateXml=") == buffer) {
-            validateXml = (int)strtoul(
-                buffer + strlen("validateXml="), NULL, 0
+        } else if (std::strstr(buffer, "battleDiff=") == buffer) {
+            battleDiff = buffer + std::strlen("battleDiff=");
+        } else if (std::strstr(buffer, "validateXml=") == buffer) {
+            validateXml = (int)std::strtoul(
+                buffer + std::strlen("validateXml="), NULL, 0
             );
-        } else if (strstr(buffer, "spellEffectSpeed=") == buffer) {
-            spellEffectSpeed = (int)strtoul(
-                buffer + strlen("spellEffectSpeed="), NULL, 0
+        } else if (std::strstr(buffer, "spellEffectSpeed=") == buffer) {
+            spellEffectSpeed = (int)std::strtoul(
+                buffer + std::strlen("spellEffectSpeed="), NULL, 0
             );
-        } else if (strstr(buffer, "campTime=") == buffer) {
-            campTime = (int)strtoul(
-                buffer + strlen("campTime="), NULL, 0
+        } else if (std::strstr(buffer, "campTime=") == buffer) {
+            campTime = (int)std::strtoul(
+                buffer + std::strlen("campTime="), NULL, 0
             );
-        } else if (strstr(buffer, "innTime=") == buffer) {
-            innTime = (int)strtoul(
-                buffer + strlen("innTime="), NULL, 0
+        } else if (std::strstr(buffer, "innTime=") == buffer) {
+            innTime = (int)std::strtoul(
+                buffer + std::strlen("innTime="), NULL, 0
             );
-        } else if (strstr(buffer, "shrineTime=") == buffer) {
-            shrineTime = (int)strtoul(
-                buffer + strlen("shrineTime="), NULL, 0
+        } else if (std::strstr(buffer, "shrineTime=") == buffer) {
+            shrineTime = (int)std::strtoul(
+                buffer + std::strlen("shrineTime="), NULL, 0
             );
-        } else if (strstr(buffer, "shakeInterval=") == buffer) {
-            shakeInterval = (int)strtoul(
-                buffer + strlen("shakeInterval="), NULL, 0
+        } else if (std::strstr(buffer, "shakeInterval=") == buffer) {
+            shakeInterval = (int)std::strtoul(
+                buffer + std::strlen("shakeInterval="), NULL, 0
             );
-        } else if (strstr(buffer, "titleSpeedRandom=") == buffer) {
-            titleSpeedRandom = (int)strtoul(
-                buffer + strlen("titleSpeedRandom="), NULL, 0
+        } else if (std::strstr(buffer, "titleSpeedRandom=") == buffer) {
+            titleSpeedRandom = (int)std::strtoul(
+                buffer + std::strlen("titleSpeedRandom="), NULL, 0
             );
-        } else if (strstr(buffer, "titleSpeedOther=") == buffer) {
-            titleSpeedOther = (int)strtoul(
-                buffer + strlen("titleSpeedOther="), NULL, 0
+        } else if (std::strstr(buffer, "titleSpeedOther=") == buffer) {
+            titleSpeedOther = (int)std::strtoul(
+                buffer + std::strlen("titleSpeedOther="), NULL, 0
             );
         }
         /* minor enhancement options */
-        else if (strstr(buffer, "activePlayer=") == buffer) {
-            enhancementsOptions.activePlayer = (int)strtoul(
-                buffer + strlen("activePlayer="), NULL, 0
+        else if (std::strstr(buffer, "activePlayer=") == buffer) {
+            enhancementsOptions.activePlayer = (int)std::strtoul(
+                buffer + std::strlen("activePlayer="), NULL, 0
             );
-        } else if (strstr(buffer, "u5spellMixing=") == buffer) {
-            enhancementsOptions.u5spellMixing = (int)strtoul(
-                buffer + strlen("u5spellMixing="), NULL, 0
+        } else if (std::strstr(buffer, "u5spellMixing=") == buffer) {
+            enhancementsOptions.u5spellMixing = (int)std::strtoul(
+                buffer + std::strlen("u5spellMixing="), NULL, 0
             );
-        } else if (strstr(buffer, "u5shrines=") == buffer) {
-            enhancementsOptions.u5shrines = (int)strtoul(
-                buffer + strlen("u5shrines="), NULL, 0
+        } else if (std::strstr(buffer, "u5shrines=") == buffer) {
+            enhancementsOptions.u5shrines = (int)std::strtoul(
+                buffer + std::strlen("u5shrines="), NULL, 0
             );
-        } else if (strstr(buffer, "slimeDivides=") == buffer) {
-            enhancementsOptions.slimeDivides = (int)strtoul(
-                buffer + strlen("slimeDivides="), NULL, 0
+        } else if (std::strstr(buffer, "slimeDivides=") == buffer) {
+            enhancementsOptions.slimeDivides = (int)std::strtoul(
+                buffer + std::strlen("slimeDivides="), NULL, 0
             );
-        } else if (strstr(buffer, "gazerSpawnsInsects=") == buffer) {
-            enhancementsOptions.gazerSpawnsInsects = (int)strtoul(
-                buffer + strlen("gazerSpawnsInsects="), NULL, 0
+        } else if (std::strstr(buffer, "gazerSpawnsInsects=") == buffer) {
+            enhancementsOptions.gazerSpawnsInsects = (int)std::strtoul(
+                buffer + std::strlen("gazerSpawnsInsects="), NULL, 0
             );
-        } else if (strstr(buffer, "textColorization=") == buffer) {
-            enhancementsOptions.textColorization = (int)strtoul(
-                buffer + strlen("textColorization="), NULL, 0
+        } else if (std::strstr(buffer, "textColorization=") == buffer) {
+            enhancementsOptions.textColorization = (int)std::strtoul(
+                buffer + std::strlen("textColorization="), NULL, 0
             );
-        } else if (strstr(buffer, "c64chestTraps=") == buffer) {
-            enhancementsOptions.c64chestTraps = (int)strtoul(
-                buffer + strlen("c64chestTraps="), NULL, 0
+        } else if (std::strstr(buffer, "c64chestTraps=") == buffer) {
+            enhancementsOptions.c64chestTraps = (int)std::strtoul(
+                buffer + std::strlen("c64chestTraps="), NULL, 0
             );
-        } else if (strstr(buffer, "smartEnterKey=") == buffer) {
-            enhancementsOptions.smartEnterKey = (int)strtoul(
-                buffer + strlen("smartEnterKey="), NULL, 0
+        } else if (std::strstr(buffer, "smartEnterKey=") == buffer) {
+            enhancementsOptions.smartEnterKey = (int)std::strtoul(
+                buffer + std::strlen("smartEnterKey="), NULL, 0
             );
         }
         /* major enhancement options */
-        else if (strstr(buffer, "peerShowsObjects=") == buffer) {
-            enhancementsOptions.peerShowsObjects = (int)strtoul(
-                buffer + strlen("peerShowsObjects="), NULL, 0
+        else if (std::strstr(buffer, "peerShowsObjects=") == buffer) {
+            enhancementsOptions.peerShowsObjects = (int)std::strtoul(
+                buffer + std::strlen("peerShowsObjects="), NULL, 0
             );
-        } else if (strstr(buffer, "u5combat=") == buffer) {
-            enhancementsOptions.u5combat = (int)strtoul(
-                buffer + strlen("u5combat="), NULL, 0
+        } else if (std::strstr(buffer, "u5combat=") == buffer) {
+            enhancementsOptions.u5combat = (int)std::strtoul(
+                buffer + std::strlen("u5combat="), NULL, 0
             );
-        } else if (strstr(buffer, "innAlwaysCombat=") == buffer) {
-            innAlwaysCombat = (int)strtoul(
-                buffer + strlen("innAlwaysCombat="), NULL, 0
+        } else if (std::strstr(buffer, "innAlwaysCombat=") == buffer) {
+            innAlwaysCombat = (int)std::strtoul(
+                buffer + std::strlen("innAlwaysCombat="), NULL, 0
             );
-        } else if (strstr(buffer, "campingAlwaysCombat=") == buffer) {
-            campingAlwaysCombat = (int)strtoul(
-                buffer + strlen("campingAlwaysCombat="), NULL, 0
+        } else if (std::strstr(buffer, "campingAlwaysCombat=") == buffer) {
+            campingAlwaysCombat = (int)std::strtoul(
+                buffer + std::strlen("campingAlwaysCombat="), NULL, 0
             );
         }
         /* mouse options */
-        else if (strstr(buffer, "mouseEnabled=") == buffer) {
-            mouseOptions.enabled = (int)strtoul(
-                buffer + strlen("mouseEnabled="), NULL, 0
+        else if (std::strstr(buffer, "mouseEnabled=") == buffer) {
+            mouseOptions.enabled = (int)std::strtoul(
+                buffer + std::strlen("mouseEnabled="), NULL, 0
             );
-        } else if (strstr(buffer, "logging=") == buffer) {
-            logging = buffer + strlen("logging=");
-        } else if (strstr(buffer, "game=") == buffer) {
-            game = buffer + strlen("game=");
+        } else if (std::strstr(buffer, "logging=") == buffer) {
+            logging = buffer + std::strlen("logging=");
+        } else if (std::strstr(buffer, "game=") == buffer) {
+            game = buffer + std::strlen("game=");
         }
         /* graphics enhancements options */
-        else if (strstr(buffer, "renderTileTransparency=") == buffer) {
-            enhancementsOptions.u4TileTransparencyHack = (int)strtoul(
-                buffer + strlen("renderTileTransparency="), NULL, 0
+        else if (std::strstr(buffer, "renderTileTransparency=") == buffer) {
+            enhancementsOptions.u4TileTransparencyHack = (int)std::strtoul(
+                buffer + std::strlen("renderTileTransparency="), NULL, 0
             );
-        } else if (strstr(buffer, "transparentTilePixelShadowOpacity=")
+        } else if (std::strstr(buffer, "transparentTilePixelShadowOpacity=")
                    == buffer) {
             enhancementsOptions.u4TileTransparencyHackPixelShadowOpacity =
-                (int)strtoul(
-                    buffer + strlen("transparentTilePixelShadowOpacity="),
+                (int)std::strtoul(
+                    buffer + std::strlen("transparentTilePixelShadowOpacity="),
                     NULL,
                     0
                 );
-        } else if (strstr(buffer, "transparentTileShadowSize=") == buffer) {
+        } else if (std::strstr(buffer, "transparentTileShadowSize=")
+                   == buffer) {
             enhancementsOptions.u4TileTransparencyHackShadowBreadth =
-                (int)strtoul(
-                    buffer + strlen("transparentTileShadowSize="),
+                (int)std::strtoul(
+                    buffer + std::strlen("transparentTileShadowSize="),
                     NULL,
                     0
                 );
@@ -607,19 +615,19 @@ bool Settings::read()
          * remove:  attackspeed, minorEnhancements,
          * majorEnhancements, vol
          */
-        else if (strstr(buffer, "attackspeed=") == buffer) {
+        else if (std::strstr(buffer, "attackspeed=") == buffer) {
             /* do nothing */
-        } else if (strstr(buffer, "minorEnhancements=") == buffer) {
-            enhancements = (int)strtoul(
-                buffer + strlen("minorEnhancements="),
+        } else if (std::strstr(buffer, "minorEnhancements=") == buffer) {
+            enhancements = (int)std::strtoul(
+                buffer + std::strlen("minorEnhancements="),
                 NULL,
                 0
             );
-        } else if (strstr(buffer, "majorEnhancements=") == buffer) {
+        } else if (std::strstr(buffer, "majorEnhancements=") == buffer) {
             /* do nothing */
-        } else if (strstr(buffer, "vol=") == buffer) {
-            musicVol = soundVol = (int)strtoul(
-                buffer + strlen("vol="), NULL, 0
+        } else if (std::strstr(buffer, "vol=") == buffer) {
+            musicVol = soundVol = (int)std::strtoul(
+                buffer + std::strlen("vol="), NULL, 0
             );
         }
         /***/
@@ -629,7 +637,7 @@ bool Settings::read()
             );
         }
     }
-    fclose(settingsFile);
+    std::fclose(settingsFile);
     eventTimerGranularity = (1000 / gameCyclesPerSecond);
     return true;
 } // Settings::read
@@ -641,13 +649,13 @@ bool Settings::read()
  */
 bool Settings::write()
 {
-    FILE *settingsFile;
-    settingsFile = fopen(filename.c_str(), "wt");
+    std::FILE *settingsFile;
+    settingsFile = std::fopen(filename.c_str(), "wt");
     if (!settingsFile) {
         errorWarning("can't write settings file");
         return false;
     }
-    fprintf(
+    std::fprintf(
         settingsFile,
         "scale=%d\n"
         "fullscreen=%d\n"
@@ -743,7 +751,7 @@ bool Settings::write()
         enhancementsOptions.u4TileTransparencyHackShadowBreadth
     );
     fsync(fileno(settingsFile));
-    fclose(settingsFile);
+    std::fclose(settingsFile);
     sync();
     setChanged();
     notifyObservers(NULL);
@@ -754,12 +762,12 @@ bool Settings::write()
 /**
  * Return the path where user settings are stored.
  */
-const string &Settings::getUserPath()
+const std::string &Settings::getUserPath()
 {
     return userPath;
 }
 
-const vector<string> &Settings::getBattleDiffs()
+const std::vector<std::string> &Settings::getBattleDiffs()
 {
     return battleDiffs;
 }

@@ -11,9 +11,9 @@
 #include "object.h"
 #include "types.h"
 
-using std::string;
 
-int SaveGame::write(FILE *f) const
+
+int SaveGame::write(std::FILE *f) const
 {
     int i;
     if (!writeInt(unknown1, f) || !writeInt(moves, f)) {
@@ -84,7 +84,7 @@ int SaveGame::write(FILE *f) const
     return 1;
 } // SaveGame::write
 
-int SaveGame::read(FILE *f)
+int SaveGame::read(std::FILE *f)
 {
     int i;
     if (!readInt(&unknown1, f) || !readInt(&moves, f)) {
@@ -213,7 +213,7 @@ void SaveGame::init(const SaveGamePlayerRecord *avatarInfo)
     location = 0;
 } // SaveGame::init
 
-int SaveGamePlayerRecord::write(FILE *f) const
+int SaveGamePlayerRecord::write(std::FILE *f) const
 {
     int i;
     if (!writeShort(hp, f)
@@ -241,7 +241,7 @@ int SaveGamePlayerRecord::write(FILE *f) const
     return 1;
 }
 
-int SaveGamePlayerRecord::read(FILE *f)
+int SaveGamePlayerRecord::read(std::FILE *f)
 {
     int i;
     unsigned char ch;
@@ -305,7 +305,7 @@ void SaveGamePlayerRecord::init()
     status = STAT_GOOD;
 }
 
-int saveGameMonstersWrite(SaveGameMonsterRecord *monsterTable, FILE *f)
+int saveGameMonstersWrite(SaveGameMonsterRecord *monsterTable, std::FILE *f)
 {
     int i, max;
     if (monsterTable) {
@@ -360,7 +360,7 @@ int saveGameMonstersWrite(SaveGameMonsterRecord *monsterTable, FILE *f)
     return 1;
 } // saveGameMonstersWrite
 
-int saveGameMonstersRead(SaveGameMonsterRecord *monsterTable, FILE *f)
+int saveGameMonstersRead(SaveGameMonsterRecord *monsterTable, std::FILE *f)
 {
     int i;
     for (i = 0; i < MONSTERTABLE_SIZE; i++) {

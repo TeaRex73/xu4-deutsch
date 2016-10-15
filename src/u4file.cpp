@@ -18,9 +18,7 @@
 #include <libgen.h>
 #endif
 
-using std::unordered_map;
-using std::string;
-using std::vector;
+
 
 
 /**
@@ -28,16 +26,16 @@ using std::vector;
  */
 class U4FILE_stdio:public U4FILE {
 public:
-    static U4FILE *open(const string &fname);
+    static U4FILE *open(const std::string &fname);
     virtual void close();
     virtual int seek(long offset, int whence);
     virtual long tell();
-    virtual size_t read(void *ptr, size_t size, size_t nmemb);
+    virtual std::size_t read(void *ptr, std::size_t size, std::size_t nmemb);
     virtual int getc();
     virtual int putc(int c);
     virtual long length();
 private:
-    FILE *file;
+    std::FILE *file;
 };
 
 
@@ -47,11 +45,11 @@ private:
  */
 class U4FILE_zip:public U4FILE {
 public:
-    static U4FILE *open(const string &fname, const U4ZipPackage *package);
+    static U4FILE *open(const std::string &fname, const U4ZipPackage *package);
     virtual void close();
     virtual int seek(long offset, int whence);
     virtual long tell();
-    virtual size_t read(void *ptr, size_t size, size_t nmemb);
+    virtual std::size_t read(void *ptr, std::size_t size, std::size_t nmemb);
     virtual int getc();
     virtual int putc(int c);
     virtual long length();
@@ -162,7 +160,7 @@ bool u4isUpgradeInstalled()
         }
     }
     if (verbose) {
-        printf("u4isUpgradeInstalled %d\n", (int)result);
+        std::printf("u4isUpgradeInstalled %d\n", (int)result);
     }
     return result;
 }
@@ -172,7 +170,7 @@ bool u4isUpgradeInstalled()
  * Creates a new zip package.
  */
 U4ZipPackage::U4ZipPackage(
-    const string &name, const string &path, bool extension
+    const std::string &name, const std::string &path, bool extension
 )
 {
     this->name = name;
@@ -181,15 +179,16 @@ U4ZipPackage::U4ZipPackage(
 }
 
 void U4ZipPackage::addTranslation(
-    const string &value, const string &translation
+    const std::string &value, const std::string &translation
 )
 {
     translations[value] = translation;
 }
 
-const string &U4ZipPackage::translate(const string &name) const
+const std::string &U4ZipPackage::translate(const std::string &name) const
 {
-    unordered_map<string, string>::const_iterator i = translations.find(name);
+    std::map<std::string, std::string>::const_iterator i =
+        translations.find(name);
     if (i != translations.end()) {
         return i->second;
     } else {
@@ -221,7 +220,7 @@ void U4ZipPackageMgr::add(U4ZipPackage *package)
 U4ZipPackageMgr::U4ZipPackageMgr()
 {
     unzFile f;
-    string upg_pathname(u4find_path("u4upgrad.zip", u4Path.u4ZipPaths));
+    std::string upg_pathname(u4find_path("u4upgrad.zip", u4Path.u4ZipPaths));
     if (!upg_pathname.empty()) {
         /* upgrade zip is present */
         U4ZipPackage *upgrade = new U4ZipPackage(upg_pathname, "", false);
@@ -258,7 +257,7 @@ U4ZipPackageMgr::U4ZipPackageMgr()
     }
     // Check for the default zip packages
     int flag = 0;
-    string pathname;
+    std::string pathname;
     do                                {
         // Check for the upgraded package once.
         // unlikely it'll be renamed.
@@ -361,11 +360,11 @@ int U4FILE::getshort()
     return byteLow | (getc() << 8);
 }
 
-U4FILE *U4FILE_stdio::open(const string &fname)
+U4FILE *U4FILE_stdio::open(const std::string &fname)
 {
     U4FILE_stdio *u4f;
-    FILE *f;
-    f = fopen(fname.c_str(), "rb");
+    std::FILE *f;
+    f = std::fopen(fname.c_str(), "rb");
     if (!f) {
         return NULL;
     }
@@ -376,41 +375,41 @@ U4FILE *U4FILE_stdio::open(const string &fname)
 
 void U4FILE_stdio::close()
 {
-    fclose(file);
+    std::fclose(file);
 }
 
 int U4FILE_stdio::seek(long offset, int whence)
 {
-    return fseek(file, offset, whence);
+    return std::fseek(file, offset, whence);
 }
 
 long U4FILE_stdio::tell()
 {
-    return ftell(file);
+    return std::ftell(file);
 }
 
-size_t U4FILE_stdio::read(void *ptr, size_t size, size_t nmemb)
+std::size_t U4FILE_stdio::read(void *ptr, std::size_t size, std::size_t nmemb)
 {
-    return fread(ptr, size, nmemb, file);
+    return std::fread(ptr, size, nmemb, file);
 }
 
 int U4FILE_stdio::getc()
 {
-    return fgetc(file);
+    return std::fgetc(file);
 }
 
 int U4FILE_stdio::putc(int c)
 {
-    return fputc(c, file);
+    return std::fputc(c, file);
 }
 
 long U4FILE_stdio::length()
 {
     long curr, len;
-    curr = ftell(file);
-    fseek(file, 0L, SEEK_END);
-    len = ftell(file);
-    fseek(file, curr, SEEK_SET);
+    curr = std::ftell(file);
+    std::fseek(file, 0L, SEEK_END);
+    len = std::ftell(file);
+    std::fseek(file, curr, SEEK_SET);
     return len;
 }
 
@@ -418,7 +417,7 @@ long U4FILE_stdio::length()
 /**
  * Opens a file from within a zip archive.
  */
-U4FILE *U4FILE_zip::open(const string &fname, const U4ZipPackage *package)
+U4FILE *U4FILE_zip::open(const std::string &fname, const U4ZipPackage *package)
 {
     U4FILE_zip *u4f;
     unzFile f;
@@ -426,7 +425,8 @@ U4FILE *U4FILE_zip::open(const string &fname, const U4ZipPackage *package)
     if (!f) {
         return NULL;
     }
-    string pathname = package->getInternalPath() + package->translate(fname);
+    std::string pathname =
+        package->getInternalPath() + package->translate(fname);
     if (unzLocateFile(f, pathname.c_str(), 2) == UNZ_END_OF_LIST_OF_FILE) {
         unzClose(f);
         return NULL;
@@ -475,9 +475,9 @@ long U4FILE_zip::tell()
     return unztell(zfile);
 }
 
-size_t U4FILE_zip::read(void *ptr, size_t size, size_t nmemb)
+std::size_t U4FILE_zip::read(void *ptr, std::size_t size, std::size_t nmemb)
 {
-    size_t retval = unzReadCurrentFile(zfile, ptr, size * nmemb);
+    std::size_t retval = unzReadCurrentFile(zfile, ptr, size * nmemb);
     if (retval > 0) {
         retval = retval / size;
     }
@@ -525,17 +525,17 @@ long U4FILE_zip::length()
  * getting excessive.  The presence of the zipfiles should probably be
  * cached.
  */
-U4FILE *u4fopen(const string &fname)
+U4FILE *u4fopen(const std::string &fname)
 {
     U4FILE *u4f = NULL;
     unsigned int i;
     if (verbose) {
-        printf("looking for %s\n", fname.c_str());
+        std::printf("looking for %s\n", fname.c_str());
     }
     /**
      * search for file within zipfiles (ultima4.zip, u4upgrad.zip, etc.)
      */
-    const vector<U4ZipPackage *> &packages =
+    const std::vector<U4ZipPackage *> &packages =
         U4ZipPackageMgr::getInstance()->getPackages();
     for (std::vector<U4ZipPackage *>::const_reverse_iterator j =
              packages.rbegin();
@@ -549,18 +549,17 @@ U4FILE *u4fopen(const string &fname)
     /*
      * file not in a zipfile; check if it has been unzipped
      */
-    string fname_copy(fname + '\0');
-    string pathname = u4find_path(fname_copy, u4Path.u4ForDOSPaths);
+    std::string fname_copy(fname + '\0');
+    std::string pathname = u4find_path(fname_copy, u4Path.u4ForDOSPaths);
     if (pathname.empty()) {
-        using namespace std;
-        if (islower(fname_copy[0])) {
-            fname_copy[0] = mytoupper(fname_copy[0]);
+        if (std::islower(fname_copy[0])) {
+            fname_copy[0] = std::toupper(fname_copy[0]);
             pathname = u4find_path(fname_copy, u4Path.u4ForDOSPaths);
         }
         if (pathname.empty()) {
             for (i = 0; fname_copy[i] != '\0'; i++) {
-                if (islower(fname_copy[i])) {
-                    fname_copy[i] = mytoupper(fname_copy[i]);
+                if (std::islower(fname_copy[i])) {
+                    fname_copy[i] = std::toupper(fname_copy[i]);
                 }
             }
             pathname = u4find_path(fname_copy, u4Path.u4ForDOSPaths);
@@ -569,7 +568,7 @@ U4FILE *u4fopen(const string &fname)
     if (!pathname.empty()) {
         u4f = U4FILE_stdio::open(pathname);
         if (verbose && (u4f != NULL)) {
-            printf("%s successfully opened\n", pathname.c_str());
+            std::printf("%s successfully opened\n", pathname.c_str());
         }
     }
     return u4f;
@@ -580,7 +579,7 @@ U4FILE *u4fopen(const string &fname)
  * Opens a file with the standard C stdio facilities and wrap it in a
  * U4FILE.
  */
-U4FILE *u4fopen_stdio(const string &fname)
+U4FILE *u4fopen_stdio(const std::string &fname)
 {
     return U4FILE_stdio::open(fname);
 }
@@ -589,7 +588,7 @@ U4FILE *u4fopen_stdio(const string &fname)
 /**
  * Opens a file from a zipfile and wraps it in a U4FILE.
  */
-U4FILE *u4fopen_zip(const string &fname, U4ZipPackage *package)
+U4FILE *u4fopen_zip(const std::string &fname, U4ZipPackage *package)
 {
     return U4FILE_zip::open(fname, package);
 }
@@ -614,7 +613,7 @@ long u4ftell(U4FILE *f)
     return f->tell();
 }
 
-size_t u4fread(void *ptr, size_t size, size_t nmemb, U4FILE *f)
+std::size_t u4fread(void *ptr, std::size_t size, std::size_t nmemb, U4FILE *f)
 {
     return f->read(ptr, size, nmemb);
 }
@@ -649,11 +648,13 @@ long u4flength(U4FILE *f)
  * are read from the given offset, or the current file position if
  * offset is -1.
  */
-vector<string> u4read_stringtable(U4FILE *f, long offset, int nstrings)
+std::vector<std::string> u4read_stringtable(
+    U4FILE *f, long offset, int nstrings
+)
 {
-    string buffer;
+    std::string buffer;
     int i;
-    vector<string> strs;
+    std::vector<std::string> strs;
     ASSERT(offset < u4flength(f), "offset begins beyond end of file");
     if (offset != -1) {
         f->seek(offset, SEEK_SET);
@@ -669,18 +670,21 @@ vector<string> u4read_stringtable(U4FILE *f, long offset, int nstrings)
     return strs;
 }
 
-string u4find_path(const string &fname, std::list<string> specificSubPaths)
+std::string u4find_path(
+    const std::string &fname, std::list<std::string> specificSubPaths
+)
 {
-    FILE *f = NULL;
+    std::FILE *f = NULL;
     char path[2048]; // Sometimes paths get big.
-    for (std::list<string>::iterator rootItr =
+    for (std::list<std::string>::iterator rootItr =
              u4Path.rootResourcePaths.begin();
          rootItr != u4Path.rootResourcePaths.end() && !f;
          rootItr++) {
-        for (std::list<string>::iterator subItr = specificSubPaths.begin();
+        for (std::list<std::string>::iterator subItr =
+                 specificSubPaths.begin();
              subItr != specificSubPaths.end() && !f;
              ++subItr) {
-            snprintf(
+            std::snprintf(
                 path,
                 sizeof(path),
                 "%s/%s/%s",
@@ -689,44 +693,44 @@ string u4find_path(const string &fname, std::list<string> specificSubPaths)
                 fname.c_str()
             );
             if (verbose) {
-                printf("trying to open %s\n", path);
+                std::printf("trying to open %s\n", path);
             }
-            if ((f = fopen(path, "rb")) != NULL) {
+            if ((f = std::fopen(path, "rb")) != NULL) {
                 break;
             }
         }
     }
     if (verbose) {
         if (f != NULL) {
-            printf("%s successfully found\n", path);
+            std::printf("%s successfully found\n", path);
         } else {
-            printf("%s not found\n", fname.c_str());
+            std::printf("%s not found\n", fname.c_str());
         }
     }
     if (f) {
-        fclose(f);
+        std::fclose(f);
         return path;
     } else {
         return "";
     }
 } // u4find_path
 
-string u4find_music(const string &fname)
+std::string u4find_music(const std::string &fname)
 {
     return u4find_path(fname, u4Path.musicPaths);
 }
 
-string u4find_sound(const string &fname)
+std::string u4find_sound(const std::string &fname)
 {
     return u4find_path(fname, u4Path.soundPaths);
 }
 
-string u4find_conf(const string &fname)
+std::string u4find_conf(const std::string &fname)
 {
     return u4find_path(fname, u4Path.configPaths);
 }
 
-string u4find_graphics(const string &fname)
+std::string u4find_graphics(const std::string &fname)
 {
     return u4find_path(fname, u4Path.graphicsPaths);
 }

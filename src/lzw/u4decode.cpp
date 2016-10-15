@@ -49,8 +49,8 @@ long decompress_u4_file(FILE *in, long filesize, void **out)
         return -1;
     }
     /* load compressed file into compressed_mem[] */
-    compressed_mem = (unsigned char *) malloc(compressed_filesize);
-    if (fread(compressed_mem, 1, compressed_filesize, in)
+    compressed_mem = (unsigned char *) std::malloc(compressed_filesize);
+    if (std::fread(compressed_mem, 1, compressed_filesize, in)
         != (size_t) compressed_filesize) {
         perror("fread failed");
     }
@@ -65,12 +65,12 @@ long decompress_u4_file(FILE *in, long filesize, void **out)
         return -1;
     }
     /* decompress file from compressed_mem[] into decompressed_mem[] */
-    decompressed_mem = (unsigned char *) malloc(decompressed_filesize);
+    decompressed_mem = (unsigned char *) std::malloc(decompressed_filesize);
     /* testing: clear destination mem */
     memset(decompressed_mem, 0, decompressed_filesize);
     errorCode =
         lzwDecompress(compressed_mem, decompressed_mem, compressed_filesize);
-    free(compressed_mem);
+    std::free(compressed_mem);
     *out = decompressed_mem;
     return errorCode;
 }
@@ -97,7 +97,7 @@ long decompress_u4_memory(void *in, long inlen, void **out)
         return -1;
     }
     /* decompress file from compressed_mem[] into decompressed_mem[] */
-    decompressed_mem = (unsigned char *) malloc(decompressed_filesize);
+    decompressed_mem = (unsigned char *) std::malloc(decompressed_filesize);
     /* testing: clear destination mem */
     memset(decompressed_mem, 0, decompressed_filesize);
     errorCode =
@@ -114,9 +114,9 @@ long decompress_u4_memory(void *in, long inlen, void **out)
 long getFilesize(FILE *input_file)
 {
     long file_length;
-    fseek(input_file, 0, SEEK_END);   /* move file pointer to file end */
-    file_length = ftell(input_file);
-    fseek(input_file, 0, SEEK_SET);   /* move file pointer to file start */
+    std::fseek(input_file, 0, SEEK_END);   /* move file pointer to file end */
+    file_length = std::ftell(input_file);
+    std::fseek(input_file, 0, SEEK_SET);   /* move file pointer to file start */
     return file_length;
 }
 
@@ -137,11 +137,11 @@ unsigned char mightBeValidCompressedFile(FILE *input_file)
     c1 = (input_filesize * 8) % 12 == 0;
     c2 = (input_filesize * 8 - 4) % 12 == 0;
     /* read first byte */
-    fseek(input_file, 0, SEEK_SET);   /* move file pointer to file start */
-    if (fread(&firstByte, 1, 1, input_file) != 1) {
+    std::fseek(input_file, 0, SEEK_SET);   /* move file pointer to file start */
+    if (std::fread(&firstByte, 1, 1, input_file) != 1) {
         perror("fread failed");
     }
-    fseek(input_file, 0, SEEK_SET);   /* move file pointer to file start */
+    std::fseek(input_file, 0, SEEK_SET);   /* move file pointer to file start */
     c3 = (firstByte >> 4) == 0;
     /* check if upper 4 bits are 0 */
     return (c1 || c2) && c3;

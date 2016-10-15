@@ -9,7 +9,7 @@ class MusicSDL:public Music {
 public:
     MusicSDL();
     ~MusicSDL();
-    bool doLoad(Type music, string pathname, Type &current);
+    bool doLoad(Type music, std::string pathname, Type &current);
     void play();
     void stop();
     void fadeOut(int msecs);

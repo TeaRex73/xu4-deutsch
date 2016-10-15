@@ -5,8 +5,8 @@
 #include "vc6.h" // Fixes things if you're using VC6, does nothing otherwise
 
 #include <list>
-#include <unordered_map>
-#include <unordered_set>
+#include <map>
+#include <set>
 
 #include "location.h"
 
@@ -167,7 +167,7 @@ std::vector<MapTile> Location::tilesAt(MapCoords coords, bool &focus)
  */
 TileId Location::getReplacementTile(MapCoords atCoords, const Tile *forTile)
 {
-    std::unordered_map<TileId, int> validMapTileCount;
+    std::map<TileId, int> validMapTileCount;
     const static int dirs[][2] = {
         { -1, 0 }, { 1, 0 }, { 0, -1 }, { 0, 1 }
     };
@@ -198,7 +198,7 @@ TileId Location::getReplacementTile(MapCoords atCoords, const Tile *forTile)
                      || forTile->isLivingObject()))
                 || (tileType->isWaterReplacement()
                     && forTile->isWaterForeground())) {
-                std::unordered_map<TileId, int>::iterator validCount =
+                std::map<TileId, int>::iterator validCount =
                     validMapTileCount.find(tileType->getId());
                 if (validCount == validMapTileCount.end()) {
                     validMapTileCount[tileType->getId()] = 1;
@@ -208,7 +208,7 @@ TileId Location::getReplacementTile(MapCoords atCoords, const Tile *forTile)
             }
         }
         if (validMapTileCount.size() > 0) {
-            std::unordered_map<TileId, int>::iterator itr =
+            std::map<TileId, int>::iterator itr =
                 validMapTileCount.begin();
             TileId winner = itr->first;
             int score = itr->second;

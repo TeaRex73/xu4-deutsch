@@ -6,7 +6,7 @@
 #define TILEANIM_H
 
 #include <string>
-#include <unordered_map>
+#include <map>
 #include <vector>
 
 #include "direction.h"
@@ -217,7 +217,7 @@ public:
  */
 class TileAnimSet {
 private:
-    typedef std::unordered_map<std::string, TileAnim *> TileAnimMap;
+    typedef std::map<std::string, TileAnim *> TileAnimMap;
 
 public:
     TileAnimSet(const ConfigElement &conf);

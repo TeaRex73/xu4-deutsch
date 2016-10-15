@@ -47,12 +47,12 @@ StatsArea::StatsArea()
      ),
      view(STATS_PARTY_OVERVIEW)
 {
-    // Generate a formatted string for each menu item,
+    // Generate a formatted std::string for each menu item,
     // and then add the item to the menu.  The Y value
     // for each menu item will be filled in later.
     for (int count = 0; count < 8; count++) {
         char outputBuffer[16];
-        snprintf(
+        std::snprintf(
             outputBuffer,
             sizeof(outputBuffer),
             "-%-11s%%s",
@@ -254,7 +254,7 @@ void StatsArea::redraw()
 /**
  * Sets the title of the stats area.
  */
-void StatsArea::setTitle(const string &s)
+void StatsArea::setTitle(const std::string &s)
 {
     int titleStart = (STATS_AREA_WIDTH / 2) - ((s.length() + 2) / 2);
     title.textAt(titleStart, 0, "%c%s%c", 16, s.c_str(), 17);
@@ -312,13 +312,13 @@ void StatsArea::showPlayerDetails()
     ASSERT(player < 8, "character number out of range: %d", player);
     PartyMember *p = c->party->member(player);
     char title[6];
-    sprintf(title, "SPL-%d", player + 1);
+    std::sprintf(title, "SPL-%d", player + 1);
     setTitle(title);
-    string nameStr = uppercase(p->getName());
+    std::string nameStr = uppercase(p->getName());
     int nameStart = (STATS_AREA_WIDTH - nameStr.length()) / 2;
     mainArea.textAt(0, 1, "%c             %c", p->getSex(), p->getStatus());
     mainArea.textAt(nameStart, 0, "%s", nameStr.c_str());
-    string classStr =
+    std::string classStr =
         uppercase(getClassNameTranslated(p->getClass(), p->getSex()));
     int classStart = (STATS_AREA_WIDTH - classStr.length()) / 2;
     mainArea.textAt(classStart, 1, "%s", classStr.c_str());
@@ -447,19 +447,19 @@ void StatsArea::showItems()
     if (c->saveGame->items & (ITEM_CANDLE | ITEM_BOOK | ITEM_BELL)) {
         buffer[0] = '\0';
         if (c->saveGame->items & ITEM_BELL) {
-            strcat(buffer, getItemName(ITEM_BELL));
-            strcat(buffer, " ");
+            std::strcat(buffer, getItemName(ITEM_BELL));
+            std::strcat(buffer, " ");
         }
         if (c->saveGame->items & ITEM_BOOK) {
-            strcat(buffer, getItemName(ITEM_BOOK));
-            strcat(buffer, " ");
+            std::strcat(buffer, getItemName(ITEM_BOOK));
+            std::strcat(buffer, " ");
         }
         if (c->saveGame->items & ITEM_CANDLE) {
-            strcat(buffer, getItemName(ITEM_CANDLE));
+            std::strcat(buffer, getItemName(ITEM_CANDLE));
             // all three are too long in German
-            if (strcmp(buffer, "GLOCKE BUCH KERZE") == 0) {
+            if (std::strcmp(buffer, "GLOCKE BUCH KERZE") == 0) {
                 buffer[0] = '\0';
-                strcat(buffer, "GLOCK BUCH KERZ");
+                std::strcat(buffer, "GLOCK BUCH KERZ");
                 buffer[15] = '\0';
             }
         }
@@ -499,7 +499,7 @@ void StatsArea::showReagents(bool active)
     setTitle("REAGENZIEN");
     Menu::MenuItemList::iterator i;
     int line = 0, r = REAG_ASH;
-    string shortcut("A");
+    std::string shortcut("A");
     reagentsMixMenu.show(&mainArea);
     for (i = reagentsMixMenu.begin(); i != reagentsMixMenu.end(); i++, r++) {
         if ((*i)->isVisible()) {
@@ -570,7 +570,7 @@ void StatsArea::resetReagentsMenu()
 bool ReagentsMenuController::keyPressed(int key)
 {
     if ((key >= 'A') && (key <= ']')) {
-        key = mytolower(key);
+        key = xu4_tolower(key);
     }
     switch (key) {
     case 'a':

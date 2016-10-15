@@ -17,11 +17,7 @@
 #include "settings.h"
 #include "u4file.h"
 
-using namespace std;
 
-#if defined(_WIN32)
-#define vsnprintf _vsnprintf
-#endif
 
 void xmlAccumError(void *l, const char *fmt, ...);
 extern bool verbose;
@@ -30,13 +26,13 @@ int ioRegistered = 0;
 void *xmlXu4FileOpen(const char *filename)
 {
     void *result;
-    string pathname(u4find_conf(filename));
+    std::string pathname(u4find_conf(filename));
     if (pathname.empty()) {
         return NULL;
     }
     result = xmlFileOpen(pathname.c_str());
     if (verbose) {
-        printf(
+        std::printf(
             "xml parser opened %s: %s\n",
             pathname.c_str(),
             result ? "success" : "failed"
@@ -71,10 +67,10 @@ xmlDocPtr xmlParse(const char *filename)
         errorFatal("error parsing %s", filename);
     }
     if (settings.validateXml && doc->intSubset) {
-        string errorMessage;
+        std::string errorMessage;
         xmlValidCtxt cvp;
         if (verbose) {
-            printf("validating %s\n", filename);
+            std::printf("validating %s\n", filename);
         }
         cvp.userData = &errorMessage;
         cvp.error = &xmlAccumError;
@@ -88,11 +84,11 @@ xmlDocPtr xmlParse(const char *filename)
 
 void xmlAccumError(void *l, const char *fmt, ...)
 {
-    string *errorMessage = (string *)l;
+    std::string *errorMessage = (std::string *)l;
     char buffer[1000];
-    va_list args;
+    std::va_list args;
     va_start(args, fmt);
-    vsnprintf(buffer, sizeof(buffer), fmt, args);
+    std::vsnprintf(buffer, sizeof(buffer), fmt, args);
     va_end(args);
     errorMessage->append(buffer);
 }
@@ -107,7 +103,7 @@ bool xmlPropExists(xmlNodePtr node, const char *name)
     return exists;
 }
 
-string xmlGetPropAsString(xmlNodePtr node, const char *name)
+std::string xmlGetPropAsString(xmlNodePtr node, const char *name)
 {
     xmlChar *prop;
     if (settings.validateXml && !xmlHasProp(node, (const xmlChar *)name)) {
@@ -117,7 +113,7 @@ string xmlGetPropAsString(xmlNodePtr node, const char *name)
     if (!prop) {
         return "";
     }
-    string result((char *)prop);
+    std::string result((char *)prop);
     xmlFree(prop);
     return result;
 }
@@ -166,7 +162,7 @@ int xmlGetPropAsInt(xmlNodePtr node, const char *name)
     if (!prop) {
         return 0;
     }
-    result = strtol((const char *)prop, NULL, 0);
+    result = std::strtol((const char *)prop, NULL, 0);
     xmlFree(prop);
     return (int)result;
 }
@@ -198,7 +194,7 @@ int xmlGetPropAsEnum(
 
 
 /**
- * Compare an XML property to another string.  The return value is as
+ * Compare an XML property to another std::string.  The return value is as
  * strcmp.
  */
 int xmlPropCmp(xmlNodePtr node, const char *name, const char *s)
@@ -213,7 +209,7 @@ int xmlPropCmp(xmlNodePtr node, const char *name, const char *s)
 
 
 /**
- * Compare an XML property to another string, case insensitively.  The
+ * Compare an XML property to another std::string, case insensitively.  The
  * return value is as str[case]cmp.
  */
 int xmlPropCaseCmp(xmlNodePtr node, const char *name, const char *s)

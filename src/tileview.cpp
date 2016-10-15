@@ -16,8 +16,6 @@
 #include "u4.h"
 #include "error.h"
 
-using std::vector;
-
 TileView::TileView(int x, int y, int columns, int rows)
     :View(x, y, columns * TILE_WIDTH, rows * TILE_HEIGHT)
 {
@@ -33,7 +31,9 @@ TileView::TileView(int x, int y, int columns, int rows)
     );
 }
 
-TileView::TileView(int x, int y, int columns, int rows, const string &tileset)
+TileView::TileView(
+    int x, int y, int columns, int rows, const std::string &tileset
+)
     :View(x, y, columns * TILE_WIDTH, rows * TILE_HEIGHT)
 {
     this->columns = columns;
@@ -126,7 +126,7 @@ void TileView::drawTile(MapTile &mapTile, bool focus, int x, int y)
     }
 } // TileView::drawTile
 
-void TileView::drawTile(vector<MapTile> &tiles, bool focus, int x, int y)
+void TileView::drawTile(std::vector<MapTile> &tiles, bool focus, int x, int y)
 {
     ASSERT(x < columns, "x value of %d out of range", x);
     ASSERT(y < rows, "y value of %d out of range", y);
@@ -142,7 +142,7 @@ void TileView::drawTile(vector<MapTile> &tiles, bool focus, int x, int y)
         SCALED(tileHeight)
     );
     // int layer = 0;
-    for (vector<MapTile>::reverse_iterator t = tiles.rbegin();
+    for (std::vector<MapTile>::reverse_iterator t = tiles.rbegin();
          t != tiles.rend();
          ++t) {
         MapTile &frontTile = *t;

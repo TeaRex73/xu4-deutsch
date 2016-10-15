@@ -32,7 +32,7 @@
 #include "image.h"
 #include "imagemgr.h"
 
-std::unordered_map<Map::Type, MapLoader *> *MapLoader::loaderMap = NULL;
+std::map<Map::Type, MapLoader *> *MapLoader::loaderMap = NULL;
 
 MapLoader *CityMapLoader::instance = MapLoader::registerLoader(
     new CityMapLoader, Map::CITY
@@ -76,7 +76,7 @@ MapLoader *MapLoader::getLoader(Map::Type type)
 MapLoader *MapLoader::registerLoader(MapLoader *loader, Map::Type type)
 {
     if (loaderMap == NULL) {
-        loaderMap = new std::unordered_map<Map::Type, MapLoader *>;
+        loaderMap = new std::map<Map::Type, MapLoader *>;
     }
     if (loaderMap->find(type) != loaderMap->end()) {
         errorFatal("map loader already registered for type %d", type);
@@ -87,7 +87,7 @@ MapLoader *MapLoader::registerLoader(MapLoader *loader, Map::Type type)
 
 void MapLoader::cleanup()
 {
-    for (std::unordered_map<Map::Type, MapLoader *>::iterator i =
+    for (std::map<Map::Type, MapLoader *>::iterator i =
              loaderMap->begin();
          i != loaderMap->end();
          i++) {
@@ -113,9 +113,9 @@ bool MapLoader::loadData(Map *map, U4FILE *f)
     if (map->chunk_width == 0) {
         map->chunk_width = map->width;
     }
-    clock_t total = 0;
+    std::clock_t total = 0;
 #ifndef NPERF
-    clock_t start = clock();
+    std::clock_t start = std::clock();
 #endif
     u4fseek(f, map->offset, SEEK_CUR);
     for (ych = 0; ych < (map->height / map->chunk_height); ych++) {
@@ -139,9 +139,9 @@ bool MapLoader::loadData(Map *map, U4FILE *f)
                         if (c == EOF) {
                             return false;
                         }
-                        clock_t s = clock();
+                        std::clock_t s = std::clock();
                         MapTile mt = map->tfrti(c);
-                        total += clock() - s;
+                        total += std::clock() - s;
                         map->data[
                             x
                             + (y * map->width)
@@ -154,16 +154,16 @@ bool MapLoader::loadData(Map *map, U4FILE *f)
         }
     }
 #ifndef NPERF
-    clock_t end = clock();
-    FILE *file = FileSystem::openFile("debug/mapLoadData.txt", "wt");
+    std::clock_t end = std::clock();
+    std::FILE *file = FileSystem::openFile("debug/mapLoadData.txt", "wt");
     if (file) {
-        fprintf(
+        std::fprintf(
             file,
             "%d msecs total\n%d msecs used by Tile::translate()",
             int(end - start),
             int(total)
         );
-        fclose(file);
+        std::fclose(file);
     }
 #endif
     return true;
@@ -290,7 +290,7 @@ bool CityMapLoader::load(Map *map)
         for (current = city->personroles.begin();
              current != city->personroles.end();
              current++) {
-            if ((unsigned)(*current)->id == (i + 1)) {
+            if ((unsigned int)(*current)->id == (i + 1)) {
                 if ((*current)->role == NPC_LORD_BRITISH) {
                     Dialogue *dlg =
                         DialogueLoader::getLoader("application/x-u4lbtlk")

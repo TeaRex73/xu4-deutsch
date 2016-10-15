@@ -147,16 +147,16 @@ int MapCoords::getRelativeDirection(const MapCoords &c, const Map *map) const
     /* adjust our coordinates to find the closest path */
     if (map && (map->border_behavior == Map::BORDER_WRAP)) {
         MapCoords me = *this;
-        if (abs((int)(me.x - c.x)) > abs((int)(me.x + map->width - c.x))) {
+        if (std::abs(me.x - c.x) > std::abs((int)(me.x + map->width - c.x))) {
             me.x += map->width;
-        } else if (abs((int)(me.x - c.x))
-                   > abs((int)(me.x - map->width - c.x))) {
+        } else if (std::abs(me.x - c.x)
+                   > std::abs((int)(me.x - map->width - c.x))) {
             me.x -= map->width;
         }
-        if (abs((int)(me.y - c.y)) > abs((int)(me.y + map->width - c.y))) {
+        if (std::abs(me.y - c.y) > std::abs((int)(me.y + map->width - c.y))) {
             me.y += map->height;
-        } else if (abs((int)(me.y - c.y))
-                   > abs((int)(me.y - map->width - c.y))) {
+        } else if (std::abs(me.y - c.y)
+                   > std::abs((int)(me.y - map->width - c.y))) {
             me.y -= map->height;
         }
         dx = me.x - c.x;
@@ -276,7 +276,10 @@ int MapCoords::distance(const MapCoords &c, const Map *map) const
     }
 
     /* calculate how many fewer movements there would have been */
-    dist -= abs(x - c.x) < abs(y - c.y) ? abs(x - c.x) : abs(y - c.y);
+    dist -=
+        (std::abs(x - c.x) < std::abs(y - c.y)) ?
+        (std::abs(x - c.x)) :
+        (std::abs(y - c.y));
     return dist;
 }
 
@@ -307,7 +310,7 @@ Map::~Map()
     delete annotations;
 }
 
-string Map::getName()
+std::string Map::getName()
 {
     return baseSource.fname;
 }
@@ -858,9 +861,9 @@ void Map::alertGuards()
     }
 }
 
-const MapCoords &Map::getLabel(const string &name) const
+const MapCoords &Map::getLabel(const std::string &name) const
 {
-    std::unordered_map<string, MapCoords>::const_iterator i =
+    std::map<std::string, MapCoords>::const_iterator i =
         labels.find(name);
     if (i == labels.end()) {
         return MapCoords::nowhere;

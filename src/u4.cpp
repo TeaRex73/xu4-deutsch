@@ -46,10 +46,10 @@
 bool verbose = false;
 int quit = 0;
 bool useProfile = false;
-string profileName = "";
+std::string profileName = "";
 Performance perf("debug/performance.txt");
 
-using namespace std;
+
 
 int main(int argc, char *argv[])
 {
@@ -81,8 +81,8 @@ int main(int argc, char *argv[])
      * they need to be identified before the settings are initialized.
      */
     for (i = 1; i < (unsigned int)argc; i++) {
-        if (((strcmp(argv[i], "-p") == 0)
-             || (strcmp(argv[i], "-profile") == 0))
+        if (((std::strcmp(argv[i], "-p") == 0)
+             || (std::strcmp(argv[i], "-profile") == 0))
             && ((unsigned int)argc > i + 1)) {
             // when grabbing the profile name:
             // 1. trim leading whitespace
@@ -109,34 +109,34 @@ int main(int argc, char *argv[])
     settings.init(useProfile, profileName);
     /* update the settings based upon command-line arguments */
     for (i = 1; i < (unsigned int)argc; i++) {
-        if ((strcmp(argv[i], "-filter") == 0)
+        if ((std::strcmp(argv[i], "-filter") == 0)
             && ((unsigned int)argc > i + 1)) {
             settings.filter = argv[i + 1];
             i++;
         }
 #if 0
-        else if ((strcmp(argv[i], "-scale") == 0)
+        else if ((std::strcmp(argv[i], "-scale") == 0)
                  && ((unsigned int)argc > i + 1)) {
-            settings.scale = strtoul(argv[i + 1], NULL, 0);
+            settings.scale = std::strtoul(argv[i + 1], NULL, 0);
             i++;
         }
 #endif
-        else if (((strcmp(argv[i], "-p") == 0)
-                  || (strcmp(argv[i], "-profile") == 0))
+        else if (((std::strcmp(argv[i], "-p") == 0)
+                  || (std::strcmp(argv[i], "-profile") == 0))
                  && ((unsigned int)argc > i + 1)) {
             // do nothing
             i++;
-        } else if ((strcmp(argv[i], "-i") == 0)
-                   || (strcmp(argv[i], "-skipintro") == 0)) {
+        } else if ((std::strcmp(argv[i], "-i") == 0)
+                   || (std::strcmp(argv[i], "-skipintro") == 0)) {
             skipIntro = 1;
-        } else if ((strcmp(argv[i], "-v") == 0)
-                   || (strcmp(argv[i], "-verbose") == 0)) {
+        } else if ((std::strcmp(argv[i], "-v") == 0)
+                   || (std::strcmp(argv[i], "-verbose") == 0)) {
             verbose = true;
-        } else if ((strcmp(argv[i], "-f") == 0)
-                   || (strcmp(argv[i], "-fullscreen") == 0)) {
+        } else if ((std::strcmp(argv[i], "-f") == 0)
+                   || (std::strcmp(argv[i], "-fullscreen") == 0)) {
             settings.fullscreen = 1;
-        } else if ((strcmp(argv[i], "-q") == 0)
-                   || (strcmp(argv[i], "-quiet") == 0)) {
+        } else if ((std::strcmp(argv[i], "-q") == 0)
+                   || (std::strcmp(argv[i], "-quiet") == 0)) {
             settings.musicVol = 0;
             settings.soundVol = 0;
         }

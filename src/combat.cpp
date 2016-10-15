@@ -5,6 +5,7 @@
 #include "vc6.h" // Fixes things if you're using VC6, does nothing otherwise
 
 #include <ctime>
+#include <unordered_map>
 #include "u4.h"
 
 #include "combat.h"
@@ -277,7 +278,7 @@ void CombatController::applyCreatureTileEffects()
 void CombatController::begin()
 {
     bool partyIsReadyToFight = false;
-    string bv;
+    std::string bv;
     /* place party members on the map */
     if (placePartyOnMap) {
         placePartyMembers();
@@ -985,7 +986,7 @@ bool CombatController::keyPressed(int key)
 {
     bool valid = true;
     if ((key >= 'A') && (key <= ']')) {
-        key = mytolower(key);
+        key = xu4_tolower(key);
     }
     switch (key) {
     case U4_UP:
@@ -1189,7 +1190,7 @@ bool CombatController::keyPressed(int key)
         break;
     } // switch
     if (valid) {
-        c->lastCommandTime = (long)time(NULL);
+        c->lastCommandTime = time(NULL);
         if (eventHandler->getController() == this) {
             c->location->turnCompleter->finishTurn();
         }
@@ -1228,7 +1229,7 @@ void CombatController::attack()
     // the attack was already made, even if there is no valid target
     // so play the attack sound
     soundPlay(SOUND_PC_ATTACK, false); // PC_ATTACK, melee and ranged
-    vector<Coords> path = gameGetDirectionalActionPath(
+    std::vector<Coords> path = gameGetDirectionalActionPath(
         MASK_DIR(dir),
         MASK_DIR_ALL,
         attacker->getCoords(),
@@ -1244,7 +1245,7 @@ void CombatController::attack()
         targetCoords = path.back();
     }
     int distance = 1;
-    for (vector<Coords>::iterator i = path.begin();
+    for (std::vector<Coords>::iterator i = path.begin();
          i != path.end();
          i++) {
         if (attackAt(*i, attacker, MASK_DIR(dir), range, distance)) {

@@ -5,7 +5,7 @@
 #ifndef MAPLOADER_H
 #define MAPLOADER_H
 
-#include <unordered_map>
+#include <map>
 #include <string>
 
 #include "map.h"
@@ -46,7 +46,7 @@ protected:
     static bool isChunkCompressed(Map *map, int chunk);
 
 private:
-    static std::unordered_map<Map::Type, MapLoader *> *loaderMap;
+    static std::map<Map::Type, MapLoader *> *loaderMap;
 };
 
 class CityMapLoader:public MapLoader {

@@ -5,14 +5,14 @@
 #ifndef IMAGEMGR_H
 #define IMAGEMGR_H
 
-#include <unordered_map>
+#include <map>
 #include <string>
 #include <vector>
 
 #include "image.h"
 #include "observer.h"
 
-using std::string;
+
 
 class ConfigElement;
 class Debug;
@@ -90,11 +90,11 @@ enum ImageFixup {
 class ImageInfo {
 public:
     ~ImageInfo();
-    string name;
-    string filename;
+    std::string name;
+    std::string filename;
     int width, height, depth;
     int prescale;
-    string filetype;
+    std::string filetype;
     int tiles; /**< used to scale the without bleeding
                   colors between adjacent tiles */
     bool introOnly; /**< whether can be freed after the intro */
@@ -104,7 +104,7 @@ public:
     ImageFixup fixup; /**< a routine to do miscellaneous
                          fixes to the image */
     Image *image; /**< the image we're describing */
-    std::unordered_map<string, SubImage *> subImages;
+    std::map<std::string, SubImage *> subImages;
     bool hasBlackBackground();
 };
 
@@ -116,10 +116,10 @@ class ImageMgr:Observer<Settings *> {
 public:
     static ImageMgr *getInstance();
     static void destroy();
-    ImageInfo *get(const string &name, bool returnUnscaled = false);
-    SubImage *getSubImage(const string &name);
+    ImageInfo *get(const std::string &name, bool returnUnscaled = false);
+    SubImage *getSubImage(const std::string &name);
     void freeIntroBackgrounds();
-    const std::vector<string> &getSetNames();
+    const std::vector<std::string> &getSetNames();
     U4FILE *getImageFile(ImageInfo *info);
     bool imageExists(ImageInfo *info);
 
@@ -132,10 +132,10 @@ private:
     SubImage *loadSubImageFromConf(
         const ImageInfo *info, const ConfigElement &conf
     );
-    ImageSet *getSet(const string &setname);
-    ImageInfo *getInfo(const string &name);
-    ImageInfo *getInfoFromSet(const string &name, ImageSet *set);
-    string guessFileType(const string &filename);
+    ImageSet *getSet(const std::string &setname);
+    ImageInfo *getInfo(const std::string &name);
+    ImageInfo *getInfoFromSet(const std::string &name, ImageSet *set);
+    std::string guessFileType(const std::string &filename);
     void fixupIntro(Image *im, int prescale);
     void fixupAbyssVision(Image *im, int prescale);
     void fixupAbacus(Image *im, int prescale);
@@ -144,8 +144,8 @@ private:
     void update(Settings *newSettings);
     static ImageMgr *instance;
     static ImageInfo *screenInfo;
-    std::unordered_map<string, ImageSet *> imageSets;
-    std::vector<string> imageSetNames;
+    std::map<std::string, ImageSet *> imageSets;
+    std::vector<std::string> imageSetNames;
     ImageSet *baseSet;
     Debug *logger;
 };

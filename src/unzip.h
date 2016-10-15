@@ -118,7 +118,7 @@ extern "C" {
       Compare two filename (fileName1,fileName2).
       If iCaseSenisivity = 1, comparision is case sensitivity (like strcmp)
       If iCaseSenisivity = 2, comparision is not case sensitivity
-      (like strcmpi or strcasecmp)
+      (like strcmpi or xu4_strcasecmp)
       If iCaseSenisivity = 0, case sensitivity is default of your
       operating system (like 1 on Unix, 2 on Windows)
     */
@@ -242,7 +242,7 @@ extern "C" {
 
 
     extern int ZEXPORT unzReadCurrentFile OF((
-        unzFile file, voidp buf, unsigned len
+        unzFile file, voidp buf, unsigned int len
     ));
     /*
       Read bytes from the current file (opened by unzOpenCurrentFile)
@@ -269,7 +269,7 @@ extern "C" {
 
     
     extern int ZEXPORT unzGetLocalExtrafield OF((
-        unzFile file, voidp buf, unsigned len
+        unzFile file, voidp buf, unsigned int len
     ));
     /*
       Read extra field from the current file (opened by unzOpenCurrentFile)

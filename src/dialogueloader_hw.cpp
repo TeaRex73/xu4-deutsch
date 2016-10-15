@@ -16,8 +16,7 @@
 #include "u4file.h"
 #include "utils.h"
 
-using std::string;
-using std::vector;
+
 
 Response *hawkwindGetAdvice(const DynamicResponse *kw);
 Response *hawkwindGetIntro(const DynamicResponse *dynResp);
@@ -35,7 +34,7 @@ Response *hawkwindGetIntro(const DynamicResponse *dynResp);
 #define HW_GOTOSHRINE 51
 #define HW_BYE 52
 
-vector<string> hawkwindText;
+std::vector<std::string> hawkwindText;
 DialogueLoader *U4HWDialogueLoader::instance = DialogueLoader::registerLoader(
     new U4HWDialogueLoader, "application/x-u4hwtlk"
 );
@@ -71,10 +70,10 @@ Dialogue *U4HWDialogueLoader::load(void *source)
     dlg->setIntro(intro);
     dlg->setLongIntro(intro);
     dlg->setDefaultAnswer(
-        new Response(string("\n" + uppercase(hawkwindText[HW_DEFAULT])))
+        new Response("\n" + uppercase(hawkwindText[HW_DEFAULT]))
     );
     for (int v = 0; v < VIRT_MAX; v++) {
-        string virtue(getVirtueName((Virtue)v));
+        std::string virtue(getVirtueName((Virtue)v));
         lowercase(virtue);
         virtue = virtue.substr(0, 4);
         dlg->addKeyword(
@@ -96,11 +95,11 @@ Dialogue *U4HWDialogueLoader::load(void *source)
  */
 Response *hawkwindGetAdvice(const DynamicResponse *dynResp)
 {
-    string text;
+    std::string text;
     int virtue = -1, virtueLevel = -1;
     /* check if asking about a virtue */
     for (int v = 0; v < VIRT_MAX; v++) {
-        if (strncasecmp(
+        if (xu4_strncasecmp(
                 dynResp->getParam().c_str(), getVirtueName((Virtue)v), 4
             ) == 0) {
             virtue = v;
@@ -122,7 +121,7 @@ Response *hawkwindGetAdvice(const DynamicResponse *dynResp)
                 + hawkwindText[HW_GOTOSHRINE];
         }
     } else {
-        text = string("\n") + hawkwindText[HW_DEFAULT];
+        text = std::string("\n") + hawkwindText[HW_DEFAULT];
     }
     return new Response(uppercase(text));
 } // hawkwindGetAdvice

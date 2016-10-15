@@ -23,14 +23,14 @@
 #include "u4file.h"
 #include "utils.h"
 
-using namespace std;
+
 
 static int codexInit();
 static void codexDelete();
 static void codexEject(CodexEjectCode code);
-static void codexHandleWOP(const string &word);
-static void codexHandleVirtues(const string &virtue);
-static void codexHandleInfinity(const string &answer);
+static void codexHandleWOP(const std::string &word);
+static void codexHandleVirtues(const std::string &virtue);
+static void codexHandleInfinity(const std::string &answer);
 static void codexImpureThoughts();
 
 
@@ -39,9 +39,9 @@ static void codexImpureThoughts();
  */
 static bool codexHandleInfinityAnyKey(int key, void *data);
 static bool codexHandleEndgameAnyKey(int key, void *data);
-static vector<string> codexVirtueQuestions;
-static vector<string> codexEndgameText1;
-static vector<string> codexEndgameText2;
+static std::vector<std::string> codexVirtueQuestions;
+static std::vector<std::string> codexEndgameText1;
+static std::vector<std::string> codexEndgameText2;
 
 
 /**
@@ -212,7 +212,7 @@ static void codexEject(CodexEjectCode code)
     /* finally, finish the turn */
     c->location->turnCompleter->finishTurn();
     eventHandler->setController(game);
-    c->lastCommandTime = (long)time(NULL);
+    c->lastCommandTime = std::time(NULL);
     c->willPassTurn = true;
 } // codexEject
 
@@ -220,7 +220,7 @@ static void codexEject(CodexEjectCode code)
 /**
  * Handles entering the Word of Passage
  */
-static void codexHandleWOP(const string &word)
+static void codexHandleWOP(const std::string &word)
 {
     static int tries = 1;
     int i;
@@ -230,7 +230,7 @@ static void codexHandleWOP(const string &word)
     screenDisableCursor();
     EventHandler::sleep(1000);
     /* entered correctly */
-    if (strcasecmp(deumlaut(word).c_str(), "veramocor") == 0) {
+    if (xu4_strcasecmp(deumlaut(word).c_str(), "veramocor") == 0) {
         tries = 1; /* reset 'tries' in case we need to
                       enter this again later */
         /* eject them if they don't have all 8 party members */
@@ -273,7 +273,7 @@ static void codexHandleWOP(const string &word)
 /**
  * Handles naming of virtues in the Chamber of the Codex
  */
-static void codexHandleVirtues(const string &virtue)
+static void codexHandleVirtues(const std::string &virtue)
 {
     static const char *codexImageNames[] = {
         BKGD_HONESTY,
@@ -297,7 +297,7 @@ static void codexHandleVirtues(const string &virtue)
     EventHandler::sleep(1000);
     /* answered with the correct one of eight virtues */
     if ((current < VIRT_MAX)
-        && (strcasecmp(
+        && (xu4_strcasecmp(
                 deumlaut(virtue).c_str(),
                 deumlaut(getVirtueName(static_cast<Virtue>(current))).c_str()
             ) == 0)) {
@@ -319,7 +319,7 @@ static void codexHandleVirtues(const string &virtue)
     }
     /* answered with the correct base virtue (truth, love, courage) */
     else if ((current >= VIRT_MAX)
-             && (strcasecmp(
+             && (xu4_strcasecmp(
                      deumlaut(virtue).c_str(),
                      deumlaut(
                          getBaseVirtueName(
@@ -395,7 +395,7 @@ static bool codexHandleInfinityAnyKey(int key, void *data)
     return true;
 }
 
-static void codexHandleInfinity(const string &answer)
+static void codexHandleInfinity(const std::string &answer)
 {
     static int tries = 1;
     eventHandler->popKeyHandler();
@@ -403,7 +403,7 @@ static void codexHandleInfinity(const string &answer)
     screenMessage("\n");
     screenDisableCursor();
     EventHandler::sleep(1000);
-    if (strcasecmp(deumlaut(answer).c_str(), "unendlichkeit") == 0) {
+    if (xu4_strcasecmp(deumlaut(answer).c_str(), "unendlichkeit") == 0) {
         EventHandler::sleep(2000);
         soundPlay(SOUND_RUMBLE, false);
         screenShake(8);

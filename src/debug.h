@@ -27,7 +27,7 @@
 #include <cstdio>
 #include <cstdlib>
 
-using std::string;
+
 
 
 /*
@@ -36,7 +36,7 @@ using std::string;
  * out when NDEBUG is set, like a regular assert.  Finally, an
  * alternate ASSERT stub is provided for pre C99 systems.
  */
-void print_trace(FILE *file);
+void print_trace(std::FILE *file);
 
 #if HAVE_VARIADIC_MACROS
 #ifdef NDEBUG
@@ -45,13 +45,13 @@ void print_trace(FILE *file);
 #define ASSERT(exp, ...)                                    \
     do {                                                    \
         if (!(exp)) {                                       \
-            fprintf(                                        \
+            std::fprintf(                                        \
                 stderr,                                     \
                 "%s:%s:%d: assert `%s' gescheitert. ",      \
                 __FILE__, XU4_FUNC, __LINE__, #exp          \
             );                                              \
-            fprintf(stderr, __VA_ARGS__);                   \
-            fprintf(stderr, "\n\n");                        \
+            std::fprintf(stderr, __VA_ARGS__);                   \
+            std::fprintf(stderr, "\n\n");                        \
             print_trace(stderr);                            \
             exit(EXIT_FAILURE);                             \
         }                                                   \
@@ -72,13 +72,15 @@ void ASSERT(bool exp, const char *desc, ...);
 class Debug {
 public:
     Debug(
-        const string &filename, const string &name = "", bool append = false
+        const std::string &filename,
+        const std::string &name = "",
+        bool append = false
     );
-    static void initGlobal(const string &filename);
+    static void initGlobal(const std::string &filename);
     void trace(
-        const string &msg,
-        const string &file = "",
-        const string &func = "",
+        const std::string &msg,
+        const std::string &file = "",
+        const std::string &func = "",
         const int line = -1,
         bool glbl = true
     );
@@ -87,12 +89,12 @@ private:
     // disallow assignments, copy contruction
     Debug(const Debug &);
     const Debug &operator=(const Debug &);
-    static bool loggingEnabled(const string &name);
+    static bool loggingEnabled(const std::string &name);
     bool disabled;
-    string filename, name;
-    FILE *file;
-    static FILE *global;
-    string l_filename, l_func;
+    std::string filename, name;
+    std::FILE *file;
+    static std::FILE *global;
+    std::string l_filename, l_func;
     int l_line;
 };
 
