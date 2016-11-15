@@ -56,6 +56,7 @@ Image *scalePoint(Image *src, int scale, int n)
     if (!dest) {
         return NULL;
     }
+    dest->alphaOff();
     if (dest->isIndexed()) {
         dest->setPaletteFromImage(src);
     }
@@ -94,6 +95,7 @@ Image *scale2xBilinear(Image *src, int scale, int n)
     if (!dest) {
         return NULL;
     }
+    dest->alphaOff();
     /*
      * Each pixel in the source image is translated into four in the
      * destination.  The destination pixels are dependant on the pixel
@@ -241,6 +243,7 @@ Image *scale2xSaI(Image *src, int scale, int N)
     if (!dest) {
         return NULL;
     }
+    dest->alphaOff();
     /*
      * Each pixel in the source image is translated into four in the
      * destination.  The destination pixels are dependant on the pixel
@@ -445,6 +448,7 @@ Image *scaleScale2x(Image *src, int scale, int n)
     if (!dest) {
         return NULL;
     }
+    dest->alphaOff();
     if (dest->isIndexed()) {
         dest->setPaletteFromImage(src);
     }

@@ -8,15 +8,15 @@ libdir=$(prefix)/lib
 datadir=$(prefix)/share
 
 UI=sdl
-UILIBS=-L/usr/local/lib -Wl,-rpath,/usr/local/lib -Wl,-rpath,/usr/lib -Wl,-rpath,/usr/lib/arm-linux-gnueabihf -Wl,-rpath,/lib/arm-linux-gnueabihf -Wl,-rpath,/opt/vc/lib -lSDL -lpthread -lSDL_mixer
+UILIBS=-L/usr/local/lib -Wl,-rpath,/usr/local/lib -Wl,-rpath,/usr/lib -Wl,-rpath,/usr/lib/arm-linux-gnueabihf -Wl,-rpath,/lib/arm-linux-gnueabihf -Wl,-rpath,/opt/vc/lib -Wl,-rpath,/opt/vc/lib -L/usr/lib -Wl,-rpath,/usr/lib -lSDL -lpthread -L/opt/vc/lib -lSDL_mixer
 UIFLAGS=-I/usr/local/include/SDL -D_REENTRANT
 
 LIBS=-L/usr/lib -L/usr/lib/arm-linux-gnueabihf -L/lib/arm-linux-gnueabihf $(UILIBS) -lxml2 -lpng -lz
 # CCPREFIX=~/raspberry/tools/arm-bcm2708/arm-bcm2708hardfp-linux-gnueabi/bin/arm-bcm2708hardfp-linux-gnueabi-
 # CCPREFIX=~/raspberry/tools/arm-bcm2708/gcc-linaro-arm-linux-gnueabihf-raspbian/bin/arm-linux-gnueabihf-
-FEATURES=-DHAVE_BACKTRACE=1 -DHAVE_VARIADIC_MACROS=1
-DEBUGCXXFLAGS=-O3 -flto -fomit-frame-pointer -DNPERF -marm -mfpu=vfp -march=armv6zk -mtune=arm1176jzf-s -mfloat-abi=hard -UDEBUG -DNEBUG -DRASB_PI -fno-exceptions -fno-non-call-exceptions -fno-common
-#DEBUGCXXFLAGS=-O3 -fomit-frame-pointer -ggdb3 -flto -DNPERF -march=native -mtune=native -UDEBUG -DNDEBUG -URASB_PI -fno-exceptions -fno-non-call-exceptions -fno-common
+FEATURES=-UHAVE_BACKTRACE -DHAVE_VARIADIC_MACROS=1
+DEBUGCXXFLAGS=-O2 -flto -DNPERF -marm -mfpu=vfp -march=armv6zk -mtune=arm1176jzf-s -mfloat-abi=hard -UDEBUG -DNEBUG -DRASB_PI -fno-exceptions -fno-non-call-exceptions -fno-common
+#DEBUGCXXFLAGS=-O2 -flto -DNPERF -march=native -mtune=native -UDEBUG -DNDEBUG -URASB_PI -fno-exceptions -fno-non-call-exceptions -fno-common
 CXXFLAGS=$(FEATURES) -Wall -Wextra -Wno-unused-parameter -pipe -I. -I/usr/include/libxml2 -I/usr/include/SDL -I/usr/include -I/usr/local/include -I/include -I/usr/include/arm-linux-gnueabihf $(UIFLAGS) -I/usr/include/libxml2 -DICON_FILE=\"$(datadir)/pixmaps/u4.bmp\" -DVERSION=\"$(VERSION)\" $(DEBUGCXXFLAGS) $(LIBS)
 CFLAGS=$(CXXFLAGS)
 INSTALL=install
@@ -78,4 +78,4 @@ all.static_gcc_libs:
 	$(MAKE) STATIC_GCC_LIBS=true
 	rm -f libstdc++.a
 
--include .depends
+include .depends

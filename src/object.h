@@ -93,11 +93,7 @@ public:
         prevTile = t;
     }
     
-    void setCoords(Coords c)
-    {
-        prevCoords = coords;
-        coords = c;
-    }
+    void setCoords(Coords c);
     
     void setPrevCoords(Coords c)
     {

@@ -80,6 +80,7 @@ void ImageMgr::init()
      * register the "screen" image representing the entire screen
      */
     Image *screen = Image::createScreenImage();
+    screen->alphaOff();
     screenInfo = new ImageInfo;
     screenInfo->name = "screen";
     screenInfo->filename = "";

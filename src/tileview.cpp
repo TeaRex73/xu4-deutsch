@@ -29,6 +29,7 @@ TileView::TileView(int x, int y, int columns, int rows)
     animated = Image::create(
         SCALED(tileWidth), SCALED(tileHeight), false, Image::HARDWARE
     );
+    animated->alphaOff();
 }
 
 TileView::TileView(
@@ -46,6 +47,7 @@ TileView::TileView(
     animated = Image::create(
         SCALED(tileWidth), SCALED(tileHeight), false, Image::HARDWARE
     );
+    animated->alphaOff();
 }
 
 TileView::~TileView()
@@ -62,6 +64,7 @@ void TileView::reinit()
     animated = Image::create(
         SCALED(tileWidth), SCALED(tileHeight), false, Image::HARDWARE
     );
+    animated->alphaOff();
 }
 
 void TileView::loadTile(MapTile &mapTile)

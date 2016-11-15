@@ -10,6 +10,8 @@
 #include <list>
 #include <utility>
 
+#include <cstdarg>
+
 #include <SDL.h>
 
 #include "debug.h"
@@ -18,6 +20,16 @@
 #include "screen.h"
 #include "settings.h"
 #include "error.h"
+
+int myfprintf(FILE *stream, const char *format, ...)
+{
+    int result;
+    std::va_list args;
+    va_start(args, format);
+    result = vfprintf(stream, format, args);
+    va_end(args);
+    return result;
+}
 
 Image::Image()
     :surface(NULL),
@@ -53,9 +65,9 @@ Image *Image::create(int w, int h, bool indexed, Image::Type type)
     amask = 0xff000000;
 #endif
     if (type == Image::HARDWARE) {
-        flags = SDL_HWSURFACE | SDL_SRCALPHA;
+        flags = SDL_HWSURFACE /* | SDL_SRCALPHA */;
     } else {
-        flags = SDL_SWSURFACE | SDL_SRCALPHA;
+        flags = SDL_SWSURFACE /* | SDL_SRCALPHA */;
     }
     if (indexed) {
         im->surface = SDL_CreateRGBSurface(
@@ -650,6 +662,14 @@ void Image::drawOn(Image *d, int x, int y, bool anyway) const
     r.w = w;
     r.h = h;
     if (__builtin_expect(screenMoving, true) || anyway) {
+#if 0
+		if (surface->flags & SDL_SRCALPHA) {
+			myfprintf(stderr, "surface\n");
+		}
+		if (destSurface->flags & SDL_SRCALPHA) {
+			myfprintf(stderr, "destSurface\n");
+		}
+#endif
         SDL_BlitSurface(surface, NULL, destSurface, &r);
     }
 }
@@ -684,6 +704,14 @@ void Image::drawSubRectOn(
     dest.y = y;
     /* dest w & h unused */
     if (__builtin_expect(screenMoving, true) || anyway) {
+#if 0
+		if (surface->flags & SDL_SRCALPHA) {
+			myfprintf(stderr, "surface\n");
+		}
+		if (destSurface->flags & SDL_SRCALPHA) {
+			myfprintf(stderr, "destSurface\n");
+		}
+#endif
         SDL_BlitSurface(surface, &src, destSurface, &dest);
     }
 } // Image::drawSubRectOn
@@ -720,6 +748,14 @@ void Image::drawSubRectInvertedOn(
         dest.y = y + rh - i - 1;
         /* dest w & h unused */
         if (__builtin_expect(screenMoving, true) || anyway) {
+#if 0
+			if (surface->flags & SDL_SRCALPHA) {
+				myfprintf(stderr, "surface\n");
+			}
+			if (destSurface->flags & SDL_SRCALPHA) {
+				myfprintf(stderr, "destSurface\n");
+			}
+#endif
             SDL_BlitSurface(surface, &src, destSurface, &dest);
         }
     }

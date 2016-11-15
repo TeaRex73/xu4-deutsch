@@ -89,9 +89,7 @@ public:
     virtual void close() = 0;
     virtual int seek(long offset, int whence) = 0;
     virtual long tell() = 0;
-    virtual std::size_t read(
-		void *ptr, std::size_t size, std::size_t nmemb
-	) = 0;
+    virtual std::size_t read(void *ptr, std::size_t size, std::size_t nmemb) = 0;
     virtual int getc() = 0;
     virtual int putc(int c) = 0;
     virtual long length() = 0;

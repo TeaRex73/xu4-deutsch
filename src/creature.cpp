@@ -835,7 +835,7 @@ Creature *Creature::nearestOpponent(int *dist, bool ranged)
     ObjectDeque::iterator i;
     bool jinx = (*c->aura == Aura::JINX);
     Map *map = getMap();
-    for (i = map->objects.begin(); i < map->objects.end(); i++) {
+    for (i = map->objects.begin(); i != map->objects.end(); i++) {
         if (!isCreature(*i)) {
             continue;
         }

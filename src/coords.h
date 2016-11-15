@@ -19,9 +19,7 @@ public:
         
     bool operator==(const Coords &a) const
     {
-        return __builtin_expect(x == a.x, false)
-            && __builtin_expect(y == a.y, false)
-            && __builtin_expect(z == a.z, false);
+        return x == a.x && y == a.y && z == a.z;
     }
 
     bool operator!=(const Coords &a) const

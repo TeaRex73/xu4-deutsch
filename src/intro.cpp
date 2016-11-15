@@ -2154,6 +2154,7 @@ void IntroController::getTitleSourceData()
                 false,
                 Image::HARDWARE
             );
+            titles[i].srcImage->alphaOff();
             if (titles[i].srcImage->isIndexed()) {
                 titles[i].srcImage->setPaletteFromImage(info->image);
             }
@@ -2297,6 +2298,7 @@ void IntroController::getTitleSourceData()
             indexed,
             Image::HARDWARE
         );
+        titles[i].destImage->alphaOff();
         if (indexed) {
             titles[i].destImage->setPaletteFromImage(info->image);
         }

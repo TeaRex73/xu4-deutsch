@@ -98,6 +98,7 @@ void View::drawHighlighted()
     if (!tmp) {
         return;
     }
+    tmp->alphaOff();
     screen->drawSubRectOn(
         tmp,
         0,

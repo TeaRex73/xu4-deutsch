@@ -164,7 +164,7 @@ void Tile::loadImage()
             image = Image::create(
                 w, h * frames, false, Image::HARDWARE
             );
-            // info->image->alphaOff();
+            image->alphaOff();
             /* draw the tile from the image we found
                to our tile image */
             if (subimage) {
@@ -182,6 +182,7 @@ void Tile::loadImage()
                 info->image->drawOn(image, 0, 0);
             }
         }
+        info->image->alphaOff();
         if (animationRule.size() > 0) {
             extern TileAnimSet *tileanims;
             anim = NULL;
@@ -198,7 +199,7 @@ void Tile::loadImage()
         /* if we have animations, we always used 'animated'
            to draw from */
         // if (anim)
-        // image->alphaOff();
+        image->alphaOff();
     }
 } // Tile::loadImage
 

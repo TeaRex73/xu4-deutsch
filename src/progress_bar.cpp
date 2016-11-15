@@ -36,6 +36,7 @@ void ProgressBar::draw()
     Image *bar = Image::create(
         SCALED(width), SCALED(height), false, Image::HARDWARE
     );
+    bar->alphaOff();
     int pos = static_cast<int>(
         (double(current - min) / double(max - min)) * (width - (bwidth * 2))
     );

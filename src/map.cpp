@@ -300,6 +300,7 @@ Map::Map()
     id = 0;
     tileset = NULL;
     tilemap = NULL;
+    objectsByLocation.clear();
 }
 
 Map::~Map()
@@ -325,21 +326,21 @@ Object *Map::objectAt(const Coords &coords)
     /* FIXME: return a list instead of one object */
     ObjectDeque::const_iterator i;
     Object *objAt = NULL;
-    for (i = objects.cbegin(); i != objects.cend(); i++) {
-        Object *obj = *i;
-        if (__builtin_expect(obj->getCoords() == coords, false)) {
-            /* get the most visible object */
-            if (objAt
-                && (objAt->getType() == Object::UNKNOWN)
-                && (obj->getType() != Object::UNKNOWN)) {
-                objAt = obj;
-            }
-            /* give priority to objects that have the focus */
-            else if (objAt && (!objAt->hasFocus()) && (obj->hasFocus())) {
-                objAt = obj;
-            } else if (!objAt) {
-                objAt = obj;
-            }
+    std::pair<ObjectLocMap::iterator, ObjectLocMap::iterator> p =
+        objectsByLocation.equal_range(coords);
+    for (ObjectLocMap::iterator i = p.first; i != p.second; i++) {
+        Object *obj = i->second;
+        /* get the most visible object */
+        if (objAt
+            && (objAt->getType() == Object::UNKNOWN)
+            && (obj->getType() != Object::UNKNOWN)) {
+            objAt = obj;
+        }
+        /* give priority to objects that have the focus */
+        else if (objAt && (!objAt->hasFocus()) && (obj->hasFocus())) {
+            objAt = obj;
+        } else if (!objAt) {
+            objAt = obj;
         }
     }
     return objAt;
@@ -510,8 +511,9 @@ Creature *Map::addCreature(const Creature *creature, Coords coords)
     *m = *creature;
     m->setInitialHp();
     m->setStatus(STAT_GOOD);
-    m->setCoords(coords);
     m->setMap(this);
+    m->setCoords(coords);
+    m->setPrevCoords(coords);
     /* initialize the creature before placing it */
     if (m->wanders()) {
         m->setMovementBehavior(MOVEMENT_WANDER);
@@ -536,6 +538,8 @@ Creature *Map::addCreature(const Creature *creature, Coords coords)
 Object *Map::addObject(Object *obj, Coords coords)
 {
     objects.push_front(obj);
+    obj->setCoords(obj->getCoords());
+    obj->setPrevCoords(obj->getCoords());
     return obj;
 }
 
@@ -545,9 +549,9 @@ Object *Map::addObject(MapTile tile, MapTile prevtile, Coords coords)
 
     obj->setTile(tile);
     obj->setPrevTile(prevtile);
+    obj->setMap(this);
     obj->setCoords(coords);
     obj->setPrevCoords(coords);
-    obj->setMap(this);
     objects.push_front(obj);
     return obj;
 }
@@ -565,6 +569,17 @@ void Map::removeObject(const Object *rem, bool deleteObject)
     ObjectDeque::iterator i;
     for (i = objects.begin(); i != objects.end(); i++) {
         if (*i == rem) {
+            std::pair<ObjectLocMap::iterator, ObjectLocMap::iterator> p =
+                objectsByLocation.equal_range((*i)->getCoords());
+            for (ObjectLocMap::iterator j = p.first;
+                 j != p.second;
+                 /* nothing */) {
+                if (j->second == *i) {
+                    j = objectsByLocation.erase(j);
+                } else {
+                    j++;
+                }
+            }
             /* Party members persist through different maps,
                so don't delete them! */
             if (deleteObject && !isPartyMember(*i)) {
@@ -580,6 +595,17 @@ ObjectDeque::iterator Map::removeObject(
     ObjectDeque::iterator rem, bool deleteObject
 )
 {
+    std::pair<ObjectLocMap::iterator, ObjectLocMap::iterator> p =
+        objectsByLocation.equal_range((*rem)->getCoords());
+    for (ObjectLocMap::iterator j = p.first;
+         j != p.second;
+         /* nothing */) {
+        if (j->second == *rem) {
+            j = objectsByLocation.erase(j);
+        } else {
+            j++;
+        }
+    }
     /* Party members persist through different maps, so don't delete them! */
     if (deleteObject && !isPartyMember(*rem)) {
         delete *rem;
@@ -596,9 +622,10 @@ ObjectDeque::iterator Map::removeObject(
  */
 Creature *Map::moveObjects(MapCoords avatar)
 {
+    ObjectDeque::iterator i;
     Creature *attacker = NULL;
-    for (unsigned int i = 0; i < objects.size(); i++) {
-        Creature *m = dynamic_cast<Creature *>(objects[i]);
+    for (i = objects.begin(); i != objects.end(); i++) {
+        Creature *m = dynamic_cast<Creature *>(*i);
         if (m) {
             /* check if the object is an attacking creature and not
                just a normal, docile person in town or an inanimate object */
@@ -654,10 +681,11 @@ void Map::resetObjectAnimations()
 }
 
 /**
- * Removes all objects from the given map, deleting them if not Party Members
+ * Removes all objects from the given map, deleting them
  */
 void Map::clearObjects()
 {
+    objectsByLocation.clear();
     objects.clear();
 }
 

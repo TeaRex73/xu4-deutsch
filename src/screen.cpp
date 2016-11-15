@@ -595,6 +595,7 @@ void screenShowChar(int chr, int x, int y)
                 settings.game.c_str()
             );
         }
+        charsetInfo->image->alphaOff();
     }
     charsetInfo->image->drawSubRect(
         x * charsetInfo->image->width(),
@@ -1527,6 +1528,7 @@ void screenShake(int iterations)
         bottom = Image::create(
             SCALED(320), SCALED(shakeOffset + 1), false, Image::HARDWARE
         );
+        bottom->alphaOff();
         // disable all screen updates except our own
         // otherwise image will get messed up because things aren't in their
         // usual places

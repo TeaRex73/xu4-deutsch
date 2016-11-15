@@ -256,6 +256,7 @@ int screenLoadImageCga(
         compressed_data = NULL;
         return 0;
     }
+    img->alphaOff();
     img->setPalette(egaPalette, 16);
     for (y = 0; y < height; y++) {
         for (x = 0; x < width; x += 4) {
@@ -436,6 +437,7 @@ Image *screenScaleDown(Image *src, int scale)
     if (!dest) {
         return NULL;
     }
+    dest->alphaOff();
     if (!dest) {
         dest = Image::duplicate(src);
     }

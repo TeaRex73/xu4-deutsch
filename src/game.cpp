@@ -2153,7 +2153,7 @@ void getChest(int player)
     if (tile->isChest() || obj) {
         // if a spell was cast to open this chest,
         // player will equal -2, otherwise player
-        // will default to -1 or the defult character
+        // will default to -1 or the default character
         // number if one was earlier specified
         if (player == -1) {
             screenMessage("Wer |ffnet-");

@@ -113,6 +113,9 @@ Image *PngImageLoader::load(
         png_destroy_read_struct(&png_ptr, &info_ptr, &end_info);
         return NULL;
     }
+    if (color_type != PNG_COLOR_TYPE_RGB_ALPHA) {
+        image->alphaOff();
+    }
     if ((bpp == 4) || (bpp == 8)) {
         int num_pngpalette;
         png_colorp pngpalette;

@@ -80,7 +80,7 @@ void MapMgr::unloadMap(MapId id)
     for (std::vector<ConfigElement>::const_iterator i = maps.begin();
          i != maps.end();
          i++) {
-        if (id == static_cast<MapId>((*i).getInt("id"))) {
+        if (id == static_cast<MapId>(i->getInt("id"))) {
             Map *map = initMapFromConf(*i);
             mapList[id] = map;
             break;

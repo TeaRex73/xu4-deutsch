@@ -7,6 +7,7 @@
 
 #include <string>
 #include <map>
+#include <unordered_map>
 #include "types.h"
 
 
@@ -43,7 +44,7 @@ public:
 class Tileset {
 public:
     typedef std::map<std::string, Tileset *> TilesetMap;
-    typedef std::map<TileId, Tile *> TileIdMap;
+    typedef std::unordered_map<TileId, Tile *> TileIdMap;
     typedef std::map<std::string, Tile *> TileStrMap;
     static void loadAll();
     static void unloadAll();

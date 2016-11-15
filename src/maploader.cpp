@@ -113,8 +113,8 @@ bool MapLoader::loadData(Map *map, U4FILE *f)
     if (map->chunk_width == 0) {
         map->chunk_width = map->width;
     }
-    std::clock_t total = 0;
 #ifndef NPERF
+    std::clock_t total = 0;
     std::clock_t start = std::clock();
 #endif
     u4fseek(f, map->offset, SEEK_CUR);
@@ -139,9 +139,13 @@ bool MapLoader::loadData(Map *map, U4FILE *f)
                         if (c == EOF) {
                             return false;
                         }
+#ifndef NPERF
                         std::clock_t s = std::clock();
+#endif
                         MapTile mt = map->tfrti(c);
+#ifndef NPERF
                         total += std::clock() - s;
+#endif
                         map->data[
                             x
                             + (y * map->width)

@@ -5,12 +5,8 @@
 #include "vc6.h" // Fixes things if you're using VC6, does nothing otherwise
 
 #include <algorithm>
-
 #include "object.h"
-
 #include "map.h"
-
-
 
 std::unordered_set<Object *> Object::all_objects;
 
@@ -45,6 +41,23 @@ void Object::cleanup()
     }
     all_objects.clear();
 }
+
+void Object::setCoords(Coords c)
+{
+    prevCoords = coords;
+    coords = c;
+    Map *map = getMap();
+    std::pair<ObjectLocMap::iterator, ObjectLocMap::iterator> p =
+        map->objectsByLocation.equal_range(prevCoords);
+    for (ObjectLocMap::iterator i = p.first; i != p.second; /* nothing */) {
+        if (i->second == this) {
+            i = map->objectsByLocation.erase(i);
+        } else {
+            i++;
+        }
+    }
+    map->objectsByLocation.insert(std::pair<Coords, Object *>(coords, this));
+}    
 
 bool Object::setDirection(Direction d)
 {

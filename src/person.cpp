@@ -144,6 +144,7 @@ std::string Person::getName() const
 void Person::goToStartLocation()
 {
     setCoords(start);
+    setPrevCoords(start);
 }
 
 void Person::setDialogue(Dialogue *d)
@@ -465,14 +466,14 @@ std::string Person::getResponse(Conversation *cnv, const char *inquiry)
             reply = dialogue->getPronoun()
                 + " sagt:\nEs ist mir eine Ehre, dich zu begleiten!";
             c->location->map->removeObject(this);
-        musicMgr->play();
+            musicMgr->play();
             cnv->state = Conversation::DONE;
         } else {
             reply = dialogue->getPronoun() + " sagt:\nDu bist nicht ";
             reply += (join == JOIN_NOT_VIRTUOUS) ?
                 getVirtueAdjective(v) :
                 "erfahren";
-            reply += " genug fuer mich, um dich zu begleiten.";
+            reply += " genug f}r mich, um dich zu begleiten.";
         }
     } else if ((*dialogue)[inquiry]) {
         Dialogue::Keyword *kw = (*dialogue)[inquiry];

@@ -25,6 +25,7 @@
 #include "imageloader.h"
 #include "imageloader_u4.h"
 #include "intro.h"
+#include "map.h"
 #include "maploader.h"
 #include "mapmgr.h"
 #include "music.h"

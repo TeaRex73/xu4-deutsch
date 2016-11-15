@@ -63,6 +63,7 @@ Image *U4RawImageLoader::load(U4FILE *file, int width, int height, int bpp)
         }
         return NULL;
     }
+    image->alphaOff();
     U4PaletteLoader paletteLoader;
     if (bpp == 8) {
         image->setPalette(paletteLoader.loadVgaPalette(), 256);
@@ -113,6 +114,7 @@ Image *U4RleImageLoader::load(U4FILE *file, int width, int height, int bpp)
         }
         return NULL;
     }
+    image->alphaOff();
     U4PaletteLoader paletteLoader;
     if (bpp == 8) {
         image->setPalette(paletteLoader.loadVgaPalette(), 256);
@@ -163,6 +165,7 @@ Image *U4LzwImageLoader::load(U4FILE *file, int width, int height, int bpp)
         }
         return NULL;
     }
+    image->alphaOff();
     U4PaletteLoader paletteLoader;
     if (bpp == 8) {
         image->setPalette(paletteLoader.loadVgaPalette(), 256);

@@ -33,7 +33,7 @@
     <topic query="job">Ich bewahre großes Wissen.</topic>
     <topic query="health">Alt und schwach, habe ich viele Questen gesehen!<question type="0">Bist du auf der Queste?<yes>Mögest du Erfolg haben!</yes><no>Oh.</no></question></topic>
     <topic query="WISS">Was ist es, das du suchst?</topic>
-    <topic query="BUCH">Schau nach dem Buch der Wahrheit, wo andere Bücher liegen.</topic>
+    <topic query="BUCH">Schau nach dem Buche der Wahrheit, wo andere Bücher liegen.</topic>
   </person>
   <person id="5" name="Jon" pronoun="Er" turnAwayProb="0">
     <description>Eine bullige Wache.</description>

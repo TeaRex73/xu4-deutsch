@@ -5,9 +5,11 @@
 #ifndef MAP_H
 #define MAP_H
 
+#include <functional>
 #include <list>
 #include <map>
 #include <string>
+#include <unordered_map>
 #include <vector>
 
 #include "coords.h"
@@ -107,16 +109,29 @@ public:
 
 namespace std
 {
+    template<> struct hash<Coords> {
+        std::size_t operator()(Coords const &s) const
+        {
+            std::hash<int> hashint;
+            size_t hx = hashint(s.x);
+            size_t hy = hashint(s.y);
+            size_t hz = hashint(s.z);
+            return hx ^ (hy << 8 | hy >> 24) ^ (hz << 16 | hz >> 16);
+        }
+    };
     template<> struct hash<MapCoords> {
         std::size_t operator()(MapCoords const &s) const
         {
-            unsigned int x = static_cast<unsigned int>(s.x);
-            unsigned int y = static_cast<unsigned int>(s.y);
-            unsigned int z = static_cast<unsigned int>(s.z);            
-            return x ^ (y << 8 | y >> 24) ^ (z << 16 | z >> 16);
+            std::hash<int> hashint;
+            size_t hx = hashint(s.x);
+            size_t hy = hashint(s.y);
+            size_t hz = hashint(s.z);
+            return hx ^ (hy << 8 | hy >> 24) ^ (hz << 16 | hz >> 16);
         }
     };
 }
+
+typedef std::unordered_multimap<Coords, Object *> ObjectLocMap;
 
 /**
  * Map class
@@ -203,6 +218,7 @@ public:
     MapData data;
     ObjectDeque objects;
     std::map<std::string, MapCoords> labels;
+    ObjectLocMap objectsByLocation;
     Tileset *tileset;
     TileMap *tilemap;
     // u4dos compatibility

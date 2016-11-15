@@ -1110,7 +1110,7 @@
         </vendor>
 
         <!-- BRITAIN -->
-        <vendor id="BRITAIN" name="IM CHATEAU BRITANNIA" innkeeper="JASON">
+        <vendor id="BRITAIN" name="IM ANWESEN BRITANNIA" innkeeper="JASON">
             <room choice="j" price="15" x="29" y="6"/>
             <ask choice="j">
                 WIR HABEN EINEN RAUM BESCHEIDENER GR\SSE MIT 1 BETT F]R 15gs.
