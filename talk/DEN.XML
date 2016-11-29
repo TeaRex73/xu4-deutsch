@@ -31,15 +31,15 @@
   <person id="4" name="Slysam" pronoun="Er" turnAwayProb="16">
     <description>Einen geschickten Dieb.</description>
     <topic query="job">Was geht's dich an?</topic>
-    <topic query="health">So gut wie nötig ist!</topic>
+    <topic query="health">So gut wie's nötig ist!</topic>
     <topic query="DIEB">Ja, und auch klever.</topic>
-    <topic query="KLEV">Du stellst zu viele Fragen!<question type="0">Bist du ein Dieb?<yes>Oh, da paß ich wohl besser mal auf!</yes><no>Habs mir schon gedacht.</no></question></topic>
+    <topic query="KLEV">Du stellst zu viele Fragen!<question type="0">Bist du ein Dieb?<yes>Oho, da paß ich wohl besser mal auf!</yes><no>Habs mir schon gedacht.</no></question></topic>
   </person>
   <person id="5" name="Ragnar" pronoun="Er" turnAwayProb="16">
     <description>Einen ernsten Waldläufer.</description>
-    <topic query="job">Ich reise.</topic>
+    <topic query="job">Ich bereise.</topic>
     <topic query="health">O.K.</topic>
-    <topic query="REIS">Die Länder Britannias.<question type="0">Suchst du hier Informationen?<yes>Worüber?</yes><no>Dann verzieh dich.</no></question></topic>
+    <topic query="BERE">Die Länder Britannias.<question type="0">Suchst du hier Informationen?<yes>Worüber?</yes><no>Dann verzieh dich.</no></question></topic>
     <topic query="SCHA">Sei gewarnt daß, wenn du jemals den Schädel benutzt, außer um ihn zu zerstören, all deine Tugend verloren ist!</topic>
   </person>
   <person id="6" name="Seanna" pronoun="Sie" turnAwayProb="0">

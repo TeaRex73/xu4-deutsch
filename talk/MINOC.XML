@@ -89,7 +89,7 @@
     <topic query="job">Dies und das.</topic>
     <topic query="health">O.K., denk ich.</topic>
     <topic query="DIES">Und das...</topic>
-    <topic query="RUNE">Die Rune des Verzichtes ist schwer zu bekommen. Sie liegt inmitten der Feuers der Schmiede!<question type="0">Hast du die Rune?<yes>Dann frag Alkerion nach dem Steine!</yes><no>Komm wieder, wenn du sie findest!</no></question></topic>
+    <topic query="RUNE">Die Rune des Verzichtes ist schwer zu bekommen. Sie liegt inmitten des Feuers der Schmiede!<question type="0">Hast du die Rune?<yes>Dann frag Alkerion nach dem Steine!</yes><no>Komm wieder, wenn du sie findest!</no></question></topic>
   </person>
   <person id="13" name="Azure" pronoun="Er" turnAwayProb="0">
     <description>Einen Zinker am Tische.</description>

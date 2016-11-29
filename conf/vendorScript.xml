@@ -751,7 +751,7 @@
             <topic choice="ALRA" price="40" redirect="save"/>
         </vendor>
         
-        <vendor id="BUKANIER-NEST" name="IN DER SPELUNKE ZUM KORSAREN" owner="DER CAP'N" specialty="HUNDEPASTETE" spec_price="4" ale_price="2">
+        <vendor id="BUKANIER-NEST" name="IN DER SPELUNKE ZUM KORSAREN" owner="DER C[P'N" specialty="HUNDEPASTETE" spec_price="4" ale_price="2">
             <topic choice="SCH[" price="99" redirect="save"/>
         </vendor>
 
@@ -1181,9 +1181,9 @@
         <intro>
             <music type="shopping"/>
             <ztats screen="equipment"/>
-            WARSCHAU, KAMERAD! DU WILLST DOCH BESTIMMT VOM ALTEN {owner} KAUFEN!
+            WARSCHAU, KAMERAD! DU WILLST VOM ALTEN {owner} KAUFEN?
 
-            {owner} SAGT: WILKOMMEN BEI{name}.
+            {owner} SAGT: WILKOMMEN I{name}.
             WILLST DU MEINE BEUTE SEHEN?<input type="choice" options="jn" target="show_goods"/>
         </intro>
 
@@ -1201,7 +1201,7 @@
         <show_goods default="true" redirect="bye"/>
         <show_goods choice="j">
             {owner} SAGT: GUT, KAMERAD!
-            SIEHSTE, ICH HAB:
+            SCHAU HER, ICH HAB:
             {show_inventory:show_item}
             WAS SOLLS'N SEIN?<input type="choice" options="{inventory_choices}" target="tell_about"/>
         </show_goods>
@@ -1228,11 +1228,12 @@
 
         <will_buy>
             <var name="item" value="{$choice}"/>
-            WILLSTE KAUFEN?<input type="choice" options="jn" target="buy_item"/>
+            WILLST DU KAUFEN?<input type="choice" options="jn" target="buy_item"/>
         </will_buy>
 
         <buy_item default="true" choice="n">
-            HMMM... GRUMMEL...<redirect target="bye"/>
+          HMMM... GRUMMEL...
+	  <redirect target="see_more"/>
         </buy_item>
         <buy_item choice="j">
             <redirect target="buy" choice="{$item}"/>
@@ -1261,7 +1262,7 @@
             <item choice="d" hidden="true" name="SEXTANT" price="900" quant="1" type="sextant"/>            
         </vendor>
 
-        <vendor id="BUKANIER-NEST" name=" DER PIRATENGILDE" owner="ONE EYED WILLEY">
+        <vendor id="BUKANIER-NEST" name="N DER PIRATENGILDE" owner="WILLEY EINAUGE">
             <item choice="a" name="FACKELN" price="50" quant="5" type="torch"/>
             <item choice="b" name="JUWELEN" price="60" quant="5" type="gem"/>
             <item choice="c" name="DIETRICHE" price="60" quant="6" type="key"/>

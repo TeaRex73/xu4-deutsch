@@ -7,6 +7,7 @@ for i in *.XML; do cat "$i" | recode UTF-8..ISO646-DE > "2$i" && /usr/local/lib/
 rm -rf 2* || exit 1
 mv *.GER ~/U4N/ULTIMA4/ || exit 1
 cd  ~/U4N/ULTIMA4/ || exit 1
+rm -rf debug || exit 1
 rm  -f ~/ultima4g-1.01.zip || exit 1
 zip -9vvr ~/ultima4g-1.01.zip * || exit 1
 popd || exit 1

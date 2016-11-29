@@ -30,7 +30,7 @@
   </person>
   <person id="4" name="Christen" pronoun="Sie" turnAwayProb="0">
     <description>Ein verspieltes Kind.</description>
-    <topic query="job">Ich bin dein Freund.</topic>
+    <topic query="job">Ich bin deine Freundin.</topic>
     <topic query="health">Fühl mich gut.</topic>
     <topic query="FREU">Ehrliche Freunde gibt's nur wenige!<question type="0">Bist du mein Freund?<yes>Das macht mich glücklich.</yes><no>Ich bin traurig.</no></question></topic>
     <topic query="EHRL">Mein Freund William weiß, wo die Rune der Ehrlichkeit ist.</topic>
@@ -86,7 +86,7 @@
   </person>
   <person id="12" name="Calabrini" pronoun="Er" turnAwayProb="0">
     <description>Einen großen Magier.</description>
-    <topic query="job">Ich grüße dich von der schönen Stadt Moonglow.<question type="0">Suchst Du ein Gasthaus oder Heilung?<yes>Welches?</yes><no>Vielleicht den Schrein, der auf einer Insel Richtung Norden liegt!</no></question></topic>
+    <topic query="job">Ich grüße dich von der schönen Stadt Moonglow.<question type="0">Suchst Du ein Gasthaus oder Heilung?<yes>Welches davon?</yes><no>Vielleicht den Schrein, der auf einer Insel Richtung Norden liegt!</no></question></topic>
     <topic query="health">Prima.</topic>
     <topic query="GAST">Wir haben einen exzellenten Gasthof.</topic>
     <topic query="HEIL">Unser Heiler ist einer der Besten!</topic>

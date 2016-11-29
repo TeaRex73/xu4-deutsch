@@ -36,7 +36,12 @@ install-prog::
 	$(INSTALL) -D -s u4enc $(libdir)/u4g/u4enc
 	$(INSTALL) -D -s u4unpackexe $(libdir)/u4g/u4unpackexe
 
-install:: install-prog
+install-conf::
+	$(INSTALL) ../conf/*.xml $(libdir)/u4g
+	mkdir -p $(libdir)/u4g/dtd
+	$(INSTALL) ../conf/dtd/*.dtd $(libdir)/u4g/dtd
+
+install:: install-prog install-conf
 	$(INSTALL) -D ../icons/u4.bmp $(datadir)/pixmaps/u4.bmp
 	$(INSTALL) -D ../icons/u4.png $(datadir)/pixmaps/u4.png
 	mkdir -p $(libdir)/u4g/music
@@ -46,9 +51,6 @@ install:: install-prog
 	mkdir -p $(libdir)/u4g/sound
 #	$(INSTALL) ../sound/*.ogg $(libdir)/u4g/sound
 	$(INSTALL) ../sound/*.wav $(libdir)/u4g/sound
-	$(INSTALL) ../conf/*.xml $(libdir)/u4g
-	mkdir -p $(libdir)/u4g/dtd
-	$(INSTALL) ../conf/dtd/*.dtd $(libdir)/u4g/dtd
 	mkdir -p $(libdir)/u4g/graphics
 	mkdir -p $(libdir)/u4g/graphics/ega
 	mkdir -p $(libdir)/u4g/graphics/hires

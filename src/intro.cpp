@@ -1133,12 +1133,11 @@ void IntroController::updateScreen()
             backgroundArea.draw(BKGD_INTRO);
             backgroundArea.draw(BKGD_OPTIONS_BTM, 0, 120);
         }
-        menuArea.textAt(9, 1, "IN EINER ANDEREN WELT");
-        menuArea.textAt(8, 2, "IN EINER ZEIT DIE KOMMT");
-        menuArea.textAt(14, 4, "OPTIONEN:");
+        menuArea.textAt(1, 1, "EINE ANDERE WELT, EINE KOMMENDE ZEIT");
+        menuArea.textAt(14, 3, "OPTIONEN:");
         menuArea.textAt(
             10,
-            6,
+            4,
             "%s",
             menuArea.colorizeString(
                 "Zur}ck zur Ansicht", FG_YELLOW, 0, 1
@@ -1146,7 +1145,7 @@ void IntroController::updateScreen()
         );
         menuArea.textAt(
             10,
-            7,
+            5,
             "%s",
             menuArea.colorizeString(
                 "Reise fortsetzen", FG_YELLOW, 0, 1
@@ -1154,7 +1153,7 @@ void IntroController::updateScreen()
         );
         menuArea.textAt(
             10,
-            8,
+            6,
             "%s",
             menuArea.colorizeString(
                 "Neues Spiel starten", FG_YELLOW, 0, 1
@@ -1163,14 +1162,14 @@ void IntroController::updateScreen()
 #if 0
         menuArea.textAt(
             10,
-            8,
+            7,
             "%s",
             menuArea.colorizeString("Konfigurieren", FG_YELLOW, 0, 1).c_str()
         );
 #endif
         menuArea.textAt(
             10,
-            9,
+            7,
             "%s",
             menuArea.colorizeString(
                 "Ende und abschalten",
@@ -1181,7 +1180,7 @@ void IntroController::updateScreen()
         );
         drawBeasties();
         // draw the cursor last
-        screenSetCursorPos(24, 17);
+        screenSetCursorPos(24, 16);
         screenShowCursor();
         break;
     default:
@@ -2398,7 +2397,7 @@ bool IntroController::updateTitle()
         while (animStepTarget > title->animStep) {
             title->animStep++;
             // blue for the underline
-            color = title->destImage->setColor(27, 154, 255);
+            color = title->destImage->setColor(0, 149, 255);
             // blit bar to the canvas
             title->destImage->fillRect(
                 1, 1, title->animStep, 1, color.r, color.g, color.b

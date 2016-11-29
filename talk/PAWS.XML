@@ -72,7 +72,7 @@
   </person>
   <person id="10" name="Pix" pronoun="Sie" turnAwayProb="0">
     <description>Ein kleines Mädchen.</description>
-    <topic query="job">Was ist ein Beruf?</topic>
+    <topic query="job">Was ist 'Beruf'?</topic>
     <topic query="health">Gut, danke.<question type="0">Und du?<yes>Gut.</yes><no>Schade.</no></question></topic>
     <topic query="A   ">A</topic>
     <topic query="A   ">A</topic>
