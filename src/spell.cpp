@@ -1019,8 +1019,9 @@ static int spellYup(int unused)
 {
     MapCoords coords = c->location->coords;
     Dungeon *dungeon = dynamic_cast<Dungeon *>(c->location->map);
-    /* can't cast in the Abyss */
-    if (c->location->map->id == MAP_ABYSS) {
+    /* can't cast in the Abyss CHANGE: or in Hythloth - too easy */
+    if (c->location->map->id == MAP_ABYSS ||
+		c->location->map->id == MAP_HYTHLOTH) {
         return 0;
     }
     /* staying in the dungeon */
@@ -1050,8 +1051,9 @@ static int spellZdown(int unused)
 {
     MapCoords coords = c->location->coords;
     Dungeon *dungeon = dynamic_cast<Dungeon *>(c->location->map);
-    /* can't cast in the Abyss */
-    if (c->location->map->id == MAP_ABYSS) {
+    /* can't cast in the Abyss CHANGE: or in Hythloth - too easy */
+    if (c->location->map->id == MAP_ABYSS ||
+		c->location->map->id == MAP_HYTHLOTH) {
         return 0;
     }
     /* can't go lower than level 8 */

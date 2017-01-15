@@ -14,6 +14,7 @@
 #include "context.h"
 #include "combat.h"
 #include "creature.h"
+#include "dungeon.h"
 #include "event.h"
 #include "game.h"
 #include "map.h"
@@ -161,7 +162,7 @@ std::vector<MapTile> Location::tilesAt(MapCoords coords, bool &focus)
 /**
  * Finds a valid replacement tile for the given location, using
  * surrounding tiles as guidelines to choose the new tile.  The new
- * tile will only be chosen if it  is marked as a valid replacement
+ * tile will only be chosen if it is marked as a valid replacement
  * (or waterReplacement) tile in tiles.xml.  If a valid replacement
  * cannot be found, it returns a "best guess" tile.
  */
@@ -225,7 +226,11 @@ TileId Location::getReplacementTile(MapCoords atCoords, const Tile *forTile)
              && searchQueue.size() > 0
              && searchQueue.size() < 64);
     /* couldn't find a tile, give it the sad default */
-    return map->tileset->getByName("grass")->getId();
+	if (isDungeon(map)) {
+		return map->tileset->getByName("brick_floor")->getId();
+	} else {
+		return map->tileset->getByName("grass")->getId();
+	}
 } // Location::getReplacementTile
 
 

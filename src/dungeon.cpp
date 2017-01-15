@@ -253,7 +253,7 @@ void dungeonDrinkFountain()
  */
 void dungeonTouchOrb()
 {
-    screenMessage("Du findest eine Magische Kugel...\nWer ber}hrt-");
+    screenMessage("Du findest eine magische Kugel.\nWer ber}hrt-");
     int player = gameGetPlayer(false, false, false);
     if (player == -1) {
         return;
@@ -290,23 +290,25 @@ void dungeonTouchOrb()
     default:
         break;
     }
+	screenMessage("\n");
     /* give stats bonuses */
     if (stats & STATSBONUS_STR) {
-        screenMessage("St{rke + 5\n");
+        screenMessage("Str + 5\n");
         AdjustValueMax(c->saveGame->players[player].str, 5, 50);
         damage += 200;
     }
     if (stats & STATSBONUS_DEX) {
-        screenMessage("Geschicklichkeit + 5\n");
+        screenMessage("Ges + 5\n");
         AdjustValueMax(c->saveGame->players[player].dex, 5, 50);
         damage += 200;
     }
     if (stats & STATSBONUS_INT) {
-        screenMessage("Intelligenz + 5\n");
+        screenMessage("Int + 5\n");
         AdjustValueMax(c->saveGame->players[player].intel, 5, 50);
         damage += 200;
     }
     /* deal damage to the party member who touched the orb */
+	soundPlay(SOUND_PC_STRUCK, false);
     c->party->member(player)->applyDamage(damage);
     /* remove the orb from the map */
     c->location->map->annotations->add(c->location->coords, replacementTile);

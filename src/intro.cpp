@@ -1137,7 +1137,7 @@ void IntroController::updateScreen()
         menuArea.textAt(14, 3, "OPTIONEN:");
         menuArea.textAt(
             10,
-            4,
+            5,
             "%s",
             menuArea.colorizeString(
                 "Zur}ck zur Ansicht", FG_YELLOW, 0, 1
@@ -1145,7 +1145,7 @@ void IntroController::updateScreen()
         );
         menuArea.textAt(
             10,
-            5,
+            6,
             "%s",
             menuArea.colorizeString(
                 "Reise fortsetzen", FG_YELLOW, 0, 1
@@ -1153,7 +1153,7 @@ void IntroController::updateScreen()
         );
         menuArea.textAt(
             10,
-            6,
+            7,
             "%s",
             menuArea.colorizeString(
                 "Neues Spiel starten", FG_YELLOW, 0, 1
@@ -1162,14 +1162,18 @@ void IntroController::updateScreen()
 #if 0
         menuArea.textAt(
             10,
-            7,
+            8,
             "%s",
             menuArea.colorizeString("Konfigurieren", FG_YELLOW, 0, 1).c_str()
         );
 #endif
         menuArea.textAt(
             10,
-            7,
+#if 0
+			9,
+#else
+            8,
+#endif
             "%s",
             menuArea.colorizeString(
                 "Ende und abschalten",
