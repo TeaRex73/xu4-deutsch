@@ -340,7 +340,7 @@ public:
     std::list<std::string> reply; /**< What the talker says */
     class Script *script; /**< A script that this person
                              follows during the
-                             conversation (may be NULL) */
+                             conversation (may be nullptr) */
     Dialogue::Question *question; /**< The current question
                                      the player is being asked */
     int quant; /**< For vendor transactions */

@@ -30,7 +30,7 @@
 /*
  * Static variables
  */
-Music *Music::instance = NULL;
+Music *Music::instance = nullptr;
 bool Music::fading = false;
 bool Music::on = false;
 bool Music::functional = true;
@@ -47,7 +47,7 @@ bool Music::functional = true;
 Music::Music()
     :introMid(NONE),
      current(NONE),
-     playing(NULL),
+     playing(nullptr),
      logger(new Debug("debug/music.txt", "Music"))
 {
     filenames.reserve(MAX);

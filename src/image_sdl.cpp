@@ -32,7 +32,7 @@ int myfprintf(FILE *stream, const char *format, ...)
 }
 
 Image::Image()
-    :surface(NULL),
+    :surface(nullptr),
      isScreen(false)
 {
 }
@@ -80,7 +80,7 @@ Image *Image::create(int w, int h, bool indexed, Image::Type type)
     }
     if (!im->surface) {
         delete im;
-        return NULL;
+        return nullptr;
     }
     return im;
 } // Image::create
@@ -95,12 +95,12 @@ Image *Image::createScreenImage()
 
     screen->surface = SDL_GetVideoSurface();
     ASSERT(
-        screen->surface != NULL,
-        "SDL_GetVideoSurface() returned a NULL screen surface!"
+        screen->surface != nullptr,
+        "SDL_GetVideoSurface() returned a nullptr screen surface!"
     );
     screen->w = screen->surface->w;
     screen->h = screen->surface->h;
-    screen->indexed = screen->surface->format->palette != NULL;
+    screen->indexed = screen->surface->format->palette != nullptr;
     screen->isScreen = true;
     return screen;
 }
@@ -652,7 +652,7 @@ void Image::drawOn(Image *d, int x, int y, bool anyway) const
 {
     SDL_Rect r;
     SDL_Surface *destSurface;
-    if (d == NULL) {
+    if (d == nullptr) {
         destSurface = SDL_GetVideoSurface();
     } else {
         destSurface = d->surface;
@@ -670,7 +670,7 @@ void Image::drawOn(Image *d, int x, int y, bool anyway) const
 			myfprintf(stderr, "destSurface\n");
 		}
 #endif
-        SDL_BlitSurface(surface, NULL, destSurface, &r);
+        SDL_BlitSurface(surface, nullptr, destSurface, &r);
     }
 }
 
@@ -691,7 +691,7 @@ void Image::drawSubRectOn(
 {
     SDL_Rect src, dest;
     SDL_Surface *destSurface;
-    if (__builtin_expect(d == NULL, true)) {
+    if (__builtin_expect(d == nullptr, true)) {
         destSurface = SDL_GetVideoSurface();
     } else {
         destSurface = d->surface;
@@ -734,7 +734,7 @@ void Image::drawSubRectInvertedOn(
     int i;
     SDL_Rect src, dest;
     SDL_Surface *destSurface;
-    if (d == NULL) {
+    if (d == nullptr) {
         destSurface = SDL_GetVideoSurface();
     } else {
         destSurface = d->surface;

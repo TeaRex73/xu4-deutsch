@@ -20,7 +20,7 @@ DungeonView::DungeonView(int x, int y, int columns, int rows)
 {
 }
 
-DungeonView *DungeonView::instance(NULL);
+DungeonView *DungeonView::instance(nullptr);
 
 DungeonView *DungeonView::getInstance()
 {
@@ -458,7 +458,7 @@ void DungeonView::drawWall(
         (BORDER_WIDTH + x) * settings.scale,
         (BORDER_HEIGHT + y) * settings.scale
     );
-    if (dngGraphicInfo[index].subimage2 != NULL) {
+    if (dngGraphicInfo[index].subimage2 != nullptr) {
         // FIXME: subimage2 is a horrible hack, needs to be cleaned up
         if (settings.videoType == "EGA") {
             screenDrawImage(

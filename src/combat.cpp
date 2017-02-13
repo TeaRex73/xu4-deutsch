@@ -41,7 +41,7 @@
 bool isCombatMap(Map *punknown)
 {
     CombatMap *ps;
-    if ((ps = dynamic_cast<CombatMap *>(punknown)) != NULL) {
+    if ((ps = dynamic_cast<CombatMap *>(punknown)) != nullptr) {
         return true;
     } else {
         return false;
@@ -54,14 +54,14 @@ bool isCombatMap(Map *punknown)
  * passed, or a CombatMap pointer to the current map
  * if no arguments were passed.
  *
- * Returns NULL if the map provided (or current map)
+ * Returns nullptr if the map provided (or current map)
  * is not a combat map.
  */
 CombatMap *getCombatMap(Map *punknown)
 {
     Map *m = punknown ? punknown : c->location->map;
     if (!isCombatMap(m)) {
-        return NULL;
+        return nullptr;
     } else {
         return dynamic_cast<CombatMap *>(m);
     }
@@ -71,21 +71,21 @@ CombatMap *getCombatMap(Map *punknown)
 /**
  * CombatController class implementation
  */
-CombatController::CombatController():map(NULL)
+CombatController::CombatController():map(nullptr)
 {
     c->party->addObserver(this);
 }
 
 CombatController::CombatController(CombatMap *m):map(m)
 {
-    game->setMap(map, true, NULL, this);
+    game->setMap(map, true, nullptr, this);
     c->party->addObserver(this);
 }
 
 CombatController::CombatController(MapId id)
 {
     map = getCombatMap(mapMgr->get(id));
-    game->setMap(map, true, NULL, this);
+    game->setMap(map, true, nullptr, this);
     c->party->addObserver(this);
     forceStandardEncounterSize = false;
 }
@@ -165,7 +165,7 @@ void CombatController::init(class Creature *m)
 {
     int i;
     creature = m;
-    placeCreaturesOnMap = (m == NULL) ? false : true;
+    placeCreaturesOnMap = (m == nullptr) ? false : true;
     placePartyOnMap = true;
     winOrLose = true;
     map->setDungeonRoom(false);
@@ -174,10 +174,10 @@ void CombatController::init(class Creature *m)
     camping = false;
     /* initialize creature info */
     for (i = 0; i < AREA_CREATURES; i++) {
-        creatureTable[i] = NULL;
+        creatureTable[i] = nullptr;
     }
     for (i = 0; i < AREA_PLAYERS; i++) {
-        party.push_back(NULL);
+        party.push_back(nullptr);
     }
     /* fill the creature table if a creature was provided to create */
     fillCreatureTable(m);
@@ -192,7 +192,7 @@ void CombatController::init(class Creature *m)
 void CombatController::initDungeonRoom(int room, Direction from)
 {
     int offset, i;
-    init(NULL);
+    init(nullptr);
     ASSERT(
         c->location->prev->context & CTX_DUNGEON,
         "Error: called initDungeonRoom from non-dungeon context"
@@ -430,7 +430,7 @@ void CombatController::end(bool adjustKarma)
 void CombatController::fillCreatureTable(const Creature *creature)
 {
     int i, j;
-    if (creature != NULL) {
+    if (creature != nullptr) {
         const Creature *baseCreature = creature, *current;
         int numCreatures = initialNumberOfCreatures(creature);
         if (baseCreature->getId() == PIRATE_ID) {
@@ -441,7 +441,7 @@ void CombatController::fillCreatureTable(const Creature *creature)
             /* find a free spot in the creature table */
             do {
                 j = xu4_random(AREA_CREATURES);
-            } while (creatureTable[j] != NULL);
+            } while (creatureTable[j] != nullptr);
             /* see if creature is a leader or leader's leader */
             /* leader is a different creature */
             if ((creatureMgr->getById(baseCreature->getLeader())
@@ -646,8 +646,8 @@ bool CombatController::attackHit(
     Creature *attacker, Creature *defender, bool harder
 )
 {
-    ASSERT(attacker != NULL, "attacker must not be NULL");
-    ASSERT(defender != NULL, "defender must not be NULL");
+    ASSERT(attacker != nullptr, "attacker must not be nullptr");
+    ASSERT(defender != nullptr, "defender must not be nullptr");
     int attackValue =
         xu4_random(0x100) + attacker->getAttackBonus();
     int defenseValue =
@@ -699,7 +699,7 @@ bool CombatController::attackAt(
         GameController::flashTile(coords, hittile, 3);
         /* apply the damage to the creature */
         if (!attacker->dealDamage(creature, attacker->getDamage())) {
-            creature = NULL;
+            creature = nullptr;
             GameController::flashTile(coords, hittile, 1);
         }
     }
@@ -1191,7 +1191,7 @@ bool CombatController::keyPressed(int key)
         break;
     } // switch
     if (valid) {
-        c->lastCommandTime = time(NULL);
+        c->lastCommandTime = time(nullptr);
         if (eventHandler->getController() == this) {
             c->location->turnCompleter->finishTurn();
         }
@@ -1236,7 +1236,7 @@ void CombatController::attack()
         attacker->getCoords(),
         1,
         range,
-        weapon->canAttackThroughObjects() ? NULL : &Tile::canAttackOverTile,
+        weapon->canAttackThroughObjects() ? nullptr : &Tile::canAttackOverTile,
         false
     );
     bool foundTarget = false;
@@ -1343,7 +1343,7 @@ PartyMemberVector CombatMap::getPartyMembers()
 
 /**
  * Returns the party member at the given coords, if there is one,
- * NULL if otherwise.
+ * nullptr if otherwise.
  */
 PartyMember *CombatMap::partyMemberAt(Coords coords)
 {
@@ -1354,13 +1354,13 @@ PartyMember *CombatMap::partyMemberAt(Coords coords)
             return *i;
         }
     }
-    return NULL;
+    return nullptr;
 }
 
 
 /**
  * Returns the creature at the given coords, if there is one,
- * NULL if otherwise.
+ * nullptr if otherwise.
  */
 Creature *CombatMap::creatureAt(Coords coords)
 {
@@ -1371,7 +1371,7 @@ Creature *CombatMap::creatureAt(Coords coords)
             return *i;
         }
     }
-    return NULL;
+    return nullptr;
 }
 
 

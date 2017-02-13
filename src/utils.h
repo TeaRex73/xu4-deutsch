@@ -178,7 +178,7 @@ public:
 #endif
     }
     
-    void report(const char *pre = NULL)
+    void report(const char *pre = nullptr)
     {
 #ifndef NPERF
         static const double msec = double(CLOCKS_PER_SEC) / double(1000);
@@ -210,7 +210,7 @@ public:
         fsync(fileno(log));
         std::fclose(log);
         sync();
-        log = NULL;
+        log = nullptr;
         times.clear();
 #endif // ifndef NPERF
     } // report

@@ -199,7 +199,9 @@ bool CheatMenuController::keyPressed(int key)
     case 'j':
         screenMessage("BEGLEITER!\n");
         for (int m = c->saveGame->members; m < 8; m++) {
-            if (c->party->canPersonJoin(c->saveGame->players[m].name, NULL)) {
+            if (c->party->canPersonJoin(
+                    c->saveGame->players[m].name, nullptr
+                )) {
                 c->party->join(c->saveGame->players[m].name);
             }
         }
@@ -295,7 +297,7 @@ bool CheatMenuController::keyPressed(int key)
                 choice = &balloon;
                 break;
             default:
-                choice = NULL;
+                choice = nullptr;
                 break;
             }
             if (choice) {
@@ -435,7 +437,7 @@ bool CheatMenuController::keyPressed(int key)
  */
 void CheatMenuController::summonCreature(const std::string &name)
 {
-    const Creature *m = NULL;
+    const Creature *m = nullptr;
     std::string creatureName = name;
     trim(creatureName);
     if (creatureName.empty()) {
@@ -482,5 +484,5 @@ bool WindCmdController::keyPressed(int key)
         doneWaiting();
         return true;
     }
-    return KeyHandler::defaultHandler(key, NULL);
+    return KeyHandler::defaultHandler(key, nullptr);
 }

@@ -33,11 +33,11 @@ Dialogue *U4LBDialogueLoader::load(void *source)
 {
     U4FILE *britkey = u4fopen("britkey.ger");
     if (!britkey) {
-        return NULL;
+        return nullptr;
     }
     U4FILE *britansw = u4fopen("britansw.ger");
     if (!britansw) {
-        return NULL;
+        return nullptr;
     }
     std::vector<std::string> lbKeywords = u4read_stringtable(britkey, 0, 27);
     std::vector<std::string> lbText = u4read_stringtable(britansw, 0, 27);
@@ -85,7 +85,7 @@ Dialogue *U4LBDialogueLoader::load(void *source)
     Response *heal = new Response("Er sagt:\nMir geht es gut, danke.");
     heal->add(ResponsePart::HEALCONFIRM);
     dlg->addKeyword("gesu", heal);
-    Response *bye = NULL;
+    Response *bye = nullptr;
     if (c->party->size() > 1) {
         bye = new Response("Er sagt:\nLebt wohl, meine Freunde!");
     } else {

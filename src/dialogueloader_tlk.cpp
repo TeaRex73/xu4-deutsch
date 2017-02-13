@@ -35,7 +35,7 @@ Dialogue *U4TlkDialogueLoader::load(void *source)
     char tlk_buffer[384];
     if (u4fread(tlk_buffer, 1, sizeof(tlk_buffer), file)
         != sizeof(tlk_buffer)) {
-        return NULL;
+        return nullptr;
     }
     char *ptr = &tlk_buffer[3];
     std::vector<std::string> strings;

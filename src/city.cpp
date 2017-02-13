@@ -90,7 +90,7 @@ void City::addPeople()
     for (current = persons.begin(); current != persons.end(); current++) {
         Person *p = *current;
         if ((p->getTile() != 0)
-            && !(c->party->canPersonJoin(p->getName(), NULL)
+            && !(c->party->canPersonJoin(p->getName(), nullptr)
                  && c->party->isPersonJoined(p->getName()))) {
             addPerson(p);
         }
@@ -116,7 +116,7 @@ void City::removeAllPeople()
 
 /**
  * Returns the person object at the given (x,y,z) coords, if one exists.
- * Otherwise, returns NULL.
+ * Otherwise, returns nullptr.
  */
 Person *City::personAt(const Coords &coords)
 {
@@ -125,7 +125,7 @@ Person *City::personAt(const Coords &coords)
     if (isPerson(obj)) {
         return dynamic_cast<Person *>(obj);
     } else {
-        return NULL;
+        return nullptr;
     }
 }
 
@@ -137,7 +137,7 @@ Person *City::personAt(const Coords &coords)
 bool isCity(Map *punknown)
 {
     City *pCity;
-    if ((pCity = dynamic_cast<City *>(punknown)) != NULL) {
+    if ((pCity = dynamic_cast<City *>(punknown)) != nullptr) {
         return true;
     } else {
         return false;

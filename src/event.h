@@ -67,7 +67,7 @@ public:
         int (*handleChoice)(int);
     } GetChoice;
     
-    KeyHandler(Callback func, void *data = NULL, bool asyncronous = true);
+    KeyHandler(Callback func, void *data = nullptr, bool asyncronous = true);
 
     static int setKeyRepeat(int delay, int interval);
     static bool globalHandler(int key);
@@ -124,10 +124,10 @@ public:
     );
     virtual bool keyPressed(int key);
     static std::string get(
-        int maxlen, int screenX, int screenY, EventHandler *eh = NULL
+        int maxlen, int screenX, int screenY, EventHandler *eh = nullptr
     );
     static std::string get(
-        int maxlen, TextView *view, EventHandler *eh = NULL
+        int maxlen, TextView *view, EventHandler *eh = nullptr
     );
 
 protected:
@@ -145,7 +145,7 @@ class ReadIntController:public ReadStringController {
 public:
     ReadIntController(int maxlen, int screenX, int screenY);
     static int get(
-        int maxlen, int screenX, int screenY, EventHandler *eh = NULL
+        int maxlen, int screenX, int screenY, EventHandler *eh = nullptr
     );
     int getInt() const;
 };
@@ -158,7 +158,7 @@ class ReadChoiceController:public WaitableController<int> {
 public:
     ReadChoiceController(const std::string &choices);
     virtual bool keyPressed(int key);
-    static char get(const std::string &choices, EventHandler *eh = NULL);
+    static char get(const std::string &choices, EventHandler *eh = nullptr);
 
 protected:
     std::string choices;
@@ -201,7 +201,7 @@ public:
     typedef std::list<TimedEvent *> List;
     typedef void (*Callback)(void *);
 
-    TimedEvent(Callback callback, int interval, void *data = NULL);
+    TimedEvent(Callback callback, int interval, void *data = nullptr);
     Callback getCallback() const;
     void *getData();
     void tick();
@@ -225,10 +225,12 @@ public:
     ~TimedEventMgr();
     static unsigned int callback(unsigned int interval, void *param);
     bool isLocked() const; /**< Returns true if event list is in use */
-    void add(TimedEvent::Callback callback, int interval, void *data = NULL);
+    void add(
+        TimedEvent::Callback callback, int interval, void *data = nullptr
+    );
     List::iterator remove(List::iterator i);
     void remove(TimedEvent *event);
-    void remove(TimedEvent::Callback callback, void *data = NULL);
+    void remove(TimedEvent::Callback callback, void *data = nullptr);
     void tick();
     void stop();
     void start();

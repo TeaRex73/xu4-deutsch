@@ -10,16 +10,16 @@
 #include "conversation.h"
 #include "dialogueloader.h"
 
-std::map<std::string, DialogueLoader *> *DialogueLoader::loaderMap = NULL;
+std::map<std::string, DialogueLoader *> *DialogueLoader::loaderMap = nullptr;
 
 DialogueLoader *DialogueLoader::getLoader(const std::string &mimeType)
 {
     ASSERT(
-        loaderMap != NULL,
+        loaderMap != nullptr,
         "DialogueLoader::getLoader loaderMap not initialized"
     );
     if (loaderMap->find(mimeType) == loaderMap->end()) {
-        return NULL;
+        return nullptr;
     }
     return (*loaderMap)[mimeType];
 }
@@ -28,7 +28,7 @@ DialogueLoader *DialogueLoader::registerLoader(
     DialogueLoader *loader, const std::string &mimeType
 )
 {
-    if (loaderMap == NULL) {
+    if (loaderMap == nullptr) {
         loaderMap = new std::map<std::string, DialogueLoader *>;
     }
     (*loaderMap)[mimeType] = loader;

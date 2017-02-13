@@ -18,7 +18,7 @@
 
 
 
-ImageInfo *ImageMgr::screenInfo = NULL;
+ImageInfo *ImageMgr::screenInfo = nullptr;
 
 Image *screenScale(Image *src, int scale, int n, int filter);
 
@@ -36,11 +36,11 @@ public:
     std::map<std::string, ImageInfo *> info;
 };
 
-ImageMgr *ImageMgr::instance = NULL;
+ImageMgr *ImageMgr::instance = nullptr;
 
 ImageMgr *ImageMgr::getInstance()
 {
-    if (instance == NULL) {
+    if (instance == nullptr) {
         instance = new ImageMgr();
         instance->init();
     }
@@ -50,7 +50,7 @@ ImageMgr *ImageMgr::getInstance()
 void ImageMgr::destroy()
 {
     delete instance;
-    instance = NULL;
+    instance = nullptr;
 }
 
 ImageMgr::ImageMgr()
@@ -159,7 +159,7 @@ ImageInfo *ImageMgr::loadImageInfoFromConf(const ConfigElement &conf)
         "dungns",
         "blackTransparencyHack",
         "fmtownsscreen",
-        NULL
+        nullptr
     };
 
     info = new ImageInfo;
@@ -177,7 +177,7 @@ ImageInfo *ImageMgr::loadImageInfoFromConf(const ConfigElement &conf)
     info->fixup = static_cast<ImageFixup>(
         conf.getEnum("fixup", fixupEnumStrings)
     );
-    info->image = NULL;
+    info->image = nullptr;
     std::vector<ConfigElement> children = conf.getChildren();
     for (std::vector<ConfigElement>::iterator i = children.begin();
          i != children.end();
@@ -417,7 +417,7 @@ void ImageMgr::fixupIntro(Image *im, int prescale)
             );
         }
         delete borderInfo->image;
-        borderInfo->image = NULL;
+        borderInfo->image = nullptr;
         borderInfo = imageMgr->get(BKGD_BORDERS, true);
         im->setPaletteFromImage(borderInfo->image);
         // update the color of "and" and "present"
@@ -437,7 +437,7 @@ void ImageMgr::fixupIntro(Image *im, int prescale)
         im->drawSubRectOn(im, 0, 184, 0, 96, 320, 8);
         borderInfo->image->alphaOn();
         delete borderInfo->image;
-        borderInfo->image = NULL;
+        borderInfo->image = nullptr;
     }
     /* -----------------------------
      * draw "Lord British" signature
@@ -495,12 +495,12 @@ void ImageMgr::fixupIntro(Image *im, int prescale)
 
 void ImageMgr::fixupAbyssVision(Image *im, int prescale)
 {
-    static unsigned int *data = NULL;
+    static unsigned int *data = nullptr;
     /*
      * Each VGA vision components must be XORed with all the previous
      * vision components to get the actual image.
      */
-    if (data != NULL) {
+    if (data != nullptr) {
         for (int y = 0; y < im->height(); y++) {
             for (int x = 0; x < im->width(); x++) {
                 unsigned int index;
@@ -648,7 +648,7 @@ ImageSet *ImageMgr::getSet(const std::string &setname)
     if (i != imageSets.end()) {
         return i->second;
     } else {
-        return NULL;
+        return nullptr;
     }
 }
 
@@ -670,7 +670,7 @@ ImageInfo *ImageMgr::getInfoFromSet(
 )
 {
     if (!imageset) {
-        return NULL;
+        return nullptr;
     }
     /* if the image set contains the image we want,
        AND IT EXISTS we are done */
@@ -687,7 +687,7 @@ ImageInfo *ImageMgr::getInfoFromSet(
         imageset = getSet(imageset->extends);
         return getInfoFromSet(name, imageset);
     }
-    return NULL;
+    return nullptr;
 }
 
 std::string ImageMgr::guessFileType(const std::string &filename)
@@ -738,9 +738,9 @@ U4FILE *ImageMgr::getImageFile(ImageInfo *info)
         }
     }
     if (filename == "") {
-        return NULL;
+        return nullptr;
     }
-    U4FILE *file = NULL;
+    U4FILE *file = nullptr;
     if (info->xu4Graphic) {
         std::string pathname(u4find_graphics(filename));
         if (!pathname.empty()) {
@@ -760,15 +760,15 @@ ImageInfo *ImageMgr::get(const std::string &name, bool returnUnscaled)
 {
     ImageInfo *info = getInfo(name);
     if (!info) {
-        return NULL;
+        return nullptr;
     }
 
     /* return if already loaded */
-    if (info->image != NULL) {
+    if (info->image != nullptr) {
         return info;
     }
     U4FILE *file = getImageFile(info);
-    Image *unscaled = NULL;
+    Image *unscaled = nullptr;
     if (file) {
         TRACE(
             *logger,
@@ -781,7 +781,7 @@ ImageInfo *ImageMgr::get(const std::string &name, bool returnUnscaled)
         }
         std::string filetype = info->filetype;
         ImageLoader *loader = ImageLoader::getLoader(filetype);
-        if (loader == NULL) {
+        if (loader == nullptr) {
             errorWarning(
                 "can't find loader to load image \"%s\" "
                 "with type \"%s\"",
@@ -805,10 +805,10 @@ ImageInfo *ImageMgr::get(const std::string &name, bool returnUnscaled)
             "Failed to open file %s for reading.",
             info->filename.c_str()
         );
-        return NULL;
+        return nullptr;
     }
-    if (unscaled == NULL) {
-        return NULL;
+    if (unscaled == nullptr) {
+        return nullptr;
     }
     if (info->transparentIndex != -1) {
         unscaled->setTransparentIndex(info->transparentIndex);
@@ -900,7 +900,7 @@ SubImage *ImageMgr::getSubImage(const std::string &name)
 {
     std::string setname;
     ImageSet *set = baseSet;
-    while (set != NULL) {
+    while (set != nullptr) {
         for (std::map<std::string, ImageInfo *>::iterator i =
                  set->info.begin();
              i != set->info.end();
@@ -914,7 +914,7 @@ SubImage *ImageMgr::getSubImage(const std::string &name)
         }
         set = getSet(set->extends);
     }
-    return NULL;
+    return nullptr;
 }
 
 
@@ -933,9 +933,9 @@ void ImageMgr::freeIntroBackgrounds()
              j != set->info.end();
              j++) {
             ImageInfo *info = j->second;
-            if ((info->image != NULL) && info->introOnly) {
+            if ((info->image != nullptr) && info->introOnly) {
                 delete info->image;
-                info->image = NULL;
+                info->image = nullptr;
             }
         }
     }

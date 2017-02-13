@@ -54,7 +54,7 @@ void Music::destroy_sys()
     if (playing) {
         TRACE_LOCAL(*logger, "Stopping currently playing music");
         Mix_FreeMusic(playing);
-        playing = NULL;
+        playing = nullptr;
     }
     TRACE_LOCAL(*logger, "Closing audio");
     Mix_CloseAudio();
@@ -66,7 +66,7 @@ bool Music::load_sys(const std::string &pathname)
 {
     if (playing) {
         Mix_FreeMusic(playing);
-        playing = NULL;
+        playing = nullptr;
     }
     playing = Mix_LoadMUS(pathname.c_str());
     if (!playing) {

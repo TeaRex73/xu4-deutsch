@@ -318,7 +318,7 @@ int one_argument(char *file_name)
     FILE *compressed_file;
     long uncompressed_size;
     compressed_file = std::fopen(file_name,"rb");
-    if (compressed_file == NULL) {
+    if (compressed_file == nullptr) {
         printf("Couldn't open the file.\n");
         return EXIT_FAILURE;
     } else {

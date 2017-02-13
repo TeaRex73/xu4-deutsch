@@ -24,7 +24,7 @@ void errorFatal(const char *fmt, ...)
     va_start(args, fmt);
     std::vsnprintf(buffer, sizeof(buffer), fmt, args);
     va_end(args);
-    MessageBox(NULL, buffer, "XU4 Error", MB_OK | MB_ICONERROR);
+    MessageBox(nullptr, buffer, "XU4 Error", MB_OK | MB_ICONERROR);
     std::exit(EXIT_FAILURE);
 }
 
@@ -35,7 +35,7 @@ void errorWarning(const char *fmt, ...)
     va_start(args, fmt);
     std::vsnprintf(buffer, sizeof(buffer), fmt, args);
     va_end(args);
-    MessageBox(NULL, buffer, "XU4 Warning", MB_OK | MB_ICONWARNING);
+    MessageBox(nullptr, buffer, "XU4 Warning", MB_OK | MB_ICONWARNING);
 }
 
 #elif defined(MACOSX)
@@ -58,13 +58,13 @@ void errorFatal(const char *fmt, ...)
     std::va_list args;
     GtkWidget *dialog;
     if (need_gtk_init) {
-        gtk_init(NULL, 0);
+        gtk_init(nullptr, 0);
         need_gtk_init = 0;
     }
     va_start(args, fmt);
     std::vsnprintf(buffer, sizeof(buffer), fmt, args);
     dialog = gtk_message_dialog_new(
-        NULL, 0, GTK_MESSAGE_ERROR, GTK_BUTTONS_OK, "xu4: %s", buffer
+        nullptr, 0, GTK_MESSAGE_ERROR, GTK_BUTTONS_OK, "xu4: %s", buffer
     );
     va_end(args);
     gtk_dialog_run(GTK_DIALOG(dialog));
@@ -78,13 +78,13 @@ void errorWarning(const char *fmt, ...)
     std::va_list args;
     GtkWidget *dialog;
     if (need_gtk_init) {
-        gtk_init(NULL, 0);
+        gtk_init(nullptr, 0);
         need_gtk_init = 0;
     }
     va_start(args, fmt);
     std::vsnprintf(buffer, sizeof(buffer), fmt, args);
     dialog = gtk_message_dialog_new(
-        NULL, 0, GTK_MESSAGE_WARNING, GTK_BUTTONS_OK, "xu4: %s", buffer
+        nullptr, 0, GTK_MESSAGE_WARNING, GTK_BUTTONS_OK, "xu4: %s", buffer
     );
     va_end(args);
     gtk_dialog_run(GTK_DIALOG(dialog));

@@ -29,7 +29,7 @@ const Armor *Armor::get(ArmorType a)
     // Load in XML if it hasn't been already
     loadConf();
     if (static_cast<unsigned int>(a) >= armors.size()) {
-        return NULL;
+        return nullptr;
     }
     return &armors[a];
 }
@@ -47,7 +47,7 @@ const Armor *Armor::get(const std::string &name)
             return &armors[i];
         }
     }
-    return NULL;
+    return nullptr;
 }
 
 

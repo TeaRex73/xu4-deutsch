@@ -43,7 +43,7 @@ Image *FMTOWNSImageLoader::load(U4FILE *file, int width, int height, int bpp)
             rawLen,
             requiredLength
         );
-        return NULL;
+        return nullptr;
     }
     Image *image = Image::create(
         width, height, bpp <= 8, Image::HARDWARE
@@ -52,7 +52,7 @@ Image *FMTOWNSImageLoader::load(U4FILE *file, int width, int height, int bpp)
         if (raw) {
             std::free(raw);
         }
-        return NULL;
+        return nullptr;
     }
     if (bpp == 4) {
         U4PaletteLoader pal;

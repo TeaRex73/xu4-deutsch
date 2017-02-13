@@ -31,7 +31,7 @@
 /*
  * Initialize static members
  */
-Settings *Settings::instance = NULL;
+Settings *Settings::instance = nullptr;
 
 #if defined(_WIN32) || defined(__CYGWIN__)
 #define SETTINGS_BASE_FILENAME "xu4.cfg"
@@ -293,14 +293,15 @@ void Settings::init(const bool useProfile, const std::string profileName)
 
 #elif defined(_WIN32) || defined(__CYGWIN__)
         userPath = "./";
-        LPMALLOC pMalloc = NULL;
+        LPMALLOC pMalloc = nullptr;
         if (SHGetMalloc(&pMalloc) == S_OK) {
-            LPITEMIDLIST pItemIDList = NULL;
+            LPITEMIDLIST pItemIDList = nullptr;
             if ((SHGetSpecialFolderLocation(
-                     NULL, CSIDL_APPDATA, &pItemIDList
-                 ) == S_OK) && (pItemIDList != NULL)) {
-                LPSTR pBuffer = NULL;
-                if ((pBuffer = (LPSTR)pMalloc->Alloc(MAX_PATH + 2)) != NULL) {
+                     nullptr, CSIDL_APPDATA, &pItemIDList
+                 ) == S_OK) && (pItemIDList != nullptr)) {
+                LPSTR pBuffer = nullptr;
+                if ((pBuffer = (LPSTR)pMalloc->Alloc(MAX_PATH + 2))
+                    != nullptr) {
                     if (SHGetPathFromIDList(pItemIDList, pBuffer) == TRUE) {
                         userPath = pBuffer;
                         userPath += "/xu4/";
@@ -327,7 +328,7 @@ void Settings::init(const bool useProfile, const std::string profileName)
 #if 0
 Settings &Settings::getInstance()
 {
-    if (instance == NULL) {
+    if (instance == nullptr) {
         instance = new Settings();
     }
     return *instance;
@@ -410,7 +411,7 @@ bool Settings::read()
     if (!settingsFile) {
         return false;
     }
-    while (std::fgets(buffer, sizeof(buffer), settingsFile) != NULL) {
+    while (std::fgets(buffer, sizeof(buffer), settingsFile) != nullptr) {
         while (std::isspace(buffer[std::strlen(buffer) - 1])) {
             buffer[std::strlen(buffer) - 1] = '\0';
         }
@@ -418,12 +419,12 @@ bool Settings::read()
             /* do nothing */
             /* scale =
                 (unsigned int) std::strtoul(
-                    buffer + std::strlen("scale="), NULL, 0
+                    buffer + std::strlen("scale="), nullptr, 0
                ); */
         }
         else if (std::strstr(buffer, "fullscreen=") == buffer) {
             fullscreen = (int)std::strtoul(
-                buffer + std::strlen("fullscreen="), NULL, 0
+                buffer + std::strlen("fullscreen="), nullptr, 0
             );
         } else if (std::strstr(buffer, "filter=") == buffer) {
             filter = buffer + std::strlen("filter=");
@@ -435,149 +436,149 @@ bool Settings::read()
             lineOfSight = buffer + std::strlen("lineOfSight=");
         } else if (std::strstr(buffer, "screenShakes=") == buffer) {
             screenShakes = (int)std::strtoul(
-                buffer + std::strlen("screenShakes="), NULL, 0
+                buffer + std::strlen("screenShakes="), nullptr, 0
             );
         } else if (std::strstr(buffer, "gamma=") == buffer) {
             gamma = (int)std::strtoul(
-                buffer + std::strlen("gamma="), NULL, 0
+                buffer + std::strlen("gamma="), nullptr, 0
             );
         } else if (std::strstr(buffer, "musicVol=") == buffer) {
             musicVol = (int)std::strtoul(
-                buffer + std::strlen("musicVol="), NULL, 0
+                buffer + std::strlen("musicVol="), nullptr, 0
             );
         } else if (std::strstr(buffer, "soundVol=") == buffer) {
             soundVol = (int)std::strtoul(
-                buffer + std::strlen("soundVol="), NULL, 0
+                buffer + std::strlen("soundVol="), nullptr, 0
             );
         } else if (std::strstr(buffer, "volumeFades=") == buffer) {
             volumeFades = (int)std::strtoul(
-                buffer + std::strlen("volumeFades="), NULL, 0
+                buffer + std::strlen("volumeFades="), nullptr, 0
             );
         } else if (std::strstr(buffer, "shortcutCommands=") == buffer) {
             shortcutCommands = (int)std::strtoul(
-                buffer + std::strlen("shortcutCommands="), NULL, 0
+                buffer + std::strlen("shortcutCommands="), nullptr, 0
             );
         } else if (std::strstr(buffer, "keydelay=") == buffer) {
             keydelay = (int)std::strtoul(
-                buffer + std::strlen("keydelay="), NULL, 0
+                buffer + std::strlen("keydelay="), nullptr, 0
             );
         } else if (std::strstr(buffer, "keyinterval=") == buffer) {
             keyinterval = (int)std::strtoul(
-                buffer + std::strlen("keyinterval="), NULL, 0
+                buffer + std::strlen("keyinterval="), nullptr, 0
             );
         } else if (std::strstr(buffer, "filterMoveMessages=") == buffer) {
             filterMoveMessages = (int)std::strtoul(
                 buffer + std::strlen("filterMoveMessages="),
-                NULL,
+                nullptr,
                 0
             );
         } else if (std::strstr(buffer, "battlespeed=") == buffer) {
             battleSpeed = (int)std::strtoul(
-                buffer + std::strlen("battlespeed="), NULL, 0
+                buffer + std::strlen("battlespeed="), nullptr, 0
             );
         } else if (std::strstr(buffer, "enhancements=") == buffer) {
             enhancements = (int)std::strtoul(
-                buffer + std::strlen("enhancements="), NULL, 0
+                buffer + std::strlen("enhancements="), nullptr, 0
             );
         } else if (std::strstr(buffer, "gameCyclesPerSecond=") == buffer) {
             gameCyclesPerSecond = (int)std::strtoul(
-                buffer + std::strlen("gameCyclesPerSecond="), NULL, 0
+                buffer + std::strlen("gameCyclesPerSecond="), nullptr, 0
             );
         } else if (std::strstr(buffer, "debug=") == buffer) {
             debug = (int)std::strtoul(
-                buffer + std::strlen("debug="), NULL, 0
+                buffer + std::strlen("debug="), nullptr, 0
             );
         } else if (std::strstr(buffer, "battleDiff=") == buffer) {
             battleDiff = buffer + std::strlen("battleDiff=");
         } else if (std::strstr(buffer, "validateXml=") == buffer) {
             validateXml = (int)std::strtoul(
-                buffer + std::strlen("validateXml="), NULL, 0
+                buffer + std::strlen("validateXml="), nullptr, 0
             );
         } else if (std::strstr(buffer, "spellEffectSpeed=") == buffer) {
             spellEffectSpeed = (int)std::strtoul(
-                buffer + std::strlen("spellEffectSpeed="), NULL, 0
+                buffer + std::strlen("spellEffectSpeed="), nullptr, 0
             );
         } else if (std::strstr(buffer, "campTime=") == buffer) {
             campTime = (int)std::strtoul(
-                buffer + std::strlen("campTime="), NULL, 0
+                buffer + std::strlen("campTime="), nullptr, 0
             );
         } else if (std::strstr(buffer, "innTime=") == buffer) {
             innTime = (int)std::strtoul(
-                buffer + std::strlen("innTime="), NULL, 0
+                buffer + std::strlen("innTime="), nullptr, 0
             );
         } else if (std::strstr(buffer, "shrineTime=") == buffer) {
             shrineTime = (int)std::strtoul(
-                buffer + std::strlen("shrineTime="), NULL, 0
+                buffer + std::strlen("shrineTime="), nullptr, 0
             );
         } else if (std::strstr(buffer, "shakeInterval=") == buffer) {
             shakeInterval = (int)std::strtoul(
-                buffer + std::strlen("shakeInterval="), NULL, 0
+                buffer + std::strlen("shakeInterval="), nullptr, 0
             );
         } else if (std::strstr(buffer, "titleSpeedRandom=") == buffer) {
             titleSpeedRandom = (int)std::strtoul(
-                buffer + std::strlen("titleSpeedRandom="), NULL, 0
+                buffer + std::strlen("titleSpeedRandom="), nullptr, 0
             );
         } else if (std::strstr(buffer, "titleSpeedOther=") == buffer) {
             titleSpeedOther = (int)std::strtoul(
-                buffer + std::strlen("titleSpeedOther="), NULL, 0
+                buffer + std::strlen("titleSpeedOther="), nullptr, 0
             );
         }
         /* minor enhancement options */
         else if (std::strstr(buffer, "activePlayer=") == buffer) {
             enhancementsOptions.activePlayer = (int)std::strtoul(
-                buffer + std::strlen("activePlayer="), NULL, 0
+                buffer + std::strlen("activePlayer="), nullptr, 0
             );
         } else if (std::strstr(buffer, "u5spellMixing=") == buffer) {
             enhancementsOptions.u5spellMixing = (int)std::strtoul(
-                buffer + std::strlen("u5spellMixing="), NULL, 0
+                buffer + std::strlen("u5spellMixing="), nullptr, 0
             );
         } else if (std::strstr(buffer, "u5shrines=") == buffer) {
             enhancementsOptions.u5shrines = (int)std::strtoul(
-                buffer + std::strlen("u5shrines="), NULL, 0
+                buffer + std::strlen("u5shrines="), nullptr, 0
             );
         } else if (std::strstr(buffer, "slimeDivides=") == buffer) {
             enhancementsOptions.slimeDivides = (int)std::strtoul(
-                buffer + std::strlen("slimeDivides="), NULL, 0
+                buffer + std::strlen("slimeDivides="), nullptr, 0
             );
         } else if (std::strstr(buffer, "gazerSpawnsInsects=") == buffer) {
             enhancementsOptions.gazerSpawnsInsects = (int)std::strtoul(
-                buffer + std::strlen("gazerSpawnsInsects="), NULL, 0
+                buffer + std::strlen("gazerSpawnsInsects="), nullptr, 0
             );
         } else if (std::strstr(buffer, "textColorization=") == buffer) {
             enhancementsOptions.textColorization = (int)std::strtoul(
-                buffer + std::strlen("textColorization="), NULL, 0
+                buffer + std::strlen("textColorization="), nullptr, 0
             );
         } else if (std::strstr(buffer, "c64chestTraps=") == buffer) {
             enhancementsOptions.c64chestTraps = (int)std::strtoul(
-                buffer + std::strlen("c64chestTraps="), NULL, 0
+                buffer + std::strlen("c64chestTraps="), nullptr, 0
             );
         } else if (std::strstr(buffer, "smartEnterKey=") == buffer) {
             enhancementsOptions.smartEnterKey = (int)std::strtoul(
-                buffer + std::strlen("smartEnterKey="), NULL, 0
+                buffer + std::strlen("smartEnterKey="), nullptr, 0
             );
         }
         /* major enhancement options */
         else if (std::strstr(buffer, "peerShowsObjects=") == buffer) {
             enhancementsOptions.peerShowsObjects = (int)std::strtoul(
-                buffer + std::strlen("peerShowsObjects="), NULL, 0
+                buffer + std::strlen("peerShowsObjects="), nullptr, 0
             );
         } else if (std::strstr(buffer, "u5combat=") == buffer) {
             enhancementsOptions.u5combat = (int)std::strtoul(
-                buffer + std::strlen("u5combat="), NULL, 0
+                buffer + std::strlen("u5combat="), nullptr, 0
             );
         } else if (std::strstr(buffer, "innAlwaysCombat=") == buffer) {
             innAlwaysCombat = (int)std::strtoul(
-                buffer + std::strlen("innAlwaysCombat="), NULL, 0
+                buffer + std::strlen("innAlwaysCombat="), nullptr, 0
             );
         } else if (std::strstr(buffer, "campingAlwaysCombat=") == buffer) {
             campingAlwaysCombat = (int)std::strtoul(
-                buffer + std::strlen("campingAlwaysCombat="), NULL, 0
+                buffer + std::strlen("campingAlwaysCombat="), nullptr, 0
             );
         }
         /* mouse options */
         else if (std::strstr(buffer, "mouseEnabled=") == buffer) {
             mouseOptions.enabled = (int)std::strtoul(
-                buffer + std::strlen("mouseEnabled="), NULL, 0
+                buffer + std::strlen("mouseEnabled="), nullptr, 0
             );
         } else if (std::strstr(buffer, "logging=") == buffer) {
             logging = buffer + std::strlen("logging=");
@@ -587,14 +588,14 @@ bool Settings::read()
         /* graphics enhancements options */
         else if (std::strstr(buffer, "renderTileTransparency=") == buffer) {
             enhancementsOptions.u4TileTransparencyHack = (int)std::strtoul(
-                buffer + std::strlen("renderTileTransparency="), NULL, 0
+                buffer + std::strlen("renderTileTransparency="), nullptr, 0
             );
         } else if (std::strstr(buffer, "transparentTilePixelShadowOpacity=")
                    == buffer) {
             enhancementsOptions.u4TileTransparencyHackPixelShadowOpacity =
                 (int)std::strtoul(
                     buffer + std::strlen("transparentTilePixelShadowOpacity="),
-                    NULL,
+                    nullptr,
                     0
                 );
         } else if (std::strstr(buffer, "transparentTileShadowSize=")
@@ -602,7 +603,7 @@ bool Settings::read()
             enhancementsOptions.u4TileTransparencyHackShadowBreadth =
                 (int)std::strtoul(
                     buffer + std::strlen("transparentTileShadowSize="),
-                    NULL,
+                    nullptr,
                     0
                 );
         }
@@ -620,14 +621,14 @@ bool Settings::read()
         } else if (std::strstr(buffer, "minorEnhancements=") == buffer) {
             enhancements = (int)std::strtoul(
                 buffer + std::strlen("minorEnhancements="),
-                NULL,
+                nullptr,
                 0
             );
         } else if (std::strstr(buffer, "majorEnhancements=") == buffer) {
             /* do nothing */
         } else if (std::strstr(buffer, "vol=") == buffer) {
             musicVol = soundVol = (int)std::strtoul(
-                buffer + std::strlen("vol="), NULL, 0
+                buffer + std::strlen("vol="), nullptr, 0
             );
         }
         /***/
@@ -754,7 +755,7 @@ bool Settings::write()
     std::fclose(settingsFile);
     sync();
     setChanged();
-    notifyObservers(NULL);
+    notifyObservers(nullptr);
     return true;
 }
 

@@ -45,7 +45,7 @@ int chars_needed(
 bool isPerson(Object *punknown)
 {
     Person *p;
-    if ((p = dynamic_cast<Person *>(punknown)) != NULL) {
+    if ((p = dynamic_cast<Person *>(punknown)) != nullptr) {
         return true;
     } else {
         return false;
@@ -110,7 +110,7 @@ Person::Person(MapTile tile)
     :Creature(tile), start(0, 0)
 {
     setType(Object::PERSON);
-    dialogue = NULL;
+    dialogue = nullptr;
     npcType = NPC_EMPTY;
 }
 
@@ -122,7 +122,7 @@ Person::Person(const Person *p)
 
 bool Person::canConverse() const
 {
-    return isVendor() || dialogue != NULL;
+    return isVendor() || dialogue != nullptr;
 }
 
 bool Person::isVendor() const
@@ -162,7 +162,7 @@ void Person::setDialogue(Dialogue *d)
 void Person::setNpcType(PersonNpcType t)
 {
     npcType = t;
-    ASSERT(!isVendor() || dialogue == NULL, "vendor has dialogue");
+    ASSERT(!isVendor() || dialogue == nullptr, "vendor has dialogue");
 }
 
 std::list<std::string> Person::getConversationText(
@@ -363,7 +363,7 @@ const char *Person::getChoices(Conversation *cnv)
     default:
         ASSERT(0, "invalid state: %d", cnv->state);
     }
-    return NULL;
+    return nullptr;
 }
 
 std::string Person::getIntro(Conversation *cnv)
@@ -517,7 +517,7 @@ std::string Person::beggarGetQuantityResponse(
 )
 {
     std::string reply;
-    cnv->quant = (int)std::strtol(response, NULL, 10);
+    cnv->quant = (int)std::strtol(response, nullptr, 10);
     cnv->state = Conversation::TALK;
     if (cnv->quant > 0) {
         if (c->party->donate(cnv->quant)) {

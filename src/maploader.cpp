@@ -32,7 +32,7 @@
 #include "image.h"
 #include "imagemgr.h"
 
-std::map<Map::Type, MapLoader *> *MapLoader::loaderMap = NULL;
+std::map<Map::Type, MapLoader *> *MapLoader::loaderMap = nullptr;
 
 MapLoader *CityMapLoader::instance = MapLoader::registerLoader(
     new CityMapLoader, Map::CITY
@@ -60,11 +60,11 @@ MapLoader *WorldMapLoader::instance = MapLoader::registerLoader(
 MapLoader *MapLoader::getLoader(Map::Type type)
 {
     ASSERT(
-        loaderMap != NULL,
+        loaderMap != nullptr,
         "ImageLoader::getLoader loaderMap not initialized"
     );
     if (loaderMap->find(type) == loaderMap->end()) {
-        return NULL;
+        return nullptr;
     }
     return (*loaderMap)[type];
 }
@@ -75,7 +75,7 @@ MapLoader *MapLoader::getLoader(Map::Type type)
  */
 MapLoader *MapLoader::registerLoader(MapLoader *loader, Map::Type type)
 {
-    if (loaderMap == NULL) {
+    if (loaderMap == nullptr) {
         loaderMap = new std::map<Map::Type, MapLoader *>;
     }
     if (loaderMap->find(type) != loaderMap->end()) {
@@ -298,13 +298,13 @@ bool CityMapLoader::load(Map *map)
                 if ((*current)->role == NPC_LORD_BRITISH) {
                     Dialogue *dlg =
                         DialogueLoader::getLoader("application/x-u4lbtlk")
-                        ->load(NULL);
+                        ->load(nullptr);
                     people[i]->setDialogue(dlg);
                     city->normalDialogues.push_back(dlg);
                 } else if ((*current)->role == NPC_HAWKWIND) {
                     Dialogue *dlg =
                         DialogueLoader::getLoader("application/x-u4hwtlk")
-                        ->load(NULL);
+                        ->load(nullptr);
                     people[i]->setDialogue(dlg);
                     city->normalDialogues.push_back(dlg);
                 }
@@ -519,7 +519,7 @@ bool DngMapLoader::load(Map *map)
         // dungeon room fixup
         //
         if (map->id == MAP_HYTHLOTH) {
-            // A couple rooms in hythloth have NULL player
+            // A couple rooms in hythloth have nullptr player
             // positions, which causes the entire party to
             // appear in the upper-left tile when entering the
             // dungeon room. Also, one dungeon room is apparently

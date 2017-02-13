@@ -27,14 +27,14 @@
 #include "u4file.h"
 #include "config.h"
 
-MapMgr *MapMgr::instance = NULL;
+MapMgr *MapMgr::instance = nullptr;
 
 extern bool isAbyssOpened(const Portal *p);
 extern bool shrineCanEnter(const Portal *p);
 
 MapMgr *MapMgr::getInstance()
 {
-    if (instance == NULL) {
+    if (instance == nullptr) {
         instance = new MapMgr();
     }
     return instance;
@@ -43,7 +43,7 @@ MapMgr *MapMgr::getInstance()
 void MapMgr::destroy()
 {
     delete instance;
-    instance = NULL;
+    instance = nullptr;
 }
 
 MapMgr::MapMgr()
@@ -108,7 +108,7 @@ Map *MapMgr::initMap(Map::Type type)
         map = new City;
         break;
     default:
-        map = NULL;
+        map = nullptr;
         errorFatal("Error: invalid map type used");
         break;
     }
@@ -120,7 +120,7 @@ Map *MapMgr::get(MapId id)
     /* if the map hasn't been loaded yet, load it! */
     if (!mapList[id]->data.size()) {
         MapLoader *loader = MapLoader::getLoader(mapList[id]->type);
-        if (loader == NULL) {
+        if (loader == nullptr) {
             errorFatal("can't load map of type \"%d\"", mapList[id]->type);
         }
         TRACE_LOCAL(
@@ -137,9 +137,9 @@ Map *MapMgr::get(MapId id)
 void MapMgr::registerMap(Map *map)
 {
     if (mapList.size() <= map->id) {
-        mapList.resize(map->id + 1, NULL);
+        mapList.resize(map->id + 1, nullptr);
     }
-    if (mapList[map->id] != NULL) {
+    if (mapList[map->id] != nullptr) {
         errorFatal("Error: A map with id '%d' already exists", map->id);
     }
     mapList[map->id] = map;
@@ -154,19 +154,19 @@ Map *MapMgr::initMapFromConf(const ConfigElement &mapConf)
         "shrine",
         "combat",
         "dungeon",
-        NULL
+        nullptr
     };
     static const char *borderBehaviorEnumStrings[] = {
         "wrap",
         "exit",
         "fixed",
-        NULL
+        nullptr
     };
     map = initMap(
         static_cast<Map::Type>(mapConf.getEnum("type", mapTypeEnumStrings))
     );
     if (!map) {
-        return NULL;
+        return nullptr;
     }
     map->id = static_cast<MapId>(mapConf.getInt("id"));
     map->type = static_cast<Map::Type>(
@@ -261,7 +261,7 @@ PersonRole *MapMgr::initPersonRoleFromConf(const ConfigElement &personRoleConf)
         "horsevendor",
         "lordbritish",
         "hawkwind",
-        NULL
+        nullptr
     };
     personrole = new PersonRole;
     personrole->role =
@@ -274,8 +274,8 @@ Portal *MapMgr::initPortalFromConf(const ConfigElement &portalConf)
 {
     Portal *portal;
     portal = new Portal;
-    portal->portalConditionsMet = NULL;
-    portal->retroActiveDest = NULL;
+    portal->portalConditionsMet = nullptr;
+    portal->retroActiveDest = nullptr;
     portal->coords = MapCoords(
         portalConf.getInt("x"),
         portalConf.getInt("y"),
@@ -357,7 +357,7 @@ void MapMgr::initShrineFromConf(
         "HONOR",
         "SPIRITUALITY",
         "HUMILITY",
-        NULL
+        nullptr
     };
     shrine->setVirtue(
         static_cast<Virtue>(shrineConf.getEnum("virtue", virtues))
@@ -370,8 +370,8 @@ void MapMgr::initDungeonFromConf(
 )
 {
     dungeon->n_rooms = dungeonConf.getInt("rooms");
-    dungeon->rooms = NULL;
-    dungeon->roomMaps = NULL;
+    dungeon->rooms = nullptr;
+    dungeon->roomMaps = nullptr;
     dungeon->name = dungeonConf.getString("name");
 }
 

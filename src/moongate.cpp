@@ -31,7 +31,7 @@ const Coords *moongateGetGateCoordsForPhase(int phase)
     if (moongate != gates.end()) {
         return &moongate->second;
     }
-    return NULL;
+    return nullptr;
 }
 
 bool moongateFindActiveGateAt(

@@ -427,6 +427,10 @@ protected:
  */
 class CreatureMgr {
 public:
+    // disallow assignments, copy contruction
+    CreatureMgr(const CreatureMgr &) = delete;
+    const CreatureMgr &operator=(const CreatureMgr &) = delete;
+
     ~CreatureMgr();
     static CreatureMgr *getInstance();
     void loadAll();
@@ -442,9 +446,6 @@ private:
     {
     }
 
-    // disallow assignments, copy contruction
-    CreatureMgr(const CreatureMgr &);
-    const CreatureMgr &operator=(const CreatureMgr &);
     static CreatureMgr *instance;
     CreatureMap creatures;
 };

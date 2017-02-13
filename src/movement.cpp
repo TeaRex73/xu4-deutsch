@@ -281,7 +281,9 @@ int moveCombatObject(int act, Map *map, Creature *obj, MapCoords target)
     }
     if (action == CA_FLEE) {
         /* run away from our target instead! */
-        dir = new_coords.pathAway(target, valid_dirs, NULL, obj->getLastDir());
+        dir = new_coords.pathAway(
+            target, valid_dirs, nullptr, obj->getLastDir()
+        );
     } else {
         ASSERT(action == CA_ADVANCE, "action must be CA_ADVANCE or CA_FLEE");
         // If they're not fleeing, make sure they don't flee on accident
@@ -296,7 +298,7 @@ int moveCombatObject(int act, Map *map, Creature *obj, MapCoords target)
             valid_dirs = DIR_REMOVE_FROM_MASK(DIR_SOUTH, valid_dirs);
         }
         dir = new_coords.pathTo(
-            target, valid_dirs, true, NULL, obj->getLastDir()
+            target, valid_dirs, true, nullptr, obj->getLastDir()
         );
     }
     if (dir) {
@@ -366,7 +368,7 @@ void movePartyMember(MoveEvent &event)
             }
             ct->setExitDir(event.dir);
             c->location->map->removeObject((*party)[member]);
-            (*party)[member] = NULL;
+            (*party)[member] = nullptr;
             event.result = (MoveResult)(
                 MOVE_EXIT_TO_PARENT
                 | MOVE_MAP_CHANGE

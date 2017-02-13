@@ -43,7 +43,7 @@ Script::Variable::Variable()
 
 Script::Variable::Variable(const std::string &v):set(true)
 {
-    i_val = static_cast<int>(std::strtol(v.c_str(), NULL, 10));
+    i_val = static_cast<int>(std::strtol(v.c_str(), nullptr, 10));
     s_val = v;
 }
 
@@ -106,9 +106,9 @@ Script::ActionMap Script::action_map;
  * Constructs a script object
  */
 Script::Script()
-    :vendorScriptDoc(NULL),
-     scriptNode(NULL),
-     debug(NULL),
+    :vendorScriptDoc(nullptr),
+     scriptNode(nullptr),
+     debug(nullptr),
      state(STATE_UNLOADED),
      nounName("item"),
      idPropName("id")
@@ -226,8 +226,8 @@ bool Script::load(
     if (xmlPropExists(root, "id_prop")) {
         idPropName = xmlGetPropAsString(root, "id_prop");
     }
-    this->currentScript = NULL;
-    this->currentItem = NULL;
+    this->currentScript = nullptr;
+    this->currentItem = nullptr;
     for (node = root->xmlChildrenNode; node; node = node->next) {
         if (xmlNodeIsText(node)
             || (xmlStrcmp(node->name, (const xmlChar *)"script") != 0)) {
@@ -319,11 +319,11 @@ void Script::unload()
 {
     if (vendorScriptDoc) {
         xmlFreeDoc(vendorScriptDoc);
-        vendorScriptDoc = NULL;
+        vendorScriptDoc = nullptr;
     }
     if (debug) {
         std::fclose(debug);
-        debug = NULL;
+        debug = nullptr;
     }
 }
 
@@ -364,7 +364,7 @@ Script::ReturnCode Script::execute(
     if (!script->children) {
         /* redirect the script to another node */
         if (xmlPropExists(script, "redirect")) {
-            retval = redirect(NULL, script);
+            retval = redirect(nullptr, script);
         }
         /* end the conversation */
         else {
@@ -729,7 +729,7 @@ void Script::translate(std::string *text)
                             }
                             /* set translation context to item */
                             translationContext.push_back(item);
-                            execute(itemShowScript, NULL, &prop);
+                            execute(itemShowScript, nullptr, &prop);
                             translationContext.pop_back();
                             this->iterator++;
                         }
@@ -836,7 +836,9 @@ void Script::translate(std::string *text)
                 /* generate a random number */
                 else if (funcName == "random") {
                     prop = std::to_string(
-                        xu4_random((int)std::strtol(content.c_str(), NULL, 10))
+                        xu4_random(
+                            (int)std::strtol(content.c_str(), nullptr, 10)
+                        )
                     );
                 }
                 /* replaced with "true" if content is empty,
@@ -919,7 +921,7 @@ xmlNodePtr Script::find(
         }
         return current;
     }
-    return NULL;
+    return nullptr;
 } // Script::find
 
 
@@ -1736,8 +1738,8 @@ bool Script::mathParse(
     if (!std::isdigit(left[0]) || !std::isdigit(right[0])) {
         return false;
     }
-    *lval = (int)std::strtol(left.c_str(), NULL, 10);
-    *rval = (int)std::strtol(right.c_str(), NULL, 10);
+    *lval = (int)std::strtol(left.c_str(), nullptr, 10);
+    *rval = (int)std::strtol(right.c_str(), nullptr, 10);
     return true;
 }
 
@@ -1784,7 +1786,7 @@ int Script::mathValue(const std::string &str)
 
     /* something was invalid, just return the integer value */
     if (!mathParse(str, &lval, &rval, &op)) {
-        return (int)std::strtol(str.c_str(), NULL, 10);
+        return (int)std::strtol(str.c_str(), nullptr, 10);
     } else {
         return math(lval, rval, op);
     }

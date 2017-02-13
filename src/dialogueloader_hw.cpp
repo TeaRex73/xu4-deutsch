@@ -45,7 +45,7 @@ DialogueLoader *U4HWDialogueLoader::instance = DialogueLoader::registerLoader(
  */
 Dialogue *U4HWDialogueLoader::load(void *source)
 {
-    U4FILE *hawkwind = NULL;
+    U4FILE *hawkwind = nullptr;
     switch (c->party->member(0)->getSex()) {
     case SEX_MALE:
         hawkwind = u4fopen("hawkwinm.ger");
@@ -57,7 +57,7 @@ Dialogue *U4HWDialogueLoader::load(void *source)
         ASSERT(0, "Invalid Sex %d!", c->party->member(0)->getSex());
     }
     if (!hawkwind) {
-        return NULL;
+        return nullptr;
     }
     hawkwindText = u4read_stringtable(hawkwind, 0, 53);
     u4fclose(hawkwind);

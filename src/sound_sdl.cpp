@@ -96,9 +96,9 @@ int SoundManager::init_sys()
 void SoundManager::del_sys()
 {
     for (int i = 0; i < SOUND_MAX; i++) {
-        if (soundChunk[i] != NULL) {
+        if (soundChunk[i] != nullptr) {
             Mix_FreeChunk(soundChunk[i]);
-            soundChunk[i] = NULL;
+            soundChunk[i] = nullptr;
         }
     }
 }

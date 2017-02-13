@@ -62,7 +62,7 @@ public:
     static int get(
         char lastValidLetter,
         const std::string &prompt,
-        EventHandler *eh = NULL
+        EventHandler *eh = nullptr
     );
 
 private:
@@ -115,7 +115,7 @@ public:
         Map *map,
         bool saveLocation,
         const Portal *portal,
-        TurnCompleter *turnCompleter = NULL
+        TurnCompleter *turnCompleter = nullptr
     );
     int exitToParentMap();
     virtual void finishTurn();

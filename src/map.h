@@ -82,28 +82,28 @@ public:
     bool operator<(const MapCoords &a)  const;
     MapCoords &wrap(const class Map *map);
     MapCoords &putInBounds(const class Map *map);
-    MapCoords &move(Direction d, const class Map *map = NULL);
-    MapCoords &move(int dx, int dy, const class Map *map = NULL);
+    MapCoords &move(Direction d, const class Map *map = nullptr);
+    MapCoords &move(int dx, int dy, const class Map *map = nullptr);
     int getRelativeDirection(
-        const MapCoords &c, const class Map *map = NULL
+        const MapCoords &c, const class Map *map = nullptr
     ) const;
     Direction pathTo(
         const MapCoords &c,
         int valid_dirs = MASK_DIR_ALL,
         bool towards = true,
-        const class Map *map = NULL,
+        const class Map *map = nullptr,
         Direction last = DIR_NONE
     ) const;
     Direction pathAway(
         const MapCoords &c,
         int valid_dirs = MASK_DIR_ALL,
-        const class Map *map = NULL,
+        const class Map *map = nullptr,
         Direction last = DIR_NONE
     ) const;
     int movementDistance(
-        const MapCoords &c, const class Map *map = NULL
+        const MapCoords &c, const class Map *map = nullptr
     ) const;
-    int distance(const MapCoords &c, const class Map *map = NULL) const;
+    int distance(const MapCoords &c, const class Map *map = nullptr) const;
     static MapCoords nowhere;
 };
 
@@ -138,6 +138,11 @@ typedef std::unordered_multimap<Coords, Object *> ObjectLocMap;
  */
 class Map {
 public:
+    // disallow map copying: all maps should be created and accessed
+    // through the MapMgr
+    Map(const Map &map) = delete;
+    Map &operator=(const Map &map) = delete;
+
     enum Type {
         WORLD,
         CITY,
@@ -225,10 +230,6 @@ public:
     SaveGameMonsterRecord monsterTable[MONSTERTABLE_SIZE];
 
 private:
-    // disallow map copying: all maps should be created and accessed
-    // through the MapMgr
-    Map(const Map &map);
-    Map &operator=(const Map &map);
     void findWalkability(Coords coords, int *path_data);
 };
 

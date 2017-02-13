@@ -267,7 +267,7 @@ void StatsArea::setTitle(const std::string &s)
 void StatsArea::showPartyView(bool avatarOnly)
 {
     const char *format = "%d%c%-9.8s%03d%s";
-    PartyMember *p = NULL;
+    PartyMember *p = nullptr;
     int activePlayer = c->party->getActivePlayer();
     ASSERT(
         c->party->size() <= 8,

@@ -7,7 +7,7 @@
 #include "settings.h"
 #include "view.h"
 
-Image *View::screen = NULL;
+Image *View::screen = nullptr;
 
 View::View(int x, int y, int width, int height)
     :x(x),
@@ -20,7 +20,7 @@ View::View(int x, int y, int width, int height)
      highlightW(0),
      highlightH(0)
 {
-    if (screen == NULL) {
+    if (screen == nullptr) {
         screen = imageMgr->get("screen")->image;
     }
 }

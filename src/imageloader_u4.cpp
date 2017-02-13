@@ -22,9 +22,9 @@ ImageLoader *U4RleImageLoader::instance =
 ImageLoader *U4LzwImageLoader::instance =
     ImageLoader::registerLoader(new U4LzwImageLoader, "image/x-u4lzw");
 
-RGBA *U4PaletteLoader::bwPalette = NULL;
-RGBA *U4PaletteLoader::egaPalette = NULL;
-RGBA *U4PaletteLoader::vgaPalette = NULL;
+RGBA *U4PaletteLoader::bwPalette = nullptr;
+RGBA *U4PaletteLoader::egaPalette = nullptr;
+RGBA *U4PaletteLoader::vgaPalette = nullptr;
 
 
 /**
@@ -54,14 +54,14 @@ Image *U4RawImageLoader::load(U4FILE *file, int width, int height, int bpp)
             rawLen,
             requiredLength
         );
-        return NULL;
+        return nullptr;
     }
     Image *image = Image::create(width, height, bpp <= 8, Image::HARDWARE);
     if (!image) {
         if (raw) {
             std::free(raw);
         }
-        return NULL;
+        return nullptr;
     }
     image->alphaOff();
     U4PaletteLoader paletteLoader;
@@ -95,24 +95,24 @@ Image *U4RleImageLoader::load(U4FILE *file, int width, int height, int bpp)
     long compressedLen = file->length();
     unsigned char *compressed = (unsigned char *)std::malloc(compressedLen);
     file->read(compressed, 1, compressedLen);
-    unsigned char *raw = NULL;
+    unsigned char *raw = nullptr;
     long rawLen = rleDecompressMemory(
         compressed, compressedLen, (void **)&raw
     );
     std::free(compressed);
-    compressed = NULL;
+    compressed = nullptr;
     if (rawLen != (width * height * bpp / 8)) {
         if (raw) {
             std::free(raw);
         }
-        return NULL;
+        return nullptr;
     }
     Image *image = Image::create(width, height, bpp <= 8, Image::HARDWARE);
     if (!image) {
         if (raw) {
             std::free(raw);
         }
-        return NULL;
+        return nullptr;
     }
     image->alphaOff();
     U4PaletteLoader paletteLoader;
@@ -146,24 +146,24 @@ Image *U4LzwImageLoader::load(U4FILE *file, int width, int height, int bpp)
     long compressedLen = file->length();
     unsigned char *compressed = (unsigned char *)std::malloc(compressedLen);
     file->read(compressed, 1, compressedLen);
-    unsigned char *raw = NULL;
+    unsigned char *raw = nullptr;
     long rawLen = decompress_u4_memory(
         compressed, compressedLen, (void **)&raw
     );
     std::free(compressed);
-    compressed = NULL;
+    compressed = nullptr;
     if (rawLen != (width * height * bpp / 8)) {
         if (raw) {
             std::free(raw);
         }
-        return NULL;
+        return nullptr;
     }
     Image *image = Image::create(width, height, bpp <= 8, Image::HARDWARE);
     if (!image) {
         if (raw) {
             std::free(raw);
         }
-        return NULL;
+        return nullptr;
     }
     image->alphaOff();
     U4PaletteLoader paletteLoader;
@@ -191,7 +191,7 @@ void U4PaletteLoader::cleanup()
  */
 RGBA *U4PaletteLoader::loadBWPalette()
 {
-    if (bwPalette == NULL) {
+    if (bwPalette == nullptr) {
         bwPalette = new RGBA[2];
         bwPalette[0].r = 0;
         bwPalette[0].g = 0;
@@ -209,7 +209,7 @@ RGBA *U4PaletteLoader::loadBWPalette()
  */
 RGBA *U4PaletteLoader::loadEgaPalette()
 {
-    if (egaPalette == NULL) {
+    if (egaPalette == nullptr) {
         int index = 0;
         const Config *config = Config::getInstance();
         egaPalette = new RGBA[16];
@@ -236,10 +236,10 @@ RGBA *U4PaletteLoader::loadEgaPalette()
  */
 RGBA *U4PaletteLoader::loadVgaPalette()
 {
-    if (vgaPalette == NULL) {
+    if (vgaPalette == nullptr) {
         U4FILE *pal = u4fopen("u4vga.pal");
         if (!pal) {
-            return NULL;
+            return nullptr;
         }
         vgaPalette = new RGBA[256];
         for (int i = 0; i < 256; i++) {

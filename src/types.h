@@ -60,6 +60,33 @@ public:
     {
     }
 
+    MapTile(MapTile &&t)
+        :id(std::move(t.id)),
+         frame(std::move(t.frame)),
+         freezeAnimation(std::move(t.freezeAnimation))
+    {
+    }
+
+    MapTile &operator=(const MapTile &t)
+    {
+        if (&t != this) {
+            id = t.id;
+            frame = t.frame;
+            freezeAnimation = t.freezeAnimation;
+        }
+        return *this;
+    }
+    
+    MapTile &operator=(MapTile &&t)
+    {
+        if (&t != this) {
+            id = std::move(t.id);
+            frame = std::move(t.frame);
+            freezeAnimation = std::move(t.freezeAnimation);
+        }
+        return *this;
+    }
+    
     TileId getId() const
     {
         return id;
@@ -106,30 +133,6 @@ public:
     TileId id;
     unsigned char frame;
     bool freezeAnimation;
-};
-
-
-/**
- * An Uncopyable has no default copy constructor or operator=.
- * A subclass may derive from Uncopyable at any level of visibility,
- * even private, and subclasses will not have a default copy
- * constructor or operator=. See also, boost::noncopyable
- * Uncopyable (from the Boost project) and Item 6 from Scott Meyers
- * Effective C++.
- */
-class Uncopyable {
-protected:
-    Uncopyable()
-    {
-    }
-
-    ~Uncopyable()
-    {
-    }
-    
-private:
-    Uncopyable(const Uncopyable &);
-    const Uncopyable &operator=(const Uncopyable &);
 };
 
 #endif // ifndef TYPEDEFS_H

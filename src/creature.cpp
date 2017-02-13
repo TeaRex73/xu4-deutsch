@@ -24,12 +24,12 @@
 #include "tileset.h"
 #include "utils.h"
 
-CreatureMgr *CreatureMgr::instance = NULL;
+CreatureMgr *CreatureMgr::instance = nullptr;
 
 bool isCreature(Object *punknown)
 {
     Creature *m;
-    if ((m = dynamic_cast<Creature *>(punknown)) != NULL) {
+    if ((m = dynamic_cast<Creature *>(punknown)) != nullptr) {
         return true;
     } else {
         return false;
@@ -340,7 +340,7 @@ bool Creature::specialAction()
             && ((c->location->context & CTX_CITY) == 0)) {
             soundPlay(SOUND_NPC_ATTACK);
             std::vector<Coords> path = gameGetDirectionalActionPath(
-                dir, MASK_DIR_ALL, coords, 1, 3, NULL, false
+                dir, MASK_DIR_ALL, coords, 1, 3, nullptr, false
             );
             for (std::vector<Coords>::iterator i = path.begin();
                  i != path.end();
@@ -365,7 +365,7 @@ bool Creature::specialAction()
             // nothing (not even mountains!) can block cannonballs
             soundPlay(SOUND_NPC_ATTACK);
             std::vector<Coords> path = gameGetDirectionalActionPath(
-                dir, broadsidesDirs, coords, 1, 3, NULL, false
+                dir, broadsidesDirs, coords, 1, 3, nullptr, false
             );
             for (std::vector<Coords>::iterator i = path.begin();
                  i != path.end();
@@ -525,7 +525,7 @@ void Creature::act(CombatController *controller)
      * now find out who to do it to
      */
     target = nearestOpponent(&dist, action == CA_RANGED);
-    if (target == NULL) {
+    if (target == nullptr) {
         return;
     }
     if ((action == CA_ATTACK) && (dist > 1)) {
@@ -544,7 +544,7 @@ void Creature::act(CombatController *controller)
             soundPlay(SOUND_PC_STRUCK, false);
             GameController::flashTile(target->getCoords(), "hit_flash", 4);
             if (!dealDamage(target, getDamage())) {
-                target = NULL;
+                target = nullptr;
             }
             if (target && isPartyMember(target)) {
                 /* steal gold if the creature steals gold */
@@ -818,7 +818,7 @@ bool Creature::hideOrShow()
     int dist;
     /* ok, now we've got the nearest party member.
        Now, see if they're close enough */
-    if (nearestOpponent(&dist, false) != NULL) {
+    if (nearestOpponent(&dist, false) != nullptr) {
         if ((dist < 5) && !isVisible()) {
             setVisible(); /* show yourself */
         } else if (dist >= 5) {
@@ -830,7 +830,7 @@ bool Creature::hideOrShow()
 
 Creature *Creature::nearestOpponent(int *dist, bool ranged)
 {
-    Creature *opponent = NULL;
+    Creature *opponent = nullptr;
     int d, leastDist = 0xFFFF;
     ObjectDeque::iterator i;
     bool jinx = (*c->aura == Aura::JINX);
@@ -1002,7 +1002,7 @@ bool Creature::dealDamage(Creature *m, int damage)
  */
 CreatureMgr *CreatureMgr::getInstance()
 {
-    if (instance == NULL) {
+    if (instance == nullptr) {
         instance = new CreatureMgr();
         instance->loadAll();
     }
@@ -1035,7 +1035,7 @@ void CreatureMgr::loadAll()
 
 /**
  * Returns a creature using a tile to find which one to create
- * or NULL if a creature with that tile cannot be found
+ * or nullptr if a creature with that tile cannot be found
  */
 Creature *CreatureMgr::getByTile(MapTile tile)
 {
@@ -1045,13 +1045,13 @@ Creature *CreatureMgr::getByTile(MapTile tile)
             return i->second;
         }
     }
-    return NULL;
+    return nullptr;
 }
 
 
 /**
  * Returns the creature that has the corresponding id
- * or returns NULL if no creature with that id could
+ * or returns nullptr if no creature with that id could
  * be found.
  */
 Creature *CreatureMgr::getById(CreatureId id)
@@ -1060,14 +1060,14 @@ Creature *CreatureMgr::getById(CreatureId id)
     if (i != creatures.end()) {
         return i->second;
     } else {
-        return NULL;
+        return nullptr;
     }
 }
 
 
 /**
  * Returns the creature that has the corresponding name
- * or returns NULL if no creature can be found with
+ * or returns nullptr if no creature can be found with
  * that name (case insensitive)
  */
 Creature *CreatureMgr::getByName(std::string name)
@@ -1081,7 +1081,7 @@ Creature *CreatureMgr::getByName(std::string name)
             return i->second;
         }
     }
-    return NULL;
+    return nullptr;
 }
 
 
@@ -1106,7 +1106,7 @@ Creature *CreatureMgr::randomForTile(const Tile *tile)
         return getByTile(randTile);
     }
     if (!tile->isCreatureWalkable() || !tile->willWanderOn()) {
-        return NULL;
+        return nullptr;
     }
     if (c->saveGame->moves > 30000) {
         era = 0x0f;
@@ -1196,5 +1196,5 @@ Creature *CreatureMgr::randomAmbushing()
         }
     }
     ASSERT(0, "failed to find an ambushing creature");
-    return NULL;
+    return nullptr;
 } // CreatureMgr::randomAmbushing

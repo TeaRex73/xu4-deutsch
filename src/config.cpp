@@ -33,7 +33,7 @@
 
 
 extern bool verbose;
-Config *Config::instance = NULL;
+Config *Config::instance = nullptr;
 char DEFAULT_CONFIG_XML_LOCATION[] = "config.xml";
 char *Config::CONFIG_XML_LOCATION_POINTER = &DEFAULT_CONFIG_XML_LOCATION[0];
 
@@ -82,7 +82,7 @@ Config::Config()
 {
     doc = xmlReadFile(
         Config::CONFIG_XML_LOCATION_POINTER,
-        NULL,
+        nullptr,
         XML_PARSE_NOENT | XML_PARSE_XINCLUDE
     );
     if (!doc) {
@@ -123,7 +123,7 @@ void *Config::fileOpen(const char *filename)
     void *result;
     std::string pathname(u4find_conf(filename));
     if (pathname.empty()) {
-        return NULL;
+        return nullptr;
     }
     result = xmlFileOpen(pathname.c_str());
     if (verbose) {
@@ -157,6 +157,11 @@ ConfigElement::ConfigElement(const ConfigElement &e)
 {
 }
 
+ConfigElement::ConfigElement(ConfigElement &&e)
+    :node(std::move(e.node)), name(std::move(e.name))
+{
+}
+
 ConfigElement::~ConfigElement()
 {
 }
@@ -170,11 +175,20 @@ ConfigElement &ConfigElement::operator=(const ConfigElement &e)
     return *this;
 }
 
+ConfigElement &ConfigElement::operator=(ConfigElement &&e)
+{
+    if (&e != this) {
+        node = std::move(e.node);
+        name = std::move(e.name);
+    }
+    return *this;
+}
+
 bool ConfigElement::exists(const std::string &name) const
 {
     xmlChar *prop =
         xmlGetProp(node, reinterpret_cast<const xmlChar *>(name.c_str()));
-    bool exists = prop != NULL;
+    bool exists = prop != nullptr;
     xmlFree(prop);
     return exists;
 }
@@ -199,7 +213,7 @@ int ConfigElement::getInt(const std::string &name, int defaultValue) const
     if (!prop) {
         return defaultValue;
     }
-    result = std::strtol(reinterpret_cast<const char *>(prop), NULL, 0);
+    result = std::strtol(reinterpret_cast<const char *>(prop), nullptr, 0);
     xmlFree(prop);
     return static_cast<int>(result);
 }

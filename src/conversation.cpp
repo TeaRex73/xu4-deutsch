@@ -101,7 +101,7 @@ DynamicResponse::DynamicResponse(
     :Response(""), param(param)
 {
     this->generator = generator;
-    currentResponse = NULL;
+    currentResponse = nullptr;
 }
 
 DynamicResponse::~DynamicResponse()
@@ -189,7 +189,10 @@ bool Dialogue::Keyword::operator==(const std::string &kw) const
  * Dialogue class
  */
 Dialogue::Dialogue()
-    :intro(NULL), longIntro(NULL), defaultAnswer(NULL), question(NULL)
+    :intro(nullptr),
+     longIntro(nullptr),
+     defaultAnswer(nullptr),
+     question(nullptr)
 {
 }
 
@@ -231,7 +234,7 @@ Dialogue::Keyword *Dialogue::operator[](const std::string &kw)
             }
         }
     }
-    return NULL;
+    return nullptr;
 }
 
 const ResponsePart &Dialogue::getAction() const

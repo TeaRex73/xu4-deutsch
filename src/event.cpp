@@ -23,11 +23,11 @@ extern int quit;
 bool EventHandler::controllerDone = false;
 bool EventHandler::ended = false;
 unsigned int TimedEventMgr::instances = 0;
-EventHandler *EventHandler::instance = NULL;
+EventHandler *EventHandler::instance = nullptr;
 
 EventHandler *EventHandler::getInstance()
 {
-    if (instance == NULL) {
+    if (instance == nullptr) {
         instance = new EventHandler();
     }
     return instance;
@@ -91,7 +91,7 @@ Controller *EventHandler::pushController(Controller *c)
 Controller *EventHandler::popController()
 {
     if (controllers.empty()) {
-        return NULL;
+        return nullptr;
     }
     Controller *controller = controllers.back();
     getTimer()->remove(&Controller::timerCallback, controller);
@@ -102,14 +102,14 @@ Controller *EventHandler::popController()
 Controller *EventHandler::getController() const
 {
     if (controllers.empty()) {
-        return NULL;
+        return nullptr;
     }
     return controllers.back();
 }
 
 void EventHandler::setController(Controller *c)
 {
-    while (popController() != NULL) {}
+    while (popController() != nullptr) {}
     pushController(c);
 }
 
@@ -250,7 +250,7 @@ MouseArea *EventHandler::getMouseAreaSet() const
     if (mouseAreaSets.size()) {
         return mouseAreaSets.front();
     } else {
-        return NULL;
+        return nullptr;
     }
 }
 
@@ -268,7 +268,7 @@ ReadStringController::ReadStringController(
     this->maxlen = maxlen;
     this->screenX = screenX;
     this->screenY = screenY;
-    this->view = NULL;
+    this->view = nullptr;
     this->accepted = accepted_chars;
 }
 
@@ -323,7 +323,7 @@ bool ReadStringController::keyPressed(int key)
     } else {
         valid = false;
     }
-    return valid || KeyHandler::defaultHandler(key, NULL);
+    return valid || KeyHandler::defaultHandler(key, nullptr);
 } // ReadStringController::keyPressed
 
 std::string ReadStringController::get(
@@ -370,7 +370,7 @@ int ReadIntController::get(
 
 int ReadIntController::getInt() const
 {
-    return static_cast<int>(std::strtol(value.c_str(), NULL, 10));
+    return static_cast<int>(std::strtol(value.c_str(), nullptr, 10));
 }
 
 ReadChoiceController::ReadChoiceController(const std::string &choices)

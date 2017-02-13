@@ -29,7 +29,7 @@ Location *locationPop(Location **stack);
 
 /**
  * Add a new location to the stack, or
- * start a new stack if 'prev' is NULL
+ * start a new stack if 'prev' is nullptr
  */
 Location::Location(
     MapCoords coords,
@@ -298,6 +298,6 @@ Location *locationPop(Location **stack)
 {
     Location *loc = *stack;
     *stack = (*stack)->prev;
-    loc->prev = NULL;
+    loc->prev = nullptr;
     return loc;
 }

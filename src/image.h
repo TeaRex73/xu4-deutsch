@@ -56,6 +56,10 @@ struct SubImage {
  */
 class Image {
 public:
+    // disallow assignments, copy contruction
+    Image(const Image &) = delete;
+    const Image &operator=(const Image &) = delete;
+
     enum Type {
         HARDWARE,
         SOFTWARE
@@ -155,7 +159,7 @@ public:
      */
     void draw(int x, int y) const
     {
-        drawOn(NULL, x, y);
+        drawOn(nullptr, x, y);
     }
 
     
@@ -166,7 +170,7 @@ public:
      */
     void drawSubRect(int x, int y, int rx, int ry, int rw, int rh) const
     {
-        drawSubRectOn(NULL, x, y, rx, ry, rw, rh);
+        drawSubRectOn(nullptr, x, y, rx, ry, rw, rh);
     }
 
     
@@ -179,7 +183,7 @@ public:
         int x, int y, int rx, int ry, int rw, int rh
     ) const
     {
-        drawSubRectInvertedOn(NULL, x, y, rx, ry, rw, rh);
+        drawSubRectInvertedOn(nullptr, x, y, rx, ry, rw, rh);
     }
 
     /* image drawing methods for drawing onto another image instead of
@@ -234,9 +238,6 @@ private:
     bool indexed;
     RGBA backgroundColor;
     Image(); /* use create method to construct images */
-    // disallow assignments, copy contruction
-    Image(const Image &);
-    const Image &operator=(const Image &);
     BackendSurface surface;
     bool isScreen;
 };

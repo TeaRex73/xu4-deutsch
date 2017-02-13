@@ -47,7 +47,7 @@ Image *U5LzwImageLoader::load(U4FILE *file, int width, int height, int bpp)
         if (raw) {
             delete[] raw;
         }
-        return NULL;
+        return nullptr;
     }
     Image *image = Image::create(
         width,  height, bpp == 4 || bpp == 8, Image::HARDWARE
@@ -56,7 +56,7 @@ Image *U5LzwImageLoader::load(U4FILE *file, int width, int height, int bpp)
         if (raw) {
             delete[] raw;
         }
-        return NULL;
+        return nullptr;
     }
     U4PaletteLoader paletteLoader;
     if (bpp == 8) {

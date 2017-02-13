@@ -44,9 +44,9 @@ void createDngLadder(
             p->exitPortal = false;
         }
         p->message = "";
-        p->portalConditionsMet = NULL;
+        p->portalConditionsMet = nullptr;
         p->portalTransportRequisites = TRANSPORT_FOOT_OR_HORSE;
-        p->retroActiveDest = NULL;
+        p->retroActiveDest = nullptr;
         p->saveLocation = false;
         p->start = location->coords;
         p->start.z += (action == ACTION_KLIMB) ? -1 : 1;

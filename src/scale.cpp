@@ -26,7 +26,7 @@ Scaler scalerGet(const std::string &filter)
     } else if (filter == "Scale2x") {
         return &scaleScale2x;
     } else {
-        return NULL;
+        return nullptr;
     }
 }
 
@@ -54,7 +54,7 @@ Image *scalePoint(Image *src, int scale, int n)
         Image::HARDWARE
     );
     if (!dest) {
-        return NULL;
+        return nullptr;
     }
     dest->alphaOff();
     if (dest->isIndexed()) {
@@ -93,7 +93,7 @@ Image *scale2xBilinear(Image *src, int scale, int n)
         Image::HARDWARE
     );
     if (!dest) {
-        return NULL;
+        return nullptr;
     }
     dest->alphaOff();
     /*
@@ -241,7 +241,7 @@ Image *scale2xSaI(Image *src, int scale, int N)
         Image::HARDWARE
     );
     if (!dest) {
-        return NULL;
+        return nullptr;
     }
     dest->alphaOff();
     /*
@@ -446,7 +446,7 @@ Image *scaleScale2x(Image *src, int scale, int n)
         Image::HARDWARE
     );
     if (!dest) {
-        return NULL;
+        return nullptr;
     }
     dest->alphaOff();
     if (dest->isIndexed()) {

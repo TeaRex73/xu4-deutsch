@@ -29,6 +29,10 @@ class Tile;
  */
 class IntroBinData {
 public:
+    //disallow assignment, copy construction
+    IntroBinData(const IntroBinData &) = delete;
+    const IntroBinData &operator=(const IntroBinData &) = delete;
+
     const static int INTRO_TEXT_OFFSET;
     const static int INTRO_MAP_OFFSET;
     const static int INTRO_FIXUPDATA_OFFSET;
@@ -53,11 +57,6 @@ public:
     std::vector<std::string> introText[2];
     std::vector<std::string> introQuestions[2];
     std::vector<std::string> introGypsy[2];
-
-private:
-    // disallow assignments, copy contruction
-    IntroBinData(const IntroBinData &);
-    const IntroBinData &operator=(const IntroBinData &);
 };
 
 

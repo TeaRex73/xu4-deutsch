@@ -43,8 +43,10 @@ class ConfigElement {
 public:
     ConfigElement(xmlNodePtr xmlNode);
     ConfigElement(const ConfigElement &e);
+    ConfigElement(ConfigElement &&e);
     ~ConfigElement();
     ConfigElement &operator=(const ConfigElement &e);
+    ConfigElement &operator=(ConfigElement &&e);
 
     const std::string getName() const
     {

@@ -83,7 +83,7 @@ void ASSERT(bool exp, const char *desc, ...)
 #endif // if !HAVE_VARIADIC_MACROS
 
 
-std::FILE *Debug::global = NULL;
+std::FILE *Debug::global = nullptr;
 
 
 /**
@@ -163,7 +163,7 @@ void Debug::initGlobal(const std::string &filename)
             osxfname += filename;
         }
     }
-    global = osxfname.empty() ? NULL : FileSystem::openFile(osxfname, "wt");
+    global = osxfname.empty() ? nullptr : FileSystem::openFile(osxfname, "wt");
 #else
     global = FileSystem::openFile(filename, "wt");
 #endif

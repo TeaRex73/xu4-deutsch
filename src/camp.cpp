@@ -45,7 +45,7 @@ CampController::CampController()
         id = MAP_CAMP_CON;
     }
     map = getCombatMap(mapMgr->get(id));
-    game->setMap(map, true, NULL, this);
+    game->setMap(map, true, nullptr, this);
 }
 
 void CampController::init(Creature *m)
@@ -130,7 +130,7 @@ bool CampController::heal()
 
 InnController::InnController()
 {
-    map = NULL;
+    map = nullptr;
     /*
      * Normally in cities, only one opponent per encounter; inns
      * override this to get the regular encounter size.
@@ -268,7 +268,7 @@ void InnController::maybeAmbush()
         showMessage = false;
     }
     map = getCombatMap(mapMgr->get(mapid));
-    game->setMap(map, true, NULL, this);
+    game->setMap(map, true, nullptr, this);
     init(creature);
     showCombatMessage(showMessage);
     CombatController::begin();

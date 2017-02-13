@@ -134,7 +134,7 @@ TileMap *TileMap::get(std::string name)
     if (tileMaps.find(name) != tileMaps.end()) {
         return tileMaps[name];
     } else {
-        return NULL;
+        return nullptr;
     }
 }
 

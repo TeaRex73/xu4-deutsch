@@ -45,35 +45,35 @@ Image *PngImageLoader::load(
     char header[8];
     file->read(header, 1, sizeof(header));
     if (png_sig_cmp((png_byte *)header, 0, sizeof(header)) != 0) {
-        return NULL;
+        return nullptr;
     }
     png_structp png_ptr = png_create_read_struct(
-        PNG_LIBPNG_VER_STRING, NULL, NULL, NULL
+        PNG_LIBPNG_VER_STRING, nullptr, nullptr, nullptr
     );
     if (!png_ptr) {
-        return NULL;
+        return nullptr;
     }
     png_infop info_ptr = png_create_info_struct(png_ptr);
     if (!info_ptr) {
         png_destroy_read_struct(
-            &png_ptr, (png_infopp)NULL, (png_infopp)NULL
+            &png_ptr, (png_infopp)nullptr, (png_infopp)nullptr
         );
-        return NULL;
+        return nullptr;
     }
     png_infop end_info = png_create_info_struct(png_ptr);
     if (!end_info) {
         png_destroy_read_struct(
-            &png_ptr, &info_ptr, (png_infopp)NULL
+            &png_ptr, &info_ptr, (png_infopp)nullptr
         );
-        return NULL;
+        return nullptr;
     }
     if (setjmp(png_jmpbuf(png_ptr))) {
         png_destroy_read_struct(&png_ptr, &info_ptr, &end_info);
-        return NULL;
+        return nullptr;
     }
     png_set_read_fn(png_ptr, file, &png_read_xu4);
     png_set_sig_bytes(png_ptr, sizeof(header));
-    png_read_png(png_ptr, info_ptr, PNG_TRANSFORM_IDENTITY, NULL);
+    png_read_png(png_ptr, info_ptr, PNG_TRANSFORM_IDENTITY, nullptr);
     png_uint_32 pwidth, pheight;
     int bit_depth, color_type, interlace_type;
     int compression_type, filter_method;
@@ -111,7 +111,7 @@ Image *PngImageLoader::load(
     if (!image) {
         delete[] raw;
         png_destroy_read_struct(&png_ptr, &info_ptr, &end_info);
-        return NULL;
+        return nullptr;
     }
     if (color_type != PNG_COLOR_TYPE_RGB_ALPHA) {
         image->alphaOff();

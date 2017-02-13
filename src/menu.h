@@ -27,7 +27,7 @@ public:
         RESET
     };
 
-    MenuEvent(const Menu *menu, Type type, const MenuItem *item = NULL)
+    MenuEvent(const Menu *menu, Type type, const MenuItem *item = nullptr)
     {
         this->menu = menu;
         this->type = type;

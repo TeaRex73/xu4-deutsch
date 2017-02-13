@@ -152,7 +152,7 @@ public:
     
     static Settings &getInstance()
     {
-        if (__builtin_expect((instance == NULL), false)) {
+        if (__builtin_expect((instance == nullptr), false)) {
             instance = new Settings();
         }
         return *instance;

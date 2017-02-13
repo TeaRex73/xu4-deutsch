@@ -212,7 +212,7 @@ static void codexEject(CodexEjectCode code)
     /* finally, finish the turn */
     c->location->turnCompleter->finishTurn();
     eventHandler->setController(game);
-    c->lastCommandTime = std::time(NULL);
+    c->lastCommandTime = std::time(nullptr);
     c->willPassTurn = true;
 } // codexEject
 

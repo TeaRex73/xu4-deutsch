@@ -71,6 +71,10 @@ void ASSERT(bool exp, const char *desc, ...);
  */
 class Debug {
 public:
+    // disallow assignments, copy contruction
+    Debug(const Debug &) = delete;
+    const Debug &operator=(const Debug &) = delete;
+
     Debug(
         const std::string &filename,
         const std::string &name = "",
@@ -86,9 +90,6 @@ public:
     );
 
 private:
-    // disallow assignments, copy contruction
-    Debug(const Debug &);
-    const Debug &operator=(const Debug &);
     static bool loggingEnabled(const std::string &name);
     bool disabled;
     std::string filename, name;

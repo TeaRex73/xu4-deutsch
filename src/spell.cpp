@@ -29,7 +29,7 @@
 #include "tileset.h"
 #include "utils.h"
 
-SpellEffectCallback spellEffectCallback = NULL;
+SpellEffectCallback spellEffectCallback = nullptr;
 CombatController *spellCombatController();
 void spellMagicAttack(
     const std::string &tilename, Direction dir, int minDamage, int maxDamage

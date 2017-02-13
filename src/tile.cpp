@@ -30,14 +30,14 @@ Tile::Tile(Tileset *tileset)
      h(0),
      frames(0),
      scale(1),
-     anim(NULL),
+     anim(nullptr),
      opaque(false),
      foreground(),
      waterForeground(),
-     rule(NULL),
+     rule(nullptr),
      imageName(),
      looks_like(),
-     image(NULL),
+     image(nullptr),
      tiledInDungeon(false),
      directions(),
      animationRule("")
@@ -68,7 +68,7 @@ void Tile::loadProperties(const ConfigElement &conf)
        if there is no rule specified, it defaults to the "default" rule */
     if (conf.exists("rule")) {
         rule = TileRule::findByName(conf.getString("rule"));
-        if (rule == NULL) {
+        if (rule == nullptr) {
             rule = TileRule::findByName("default");
         }
     } else {
@@ -127,7 +127,7 @@ void Tile::loadImage()
 {
     if (!image) {
         scale = settings.scale;
-        SubImage *subimage = NULL;
+        SubImage *subimage = nullptr;
         ImageInfo *info = imageMgr->get(imageName);
         if (!info) {
             subimage = imageMgr->getSubImage(imageName);
@@ -185,11 +185,11 @@ void Tile::loadImage()
         info->image->alphaOff();
         if (animationRule.size() > 0) {
             extern TileAnimSet *tileanims;
-            anim = NULL;
+            anim = nullptr;
             if (tileanims) {
                 anim = tileanims->getByName(animationRule);
             }
-            if (anim == NULL) {
+            if (anim == nullptr) {
                 errorWarning(
                     "Warning: animation style '%s' not found",
                     animationRule.c_str()
@@ -206,7 +206,7 @@ void Tile::loadImage()
 void Tile::deleteImage()
 {
     delete image;
-    image = NULL;
+    image = nullptr;
     scale = settings.scale;
 }
 

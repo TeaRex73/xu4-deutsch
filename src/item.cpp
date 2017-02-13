@@ -63,41 +63,41 @@ void itemHandleStones(const std::string &color);
 static const ItemLocation items[] = {
     {
         "Alraune",
-        NULL,
+        nullptr,
         "mandrake1",
         &isReagentInInventory,
         &putReagentInInventory,
-        NULL,
+        nullptr,
         REAG_MANDRAKE,
         SC_NEWMOONS | SC_REAGENTDELAY
     },
     {
         "Alraune",
-        NULL,
+        nullptr,
         "mandrake2",
         &isReagentInInventory,
         &putReagentInInventory,
-        NULL,
+        nullptr,
         REAG_MANDRAKE,
         SC_NEWMOONS | SC_REAGENTDELAY
     },
     {
         "Schatten",
-        NULL,
+        nullptr,
         "nightshade1",
         &isReagentInInventory,
         &putReagentInInventory,
-        NULL,
+        nullptr,
         REAG_NIGHTSHADE,
         SC_NEWMOONS | SC_REAGENTDELAY
     },
     {
         "Schatten",
-        NULL,
+        nullptr,
         "nightshade2",
         &isReagentInInventory,
         &putReagentInInventory,
-        NULL,
+        nullptr,
         REAG_NIGHTSHADE,
         SC_NEWMOONS | SC_REAGENTDELAY
     },
@@ -243,80 +243,80 @@ static const ItemLocation items[] = {
     },
     /* handlers for using generic objects */
     {
-        NULL,
+        nullptr,
         "stein",
-        NULL,
+        nullptr,
         &isStoneInInventory,
-        NULL,
+        nullptr,
         &useStone,
         -1,
         0
     },
     {
-        NULL,
+        nullptr,
         "steine",
-        NULL,
+        nullptr,
         &isStoneInInventory,
-        NULL,
+        nullptr,
         &useStone,
         -1,
         0
     },
     {
-        NULL,
+        nullptr,
         "schl}ssel",
-        NULL,
+        nullptr,
         &isItemInInventory,
-        NULL,
+        nullptr,
         &useKey,
         ITEM_KEY_C | ITEM_KEY_L | ITEM_KEY_T,
         0
     },
     {
-        NULL,
+        nullptr,
         "schl}ssel",
-        NULL,
+        nullptr,
         &isItemInInventory,
-        NULL,
+        nullptr,
         &useKey,
         ITEM_KEY_C | ITEM_KEY_L | ITEM_KEY_T,
         0
     },
     /* Lycaeum telescope */
     {
-        NULL,
-        NULL,
+        nullptr,
+        nullptr,
         "telescope",
-        NULL,
+        nullptr,
         &useTelescope,
-        NULL,
+        nullptr,
         0,
         0
     },
     {
         "Mystische R}stung",
-        NULL,
+        nullptr,
         "mysticarmor",
         &isMysticInInventory,
         &putMysticInInventory,
-        NULL,
+        nullptr,
         ARMR_MYSTICROBES,
         SC_FULLAVATAR
     },
     {
         "Mystische Schwerter",
-        NULL,
+        nullptr,
         "mysticswords",
         &isMysticInInventory,
         &putMysticInInventory,
-        NULL,
+        nullptr,
         WEAP_MYSTICSWORD,
         SC_FULLAVATAR
     },
     {
         "die verschwelten ]berreste einer uralten sosarischen "
         "Laserpistole. Sie zerf{llt in deinen Fingern zu Asche",
-        NULL,
+        nullptr,
         "lasergun",
         &isWeaponInInventory,
         &putWeaponInInventory,
@@ -326,81 +326,81 @@ static const ItemLocation items[] = {
     },
     {
         "die Rune der Ehrlichkeit",
-        NULL,
+        nullptr,
         "honestyrune",
         &isRuneInInventory,
         &putRuneInInventory,
-        NULL,
+        nullptr,
         RUNE_HONESTY,
         0
     },
     {
         "die Rune des Mitgef}hls",
-        NULL,
+        nullptr,
         "compassionrune",
         &isRuneInInventory,
         &putRuneInInventory,
-        NULL,
+        nullptr,
         RUNE_COMPASSION,
         0
     },
     {
         "die Rune der Tapferkeit",
-        NULL,
+        nullptr,
         "valorrune",
         &isRuneInInventory,
         &putRuneInInventory,
-        NULL,
+        nullptr,
         RUNE_VALOR,
         0
     },
     {
         "die Rune der Gerechtigkeit",
-        NULL,
+        nullptr,
         "justicerune",
         &isRuneInInventory,
         &putRuneInInventory,
-        NULL,
+        nullptr,
         RUNE_JUSTICE,
         0
     },
     {
         "die Rune des Verzichts",
-        NULL,
+        nullptr,
         "sacrificerune",
         &isRuneInInventory,
         &putRuneInInventory,
-        NULL,
+        nullptr,
         RUNE_SACRIFICE,
         0
     },
     {
         "die Rune der Ehre",
-        NULL,
+        nullptr,
         "honorrune",
         &isRuneInInventory,
         &putRuneInInventory,
-        NULL,
+        nullptr,
         RUNE_HONOR,
         0
     },
     {
         "die Rune der Spiritualit{t",
-        NULL,
+        nullptr,
         "spiritualityrune",
         &isRuneInInventory,
         &putRuneInInventory,
-        NULL,
+        nullptr,
         RUNE_SPIRITUALITY,
         0
     },
     {
         "die Rune der Demut",
-        NULL,
+        nullptr,
         "humilityrune",
         &isRuneInInventory,
         &putRuneInInventory,
-        NULL,
+        nullptr,
         RUNE_HUMILITY,
         0
     }
@@ -593,7 +593,7 @@ void useStone(int item)
         STONE_WHITE | STONE_YELLOW | STONE_GREEN | STONE_ORANGE;
     static unsigned char courage =
         STONE_WHITE | STONE_RED | STONE_PURPLE | STONE_ORANGE;
-    static unsigned char *attr = NULL;
+    static unsigned char *attr = nullptr;
     c->location->getCurrentPosition(&coords);
     /**
      * Named a specific stone (after using "stone" or "stones")
@@ -825,7 +825,7 @@ void useTelescope(int notused)
     if (choice == -1) {
         return;
     }
-    gamePeerCity(choice, NULL);
+    gamePeerCity(choice, nullptr);
     screenMessage("\n");
 }
 
@@ -874,7 +874,7 @@ bool itemConditionsMet(unsigned char conditions)
 
 /**
  * Returns an item location record if a searchable object exists at
- * the given location. NULL is returned if nothing is there.
+ * the given location. nullptr is returned if nothing is there.
  */
 const ItemLocation *itemAtLocation(const Map *map, const Coords &coords)
 {
@@ -888,7 +888,7 @@ const ItemLocation *itemAtLocation(const Map *map, const Coords &coords)
             return &(items[i]);
         }
     }
-    return NULL;
+    return nullptr;
 }
 
 
@@ -898,7 +898,7 @@ const ItemLocation *itemAtLocation(const Map *map, const Coords &coords)
 void itemUse(const std::string &shortname)
 {
     unsigned int i;
-    const ItemLocation *item = NULL;
+    const ItemLocation *item = nullptr;
     for (i = 0; i < N_ITEMS; i++) {
         if (items[i].shortname
             && (xu4_strcasecmp(

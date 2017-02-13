@@ -101,7 +101,7 @@ void deathTimer(void *data)
 
 void deathRevive()
 {
-    while (!c->location->map->isWorldMap() && c->location->prev != NULL) {
+    while (!c->location->map->isWorldMap() && c->location->prev != nullptr) {
         game->exitToParentMap();
     }
     eventHandler->setController(game);
@@ -111,7 +111,7 @@ void deathRevive()
     c->location->coords = c->location->map->portals[0]->coords;
     /* Now, move the avatar into the castle and put him
        in front of Lord British */
-    game->setMap(mapMgr->get(100), 1, NULL);
+    game->setMap(mapMgr->get(100), 1, nullptr);
     c->location->coords.x = REVIVE_CASTLE_X;
     c->location->coords.y = REVIVE_CASTLE_Y;
     c->location->coords.z = 0;
@@ -123,6 +123,6 @@ void deathRevive()
     screenShowCursor();
     c->stats->setView(STATS_PARTY_OVERVIEW);
     screenRedrawScreen();
-    c->lastCommandTime = std::time(NULL);
+    c->lastCommandTime = std::time(nullptr);
     c->willPassTurn = true;
 } // deathRevive

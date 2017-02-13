@@ -297,7 +297,7 @@ MenuItem *Menu::getItemById(int id)
     if (current != items.end()) {
         return *current;
     }
-    return NULL;
+    return nullptr;
 }
 
 

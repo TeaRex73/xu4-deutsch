@@ -20,7 +20,7 @@
 
 TileAnimTransform *TileAnimTransform::create(const ConfigElement &conf)
 {
-    TileAnimTransform *transform = NULL;
+    TileAnimTransform *transform = nullptr;
     static const char *transformTypeEnumStrings[] = {
         "invert",
         "pixel",
@@ -28,7 +28,7 @@ TileAnimTransform *TileAnimTransform::create(const ConfigElement &conf)
         "frame",
         "pixel_color",
         "scramble",
-        NULL
+        nullptr
     };
     int type = conf.getEnum("type", transformTypeEnumStrings);
     switch (type) {
@@ -283,8 +283,8 @@ TileAnimPixelColorTransform::TileAnimPixelColorTransform(
     this->y = y;
     this->w = w;
     this->h = h;
-    this->start = NULL;
-    this->end = NULL;
+    this->start = nullptr;
+    this->end = nullptr;
 }
 
 TileAnimPixelColorTransform::~TileAnimPixelColorTransform()
@@ -349,7 +349,7 @@ TileAnimContext *TileAnimContext::create(const ConfigElement &conf)
     static const char *contextTypeEnumStrings[] = {
         "frame",
         "dir",
-        NULL
+        nullptr
     };
     static const char *dirEnumStrings[] = {
         "none",
@@ -357,7 +357,7 @@ TileAnimContext *TileAnimContext::create(const ConfigElement &conf)
         "north",
         "east",
         "south",
-        NULL
+        nullptr
     };
     TileAnimContext::Type type =
         (TileAnimContext::Type)conf.getEnum("type", contextTypeEnumStrings);
@@ -371,7 +371,7 @@ TileAnimContext *TileAnimContext::create(const ConfigElement &conf)
         );
         break;
     default:
-        context = NULL;
+        context = nullptr;
         break;
     }
     /**
@@ -398,7 +398,7 @@ TileAnimContext::~TileAnimContext()
          i != animTransforms.end();
          i++) {
         delete (*i);
-        (*i) = NULL;
+        (*i) = nullptr;
     }
 }
 
@@ -477,7 +477,7 @@ TileAnim *TileAnimSet::getByName(const std::string &name)
 {
     TileAnimMap::iterator i = tileanims.find(name);
     if (i == tileanims.end()) {
-        return NULL;
+        return nullptr;
     }
     return i->second;
 }

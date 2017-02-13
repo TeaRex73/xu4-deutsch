@@ -28,7 +28,7 @@ void *xmlXu4FileOpen(const char *filename)
     void *result;
     std::string pathname(u4find_conf(filename));
     if (pathname.empty()) {
-        return NULL;
+        return nullptr;
     }
     result = xmlFileOpen(pathname.c_str());
     if (verbose) {
@@ -61,7 +61,7 @@ xmlDocPtr xmlParse(const char *filename)
         xmlRegisterIO();
     }
     doc = xmlReadFile(
-        filename, NULL, XML_PARSE_NOENT | XML_PARSE_XINCLUDE
+        filename, nullptr, XML_PARSE_NOENT | XML_PARSE_XINCLUDE
     );
     if (!doc) {
         errorFatal("error parsing %s", filename);
@@ -96,7 +96,7 @@ void xmlAccumError(void *l, const char *fmt, ...)
 bool xmlPropExists(xmlNodePtr node, const char *name)
 {
     xmlChar *prop = xmlGetProp(node, (const xmlChar *)name);
-    bool exists = (prop != NULL);
+    bool exists = (prop != nullptr);
     if (prop) {
         xmlFree(prop);
     }
@@ -162,7 +162,7 @@ int xmlGetPropAsInt(xmlNodePtr node, const char *name)
     if (!prop) {
         return 0;
     }
-    result = std::strtol((const char *)prop, NULL, 0);
+    result = std::strtol((const char *)prop, nullptr, 0);
     xmlFree(prop);
     return (int)result;
 }

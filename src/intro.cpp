@@ -42,7 +42,7 @@
 extern bool useProfile;
 extern std::string profileName;
 extern int quit;
-IntroController *intro = NULL;
+IntroController *intro = nullptr;
 const std::string tmpstr = "/tmp/";
 
 #define INTRO_MAP_HEIGHT 5
@@ -87,11 +87,11 @@ const int IntroBinData::BEASTIE1_FRAMES_OFFSET = 0;
 const int IntroBinData::BEASTIE2_FRAMES_OFFSET = 0x78;
 
 IntroBinData::IntroBinData()
-    :sigData(NULL),
-     scriptTable(NULL),
-     baseTileTable(NULL),
-     beastie1FrameTable(NULL),
-     beastie2FrameTable(NULL)
+    :sigData(nullptr),
+     scriptTable(nullptr),
+     baseTileTable(nullptr),
+     beastie1FrameTable(nullptr),
+     beastie2FrameTable(nullptr)
 {
 }
 
@@ -200,7 +200,7 @@ IntroController::IntroController()
          INTRO_MAP_HEIGHT,
          "base"
      ),
-     binData(NULL),
+     binData(nullptr),
      titles(), // element list
      title(titles.begin()), // element iterator
      transparentIndex(2), // palette index for transparency
@@ -776,9 +776,9 @@ bool IntroController::hasInitiatedNewGame()
 void IntroController::deleteIntro()
 {
     delete binData;
-    binData = NULL;
+    binData = nullptr;
     delete[] objectStateTable;
-    objectStateTable = NULL;
+    objectStateTable = nullptr;
     imageMgr->freeIntroBackgrounds();
     musicMgr->introMid = Music::NONE;
     bSkipTitles = true;
@@ -786,7 +786,7 @@ void IntroController::deleteIntro()
 
 unsigned char *IntroController::getSigData()
 {
-    ASSERT(binData->sigData != NULL, "intro sig data not loaded");
+    ASSERT(binData->sigData != nullptr, "intro sig data not loaded");
     return binData->sigData;
 }
 
@@ -861,7 +861,7 @@ bool IntroController::keyPressed(int key)
         return true;
     } // switch
 
-    return valid || KeyHandler::defaultHandler(key, NULL);
+    return valid || KeyHandler::defaultHandler(key, nullptr);
 } // IntroController::keyPressed
 
 
@@ -1283,7 +1283,7 @@ void IntroController::finishInitiateGame(
     saveGameFile =
         std::fopen((tmpstr + MONSTERS_SAV_BASE_FILENAME).c_str(), "wb");
     if (saveGameFile) {
-        saveGameMonstersWrite(NULL, saveGameFile);
+        saveGameMonstersWrite(nullptr, saveGameFile);
         fsync(fileno(saveGameFile));
         std::fclose(saveGameFile);
         sync();
@@ -2010,7 +2010,7 @@ void IntroController::initPlayers(SaveGame *saveGame)
             break;
         } // switch
     }
-    PartyMember player(NULL, &saveGame->players[0]);
+    PartyMember player(nullptr, &saveGame->players[0]);
     saveGame->players[0].hp = saveGame->players[0].hpMax =
         player.getMaxLevel() * 100;
     saveGame->players[0].mp = player.getMaxMp();
@@ -2031,7 +2031,7 @@ void IntroController::initPlayers(SaveGame *saveGame)
             saveGame->players[p].sex = initValuesForNpcClass[i].sex;
             saveGame->players[p].hp = saveGame->players[p].hpMax =
                 initValuesForClass[i].level * 100;
-            player = PartyMember(NULL, &saveGame->players[p]);
+            player = PartyMember(nullptr, &saveGame->players[p]);
             saveGame->players[p].mp = player.getMaxMp();
             p++;
         }
@@ -2100,8 +2100,8 @@ void IntroController::addTitle(
         0, // timeBase
         delay, // delay before rendering begins
         duration, // total animation time
-        NULL, // storage for the source image
-        NULL, // storage for the animation frame
+        nullptr, // storage for the source image
+        nullptr, // storage for the animation frame
         std::vector<AnimPlot>(), false
     };         // prescaled
 
@@ -2601,7 +2601,7 @@ bool IntroController::updateTitle()
 void IntroController::compactTitle()
 {
     delete title->srcImage;
-    title->srcImage = NULL;
+    title->srcImage = nullptr;
     title->plotData.clear();
 }
 
@@ -2630,7 +2630,7 @@ void IntroController::drawTitle()
     );
     if (!title->prescaled) {
         delete scaled;
-        scaled = NULL;
+        scaled = nullptr;
     }
 }
 

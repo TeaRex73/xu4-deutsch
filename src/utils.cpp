@@ -22,7 +22,7 @@
  */
 void xu4_srandom()
 {
-    std::srand((unsigned int)std::time(NULL));
+    std::srand((unsigned int)std::time(nullptr));
 }
 
 
@@ -121,8 +121,8 @@ char *xu4_strdup(const char *s)
 {
     std::size_t length = std::strlen(s) + 1;
     void *copy = std::malloc(length);
-    if (copy == NULL) {
-        return NULL;
+    if (copy == nullptr) {
+        return nullptr;
     }
     return (char *)std::memcpy(copy, s, length);
 }

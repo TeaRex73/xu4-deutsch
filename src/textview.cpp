@@ -15,7 +15,7 @@
 #include "textview.h"
 #include "utils.h"
 
-Image *TextView::charset = NULL;
+Image *TextView::charset = nullptr;
 
 TextView::TextView(int x, int y, int columns, int rows)
     :View(x, y, columns * CHAR_WIDTH, rows * CHAR_HEIGHT)
@@ -27,7 +27,7 @@ TextView::TextView(int x, int y, int columns, int rows)
     this->cursorX = 0;
     this->cursorY = 0;
     this->cursorPhase = 0;
-    if (charset == NULL) {
+    if (charset == nullptr) {
         charset = imageMgr->get(BKGD_CHARSET)->image;
     }
     eventHandler->getTimer()->add(

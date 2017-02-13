@@ -8,7 +8,7 @@
 #include "image.h"
 #include "imageloader.h"
 
-std::map<std::string, ImageLoader *> *ImageLoader::loaderMap = NULL;
+std::map<std::string, ImageLoader *> *ImageLoader::loaderMap = nullptr;
 
 
 /**
@@ -18,10 +18,11 @@ std::map<std::string, ImageLoader *> *ImageLoader::loaderMap = NULL;
 ImageLoader *ImageLoader::getLoader(const std::string &fileType)
 {
     ASSERT(
-        loaderMap != NULL, "ImageLoader::getLoader loaderMap not initialized"
+        loaderMap != nullptr,
+        "ImageLoader::getLoader loaderMap not initialized"
     );
     if (loaderMap->find(fileType) == loaderMap->end()) {
-        return NULL;
+        return nullptr;
     }
     return (*loaderMap)[fileType];
 }
@@ -36,7 +37,7 @@ ImageLoader *ImageLoader::registerLoader(
     ImageLoader *loader, const std::string &type
 )
 {
-    if (loaderMap == NULL) {
+    if (loaderMap == nullptr) {
         loaderMap = new std::map<std::string, ImageLoader *>;
     }
     (*loaderMap)[type] = loader;

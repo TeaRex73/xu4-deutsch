@@ -149,8 +149,8 @@ public:
     void run(const std::string &script);
     ReturnCode execute(
         xmlNodePtr script,
-        xmlNodePtr currentItem = NULL,
-        std::string *output = NULL
+        xmlNodePtr currentItem = nullptr,
+        std::string *output = nullptr
     );
     void _continue();
     void resetState();

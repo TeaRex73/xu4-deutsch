@@ -23,7 +23,7 @@
 #include "context.h"
 
 Context::Context()
-    :party(NULL), saveGame(NULL), location(NULL)
+    :party(nullptr), saveGame(nullptr), location(nullptr)
 {
 }
 

@@ -73,7 +73,7 @@ int SoundManager::init()
      */
     const Config *config = Config::getInstance();
     soundFilenames.reserve(SOUND_MAX);
-    soundChunk.resize(SOUND_MAX, NULL);
+    soundChunk.resize(SOUND_MAX, nullptr);
     std::vector<ConfigElement> soundConfs =
         config->getElement("sound").getChildren();
     std::vector<ConfigElement>::const_iterator i = soundConfs.begin();
@@ -96,7 +96,7 @@ bool SoundManager::load(Sound sound)
     if (!Music::functional || !settings.soundVol) {
         return false;
     }
-    if (soundChunk[sound] == NULL) {
+    if (soundChunk[sound] == nullptr) {
         std::string pathname(u4find_sound(soundFilenames[sound]));
         std::string basename =
             pathname.substr(pathname.find_last_of("/") + 1);
@@ -118,7 +118,7 @@ void SoundManager::play(
     if (!Music::functional || !settings.soundVol) {
         return;
     }
-    if (soundChunk[sound] == NULL) {
+    if (soundChunk[sound] == nullptr) {
         if (!load(sound)) {
             return;
         }

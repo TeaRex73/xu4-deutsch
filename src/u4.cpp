@@ -118,7 +118,7 @@ int main(int argc, char *argv[])
 #if 0
         else if ((std::strcmp(argv[i], "-scale") == 0)
                  && ((unsigned int)argc > i + 1)) {
-            settings.scale = std::strtoul(argv[i + 1], NULL, 0);
+            settings.scale = std::strtoul(argv[i + 1], nullptr, 0);
             i++;
         }
 #endif

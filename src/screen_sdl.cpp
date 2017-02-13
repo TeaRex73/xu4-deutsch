@@ -72,11 +72,11 @@ void screenInit_sys()
         settings.gamma / 100.0f
     );
     std::atexit(SDL_Quit);
-    SDL_WM_SetCaption("Ultima IV", NULL);
+    SDL_WM_SetCaption("Ultima IV", nullptr);
 #ifdef ICON_FILE
     icon = SDL_LoadBMP(ICON_FILE);
     if (icon) {
-        SDL_WM_SetIcon(icon, NULL);
+        SDL_WM_SetIcon(icon, nullptr);
     }
 #endif
     if (!(screen = SDL_SetVideoMode(
@@ -154,7 +154,7 @@ void screenDelete_sys()
     SDL_FreeCursor(cursors[4]);
     u4_SDL_QuitSubSystem(SDL_INIT_VIDEO);
     SDL_FreeSurface(icon);
-    icon = NULL;
+    icon = nullptr;
 }
 
 
@@ -213,7 +213,7 @@ int screenLoadImageCga(
 {
     Image *img;
     int x, y;
-    unsigned char *compressed_data, *decompressed_data = NULL;
+    unsigned char *compressed_data, *decompressed_data = nullptr;
     long inlen, decompResult;
     inlen = u4flength(file);
     compressed_data = (Uint8 *)std::malloc(inlen);
@@ -228,14 +228,14 @@ int screenLoadImageCga(
             compressed_data, inlen, (void **)&decompressed_data
         );
         std::free(compressed_data);
-        compressed_data = NULL;
+        compressed_data = nullptr;
         break;
     case COMP_LZW:
         decompResult = decompress_u4_memory(
             compressed_data, inlen, (void **)&decompressed_data
         );
         std::free(compressed_data);
-        compressed_data = NULL;
+        compressed_data = nullptr;
         break;
     default:
         ASSERT(0, "invalid compression type %d", comp);
@@ -244,7 +244,7 @@ int screenLoadImageCga(
         if (decompressed_data) {
             std::free(decompressed_data);
         }
-        compressed_data = NULL;
+        compressed_data = nullptr;
         return 0;
     }
     screenDeinterlaceCga(decompressed_data, width, height, tiles, 0);
@@ -253,7 +253,7 @@ int screenLoadImageCga(
         if (decompressed_data) {
             std::free(decompressed_data);
         }
-        compressed_data = NULL;
+        compressed_data = nullptr;
         return 0;
     }
     img->alphaOff();
@@ -283,7 +283,7 @@ int screenLoadImageCga(
         }
     }
     std::free(decompressed_data);
-    compressed_data = NULL;
+    compressed_data = nullptr;
     (*image) = img;
     return 1;
 } // screenLoadImageCga
@@ -293,7 +293,7 @@ int screenLoadImageCga(
 /**
  * Force a redraw.
  */
-SDL_mutex *screenLockMutex = NULL;
+SDL_mutex *screenLockMutex = nullptr;
 int frameDuration = 0;
 
 void screenLock()
@@ -332,7 +332,7 @@ void screenWait(int numberOfAnimationFrames)
 }
 
 bool continueScreenRefresh = true;
-SDL_Thread *screenRefreshThread = NULL;
+SDL_Thread *screenRefreshThread = nullptr;
 
 int screenRefreshThreadFunction(void *unused)
 {
@@ -353,7 +353,7 @@ void screenRefreshThreadInit()
         return;
     }
     screenRefreshThread = SDL_CreateThread(
-        screenRefreshThreadFunction, NULL
+        screenRefreshThreadFunction, nullptr
     );
     if (!screenRefreshThread) {
         errorWarning("SDL Error: %s", SDL_GetError());
@@ -364,8 +364,8 @@ void screenRefreshThreadInit()
 void screenRefreshThreadEnd()
 {
     continueScreenRefresh = false;
-    SDL_WaitThread(screenRefreshThread, NULL);
-    screenRefreshThread = NULL;
+    SDL_WaitThread(screenRefreshThread, nullptr);
+    screenRefreshThread = nullptr;
     SDL_UnlockMutex(screenLockMutex);
     SDL_DestroyMutex(screenLockMutex);
 }
@@ -380,7 +380,7 @@ void screenRefreshThreadEnd()
  */
 Image *screenScale(Image *src, int scale, int n, int filter)
 {
-    Image *dest = NULL;
+    Image *dest = nullptr;
     bool isTransparent;
     unsigned int transparentIndex;
     bool alpha = src->isAlphaOn();
@@ -435,7 +435,7 @@ Image *screenScaleDown(Image *src, int scale)
         Image::HARDWARE
     );
     if (!dest) {
-        return NULL;
+        return nullptr;
     }
     dest->alphaOff();
     if (!dest) {

@@ -28,7 +28,7 @@ const Weapon *Weapon::get(WeaponType w)
     // Load in XML if it hasn't been already
     loadConf();
     if (static_cast<unsigned int>(w) >= weapons.size()) {
-        return NULL;
+        return nullptr;
     }
     return &weapons[w];
 }
@@ -46,7 +46,7 @@ const Weapon *Weapon::get(const std::string &name)
             return &weapons[i];
         }
     }
-    return NULL;
+    return nullptr;
 }
 
 

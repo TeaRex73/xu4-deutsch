@@ -298,8 +298,8 @@ Map::Map()
     chunk_height = 0;
     offset = 0;
     id = 0;
-    tileset = NULL;
-    tilemap = NULL;
+    tileset = nullptr;
+    tilemap = nullptr;
     objectsByLocation.clear();
 }
 
@@ -319,13 +319,13 @@ std::string Map::getName()
 
 /**
  * Returns the object at the given (x,y,z) coords, if one exists.
- * Otherwise, returns NULL.
+ * Otherwise, returns nullptr.
  */
 Object *Map::objectAt(const Coords &coords)
 {
     /* FIXME: return a list instead of one object */
     ObjectDeque::const_iterator i;
-    Object *objAt = NULL;
+    Object *objAt = nullptr;
     std::pair<ObjectLocMap::iterator, ObjectLocMap::iterator> p =
         objectsByLocation.equal_range(coords);
     for (ObjectLocMap::iterator i = p.first; i != p.second; i++) {
@@ -350,7 +350,7 @@ Object *Map::objectAt(const Coords &coords)
 /**
  * Returns the portal for the correspoding action(s) given.
  * If there is no portal that corresponds to the actions flagged
- * by 'actionFlags' at the given (x,y,z) coords, it returns NULL.
+ * by 'actionFlags' at the given (x,y,z) coords, it returns nullptr.
  */
 const Portal *Map::portalAt(const Coords &coords, int actionFlags)
 {
@@ -360,7 +360,7 @@ const Portal *Map::portalAt(const Coords &coords, int actionFlags)
             return *i;
         }
     }
-    return NULL;
+    return nullptr;
 }
 
 
@@ -623,7 +623,7 @@ ObjectDeque::iterator Map::removeObject(
 Creature *Map::moveObjects(MapCoords avatar)
 {
     ObjectDeque::iterator i;
-    Creature *attacker = NULL;
+    Creature *attacker = nullptr;
     for (i = objects.begin(); i != objects.end(); i++) {
         Creature *m = dynamic_cast<Creature *>(*i);
         if (m) {
@@ -977,7 +977,7 @@ bool Map::fillMonsterTable()
 
 MapTile Map::tfrti(int raw) const
 {
-    ASSERT(tilemap != NULL, "tilemap hasn't been set");
+    ASSERT(tilemap != nullptr, "tilemap hasn't been set");
     return tilemap->translate(raw);
 }
 

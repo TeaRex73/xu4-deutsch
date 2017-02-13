@@ -61,7 +61,7 @@
 
 
 
-GameController *game = NULL;
+GameController *game = nullptr;
 
 
 /*-----------------*/
@@ -114,7 +114,7 @@ extern int quit;
 
 const std::string tmpstr = "/tmp/";
 
-Context *c = NULL;
+Context *c = nullptr;
 Debug gameDbg("debug/game.txt", "Game");
 MouseArea mouseAreas[] = {
     {
@@ -196,7 +196,7 @@ bool AlphaActionController::keyPressed(int key)
     } else {
         screenMessage("\n%s", uppercase(prompt).c_str());
         screenRedrawScreen();
-        return KeyHandler::defaultHandler(key, NULL);
+        return KeyHandler::defaultHandler(key, nullptr);
     }
     return true;
 }
@@ -274,9 +274,9 @@ void GameController::init()
     c->aura = new Aura();
     c->horseSpeed = 0;
     c->opacity = 1;
-    c->lastCommandTime = std::time(NULL);
+    c->lastCommandTime = std::time(nullptr);
     c->willPassTurn = false;
-    c->lastShip = NULL;
+    c->lastShip = nullptr;
     /* load in the save game */
     // First the temporary just-inited save game...
     saveGameFile = std::fopen(
@@ -302,7 +302,7 @@ void GameController::init()
     c->party = new Party(c->saveGame);
     c->party->addObserver(this);
     /* set the map to the world map by default */
-    setMap(mapMgr->get(MAP_WORLD), 0, NULL);
+    setMap(mapMgr->get(MAP_WORLD), 0, nullptr);
     c->location->map->clearObjects();
     TRACE_LOCAL(gameDbg, "World map set.");
 #if 0
@@ -313,7 +313,7 @@ void GameController::init()
     TRACE_LOCAL(gameDbg, "Initializing start location.");
     /* if our map is not the world map, then load our map */
     if (map->type != Map::WORLD) {
-        setMap(map, 1, NULL);
+        setMap(map, 1, nullptr);
     } else {
         /* initialize the moons (must be done from the world map) */
         initMoons();
@@ -658,7 +658,7 @@ int GameController::exitToParentMap()
     if (!c->location) {
         return 0;
     }
-    if (c->location->prev != NULL) {
+    if (c->location->prev != nullptr) {
         // Create the balloon for Hythloth
         if (c->location->map->id == MAP_HYTHLOTH) {
             createBalloon(c->location->prev->map);
@@ -688,8 +688,8 @@ int GameController::exitToParentMap()
  */
 void GameController::finishTurn()
 {
-    c->lastCommandTime = std::time(NULL);
-    Creature *attacker = NULL;
+    c->lastCommandTime = std::time(nullptr);
+    Creature *attacker = nullptr;
     while (1) {
         /* adjust food and moves */
         c->party->endTurn();
@@ -731,11 +731,11 @@ void GameController::finishTurn()
             return;
         } else {
             Controller *controller = eventHandler->getController();
-            if ((controller != NULL)
+            if ((controller != nullptr)
                 && ((eventHandler->getController() == game)
                     || (dynamic_cast<CombatController *>(
                             eventHandler->getController()
-                        ) != NULL))) {
+                        ) != nullptr))) {
                 /* pass the turn, and redraw the text area so the prompt
                    is shown */
                 screenPrompt();
@@ -953,13 +953,13 @@ bool GameController::keyPressed(int key)
         }
         /* Klimb? */
         if ((c->location->map->portalAt(c->location->coords, ACTION_KLIMB)
-             != NULL)) {
+             != nullptr)) {
             key = 'q';
         }
         /* Descend? */
         else if ((c->location->map->portalAt(
                       c->location->coords, ACTION_DESCEND
-                  ) != NULL)) {
+                  ) != nullptr)) {
             key = 'y';
         }
         if (c->location->context == CTX_DUNGEON) {
@@ -979,7 +979,7 @@ bool GameController::keyPressed(int key)
         }
         /* Enter? */
         if (c->location->map->portalAt(c->location->coords, ACTION_ENTER)
-            != NULL) {
+            != nullptr) {
             key = 'b';
         }
         /* Get Chest? */
@@ -1046,7 +1046,7 @@ bool GameController::keyPressed(int key)
         case U4_FKEY + 8:
             /* the altar room of truth */
             if (settings.debug && (c->location->context & CTX_WORLDMAP)) {
-                setMap(mapMgr->get(MAP_DECEIT), 1, NULL);
+                setMap(mapMgr->get(MAP_DECEIT), 1, nullptr);
                 c->location->coords = MapCoords(1, 0, 7);
                 c->saveGame->orientation = DIR_SOUTH;
             } else {
@@ -1056,7 +1056,7 @@ bool GameController::keyPressed(int key)
         case U4_FKEY + 9:
             /* the altar room of love */
             if (settings.debug && (c->location->context & CTX_WORLDMAP)) {
-                setMap(mapMgr->get(MAP_DESPISE), 1, NULL);
+                setMap(mapMgr->get(MAP_DESPISE), 1, nullptr);
                 c->location->coords = MapCoords(3, 2, 7);
                 c->saveGame->orientation = DIR_SOUTH;
             } else {
@@ -1066,7 +1066,7 @@ bool GameController::keyPressed(int key)
         case U4_FKEY + 10:
             /* the altar room of courage */
             if (settings.debug && (c->location->context & CTX_WORLDMAP)) {
-                setMap(mapMgr->get(MAP_DESTARD), 1, NULL);
+                setMap(mapMgr->get(MAP_DESTARD), 1, nullptr);
                 c->location->coords = MapCoords(7, 6, 7);
                 c->saveGame->orientation = DIR_SOUTH;
             } else {
@@ -1108,7 +1108,7 @@ bool GameController::keyPressed(int key)
                 screenPrompt();
                 /* Help! send me to Lord British (who conveniently is
                    right around where you are)! */
-                setMap(mapMgr->get(100), 1, NULL);
+                setMap(mapMgr->get(100), 1, nullptr);
                 c->location->coords.x = 19;
                 c->location->coords.y = 8;
                 c->location->coords.z = 0;
@@ -1362,7 +1362,7 @@ bool GameController::keyPressed(int key)
                     c->location->map, c->location->coords
                 );
                 if (item) {
-                    if ((*item->isItemInInventory != NULL)
+                    if ((*item->isItemInInventory != nullptr)
                         && (*item->isItemInInventory)(item->data)) {
                         screenMessage(
                             "%cHIER IST NICHTS!%c\n", FG_GREY, FG_WHITE
@@ -1399,7 +1399,7 @@ bool GameController::keyPressed(int key)
             if (settings.enhancements) {
                 c->stats->setView(STATS_PARTY_OVERVIEW);
             }
-            c->lastCommandTime = std::time(NULL);
+            c->lastCommandTime = std::time(nullptr);
             c->willPassTurn = true;
             break;
         case 'x':
@@ -1458,7 +1458,7 @@ bool GameController::keyPressed(int key)
                 /* first teleport to the abyss */
                 c->location->coords.x = 0xe9;
                 c->location->coords.y = 0xe9;
-                setMap(mapMgr->get(MAP_ABYSS), 1, NULL);
+                setMap(mapMgr->get(MAP_ABYSS), 1, nullptr);
                 /* then to the final altar */
                 c->location->coords.x = 7;
                 c->location->coords.y = 7;
@@ -1547,7 +1547,7 @@ bool GameController::keyPressed(int key)
                 screenMessage("\n");
                 break;
             }
-            eventHandler->setScreenUpdate(NULL);
+            eventHandler->setScreenUpdate(nullptr);
             eventHandler->popController();
             eventHandler->pushController(intro);
             // Stop the music and hide the cursor
@@ -1618,7 +1618,7 @@ bool GameController::keyPressed(int key)
         /* if our turn did not end, then manually redraw the text prompt */
         screenPrompt();
     }
-    return valid || KeyHandler::defaultHandler(key, NULL);
+    return valid || KeyHandler::defaultHandler(key, nullptr);
 } // GameController::keyPressed
 
 std::string gameGetInput(int maxlen)
@@ -1761,7 +1761,7 @@ bool ZtatsController::keyPressed(int key)
         doneWaiting();
         return true;
     default:
-        return KeyHandler::defaultHandler(key, NULL);
+        return KeyHandler::defaultHandler(key, nullptr);
     }
 }
 
@@ -1773,7 +1773,7 @@ void destroy()
         return;
     }
     std::vector<Coords> path = gameGetDirectionalActionPath(
-        MASK_DIR(dir), MASK_DIR_ALL, c->location->coords, 1, 1, NULL, true
+        MASK_DIR(dir), MASK_DIR_ALL, c->location->coords, 1, 1, nullptr, true
     );
     for (std::vector<Coords>::iterator i = path.begin();
          i != path.end();
@@ -1817,7 +1817,7 @@ void attack()
         return;
     }
     std::vector<Coords> path = gameGetDirectionalActionPath(
-        MASK_DIR(dir), MASK_DIR_ALL, c->location->coords, 1, 1, NULL, true
+        MASK_DIR(dir), MASK_DIR_ALL, c->location->coords, 1, 1, nullptr, true
     );
     for (std::vector<Coords>::iterator i = path.begin();
          i != path.end();
@@ -1842,7 +1842,7 @@ bool attackAt(const Coords &coords)
     Creature *m;
     m = dynamic_cast<Creature *>(c->location->map->objectAt(coords));
     /* nothing attackable: move on to next tile */
-    if ((m == NULL) || !m->isAttackable()) {
+    if ((m == nullptr) || !m->isAttackable()) {
         return false;
     }
     /* attack successful */
@@ -2057,7 +2057,13 @@ void fire()
     }
     // nothing (not even mountains!) can block cannonballs
     std::vector<Coords> path = gameGetDirectionalActionPath(
-        MASK_DIR(dir), broadsidesDirs, c->location->coords, 1, 3, NULL, false
+        MASK_DIR(dir),
+        broadsidesDirs,
+        c->location->coords,
+        1,
+        3,
+        nullptr,
+        false
     );
     for (std::vector<Coords>::iterator i = path.begin();
          i != path.end();
@@ -2073,7 +2079,7 @@ bool fireAt(const Coords &coords, bool originAvatar)
     bool validObject = false;
     bool hitsAvatar = false;
     bool objectHit = false;
-    Object *obj = NULL;
+    Object *obj = nullptr;
     MapTile tile(c->location->map->tileset->getByName("miss_flash")->getId());
     GameController::flashTile(coords, tile, 1);
     obj = c->location->map->objectAt(coords);
@@ -2148,7 +2154,7 @@ void getChest(int player)
     /* get the object for the chest, if it is indeed an object */
     Object *obj = c->location->map->objectAt(coords);
     if (obj && !obj->getTile().getTileType()->isChest()) {
-        obj = NULL;
+        obj = nullptr;
     }
     if (tile->isChest() || obj) {
         // if a spell was cast to open this chest,
@@ -2179,7 +2185,7 @@ void getChest(int player)
             screenMessage("%cTRUHE ZERST\\RT!%c\n", FG_RED, FG_WHITE);
         }
         screenPrompt();
-        if (isCity(c->location->map) && (obj == NULL)) {
+        if (isCity(c->location->map) && (obj == nullptr)) {
             c->party->adjustKarma(KA_STOLE_CHEST);
         }
     } else {
@@ -2262,7 +2268,7 @@ void holeUp()
         return;
     }
     CombatController *cc = new CampController();
-    cc->init(NULL);
+    cc->init(nullptr);
     cc->begin();
 }
 
@@ -2276,8 +2282,8 @@ void GameController::initMoons()
     int trammelphase = c->saveGame->trammelphase,
         feluccaphase = c->saveGame->feluccaphase;
 
-    ASSERT(c != NULL, "Game context doesn't exist!");
-    ASSERT(c->saveGame != NULL, "Savegame doesn't exist!");
+    ASSERT(c != nullptr, "Game context doesn't exist!");
+    ASSERT(c->saveGame != nullptr, "Savegame doesn't exist!");
     c->saveGame->trammelphase = c->saveGame->feluccaphase = 0;
     c->moonPhase = 0;
     while ((c->saveGame->trammelphase != trammelphase)
@@ -2464,8 +2470,9 @@ void GameController::avatarMoved(MoveEvent &event)
                         (MoveResult)(MOVE_SUCCEEDED | MOVE_END_TURN);
                 }
 #if 0
-                else if (mapPersonAt(c->location->map, new_coords) != NULL) {
-                    talkAtCoord(newx, newy, 1, NULL);
+                else if (mapPersonAt(c->location->map, new_coords)
+                         != nullptr) {
+                    talkAtCoord(newx, newy, 1, nullptr);
                     event.result = MOVE_SUCCEEDED | MOVE_END_TURN;
                 }
 #endif
@@ -2579,7 +2586,7 @@ void jimmy()
         return;
     }
     std::vector<Coords> path = gameGetDirectionalActionPath(
-        MASK_DIR(dir), MASK_DIR_ALL, c->location->coords, 1, 1, NULL, true
+        MASK_DIR(dir), MASK_DIR_ALL, c->location->coords, 1, 1, nullptr, true
     );
     for (std::vector<Coords>::iterator i = path.begin();
          i != path.end();
@@ -2631,7 +2638,7 @@ void opendoor()
         return;
     }
     std::vector<Coords> path = gameGetDirectionalActionPath(
-        MASK_DIR(dir), MASK_DIR_ALL, c->location->coords, 1, 1, NULL, true
+        MASK_DIR(dir), MASK_DIR_ALL, c->location->coords, 1, 1, nullptr, true
     );
     for (std::vector<Coords>::iterator i = path.begin();
          i != path.end();
@@ -2929,8 +2936,8 @@ bool gamePeerCity(int city, void *data)
 {
     Map *peerMap;
     peerMap = mapMgr->get((MapId)(city + 1));
-    if (peerMap != NULL) {
-        game->setMap(peerMap, 1, NULL);
+    if (peerMap != nullptr) {
+        game->setMap(peerMap, 1, nullptr);
         c->location->viewMode = VIEW_GEM;
         game->paused = true;
         game->pausedTimer = 0;
@@ -3112,7 +3119,7 @@ void talkRunConversation(Conversation &conv, Person *talker, bool showPrompt)
     if (conv.reply.size() > 0) {
         screenMessage("%s", uppercase(conv.reply.front()).c_str());
     }
-    c->lastCommandTime = std::time(NULL);
+    c->lastCommandTime = std::time(nullptr);
     c->willPassTurn = true;
 } // talkRunConversation
 
@@ -3234,11 +3241,11 @@ void GameController::timerFired()
          */
         Controller *controller = eventHandler->getController();
         if (c->willPassTurn
-            && (controller != NULL)
+            && (controller != nullptr)
             && ((eventHandler->getController() == game)
                 || (dynamic_cast<CombatController *>(
                         eventHandler->getController()
-                    ) != NULL))
+                    ) != nullptr))
             && (gameTimeSinceLastCommand() > 20)) {
             /* pass the turn, and redraw the text area so the prompt is
                shown */
@@ -3378,7 +3385,7 @@ bool GameController::checkMoongates()
             if (!c->party->canEnterShrine(VIRT_SPIRITUALITY)) {
                 return true;
             }
-            setMap(shrine_spirituality, 1, NULL);
+            setMap(shrine_spirituality, 1, nullptr);
             musicMgr->play();
             shrine_spirituality->enter();
         }
@@ -3430,7 +3437,7 @@ void gameFixupObjects(Map *map)
 
 std::time_t gameTimeSinceLastCommand()
 {
-    return std::time(NULL) - c->lastCommandTime;
+    return std::time(nullptr) - c->lastCommandTime;
 }
 
 
@@ -3693,7 +3700,7 @@ void GameController::checkRandomCreatures()
         || (xu4_random(spawnDivisor) != 0)) {
         return;
     }
-    gameSpawnCreature(NULL);
+    gameSpawnCreature(nullptr);
 }
 
 
@@ -3746,7 +3753,7 @@ void gameLordBritishCheckLevels()
 
 /**
  * Spawns a creature (m) just offscreen of the avatar.
- * If (m==NULL) then it finds its own creature to spawn and spawns it.
+ * If (m==nullptr) then it finds its own creature to spawn and spawns it.
  */
 bool gameSpawnCreature(const Creature *m)
 {

@@ -24,7 +24,7 @@ TileRuleMap TileRule::rules;
 
 
 /**
- * Returns the tile rule with the given name, or NULL if none could be found
+ * Returns the tile rule with the given name, or nullptr if none could be found
  */
 TileRule *TileRule::findByName(const std::string &name)
 {
@@ -32,7 +32,7 @@ TileRule *TileRule::findByName(const std::string &name)
     if (i != rules.end()) {
         return i->second;
     }
-    return NULL;
+    return nullptr;
 }
 
 void TileRule::unloadAll()
@@ -61,7 +61,7 @@ void TileRule::load()
         TileRule::rules[rule->name] = rule;
     }
     
-    if (TileRule::findByName("default") == NULL) {
+    if (TileRule::findByName("default") == nullptr) {
         errorFatal("no 'default' rule found in tile rules");
     }
 }
@@ -109,7 +109,7 @@ bool TileRule::initFromConf(const ConfigElement &conf)
         "slow",
         "vslow",
         "vvslow",
-        NULL
+        nullptr
     };
     static const char *effectsEnumStrings[] = {
         "none",
@@ -119,7 +119,7 @@ bool TileRule::initFromConf(const ConfigElement &conf)
         "poisonField",
         "electricity",
         "lava",
-        NULL
+        nullptr
     };
     this->mask = 0;
     this->movementMask = 0;
@@ -268,7 +268,7 @@ Tileset *Tileset::get(const std::string &name)
     if (tilesets.find(name) != tilesets.end()) {
         return tilesets[name];
     } else {
-        return NULL;
+        return nullptr;
     }
 }
 
@@ -285,7 +285,7 @@ Tile *Tileset::findTileByName(const std::string &name)
             return t;
         }
     }
-    return NULL;
+    return nullptr;
 }
 
 Tile *Tileset::findTileById(TileId id)
@@ -297,7 +297,7 @@ Tile *Tileset::findTileById(TileId id)
             return t;
         }
     }
-    return NULL;
+    return nullptr;
 }
 
 
@@ -314,7 +314,7 @@ void Tileset::load(const ConfigElement &tilesetConf)
     if (tilesetConf.exists("extends")) {
         extends = Tileset::get(tilesetConf.getString("extends"));
     } else {
-        extends = NULL;
+        extends = nullptr;
     }
     TRACE_LOCAL(dbg, "\tLoading Tiles...");
     int index = 0;
@@ -372,7 +372,7 @@ Tile *Tileset::get(TileId id)
     } else if (extends) {
         return extends->get(id);
     }
-    return NULL;
+    return nullptr;
 }
 
 
@@ -386,7 +386,7 @@ Tile *Tileset::getByName(const std::string &name)
     } else if (extends) {
         return extends->getByName(name);
     } else {
-        return NULL;
+        return nullptr;
     }
 }
 

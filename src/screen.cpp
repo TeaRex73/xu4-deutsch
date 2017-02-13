@@ -62,11 +62,11 @@ std::vector<TileAnimSet *> tileanimSets;
 std::vector<std::string> gemLayoutNames;
 std::vector<std::string> filterNames;
 std::vector<std::string> lineOfSightStyles;
-Layout *gemlayout = NULL;
+Layout *gemlayout = nullptr;
 std::map<std::string, int> dungeonTileChars;
-TileAnimSet *tileanims = NULL;
-ImageInfo *charsetInfo = NULL;
-ImageInfo *gemTilesInfo = NULL;
+TileAnimSet *tileanims = nullptr;
+ImageInfo *charsetInfo = nullptr;
+ImageInfo *gemTilesInfo = nullptr;
 void screenFindLineOfSight(
     std::vector<MapTile> viewportTiles[VIEWPORT_W][VIEWPORT_H]
 );
@@ -102,8 +102,8 @@ void screenInit()
     lineOfSightStyles.clear();
     lineOfSightStyles.push_back("DOS");
     lineOfSightStyles.push_back("Enhanced");
-    charsetInfo = NULL;
-    gemTilesInfo = NULL;
+    charsetInfo = nullptr;
+    gemTilesInfo = nullptr;
     screenLoadGraphicsFromConf();
     if (verbose) {
         std::printf("using %s scaler\n", settings.filter.c_str());
@@ -115,7 +115,7 @@ void screenInit()
     }
     KeyHandler::setKeyRepeat(settings.keydelay, settings.keyinterval);
     /* find the tile animations for our tileset */
-    tileanims = NULL;
+    tileanims = nullptr;
     for (std::vector<TileAnimSet *>::const_iterator i = tileanimSets.begin();
          i != tileanimSets.end();
          i++) {
@@ -181,7 +181,7 @@ void screenReInit()
     /* unload tilesets, which will be reloaded lazily as needed */
     Tileset::unloadAllImages();
     ImageMgr::destroy();
-    tileanims = NULL;
+    tileanims = nullptr;
     /* delete screen stuff */
     screenDelete();
     /* re-init screen stuff (loading new backgrounds, etc.) */
@@ -346,7 +346,7 @@ Layout *screenLoadLayoutFromConf(const ConfigElement &conf)
         "standard",
         "gem",
         "dungeon_gem",
-        NULL
+        nullptr
     };
     layout = new Layout;
     layout->name = conf.getString("name");
@@ -441,7 +441,7 @@ bool screenTileUpdate(TileView *view, const Coords &coords, bool redraw)
  */
 void screenUpdate(TileView *view, bool showmap, bool blackout)
 {
-    ASSERT(c != NULL, "context has not yet been initialized");
+    ASSERT(c != nullptr, "context has not yet been initialized");
     screenLock();
     if (blackout) {
         screenEraseMapArea();
@@ -550,7 +550,7 @@ void screenDrawImageInMapArea(const std::string &name)
  */
 void screenTextColor(int color)
 {
-    if (charsetInfo == NULL) {
+    if (charsetInfo == nullptr) {
         charsetInfo = imageMgr->get(BKGD_CHARSET);
         if (!charsetInfo) {
             errorFatal(
@@ -584,7 +584,7 @@ void screenTextColor(int color)
  */
 void screenShowChar(int chr, int x, int y)
 {
-    if (charsetInfo == NULL) {
+    if (charsetInfo == nullptr) {
         charsetInfo = imageMgr->get(BKGD_CHARSET);
         if (!charsetInfo) {
             errorFatal(
@@ -612,7 +612,7 @@ void screenShowChar(int chr, int x, int y)
 void screenScrollMessageArea()
 {
     ASSERT(
-        charsetInfo != NULL && charsetInfo->image != NULL,
+        charsetInfo != nullptr && charsetInfo->image != nullptr,
         "charset not initialized!"
     );
     Image *screen = imageMgr->get("screen")->image;
@@ -1609,7 +1609,7 @@ void screenShowGemTile(
             );
         }
     } else {
-        if (gemTilesInfo == NULL) {
+        if (gemTilesInfo == nullptr) {
             gemTilesInfo = imageMgr->get(BKGD_GEMTILES);
             if (!gemTilesInfo) {
                 errorFatal(
@@ -1660,7 +1660,7 @@ Layout *screenGetGemLayout(const Map *map)
             }
         }
         errorFatal("no dungeon gem layout found!\n");
-        return NULL;
+        return nullptr;
     } else {
         return gemlayout;
     }

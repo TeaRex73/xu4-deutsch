@@ -27,7 +27,7 @@
 bool isDungeon(Map *punknown)
 {
     Dungeon *pd;
-    if ((pd = dynamic_cast<Dungeon *>(punknown)) != NULL) {
+    if ((pd = dynamic_cast<Dungeon *>(punknown)) != nullptr) {
         return true;
     } else {
         return false;
@@ -174,7 +174,7 @@ void dungeonSearch(void)
            (stones on altars, etc.) */
         item = itemAtLocation(dungeon, c->location->coords);
         if (item) {
-            if ((*item->isItemInInventory != NULL)
+            if ((*item->isItemInInventory != nullptr)
                 && (*item->isItemInInventory)(item->data)) {
                 screenMessage("%cHIER IST NICHTS!%c\n", FG_GREY, FG_WHITE);
             } else {

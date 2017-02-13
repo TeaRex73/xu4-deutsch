@@ -48,8 +48,12 @@ class TileAnim;
  * A Tile object represents a specific tile type.  Every tile is a
  * member of a Tileset.
  */
-class Tile:private Uncopyable {
+class Tile {
 public:
+    //disallow copy construction, assignment
+    Tile(const Tile &) = delete;
+    const Tile &operator=(const Tile &) = delete;
+    
     Tile(Tileset *tileset);
     void loadProperties(const ConfigElement &conf);
 

@@ -74,7 +74,7 @@ void Object::setMap(class Map *m)
 Map *Object::getMap()
 {
     if (maps.empty()) {
-        return NULL;
+        return nullptr;
     }
     return maps.back();
 }

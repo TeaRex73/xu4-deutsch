@@ -160,7 +160,7 @@ KeyHandlerController::~KeyHandlerController()
 
 bool KeyHandlerController::keyPressed(int key)
 {
-    ASSERT(handler != NULL, "key handler must be initialized");
+    ASSERT(handler != nullptr, "key handler must be initialized");
     return handler->handle(key);
 }
 
@@ -199,7 +199,7 @@ TimedEventMgr::TimedEventMgr(int i)
 TimedEventMgr::~TimedEventMgr()
 {
     SDL_RemoveTimer(static_cast<SDL_TimerID>(id));
-    id = NULL;
+    id = nullptr;
     if (instances == 1) {
         u4_SDL_QuitSubSystem(SDL_INIT_TIMER);
     }
@@ -227,7 +227,7 @@ unsigned int TimedEventMgr::callback(unsigned int interval, void *param)
     event.type = SDL_USEREVENT;
     event.user.code = 0;
     event.user.data1 = param;
-    event.user.data2 = NULL;
+    event.user.data2 = nullptr;
     SDL_PushEvent(&event);
     return interval;
 }
@@ -247,7 +247,7 @@ void TimedEventMgr::stop()
 {
     if (id) {
         SDL_RemoveTimer(static_cast<SDL_TimerID>(id));
-        id = NULL;
+        id = nullptr;
     }
 }
 
@@ -265,7 +265,7 @@ void TimedEventMgr::start()
  * Constructs an event handler object.
  */
 EventHandler::EventHandler()
-    :timer(eventTimerGranularity), updateScreen(NULL)
+    :timer(eventTimerGranularity), updateScreen(nullptr)
 {
 }
 
@@ -567,7 +567,7 @@ void EventHandler::popKeyHandler()
     }
     KeyHandlerController *khc =
         dynamic_cast<KeyHandlerController *>(controllers.back());
-    if (khc == NULL) {
+    if (khc == nullptr) {
         return;
     }
     popController();
@@ -576,22 +576,22 @@ void EventHandler::popKeyHandler()
 
 /**
  * Returns a pointer to the current key handler.
- * Returns NULL if there is no key handler.
+ * Returns nullptr if there is no key handler.
  */
 KeyHandler *EventHandler::getKeyHandler() const
 {
     if (controllers.empty()) {
-        return NULL;
+        return nullptr;
     }
     KeyHandlerController *khc =
         dynamic_cast<KeyHandlerController *>(controllers.back());
     ASSERT(
-        khc != NULL,
+        khc != nullptr,
         "EventHandler::getKeyHandler called when controller wasn't a "
         "keyhandler"
     );
-    if (khc == NULL) {
-        return NULL;
+    if (khc == nullptr) {
+        return nullptr;
     }
     return khc->getKeyHandler();
 }
@@ -606,7 +606,7 @@ KeyHandler *EventHandler::getKeyHandler() const
  */
 void EventHandler::setKeyHandler(KeyHandler kh)
 {
-    while (popController() != NULL) {}
+    while (popController() != nullptr) {}
     pushKeyHandler(kh);
 }
 
@@ -615,12 +615,12 @@ MouseArea *EventHandler::mouseAreaForPoint(int x, int y)
     int i;
     MouseArea *areas = getMouseAreaSet();
     if (!areas) {
-        return NULL;
+        return nullptr;
     }
     for (i = 0; areas[i].npoints != 0; i++) {
         if (screenPointInMouseArea(x, y, &(areas[i]))) {
             return &(areas[i]);
         }
     }
-    return NULL;
+    return nullptr;
 }

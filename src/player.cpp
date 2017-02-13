@@ -26,7 +26,7 @@
 bool isPartyMember(Object *punknown)
 {
     PartyMember *pm;
-    if ((pm = dynamic_cast<PartyMember *>(punknown)) != NULL) {
+    if ((pm = dynamic_cast<PartyMember *>(punknown)) != nullptr) {
         return true;
     } else {
         return false;
@@ -658,7 +658,7 @@ void PartyMember::wakeUp()
 
 MapTile PartyMember::tileForClass(int klass)
 {
-    const char *name = NULL;
+    const char *name = nullptr;
     switch (klass) {
     case CLASS_MAGE:
         name = "mage";
@@ -779,7 +779,7 @@ std::string Party::translate(std::vector<std::string> &parts)
             std::string::size_type pos = str.find_first_of("1234567890");
             if (pos != std::string::npos) {
                 str = str.substr(pos);
-                int p_member = (int)std::strtol(str.c_str(), NULL, 10);
+                int p_member = (int)std::strtol(str.c_str(), nullptr, 10);
                 // Make the party member translate its
                 // own stuff
                 if (p_member > 0) {

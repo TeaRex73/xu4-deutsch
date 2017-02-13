@@ -44,6 +44,10 @@ class CombatController
      public Observer<Party *, PartyEvent &>,
      public TurnCompleter {
 public:
+    //Uncopyable
+    CombatController(const CombatController &) = delete;
+    const CombatController &operator=(const CombatController &) = delete;
+
     CombatController(CombatMap *m);
     CombatController(MapId id);
     virtual ~CombatController();
@@ -121,8 +125,6 @@ protected:
     Direction exitDir;
 
 private:
-    CombatController(const CombatController &);
-    const CombatController &operator=(const CombatController &);
 };
 
 
@@ -186,6 +188,6 @@ protected:
 
 
 bool isCombatMap(Map *punknown);
-CombatMap *getCombatMap(Map *punknown = NULL);
+CombatMap *getCombatMap(Map *punknown = nullptr);
 
 #endif // ifndef COMBAT_H

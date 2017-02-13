@@ -60,7 +60,7 @@ private:
 
 extern bool verbose;
 
-U4PATH *U4PATH::instance = NULL;
+U4PATH *U4PATH::instance = nullptr;
 
 U4PATH::~U4PATH()
 {
@@ -132,7 +132,7 @@ bool u4isUpgradeAvailable()
 {
     bool avail = false;
     U4FILE *pal;
-    if ((pal = u4fopen("u4vga.pal")) != NULL) {
+    if ((pal = u4fopen("u4vga.pal")) != nullptr) {
         avail = true;
         u4fclose(pal);
     }
@@ -146,7 +146,7 @@ bool u4isUpgradeAvailable()
  */
 bool u4isUpgradeInstalled()
 {
-    U4FILE *u4f = NULL;
+    U4FILE *u4f = nullptr;
     long int filelength;
     bool result = false;
     /* FIXME: Is there a better way to determine this? */
@@ -196,11 +196,11 @@ const std::string &U4ZipPackage::translate(const std::string &name) const
     }
 }
 
-U4ZipPackageMgr *U4ZipPackageMgr::instance = NULL;
+U4ZipPackageMgr *U4ZipPackageMgr::instance = nullptr;
 
 U4ZipPackageMgr *U4ZipPackageMgr::getInstance()
 {
-    if (instance == NULL) {
+    if (instance == nullptr) {
         instance = new U4ZipPackageMgr();
     }
     return instance;
@@ -209,7 +209,7 @@ U4ZipPackageMgr *U4ZipPackageMgr::getInstance()
 void U4ZipPackageMgr::destroy()
 {
     delete instance;
-    instance = NULL;
+    instance = nullptr;
 }
 
 void U4ZipPackageMgr::add(U4ZipPackage *package)
@@ -366,7 +366,7 @@ U4FILE *U4FILE_stdio::open(const std::string &fname)
     std::FILE *f;
     f = std::fopen(fname.c_str(), "rb");
     if (!f) {
-        return NULL;
+        return nullptr;
     }
     u4f = new U4FILE_stdio;
     u4f->file = f;
@@ -423,13 +423,13 @@ U4FILE *U4FILE_zip::open(const std::string &fname, const U4ZipPackage *package)
     unzFile f;
     f = unzOpen(package->getFilename().c_str());
     if (!f) {
-        return NULL;
+        return nullptr;
     }
     std::string pathname =
         package->getInternalPath() + package->translate(fname);
     if (unzLocateFile(f, pathname.c_str(), 2) == UNZ_END_OF_LIST_OF_FILE) {
         unzClose(f);
-        return NULL;
+        return nullptr;
     }
     unzOpenCurrentFile(f);
     u4f = new U4FILE_zip;
@@ -506,7 +506,9 @@ long U4FILE_zip::length()
 {
     unz_file_info fileinfo;
     if (length_cached == -1) {
-        unzGetCurrentFileInfo(zfile, &fileinfo, NULL, 0, NULL, 0, NULL, 0);
+        unzGetCurrentFileInfo(
+            zfile, &fileinfo, nullptr, 0, nullptr, 0, nullptr, 0
+        );
         length_cached = fileinfo.uncompressed_size;
     }
     return length_cached;
@@ -527,7 +529,7 @@ long U4FILE_zip::length()
  */
 U4FILE *u4fopen(const std::string &fname)
 {
-    U4FILE *u4f = NULL;
+    U4FILE *u4f = nullptr;
     unsigned int i;
     if (verbose) {
         std::printf("looking for %s\n", fname.c_str());
@@ -567,7 +569,7 @@ U4FILE *u4fopen(const std::string &fname)
     }
     if (!pathname.empty()) {
         u4f = U4FILE_stdio::open(pathname);
-        if (verbose && (u4f != NULL)) {
+        if (verbose && (u4f != nullptr)) {
             std::printf("%s successfully opened\n", pathname.c_str());
         }
     }
@@ -674,7 +676,7 @@ std::string u4find_path(
     const std::string &fname, std::list<std::string> specificSubPaths
 )
 {
-    std::FILE *f = NULL;
+    std::FILE *f = nullptr;
     char path[2048]; // Sometimes paths get big.
     for (std::list<std::string>::iterator rootItr =
              u4Path.rootResourcePaths.begin();
@@ -695,13 +697,13 @@ std::string u4find_path(
             if (verbose) {
                 std::printf("trying to open %s\n", path);
             }
-            if ((f = std::fopen(path, "rb")) != NULL) {
+            if ((f = std::fopen(path, "rb")) != nullptr) {
                 break;
             }
         }
     }
     if (verbose) {
-        if (f != NULL) {
+        if (f != nullptr) {
             std::printf("%s successfully found\n", path);
         } else {
             std::printf("%s not found\n", fname.c_str());
