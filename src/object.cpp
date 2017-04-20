@@ -13,8 +13,11 @@ std::unordered_set<Object *> Object::all_objects;
 Object::Object(Type type)
     :tile(0),
      prevTile(0),
+     coords(),
+     prevCoords(),
      movement_behavior(MOVEMENT_FIXED),
      objType(type),
+     maps(),
      focused(false),
      visible(true),
      animated(true)

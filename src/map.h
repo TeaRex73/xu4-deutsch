@@ -140,8 +140,10 @@ class Map {
 public:
     // disallow map copying: all maps should be created and accessed
     // through the MapMgr
-    Map(const Map &map) = delete;
-    Map &operator=(const Map &map) = delete;
+    Map(const Map &) = delete;
+	Map(Map &&) = delete;
+    Map &operator=(const Map &) = delete;
+	Map &operator=(Map &&) = delete;
 
     enum Type {
         WORLD,
@@ -160,6 +162,7 @@ public:
     class Source {
     public:
         Source()
+			:fname(), type(WORLD)
         {
         }
 

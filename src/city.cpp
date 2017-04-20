@@ -18,7 +18,15 @@
 
 
 City::City()
-    :Map()
+    :Map(),
+	 name(),
+	 type(),
+	 persons(),
+	 tlk_fname(),
+	 personroles(),
+	 personObjects(),
+	 normalDialogues(),
+	 extraDialogues()
 {
 }
 

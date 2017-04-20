@@ -31,7 +31,7 @@ const unsigned int Conversation::BUFFERLEN = 16;
 
 
 Response::Response(const std::string &response)
-    :references(0)
+    :references(0), parts()
 {
     add(response);
 }
@@ -74,10 +74,8 @@ void Response::release()
 ResponsePart::ResponsePart(
     const std::string &value, const std::string &arg, bool command
 )
+    :value(value), arg(arg), command(command)
 {
-    this->value = value;
-    this->arg = arg;
-    this->command = command;
 }
 
 ResponsePart::operator std::string() const
@@ -98,10 +96,8 @@ bool ResponsePart::isCommand() const
 DynamicResponse::DynamicResponse(
     Response *(*generator)(const DynamicResponse *), const std::string &param
 )
-    :Response(""), param(param)
+    :Response(""), generator(generator), currentResponse(nullptr), param(param)
 {
-    this->generator = generator;
-    currentResponse = nullptr;
 }
 
 DynamicResponse::~DynamicResponse()
@@ -189,9 +185,15 @@ bool Dialogue::Keyword::operator==(const std::string &kw) const
  * Dialogue class
  */
 Dialogue::Dialogue()
-    :intro(nullptr),
+    :name(),
+     pronoun(),
+     prompt(),
+     intro(nullptr),
      longIntro(nullptr),
      defaultAnswer(nullptr),
+     keywords(),
+     responses(),
+     turnAwayProb(0),
      question(nullptr)
 {
 }
@@ -275,9 +277,16 @@ std::string Dialogue::dump(const std::string &arg)
  * Conversation class
  */
 Conversation::Conversation()
-    :state(INTRO), script(new Script()), logger(0)
+    :state(INTRO),
+     playerInput(),
+     reply(),
+     script(new Script()),
+     question(nullptr),
+     quant(0),
+     player(0),
+     price(0),
+     logger(new Debug("debug/conversation.txt", "Conversation"))
 {
-    logger = new Debug("debug/conversation.txt", "Conversation");
 }
 
 Conversation::~Conversation()

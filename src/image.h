@@ -36,7 +36,13 @@ bool operator==(const RGBA &lhs, const RGBA &rhs);
 
 class Image;
 
-struct SubImage {
+class SubImage {
+public:
+    SubImage()
+        :name(), srcImageName(), x(0), y(0), width(0), height(0)
+    {
+    }
+    
     std::string name;
     std::string srcImageName;
     int x, y, width, height;

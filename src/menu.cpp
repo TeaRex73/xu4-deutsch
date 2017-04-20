@@ -11,7 +11,13 @@
 #include "textview.h"
 
 Menu::Menu()
-    :closed(false), title(""), titleX(0), titleY(0)
+    :items(),
+     current(),
+     selected(),
+     closed(false),
+     title(),
+     titleX(0),
+     titleY(0)
 {
 }
 
@@ -384,9 +390,8 @@ void Menu::setTitle(const std::string &text, int x, int y)
 }
 
 MenuController::MenuController(Menu *menu, TextView *view)
+    :menu(menu), view(view)
 {
-    this->menu = menu;
-    this->view = view;
 }
 
 bool MenuController::keyPressed(int key)

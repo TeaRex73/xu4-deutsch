@@ -116,6 +116,11 @@ public:
     {
     }
 
+	ReagentsMenuController(const ReagentsMenuController &) = delete;
+	ReagentsMenuController(ReagentsMenuController &&) = delete;
+	ReagentsMenuController &operator=(const ReagentsMenuController &) = delete;
+	ReagentsMenuController &operator=(ReagentsMenuController &&) = delete;
+	
     bool keyPressed(int key);
 
 private:

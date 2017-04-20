@@ -23,7 +23,23 @@
 #include "context.h"
 
 Context::Context()
-    :party(nullptr), saveGame(nullptr), location(nullptr)
+    :party(nullptr),
+     saveGame(nullptr),
+     location(nullptr),
+     line(0),
+     col(0),
+     stats(nullptr),
+     moonPhase(0),
+     windDirection(0),
+     windCounter(0),
+     windLock(false),
+     aura(nullptr),
+     horseSpeed(0),
+     opacity(0),
+     transportContext(),
+     lastCommandTime(0),
+     willPassTurn(false),
+     lastShip(nullptr)
 {
 }
 

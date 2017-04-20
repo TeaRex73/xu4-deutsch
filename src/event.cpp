@@ -264,23 +264,24 @@ MouseArea *EventHandler::getMouseAreaSet() const
 ReadStringController::ReadStringController(
     int maxlen, int screenX, int screenY, const std::string &accepted_chars
 )
+
+    :maxlen(maxlen),
+     screenX(screenX),
+     screenY(screenY),
+     view(nullptr),
+     accepted(accepted_chars)
 {
-    this->maxlen = maxlen;
-    this->screenX = screenX;
-    this->screenY = screenY;
-    this->view = nullptr;
-    this->accepted = accepted_chars;
 }
 
 ReadStringController::ReadStringController(
     int maxlen, TextView *view, const std::string &accepted_chars
 )
+    :maxlen(maxlen),
+     screenX(view->getCursorX()),
+     screenY(view->getCursorY()),
+     view(view),
+     accepted(accepted_chars)
 {
-    this->maxlen = maxlen;
-    this->screenX = view->getCursorX();
-    this->screenY = view->getCursorY();
-    this->view = view;
-    this->accepted = accepted_chars;
 }
 
 bool ReadStringController::keyPressed(int key)
@@ -374,8 +375,8 @@ int ReadIntController::getInt() const
 }
 
 ReadChoiceController::ReadChoiceController(const std::string &choices)
+    :choices(choices)
 {
-    this->choices = choices;
 }
 
 bool ReadChoiceController::keyPressed(int key)

@@ -61,9 +61,32 @@
 #define DEFAULT_SHADOW_PIXEL_OPACITY 64
 #define DEFAULT_SHADOW_PIXEL_SIZE 2
 
-struct SettingsEnhancementOptions {
-    bool operator==(const struct SettingsEnhancementOptions &) const;
-    bool operator!=(const struct SettingsEnhancementOptions &) const;
+class SettingsEnhancementOptions {
+public:
+    SettingsEnhancementOptions()
+        :activePlayer(false),
+         u5spellMixing(false),
+         u5shrines(false),
+         u5combat(false),
+         slimeDivides(false),
+         gazerSpawnsInsects(false),
+         textColorization(false),
+         c64chestTraps(true),
+         smartEnterKey(false),
+         peerShowsObjects(false),
+         u4TileTransparencyHack(false),
+         u4TileTransparencyHackPixelShadowOpacity(
+             DEFAULT_SHADOW_PIXEL_OPACITY
+         ),
+         u4TileTransparencyHackShadowBreadth(
+             DEFAULT_SHADOW_PIXEL_SIZE
+         )
+    {
+    }
+
+
+    bool operator==(const SettingsEnhancementOptions &) const;
+    bool operator!=(const SettingsEnhancementOptions &) const;
     bool activePlayer;
     bool u5spellMixing;
     bool u5shrines;
@@ -79,9 +102,15 @@ struct SettingsEnhancementOptions {
     int u4TileTransparencyHackShadowBreadth;
 };
 
-struct MouseOptions {
-    bool operator==(const struct MouseOptions &) const;
-    bool operator!=(const struct MouseOptions &) const;
+class MouseOptions {
+public:
+    MouseOptions()
+        :enabled(false)
+    {
+    }
+    
+    bool operator==(const MouseOptions &) const;
+    bool operator!=(const MouseOptions &) const;
     bool enabled;
 };
 
@@ -91,7 +120,51 @@ struct MouseOptions {
  */
 class SettingsData {
 public:
-    bool operator==(const SettingsData &) const;
+    SettingsData()
+        :battleSpeed(DEFAULT_BATTLE_SPEED),
+         campingAlwaysCombat(0),
+         campTime(DEFAULT_CAMP_TIME),
+         debug(DEFAULT_DEBUG),
+         enhancements(DEFAULT_ENHANCEMENTS),
+         enhancementsOptions(),
+         filterMoveMessages(DEFAULT_FILTER_MOVE_MESSAGES),
+         fullscreen(DEFAULT_FULLSCREEN),
+         gameCyclesPerSecond(DEFAULT_CYCLES_PER_SECOND),
+         screenAnimationFramesPerSecond(DEFAULT_ANIMATION_FRAMES_PER_SECOND),
+         innAlwaysCombat(0),
+         innTime(DEFAULT_INN_TIME),
+         keydelay(DEFAULT_KEY_DELAY),
+         keyinterval(DEFAULT_KEY_INTERVAL),
+         mouseOptions(),
+         musicVol(DEFAULT_MUSIC_VOLUME),
+#if 0
+         scale(DEFAULT_SCALE),
+#endif
+         screenShakes(DEFAULT_SCREEN_SHAKES),
+         gamma(DEFAULT_GAMMA),
+         shakeInterval(DEFAULT_SHAKE_INTERVAL),
+         shortcutCommands(DEFAULT_SHORTCUT_COMMANDS),
+         shrineTime(DEFAULT_SHRINE_TIME),
+         soundVol(DEFAULT_SOUND_VOLUME),
+         spellEffectSpeed(DEFAULT_SPELL_EFFECT_SPEED),
+         validateXml(DEFAULT_VALIDATE_XML),
+         volumeFades(DEFAULT_VOLUME_FADES),
+         titleSpeedRandom(DEFAULT_TITLE_SPEED_RANDOM),
+         titleSpeedOther(DEFAULT_TITLE_SPEED_OTHER),
+         pauseForEachTurn(DEFAULT_PAUSE_FOR_EACH_TURN),
+         pauseForEachMovement(DEFAULT_PAUSE_FOR_EACH_MOVEMENT),
+         filter(DEFAULT_FILTER),
+         gemLayout(DEFAULT_GEM_LAYOUT),
+         lineOfSight(DEFAULT_LINEOFSIGHT),
+         videoType(DEFAULT_VIDEO_TYPE),
+         battleDiff(DEFAULT_BATTLE_DIFFICULTY),
+         logging(DEFAULT_LOGGING),
+         game("Ultima IV")
+    {
+    }
+    
+	virtual ~SettingsData() = default;
+	bool operator==(const SettingsData &) const;
     bool operator!=(const SettingsData &) const;
     int battleSpeed;
     bool campingAlwaysCombat;
@@ -149,7 +222,9 @@ class Settings
      public Observable<Settings *> {
 public:
     void init(const bool useProfile, const std::string profileName);
-    
+
+	virtual ~Settings() = default;
+	
     static Settings &getInstance()
     {
         if (__builtin_expect((instance == nullptr), false)) {
@@ -157,7 +232,7 @@ public:
         }
         return *instance;
     }
-
+	
     void setData(const SettingsData &data);
     bool read();
     bool write();

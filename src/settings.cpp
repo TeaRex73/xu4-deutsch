@@ -239,10 +239,8 @@ bool SettingsData::operator!=(const SettingsData &s) const
  * Default contructor.  Settings is a singleton so this is private.
  */
 Settings::Settings()
+    :userPath(), filename(), battleDiffs({"Normal", "Hard", "Expert"})
 {
-    battleDiffs.push_back("Normal");
-    battleDiffs.push_back("Hard");
-    battleDiffs.push_back("Expert");
 }
 
 
@@ -350,63 +348,7 @@ bool Settings::read()
     char buffer[256];
     std::FILE *settingsFile;
     extern int eventTimerGranularity;
-    /* default settings */
-#if 0
-    scale = DEFAULT_SCALE;
-#endif
-    fullscreen = DEFAULT_FULLSCREEN;
-    filter = DEFAULT_FILTER;
-    videoType = DEFAULT_VIDEO_TYPE;
-    gemLayout = DEFAULT_GEM_LAYOUT;
-    lineOfSight = DEFAULT_LINEOFSIGHT;
-    screenShakes = DEFAULT_SCREEN_SHAKES;
-    gamma = DEFAULT_GAMMA;
-    musicVol = DEFAULT_MUSIC_VOLUME;
-    soundVol = DEFAULT_SOUND_VOLUME;
-    volumeFades = DEFAULT_VOLUME_FADES;
-    shortcutCommands = DEFAULT_SHORTCUT_COMMANDS;
-    keydelay = DEFAULT_KEY_DELAY;
-    keyinterval = DEFAULT_KEY_INTERVAL;
-    filterMoveMessages = DEFAULT_FILTER_MOVE_MESSAGES;
-    battleSpeed = DEFAULT_BATTLE_SPEED;
-    enhancements = DEFAULT_ENHANCEMENTS;
-    gameCyclesPerSecond = DEFAULT_CYCLES_PER_SECOND;
-    screenAnimationFramesPerSecond = DEFAULT_ANIMATION_FRAMES_PER_SECOND;
-    debug = DEFAULT_DEBUG;
-    battleDiff = DEFAULT_BATTLE_DIFFICULTY;
-    validateXml = DEFAULT_VALIDATE_XML;
-    spellEffectSpeed = DEFAULT_SPELL_EFFECT_SPEED;
-    campTime = DEFAULT_CAMP_TIME;
-    innTime = DEFAULT_INN_TIME;
-    shrineTime = DEFAULT_SHRINE_TIME;
-    shakeInterval = DEFAULT_SHAKE_INTERVAL;
-    titleSpeedRandom = DEFAULT_TITLE_SPEED_RANDOM;
-    titleSpeedOther = DEFAULT_TITLE_SPEED_OTHER;
-    pauseForEachMovement = DEFAULT_PAUSE_FOR_EACH_MOVEMENT;
-    pauseForEachTurn = DEFAULT_PAUSE_FOR_EACH_TURN;
-    /* all specific minor enhancements default to "on",
-       any major enhancements default to "off" */
-    enhancementsOptions.activePlayer = false;
-    enhancementsOptions.u5spellMixing = false;
-    enhancementsOptions.u5shrines = false;
-    enhancementsOptions.slimeDivides = false;
-    enhancementsOptions.gazerSpawnsInsects = false;
-    enhancementsOptions.textColorization = false;
-    enhancementsOptions.c64chestTraps = true;
-    enhancementsOptions.smartEnterKey = false;
-    enhancementsOptions.peerShowsObjects = false;
-    enhancementsOptions.u5combat = false;
-    enhancementsOptions.u4TileTransparencyHack = false;
-    enhancementsOptions.u4TileTransparencyHackPixelShadowOpacity =
-        DEFAULT_SHADOW_PIXEL_OPACITY;
-    enhancementsOptions.u4TileTransparencyHackShadowBreadth =
-        DEFAULT_SHADOW_PIXEL_SIZE;
-    innAlwaysCombat = 0;
-    campingAlwaysCombat = 0;
-    /* mouse defaults to on */
-    mouseOptions.enabled = 0;
-    logging = DEFAULT_LOGGING;
-    game = "Ultima IV";
+
     settingsFile = std::fopen(filename.c_str(), "rt");
     if (!settingsFile) {
         return false;

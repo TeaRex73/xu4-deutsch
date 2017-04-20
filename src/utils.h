@@ -130,12 +130,16 @@ private:
 
 public:
     Performance(const std::string &s)
+		:log(), filename(), s(), e(), times()
     {
 #ifndef NPERF
         init(s);
 #endif
     }
-    
+    Performance(const Performance &) = delete;
+	Performance(Performance &&) = delete;
+	Performance &operator=(const Performance &) = delete;
+	Performance &operator=(Performance &&) = delete;
     void init(const std::string &s)
     {
 #ifndef NPERF

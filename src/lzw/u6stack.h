@@ -4,6 +4,11 @@ using std::vector;
 
 class U6Decode::Stack {
 public:
+    Stack()
+        :stack()
+    {
+    }
+    
     bool is_empty()
     {
         return stack.size() == 0;

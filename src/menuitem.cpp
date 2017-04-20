@@ -24,6 +24,7 @@ MenuItem::MenuItem(std::string t, short xpos, short ypos, int sc)
      selected(false),
      visible(true),
      scOffset(sc),
+     shortcutKeys(),
      closesMenu(false)
 {
     // if the sc/scOffset is outside the range of the text std::string, assert

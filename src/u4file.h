@@ -108,7 +108,14 @@ public:
 class U4PATH {
 public:
     U4PATH()
-        :defaultsHaveBeenInitd(false)
+        :rootResourcePaths(),
+		 u4ForDOSPaths(),
+		 u4ZipPaths(),
+		 musicPaths(),
+		 soundPaths(),
+		 configPaths(),
+		 graphicsPaths(),
+		 defaultsHaveBeenInitd(false)
     {
     }
     

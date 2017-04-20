@@ -142,6 +142,10 @@ public:
     typedef std::list<StatusType> StatusList;
 
     Creature(MapTile tile = MapTile(0));
+    Creature(const Creature &c) = default;
+    Creature(Creature &&c) = default;
+    Creature &operator=(const Creature &c) = default;
+    Creature &operator=(Creature &&c) = default;
     virtual ~Creature();
     void load(const ConfigElement &conf);
     
@@ -429,8 +433,10 @@ class CreatureMgr {
 public:
     // disallow assignments, copy contruction
     CreatureMgr(const CreatureMgr &) = delete;
-    const CreatureMgr &operator=(const CreatureMgr &) = delete;
-
+	CreatureMgr(CreatureMgr &&) = delete;
+	CreatureMgr &operator=(const CreatureMgr &) = delete;
+    CreatureMgr &operator=(CreatureMgr &&) = delete;
+	
     ~CreatureMgr();
     static CreatureMgr *getInstance();
     void loadAll();
@@ -443,6 +449,7 @@ public:
 
 private:
     CreatureMgr()
+		:creatures()
     {
     }
 

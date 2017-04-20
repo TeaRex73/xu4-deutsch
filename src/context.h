@@ -38,7 +38,11 @@ typedef enum {
 class Context:public Script::Provider {
 public:
     Context();
-    ~Context();
+    virtual ~Context();
+    Context(const Context &c) = delete;
+    Context(Context &&e) = delete;
+    Context &operator=(const Context &c) = delete;
+    Context &operator=(Context &&c) = delete;
     Party *party;
     SaveGame *saveGame;
     class Location *location;

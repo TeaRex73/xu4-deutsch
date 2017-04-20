@@ -37,9 +37,9 @@
   </person>
   <person id="5" name="Shyra" pronoun="Sie" turnAwayProb="0">
     <description>Die Meisterin der Übungen.</description>
-    <topic query="job">Ich trainiere Krieger, mit Mut zu kämpfen!</topic>
+    <topic query="job">Ich trainiere Krieger darin, mit Mut zu kämpfen!</topic>
     <topic query="health">Top.</topic>
-    <topic query="TRAI">Trainiere gut, und dein Mut kann mit Zutrauen wachsen.<question type="0">Wirst du trainieren?<yes>Bravo!</yes><no>Bedauernswert.</no></question></topic>
+    <topic query="TRAI">Trainiere gut, und dein Mut kann mit dem Selbstvertrauen wachsen.<question type="0">Wirst du trainieren?<yes>Bravo!</yes><no>Bedauernswert.</no></question></topic>
     <topic query="RAEU">Im Altarraume des Mutes, benutze die roten, orangenen, violetten und weißen Steine!</topic>
   </person>
   <person id="6" name="eine freiherrliche Wache" pronoun="Sie" turnAwayProb="0">
@@ -107,7 +107,7 @@
   </person>
   <person id="15" name="Michelle" pronoun="Sie" turnAwayProb="0">
     <description>Eine schöne Paladinin!</description>
-    <topic query="job">Ich heiße dich Wilkommen in der Schlangenburg!</topic>
+    <topic query="job">Ich heiße dich Willkommen in der Schlangenburg!</topic>
     <topic query="health">Sehr gut.<question type="0">Geht es dir gut?<yes>Sehr gut, vielleicht suchst du Sentri.</yes><no>Dann solltest du unseren Heiler besuchen!</no></question></topic>
     <topic query="SENT">Er ist der Herr hier, geh immer geradeaus.</topic>
     <topic query="HEIL">Geh geradeaus, dann nimm die östliche Tür.</topic>

@@ -49,6 +49,11 @@ class TextView;
  */
 class KeyHandler {
 public:
+	KeyHandler(const KeyHandler &) = delete;
+	KeyHandler(KeyHandler &&) = default;
+	KeyHandler &operator=(const KeyHandler &) = delete;
+	KeyHandler &operator=(KeyHandler &&) = default;
+	
     virtual ~KeyHandler()
     {
     }
@@ -66,9 +71,8 @@ public:
         std::string choices;
         int (*handleChoice)(int);
     } GetChoice;
-    
-    KeyHandler(Callback func, void *data = nullptr, bool asyncronous = true);
 
+    KeyHandler(Callback func, void *data = nullptr, bool asyncronous = true);
     static int setKeyRepeat(int delay, int interval);
     static bool globalHandler(int key);
     static bool defaultHandler(int key, void *data);
@@ -91,6 +95,10 @@ protected:
 class KeyHandlerController:public Controller {
 public:
     KeyHandlerController(KeyHandler *handler);
+	KeyHandlerController(const KeyHandlerController &) = delete;
+	KeyHandlerController(KeyHandlerController &&) = delete;
+	KeyHandlerController &operator=(const KeyHandlerController &) = delete;
+	KeyHandlerController &operator=(KeyHandlerController &&) = delete;
     ~KeyHandlerController();
     virtual bool keyPressed(int key);
     KeyHandler *getKeyHandler();
@@ -122,6 +130,11 @@ public:
         "ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]"
         "1234567890 \n\r\010"
     );
+	ReadStringController(const ReadStringController &) = delete;
+	ReadStringController(ReadStringController &&) = delete;
+	ReadStringController &operator=(const ReadStringController &) = delete;
+	ReadStringController &operator=(ReadStringController &&) = delete;
+	
     virtual bool keyPressed(int key);
     static std::string get(
         int maxlen, int screenX, int screenY, EventHandler *eh = nullptr
@@ -222,6 +235,10 @@ public:
     typedef TimedEvent::List List;
 
     TimedEventMgr(int baseInterval);
+	TimedEventMgr(const TimedEventMgr &) = delete;
+	TimedEventMgr(TimedEventMgr &&) = delete;
+	TimedEventMgr &operator=(const TimedEventMgr &) = delete;
+	TimedEventMgr &operator=(TimedEventMgr &&) = delete;
     ~TimedEventMgr();
     static unsigned int callback(unsigned int interval, void *param);
     bool isLocked() const; /**< Returns true if event list is in use */

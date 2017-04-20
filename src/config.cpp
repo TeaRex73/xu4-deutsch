@@ -79,12 +79,14 @@ ConfigElement Config::getElement(const std::string &name) const
 }
 
 Config::Config()
-{
-    doc = xmlReadFile(
+    :doc(
+        xmlReadFile(
         Config::CONFIG_XML_LOCATION_POINTER,
         nullptr,
         XML_PARSE_NOENT | XML_PARSE_XINCLUDE
-    );
+        )
+    )
+{
     if (!doc) {
         std::printf(
             "Failed to read core config.xml. Assuming it is located at '%s'",

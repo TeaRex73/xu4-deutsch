@@ -80,6 +80,10 @@ class IntroController
      public Observer<Menu *, MenuEvent &> {
 public:
     IntroController();
+    IntroController(const IntroController &) = delete;
+    IntroController(IntroController &&) = delete;
+    IntroController &operator=(const IntroController &) = delete;
+    IntroController &operator=(IntroController &&) = delete;
     bool init();
     bool hasInitiatedNewGame();
     void deleteIntro();

@@ -28,10 +28,8 @@ public:
     };
 
     MenuEvent(const Menu *menu, Type type, const MenuItem *item = nullptr)
+		:menu(menu), type(type), item(item)
     {
-        this->menu = menu;
-        this->type = type;
-        this->item = item;
     }
     
     const Menu *getMenu()
@@ -108,6 +106,10 @@ private:
 class MenuController:public WaitableController<void *> {
 public:
     MenuController(Menu *menu, TextView *view);
+	MenuController(const MenuController &) = delete;
+	MenuController(MenuController &&) = delete;
+	MenuController &operator=(const MenuController &) = delete;
+	MenuController &operator=(MenuController &&) = delete;
     bool keyPressed(int key);
 
 protected:

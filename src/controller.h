@@ -46,10 +46,16 @@ void Controller_endWait();
  */
 template<class T> class WaitableController:public Controller {
 public:
-    WaitableController():exitWhenDone(false)
+    WaitableController()
+		:value(), exitWhenDone(false)
     {
     }
 
+	WaitableController(const WaitableController &) = delete;
+	WaitableController(WaitableController &&) = delete;
+	WaitableController &operator=(const WaitableController &) = delete;
+	WaitableController &operator=(WaitableController &&) = delete;
+	
     virtual T getValue()
     {
         return value;

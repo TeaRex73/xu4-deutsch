@@ -26,14 +26,39 @@ typedef enum {
 
 typedef bool (*PortalConditionsMet)(const Portal *p);
 
-struct PortalDestination {
+class PortalDestination {
+public:
+    PortalDestination()
+        :coords(), mapid(0)
+    {
+    }
+    
     MapCoords coords;
     MapId mapid;
 };
 
 class Portal {
 public:
+    Portal()
+        :coords(),
+         destid(0),
+         start(),
+         trigger_action(ACTION_NONE),
+         portalConditionsMet(nullptr),
+         retroActiveDest(nullptr),
+         saveLocation(false),
+         message(),
+         portalTransportRequisites(TRANSPORT_ANY),
+         exitPortal(false)
+    {
+    }
+    
     ~Portal();
+    Portal(const Portal &) = delete;
+    Portal(Portal &&) = delete;
+    Portal &operator=(const Portal &) = delete;
+    Portal &operator=(Portal &&) = delete;
+    
     MapCoords coords;
     MapId destid;
     MapCoords start;

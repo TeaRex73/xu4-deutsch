@@ -53,7 +53,7 @@
     <description>Einen starken Paladin.</description>
     <topic query="job">Ich bin der Begrüßer.</topic>
     <topic query="health">Extragut.</topic>
-    <topic query="BEGR">Ja, wilkommen in Trinsic, Stadt der Ehre!</topic>
+    <topic query="BEGR">Ja, willkommen in Trinsic, Stadt der Ehre!</topic>
     <topic query="EHRE">Weisheit über die Tugend der Ehre findet man überall in dieser Stadt.<question type="0">Suchst du diese Weisheit?<yes>Tritt ein und finde deinen Weg.</yes><no>Dies ist der falsche Ort!</no></question></topic>
   </person>
   <person id="8" name="Winthrop" pronoun="Er" turnAwayProb="0">

@@ -47,8 +47,9 @@ void MapMgr::destroy()
 }
 
 MapMgr::MapMgr()
+    :mapList(),
+     logger(new Debug("debug/mapmgr.txt", "MapMgr"))
 {
-    logger = new Debug("debug/mapmgr.txt", "MapMgr");
     TRACE(*logger, "creating MapMgr");
     const Config *config = Config::getInstance();
     Map *map;

@@ -45,7 +45,8 @@ StatsArea::StatsArea()
          STATS_AREA_WIDTH,
          1
      ),
-     view(STATS_PARTY_OVERVIEW)
+     view(STATS_PARTY_OVERVIEW),
+     reagentsMixMenu()
 {
     // Generate a formatted std::string for each menu item,
     // and then add the item to the menu.  The Y value

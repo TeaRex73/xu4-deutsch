@@ -46,7 +46,9 @@ class CombatController
 public:
     //Uncopyable
     CombatController(const CombatController &) = delete;
-    const CombatController &operator=(const CombatController &) = delete;
+    CombatController(CombatController &&) = delete;
+    CombatController &operator=(const CombatController &) = delete;
+    CombatController &operator=(CombatController &&) = delete;
 
     CombatController(CombatMap *m);
     CombatController(MapId id);

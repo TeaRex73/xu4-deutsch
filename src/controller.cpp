@@ -8,8 +8,8 @@
 #include "event.h"
 
 Controller::Controller(int timerInterval)
+    :timerInterval(timerInterval)
 {
-    this->timerInterval = timerInterval;
 }
 
 Controller::~Controller()

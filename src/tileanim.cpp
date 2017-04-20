@@ -118,11 +118,8 @@ RGBA *TileAnimTransform::loadColorFromConf(const ConfigElement &conf)
 }
 
 TileAnimInvertTransform::TileAnimInvertTransform(int x, int y, int w, int h)
+    :x(x), y(y), w(w), h(h)
 {
-    this->x = x;
-    this->y = y;
-    this->w = w;
-    this->h = h;
 }
 
 bool TileAnimInvertTransform::drawsTile() const
@@ -144,10 +141,8 @@ void TileAnimInvertTransform::draw(Image *dest, Tile *tile, MapTile &mapTile)
 }
 
 TileAnimPixelTransform::TileAnimPixelTransform(int x, int y)
+    :x(x), y(y), colors()
 {
-    this->x = x;
-    this->y = y;
-    this->colors.clear();
 }
 
 TileAnimPixelTransform::~TileAnimPixelTransform()
@@ -278,13 +273,8 @@ void TileAnimFrameTransform::draw(Image *dest, Tile *tile, MapTile &mapTile)
 TileAnimPixelColorTransform::TileAnimPixelColorTransform(
     int x, int y, int w, int h
 )
+    :x(x), y(y), w(w), h(h), start(nullptr), end(nullptr)
 {
-    this->x = x;
-    this->y = y;
-    this->w = w;
-    this->h = h;
-    this->start = nullptr;
-    this->end = nullptr;
 }
 
 TileAnimPixelColorTransform::~TileAnimPixelColorTransform()
@@ -448,8 +438,9 @@ bool TileAnimPlayerDirContext::isInContext(
  * TileAnimSet
  */
 TileAnimSet::TileAnimSet(const ConfigElement &conf)
+    :name(conf.getString("name")), tileanims() 
+
 {
-    name = conf.getString("name");
     std::vector<ConfigElement> children = conf.getChildren();
     for (std::vector<ConfigElement>::iterator i = children.begin();
          i != children.end();
@@ -483,12 +474,11 @@ TileAnim *TileAnimSet::getByName(const std::string &name)
 }
 
 TileAnim::TileAnim(const ConfigElement &conf)
-    :random(0)
+    :name(conf.getString("name")),
+     transforms(),
+     contexts(),
+     random(conf.exists("random") ? conf.getInt("random") : 0)
 {
-    name = conf.getString("name");
-    if (conf.exists("random")) {
-        random = conf.getInt("random");
-    }
     std::vector<ConfigElement> children = conf.getChildren();
     for (std::vector<ConfigElement>::iterator i = children.begin();
          i != children.end();

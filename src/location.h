@@ -38,6 +38,10 @@ public:
         TurnCompleter *turnCompleter,
         Location *prev
     );
+	Location(const Location &) = delete;
+	Location(Location &&) = delete;
+	Location &operator=(const Location &) = delete;
+	Location &operator=(Location &&) = delete;
     std::vector<MapTile> tilesAt(MapCoords coords, bool &focus);
     TileId getReplacementTile(MapCoords atCoords, Tile const *forTile);
     int getCurrentPosition(MapCoords *coords);

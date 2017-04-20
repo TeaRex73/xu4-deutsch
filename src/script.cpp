@@ -41,16 +41,16 @@ Script::Variable::Variable()
 {
 }
 
-Script::Variable::Variable(const std::string &v):set(true)
+Script::Variable::Variable(const std::string &v)
+    :i_val(static_cast<int>(std::strtol(v.c_str(), nullptr, 10))),
+     s_val(v),
+     set(true)
 {
-    i_val = static_cast<int>(std::strtol(v.c_str(), nullptr, 10));
-    s_val = v;
 }
 
-Script::Variable::Variable(const int &v):set(true)
+Script::Variable::Variable(const int &v)
+    :i_val(v), s_val(std::to_string(v)), set(true)
 {
-    i_val = v;
-    s_val = std::to_string(v);
 }
 
 int &Script::Variable::getInt()
@@ -110,8 +110,19 @@ Script::Script()
      scriptNode(nullptr),
      debug(nullptr),
      state(STATE_UNLOADED),
+     currentScript(nullptr),
+     currentItem(nullptr),
+     translationContext(),
+     target(),
+     inputType(INPUT_CHOICE),
+     inputName(),
+     inputMaxLen(0),
      nounName("item"),
-     idPropName("id")
+     idPropName("id"),
+     choices(),
+     iterator(0),
+     variables(),
+     providers()
 {
     action_map["context"] = ACTION_SET_CONTEXT;
     action_map["unset_context"] = ACTION_UNSET_CONTEXT;

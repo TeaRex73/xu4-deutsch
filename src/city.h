@@ -26,7 +26,7 @@ typedef std::list<PersonRole *> PersonRoleList;
 class City:public Map {
 public:
     City();
-    ~City();
+    virtual ~City();
     virtual std::string getName();
     Person *addPerson(Person *p);
     void addPeople();

@@ -88,7 +88,7 @@
     <description>Einen herumhüpfenden Narren.</description>
     <topic query="job">Ich bin der königliche Narr.</topic>
     <topic query="health">Gut, danke.</topic>
-    <topic query="NARR">Wilkommen in der Burg Britannia!<question type="0">Hast du ein Ench?<yes>Dann tritt in Frieden ein!</yes><no>Warum bist du dann hier?</no></question></topic>
+    <topic query="NARR">Willkommen in der Burg Britannia!<question type="0">Hast du ein Ench?<yes>Dann tritt in Frieden ein!</yes><no>Warum bist du dann hier?</no></question></topic>
     <topic query="TIPP">Sprich mit dem Wasser des Quells und frage nach Altären!</topic>
   </person>
   <person id="13" name="eine Wache" pronoun="Er" turnAwayProb="0">

@@ -31,13 +31,17 @@ public:
         OUTSIDE,
         COMBAT,
         SHRINES,
-    EXTRA,
+        EXTRA,
         MAX
     };
     
     Music();
-    ~Music();
-
+    Music(const Music &) = delete;
+	Music(Music &&) = delete;
+	Music &operator=(const Music &) = delete;
+	Music &operator=(Music &&) = delete;
+	~Music();
+	
     /** Returns an instance of the Music class */
     static Music *getInstance()
     {
@@ -100,7 +104,7 @@ public:
 
     void create_or_win()
     {
-    playMid(EXTRA); /**< Music when starting a new game of ending */
+        playMid(EXTRA); /**< Music when starting a new game of ending */
     }
     
     void intro()

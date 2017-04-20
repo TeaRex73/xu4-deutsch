@@ -58,9 +58,9 @@
   </person>
   <person id="8" name="Tymus" pronoun="Er" turnAwayProb="0">
     <description>Einen stattlichen Zauberer.</description>
-    <topic query="job">Dich wilkommen zu heißen!</topic>
+    <topic query="job">Dich willkommen zu heißen!</topic>
     <topic query="health">Sehr gut, danke!</topic>
-    <topic query="WILK">Ja, wilkommen im Lyzeum, der Festung der Wahrheit!<question type="0">Weißt du, wie viele Städte dem Prinzipe der Wahrheit folgen?<yes>Wie viele?</yes><no>Reise und lerne!</no></question></topic>
+    <topic query="WILL">Ja, willkommen im Lyzeum, der Festung der Wahrheit!<question type="0">Weißt du, wie viele Städte dem Prinzipe der Wahrheit folgen?<yes>Wie viele?</yes><no>Reise und lerne!</no></question></topic>
     <topic query="VIER">Die Altarräume der Höhlen brauchen jeweils 4 Steine!</topic>
   </person>
   <person id="9" name="ein Wahrheitssucher" pronoun="Er" turnAwayProb="32">

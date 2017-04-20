@@ -91,6 +91,10 @@ class PartyMember:public Creature, public Script::Provider {
 public:
     friend class Party;
     PartyMember(Party *p, SaveGamePlayerRecord *pr);
+    PartyMember(const PartyMember &p) = default;
+    PartyMember(PartyMember &&p) = default;
+    PartyMember &operator=(const PartyMember &p) = default;
+    PartyMember &operator=(PartyMember &&p) = default;
     virtual ~PartyMember();
     void notifyOfChange();
     // Used to translate script values into something useful
@@ -204,6 +208,10 @@ class Party
 public:
     friend class PartyMember;
     Party(SaveGame *saveGame);
+	Party(const Party &) = delete;
+	Party(Party &&) = delete;
+	Party &operator=(const Party &) = delete;
+	Party &operator=(Party &&) = delete;
     virtual ~Party();
     void notifyOfChange(
         PartyMember *partyMember = 0, PartyEvent::Type = PartyEvent::GENERIC

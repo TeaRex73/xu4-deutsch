@@ -25,7 +25,26 @@ struct Trigger {
     unsigned char change_x1, change_y1, change_x2, change_y2;
 };
 
-struct DngRoom {
+class DngRoom {
+public:
+    DngRoom()
+        :triggers(),
+         creature_tiles(),
+         creature_start_x(),
+         creature_start_y(),
+         party_north_start_x(),
+         party_north_start_y(),
+         party_east_start_x(),
+         party_east_start_y(),
+         party_south_start_x(),
+         party_south_start_y(),
+         party_west_start_x(),
+         party_west_start_y(),
+         map_data(),
+         buffer()
+    {
+    }
+    
     Trigger triggers[DNGROOM_NTRIGGERS];
     unsigned char creature_tiles[16];
     unsigned char creature_start_x[16];
@@ -69,9 +88,19 @@ enum DungeonToken {
 class Dungeon:public Map {
 public:
     Dungeon()
+        :name(),
+         n_rooms(0),
+         dataSubTokens(),
+         rooms(nullptr),
+         roomMaps(nullptr),
+         currentRoom(0)
     {
     }
 
+	Dungeon(const Dungeon &) = delete;
+	Dungeon(Dungeon &&) = delete;
+	Dungeon &operator=(const Dungeon &) = delete;
+	Dungeon &operator=(Dungeon &&) = delete;
     virtual ~Dungeon();
     virtual std::string getName();
     DungeonToken tokenForTile(MapTile tile);

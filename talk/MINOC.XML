@@ -65,7 +65,7 @@
   </person>
   <person id="9" name="Shentis" pronoun="Er" turnAwayProb="0">
     <description>Einen rundlichen Zinker.</description>
-    <topic query="job">Ich heiße dich Wilkommen in Minoc, Stadt des Verzichtes!</topic>
+    <topic query="job">Ich heiße dich Willkommen in Minoc, Stadt des Verzichtes!</topic>
     <topic query="health">OK.</topic>
     <topic query="VERZ">Verzicht ist eine notwendige Tugend!</topic>
     <topic query="TUGE">Avatare streben danach, tugendhaft zu sein.<question type="0">Strebst du nach Tugend?<yes>Dann wirst du vielleicht ein Avatar!</yes><no>Ein Avatar bist du nicht!</no></question></topic>

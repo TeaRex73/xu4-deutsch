@@ -49,6 +49,7 @@ void soundStop(int channel)
 SoundManager *SoundManager::instance = 0;
 
 SoundManager::SoundManager()
+    :soundFilenames(), soundChunk()
 {
 }
 

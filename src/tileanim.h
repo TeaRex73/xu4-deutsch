@@ -22,14 +22,24 @@ struct RGBA;
  */
 class TileAnimTransform {
 public:
-    static TileAnimTransform *create(const ConfigElement &config);
-    static RGBA *loadColorFromConf(const ConfigElement &conf);
-    virtual void draw(Image *dest, Tile *tile, MapTile &mapTile) = 0;
+    TileAnimTransform()
+        :random(0), replaces(false)
+    {
+    }
+
+    TileAnimTransform(const TileAnimTransform &) = delete;
+    TileAnimTransform(TileAnimTransform &&) = delete;
+    TileAnimTransform &operator=(const TileAnimTransform &) = delete;
+    TileAnimTransform &operator=(TileAnimTransform &&) = delete;
 
     virtual ~TileAnimTransform()
     {
     }
     
+    static TileAnimTransform *create(const ConfigElement &config);
+    static RGBA *loadColorFromConf(const ConfigElement &conf);
+    virtual void draw(Image *dest, Tile *tile, MapTile &mapTile) = 0;
+
     virtual bool drawsTile() const = 0;
     int random;
 
@@ -126,6 +136,16 @@ protected:
 class TileAnimPixelColorTransform:public TileAnimTransform {
 public:
     TileAnimPixelColorTransform(int x, int y, int w, int h);
+
+    TileAnimPixelColorTransform(const TileAnimPixelColorTransform &) = delete;
+    TileAnimPixelColorTransform(TileAnimPixelColorTransform &&) = delete;
+    TileAnimPixelColorTransform &operator=(
+        const TileAnimPixelColorTransform &
+    ) = delete;
+    TileAnimPixelColorTransform &operator=(
+        TileAnimPixelColorTransform &&
+    ) = delete;
+
     virtual ~TileAnimPixelColorTransform();
     virtual void draw(Image *dest, Tile *tile, MapTile &mapTile);
     virtual bool drawsTile() const;
@@ -145,6 +165,12 @@ public:
         FRAME,
         DIR
     } Type;
+
+    TileAnimContext()
+        :animTransforms()
+    {
+    }
+    
     
     static TileAnimContext *create(const ConfigElement &config);
     void add(TileAnimTransform *);

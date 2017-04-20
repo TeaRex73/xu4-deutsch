@@ -12,9 +12,14 @@
 ProgressBar::ProgressBar(
     int x, int y, int width, int height, int _min, int _max
 )
-    :View(x, y, width, height), min(_min), max(_max)
+    :View(x, y, width, height),
+     min(_min),
+     max(_max),
+     current(_min),
+     color(),
+     bcolor(),
+     bwidth(0)
 {
-    current = min;
 }
 
 ProgressBar &ProgressBar::operator++()

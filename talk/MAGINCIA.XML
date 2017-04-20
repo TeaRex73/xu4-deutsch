@@ -107,7 +107,7 @@
   </person>
   <person id="15" name="Virtuebane" pronoun="Er" turnAwayProb="0">
     <description>Einen abscheulichen entsetzlichen Teufel!</description>
-    <topic query="job">Ich heiße dich wilkommen in Magincia! Der stolzen Stadt auf hoher See!</topic>
+    <topic query="job">Ich heiße dich willkommen in Magincia! Der stolzen Stadt auf hoher See!</topic>
     <topic query="health">Teuflisch!</topic>
     <topic query="MAGI">Magincia ist ins Reich der Dunkelheit gefallen, denn das Fundament ihrer Tugend war auf Stolz gebaut!<question type="1">Bist du stolz?<yes>Gut!</yes><no>Ach.</no></question></topic>
     <topic query="A   ">A</topic>

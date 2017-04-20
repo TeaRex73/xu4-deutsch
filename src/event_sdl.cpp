@@ -149,8 +149,8 @@ bool KeyHandler::operator==(Callback cb) const
 }
 
 KeyHandlerController::KeyHandlerController(KeyHandler *handler)
+    :handler(handler)
 {
-    this->handler = handler;
 }
 
 KeyHandlerController::~KeyHandlerController()
@@ -177,7 +177,11 @@ KeyHandler *KeyHandlerController::getKeyHandler()
  * controls.
  */
 TimedEventMgr::TimedEventMgr(int i)
-    :baseInterval(i)
+    :id(nullptr),
+     baseInterval(i),
+     locked(false),
+     events(),
+     deferredRemovals()
 {
     /* start the SDL timer */
     if (instances == 0) {
@@ -265,7 +269,10 @@ void TimedEventMgr::start()
  * Constructs an event handler object.
  */
 EventHandler::EventHandler()
-    :timer(eventTimerGranularity), updateScreen(nullptr)
+    :timer(eventTimerGranularity),
+     controllers(),
+     mouseAreaSets(),
+     updateScreen(nullptr)
 {
 }
 
@@ -550,7 +557,7 @@ bool EventHandler::timerQueueEmpty()
  */
 void EventHandler::pushKeyHandler(KeyHandler kh)
 {
-    KeyHandler *new_kh = new KeyHandler(kh);
+    KeyHandler *new_kh = new KeyHandler(std::move(kh));
     KeyHandlerController *khc = new KeyHandlerController(new_kh);
     pushController(khc);
 }
@@ -607,7 +614,7 @@ KeyHandler *EventHandler::getKeyHandler() const
 void EventHandler::setKeyHandler(KeyHandler kh)
 {
     while (popController() != nullptr) {}
-    pushKeyHandler(kh);
+    pushKeyHandler(std::move(kh));
 }
 
 MouseArea *EventHandler::mouseAreaForPoint(int x, int y)

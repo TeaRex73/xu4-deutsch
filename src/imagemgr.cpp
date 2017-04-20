@@ -29,6 +29,14 @@ bool ImageInfo::hasBlackBackground()
 
 class ImageSet {
 public:
+    ImageSet()
+        :name(),
+         location(),
+         extends(),
+         info()
+    {
+    }
+    
     ~ImageSet();
     std::string name;
     std::string location;
@@ -54,8 +62,11 @@ void ImageMgr::destroy()
 }
 
 ImageMgr::ImageMgr()
+    :imageSets(),
+     imageSetNames(),
+     baseSet(nullptr),
+     logger(new Debug("debug/imagemgr.txt", "ImageMgr"))
 {
-    logger = new Debug("debug/imagemgr.txt", "ImageMgr");
     TRACE(*logger, "creating ImageMgr");
     settings.addObserver(this);
 }

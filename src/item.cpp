@@ -818,13 +818,14 @@ void putWeaponInInventory(int weapon)
 void useTelescope(int notused)
 {
     screenMessage(
-        "\n\nDU SIEHST EIN DREHRAD AM TELESKOPE, MIT MARKIERUNGEN VON "
+        "\nDU SIEHST EIN DREHRAD AM TELESKOPE, MIT MARKIERUNGEN VON "
         "A BIS P.\nDU W[HLST:"
     );
     int choice = AlphaActionController::get('p', "DU W[HLST:");
     if (choice == -1) {
         return;
     }
+	screenMessage("%c", 'A' + choice);
     gamePeerCity(choice, nullptr);
     screenMessage("\n");
 }

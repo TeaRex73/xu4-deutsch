@@ -137,6 +137,10 @@ public:
     };
     
     Script();
+	Script(const Script &) = delete;
+	Script(Script &&) = delete;
+	Script &operator=(const Script &) = delete;
+	Script &operator=(Script &&) = delete;
     ~Script();
     void addProvider(const std::string &name, Provider *p);
     bool load(

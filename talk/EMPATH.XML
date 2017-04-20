@@ -51,7 +51,7 @@
   </person>
   <person id="7" name="Chinup" pronoun="Er" turnAwayProb="0">
     <description>Ein kleines aber stattliches Kind.</description>
-    <topic query="job">Ich heiße dich Wilkommen in der Abtei!<question type="0">Bist du auf der Suche nach Liebe hier?<yes>Vielleicht dann den Eichenhain!</yes><no>Vielleicht dann den Eichenhain.</no></question></topic>
+    <topic query="job">Ich heiße dich Willkommen in der Abtei!<question type="0">Bist du auf der Suche nach Liebe hier?<yes>Vielleicht dann den Eichenhain!</yes><no>Vielleicht dann den Eichenhain.</no></question></topic>
     <topic query="health">Sehr gut, danke dir!</topic>
     <topic query="HAIN">Ein Hain von Eichen.</topic>
     <topic query="EICH">Dort suchen vier Berufsgruppen die Wahrheit!</topic>

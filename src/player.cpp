@@ -697,7 +697,7 @@ MapTile PartyMember::tileForClass(int klass)
  * Party class implementation
  */
 Party::Party(SaveGame *s)
-    :saveGame(s), transport(0), torchduration(0), activePlayer(-1)
+    :members(), saveGame(s), transport(0), torchduration(0), activePlayer(-1)
 {
     if ((MAP_DECEIT <= saveGame->location)
         && (saveGame->location <= MAP_ABYSS)) {

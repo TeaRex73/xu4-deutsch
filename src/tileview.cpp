@@ -17,36 +17,40 @@
 #include "error.h"
 
 TileView::TileView(int x, int y, int columns, int rows)
-    :View(x, y, columns * TILE_WIDTH, rows * TILE_HEIGHT)
-{
-    this->columns = columns;
-    this->rows = rows;
+    :View(x, y, columns * TILE_WIDTH, rows * TILE_HEIGHT),
+     columns(columns),
+     rows(rows),
 #if 0
-    this->tileWidth = TILE_WIDTH;
-    this->tileHeight = TILE_HEIGHT;
+     tileWidth(TILE_WIDTH),
+     tileHeight(TILE_HEIGHT),
 #endif
-    this->tileset = Tileset::get("base");
-    animated = Image::create(
-        SCALED(tileWidth), SCALED(tileHeight), false, Image::HARDWARE
-    );
+     tileset(Tileset::get("base")),
+     animated(
+         Image::create(
+             SCALED(tileWidth), SCALED(tileHeight), false, Image::HARDWARE
+         )
+     )
+{
     animated->alphaOff();
 }
 
 TileView::TileView(
     int x, int y, int columns, int rows, const std::string &tileset
 )
-    :View(x, y, columns * TILE_WIDTH, rows * TILE_HEIGHT)
-{
-    this->columns = columns;
-    this->rows = rows;
+    :View(x, y, columns * TILE_WIDTH, rows * TILE_HEIGHT),
+     columns(columns),
+     rows(rows),
 #if 0
-    this->tileWidth = TILE_WIDTH;
-    this->tileHeight = TILE_HEIGHT;
+     tileWidth(TILE_WIDTH),
+     tileHeight(TILE_HEIGHT),
 #endif
-    this->tileset = Tileset::get(tileset);
-    animated = Image::create(
-        SCALED(tileWidth), SCALED(tileHeight), false, Image::HARDWARE
-    );
+     tileset(Tileset::get(tileset)),
+     animated(
+         Image::create(
+             SCALED(tileWidth), SCALED(tileHeight), false, Image::HARDWARE
+         )
+     )
+{
     animated->alphaOff();
 }
 

@@ -89,7 +89,29 @@ enum ImageFixup {
  */
 class ImageInfo {
 public:
+    ImageInfo()
+        :name(),
+         filename(),
+         width(0),
+         height(0),
+         depth(0),
+         prescale(0),
+         filetype(),
+         tiles(0),
+         introOnly(false),
+         transparentIndex(0),
+         xu4Graphic(false),
+         fixup(FIXUP_NONE),
+         image(nullptr),
+         subImages()
+    {
+    }
+         
     ~ImageInfo();
+    ImageInfo(const ImageInfo &) = delete;
+    ImageInfo(ImageInfo &&) = delete;
+    ImageInfo &operator=(const ImageInfo &) = delete;
+    ImageInfo &operator=(ImageInfo &&) = delete;
     std::string name;
     std::string filename;
     int width, height, depth;
@@ -125,6 +147,10 @@ public:
 
 private:
     ImageMgr();
+	ImageMgr(const ImageMgr &) = delete;
+	ImageMgr(ImageMgr &&) = delete;
+	ImageMgr &operator=(const ImageMgr &) = delete;
+	ImageMgr &operator=(ImageMgr &&) = delete;
     ~ImageMgr();
     void init();
     ImageSet *loadImageSetFromConf(const ConfigElement &conf);

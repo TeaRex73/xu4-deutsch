@@ -51,7 +51,7 @@
   </person>
   <person id="7" name="Dwp" pronoun="Er" turnAwayProb="0">
     <description>Einen weisen Druiden.</description>
-    <topic query="job">Dich wilkommen heißen in Yew, Stadt der Gerechtigkeit!</topic>
+    <topic query="job">Dich willkommen heißen in Yew, Stadt der Gerechtigkeit!</topic>
     <topic query="health">Mir geht es gut.</topic>
     <topic query="GERE">Liebe niemanden mehr als die Wahrheit, denn Gerechtigkeit sucht keine Bevorzugung. Mäßige deine Gerechtigkeit durch Verständnis.</topic>
     <topic query="YEW ">Ja, es ist eine schöne Stadt!<question type="0">Gefällt sie dir?<yes>Laß sie wie deine eigene sein!</yes><no>Sehr bedauerlich.</no></question></topic>

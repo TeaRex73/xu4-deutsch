@@ -39,13 +39,13 @@ Location::Location(
     TurnCompleter *turnCompleter,
     Location *prev
 )
+    :coords(coords),
+     map(map),
+     viewMode(viewmode),
+     context(ctx),
+     turnCompleter(turnCompleter),
+     prev(prev)
 {
-    this->coords = coords;
-    this->map = map;
-    this->viewMode = viewmode;
-    this->context = ctx;
-    this->turnCompleter = turnCompleter;
-    locationPush(prev, this);
 }
 
 

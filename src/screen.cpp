@@ -40,7 +40,16 @@ enum LayoutType {
     LAYOUT_DUNGEONGEM
 };
 
-struct Layout {
+class Layout {
+public:
+    Layout()
+        :name(),
+         type(LAYOUT_STANDARD),
+         tileshape({0, 0}),
+         viewport({0, 0, 0, 0})
+    {
+    }
+    
     std::string name;
     LayoutType type;
     struct {

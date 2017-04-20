@@ -45,7 +45,8 @@ bool Music::functional = true;
  * Initialize the music
  */
 Music::Music()
-    :introMid(NONE),
+    :filenames(),
+     introMid(NONE),
      current(NONE),
      playing(nullptr),
      logger(new Debug("debug/music.txt", "Music"))

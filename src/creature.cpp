@@ -39,11 +39,32 @@ bool isCreature(Object *punknown)
 /**
  * Creature class implementation
  */
-Creature::Creature(MapTile tile):Object(Object::CREATURE)
+Creature::Creature(MapTile tile)
+    :Object(Object::CREATURE),
+     name(),
+     rangedhittile(),
+     rangedmisstile(),
+     id(0),
+     camouflageTile(),
+     leader(0),
+     basehp(0),
+     hp(0),
+     status(),
+     xp(0),
+     ranged(0),
+     worldrangedtile(),
+     leavestile(false),
+     mattr(),
+     movementAttr(),
+     slowedType(),
+     encounterSize(0),
+     resists(0),
+     spawn(0),
+     lastDir(DIR_NONE)
 {
-    const Creature *m = creatureMgr->getByTile(tile);
+    Creature *m = creatureMgr->getByTile(tile);
     if (m) {
-        *this = *m;
+        *this = std::move(*m);
     }
 }
 

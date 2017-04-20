@@ -15,6 +15,10 @@ class GameController;
 class CheatMenuController:public WaitableController<void *> {
 public:
     CheatMenuController(GameController *game);
+	CheatMenuController(const CheatMenuController &) = delete;
+	CheatMenuController(CheatMenuController &&) = delete;
+	CheatMenuController &operator=(const CheatMenuController &) = delete;
+	CheatMenuController &operator=(CheatMenuController &&) = delete;
     bool keyPressed(int key);
 
 private:

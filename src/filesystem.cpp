@@ -27,7 +27,7 @@ const char Path::delim = '/';
  * Creates a path to a directory or file
  */
 Path::Path(const std::string &p)
-    :path(p)
+    :path(p), dirs(), file(), ext()
 {
     struct stat path_stat;
     char src_char, dest_char;

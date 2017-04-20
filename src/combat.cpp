@@ -71,23 +71,55 @@ CombatMap *getCombatMap(Map *punknown)
 /**
  * CombatController class implementation
  */
-CombatController::CombatController():map(nullptr)
+CombatController::CombatController()
+    :map(nullptr),
+     party(),
+     focus(0),
+     creature(nullptr),
+     camping(false),
+     forceStandardEncounterSize(false),
+     placePartyOnMap(false),
+     placeCreaturesOnMap(false),
+     winOrLose(false),
+     showMessage(false),
+     exitDir(DIR_NONE)
+
 {
     c->party->addObserver(this);
 }
 
-CombatController::CombatController(CombatMap *m):map(m)
+CombatController::CombatController(CombatMap *m)
+    :map(m),
+     party(),
+     focus(0),
+     creature(nullptr),
+     camping(false),
+     forceStandardEncounterSize(false),
+     placePartyOnMap(false),
+     placeCreaturesOnMap(false),
+     winOrLose(false),
+     showMessage(false),
+     exitDir(DIR_NONE)
 {
     game->setMap(map, true, nullptr, this);
     c->party->addObserver(this);
 }
 
 CombatController::CombatController(MapId id)
+    :map(getCombatMap(mapMgr->get(id))),
+     party(),
+     focus(0),
+     creature(nullptr),
+     camping(false),
+     forceStandardEncounterSize(false),
+     placePartyOnMap(false),
+     placeCreaturesOnMap(false),
+     winOrLose(false),
+     showMessage(false),
+     exitDir(DIR_NONE)
 {
-    map = getCombatMap(mapMgr->get(id));
     game->setMap(map, true, nullptr, this);
     c->party->addObserver(this);
-    forceStandardEncounterSize = false;
 }
 
 CombatController::~CombatController()

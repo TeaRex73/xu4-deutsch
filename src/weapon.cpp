@@ -59,7 +59,7 @@ Weapon::Weapon(const ConfigElement &conf)
      damage(conf.getInt("damage")),
      hittile("hit_flash"),
      misstile("miss_flash"),
-     leavetile(""),
+     leavetile(),
      flags(0)
 {
     static const struct {

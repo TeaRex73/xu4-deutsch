@@ -72,10 +72,6 @@ bool isShrine(Map *punknown)
 /**
  * Shrine class implementation
  */
-Shrine::Shrine()
-{
-}
-
 std::string Shrine::getName()
 {
     if (name.empty()) {

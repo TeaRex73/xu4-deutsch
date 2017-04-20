@@ -30,6 +30,10 @@ public:
     };
     
     Object(Type type = UNKNOWN);
+    Object(const Object &o) = default;
+    Object(Object &&o) = default;
+    Object &operator=(const Object &o) = default;
+    Object &operator=(Object &&o) = default;
     virtual ~Object();
     static void cleanup();
     

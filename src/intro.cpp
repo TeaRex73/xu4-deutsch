@@ -87,11 +87,15 @@ const int IntroBinData::BEASTIE1_FRAMES_OFFSET = 0;
 const int IntroBinData::BEASTIE2_FRAMES_OFFSET = 0x78;
 
 IntroBinData::IntroBinData()
-    :sigData(nullptr),
+    :introMap(),
+     sigData(nullptr),
      scriptTable(nullptr),
      baseTileTable(nullptr),
      beastie1FrameTable(nullptr),
-     beastie2FrameTable(nullptr)
+     beastie2FrameTable(nullptr),
+     introText(),
+     introQuestions(),
+     introGypsy()
 {
 }
 
@@ -184,6 +188,7 @@ bool IntroBinData::load()
 
 IntroController::IntroController()
     :Controller(1),
+     mode(INTRO_TITLES),
      backgroundArea(),
      menuArea(1 * CHAR_WIDTH, 13 * CHAR_HEIGHT, 38, 11),
      extendedMenuArea(2 * CHAR_WIDTH, 10 * CHAR_HEIGHT, 36, 13),
@@ -200,7 +205,29 @@ IntroController::IntroController()
          INTRO_MAP_HEIGHT,
          "base"
      ),
+     mainMenu(),
+     confMenu(),
+     videoMenu(),
+     gfxMenu(),
+     soundMenu(),
+     inputMenu(),
+     speedMenu(),
+     gameplayMenu(),
+     interfaceMenu(),
      binData(nullptr),
+     errorMessage(),
+     answerInd(0),
+     questionRound(0),
+     questionTree(),
+     beastie1Cycle(0),
+     beastie2Cycle(0),
+     beastieOffset(0),
+     beastiesVisible(false),
+     sleepCycles(0),
+     scrPos(0),
+     objectStateTable(nullptr),
+     justInitiatedNewGame(false),
+     initiatingNewGame(false),
      titles(), // element list
      title(titles.begin()), // element iterator
      transparentIndex(2), // palette index for transparency
@@ -2031,7 +2058,7 @@ void IntroController::initPlayers(SaveGame *saveGame)
             saveGame->players[p].sex = initValuesForNpcClass[i].sex;
             saveGame->players[p].hp = saveGame->players[p].hpMax =
                 initValuesForClass[i].level * 100;
-            player = PartyMember(nullptr, &saveGame->players[p]);
+            player = std::move(PartyMember(nullptr, &saveGame->players[p]));
             saveGame->players[p].mp = player.getMaxMp();
             p++;
         }

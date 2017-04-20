@@ -23,6 +23,17 @@ typedef std::map<std::string, class TileRule *> TileRuleMap;
  */
 class TileRule {
 public:
+    TileRule()
+        :name(),
+         mask(0),
+         movementMask(0),
+         speed(FAST),
+         effect(EFFECT_NONE),
+         walkonDirs(0),
+         walkoffDirs(0)
+    {
+    }
+    
     static TileRule *findByName(const std::string &name);
     static void load();
     static void unloadAll();
@@ -46,6 +57,22 @@ public:
     typedef std::map<std::string, Tileset *> TilesetMap;
     typedef std::unordered_map<TileId, Tile *> TileIdMap;
     typedef std::map<std::string, Tile *> TileStrMap;
+
+    Tileset()
+        :name(),
+         tiles(),
+         totalFrames(0),
+         imageName(),
+         extends(nullptr),
+         nameMap()
+    {
+    }
+
+    Tileset(const Tileset &) = delete;
+    Tileset(Tileset &&) = delete;
+    Tileset &operator=(const Tileset &) = delete;
+    Tileset &operator=(Tileset &&) = delete;
+    
     static void loadAll();
     static void unloadAll();
     static void unloadAllImages();

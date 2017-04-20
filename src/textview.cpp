@@ -18,15 +18,15 @@
 Image *TextView::charset = nullptr;
 
 TextView::TextView(int x, int y, int columns, int rows)
-    :View(x, y, columns * CHAR_WIDTH, rows * CHAR_HEIGHT)
+    :View(x, y, columns * CHAR_WIDTH, rows * CHAR_HEIGHT),
+     columns(columns),
+     rows(rows),
+     cursorEnabled(false),
+     cursorFollowsText(false),
+     cursorX(0),
+     cursorY(0),
+     cursorPhase(0)
 {
-    this->columns = columns;
-    this->rows = rows;
-    this->cursorEnabled = false;
-    this->cursorFollowsText = false;
-    this->cursorX = 0;
-    this->cursorY = 0;
-    this->cursorPhase = 0;
     if (charset == nullptr) {
         charset = imageMgr->get(BKGD_CHARSET)->image;
     }

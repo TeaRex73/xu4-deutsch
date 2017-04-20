@@ -107,17 +107,17 @@ std::list<std::string> replySplit(const std::string &text)
 }  // replySplit
 
 Person::Person(MapTile tile)
-    :Creature(tile), start(0, 0)
+    :Creature(tile), dialogue(nullptr), start(0, 0), npcType(NPC_EMPTY)
 {
     setType(Object::PERSON);
-    dialogue = nullptr;
-    npcType = NPC_EMPTY;
 }
 
 Person::Person(const Person *p)
-    :Creature(p->tile)
+    :Creature(static_cast<Creature>(*p)),
+     dialogue(p->dialogue),
+     start(p->start),
+     npcType(p->npcType)
 {
-    *this = *p;
 }
 
 bool Person::canConverse() const

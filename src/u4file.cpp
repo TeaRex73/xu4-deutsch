@@ -26,6 +26,16 @@
  */
 class U4FILE_stdio:public U4FILE {
 public:
+    U4FILE_stdio()
+        :file(nullptr)
+    {
+    }
+
+    U4FILE_stdio(const U4FILE_stdio &) = delete;
+    U4FILE_stdio(U4FILE_stdio &&) = delete;
+    U4FILE_stdio &operator=(const U4FILE_stdio &) = delete;
+    U4FILE_stdio &operator=(U4FILE_stdio &&) = delete;
+    
     static U4FILE *open(const std::string &fname);
     virtual void close();
     virtual int seek(long offset, int whence);
@@ -45,6 +55,17 @@ private:
  */
 class U4FILE_zip:public U4FILE {
 public:
+    U4FILE_zip()
+        :zfile(nullptr),
+         length_cached(0)
+    {
+    }
+
+    U4FILE_zip(const U4FILE_zip &) = delete;
+    U4FILE_zip(U4FILE_zip &&) = delete;
+    U4FILE_zip &operator=(const U4FILE_zip &) = delete;
+    U4FILE_zip &operator=(U4FILE_zip &&) = delete;
+        
     static U4FILE *open(const std::string &fname, const U4ZipPackage *package);
     virtual void close();
     virtual int seek(long offset, int whence);
@@ -172,10 +193,8 @@ bool u4isUpgradeInstalled()
 U4ZipPackage::U4ZipPackage(
     const std::string &name, const std::string &path, bool extension
 )
+    :name(name), path(path), extension(extension), translations()
 {
-    this->name = name;
-    this->path = path;
-    this->extension = extension;
 }
 
 void U4ZipPackage::addTranslation(
@@ -218,6 +237,7 @@ void U4ZipPackageMgr::add(U4ZipPackage *package)
 }
 
 U4ZipPackageMgr::U4ZipPackageMgr()
+    :packages()
 {
     unzFile f;
     std::string upg_pathname(u4find_path("u4upgrad.zip", u4Path.u4ZipPaths));

@@ -240,7 +240,7 @@ Response *lordBritishGetIntro(const DynamicResponse *resp)
         if (c->saveGame->members == 1) {
             intro->add(
                 std::string(
-                    "\n\nDu triffst Lord British.\n\nEr sagt:\nWilkommen\n"
+                    "\n\nDu triffst Lord British.\n\nEr sagt:\nWillkommen\n"
                 )
                 + c->party->member(0)->getName()
                 + "!\n"
@@ -248,7 +248,7 @@ Response *lordBritishGetIntro(const DynamicResponse *resp)
         } else if (c->saveGame->members == 2) {
             intro->add(
                 std::string(
-                    "\n\nDu triffst Lord British.\n\nEr sagt:\nWilkommen\n"
+                    "\n\nDu triffst Lord British.\n\nEr sagt:\nWillkommen\n"
                 )
                 + c->party->member(0)->getName()
                 + ", und auch du "
@@ -258,7 +258,7 @@ Response *lordBritishGetIntro(const DynamicResponse *resp)
         } else {
             intro->add(
                 std::string(
-                    "\n\nDu triffst Lord British.\n\nEr sagt:\nWilkommen\n"
+                    "\n\nDu triffst Lord British.\n\nEr sagt:\nWillkommen\n"
                 )
                 + c->party->member(0)->getName()
                 + " und deine gesch{tzten Abenteurer!\n"

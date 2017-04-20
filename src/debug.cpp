@@ -99,7 +99,13 @@ std::FILE *Debug::global = nullptr;
  *                  instead of overwriting it.
  */
 Debug::Debug(const std::string &fn, const std::string &nm, bool append)
-    :disabled(false), filename(fn), name(nm)
+    :disabled(false),
+     filename(fn),
+     name(nm),
+     file(nullptr),
+     l_filename(),
+     l_func(),
+     l_line(0)
 {
     if (!loggingEnabled(name)) {
         disabled = true;

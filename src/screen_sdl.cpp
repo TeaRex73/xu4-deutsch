@@ -113,11 +113,12 @@ void screenInit_sys()
     SDL_FreeSurface(window);
     SDL_UnlockSurface(screen);
 #ifdef FIXUP
-    screen->w = 320;
-    screen->h = 200;
+    screen->w = 320 * settings.scale;
+    screen->h = 200 * settings.scale;
     char *pix;
     pix = (char *)(screen->pixels);
-    pix += (screen->pitch * 20 + screen->format->BytesPerPixel * 32);
+    pix += (screen->pitch * 20 * settings.scale
+			+ screen->format->BytesPerPixel * 32 * settings.scale);
     screen->pixels = pix;
 #endif
     if (verbose) {

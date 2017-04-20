@@ -62,7 +62,7 @@
     <creature id="43" encounterSize="6" name="ZYKLOP" tile="cyclops" basehp="128" exp="9" ranged="true" rangedhittile="rocks" rangedmisstile="rocks" leader="48"/>
     <creature id="44" encounterSize="12" name="IRRLICHT" tile="wisp" ambushes="true" basehp="64" exp="5" teleports="true" leader="36" nochest="true"/>
     <creature id="45" encounterSize="6" name="MAGIER" tile="evil_mage" basehp="176" exp="12" ranged="true" rangedhittile="magic_flash" rangedmisstile="magic_flash" leader="49"/>
-    <creature id="46" encounterSize="4" name="LEICHE" tile="liche" basehp="192" exp="13" ranged="true" rangedhittile="magic_flash" rangedmisstile="magic_flash" undead="true" resists="sleep" leader="49"/>
+    <creature id="46" encounterSize="4" name="LEICHNAM" tile="liche" basehp="192" exp="13" ranged="true" rangedhittile="magic_flash" rangedmisstile="magic_flash" undead="true" resists="sleep" leader="49"/>
     <creature id="47" encounterSize="8" name="LAVA-ECHSE" tile="lava_lizard" basehp="96" exp="7" ranged="true" worldrangedtile="hit_flash" rangedhittile="lava" rangedmisstile="lava" resists="fire" leader="50" leavestile="true"/>
     <creature id="48" encounterSize="4" name="ZORN" tile="zorn" basehp="240" exp="16" casts="negate" incorporeal="true" leader="35"/>
     <creature id="49" encounterSize="6" name="D[MON" tile="daemon" basehp="112" exp="8" ranged="true" rangedhittile="magic_flash" rangedmisstile="magic_flash" flies="true" resists="fire" leader="52"/>

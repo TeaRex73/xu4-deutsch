@@ -20,6 +20,11 @@ class TileMap {
 public:
     typedef std::map<std::string, TileMap *> TileIndexMapMap;
 
+    TileMap()
+        :tilemap()
+    {
+    }
+
     MapTile translate(unsigned int index);
     unsigned int untranslate(MapTile &tile);
     static void loadAll();

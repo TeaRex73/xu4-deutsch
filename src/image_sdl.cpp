@@ -32,7 +32,11 @@ int myfprintf(FILE *stream, const char *format, ...)
 }
 
 Image::Image()
-    :surface(nullptr),
+    :w(0),
+     h(0),
+     indexed(false),
+     backgroundColor(),
+     surface(nullptr),
      isScreen(false)
 {
 }

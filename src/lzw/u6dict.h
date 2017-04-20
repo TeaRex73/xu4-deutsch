@@ -4,6 +4,12 @@ using std::vector;
 
 class U6Decode::Dict {
 public:
+
+    Dict()
+        :dict(), contains(0x102)
+    {
+    }
+    
     void init()
     {
         contains = 0x102;
