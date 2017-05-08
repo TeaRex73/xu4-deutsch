@@ -148,7 +148,7 @@ void Music::playCurrent()
 {
     if (introMid) {
         int next = (int)introMid + 1;
-        if (next >= (int)MAX) next = 1;
+        if (next >= (int)EXTRA) next = 1;
         introSwitch(next);
         return;
     }

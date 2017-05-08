@@ -1150,11 +1150,11 @@ void IntroController::updateScreen()
         backgroundArea.draw(BKGD_OPTIONS_BTM, 0, 120);
         // if there is an error message to display, show it
         if (!errorMessage.empty()) {
-            menuArea.textAt(6, 5, "%s", errorMessage.c_str());
+            menuArea.textAt(4, 5, "%s", errorMessage.c_str());
             drawBeasties();
             screenRedrawScreen();
             // wait for a couple seconds
-            EventHandler::wait_msecs(2000);
+            EventHandler::wait_msecs(5000);
             // clear the screen again
             errorMessage.erase();
             backgroundArea.draw(BKGD_INTRO);
@@ -1288,7 +1288,7 @@ void IntroController::finishInitiateGame(
         std::fopen((tmpstr + PARTY_SAV_BASE_FILENAME).c_str(), "wb");
     if (!saveGameFile) {
         questionArea.disableCursor();
-        errorMessage = "Unable to create save game!";
+        errorMessage = "Spielstand nicht erstellbar!";
         updateScreen();
         return;
     }
