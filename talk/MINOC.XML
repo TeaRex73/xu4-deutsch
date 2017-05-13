@@ -12,7 +12,7 @@
     <topic query="job">Ich schmiede Waffen.</topic>
     <topic query="health">Sehr gut.</topic>
     <topic query="WAFF">Ich mache die allerbesten!<question type="0">Suchst du eine Waffe?<yes>Frag an der Theke!</yes><no>Hmmm.</no></question></topic>
-    <topic query="MYST">Ah, ja, die mystischen Waffen, und Rüstungen, mein größtes Werk! Die gab ich Sir Simon und Lady Tessa.</topic>
+    <topic query="MYST">Ah, ja, die mystischen Waffen und Rüstungen, mein größtes Werk! Die gab ich Sir Simon und Lady Tessa.</topic>
   </person>
   <person id="2" name="Bob der Bettler" pronoun="Er" turnAwayProb="0">
     <description>Einen kränklichen kleinen Mann.</description>
@@ -53,7 +53,7 @@
     <description>Einen gedrungenen Waldläufer.</description>
     <topic query="job">Ich versuche, ein Zimmer zu bekommen.</topic>
     <topic query="health">Gut genug.</topic>
-    <topic query="ZIMM">Ich bin aus Skara Brae weggereist.</topic>
+    <topic query="ZIMM">Ich bin aus Skara Brae hierher gereist.</topic>
     <topic query="SKAR">Die Rune unserer Stadt wird vermißt!<question type="0">Weißt du von der Rune?<yes>Sie ist der Schlüssel zum Schreine der Spiritualität!</yes><no>Sie ist nicht in Skara Brae.</no></question></topic>
   </person>
   <person id="8" name="Alex" pronoun="Er" turnAwayProb="0">
