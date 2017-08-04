@@ -37,4 +37,11 @@
     <rule name="dng_altar" creatureunwalkable="true" unflyable="true"/>
     <rule name="dng_door" cantwalkon="retreat"/>
     <rule name="dng_room" creatureunwalkable="true" cantwalkon="retreat" unflyable="true"/>
+    <rule name="dng_trap" creatureunwalkable="true" unflyable="true"/>
+    <rule name="dng_fountain" creatureunwalkable="true" unflyable="true"/>
+    <rule name="dng_poison_field" speed="vslow" effect="poisonField" dispel="true" creatureunwalkable="true" unflyable="true"/>
+    <rule name="dng_energy_field" cantwalkon="all" speed="vvslow" effect="electricity" creatureunwalkable="true" unflyable="true" dispel="true"/>
+    <rule name="dng_fire_field" speed="vslow" effect="fire" dispel="true" creatureunwalkable="true" unflyable="true"/>
+    <rule name="dng_sleep_field" speed="vslow" effect="sleep" dispel="true" creatureunwalkable="true" unflyable="true"/>
+    
 </tileRules>

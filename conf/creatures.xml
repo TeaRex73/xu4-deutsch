@@ -30,7 +30,7 @@
     <creature id="17" name="LORD BRITISH" tile="lord_british" basehp="255" exp="16" ranged="true" rangedhittile="magic_flash" rangedmisstile="magic_flash" good="true" wontattack="true"/>
 
     <!-- Water creatures -->
-    <creature id="18" encounterSize="1" name="PIRATEN" tile="pirate_ship" exp="16" sails="true"/>
+    <creature id="18" encounterSize="1" name="PIRATEN" tile="pirate_ship" basehp="255" exp="16" sails="true"/>
     <creature id="19" encounterSize="12" name="NIX" tile="nixie" basehp="64" exp="5" ranged="true" swims="true" leader="22"/>
     <creature id="20" encounterSize="4" name="KRAKE" tile="giant_squid" basehp="96" exp="7" ranged="true" rangedhittile="energy_field" rangedmisstile="energy_field" poisons="true" swims="true" leader="21"/>
     <creature id="21" encounterSize="4" name="SEESCHLANGE" tile="sea_serpent" basehp="128" exp="9" ranged="true" worldrangedtile="hit_flash" rangedhittile="hit_flash" rangedmisstile="hit_flash" swims="true" leader="20"/>

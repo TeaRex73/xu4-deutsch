@@ -9,7 +9,6 @@
 #include <list>
 #include <map>
 #include <string>
-#include <unordered_map>
 #include <vector>
 
 #include "coords.h"
@@ -76,10 +75,22 @@ public:
         z = a.z;
         return *this;
     }
+
+    bool operator==(const MapCoords &a) const
+    {
+        return static_cast<Coords>(*this) == static_cast<Coords>(a);
+    }
     
-    bool operator==(const MapCoords &a) const;
-    bool operator!=(const MapCoords &a) const;
-    bool operator<(const MapCoords &a)  const;
+    bool operator!=(const MapCoords &a) const
+    {
+        return static_cast<Coords>(*this) != static_cast<Coords>(a);
+    }
+    
+    bool operator<(const MapCoords &a) const
+    {
+        return static_cast<Coords>(*this) < static_cast<Coords>(a);
+    }    
+
     MapCoords &wrap(const class Map *map);
     MapCoords &putInBounds(const class Map *map);
     MapCoords &move(Direction d, const class Map *map = nullptr);
@@ -107,32 +118,6 @@ public:
     static MapCoords nowhere;
 };
 
-namespace std
-{
-    template<> struct hash<Coords> {
-        std::size_t operator()(Coords const &s) const
-        {
-            std::hash<int> hashint;
-            size_t hx = hashint(s.x);
-            size_t hy = hashint(s.y);
-            size_t hz = hashint(s.z);
-            return hx ^ (hy << 8 | hy >> 24) ^ (hz << 16 | hz >> 16);
-        }
-    };
-    template<> struct hash<MapCoords> {
-        std::size_t operator()(MapCoords const &s) const
-        {
-            std::hash<int> hashint;
-            size_t hx = hashint(s.x);
-            size_t hy = hashint(s.y);
-            size_t hz = hashint(s.z);
-            return hx ^ (hy << 8 | hy >> 24) ^ (hz << 16 | hz >> 16);
-        }
-    };
-}
-
-typedef std::unordered_multimap<Coords, Object *> ObjectLocMap;
-
 /**
  * Map class
  */
@@ -140,10 +125,11 @@ class Map {
 public:
     // disallow map copying: all maps should be created and accessed
     // through the MapMgr
+    friend class MapCoords;
     Map(const Map &) = delete;
-	Map(Map &&) = delete;
+    Map(Map &&) = delete;
     Map &operator=(const Map &) = delete;
-	Map &operator=(Map &&) = delete;
+    Map &operator=(Map &&) = delete;
 
     enum Type {
         WORLD,
@@ -162,7 +148,7 @@ public:
     class Source {
     public:
         Source()
-			:fname(), type(WORLD)
+            :fname(), type(WORLD)
         {
         }
 
@@ -210,6 +196,8 @@ public:
     MapTile tfrti(int c) const;
     /* Translate to raw tile index */
     unsigned int ttrti(MapTile &tile) const;
+
+public:
     MapId id;
     std::string fname;
     Type type;
@@ -226,7 +214,6 @@ public:
     MapData data;
     ObjectDeque objects;
     std::map<std::string, MapCoords> labels;
-    ObjectLocMap objectsByLocation;
     Tileset *tileset;
     TileMap *tilemap;
     // u4dos compatibility

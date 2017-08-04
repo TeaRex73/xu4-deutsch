@@ -693,6 +693,7 @@ bool Settings::write()
         enhancementsOptions.u4TileTransparencyHackPixelShadowOpacity,
         enhancementsOptions.u4TileTransparencyHackShadowBreadth
     );
+    std::fflush(settingsFile);
     fsync(fileno(settingsFile));
     std::fclose(settingsFile);
     sync();

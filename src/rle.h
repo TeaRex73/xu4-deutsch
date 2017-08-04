@@ -7,7 +7,7 @@
 
 #ifdef __cplusplus
 extern "C" {
-#define STDFILE std::FILE
+#define STDFILE FILE
 #else
 #define STDFILE FILE
 #endif
@@ -17,10 +17,12 @@ extern "C" {
 long rleDecompressFile(STDFILE *in, long inlen, void **out);
 long rleDecompressMemory(void *in, long inlen, void **out);
 long rleGetDecompressedSize(unsigned char *indata, long inlen);
-long rleDecompress(unsigned char *indata,
-           long inlen,
-           unsigned char *outdata,
-           long outlen);
+long rleDecompress(
+    unsigned char *indata,
+    long inlen,
+    unsigned char *outdata,
+    long outlen
+);
 
 #undef STDFILE
 #ifdef __cplusplus

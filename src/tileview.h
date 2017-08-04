@@ -27,10 +27,10 @@ class TileView:public View {
 public:
     TileView(int x, int y, int columns, int rows);
     TileView(int x, int y, int columns, int rows, const std::string &tileset);
-	TileView(const TileView &) = delete;
-	TileView(TileView &&) = delete;
-	TileView &operator=(const TileView &) = delete;
-	TileView &operator=(TileView &&) = delete;
+    TileView(const TileView &) = delete;
+    TileView(TileView &&) = delete;
+    TileView &operator=(const TileView &) = delete;
+    TileView &operator=(TileView &&) = delete;
     virtual ~TileView();
     void reinit();
     void drawTile(MapTile &mapTile, bool focus, int x, int y);

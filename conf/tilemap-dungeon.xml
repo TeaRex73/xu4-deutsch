@@ -8,37 +8,42 @@
     <mapping frames="16" tile="down_ladder"/>
     <mapping frames="16" tile="up_down_ladder"/>
     <mapping frames="16" tile="chest"/>
-    <mapping frames="16" tile="ceiling_hole"/>
-    <mapping frames="16" tile="floor_hole"/>
+    <mapping frames="32" tile="unused"/>
     <mapping frames="16" tile="magic_orb"/>
-    
-    <mapping frames="16" tile="ceiling_hole"/>
-    <!--
     <mapping tile="wind_trap"/>
     <mapping tile="falling_rock_trap"/>
-    <mapping frames="12" tile="brick_floor"/>
+    <mapping frames="12" tile="unused"/>
     <mapping tile="pit_trap"/>
-    <mapping tile="dungeon_floor"/>
-    -->
-
-    <mapping frames="16" tile="fountain"/>
-    <!--
+    <mapping tile="unused"/>
     <mapping tile="fountain_normal"/>
     <mapping tile="fountain_healing"/>
     <mapping tile="fountain_acid"/>
     <mapping tile="fountain_cure"/>
     <mapping tile="fountain_poison"/>
-    <mapping frames="11" tile="brick_floor"/>
-    -->
-
-    <mapping tile="poison_field"/>
-    <mapping tile="energy_field"/>
-    <mapping tile="fire_field"/>
-    <mapping tile="sleep_field"/>
-    <mapping frames="12" tile="brick_floor"/> <!-- unused fields -->
+    <mapping frames="11" tile="unused"/>
+    <mapping tile="dungeon_poison_field"/>
+    <mapping tile="dungeon_energy_field"/>
+    <mapping tile="dungeon_fire_field"/>
+    <mapping tile="dungeon_sleep_field"/>
+    <mapping frames="12" tile="unused"/>
     <mapping frames="16" tile="dungeon_altar"/>
     <mapping frames="16" tile="dungeon_door"/>
-    <mapping frames="16" tile="dungeon_room"/>
+    <mapping tile="dungeon_room_0"/>
+    <mapping tile="dungeon_room_1"/>
+    <mapping tile="dungeon_room_2"/>
+    <mapping tile="dungeon_room_3"/>
+    <mapping tile="dungeon_room_4"/>
+    <mapping tile="dungeon_room_5"/>
+    <mapping tile="dungeon_room_6"/>
+    <mapping tile="dungeon_room_7"/>
+    <mapping tile="dungeon_room_8"/>
+    <mapping tile="dungeon_room_9"/>
+    <mapping tile="dungeon_room_a"/>
+    <mapping tile="dungeon_room_b"/>
+    <mapping tile="dungeon_room_c"/>
+    <mapping tile="dungeon_room_d"/>
+    <mapping tile="dungeon_room_e"/>
+    <mapping tile="dungeon_room_f"/>
     <mapping frames="16" tile="secret_door"/>
     <mapping frames="16" tile="brick_wall"/>
 </tilemap>

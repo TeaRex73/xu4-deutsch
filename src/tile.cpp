@@ -87,8 +87,8 @@ void Tile::loadProperties(const ConfigElement &conf)
         std::string dirs = conf.getString("directions");
         if (dirs.length() != (unsigned int)frames) {
             errorFatal(
-                "Error: %ld directions for tile but only %d frames",
-                (long)dirs.length(),
+                "Error: %llu directions for tile but only %d frames",
+                (unsigned long long)dirs.length(),
                 frames
             );
         }

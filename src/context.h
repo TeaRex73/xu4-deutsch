@@ -39,10 +39,10 @@ class Context:public Script::Provider {
 public:
     Context();
     virtual ~Context();
-    Context(const Context &c) = delete;
-    Context(Context &&e) = delete;
-    Context &operator=(const Context &c) = delete;
-    Context &operator=(Context &&c) = delete;
+    Context(const Context &) = delete;
+    Context(Context &&) = delete;
+    Context &operator=(const Context &) = delete;
+    Context &operator=(Context &&) = delete;
     Party *party;
     SaveGame *saveGame;
     class Location *location;

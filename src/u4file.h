@@ -109,13 +109,13 @@ class U4PATH {
 public:
     U4PATH()
         :rootResourcePaths(),
-		 u4ForDOSPaths(),
-		 u4ZipPaths(),
-		 musicPaths(),
-		 soundPaths(),
-		 configPaths(),
-		 graphicsPaths(),
-		 defaultsHaveBeenInitd(false)
+         u4ForDOSPaths(),
+         u4ZipPaths(),
+         musicPaths(),
+         soundPaths(),
+         configPaths(),
+         graphicsPaths(),
+         defaultsHaveBeenInitd(false)
     {
     }
     

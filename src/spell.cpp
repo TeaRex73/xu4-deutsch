@@ -770,25 +770,48 @@ static int spellEField(int param)
     fieldType = param >> 4;
     dir = param & 0xF;
     /* Make sure params valid */
-    switch (fieldType) {
-    case ENERGYFIELD_FIRE:
-        fieldTile =
-            c->location->map->tileset->getByName("fire_field")->getId();
-        break;
-    case ENERGYFIELD_LIGHTNING:
-        fieldTile =
-            c->location->map->tileset->getByName("energy_field")->getId();
-        break;
-    case ENERGYFIELD_POISON:
-        fieldTile =
-            c->location->map->tileset->getByName("poison_field")->getId();
-        break;
-    case ENERGYFIELD_SLEEP:
-        fieldTile =
-            c->location->map->tileset->getByName("sleep_field")->getId();
-        break;
-    default:
-        return 0;
+    if (c->location->map->type == Map::DUNGEON) {
+        switch (fieldType) {
+        case ENERGYFIELD_FIRE:
+            fieldTile =
+                c->location->map->tileset->getByName("dungeon_fire_field")->getId();
+            break;
+        case ENERGYFIELD_LIGHTNING:
+            fieldTile =
+                c->location->map->tileset->getByName("dungeon_energy_field")->getId();
+            break;
+        case ENERGYFIELD_POISON:
+            fieldTile =
+                c->location->map->tileset->getByName("dungeon_poison_field")->getId();
+            break;
+        case ENERGYFIELD_SLEEP:
+            fieldTile =
+                c->location->map->tileset->getByName("dungeon_sleep_field")->getId();
+            break;
+        default:
+            return 0;
+        }
+    } else {
+        switch (fieldType) {
+        case ENERGYFIELD_FIRE:
+            fieldTile =
+                c->location->map->tileset->getByName("fire_field")->getId();
+            break;
+        case ENERGYFIELD_LIGHTNING:
+            fieldTile =
+                c->location->map->tileset->getByName("energy_field")->getId();
+            break;
+        case ENERGYFIELD_POISON:
+            fieldTile =
+                c->location->map->tileset->getByName("poison_field")->getId();
+            break;
+        case ENERGYFIELD_SLEEP:
+            fieldTile =
+                c->location->map->tileset->getByName("sleep_field")->getId();
+            break;
+        default:
+            return 0;
+        }
     }
     c->location->getCurrentPosition(&coords);
     coords.move((Direction)dir, c->location->map);
@@ -1021,7 +1044,7 @@ static int spellYup(int unused)
     Dungeon *dungeon = dynamic_cast<Dungeon *>(c->location->map);
     /* can't cast in the Abyss CHANGE: or in Hythloth - too easy */
     if (c->location->map->id == MAP_ABYSS ||
-		c->location->map->id == MAP_HYTHLOTH) {
+        c->location->map->id == MAP_HYTHLOTH) {
         return 0;
     }
     /* staying in the dungeon */
@@ -1053,7 +1076,7 @@ static int spellZdown(int unused)
     Dungeon *dungeon = dynamic_cast<Dungeon *>(c->location->map);
     /* can't cast in the Abyss CHANGE: or in Hythloth - too easy */
     if (c->location->map->id == MAP_ABYSS ||
-		c->location->map->id == MAP_HYTHLOTH) {
+        c->location->map->id == MAP_HYTHLOTH) {
         return 0;
     }
     /* can't go lower than level 8 */

@@ -19,12 +19,28 @@ public:
         
     bool operator==(const Coords &a) const
     {
-        return x == a.x && y == a.y && z == a.z;
+        return __builtin_expect((x == a.x), false)
+            && __builtin_expect((y == a.y), false)
+            && __builtin_expect((z == a.z), false);
     }
+
+    bool operator<(const Coords &a) const
+    {
+        if (__builtin_expect(!(x == a.x), true))
+        {
+            return x < a.x;
+        }
+    
+        if (__builtin_expect(!(y == a.y), true))
+        {
+            return y < a.y;
+        }
+        return z < a.z;
+    }    
 
     bool operator!=(const Coords &a) const
     {
-        return !operator==(a);
+        return __builtin_expect(!operator==(a), true);
     }
 
 };

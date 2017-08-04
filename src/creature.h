@@ -123,7 +123,7 @@ typedef enum {
     MSTAT_HEAVILYWOUNDED,
     MSTAT_LIGHTLYWOUNDED,
     MSTAT_BARELYWOUNDED
-} CreatureStatus;
+} CreatureState;
 
 
 /**
@@ -139,14 +139,10 @@ typedef enum {
  */
 class Creature:public Object {
 public:
-    typedef std::list<StatusType> StatusList;
-
     Creature(MapTile tile = MapTile(0));
     Creature(const Creature &c) = default;
-    Creature(Creature &&c) = default;
     Creature &operator=(const Creature &c) = default;
-    Creature &operator=(Creature &&c) = default;
-    virtual ~Creature();
+    virtual ~Creature() = default;
     void load(const ConfigElement &conf);
     
     virtual std::string getName() const
@@ -390,7 +386,7 @@ public:
     virtual int getDefense(bool needsMystic) const;
     bool divide();
     bool spawnOnDeath();
-    virtual CreatureStatus getState() const;
+    virtual CreatureState getState() const;
     StatusType getStatus() const;
     bool isAsleep() const;
     bool hideOrShow();
@@ -411,7 +407,7 @@ protected:
     CreatureId leader;
     int basehp;
     int hp;
-    StatusList status;
+    StatusType status;
     int xp;
     unsigned char ranged;
     std::string worldrangedtile;
@@ -433,10 +429,10 @@ class CreatureMgr {
 public:
     // disallow assignments, copy contruction
     CreatureMgr(const CreatureMgr &) = delete;
-	CreatureMgr(CreatureMgr &&) = delete;
-	CreatureMgr &operator=(const CreatureMgr &) = delete;
+    CreatureMgr(CreatureMgr &&) = delete;
+    CreatureMgr &operator=(const CreatureMgr &) = delete;
     CreatureMgr &operator=(CreatureMgr &&) = delete;
-	
+    
     ~CreatureMgr();
     static CreatureMgr *getInstance();
     void loadAll();
@@ -449,7 +445,7 @@ public:
 
 private:
     CreatureMgr()
-		:creatures()
+        :creatures()
     {
     }
 

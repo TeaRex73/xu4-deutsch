@@ -37,11 +37,11 @@ public:
     
     Music();
     Music(const Music &) = delete;
-	Music(Music &&) = delete;
-	Music &operator=(const Music &) = delete;
-	Music &operator=(Music &&) = delete;
-	~Music();
-	
+    Music(Music &&) = delete;
+    Music &operator=(const Music &) = delete;
+    Music &operator=(Music &&) = delete;
+    ~Music();
+    
     /** Returns an instance of the Music class */
     static Music *getInstance()
     {

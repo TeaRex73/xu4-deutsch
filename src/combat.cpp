@@ -5,7 +5,7 @@
 #include "vc6.h" // Fixes things if you're using VC6, does nothing otherwise
 
 #include <ctime>
-#include <unordered_map>
+#include <map>
 #include "u4.h"
 
 #include "combat.h"
@@ -610,7 +610,7 @@ void CombatController::placePartyMembers()
     int i;
     // The following line caused a crash upon entering combat
     // (MSVC8 binary)
-    // party.clear();
+    party.clear();
     for (i = 0; i < c->party->size(); i++) {
         PartyMember *p = c->party->member(i);
         p->setFocus(false); // take the focus off of everyone
@@ -1416,7 +1416,7 @@ MapId CombatMap::mapForTile(
 {
     bool fromShip = false, toShip = false;
     Object *objUnder = c->location->map->objectAt(c->location->coords);
-    static std::unordered_map<const Tile *, MapId> tileMap;
+    static std::map<const Tile *, MapId> tileMap;
     if (!tileMap.size()) {
         tileMap[Tileset::get("base")->getByName("horse")] = MAP_GRASS_CON;
         tileMap[Tileset::get("base")->getByName("swamp")] = MAP_MARSH_CON;
@@ -1444,7 +1444,7 @@ MapId CombatMap::mapForTile(
         tileMap[Tileset::get("base")->getByName("dungeon_floor")] =
             MAP_GRASS_CON;
     }
-    static std::unordered_map<const Tile *, MapId> dungeontileMap;
+    static std::map<const Tile *, MapId> dungeontileMap;
     if (!dungeontileMap.size()) {
         dungeontileMap[Tileset::get("dungeon")->getByName("brick_floor")] =
             MAP_DNG0_CON;

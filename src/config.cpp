@@ -159,11 +159,6 @@ ConfigElement::ConfigElement(const ConfigElement &e)
 {
 }
 
-ConfigElement::ConfigElement(ConfigElement &&e)
-    :node(std::move(e.node)), name(std::move(e.name))
-{
-}
-
 ConfigElement::~ConfigElement()
 {
 }
@@ -173,15 +168,6 @@ ConfigElement &ConfigElement::operator=(const ConfigElement &e)
     if (&e != this) {
         node = e.node;
         name = e.name;
-    }
-    return *this;
-}
-
-ConfigElement &ConfigElement::operator=(ConfigElement &&e)
-{
-    if (&e != this) {
-        node = std::move(e.node);
-        name = std::move(e.name);
     }
     return *this;
 }

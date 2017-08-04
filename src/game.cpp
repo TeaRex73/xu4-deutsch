@@ -7,7 +7,7 @@
 #include <cctype>
 #include <cstring>
 #include <ctime>
-#include <unordered_map>
+#include <map>
 #include <unistd.h>
 #include "u4.h"
 
@@ -71,7 +71,7 @@ void gameAdvanceLevel(PartyMember *player);
 void gameInnHandler(void);
 void gameLostEighth(Virtue virtue);
 void gamePartyStarving(void);
-long gameTimeSinceLastCommand(void);
+std::time_t gameTimeSinceLastCommand(void);
 int gameSave(void);
 
 /* spell functions */
@@ -249,7 +249,7 @@ void GameController::initScreenWithoutReloadingState()
 
 void GameController::init()
 {
-    std::FILE *saveGameFile, *monstersFile;
+    std::FILE *saveGameFile, *monstersFile, *dngMapFile;
     TRACE(gameDbg, "gameInit() running.");
     initScreen();
 #if 0
@@ -312,12 +312,52 @@ void GameController::init()
     Map *map = mapMgr->get(MapId(c->saveGame->location));
     TRACE_LOCAL(gameDbg, "Initializing start location.");
     /* if our map is not the world map, then load our map */
+    ASSERT(
+        map-> type == Map::WORLD || map->type == Map::DUNGEON,
+        "Initial Map must be World or Dungeon map!"
+    );
     if (map->type != Map::WORLD) {
         setMap(map, 1, nullptr);
+        dngMapFile = std::fopen(
+            (settings.getUserPath() + DNGMAP_SAV_BASE_FILENAME).c_str(), "rb"
+        );
+        if (dngMapFile) {
+            Dungeon *dungeon = dynamic_cast<Dungeon *>(map);
+            ASSERT(dungeon, "Map to Dungeon Conversion failed!");
+            dungeon->tempData = dungeon->data;
+            dungeon->data.clear();
+            dungeon->tempDataSubTokens = dungeon->dataSubTokens;
+            dungeon->dataSubTokens.clear();
+            unsigned int i;
+            int intMapData;
+            unsigned char mapData;
+            for (i = 0; i < (DNG_HEIGHT * DNG_WIDTH * dungeon->levels); i++) {
+                intMapData = std::fgetc(dngMapFile);
+                if (intMapData == EOF) {
+                    std::fclose(dngMapFile);
+                    errorFatal("DngMapFile read error!");
+                }
+                mapData = (unsigned char)intMapData;
+                switch (mapData & 0xF0) {
+                case 0x80:
+                case 0x90:
+                case 0xA0:
+                case 0xD0:
+                    break;
+                default:
+                    mapData &= 0xF0; /* ignore monsters in dngmap.sav */
+                }
+                MapTile tile = map->tfrti(mapData);
+                /* determine what type of tile it is */
+                dungeon->data.push_back(tile);
+                dungeon->dataSubTokens.push_back(mapData % 16);
+            }
+            std::fclose(dngMapFile);
+        } // if(dngMapFile)
     } else {
         /* initialize the moons (must be done from the world map) */
         initMoons();
-    }
+    } // if(map->type != Map::WORLD)
     /**
      * Translate info from the savegame to something we can use
      */
@@ -346,7 +386,7 @@ void GameController::init()
 #if 0
     ++pb;
 #endif
-    /* load in creatures.sav */
+    /* load in monsters.sav */
     monstersFile = std::fopen(
         (tmpstr + MONSTERS_SAV_BASE_FILENAME).c_str(), "rb"
     );
@@ -389,7 +429,7 @@ void GameController::init()
 
 
 /**
- * Saves the game state into party.sav and creatures.sav.
+ * Saves the game state into party.sav and monsters.sav.
  */
 int gameSave()
 {
@@ -423,11 +463,13 @@ int gameSave()
     }
     if (!save.write(saveGameFile)) {
         screenMessage("Error writing to " PARTY_SAV_BASE_FILENAME "\n");
+        std::fflush(saveGameFile);
         fsync(fileno(saveGameFile));
         std::fclose(saveGameFile);
         sync();
         return 0;
     }
+    std::fflush(saveGameFile);
     fsync(fileno(saveGameFile));
     std::fclose(saveGameFile);
     sync();
@@ -435,7 +477,7 @@ int gameSave()
         (settings.getUserPath() + MONSTERS_SAV_BASE_FILENAME).c_str(), "wb"
     );
     if (!monstersFile) {
-        screenMessage("Error opening %s\n", MONSTERS_SAV_BASE_FILENAME);
+        screenMessage("Error opening " MONSTERS_SAV_BASE_FILENAME "\n");
         return 0;
     }
     /* fix creature animations so they are compatible with u4dos */
@@ -443,12 +485,14 @@ int gameSave()
     /* fill the monster table so we can save it */
     c->location->map->fillMonsterTable();
     if (!saveGameMonstersWrite(c->location->map->monsterTable, monstersFile)) {
-        screenMessage("Error opening creatures.sav\n");
+        screenMessage("Error writing to " MONSTERS_SAV_BASE_FILENAME "\n");
+        std::fflush(monstersFile);
         fsync(fileno(monstersFile));
         std::fclose(monstersFile);
         sync();
         return 0;
     }
+    std::fflush(monstersFile);
     fsync(fileno(monstersFile));
     std::fclose(monstersFile);
     sync();
@@ -457,7 +501,7 @@ int gameSave()
      */
     if (c->location->context & CTX_DUNGEON) {
         unsigned int x, y, z;
-        typedef std::unordered_map<const Creature *, int> DngCreatureIdMap;
+        typedef std::map<const Creature *, int> DngCreatureIdMap;
         static DngCreatureIdMap id_map;
         /**
          * Map creatures to u4dos dungeon creature Ids
@@ -479,35 +523,63 @@ int gameSave()
             id_map[creatureMgr->getById(SKELETON_ID)] = 14;
             id_map[creatureMgr->getById(ROGUE_ID)] = 15;
         }
-        dngMapFile =
-            std::fopen((settings.getUserPath() + "dngmap.sav").c_str(), "wb");
+        dngMapFile = std::fopen(
+            (settings.getUserPath() + DNGMAP_SAV_BASE_FILENAME).c_str(), "wb"
+        );
         if (!dngMapFile) {
-            screenMessage("Error opening dngmap.sav\n");
+            screenMessage("Error opening " DNGMAP_SAV_BASE_FILENAME "\n");
             return 0;
         }
         for (z = 0; z < c->location->map->levels; z++) {
             for (y = 0; y < c->location->map->height; y++) {
                 for (x = 0; x < c->location->map->width; x++) {
                     unsigned char tile = c->location->map->ttrti(
+#if 0
                         *c->location->map->getTileFromData(MapCoords(x, y, z))
+#else
+                        *c->location->map->tileAt(
+                            MapCoords(x, y, z), WITHOUT_OBJECTS
+                        )
+#endif
                     );
-                    Object *obj =
-                        c->location->map->objectAt(MapCoords(x, y, z));
+
                     /**
-                     * Add the creature to the tile
+                     * Add the creature to the tile if tile w/o subtokens
                      */
-                    if (obj && (obj->getType() == Object::CREATURE)) {
-                        const Creature *m = dynamic_cast<Creature *>(obj);
-                        DngCreatureIdMap::iterator m_id = id_map.find(m);
-                        if (m_id != id_map.end()) {
-                            tile |= m_id->second;
+                    switch(tile & 0xF0) {
+                    case 0x80: // Traps
+                    case 0x90: // Fountains
+                    case 0xA0: // Energy Fields
+                    case 0xD0: // Rooms
+                        //FIXME: What does U4DOS do in this case?
+                        //does it prevent all creatures from stepping there?
+                        break; //For now, just ignore creature
+                    default: // Other tile, has no subtokens, can add creature
+                        Object *obj =
+                            c->location->map->objectAt(MapCoords(x, y, z));
+                        if (obj && (obj->getType() == Object::CREATURE)) {
+                            const Creature *m = dynamic_cast<Creature *>(obj);
+                            DngCreatureIdMap::iterator m_id = id_map.find(m);
+                            if (m_id != id_map.end()) {
+                                tile |= m_id->second;
+                            }
                         }
                     }
                     // Write the tile
-                    std::fputc(tile, dngMapFile);
+                    if (std::fputc(tile, dngMapFile) == EOF) {
+                        screenMessage(
+                            "Error writing to " DNGMAP_SAV_BASE_FILENAME "\n"
+                        );
+                        std::fflush(dngMapFile);
+                        fsync(fileno(dngMapFile));
+                        std::fclose(dngMapFile);
+                        sync();
+                        return 0;
+                    }
                 }
             }
         }
+        std::fflush(dngMapFile);
         fsync(fileno(dngMapFile));
         std::fclose(dngMapFile);
         sync();
@@ -518,7 +590,7 @@ int gameSave()
             (settings.getUserPath() + OUTMONST_SAV_BASE_FILENAME).c_str(), "wb"
         );
         if (!monstersFile) {
-            screenMessage("Error opening %s\n", OUTMONST_SAV_BASE_FILENAME);
+            screenMessage("Error opening " OUTMONST_SAV_BASE_FILENAME "\n");
             return 0;
         }
         /* fix creature animations so they are compatible with u4dos */
@@ -528,12 +600,14 @@ int gameSave()
         if (!saveGameMonstersWrite(
                 c->location->prev->map->monsterTable, monstersFile
             )) {
-            screenMessage("Error opening %s\n", OUTMONST_SAV_BASE_FILENAME);
+            screenMessage("Error writing to " OUTMONST_SAV_BASE_FILENAME "\n");
+            std::fflush(monstersFile);
             fsync(fileno(monstersFile));
             std::fclose(monstersFile);
             sync();
             return 0;
         }
+        std::fflush(monstersFile);
         fsync(fileno(monstersFile));
         std::fclose(monstersFile);
         sync();
@@ -667,7 +741,14 @@ int GameController::exitToParentMap()
         if (c->location->prev->map != c->location->map) {
             c->location->map->annotations->clear();
             c->location->map->clearObjects();
-            /* quench the torch of we're on the world map */
+            Dungeon *dungeon = dynamic_cast<Dungeon *>(c->location->map);
+            if (dungeon && (dungeon->tempData.size() > 0)) {
+                dungeon->data = dungeon->tempData;
+                dungeon->tempData.clear();
+                dungeon->dataSubTokens = dungeon->tempDataSubTokens;
+                dungeon->tempDataSubTokens.clear();
+            }
+            /* quench the torch if we're on the world map */
             if (c->location->prev->map->isWorldMap()) {
                 c->party->quenchTorch();
             }
@@ -1980,7 +2061,7 @@ void castSpell(int player)
     {
         screenMessage("ENERGIETYP?");
         EnergyFieldType fieldType = ENERGYFIELD_NONE;
-        char key = ReadChoiceController::get("flps \033\n\r");
+        char key = ReadChoiceController::get("fbgs \033\n\r");
         switch (key) {
         case 'f':
             fieldType = ENERGYFIELD_FIRE;
@@ -2203,11 +2284,11 @@ void getChest(int player)
 bool getChestTrapHandler(int player)
 {
     TileEffect trapType = EFFECT_FIRE;
-    int randNum = xu4_random(4);
     int passTest = !xu4_random(2); /* xu4-enhanced */
     /* Chest is trapped! 50/50 chance */
     if (passTest) {
         /* Figure out which trap the chest has */
+        int randNum = xu4_random(4);
         switch (randNum & xu4_random(4)) {
         case 0:
             trapType = EFFECT_FIRE;
@@ -2221,6 +2302,8 @@ bool getChestTrapHandler(int player)
         case 3:
             trapType = EFFECT_LAVA;
             break; /* bomb trap (6% chance - 1/16) */
+        default:
+            ASSERT(0, "Wrong logic in getChestTrapHandler()!");
         }
         /* apply the effects from the trap */
         if (trapType == EFFECT_FIRE) {
@@ -3403,11 +3486,13 @@ void gameFixupObjects(Map *map)
 {
     int i;
     Object *obj;
+    int z;
     /* add stuff from the monster table to the map */
     for (i = 0; i < MONSTERTABLE_SIZE; i++) {
         SaveGameMonsterRecord *monster = &map->monsterTable[i];
         if (monster->prevTile != 0) {
-            Coords coords(monster->x, monster->y);
+            z = (map->type == Map::DUNGEON) ? monster->z : 0;
+            Coords coords(monster->x, monster->y, z);
             // tile values stored in monsters.sav hardcoded to index
             // into base tilemap
             MapTile tile = TileMap::get("base")->translate(monster->tile),
@@ -3688,13 +3773,13 @@ void GameController::creatureCleanup()
  */
 void GameController::checkRandomCreatures()
 {
-    int canSpawnHere =
+    bool canSpawnHere =
         c->location->map->isWorldMap() || c->location->context & CTX_DUNGEON;
     int spawnDivisor = c->location->context & CTX_DUNGEON ?
         (32 - (c->location->coords.z << 2)) :
         32;
     /* If there are too many creatures already,
-     * or we're not on the world map, don't worry about it! */
+     * or we're not on outdoors/in a dungeon, don't worry about it! */
     if (!canSpawnHere
         || (c->location->map->getNumberOfCreatures() >= MAX_CREATURES_ON_MAP)
         || (xu4_random(spawnDivisor) != 0)) {

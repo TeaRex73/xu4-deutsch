@@ -163,8 +163,8 @@ public:
     {
     }
     
-	virtual ~SettingsData() = default;
-	bool operator==(const SettingsData &) const;
+    virtual ~SettingsData() = default;
+    bool operator==(const SettingsData &) const;
     bool operator!=(const SettingsData &) const;
     int battleSpeed;
     bool campingAlwaysCombat;
@@ -223,8 +223,8 @@ class Settings
 public:
     void init(const bool useProfile, const std::string profileName);
 
-	virtual ~Settings() = default;
-	
+    virtual ~Settings() = default;
+    
     static Settings &getInstance()
     {
         if (__builtin_expect((instance == nullptr), false)) {
@@ -232,7 +232,7 @@ public:
         }
         return *instance;
     }
-	
+    
     void setData(const SettingsData &data);
     bool read();
     bool write();

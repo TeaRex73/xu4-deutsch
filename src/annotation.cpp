@@ -59,7 +59,7 @@ bool Annotation::operator==(const Annotation &a) const
  * Constructors
  */
 AnnotationMgr::AnnotationMgr()
-	:annotations(), i()
+    :annotations(), i()
 {
 }
 

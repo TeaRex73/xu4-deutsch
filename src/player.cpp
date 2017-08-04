@@ -40,6 +40,7 @@ bool isPartyMember(Object *punknown)
 PartyMember::PartyMember(Party *p, SaveGamePlayerRecord *pr)
     :Creature(tileForClass(pr->klass)), player(pr), party(p)
 {
+    setType(Object::PARTYMEMBER);
     /* FIXME: we need to rename movement behaviors */
     setMovementBehavior(MOVEMENT_ATTACK_AVATAR);
     this->ranged = Weapon::get(pr->weapon)->getRange() ? 1 : 0;
@@ -200,7 +201,7 @@ ClassType PartyMember::getClass() const
     return player->klass;
 }
 
-CreatureStatus PartyMember::getState() const
+CreatureState PartyMember::getState() const
 {
     if (getHp() <= 0) {
         return MSTAT_DEAD;
@@ -243,7 +244,7 @@ int PartyMember::getMaxLevel() const
 void PartyMember::addStatus(StatusType s)
 {
     Creature::addStatus(s);
-    player->status = status.back();
+    player->status = status;
     switch (player->status) {
     case STAT_GOOD:
     case STAT_POISONED:
@@ -251,7 +252,7 @@ void PartyMember::addStatus(StatusType s)
     break;
     case STAT_SLEEPING:
     case STAT_DEAD:
-    setTile(Tileset::findTileByName("corpse")->getId());
+        setTile(Tileset::findTileByName("corpse")->getId());
     break;
     default:
         ASSERT(
@@ -416,15 +417,15 @@ bool PartyMember::heal(HealType type)
 void PartyMember::removeStatus(StatusType s)
 {
     Creature::removeStatus(s);
-    player->status = status.back();
+    player->status = status;
     switch (player->status) {
     case STAT_GOOD:
     case STAT_POISONED:
-    setTile(tileForClass(getClass()));
+        setTile(tileForClass(getClass()));
     break;
     case STAT_SLEEPING:
     case STAT_DEAD:
-    setTile(Tileset::findTileByName("corpse")->getId());
+        setTile(Tileset::findTileByName("corpse")->getId());
     break;
     default:
         ASSERT(
@@ -776,7 +777,7 @@ std::string Party::translate(std::vector<std::string> &parts)
             new_parts.erase(new_parts.begin());
             // Find the member we'll be working with
             std::string str = parts[0];
-            std::string::size_type pos = str.find_first_of("1234567890");
+            std::size_t pos = str.find_first_of("1234567890");
             if (pos != std::string::npos) {
                 str = str.substr(pos);
                 int p_member = (int)std::strtol(str.c_str(), nullptr, 10);
@@ -1261,7 +1262,7 @@ CannotJoinError Party::join(std::string name)
         if (name == saveGame->players[i].name) {
             /* ensure avatar is experienced enough */
             if (saveGame->members + 1 >
-                (saveGame->players[0].hp / 100)) {
+                (saveGame->players[0].hpMax / 100)) {
                 return JOIN_NOT_EXPERIENCED;
             }
             /* ensure character has enough karma */

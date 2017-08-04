@@ -32,10 +32,10 @@ class MenuItem {
 public:
     MenuItem(std::string text, short x, short y, int shortcutKey = -1);
 
-	MenuItem(const MenuItem &) = delete;
-	MenuItem(MenuItem &&) = delete;
-	MenuItem &operator=(const MenuItem &) = delete;
-	MenuItem &operator=(MenuItem &&) = delete;
+    MenuItem(const MenuItem &) = delete;
+    MenuItem(MenuItem &&) = delete;
+    MenuItem &operator=(const MenuItem &) = delete;
+    MenuItem &operator=(MenuItem &&) = delete;
     virtual ~MenuItem()
     {
     }
@@ -86,10 +86,10 @@ public:
     BoolMenuItem(
         std::string text, short x, short y, int shortcutKey, bool *val
     );
-	BoolMenuItem(const BoolMenuItem &) = delete;
-	BoolMenuItem(BoolMenuItem &&) = delete;
-	BoolMenuItem &operator=(const BoolMenuItem &) = delete;
-	BoolMenuItem &operator=(BoolMenuItem &&) = delete;
+    BoolMenuItem(const BoolMenuItem &) = delete;
+    BoolMenuItem(BoolMenuItem &&) = delete;
+    BoolMenuItem &operator=(const BoolMenuItem &) = delete;
+    BoolMenuItem &operator=(BoolMenuItem &&) = delete;
 
     BoolMenuItem *setValueStrings(
         const std::string &onString, const std::string &offString
@@ -117,10 +117,10 @@ public:
         std::string *val,
         const std::vector<std::string> &validSettings
     );
-	StringMenuItem(const StringMenuItem &) = delete;
-	StringMenuItem(StringMenuItem &&) = delete;
-	StringMenuItem &operator=(const StringMenuItem &) = delete;
-	StringMenuItem &operator=(StringMenuItem &&) = delete;
+    StringMenuItem(const StringMenuItem &) = delete;
+    StringMenuItem(StringMenuItem &&) = delete;
+    StringMenuItem &operator=(const StringMenuItem &) = delete;
+    StringMenuItem &operator=(StringMenuItem &&) = delete;
 
     virtual void activate(MenuEvent &event);
     virtual std::string getText() const;
@@ -148,10 +148,10 @@ public:
         int increment,
         menuOutputType output = MENU_OUTPUT_INT
     );
-	IntMenuItem(const IntMenuItem &) = delete;
-	IntMenuItem(IntMenuItem &&) = delete;
-	IntMenuItem &operator=(const IntMenuItem &) = delete;
-	IntMenuItem &operator=(IntMenuItem &&) = delete;
+    IntMenuItem(const IntMenuItem &) = delete;
+    IntMenuItem(IntMenuItem &&) = delete;
+    IntMenuItem &operator=(const IntMenuItem &) = delete;
+    IntMenuItem &operator=(IntMenuItem &&) = delete;
 
     virtual void activate(MenuEvent &event);
     virtual std::string getText() const;

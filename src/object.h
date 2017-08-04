@@ -7,8 +7,9 @@
 
 #include <cstdlib>
 #include <deque>
-#include <unordered_set>
+#include <set>
 #include "coords.h"
+#include "debug.h"
 #include "tile.h"
 #include "types.h"
 
@@ -26,17 +27,16 @@ public:
     enum Type {
         UNKNOWN,
         CREATURE,
-        PERSON
+        PERSON,
+        PARTYMEMBER
     };
-    
+
     Object(Type type = UNKNOWN);
-    Object(const Object &o) = default;
-    Object(Object &&o) = default;
-    Object &operator=(const Object &o) = default;
-    Object &operator=(Object &&o) = default;
+    Object(const Object &o);
+    Object &operator=(const Object &o);
     virtual ~Object();
     static void cleanup();
-    
+
     MapTile &getTile()
     {
         return tile;
@@ -144,7 +144,7 @@ protected:
     bool focused;
     bool visible;
     bool animated;
-    static std::unordered_set<Object *> all_objects;
+    static std::set<Object *> all_objects;
 };
 
 #endif // ifndef OBJECT_H

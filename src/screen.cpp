@@ -141,27 +141,46 @@ void screenInit()
         );
     }
     dungeonTileChars.clear();
+    dungeonTileChars["unused"] = CHARSET_FLOOR;
     dungeonTileChars["brick_floor"] = CHARSET_FLOOR;
     dungeonTileChars["up_ladder"] = CHARSET_LADDER_UP;
     dungeonTileChars["down_ladder"] = CHARSET_LADDER_DOWN;
     dungeonTileChars["up_down_ladder"] = CHARSET_LADDER_UPDOWN;
     dungeonTileChars["chest"] = '$';
-    dungeonTileChars["ceiling_hole"] = CHARSET_FLOOR;
-    dungeonTileChars["floor_hole"] = CHARSET_FLOOR;
     dungeonTileChars["magic_orb"] = CHARSET_ORB;
-    dungeonTileChars["ceiling_hole"] = 'T';
-    dungeonTileChars["floor_hole"] = 'T';
-    dungeonTileChars["fountain"] = 'F';
+    dungeonTileChars["wind_trap"] = 'T';
+    dungeonTileChars["falling_rock_trap"] = 'T';
+    dungeonTileChars["pit_trap"] = 'T';
+    dungeonTileChars["fountain_normal"] = 'F';
+    dungeonTileChars["fountain_healing"] = 'F';
+    dungeonTileChars["fountain_acid"] = 'F';
+    dungeonTileChars["fountain_cure"] = 'F';
+    dungeonTileChars["fountain_poison"] = 'F';
     dungeonTileChars["secret_door"] = CHARSET_SDOOR;
     dungeonTileChars["brick_wall"] = CHARSET_WALL;
     dungeonTileChars["dungeon_door"] = CHARSET_ROOM;
     dungeonTileChars["avatar"] = CHARSET_REDDOT;
-    dungeonTileChars["dungeon_room"] = CHARSET_ROOM;
+    dungeonTileChars["dungeon_room_0"] = CHARSET_ROOM;
+    dungeonTileChars["dungeon_room_1"] = CHARSET_ROOM;
+    dungeonTileChars["dungeon_room_2"] = CHARSET_ROOM;
+    dungeonTileChars["dungeon_room_3"] = CHARSET_ROOM;
+    dungeonTileChars["dungeon_room_4"] = CHARSET_ROOM;
+    dungeonTileChars["dungeon_room_5"] = CHARSET_ROOM;
+    dungeonTileChars["dungeon_room_6"] = CHARSET_ROOM;
+    dungeonTileChars["dungeon_room_7"] = CHARSET_ROOM;
+    dungeonTileChars["dungeon_room_8"] = CHARSET_ROOM;
+    dungeonTileChars["dungeon_room_9"] = CHARSET_ROOM;
+    dungeonTileChars["dungeon_room_a"] = CHARSET_ROOM;
+    dungeonTileChars["dungeon_room_b"] = CHARSET_ROOM;
+    dungeonTileChars["dungeon_room_c"] = CHARSET_ROOM;
+    dungeonTileChars["dungeon_room_d"] = CHARSET_ROOM;
+    dungeonTileChars["dungeon_room_e"] = CHARSET_ROOM;
+    dungeonTileChars["dungeon_room_f"] = CHARSET_ROOM;
     dungeonTileChars["dungeon_altar"] = CHARSET_ANKH;
-    dungeonTileChars["energy_field"] = '^';
-    dungeonTileChars["fire_field"] = '^';
-    dungeonTileChars["poison_field"] = '^';
-    dungeonTileChars["sleep_field"] = '^';
+    dungeonTileChars["dungeon_energy_field"] = '^';
+    dungeonTileChars["dungeon_fire_field"] = '^';
+    dungeonTileChars["dungeon_poison_field"] = '^';
+    dungeonTileChars["dungeon_sleep_field"] = '^';
 } // screenInit
 
 void screenDelete()
@@ -1737,9 +1756,15 @@ void screenGemUpdate()
             if (!weAreDrawingTheAvatarTile) {
                 // Hack to avoid showing the avatar tile multiple times in
                 if (tile.getId() == avatarTileId) {
+#if 0
                     tile = c->location->map->getTileFromData(
                         c->location->coords
                     )->getId();
+#else
+                    tile = c->location->map->tileAt(
+                        c->location->coords, WITHOUT_OBJECTS 
+                    )->getId();
+#endif
                 }
             }
             screenShowGemTile(layout, c->location->map, tile, focus, x, y);

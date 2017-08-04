@@ -60,45 +60,56 @@ std::string Dungeon::getName()
  */
 DungeonToken Dungeon::tokenForTile(MapTile tile)
 {
-    const static std::string tileNames[] = {
-        "brick_floor",
-        "up_ladder",
-        "down_ladder",
-        "up_down_ladder",
-        "chest",
-        "unimpl_ceiling_hole",
-        "unimpl_floor_hole",
-        "magic_orb",
-        "ceiling_hole",
-        "fountain",
-        "brick_floor",
-        "dungeon_altar",
-        "dungeon_door",
-        "dungeon_room",
-        "secret_door",
-        "brick_wall",
-        ""
-    };
-    const static std::string fieldNames[] = {
-        "poison_field",
-        "energy_field",
-        "fire_field",
-        "sleep_field",
-        ""
+    typedef std::pair<std::string, int> sipair;
+    const static sipair tileNames[] = {
+        sipair("brick_floor", DUNGEON_CORRIDOR),
+        sipair("up_ladder", DUNGEON_LADDER_UP),
+        sipair("down_ladder", DUNGEON_LADDER_DOWN),
+        sipair("up_down_ladder", DUNGEON_LADDER_UPDOWN),
+        sipair("chest", DUNGEON_CHEST),
+        sipair("magic_orb", DUNGEON_MAGIC_ORB),
+        sipair("wind_trap", DUNGEON_TRAP),
+        sipair("falling_rocks_trap", DUNGEON_TRAP),
+        sipair("pit_trap", DUNGEON_TRAP),
+        sipair("fountain_normal", DUNGEON_FOUNTAIN),
+        sipair("fountain_healing", DUNGEON_FOUNTAIN),
+        sipair("fountain_acid", DUNGEON_FOUNTAIN),
+        sipair("fountain_cure", DUNGEON_FOUNTAIN),
+        sipair("fountain_poison", DUNGEON_FOUNTAIN),
+        sipair("dungeon_poison_field", DUNGEON_FIELD),
+        sipair("dungeon_energy_field", DUNGEON_FIELD),
+        sipair("dungeon_fire_field", DUNGEON_FIELD),
+        sipair("dungeon_sleep_field", DUNGEON_FIELD),
+        sipair("dungeon_altar", DUNGEON_ALTAR),
+        sipair("dungeon_door", DUNGEON_DOOR),
+        sipair("dungeon_room_0", DUNGEON_ROOM),
+        sipair("dungeon_room_1", DUNGEON_ROOM),
+        sipair("dungeon_room_2", DUNGEON_ROOM),
+        sipair("dungeon_room_3", DUNGEON_ROOM),
+        sipair("dungeon_room_4", DUNGEON_ROOM),
+        sipair("dungeon_room_5", DUNGEON_ROOM),
+        sipair("dungeon_room_6", DUNGEON_ROOM),
+        sipair("dungeon_room_7", DUNGEON_ROOM),
+        sipair("dungeon_room_8", DUNGEON_ROOM),
+        sipair("dungeon_room_9", DUNGEON_ROOM),
+        sipair("dungeon_room_a", DUNGEON_ROOM),
+        sipair("dungeon_room_b", DUNGEON_ROOM),
+        sipair("dungeon_room_c", DUNGEON_ROOM),
+        sipair("dungeon_room_d", DUNGEON_ROOM),
+        sipair("dungeon_room_e", DUNGEON_ROOM),
+        sipair("dungeon_room_f", DUNGEON_ROOM),
+        sipair("secret_door", DUNGEON_SECRET_DOOR),
+        sipair("brick_wall", DUNGEON_WALL),
+        sipair("", 0)
     };
     int i;
     Tile *t = tileset->get(tile.getId());
-    for (i = 0; !tileNames[i].empty(); i++) {
-        if (t->getName() == tileNames[i]) {
-            return DungeonToken(i << 4);
+    for (i = 0; !tileNames[i].first.empty(); i++) {
+        if (t->getName() == tileNames[i].first) {
+            return DungeonToken(tileNames[i].second);
         }
     }
-    for (i = 0; !fieldNames[i].empty(); i++) {
-        if (t->getName() == fieldNames[i]) {
-            return DUNGEON_FIELD;
-        }
-    }
-    return (DungeonToken)0;
+    return DungeonToken(0);
 }
 
 
@@ -290,7 +301,7 @@ void dungeonTouchOrb()
     default:
         break;
     }
-	screenMessage("\n");
+    screenMessage("\n");
     /* give stats bonuses */
     if (stats & STATSBONUS_STR) {
         screenMessage("Str + 5\n");
@@ -308,7 +319,7 @@ void dungeonTouchOrb()
         damage += 200;
     }
     /* deal damage to the party member who touched the orb */
-	soundPlay(SOUND_PC_STRUCK, false);
+    soundPlay(SOUND_PC_STRUCK, false);
     c->party->member(player)->applyDamage(damage);
     /* remove the orb from the map */
     c->location->map->annotations->add(c->location->coords, replacementTile);

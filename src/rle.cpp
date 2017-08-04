@@ -81,7 +81,10 @@ long rleGetDecompressedSize(unsigned char *indata, long inlen)
  * Decompress a block of RLE encoded memory.
  */
 long rleDecompress(
-    unsigned char *indata, long inlen, unsigned char *outdata, long outlen
+    unsigned char *indata,
+    long inlen,
+    unsigned char *outdata,
+    long outlen
 )
 {
     int i;

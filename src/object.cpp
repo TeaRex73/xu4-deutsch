@@ -8,7 +8,7 @@
 #include "object.h"
 #include "map.h"
 
-std::unordered_set<Object *> Object::all_objects;
+std::set<Object *> Object::all_objects;
 
 Object::Object(Type type)
     :tile(0),
@@ -25,6 +25,37 @@ Object::Object(Type type)
     all_objects.insert(this);
 }
 
+Object::Object(const Object &o)
+    :tile(o.tile),
+     prevTile(o.prevTile),
+     coords(o.coords),
+     prevCoords(o.prevCoords),
+     movement_behavior(o.movement_behavior),
+     objType(o.objType),
+     maps(o.maps),
+     focused(o.focused),
+     visible(o.visible),
+     animated(o.animated)
+{
+    all_objects.insert(this);
+}
+
+Object &Object::operator=(const Object &o)
+{
+    tile = o.tile;
+    prevTile = o.prevTile;
+    coords = o.coords;
+    prevCoords = o.prevCoords;
+    movement_behavior = o.movement_behavior;
+    objType = o.objType;
+    maps = o.maps;
+    focused = o.focused;
+    visible = o.visible;
+    animated = o.animated;
+    all_objects.insert(this);
+    return *this;
+}
+
 Object::~Object()
 {
     all_objects.erase(this);
@@ -32,9 +63,9 @@ Object::~Object()
 
 void Object::cleanup()
 {
-    std::unordered_set<Object *>::iterator tmp;
+    std::set<Object *>::iterator tmp;
 
-    for (std::unordered_set<Object *>::iterator i = all_objects.begin();
+    for (std::set<Object *>::iterator i = all_objects.begin();
          i != all_objects.end();
          /* nothing */ ) {
         tmp = i; /* save iterator so deletion doesn't affect it */
@@ -49,17 +80,6 @@ void Object::setCoords(Coords c)
 {
     prevCoords = coords;
     coords = c;
-    Map *map = getMap();
-    std::pair<ObjectLocMap::iterator, ObjectLocMap::iterator> p =
-        map->objectsByLocation.equal_range(prevCoords);
-    for (ObjectLocMap::iterator i = p.first; i != p.second; /* nothing */) {
-        if (i->second == this) {
-            i = map->objectsByLocation.erase(i);
-        } else {
-            i++;
-        }
-    }
-    map->objectsByLocation.insert(std::pair<Coords, Object *>(coords, this));
 }    
 
 bool Object::setDirection(Direction d)

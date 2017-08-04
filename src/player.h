@@ -92,9 +92,7 @@ public:
     friend class Party;
     PartyMember(Party *p, SaveGamePlayerRecord *pr);
     PartyMember(const PartyMember &p) = default;
-    PartyMember(PartyMember &&p) = default;
     PartyMember &operator=(const PartyMember &p) = default;
-    PartyMember &operator=(PartyMember &&p) = default;
     virtual ~PartyMember();
     void notifyOfChange();
     // Used to translate script values into something useful
@@ -138,7 +136,7 @@ public:
     virtual std::string getName() const;
     SexType getSex() const;
     ClassType getClass() const;
-    virtual CreatureStatus getState() const;
+    virtual CreatureState getState() const;
     int getRealLevel() const;
     int getMaxLevel() const;
     virtual void addStatus(StatusType status);
@@ -208,10 +206,10 @@ class Party
 public:
     friend class PartyMember;
     Party(SaveGame *saveGame);
-	Party(const Party &) = delete;
-	Party(Party &&) = delete;
-	Party &operator=(const Party &) = delete;
-	Party &operator=(Party &&) = delete;
+    Party(const Party &) = delete;
+    Party(Party &&) = delete;
+    Party &operator=(const Party &) = delete;
+    Party &operator=(Party &&) = delete;
     virtual ~Party();
     void notifyOfChange(
         PartyMember *partyMember = 0, PartyEvent::Type = PartyEvent::GENERIC

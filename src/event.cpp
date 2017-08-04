@@ -287,7 +287,7 @@ ReadStringController::ReadStringController(
 bool ReadStringController::keyPressed(int key)
 {
     int valid = true, len = value.length();
-    std::string::size_type pos = std::string::npos;
+    std::size_t pos = std::string::npos;
     if (key < U4_ALT) {
         pos = accepted.find_first_of(key);
     }

@@ -39,7 +39,7 @@
     <description>Einen sanftmütigen Hirten.</description>
     <topic query="job">Ich bin Hirte.</topic>
     <topic query="health">Ziemlich gut.</topic>
-    <topic query="BESC">Demut leitet sich nicht von der direkten Kombination von Wahrheit, Liebe oder Mut ab.</topic>
+    <topic query="BESC">Demut leitet sich nicht aus der direkten Kombination von Wahrheit, Liebe oder Mut ab.</topic>
     <topic query="DEMU">Demut bedeutet, bescheiden zu handeln und zu sein.<question type="1">Bist du vollkommen demütig?<yes>Zweifelhaft!</yes><no>Strebe danach.</no></question></topic>
   </person>
   <person id="6" name="Shazom" pronoun="Er" turnAwayProb="0">
@@ -60,7 +60,7 @@
     <description>Einen großen Magier.</description>
     <topic query="job">Ich strebe danach, ein ehrliches Leben zu leben!</topic>
     <topic query="health">War mal besser.</topic>
-    <topic query="EHRL">Eine ehrliche Seele braucht sich keine Lügen zu merken!<question type="1">Warst du immer ehrlich?<yes>Das scheint mir nicht wahrscheinlich!</yes><no>Wahrheit verletzt niemals den, der sie sagt!</no></question></topic>
+    <topic query="EHRL">Eine ehrliche Seele braucht sich keine Lügen zu merken!<question type="1">Warst du immer ehrlich?<yes>Das scheint mir nicht wahrscheinlich!</yes><no>Die Wahrheit verletzt niemals den, der sie ausspricht!</no></question></topic>
     <topic query="WAHR">Wahrheit ist die Wurzel der Ehrlichkeit!</topic>
   </person>
   <person id="9" name="Cosima" pronoun="Sie" turnAwayProb="0">

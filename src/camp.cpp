@@ -190,6 +190,7 @@ void InnController::begin()
     }
     screenPrompt();
     musicMgr->play();
+    delete this;
 } // InnController::begin
 
 bool InnController::heal()

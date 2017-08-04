@@ -145,7 +145,7 @@ Image *U4LzwImageLoader::load(U4FILE *file, int width, int height, int bpp)
     );
     long compressedLen = file->length();
     unsigned char *compressed = (unsigned char *)std::malloc(compressedLen);
-    file->read(compressed, 1, compressedLen);
+    file->read(compressed, 1, (std::size_t)compressedLen);
     unsigned char *raw = nullptr;
     long rawLen = decompress_u4_memory(
         compressed, compressedLen, (void **)&raw

@@ -168,7 +168,7 @@ bool u4isUpgradeAvailable()
 bool u4isUpgradeInstalled()
 {
     U4FILE *u4f = nullptr;
-    long int filelength;
+    long filelength;
     bool result = false;
     /* FIXME: Is there a better way to determine this? */
     u4f = u4fopen("ega.drv");

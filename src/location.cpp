@@ -71,7 +71,11 @@ std::vector<MapTile> Location::tilesAt(MapCoords coords, bool &focus)
         if (avatar) {
             tiles.push_back(c->party->getTransport());
         } else {
+#if 0
             tiles.push_back(*map->getTileFromData(coords));
+#else
+            tiles.push_back(*map->tileAt(coords, WITHOUT_OBJECTS));
+#endif
         }
         return tiles;
     }
@@ -174,7 +178,7 @@ TileId Location::getReplacementTile(MapCoords atCoords, const Tile *forTile)
     };
     const static int dirs_per_step = sizeof(dirs) / sizeof(*dirs);
     int loop_count = 0;
-    std::unordered_set<MapCoords> searched;
+    std::set<MapCoords> searched;
     std::list<MapCoords> searchQueue;
     // Pathfinding to closest traversable tile with appropriate
     // replacement properties.
@@ -226,11 +230,11 @@ TileId Location::getReplacementTile(MapCoords atCoords, const Tile *forTile)
              && searchQueue.size() > 0
              && searchQueue.size() < 64);
     /* couldn't find a tile, give it the sad default */
-	if (isDungeon(map)) {
-		return map->tileset->getByName("brick_floor")->getId();
-	} else {
-		return map->tileset->getByName("grass")->getId();
-	}
+    if (isDungeon(map)) {
+        return map->tileset->getByName("brick_floor")->getId();
+    } else {
+        return map->tileset->getByName("grass")->getId();
+    }
 } // Location::getReplacementTile
 
 

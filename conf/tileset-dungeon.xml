@@ -2,12 +2,37 @@
 <!DOCTYPE tileset SYSTEM "dtd/tileset.dtd">
 <!-- $Id$ -->
 <tileset name="dungeon" extends="base">
-    <tile name="up_down_ladder" image="tile_bridge"/>
-    <tile name="ceiling_hole" image="tile_brick_floor"/>
-    <tile name="floor_hole" image="tile_brick_floor"/>
-    <tile name="magic_orb" image="tile_magic_flash"/>
-    <tile name="fountain" image="tile_shallows" animation="scroll"/>
-    <tile name="dungeon_room" image="tile_solid" rule="dng_room"/>    
-    <tile name="dungeon_door" image="tile_door" rule="dng_door"/>
-    <tile name="dungeon_altar" image="tile_altar" rule="dng_altar"/>
+  <tile name="unused" image="tile_brick_floor"/>
+  <tile name="up_down_ladder" image="tile_bridge"/>
+  <tile name="magic_orb" image="tile_magic_flash"/>
+  <tile name="wind_trap" image="tile_brick_floor" rule="dng_trap"/>
+  <tile name="falling_rock_trap" image="tile_brick_floor" rule="dng_trap"/>
+  <tile name="pit_trap" image="tile_brick_floor" rule="dng_trap"/>
+  <tile name="fountain_normal" image="tile_shallows" animation="scroll" rule="dng_fountain"/>
+  <tile name="fountain_healing" image="tile_shallows" animation="scroll" rule="dng_fountain"/>
+  <tile name="fountain_acid" image="tile_shallows" animation="scroll" rule="dng_fountain"/>
+  <tile name="fountain_cure" image="tile_shallows" animation="scroll" rule="dng_fountain"/>
+  <tile name="fountain_poison" image="tile_shallows" animation="scroll" rule="dng_fountain"/>
+  <tile name="dungeon_poison_field" image="tile_poison_field" rule="dng_poison_field" animation="scramble" tiledInDungeon="true" usesReplacementTileAsBackground="true" usesWaterReplacementTileAsBackground="true"/>
+  <tile name="dungeon_energy_field" image="tile_energy_field" rule="dng_energy_field" animation="scramble" tiledInDungeon="true" usesReplacementTileAsBackground="true" usesWaterReplacementTileAsBackground="true"/>
+  <tile name="dungeon_fire_field" image="tile_fire_field" rule="dng_fire_field" animation="scramble" tiledInDungeon="true" usesReplacementTileAsBackground="true" usesWaterReplacementTileAsBackground="true"/>
+  <tile name="dungeon_sleep_field" image="tile_sleep_field" rule="dng_sleep_field" animation="scramble" tiledInDungeon="true" usesReplacementTileAsBackground="true" usesWaterReplacementTileAsBackground="true"/>
+  <tile name="dungeon_room_0" image="tile_solid" rule="dng_room"/>
+  <tile name="dungeon_room_1" image="tile_solid" rule="dng_room"/>
+  <tile name="dungeon_room_2" image="tile_solid" rule="dng_room"/>
+  <tile name="dungeon_room_3" image="tile_solid" rule="dng_room"/>
+  <tile name="dungeon_room_4" image="tile_solid" rule="dng_room"/>
+  <tile name="dungeon_room_5" image="tile_solid" rule="dng_room"/>
+  <tile name="dungeon_room_6" image="tile_solid" rule="dng_room"/>
+  <tile name="dungeon_room_7" image="tile_solid" rule="dng_room"/>
+  <tile name="dungeon_room_8" image="tile_solid" rule="dng_room"/>
+  <tile name="dungeon_room_9" image="tile_solid" rule="dng_room"/>
+  <tile name="dungeon_room_a" image="tile_solid" rule="dng_room"/>
+  <tile name="dungeon_room_b" image="tile_solid" rule="dng_room"/>
+  <tile name="dungeon_room_c" image="tile_solid" rule="dng_room"/>
+  <tile name="dungeon_room_d" image="tile_solid" rule="dng_room"/>
+  <tile name="dungeon_room_e" image="tile_solid" rule="dng_room"/>
+  <tile name="dungeon_room_f" image="tile_solid" rule="dng_room"/>    
+  <tile name="dungeon_door" image="tile_door" rule="dng_door"/>
+  <tile name="dungeon_altar" image="tile_altar" rule="dng_altar"/>
 </tileset>

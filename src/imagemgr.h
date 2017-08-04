@@ -147,10 +147,10 @@ public:
 
 private:
     ImageMgr();
-	ImageMgr(const ImageMgr &) = delete;
-	ImageMgr(ImageMgr &&) = delete;
-	ImageMgr &operator=(const ImageMgr &) = delete;
-	ImageMgr &operator=(ImageMgr &&) = delete;
+    ImageMgr(const ImageMgr &) = delete;
+    ImageMgr(ImageMgr &&) = delete;
+    ImageMgr &operator=(const ImageMgr &) = delete;
+    ImageMgr &operator=(ImageMgr &&) = delete;
     ~ImageMgr();
     void init();
     ImageSet *loadImageSetFromConf(const ConfigElement &conf);

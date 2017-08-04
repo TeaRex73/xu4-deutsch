@@ -30,7 +30,7 @@ Image *FMTOWNSImageLoader::load(U4FILE *file, int width, int height, int bpp)
     }
     ASSERT((bpp == 16) | (bpp == 4), "invalid bpp: %d", bpp);
     long rawLen = file->length() - offset;
-    file->seek(offset, 0);
+    file->seek(offset, SEEK_SET);
     unsigned char *raw = (unsigned char *)std::malloc(rawLen);
     file->read(raw, 1, rawLen);
     long requiredLength = (width * height * bpp / 8);

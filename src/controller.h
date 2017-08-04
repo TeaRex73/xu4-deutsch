@@ -47,15 +47,15 @@ void Controller_endWait();
 template<class T> class WaitableController:public Controller {
 public:
     WaitableController()
-		:value(), exitWhenDone(false)
+        :value(), exitWhenDone(false)
     {
     }
 
-	WaitableController(const WaitableController &) = delete;
-	WaitableController(WaitableController &&) = delete;
-	WaitableController &operator=(const WaitableController &) = delete;
-	WaitableController &operator=(WaitableController &&) = delete;
-	
+    WaitableController(const WaitableController &) = delete;
+    WaitableController(WaitableController &&) = delete;
+    WaitableController &operator=(const WaitableController &) = delete;
+    WaitableController &operator=(WaitableController &&) = delete;
+    
     virtual T getValue()
     {
         return value;

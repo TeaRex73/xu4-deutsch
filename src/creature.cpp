@@ -49,14 +49,14 @@ Creature::Creature(MapTile tile)
      leader(0),
      basehp(0),
      hp(0),
-     status(),
+     status(STAT_GOOD),
      xp(0),
      ranged(0),
      worldrangedtile(),
      leavestile(false),
      mattr(),
      movementAttr(),
-     slowedType(),
+     slowedType(SLOWED_BY_TILE),
      encounterSize(0),
      resists(0),
      spawn(0),
@@ -64,13 +64,8 @@ Creature::Creature(MapTile tile)
 {
     Creature *m = creatureMgr->getByTile(tile);
     if (m) {
-        *this = std::move(*m);
+        *this = *m;
     }
-}
-
-Creature::~Creature()
-{
-    status.clear();
 }
 
 void Creature::load(const ConfigElement &conf)
@@ -307,7 +302,7 @@ void Creature::setRandomRanged()
     }
 }
 
-CreatureStatus Creature::getState() const
+CreatureState Creature::getState() const
 {
     int heavy_threshold, light_threshold, crit_threshold;
     crit_threshold = basehp >> 2;
@@ -701,17 +696,20 @@ void Creature::act(CombatController *controller)
  */
 void Creature::addStatus(StatusType s)
 {
-    StatusType new_status;
-    if (status.size() && (status.back() > s)) {
-        StatusType prev = status.back();
-        status.pop_back();
-        status.push_back(s);
-        new_status = prev;
-    } else {
-        new_status = s;
+    StatusType prev = status;
+    if (prev == s) { /* same as before */
+        return;
     }
-    status.push_back(new_status);
-    switch (new_status) {
+    if ((prev == STAT_DEAD && s != STAT_DEAD) ||
+        (prev == STAT_SLEEPING &&
+         (s == STAT_POISONED || s == STAT_GOOD)) ||
+        (prev == STAT_POISONED && s == STAT_GOOD)) {
+        /* new status is "better" - do nothing */
+        return;
+    } else {
+        status = s;
+    }
+    switch (status) {
     case STAT_GOOD:
     case STAT_POISONED:
         setAnimated(); /* animate creature */
@@ -722,7 +720,7 @@ void Creature::addStatus(StatusType s)
         break;
     default:
         ASSERT(
-            0, "Invalid status %d in Creature::addStatus", (int)new_status
+            0, "Invalid status %d in Creature::addStatus", (int)status
         );
     }
 }
@@ -815,18 +813,12 @@ bool Creature::spawnOnDeath()
 
 StatusType Creature::getStatus() const
 {
-    return status.back();
+    return status;
 }
 
 bool Creature::isAsleep() const
 {
-    for (StatusList::const_iterator itr = this->status.begin();
-         itr != this->status.end(); ++itr) {
-        if (*itr == STAT_SLEEPING) {
-            return true;
-        }
-    }
-    return false;
+    return status == STAT_SLEEPING;
 }
 
 /**
@@ -891,48 +883,23 @@ Creature *Creature::nearestOpponent(int *dist, bool ranged)
 
 void Creature::putToSleep(bool sound)
 {
-    if (getStatus() != STAT_DEAD) {
-        addStatus(STAT_SLEEPING);
-    }
+    addStatus(STAT_SLEEPING);
 }
 
 void Creature::removeStatus(StatusType s)
 {
-    StatusList::iterator i;
-    StatusType new_status;
-    for (i = status.begin(); i != status.end();) {
-        if (*i == s) {
-            i = status.erase(i);
-        } else {
-            i++;
-        }
+    StatusType prev = status;
+    if (prev != s) {
+        return;
+    } else {
+        status = STAT_GOOD;
     }
-    // Just to be sure, if a player is poisoned from a savegame,
-    // then they won't have a STAT_GOOD in the stack yet.
-    if (status.empty()) {
-        addStatus(STAT_GOOD);
-    }
-    new_status = status.back();
-    switch (new_status) {
-    case STAT_GOOD:
-    case STAT_POISONED:
-        setAnimated(); /* animate creature */
-    break;
-    case STAT_SLEEPING:
-    case STAT_DEAD:
-        setAnimated(false); /* freeze creature */
-    break;
-    default:
-        ASSERT(
-            0, "Invalid status %d in Creature::removeStatus", (int)new_status
-        );
-    }
+    setAnimated(); /* animate creature */
 }
 
 void Creature::setStatus(StatusType s)
 {
-    status.clear();
-    this->addStatus(s);
+    status = s;
 }
 
 void Creature::wakeUp()
@@ -1176,7 +1143,7 @@ Creature *CreatureMgr::randomForDungeon(int dngLevel)
  */
 Creature *CreatureMgr::randomForDungeon(int dngLevel)
 {
-    std::size_t range = dngLevel < 5 ? 3 : 4;
+    int range = dngLevel < 5 ? 3 : 4;
     CreatureId monster = RAT_ID + dngLevel + xu4_random(range);
     if (monster >= MIMIC_ID) {
         ++monster;

@@ -32,9 +32,9 @@ void print_trace(std::FILE *file)
 {
     /* Code Taken from GNU C Library manual */
     void *array[10];
-    std::size_t size;
+    int size;
     char **strings;
-    std::size_t i;
+    int i;
     size = backtrace(array, 10);
     strings = backtrace_symbols(array, size);
     std::fprintf(file, "Stack trace:\n");

@@ -118,7 +118,7 @@ void screenInit_sys()
     char *pix;
     pix = (char *)(screen->pixels);
     pix += (screen->pitch * 20 * settings.scale
-			+ screen->format->BytesPerPixel * 32 * settings.scale);
+            + screen->format->BytesPerPixel * 32 * settings.scale);
     screen->pixels = pix;
 #endif
     if (verbose) {
@@ -215,7 +215,8 @@ int screenLoadImageCga(
     Image *img;
     int x, y;
     unsigned char *compressed_data, *decompressed_data = nullptr;
-    long inlen, decompResult;
+    long inlen;
+    long decompResult;
     inlen = u4flength(file);
     compressed_data = (Uint8 *)std::malloc(inlen);
     u4fread(compressed_data, 1, inlen, file);

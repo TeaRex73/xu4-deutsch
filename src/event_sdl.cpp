@@ -488,28 +488,28 @@ void EventHandler::run()
         SDL_WaitEvent(&event);
         switch (event.type) {
         case SDL_KEYDOWN:
-			{
+            {
 #ifdef DEBUG
-				static volatile std::clock_t clocksum = 0, keycount = 0;
-				std::clock_t oldc, newc, diff;
-				oldc = std::clock();
+                static volatile std::clock_t clocksum = 0, keycount = 0;
+                std::clock_t oldc, newc, diff;
+                oldc = std::clock();
 #endif
-				handleKeyDownEvent(event, getController(), updateScreen);
+                handleKeyDownEvent(event, getController(), updateScreen);
 #ifdef DEBUG
-				newc = std::clock();
-				keycount++;
-				diff = newc - oldc;
-				clocksum += diff;
-				std::fprintf(
-					stderr,
-					"diff = %ld, sum = %ld, avg = %f\n",
-					diff,
-					clocksum,
-					((double) clocksum) / ((double) keycount)
-				);
+                newc = std::clock();
+                keycount++;
+                diff = newc - oldc;
+                clocksum += diff;
+                std::fprintf(
+                    stderr,
+                    "diff = %ld, sum = %ld, avg = %f\n",
+                    diff,
+                    clocksum,
+                    ((double) clocksum) / ((double) keycount)
+                );
 #endif
-				break;
-			}
+                break;
+            }
         case SDL_MOUSEBUTTONDOWN:
             handleMouseButtonDownEvent(event, getController(), updateScreen);
             break;

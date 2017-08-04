@@ -53,11 +53,11 @@ const Armor *Armor::get(const std::string &name)
 
 Armor::Armor(const ConfigElement &conf)
     :type(static_cast<ArmorType>(armors.size())),
-	 name(conf.getString("name")),
-	 canuse(0xFF),
-	 defense(conf.getInt("defense")),
-	 mask(0),
-	 mystic(conf.getBool("mystic"))
+     name(conf.getString("name")),
+     canuse(0xFF),
+     defense(conf.getInt("defense")),
+     mask(0),
+     mystic(conf.getBool("mystic"))
 {
     std::vector<ConfigElement> contraintConfs = conf.getChildren();
     for (std::vector<ConfigElement>::iterator i = contraintConfs.begin();

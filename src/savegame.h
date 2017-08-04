@@ -12,6 +12,7 @@
 #define PARTY_SAV_BASE_FILENAME "party.sav"
 #define MONSTERS_SAV_BASE_FILENAME "monsters.sav"
 #define OUTMONST_SAV_BASE_FILENAME "outmonst.sav"
+#define DNGMAP_SAV_BASE_FILENAME "dngmap.sav"
 
 #define MONSTERTABLE_SIZE 32
 #define MONSTERTABLE_CREATURES_SIZE 8
@@ -98,6 +99,8 @@ enum StatusType {
     STAT_SLEEPING = 'S',
     STAT_DEAD = 'T'
 };
+
+
 
 enum Virtue {
     VIRT_HONESTY,
@@ -203,8 +206,8 @@ typedef struct _SaveGameMonsterRecord {
     unsigned char prevTile;
     unsigned char prevx;
     unsigned char prevy;
-    unsigned char unused1;
-    unsigned char unused2;
+    unsigned char z;
+    unsigned char unused;
 } SaveGameMonsterRecord;
 
 

@@ -457,7 +457,7 @@ void StatsArea::showItems()
         }
         if (c->saveGame->items & ITEM_CANDLE) {
             std::strcat(buffer, getItemName(ITEM_CANDLE));
-            // all three are too long in German
+            // all three together are too long in German
             if (std::strcmp(buffer, "GLOCKE BUCH KERZE") == 0) {
                 buffer[0] = '\0';
                 std::strcat(buffer, "GLOCK BUCH KERZ");

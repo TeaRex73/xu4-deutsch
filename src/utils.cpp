@@ -32,7 +32,12 @@ void xu4_srandom()
 int xu4_random(int upperRange)
 {
     int r;
-    int rand_limit = RAND_MAX - (((RAND_MAX % upperRange) + 1) % upperRange);
+    int rand_limit;
+
+    if (upperRange <= 1) {
+        return 0;
+    }
+    rand_limit = RAND_MAX - (((RAND_MAX % upperRange) + 1) % upperRange);
     do {
         r = std::rand();
     } while (r > rand_limit);
@@ -49,7 +54,7 @@ std::string &trim(std::string &val, const std::string &chars_to_trim)
 {
     std::string::iterator i;
     if (val.size()) {
-        std::string::size_type pos;
+        std::size_t pos;
         for (i = val.begin();
              (i != val.end()) &&
                  (pos = chars_to_trim.find(*i)) != std::string::npos;) {

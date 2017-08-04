@@ -340,12 +340,12 @@ int saveGameMonstersWrite(SaveGameMonsterRecord *monsterTable, std::FILE *f)
             }
         }
         for (i = 0; i < MONSTERTABLE_SIZE; i++) {
-            if (!writeChar(monsterTable[i].unused1, f)) {
+            if (!writeChar(monsterTable[i].z, f)) {
                 return 0;
             }
         }
         for (i = 0; i < MONSTERTABLE_SIZE; i++) {
-            if (!writeChar(monsterTable[i].unused2, f)) {
+            if (!writeChar(monsterTable[i].unused, f)) {
                 return 0;
             }
         }
@@ -394,12 +394,12 @@ int saveGameMonstersRead(SaveGameMonsterRecord *monsterTable, std::FILE *f)
         }
     }
     for (i = 0; i < MONSTERTABLE_SIZE; i++) {
-        if (!readChar(&monsterTable[i].unused1, f)) {
+        if (!readChar(&monsterTable[i].z, f)) {
             return 0;
         }
     }
     for (i = 0; i < MONSTERTABLE_SIZE; i++) {
-        if (!readChar(&monsterTable[i].unused1, f)) {
+        if (!readChar(&monsterTable[i].unused, f)) {
             return 0;
         }
     }

@@ -19,14 +19,14 @@
 
 City::City()
     :Map(),
-	 name(),
-	 type(),
-	 persons(),
-	 tlk_fname(),
-	 personroles(),
-	 personObjects(),
-	 normalDialogues(),
-	 extraDialogues()
+     name(),
+     type(),
+     persons(),
+     tlk_fname(),
+     personroles(),
+     personObjects(),
+     normalDialogues(),
+     extraDialogues()
 {
 }
 

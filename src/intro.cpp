@@ -1197,7 +1197,7 @@ void IntroController::updateScreen()
         menuArea.textAt(
             10,
 #if 0
-			9,
+            9,
 #else
             8,
 #endif
@@ -1304,6 +1304,7 @@ void IntroController::finishInitiateGame(
     saveGame.reagents[REAG_GARLIC] = 4;
     saveGame.torches = 2;
     saveGame.write(saveGameFile);
+    std::fflush(saveGameFile);
     fsync(fileno(saveGameFile));
     std::fclose(saveGameFile);
     sync();
@@ -1311,6 +1312,7 @@ void IntroController::finishInitiateGame(
         std::fopen((tmpstr + MONSTERS_SAV_BASE_FILENAME).c_str(), "wb");
     if (saveGameFile) {
         saveGameMonstersWrite(nullptr, saveGameFile);
+        std::fflush(saveGameFile);
         fsync(fileno(saveGameFile));
         std::fclose(saveGameFile);
         sync();
@@ -1539,7 +1541,7 @@ void IntroController::showText(const std::string &text)
     std::string current = text;
     int lineNo = 0;
     questionArea.clear();
-    unsigned long pos = current.find("\n");
+    std::size_t pos = current.find("\n");
     while (pos < current.length()) {
         questionArea.textAt(0, lineNo++, "%s", current.substr(0, pos).c_str());
         current = current.substr(pos + 1);
@@ -2058,7 +2060,7 @@ void IntroController::initPlayers(SaveGame *saveGame)
             saveGame->players[p].sex = initValuesForNpcClass[i].sex;
             saveGame->players[p].hp = saveGame->players[p].hpMax =
                 initValuesForClass[i].level * 100;
-            player = std::move(PartyMember(nullptr, &saveGame->players[p]));
+            player = PartyMember(nullptr, &saveGame->players[p]);
             saveGame->players[p].mp = player.getMaxMp();
             p++;
         }

@@ -24,32 +24,11 @@
 #include "types.h"
 #include "utils.h"
 #include "settings.h"
+
 /**
  * MapCoords Class Implementation
  */
 MapCoords MapCoords::nowhere(-1, -1, -1);
-
-bool MapCoords::operator==(const MapCoords &a) const
-{
-    return (x == a.x) && (y == a.y) && (z == a.z);
-}
-
-bool MapCoords::operator!=(const MapCoords &a) const
-{
-    return !operator==(a);
-}
-
-bool MapCoords::operator<(const MapCoords &a)  const
-{
-    // TODO cooler boolean logic
-    if (x > a.x) {
-        return false;
-    }
-    if (y > a.y) {
-        return false;
-    }
-    return z < a.z;
-}
 
 MapCoords &MapCoords::wrap(const Map *map)
 {
@@ -307,7 +286,6 @@ Map::Map()
      data(),
      objects(),
      labels(),
-     objectsByLocation(),
      tileset(nullptr),
      tilemap(nullptr),
      monsterTable()
@@ -337,27 +315,26 @@ Object *Map::objectAt(const Coords &coords)
     /* FIXME: return a list instead of one object */
     ObjectDeque::const_iterator i;
     Object *objAt = nullptr;
-    std::pair<ObjectLocMap::iterator, ObjectLocMap::iterator> p =
-        objectsByLocation.equal_range(coords);
-    for (ObjectLocMap::iterator i = p.first; i != p.second; i++) {
-        Object *obj = i->second;
-        /* get the most visible object */
-        if (objAt
-            && (objAt->getType() == Object::UNKNOWN)
-            && (obj->getType() != Object::UNKNOWN)) {
-            objAt = obj;
-        }
-        /* give priority to objects that have the focus */
-        else if (objAt && (!objAt->hasFocus()) && (obj->hasFocus())) {
-            objAt = obj;
-        } else if (!objAt) {
-            objAt = obj;
+    for (i = objects.begin(); i != objects.end(); i++) {
+        Object *obj = *i;
+        if (__builtin_expect(obj->getCoords() == coords, false)) {
+            /* get the most visible object */
+            if (!objAt) {
+                objAt = obj;
+            }
+            else if (objAt->getType() < obj->getType()) {
+                objAt = obj;
+            }
+            /* give priority to objects that have the focus */
+            else if ((!objAt->hasFocus()) && (obj->hasFocus())) {
+                objAt = obj;
+            }
         }
     }
     return objAt;
 } // Map::objectAt
 
-
+    
 /**
  * Returns the portal for the correspoding action(s) given.
  * If there is no portal that corresponds to the actions flagged
@@ -517,9 +494,9 @@ void Map::findWalkability(Coords coords, int *path_data)
  */
 Creature *Map::addCreature(const Creature *creature, Coords coords)
 {
-    Creature *m = new Creature;
+    Creature *m = new Creature(*creature);
     /* make a copy of the creature before placing it */
-    *m = *creature;
+    // *m = *creature;
     m->setInitialHp();
     m->setStatus(STAT_GOOD);
     m->setMap(this);
@@ -539,6 +516,8 @@ Creature *Map::addCreature(const Creature *creature, Coords coords)
     }
     /* place the creature on the map */
     objects.push_back(m);
+    m->setCoords(coords);
+    m->setPrevCoords(coords);
     return m;
 } // Map::addCreature
 
@@ -564,6 +543,8 @@ Object *Map::addObject(MapTile tile, MapTile prevtile, Coords coords)
     obj->setCoords(coords);
     obj->setPrevCoords(coords);
     objects.push_front(obj);
+    obj->setCoords(coords);
+    obj->setPrevCoords(coords);
     return obj;
 }
 
@@ -580,17 +561,6 @@ void Map::removeObject(const Object *rem, bool deleteObject)
     ObjectDeque::iterator i;
     for (i = objects.begin(); i != objects.end(); i++) {
         if (*i == rem) {
-            std::pair<ObjectLocMap::iterator, ObjectLocMap::iterator> p =
-                objectsByLocation.equal_range((*i)->getCoords());
-            for (ObjectLocMap::iterator j = p.first;
-                 j != p.second;
-                 /* nothing */) {
-                if (j->second == *i) {
-                    j = objectsByLocation.erase(j);
-                } else {
-                    j++;
-                }
-            }
             /* Party members persist through different maps,
                so don't delete them! */
             if (deleteObject && !isPartyMember(*i)) {
@@ -606,17 +576,6 @@ ObjectDeque::iterator Map::removeObject(
     ObjectDeque::iterator rem, bool deleteObject
 )
 {
-    std::pair<ObjectLocMap::iterator, ObjectLocMap::iterator> p =
-        objectsByLocation.equal_range((*rem)->getCoords());
-    for (ObjectLocMap::iterator j = p.first;
-         j != p.second;
-         /* nothing */) {
-        if (j->second == *rem) {
-            j = objectsByLocation.erase(j);
-        } else {
-            j++;
-        }
-    }
     /* Party members persist through different maps, so don't delete them! */
     if (deleteObject && !isPartyMember(*rem)) {
         delete *rem;
@@ -696,7 +655,6 @@ void Map::resetObjectAnimations()
  */
 void Map::clearObjects()
 {
-    objectsByLocation.clear();
     objects.clear();
 }
 
@@ -931,7 +889,7 @@ bool Map::fillMonsterTable()
         obj = *current;
         /* moving objects first */
         if ((obj->getType() == Object::CREATURE)
-            && (obj->getMovementBehavior() != MOVEMENT_FIXED)) {
+            /* && (obj->getMovementBehavior() != MOVEMENT_FIXED) */ ) {
             Creature *c = dynamic_cast<Creature *>(obj);
             /* whirlpools and storms are separated from other moving objects */
             if ((c->getId() == WHIRLPOOL_ID) || (c->getId() == STORM_ID)) {
@@ -976,12 +934,16 @@ bool Map::fillMonsterTable()
     for (i = 0; i < MONSTERTABLE_SIZE; i++) {
         Coords c = monsters[i]->getCoords(),
             prevc = monsters[i]->getPrevCoords();
-        monsterTable[i].tile = ttrti(monsters[i]->getTile());
+        monsterTable[i].tile =
+            TileMap::get("base")->untranslate(monsters[i]->getTile());
         monsterTable[i].x = c.x;
         monsterTable[i].y = c.y;
-        monsterTable[i].prevTile = ttrti(monsters[i]->getPrevTile());
+        monsterTable[i].prevTile =
+            TileMap::get("base")->untranslate(monsters[i]->getPrevTile());
         monsterTable[i].prevx = prevc.x;
         monsterTable[i].prevy = prevc.y;
+        monsterTable[i].z = (type == Map::DUNGEON) ? c.z : 0;
+        monsterTable[i].unused = 0;
     }
     return true;
 } // Map::fillMonsterTable
@@ -994,5 +956,6 @@ MapTile Map::tfrti(int raw) const
 
 unsigned int Map::ttrti(MapTile &tile) const
 {
+    ASSERT(tilemap != nullptr, "tilemap hasn't been set");
     return tilemap->untranslate(tile);
 }

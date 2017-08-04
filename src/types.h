@@ -60,29 +60,12 @@ public:
     {
     }
 
-    MapTile(MapTile &&t)
-        :id(std::move(t.id)),
-         frame(std::move(t.frame)),
-         freezeAnimation(std::move(t.freezeAnimation))
-    {
-    }
-
     MapTile &operator=(const MapTile &t)
     {
         if (&t != this) {
             id = t.id;
             frame = t.frame;
             freezeAnimation = t.freezeAnimation;
-        }
-        return *this;
-    }
-    
-    MapTile &operator=(MapTile &&t)
-    {
-        if (&t != this) {
-            id = std::move(t.id);
-            frame = std::move(t.frame);
-            freezeAnimation = std::move(t.freezeAnimation);
         }
         return *this;
     }

@@ -93,14 +93,16 @@ public:
          dataSubTokens(),
          rooms(nullptr),
          roomMaps(nullptr),
-         currentRoom(0)
+         currentRoom(0),
+         tempData(),
+         tempDataSubTokens()
     {
     }
 
-	Dungeon(const Dungeon &) = delete;
-	Dungeon(Dungeon &&) = delete;
-	Dungeon &operator=(const Dungeon &) = delete;
-	Dungeon &operator=(Dungeon &&) = delete;
+    Dungeon(const Dungeon &) = delete;
+    Dungeon(Dungeon &&) = delete;
+    Dungeon &operator=(const Dungeon &) = delete;
+    Dungeon &operator=(Dungeon &&) = delete;
     virtual ~Dungeon();
     virtual std::string getName();
     DungeonToken tokenForTile(MapTile tile);
@@ -119,6 +121,8 @@ public:
     int currentRoom;
     unsigned char party_startx[8];
     unsigned char party_starty[8];
+    MapData tempData;
+    std::vector<unsigned char> tempDataSubTokens;
 };
 
 

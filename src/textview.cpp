@@ -149,8 +149,8 @@ std::string TextView::colorizeString(
         return input;
     }
     std::string output = "";
-    std::string::size_type length = input.length();
-    std::string::size_type i;
+    std::size_t length = input.length();
+    std::size_t i;
     bool colorization = false;
     // loop through the entire std::string
     for (i = 0; i < length; i++) {

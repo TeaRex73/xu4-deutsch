@@ -95,10 +95,10 @@ public:
 
 private:
     MapMgr();
-	MapMgr(const MapMgr &) = delete;
-	MapMgr(MapMgr &&) = delete;
-	MapMgr &operator=(const MapMgr &) = delete;
-	MapMgr &operator=(MapMgr &&) = delete;
+    MapMgr(const MapMgr &) = delete;
+    MapMgr(MapMgr &&) = delete;
+    MapMgr &operator=(const MapMgr &) = delete;
+    MapMgr &operator=(MapMgr &&) = delete;
     ~MapMgr();
     void registerMap(Map *map);
     Map *initMapFromConf(const ConfigElement &mapConf);

@@ -26,7 +26,7 @@ int myfprintf(FILE *stream, const char *format, ...)
     int result;
     std::va_list args;
     va_start(args, format);
-    result = vfprintf(stream, format, args);
+    result = std::vfprintf(stream, format, args);
     va_end(args);
     return result;
 }
@@ -475,7 +475,9 @@ void Image::performTransparencyHack(
             } else {
                 putPixel(x, y, r, g, b, a);
                 if (haloWidth) {
-                    opaqueXYs.push_back(std::pair<int, int>(x, y));
+                    opaqueXYs.push_back(
+                        std::pair<unsigned int, unsigned int>(x, y)
+                    );
                 }
             }
         }
@@ -667,12 +669,12 @@ void Image::drawOn(Image *d, int x, int y, bool anyway) const
     r.h = h;
     if (__builtin_expect(screenMoving, true) || anyway) {
 #if 0
-		if (surface->flags & SDL_SRCALPHA) {
-			myfprintf(stderr, "surface\n");
-		}
-		if (destSurface->flags & SDL_SRCALPHA) {
-			myfprintf(stderr, "destSurface\n");
-		}
+        if (surface->flags & SDL_SRCALPHA) {
+            myfprintf(stderr, "surface\n");
+        }
+        if (destSurface->flags & SDL_SRCALPHA) {
+            myfprintf(stderr, "destSurface\n");
+        }
 #endif
         SDL_BlitSurface(surface, nullptr, destSurface, &r);
     }
@@ -709,12 +711,12 @@ void Image::drawSubRectOn(
     /* dest w & h unused */
     if (__builtin_expect(screenMoving, true) || anyway) {
 #if 0
-		if (surface->flags & SDL_SRCALPHA) {
-			myfprintf(stderr, "surface\n");
-		}
-		if (destSurface->flags & SDL_SRCALPHA) {
-			myfprintf(stderr, "destSurface\n");
-		}
+        if (surface->flags & SDL_SRCALPHA) {
+            myfprintf(stderr, "surface\n");
+        }
+        if (destSurface->flags & SDL_SRCALPHA) {
+            myfprintf(stderr, "destSurface\n");
+        }
 #endif
         SDL_BlitSurface(surface, &src, destSurface, &dest);
     }
@@ -753,12 +755,12 @@ void Image::drawSubRectInvertedOn(
         /* dest w & h unused */
         if (__builtin_expect(screenMoving, true) || anyway) {
 #if 0
-			if (surface->flags & SDL_SRCALPHA) {
-				myfprintf(stderr, "surface\n");
-			}
-			if (destSurface->flags & SDL_SRCALPHA) {
-				myfprintf(stderr, "destSurface\n");
-			}
+            if (surface->flags & SDL_SRCALPHA) {
+                myfprintf(stderr, "surface\n");
+            }
+            if (destSurface->flags & SDL_SRCALPHA) {
+                myfprintf(stderr, "destSurface\n");
+            }
 #endif
             SDL_BlitSurface(surface, &src, destSurface, &dest);
         }

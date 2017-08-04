@@ -31,8 +31,8 @@ public:
     {
     }
 
-	virtual ~Observable() = default;
-	
+    virtual ~Observable() = default;
+    
     void addObserver(Observer<O, A> *o)
     {
         typename std::vector<Observer<O, A> *>::iterator i;
@@ -65,8 +65,8 @@ public:
     void notifyObservers(A arg)
     {
         if (!changed) {
-			return;
-		}
+            return;
+        }
         // vector iterators are invalidated if erase
         // is called, so a copy is used to prevent
         // problems if the observer removes itself (or

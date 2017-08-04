@@ -825,7 +825,7 @@ void useTelescope(int notused)
     if (choice == -1) {
         return;
     }
-	screenMessage("%c", 'A' + choice);
+    screenMessage("%c", 'A' + choice);
     gamePeerCity(choice, nullptr);
     screenMessage("\n");
 }

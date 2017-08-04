@@ -43,9 +43,7 @@ public:
     Person(MapTile tile);
     Person(const Person *p);
     Person(const Person &p) = default;
-    Person(Person &&p) = default;
     Person &operator=(const Person &p) = default;
-    Person &operator=(Person &&p) = default;
     ~Person() = default;
     bool canConverse() const;
     bool isVendor() const;

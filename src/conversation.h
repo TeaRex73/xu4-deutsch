@@ -88,10 +88,10 @@ public:
         Response *(*generator)(const DynamicResponse *),
         const std::string &param = ""
     );
-	DynamicResponse(const DynamicResponse &) = delete;
-	DynamicResponse(DynamicResponse &&) = delete;
-	DynamicResponse &operator=(const DynamicResponse &) = delete;
-	DynamicResponse &operator=(DynamicResponse &&) = delete;
+    DynamicResponse(const DynamicResponse &) = delete;
+    DynamicResponse(DynamicResponse &&) = delete;
+    DynamicResponse &operator=(const DynamicResponse &) = delete;
+    DynamicResponse &operator=(DynamicResponse &&) = delete;
     virtual ~DynamicResponse();
     virtual const std::vector<ResponsePart> &getParts() const;
 
@@ -121,10 +121,10 @@ public:
     class Question {
     public:
         Question(const std::string &txt, Response *yes, Response *no);
-        Question(const Question &q) = delete;
-        Question(Question &&q) = delete;
-        Question &operator=(const Question &q) = delete;
-        Question &operator=(Question &&q) = delete;
+        Question(const Question &) = delete;
+        Question(Question &&) = delete;
+        Question &operator=(const Question &) = delete;
+        Question &operator=(Question &&) = delete;
         ~Question();
         std::string getText();
         Response *getResponse(bool yes);
@@ -144,10 +144,10 @@ public:
     public:
         Keyword(const std::string &kw, Response *resp);
         Keyword(const std::string &kw, const std::string &resp);
-        Keyword(const Keyword &k) = delete;
-        Keyword(Keyword &&k) = delete;
-        Keyword &operator=(const Keyword &k) = delete;
-        Keyword &operator=(Keyword &&j) = delete;
+        Keyword(const Keyword &) = delete;
+        Keyword(Keyword &&) = delete;
+        Keyword &operator=(const Keyword &) = delete;
+        Keyword &operator=(Keyword &&) = delete;
         ~Keyword();
         bool operator==(const std::string &kw) const;
 
@@ -181,10 +181,10 @@ public:
      * Constructors/Destructors
      */
     Dialogue();
-	Dialogue(const Dialogue &) = delete;
-	Dialogue(Dialogue &&) = delete;
-	Dialogue &operator=(const Dialogue &) = delete;
-	Dialogue &operator=(Dialogue &&) = delete;
+    Dialogue(const Dialogue &) = delete;
+    Dialogue(Dialogue &&) = delete;
+    Dialogue &operator=(const Dialogue &) = delete;
+    Dialogue &operator=(Dialogue &&) = delete;
     virtual ~Dialogue();
 
     
@@ -342,10 +342,10 @@ public:
     
     /* Constructor/Destructors */
     Conversation();
-    Conversation(const Conversation &c) = delete;
-    Conversation(Conversation &&c) = delete;
-    Conversation &operator=(const Conversation &c) = delete;
-    Conversation &operator=(Conversation &&c) = delete;
+    Conversation(const Conversation &) = delete;
+    Conversation(Conversation &&) = delete;
+    Conversation &operator=(const Conversation &) = delete;
+    Conversation &operator=(Conversation &&) = delete;
     ~Conversation();
     /* Member functions */
     InputType getInputRequired(int *bufferLen);
