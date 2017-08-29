@@ -13,49 +13,49 @@
 
 
 
-int SaveGame::write(std::FILE *f) const
+bool SaveGame::write(std::FILE *f) const
 {
     int i;
     if (!writeInt(unknown1, f) || !writeInt(moves, f)) {
-        return 0;
+        return false;
     }
     for (i = 0; i < 8; i++) {
         if (!players[i].write(f)) {
-            return 0;
+            return false;
         }
     }
     if (!writeInt(food, f) || !writeShort(gold, f)) {
-        return 0;
+        return false;
     }
     for (i = 0; i < 8; i++) {
         if (!writeShort(karma[i], f)) {
-            return 0;
+            return false;
         }
     }
     if (!writeShort(torches, f)
         || !writeShort(gems, f)
         || !writeShort(keys, f)
         || !writeShort(sextants, f)) {
-        return 0;
+        return false;
     }
     for (i = 0; i < ARMR_MAX; i++) {
         if (!writeShort(armor[i], f)) {
-            return 0;
+            return false;
         }
     }
     for (i = 0; i < WEAP_MAX; i++) {
         if (!writeShort(weapons[i], f)) {
-            return 0;
+            return false;
         }
     }
     for (i = 0; i < REAG_MAX; i++) {
         if (!writeShort(reagents[i], f)) {
-            return 0;
+            return false;
         }
     }
     for (i = 0; i < SPELL_MAX; i++) {
         if (!writeShort(mixtures[i], f)) {
-            return 0;
+            return false;
         }
     }
     if (!writeShort(items, f)
@@ -79,55 +79,55 @@ int SaveGame::write(std::FILE *f) const
         || !writeShort(orientation, f)
         || !writeShort(dnglevel, f)
         || !writeShort(location, f)) {
-        return 0;
+        return false;
     }
-    return 1;
+    return true;
 } // SaveGame::write
 
-int SaveGame::read(std::FILE *f)
+bool SaveGame::read(std::FILE *f)
 {
     int i;
     if (!readInt(&unknown1, f) || !readInt(&moves, f)) {
-        return 0;
+        return false;
     }
     for (i = 0; i < 8; i++) {
         if (!players[i].read(f)) {
-            return 0;
+            return false;
         }
     }
     if (!readInt((unsigned int *)&food, f)
         || !readShort((unsigned short *)&gold, f)) {
-        return 0;
+        return false;
     }
     for (i = 0; i < 8; i++) {
         if (!readShort((unsigned short *)&(karma[i]), f)) {
-            return 0;
+            return false;
         }
     }
     if (!readShort((unsigned short *)&torches, f)
         || !readShort((unsigned short *)&gems, f)
         || !readShort((unsigned short *)&keys, f)
         || !readShort((unsigned short *)&sextants, f)) {
-        return 0;
+        return false;
     }
     for (i = 0; i < ARMR_MAX; i++) {
         if (!readShort((unsigned short *)&(armor[i]), f)) {
-            return 0;
+            return false;
         }
     }
     for (i = 0; i < WEAP_MAX; i++) {
         if (!readShort((unsigned short *)&(weapons[i]), f)) {
-            return 0;
+            return false;
         }
     }
     for (i = 0; i < REAG_MAX; i++) {
         if (!readShort((unsigned short *)&(reagents[i]), f)) {
-            return 0;
+            return false;
         }
     }
     for (i = 0; i < SPELL_MAX; i++) {
         if (!readShort((unsigned short *)&(mixtures[i]), f)) {
-            return 0;
+            return false;
         }
     }
     if (!readShort(&items, f)
@@ -151,13 +151,13 @@ int SaveGame::read(std::FILE *f)
         || !readShort(&orientation, f)
         || !readShort(&dnglevel, f)
         || !readShort(&location, f)) {
-        return 0;
+        return false;
     }
     /* workaround of U4DOS bug to retain savegame compatibility */
     if ((location == 0) && (dnglevel == 0)) {
         dnglevel = 0xFFFF;
     }
-    return 1;
+    return true;
 } // SaveGame::read
 
 void SaveGame::init(const SaveGamePlayerRecord *avatarInfo)
@@ -213,7 +213,7 @@ void SaveGame::init(const SaveGamePlayerRecord *avatarInfo)
     location = 0;
 } // SaveGame::init
 
-int SaveGamePlayerRecord::write(std::FILE *f) const
+bool SaveGamePlayerRecord::write(std::FILE *f) const
 {
     int i;
     if (!writeShort(hp, f)
@@ -226,22 +226,22 @@ int SaveGamePlayerRecord::write(std::FILE *f) const
         || !writeShort(unknown, f)
         || !writeShort((unsigned short)weapon, f)
         || !writeShort((unsigned short)armor, f)) {
-        return 0;
+        return false;
     }
     for (i = 0; i < 16; i++) {
         if (!writeChar(name[i], f)) {
-            return 0;
+            return false;
         }
     }
     if (!writeChar((unsigned char)sex, f)
         || !writeChar((unsigned char)klass, f)
         || !writeChar((unsigned char)status, f)) {
-        return 0;
+        return false;
     }
-    return 1;
+    return true;
 }
 
-int SaveGamePlayerRecord::read(std::FILE *f)
+bool SaveGamePlayerRecord::read(std::FILE *f)
 {
     int i;
     unsigned char ch;
@@ -254,34 +254,34 @@ int SaveGamePlayerRecord::read(std::FILE *f)
         || !readShort(&intel, f)
         || !readShort(&mp, f)
         || !readShort(&unknown, f)) {
-        return 0;
+        return false;
     }
     if (!readShort(&s, f)) {
-        return 0;
+        return false;
     }
     weapon = (WeaponType)s;
     if (!readShort(&s, f)) {
-        return 0;
+        return false;
     }
     armor = (ArmorType)s;
     for (i = 0; i < 16; i++) {
         if (!readChar((unsigned char *)&(name[i]), f)) {
-            return 0;
+            return false;
         }
     }
     if (!readChar(&ch, f)) {
-        return 0;
+        return false;
     }
     sex = (SexType)ch;
     if (!readChar(&ch, f)) {
-        return 0;
+        return false;
     }
     klass = (ClassType)ch;
     if (!readChar(&ch, f)) {
-        return 0;
+        return false;
     }
     status = (StatusType)ch;
-    return 1;
+    return true;
 } // SaveGamePlayerRecord::read
 
 void SaveGamePlayerRecord::init()
@@ -305,103 +305,103 @@ void SaveGamePlayerRecord::init()
     status = STAT_GOOD;
 }
 
-int saveGameMonstersWrite(SaveGameMonsterRecord *monsterTable, std::FILE *f)
+bool saveGameMonstersWrite(SaveGameMonsterRecord *monsterTable, std::FILE *f)
 {
     int i, max;
     if (monsterTable) {
         for (i = 0; i < MONSTERTABLE_SIZE; i++) {
             if (!writeChar(monsterTable[i].tile, f)) {
-                return 0;
+                return false;
             }
         }
         for (i = 0; i < MONSTERTABLE_SIZE; i++) {
             if (!writeChar(monsterTable[i].x, f)) {
-                return 0;
+                return false;
             }
         }
         for (i = 0; i < MONSTERTABLE_SIZE; i++) {
             if (!writeChar(monsterTable[i].y, f)) {
-                return 0;
+                return false;
             }
         }
         for (i = 0; i < MONSTERTABLE_SIZE; i++) {
             if (!writeChar(monsterTable[i].prevTile, f)) {
-                return 0;
+                return false;
             }
         }
         for (i = 0; i < MONSTERTABLE_SIZE; i++) {
             if (!writeChar(monsterTable[i].prevx, f)) {
-                return 0;
+                return false;
             }
         }
         for (i = 0; i < MONSTERTABLE_SIZE; i++) {
             if (!writeChar(monsterTable[i].prevy, f)) {
-                return 0;
+                return false;
             }
         }
         for (i = 0; i < MONSTERTABLE_SIZE; i++) {
             if (!writeChar(monsterTable[i].z, f)) {
-                return 0;
+                return false;
             }
         }
         for (i = 0; i < MONSTERTABLE_SIZE; i++) {
             if (!writeChar(monsterTable[i].unused, f)) {
-                return 0;
+                return false;
             }
         }
     } else {
         max = MONSTERTABLE_SIZE * 8;
         for (i = 0; i < max; i++) {
             if (!writeChar((unsigned char)0, f)) {
-                return 0;
+                return false;
             }
         }
     }
-    return 1;
+    return true;
 } // saveGameMonstersWrite
 
-int saveGameMonstersRead(SaveGameMonsterRecord *monsterTable, std::FILE *f)
+bool saveGameMonstersRead(SaveGameMonsterRecord *monsterTable, std::FILE *f)
 {
     int i;
     for (i = 0; i < MONSTERTABLE_SIZE; i++) {
         if (!readChar(&monsterTable[i].tile, f)) {
-            return 0;
+            return false;
         }
     }
     for (i = 0; i < MONSTERTABLE_SIZE; i++) {
         if (!readChar(&monsterTable[i].x, f)) {
-            return 0;
+            return false;
         }
     }
     for (i = 0; i < MONSTERTABLE_SIZE; i++) {
         if (!readChar(&monsterTable[i].y, f)) {
-            return 0;
+            return false;
         }
     }
     for (i = 0; i < MONSTERTABLE_SIZE; i++) {
         if (!readChar(&monsterTable[i].prevTile, f)) {
-            return 0;
+            return false;
         }
     }
     for (i = 0; i < MONSTERTABLE_SIZE; i++) {
         if (!readChar(&monsterTable[i].prevx, f)) {
-            return 0;
+            return false;
         }
     }
     for (i = 0; i < MONSTERTABLE_SIZE; i++) {
         if (!readChar(&monsterTable[i].prevy, f)) {
-            return 0;
+            return false;
         }
     }
     for (i = 0; i < MONSTERTABLE_SIZE; i++) {
         if (!readChar(&monsterTable[i].z, f)) {
-            return 0;
+            return false;
         }
     }
     for (i = 0; i < MONSTERTABLE_SIZE; i++) {
         if (!readChar(&monsterTable[i].unused, f)) {
-            return 0;
+            return false;
         }
     }
-    return 1;
+    return true;
 } // saveGameMonstersRead

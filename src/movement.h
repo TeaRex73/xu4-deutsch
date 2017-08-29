@@ -44,8 +44,8 @@ public:
 
 void moveAvatar(MoveEvent &event);
 void moveAvatarInDungeon(MoveEvent &event);
-int moveObject(class Map *map, class Creature *obj, MapCoords avatar);
-int moveCombatObject(
+bool moveObject(class Map *map, class Creature *obj, MapCoords avatar);
+bool moveCombatObject(
     int action, class Map * map, class Creature * obj, MapCoords target
 );
 void movePartyMember(MoveEvent &event);

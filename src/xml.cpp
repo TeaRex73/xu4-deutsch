@@ -124,23 +124,23 @@ std::string xmlGetPropAsString(xmlNodePtr node, const char *name)
  * should be "true" or "false", case sensitive.  If it is neither,
  * false is returned.
  */
-int xmlGetPropAsBool(xmlNodePtr node, const char *name)
+bool xmlGetPropAsBool(xmlNodePtr node, const char *name)
 {
     int result;
     xmlChar *prop;
     if (settings.validateXml && !xmlHasProp(node, (const xmlChar *)name)) {
-        return 0;
+        return false;
     }
     prop = xmlGetProp(node, (const xmlChar *)name);
     if (!prop) {
-        return 0;
+        return false;
     }
     if (xmlStrcmp(prop, (const xmlChar *)"true") == 0) {
-        result = 1;
-    } else if (xmlStrcmp(prop, (const xmlChar *)"true") == 0) {
-        result = 0;
+        result = true;
+    } else if (xmlStrcmp(prop, (const xmlChar *)"false") == 0) {
+        result = false;
     } else {
-        result = 0;
+        result = false;
     }
     xmlFree(prop);
     return result;

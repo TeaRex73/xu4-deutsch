@@ -1,3 +1,4 @@
+
 /*
  * $Id$
  */
@@ -828,7 +829,7 @@ void Party::adjustGold(int gold)
  */
 void Party::adjustKarma(KarmaAction action)
 {
-    int timeLimited = 0;
+    bool timeLimited = false;
     int v, newKarma[VIRT_MAX], maxVal[VIRT_MAX];
     /*
      * make a local copy of all virtues, and adjust it according to
@@ -856,19 +857,19 @@ void Party::adjustKarma(KarmaAction action)
         // In U4DOS, we only get +2 COMPASSION,
         // no HONOR or SACRIFICE even if
         // donating all.
-        timeLimited = 1;
+        timeLimited = true;
         AdjustValueMax(newKarma[VIRT_COMPASSION], 2, maxVal[VIRT_COMPASSION]);
         break;
     case KA_BRAGGED:
         AdjustValueMin(newKarma[VIRT_HUMILITY], -5, 1);
         break;
     case KA_HUMBLE:
-        timeLimited = 1;
+        timeLimited = true;
         AdjustValueMax(newKarma[VIRT_HUMILITY], 5, maxVal[VIRT_HUMILITY]);
         break;
     case KA_HAWKWIND:
     case KA_MEDITATION:
-        timeLimited = 1;
+        timeLimited = true;
         AdjustValueMax(
             newKarma[VIRT_SPIRITUALITY], 3, maxVal[VIRT_SPIRITUALITY]
         );
@@ -923,7 +924,7 @@ void Party::adjustKarma(KarmaAction action)
         AdjustValueMin(newKarma[VIRT_HONOR], -10, 1);
         break;
     case KA_DIDNT_CHEAT_REAGENTS:
-        timeLimited = 1;
+        timeLimited = true;
         AdjustValueMax(newKarma[VIRT_HONESTY], 2, maxVal[VIRT_HONESTY]);
         AdjustValueMax(newKarma[VIRT_JUSTICE], 2, maxVal[VIRT_JUSTICE]);
         AdjustValueMax(newKarma[VIRT_HONOR], 2, maxVal[VIRT_HONOR]);
@@ -1052,7 +1053,7 @@ bool Party::canPersonJoin(std::string name, Virtue *v)
 {
     int i;
     if (name.empty()) {
-        return 0;
+        return false;
     }
     for (i = 1; i < 8; i++) {
         if (name == saveGame->players[i].name) {
@@ -1386,6 +1387,7 @@ Direction Party::getDirection() const
 void Party::setDirection(Direction dir)
 {
     transport.setDirection(dir);
+    setTransport(transport);
 }
 
 void Party::adjustReagent(int reagent, int amt)

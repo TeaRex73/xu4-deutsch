@@ -67,7 +67,7 @@ SoundManager *SoundManager::getInstance()
     return instance;
 }
 
-int SoundManager::init()
+bool SoundManager::init()
 {
     /*
      * load sound track filenames from xml config file

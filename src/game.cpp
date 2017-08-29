@@ -72,7 +72,7 @@ void gameInnHandler(void);
 void gameLostEighth(Virtue virtue);
 void gamePartyStarving(void);
 std::time_t gameTimeSinceLastCommand(void);
-int gameSave(void);
+bool gameSave(void);
 
 /* spell functions */
 void gameCastSpell(unsigned int spell, int caster, int param);
@@ -222,11 +222,6 @@ GameController::GameController()
 
 GameController::~GameController()
 {
-    delete c->saveGame;
-    delete c->stats;
-    delete c->aura;
-    delete c->party;
-    delete c->location;
     delete c;
 }
 
@@ -268,7 +263,7 @@ void GameController::init()
     c->col = 0;
     c->stats = new StatsArea();
     c->moonPhase = 0;
-    c->windDirection = DIR_NORTH;
+    c->windDirection = dirRandomDir(MASK_DIR_ALL);
     c->windCounter = 0;
     c->windLock = false;
     c->aura = new Aura();
@@ -357,6 +352,8 @@ void GameController::init()
     } else {
         /* initialize the moons (must be done from the world map) */
         initMoons();
+        /* Enable opacity iff not flying (can fly only on the world map) */
+        c->opacity = !c->saveGame->balloonstate;
     } // if(map->type != Map::WORLD)
     /**
      * Translate info from the savegame to something we can use
@@ -431,7 +428,7 @@ void GameController::init()
 /**
  * Saves the game state into party.sav and monsters.sav.
  */
-int gameSave()
+bool gameSave()
 {
     std::FILE *saveGameFile, *monstersFile, *dngMapFile;
     SaveGame save = *c->saveGame;
@@ -459,7 +456,7 @@ int gameSave()
     );
     if (!saveGameFile) {
         screenMessage("Error opening " PARTY_SAV_BASE_FILENAME "\n");
-        return 0;
+        return false;
     }
     if (!save.write(saveGameFile)) {
         screenMessage("Error writing to " PARTY_SAV_BASE_FILENAME "\n");
@@ -467,7 +464,7 @@ int gameSave()
         fsync(fileno(saveGameFile));
         std::fclose(saveGameFile);
         sync();
-        return 0;
+        return false;
     }
     std::fflush(saveGameFile);
     fsync(fileno(saveGameFile));
@@ -478,7 +475,7 @@ int gameSave()
     );
     if (!monstersFile) {
         screenMessage("Error opening " MONSTERS_SAV_BASE_FILENAME "\n");
-        return 0;
+        return false;
     }
     /* fix creature animations so they are compatible with u4dos */
     c->location->map->resetObjectAnimations();
@@ -490,7 +487,7 @@ int gameSave()
         fsync(fileno(monstersFile));
         std::fclose(monstersFile);
         sync();
-        return 0;
+        return false;
     }
     std::fflush(monstersFile);
     fsync(fileno(monstersFile));
@@ -528,7 +525,7 @@ int gameSave()
         );
         if (!dngMapFile) {
             screenMessage("Error opening " DNGMAP_SAV_BASE_FILENAME "\n");
-            return 0;
+            return false;
         }
         for (z = 0; z < c->location->map->levels; z++) {
             for (y = 0; y < c->location->map->height; y++) {
@@ -574,7 +571,7 @@ int gameSave()
                         fsync(fileno(dngMapFile));
                         std::fclose(dngMapFile);
                         sync();
-                        return 0;
+                        return false;
                     }
                 }
             }
@@ -591,7 +588,7 @@ int gameSave()
         );
         if (!monstersFile) {
             screenMessage("Error opening " OUTMONST_SAV_BASE_FILENAME "\n");
-            return 0;
+            return false;
         }
         /* fix creature animations so they are compatible with u4dos */
         c->location->prev->map->resetObjectAnimations();
@@ -605,14 +602,14 @@ int gameSave()
             fsync(fileno(monstersFile));
             std::fclose(monstersFile);
             sync();
-            return 0;
+            return false;
         }
         std::fflush(monstersFile);
         fsync(fileno(monstersFile));
         std::fclose(monstersFile);
         sync();
     }
-    return 1;
+    return true;
 } // gameSave
 
 
@@ -727,10 +724,10 @@ void GameController::setMap(
  * This restores all relevant information from the previous location,
  * such as the map, map position, etc. (such as exiting a city)
  **/
-int GameController::exitToParentMap()
+bool GameController::exitToParentMap()
 {
     if (!c->location) {
-        return 0;
+        return false;
     }
     if (c->location->prev != nullptr) {
         // Create the balloon for Hythloth
@@ -756,11 +753,10 @@ int GameController::exitToParentMap()
         locationFree(&c->location);
         // restore the tileset to the one the current map uses
         mapArea.setTileset(c->location->map->tileset);
-        return 1;
+        return true;
     }
-    return 0;
+    return false;
 } // GameController::exitToParentMap
-
 
 /**
  * Terminates a game turn.  This performs the post-turn housekeeping
@@ -769,6 +765,11 @@ int GameController::exitToParentMap()
  */
 void GameController::finishTurn()
 {
+    extern bool deathSequenceRunning;
+    if (deathSequenceRunning) {
+        /* none of this makes sense if party is already dead */
+        return;
+    }
     c->lastCommandTime = std::time(nullptr);
     Creature *attacker = nullptr;
     while (1) {
@@ -997,7 +998,7 @@ void gameCastSpell(unsigned int spell, int caster, int param)
 bool GameController::keyPressed(int key)
 {
     bool valid = true;
-    int endTurn = 1;
+    bool endTurn = true;
     Object *obj;
     MapTile *tile;
     if ((key >= 'A') && (key <= ']')) {
@@ -1102,7 +1103,7 @@ bool GameController::keyPressed(int key)
                 }
             }
             /* let the movement handler decide to end the turn */
-            endTurn = (retval & MOVE_END_TURN);
+            endTurn = !!(retval & MOVE_END_TURN);
             break;
         }
         case U4_FKEY:
@@ -1204,7 +1205,7 @@ bool GameController::keyPressed(int key)
                     "3-D view %s\n",
                     DungeonViewer.toggle3DDungeonView() ? "on" : "off"
                 );
-                endTurn = 0;
+                endTurn = false;
             } else {
                 valid = false;
             }
@@ -1337,7 +1338,7 @@ bool GameController::keyPressed(int key)
                     screenMessage("%cBetreten - WAS?%c\n", FG_GREY, FG_WHITE);
                 }
             } else {
-                endTurn = 0; /* entering a portal doesn't end the turn */
+                endTurn = false; /* entering a portal doesn't end the turn */
             }
             break;
         case 'k':
@@ -1684,7 +1685,7 @@ bool GameController::keyPressed(int key)
                 soundPlay(SOUND_ERROR);
                 screenMessage("%cWAS?%c\n", FG_GREY, FG_WHITE);
             }
-            endTurn = 0;
+            endTurn = false;
             break;
         default:
             valid = false;
@@ -3377,6 +3378,7 @@ void gameCheckHullIntegrity()
             c->party->member(i)->setHp(0);
             c->party->member(i)->setStatus(STAT_DEAD);
         }
+        c->stats->update();
         screenRedrawScreen();
         musicMgr->pause();
         soundPlay(SOUND_WHIRLPOOL, false, -1, true);
@@ -3414,6 +3416,7 @@ void GameController::checkSpecialCreatures(Direction dir)
     if ((dir == DIR_EAST)
         && (c->location->coords.x == 0xdd)
         && (c->location->coords.y == 0xe0)) {
+        creatureCleanup(true);
         for (i = 0; i < 8; i++) {
             obj = c->location->map->addCreature(
                 creatureMgr->getById(PIRATE_ID),
@@ -3433,6 +3436,7 @@ void GameController::checkSpecialCreatures(Direction dir)
         && (c->location->coords.y >= 212)
         && (c->location->coords.y < 217)
         && (*c->aura != Aura::HORN)) {
+        creatureCleanup(true);
         for (i = 0; i < 8; i++) {
             c->location->map->addCreature(
                 creatureMgr->getById(DAEMON_ID),
@@ -3498,7 +3502,7 @@ void gameFixupObjects(Map *map)
             MapTile tile = TileMap::get("base")->translate(monster->tile),
                 oldTile = TileMap::get("base")->translate(monster->prevTile);
             if (i < MONSTERTABLE_CREATURES_SIZE) {
-                const Creature *creature = creatureMgr->getByTile(tile);
+                Creature *creature = creatureMgr->getByTile(tile);
                 /* make sure we really have a creature */
                 if (creature) {
                     obj = map->addCreature(creature, coords);
@@ -3516,6 +3520,9 @@ void gameFixupObjects(Map *map)
             }
             /* set the map for our object */
             obj->setMap(map);
+            /* set tile / prevtile, fixes pirate ship direction */
+            obj->setTile(tile);
+            obj->setPrevTile(oldTile);
         }
     }
 } // gameFixupObjects
@@ -3746,9 +3753,9 @@ void gameSetActivePlayer(int player)
 
 /**
  * Removes creatures from the current map if they are too far away from
- * the avatar
+ * the avatar, or removes all creatures to make room for special creatures
  */
-void GameController::creatureCleanup()
+void GameController::creatureCleanup(bool allCreatures)
 {
     ObjectDeque::iterator i;
     Map *map = c->location->map;
@@ -3756,9 +3763,9 @@ void GameController::creatureCleanup()
         Object *obj = *i;
         MapCoords o_coords = obj->getCoords();
         if ((obj->getType() == Object::CREATURE)
-            && (o_coords.z == c->location->coords.z)
-            && (o_coords.distance(c->location->coords, c->location->map)
-                > MAX_CREATURE_DISTANCE)) {
+            && (allCreatures || ((o_coords.z == c->location->coords.z)
+                && (o_coords.distance(c->location->coords, c->location->map)
+                    > MAX_CREATURE_DISTANCE)))) {
             /* delete the object and remove it from the map */
             i = map->removeObject(i);
         } else {
@@ -3853,7 +3860,8 @@ bool gameSpawnCreature(const Creature *m)
         for (i = 0; i < 0x100; i++) {
             new_coords = MapCoords(
                 xu4_random(c->location->map->width),
-                xu4_random(c->location->map->height), coords.z
+                xu4_random(c->location->map->height),
+                coords.z
             );
             const Tile *tile =
                 c->location->map->tileTypeAt(new_coords, WITH_OBJECTS);

@@ -64,6 +64,7 @@
         <label name="blackstone"  x="224" y="133"/>
         <label name="whitestone"  x="64"  y="80"/>
         <label name="lasergun"    x="48"  y="22"/>
+	<label name="pirates"     x="218" y="224"/>
     </map>
 
     <!-- Burgen -->

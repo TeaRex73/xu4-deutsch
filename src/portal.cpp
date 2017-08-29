@@ -59,7 +59,7 @@ void createDngLadder(
  * given and uses it.  If in a dungeon and trying to use a ladder, it creates
  * a portal based on the ladder and uses it.
  */
-int usePortalAt(
+bool usePortalAt(
     Location *location, MapCoords coords, PortalTriggerAction action
 )
 {
@@ -79,25 +79,25 @@ int usePortalAt(
                        && dungeon->ladderDownAt(coords)) {
                 createDngLadder(location, action, &dngLadder);
             } else {
-                return 0;
+                return false;
             }
             portal = &dngLadder;
         } else {
-            return 0;
+            return false;
         }
     }
     /* conditions not met for portal to work */
     if (portal
         && portal->portalConditionsMet
         && !(*portal->portalConditionsMet)(portal)) {
-        return 0;
+        return false;
     }
     /* must klimb or descend on foot! */
     else if (c->transportContext & ~TRANSPORT_FOOT
              && ((action == ACTION_KLIMB)
                  || (action == ACTION_DESCEND))) {
         screenMessage("NUR ZU FUSS!\n");
-        return 1;
+        return true;
     }
     destination = mapMgr->get(portal->destid);
     if (portal->message.empty()) {
@@ -151,7 +151,7 @@ int usePortalAt(
     /* check the transportation requisites of the portal */
     if (c->transportContext & ~portal->portalTransportRequisites) {
         screenMessage("NUR ZU FUSS!\n");
-        return 1;
+        return true;
     }
     /* ok, we know the portal is going to work -- now display the
        custom message, if any */
@@ -164,7 +164,7 @@ int usePortalAt(
     if (portal->exitPortal) {
         game->exitToParentMap();
         musicMgr->play();
-        return 1;
+        return true;
     } else if (portal->destid == location->map->id) {
         location->coords = portal->start;
     } else {
@@ -185,5 +185,5 @@ int usePortalAt(
         Shrine *shrine = dynamic_cast<Shrine *>(destination);
         shrine->enter();
     }
-    return 1;
+    return true;
 } // usePortalAt

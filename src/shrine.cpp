@@ -49,9 +49,9 @@ bool shrineCanEnter(const Portal *p)
             "DU TR[GST NICHT DIE RUNE DES EINTRITTS! "
             "EINE SELTSAME KRAFT H[LT DICH FERN!\n"
         );
-        return 0;
+        return false;
     }
-    return 1;
+    return true;
 }
 
 

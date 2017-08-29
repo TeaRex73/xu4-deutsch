@@ -876,6 +876,7 @@ bool Map::fillMonsterTable()
     ObjectDeque other_creatures;
     ObjectDeque inanimate_objects;
     Object empty;
+    int nForcesOfNature = 0;
     int nCreatures = 0;
     int nObjects = 0;
     int i;
@@ -893,21 +894,34 @@ bool Map::fillMonsterTable()
             Creature *c = dynamic_cast<Creature *>(obj);
             /* whirlpools and storms are separated from other moving objects */
             if ((c->getId() == WHIRLPOOL_ID) || (c->getId() == STORM_ID)) {
+                nForcesOfNature++;
                 monsters.push_back(obj);
             } else {
+                nCreatures++;
                 other_creatures.push_back(obj);
             }
         } else {
+            nObjects++;
             inanimate_objects.push_back(obj);
         }
     }
+    /* limit forces of nature */
+    while(nForcesOfNature > MONSTERTABLE_FORCESOFNATURE_SIZE) {
+        monsters.pop_back();
+        nForcesOfNature--;
+    }
+    nCreatures += nForcesOfNature;
     /**
      * Add other monsters to our whirlpools and storms
      */
-    while (other_creatures.size()
-           && nCreatures < MONSTERTABLE_CREATURES_SIZE) {
+    while (other_creatures.size()) {
         monsters.push_back(other_creatures.front());
         other_creatures.pop_front();
+    }
+    /* limit monsters */
+    while (nCreatures > MONSTERTABLE_CREATURES_SIZE) {
+        monsters.pop_back();
+        nCreatures--;
     }
     /**
      * Add empty objects to our list to fill things up
@@ -918,9 +932,14 @@ bool Map::fillMonsterTable()
     /**
      * Finally, add inanimate objects
      */
-    while (inanimate_objects.size() && nObjects < MONSTERTABLE_OBJECTS_SIZE) {
+    while (inanimate_objects.size()) {
         monsters.push_back(inanimate_objects.front());
         inanimate_objects.pop_front();
+    }
+    /* limit objects */
+    while (nObjects > MONSTERTABLE_OBJECTS_SIZE) {
+        monsters.pop_back();
+        nObjects--;
     }
     /**
      * Fill in the blanks

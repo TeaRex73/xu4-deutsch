@@ -11,7 +11,7 @@
     <description>Ein zähes Mädchen.</description>
     <topic query="job">Ich bin die Stallmagd.</topic>
     <topic query="health">Richtig gut.</topic>
-    <topic query="STAL">Ich hab gesehen, wie du mit dem alten Spitzhorn umgesprungen bist!<question type="0">Du bist nicht etwa hier um 'n Pferd zu klauen, oder?<yes>Das wird dem Boß aber gar nicht gefallen!</yes><no>Dann um Smith zu sehen, was!</no></question></topic>
+    <topic query="STAL">Ich hab gesehen, wie du mit dem alten Spitzhorn umgesprungen bist!<question type="0">Du bist nicht etwa hier, um 'n Pferd zu klauen, oder?<yes>Das wird dem Boß aber gar nicht gefallen!</yes><no>Dann um Smith zu sehen, was!</no></question></topic>
     <topic query="SMIT">Das sprechende Pferd!</topic>
   </person>
   <person id="2" name="Sven" pronoun="Er" turnAwayProb="0">
@@ -25,7 +25,7 @@
     <description>Einen Mann von vielen Jahren.</description>
     <topic query="job">Ich war nahe beim Kodexe!</topic>
     <topic query="health">Gut.</topic>
-    <topic query="KODE">Seine Geheimnisse sind grenzenlos!<question type="0">Hast du ihn gesehen?<yes>Mensch!</yes><no>Such ihn!</no></question></topic>
+    <topic query="KODE">Seine Geheimnisse sind grenzenlos!<question type="1">Hast du ihn gesehen?<yes>Mensch!</yes><no>Such ihn!</no></question></topic>
     <topic query="WORT">Ein Schlüssel und ein Wort werden benötigt, um die Kammer zu betreten. Frag meinen Bruder jenseits des Loch-Sees nach dem Worte!</topic>
   </person>
   <person id="4" name="Sal" pronoun="Sie" turnAwayProb="0">

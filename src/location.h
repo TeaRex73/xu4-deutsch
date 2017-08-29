@@ -44,7 +44,7 @@ public:
     Location &operator=(Location &&) = delete;
     std::vector<MapTile> tilesAt(MapCoords coords, bool &focus);
     TileId getReplacementTile(MapCoords atCoords, Tile const *forTile);
-    int getCurrentPosition(MapCoords *coords);
+    void getCurrentPosition(MapCoords *coords);
     MoveResult move(Direction dir, bool userEvent);
     MapCoords coords;
     Map *map;

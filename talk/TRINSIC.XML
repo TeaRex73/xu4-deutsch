@@ -39,8 +39,8 @@
     <description>Einen würdigen Paladin.</description>
     <topic query="job">Ich suche nach Ehre.</topic>
     <topic query="health">Mir geht es gut.</topic>
-    <topic query="EHRE">Würde besteht nicht darin, Ehren zu erhalten, sondern, Ehren zu verdienen.</topic>
-    <topic query="WUER">Ehre niemanden als die Ehre selbst!<question type="1">Bist du immer ehrenvoll?<yes>Beeindruckend.</yes><no>Strebe danach, so zu sein.</no></question></topic>
+    <topic query="EHRE">Würde besteht nicht darin, Ehrungen zu erhalten, sondern, Ehrungen zu verdienen.</topic>
+    <topic query="WUER">Ehre niemanden mehr als die Ehre selbst!<question type="1">Bist du immer ehrenvoll?<yes>Beeindruckend.</yes><no>Strebe danach, so zu sein.</no></question></topic>
   </person>
   <person id="6" name="Terrin" pronoun="Er" turnAwayProb="0">
     <description>Ein kauerndes Kind.</description>

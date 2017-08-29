@@ -50,7 +50,7 @@ void errorWarning(const char *fmt, ...)
 
 #include <gtk/gtk.h>
 
-int need_gtk_init = 1;
+bool need_gtk_init = true;
 
 void errorFatal(const char *fmt, ...)
 {
@@ -59,7 +59,7 @@ void errorFatal(const char *fmt, ...)
     GtkWidget *dialog;
     if (need_gtk_init) {
         gtk_init(nullptr, 0);
-        need_gtk_init = 0;
+        need_gtk_init = false;
     }
     va_start(args, fmt);
     std::vsnprintf(buffer, sizeof(buffer), fmt, args);

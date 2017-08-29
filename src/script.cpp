@@ -729,7 +729,7 @@ void Script::translate(std::string *text)
             for (item = node->children; item; item = item->next) {
                 if (xmlStrcmp(item->name, (const xmlChar *)nounName.c_str())
                     == 0) {
-                    bool hidden = (bool)xmlGetPropAsBool(item, "hidden");
+                    bool hidden = xmlGetPropAsBool(item, "hidden");
                     if (!hidden) {
                         /* make sure the item's requisites are met */
                         if (!xmlPropExists(item, "req")
@@ -1290,7 +1290,7 @@ Script::ReturnCode Script::sleep(xmlNodePtr script, xmlNodePtr current)
  */
 Script::ReturnCode Script::cursor(xmlNodePtr script, xmlNodePtr current)
 {
-    bool enable = (bool)xmlGetPropAsBool(current, "enable");
+    bool enable = xmlGetPropAsBool(current, "enable");
     if (enable) {
         screenEnableCursor();
     } else {

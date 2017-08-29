@@ -82,8 +82,11 @@ public:
 
 class TurnCompleter {
 public:
-    virtual ~TurnCompleter() {}
-    virtual void finishTurn() = 0;
+    virtual ~TurnCompleter()
+	{
+	}
+
+	virtual void finishTurn() = 0;
 };
 
 
@@ -117,7 +120,7 @@ public:
         const Portal *portal,
         TurnCompleter *turnCompleter = nullptr
     );
-    int exitToParentMap();
+    bool exitToParentMap();
     virtual void finishTurn();
     virtual void update(Party *party, PartyEvent &event);
     virtual void update(Location *location, MoveEvent &event);
@@ -137,7 +140,7 @@ public:
 private:
     void avatarMoved(MoveEvent &event);
     void avatarMovedInDungeon(MoveEvent &event);
-    void creatureCleanup();
+    void creatureCleanup(bool allCreatures = false);
     void checkBridgeTrolls();
     void checkRandomCreatures();
     void checkSpecialCreatures(Direction dir);

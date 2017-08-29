@@ -71,7 +71,7 @@ struct Spell {
     int components;
     LocationContext context;
     TransportContext transportContext;
-    int (*spellFunc)(int);
+    bool (*spellFunc)(int);
     Param paramType;
     int mp;
 };
@@ -84,7 +84,7 @@ int spellGetRequiredMP(unsigned int spell);
 LocationContext spellGetContext(unsigned int spell);
 TransportContext spellGetTransportContext(unsigned int spell);
 std::string spellGetErrorMessage(unsigned int spell, SpellCastError error);
-int spellMix(unsigned int spell, const Ingredients *ingredients);
+bool spellMix(unsigned int spell, const Ingredients *ingredients);
 Spell::Param spellGetParamType(unsigned int spell);
 SpellCastError spellCheckPrerequisites(unsigned int spell, int character);
 bool spellCast(

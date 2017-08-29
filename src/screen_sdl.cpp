@@ -203,7 +203,7 @@ void screenDeinterlaceCga(
 /**
  * Load an image from an ".pic" CGA image file.
  */
-int screenLoadImageCga(
+bool screenLoadImageCga(
     Image **image,
     int width,
     int height,
@@ -247,7 +247,7 @@ int screenLoadImageCga(
             std::free(decompressed_data);
         }
         compressed_data = nullptr;
-        return 0;
+        return false;
     }
     screenDeinterlaceCga(decompressed_data, width, height, tiles, 0);
     img = Image::create(width, height, true, Image::HARDWARE);
@@ -256,7 +256,7 @@ int screenLoadImageCga(
             std::free(decompressed_data);
         }
         compressed_data = nullptr;
-        return 0;
+        return false;
     }
     img->alphaOff();
     img->setPalette(egaPalette, 16);
@@ -287,7 +287,7 @@ int screenLoadImageCga(
     std::free(decompressed_data);
     compressed_data = nullptr;
     (*image) = img;
-    return 1;
+    return true;
 } // screenLoadImageCga
 #endif // if 0
 

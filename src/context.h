@@ -15,12 +15,10 @@
 #include "script.h"
 #include "types.h"
 #include "savegame.h"
-
-class Object;
-class Party;
-class Person;
-class Script;
-class StatsArea;
+#include "object.h"
+#include "player.h"
+#include "script.h"
+#include "stats.h"
 
 typedef enum {
     TRANSPORT_FOOT = 0x1,

@@ -54,7 +54,7 @@
     <topic query="job">Ich bin hier, um dir zu helfen.</topic>
     <topic query="health">Ich bin alt, sehr alt...</topic>
     <topic query="HELF">Such Hilfe in den Burgen!</topic>
-    <topic query="BURG">Such: Das Lyzeum, Empath-Abtei, Schlangenfeste!<question type="0">Wirst du dorthin gehen?<yes>Finde darin alle namens Antos und frag nach der Glocke, dem Buche und der Kerze!</yes><no>Leider.</no></question></topic>
+    <topic query="BURG">Such: Das Lyzeum, Empath-Abtei, Schlangenburg!<question type="0">Wirst du dorthin gehen?<yes>Finde darin alle namens Antos und frag nach der Glocke, dem Buche und der Kerze!</yes><no>Leider.</no></question></topic>
   </person>
   <person id="8" name="eine Wache" pronoun="Er" turnAwayProb="0">
     <description>Eine stramme Wache.</description>

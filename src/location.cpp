@@ -243,7 +243,7 @@ TileId Location::getReplacementTile(MapCoords atCoords, const Tile *forTile)
  *     If in combat - returns the coordinates of party member with focus
  *     If elsewhere - returns the coordinates of the avatar
  */
-int Location::getCurrentPosition(MapCoords *coords)
+void Location::getCurrentPosition(MapCoords *coords)
 {
     if (context & CTX_COMBAT) {
         CombatController *cc =
@@ -253,7 +253,6 @@ int Location::getCurrentPosition(MapCoords *coords)
     } else {
         *coords = this->coords;
     }
-    return 1;
 }
 
 MoveResult Location::move(Direction dir, bool userEvent)

@@ -25,7 +25,7 @@
 
 
 
-static int codexInit();
+static bool codexInit();
 static void codexDelete();
 static void codexEject(CodexEjectCode code);
 static void codexHandleWOP(const std::string &word);
@@ -47,18 +47,18 @@ static std::vector<std::string> codexEndgameText2;
 /**
  * Initializes the Chamber of the Codex sequence (runs from codexStart())
  */
-static int codexInit()
+static bool codexInit()
 {
     U4FILE *codextext;
     codextext = u4fopen("codex.ger");
     if (!codextext) {
-        return 0;
+        return false;
     }
     codexVirtueQuestions = u4read_stringtable(codextext, 0, 11);
     codexEndgameText1 = u4read_stringtable(codextext, -1, 7);
     codexEndgameText2 = u4read_stringtable(codextext, -1, 5);
     u4fclose(codextext);
-    return 1;
+    return true;
 }
 
 

@@ -15,6 +15,7 @@
 #define DNGMAP_SAV_BASE_FILENAME "dngmap.sav"
 
 #define MONSTERTABLE_SIZE 32
+#define MONSTERTABLE_FORCESOFNATURE_SIZE 4
 #define MONSTERTABLE_CREATURES_SIZE 8
 #define MONSTERTABLE_OBJECTS_SIZE                       \
     (MONSTERTABLE_SIZE - MONSTERTABLE_CREATURES_SIZE)
@@ -178,8 +179,8 @@ enum Rune {
  * The Ultima IV savegame player record data.
  */
 struct SaveGamePlayerRecord {
-    int write(std::FILE *f) const;
-    int read(std::FILE *f);
+    bool write(std::FILE *f) const;
+    bool read(std::FILE *f);
     void init();
     unsigned short hp;
     unsigned short hpMax;
@@ -215,8 +216,8 @@ typedef struct _SaveGameMonsterRecord {
  * Represents the on-disk contents of PARTY.SAV.
  */
 struct SaveGame {
-    int write(std::FILE *f) const;
-    int read(std::FILE *f);
+    bool write(std::FILE *f) const;
+    bool read(std::FILE *f);
     void init(const SaveGamePlayerRecord *avatarInfo);
     unsigned int unknown1;
     unsigned int moves;
@@ -256,7 +257,7 @@ struct SaveGame {
     unsigned short location;
 };
 
-int saveGameMonstersWrite(SaveGameMonsterRecord *monsterTable, std::FILE *f);
-int saveGameMonstersRead(SaveGameMonsterRecord *monsterTable, std::FILE *f);
+bool saveGameMonstersWrite(SaveGameMonsterRecord *monsterTable, std::FILE *f);
+bool saveGameMonstersRead(SaveGameMonsterRecord *monsterTable, std::FILE *f);
 
 #endif // ifndef SAVEGAME_H

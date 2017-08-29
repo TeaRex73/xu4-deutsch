@@ -500,6 +500,7 @@ void EventHandler::run()
                 keycount++;
                 diff = newc - oldc;
                 clocksum += diff;
+#if 0
                 std::fprintf(
                     stderr,
                     "diff = %ld, sum = %ld, avg = %f\n",
@@ -507,6 +508,7 @@ void EventHandler::run()
                     clocksum,
                     ((double) clocksum) / ((double) keycount)
                 );
+#endif
 #endif
                 break;
             }

@@ -88,9 +88,9 @@ void SoundManager::stop_sys(int channel)
     }
 }
 
-int SoundManager::init_sys()
+bool SoundManager::init_sys()
 {
-    return 1;
+    return true;
 }
 
 void SoundManager::del_sys()

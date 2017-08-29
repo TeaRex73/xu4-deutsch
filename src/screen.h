@@ -123,7 +123,7 @@ void screenEnableCursor();
 void screenDisableCursor();
 void screenSetCursorPos(int x, int y);
 void screenSetMouseCursor(MouseCursor cursor);
-int screenPointInMouseArea(int x, int y, MouseArea *area);
+bool screenPointInMouseArea(int x, int y, MouseArea *area);
 Image *screenScale(Image *src, int scale, int n, int filter);
 Image *screenScaleDown(Image *src, int scale);
 extern int screenCurrentCycle;

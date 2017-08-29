@@ -95,7 +95,7 @@
     <description>Eine rußige Bettlerin.</description>
     <topic query="job">Ich bettle um nur ein einziges Goldstück!</topic>
     <topic query="health">Mittelmäßig.</topic>
-    <topic query="BETT">Oh, bitte... Oh, bitte...<question type="0">Wirst du mir bitte ein Goldstück geben?<yes>Liebe, freundliche Seele.</yes><no>Geizkragen, ich weiß das du viele hast!</no></question></topic>
+    <topic query="BETT">Oh, bitte... Oh, bitte...<question type="0">Wirst du mir bitte ein Goldstück geben?<yes>Liebe, freundliche Seele.</yes><no>Geizkragen, ich weiß, daß du viele hast!</no></question></topic>
     <topic query="MANT">Frag das Kind namens Barren.</topic>
   </person>
   <person id="14" name="Barren" pronoun="Er" turnAwayProb="0">

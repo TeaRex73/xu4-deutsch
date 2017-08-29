@@ -11,11 +11,11 @@
  * 4-byte (int), 2-byte (short), and 1-byte (char) values to and from
  * the ultima 4 data files.  If sizeof(int) != 4, all bets are off.
  */
-int writeInt(unsigned int i, std::FILE *f);
-int writeShort(unsigned short s, std::FILE *f);
-int writeChar(unsigned char c, std::FILE *f);
-int readInt(unsigned int *i, std::FILE *f);
-int readShort(unsigned short *s, std::FILE *f);
-int readChar(unsigned char *c, std::FILE *f);
+bool writeInt(unsigned int i, std::FILE *f);
+bool writeShort(unsigned short s, std::FILE *f);
+bool writeChar(unsigned char c, std::FILE *f);
+bool readInt(unsigned int *i, std::FILE *f);
+bool readShort(unsigned short *s, std::FILE *f);
+bool readChar(unsigned char *c, std::FILE *f);
 
 #endif

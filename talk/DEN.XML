@@ -40,7 +40,7 @@
     <topic query="job">Ich bereise.</topic>
     <topic query="health">O.K.</topic>
     <topic query="BERE">Die Länder Britannias.<question type="0">Suchst du hier Informationen?<yes>Worüber?</yes><no>Dann verzieh dich.</no></question></topic>
-    <topic query="SCHA">Sei gewarnt daß, wenn du jemals den Schädel benutzt, außer um ihn zu zerstören, all deine Tugend verloren ist!</topic>
+    <topic query="SCHA">Sei gewarnt, daß, wenn du jemals den Schädel benutzt, außer um ihn zu zerstören, all deine Tugend verloren ist!</topic>
   </person>
   <person id="6" name="Seanna" pronoun="Sie" turnAwayProb="0">
     <description>Eine aufreizende Magierin.</description>

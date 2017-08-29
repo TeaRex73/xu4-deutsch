@@ -11,7 +11,7 @@
 xmlDocPtr xmlParse(const char *filename);
 bool xmlPropExists(xmlNodePtr node, const char *name);
 std::string xmlGetPropAsString(xmlNodePtr node, const char *name);
-int xmlGetPropAsBool(xmlNodePtr node, const char *name);
+bool xmlGetPropAsBool(xmlNodePtr node, const char *name);
 int xmlGetPropAsInt(xmlNodePtr node, const char *name);
 int xmlGetPropAsEnum(
     xmlNodePtr node, const char *name, const char *enumValues[]

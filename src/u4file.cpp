@@ -276,71 +276,71 @@ U4ZipPackageMgr::U4ZipPackageMgr()
         add(upgrade);
     }
     // Check for the default zip packages
-    int flag = 0;
+    bool flag = false;
     std::string pathname;
     do                                {
         // Check for the upgraded package once.
         // unlikely it'll be renamed.
         pathname = u4find_path("ultima4g-1.01.zip", u4Path.u4ZipPaths);
         if (!pathname.empty()) {
-            flag = 1;
+            flag = true;
             break;
         }
         // We check for all manner of generic packages, though.
         pathname = u4find_path("ultima4g.zip", u4Path.u4ZipPaths);
         if (!pathname.empty()) {
-            flag = 1;
+            flag = true;
             break;
         }
         pathname = u4find_path("Ultima4g.zip", u4Path.u4ZipPaths);
         if (!pathname.empty()) {
-            flag = 1;
+            flag = true;
             break;
         }
         pathname = u4find_path("ULTIMA4G.zip", u4Path.u4ZipPaths);
         if (!pathname.empty()) {
-            flag = 1;
+            flag = true;
             break;
         }
         pathname = u4find_path("u4g.zip", u4Path.u4ZipPaths);
         if (!pathname.empty()) {
-            flag = 1;
+            flag = true;
             break;
         }
         pathname = u4find_path("U4G.zip", u4Path.u4ZipPaths);
         if (!pathname.empty()) {
-            flag = 1;
+            flag = true;
             break;
         }
         // search for the ultimaforever.com zip and variations
         pathname = u4find_path("UltimaIVg.zip", u4Path.u4ZipPaths);
         if (!pathname.empty()) {
-            flag = 1;
+            flag = true;
             break;
         }
         pathname = u4find_path("Ultimaivg.zip", u4Path.u4ZipPaths);
         if (!pathname.empty()) {
-            flag = 1;
+            flag = true;
             break;
         }
         pathname = u4find_path("ULTIMAIVG.zip", u4Path.u4ZipPaths);
         if (!pathname.empty()) {
-            flag = 1;
+            flag = true;
             break;
         }
         pathname = u4find_path("ultimaIVg.zip", u4Path.u4ZipPaths);
         if (!pathname.empty()) {
-            flag = 1;
+            flag = true;
             break;
         }
         pathname = u4find_path("ultimaivg.zip", u4Path.u4ZipPaths);
         if (!pathname.empty()) {
-            flag = 1;
+            flag = true;
             break;
         }
         // If it's not found by this point, give up.
         break;
-    } while (flag == 0);
+    } while (!flag);
     if (flag) {
         f = unzOpen(pathname.c_str());
         if (!f) {

@@ -50,7 +50,7 @@ class SoundManager {
 public:
     ~SoundManager();
     static SoundManager *getInstance();
-    int init();
+    bool init();
     bool load(Sound sound);
     void play(
         Sound sound,
@@ -61,7 +61,7 @@ public:
     void stop(int channel = 1);
     
 private:
-    int init_sys();
+    bool init_sys();
     
     void del()
     {

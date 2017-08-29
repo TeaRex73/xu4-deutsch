@@ -39,7 +39,7 @@
     <description>Einen bewährten Kämpfer.</description>
     <topic query="job">Ich suche nach dem Geheimnisse der Magischen Kugeln.</topic>
     <topic query="health">Halbwegs gut.</topic>
-    <topic query="KUGE">Ein einhändiger Bettler kennt ihre Geheimnisse!<question type="0">Hast du ihn gesehen?<yes>Nur er kennt die Gabe der Kugeln!</yes><no>Finde ihn in der Schlagenfeste denn er weiß von Kugeln!</no></question></topic>
+    <topic query="KUGE">Ein einhändiger Bettler kennt ihre Geheimnisse!<question type="0">Hast du ihn gesehen?<yes>Nur er kennt die Gabe der Kugeln!</yes><no>Finde ihn in der Schlangenfeste denn er weiß von Kugeln!</no></question></topic>
     <topic query="MAGI">Magische Kugeln.</topic>
   </person>
   <person id="6" name="Joe" pronoun="Er" turnAwayProb="32">
@@ -51,9 +51,9 @@
   </person>
   <person id="7" name="Cricket" pronoun="Er" turnAwayProb="32">
     <description>Einen Barden in Grün.</description>
-    <topic query="job">Psst, ich spiele!</topic>
-    <topic query="health">Psst!</topic>
-    <topic query="PSST">Ja, psst!<question type="0">Bist du jetzt still?<yes>Danke.</yes><no>Ich rufe die Wachen!</no></question></topic>
+    <topic query="job">Pßt, ich spiele!</topic>
+    <topic query="health">Pßt!</topic>
+    <topic query="PSST">Ja, pßt!<question type="0">Bist du jetzt still?<yes>Danke.</yes><no>Ich rufe die Wachen!</no></question></topic>
     <topic query="MANT">Das Mantra für den Schrein des Mitgefühles ist 'MU'!</topic>
   </person>
   <person id="8" name="eine Wache" pronoun="Er" turnAwayProb="0">

@@ -33,7 +33,7 @@
     <topic query="job">Ich bewache die Hallen.</topic>
     <topic query="health">Prima.</topic>
     <topic query="HALL">Es gibt keine Gefahr.</topic>
-    <topic query="GEFA">Nun, zumindest nicht im Vergleiche mit einem Altarraume der Höhlen!<question type="0">Hast du die Altäre gelöst?<yes>Gut.</yes><no>Von ihnen gewinnt man einen Dreiteiligen Schlüssel, notwendig, um die Kammer des Kodex zu betreten!</no></question></topic>
+    <topic query="GEFA">Nun, zumindest nicht im Vergleiche mit einem Altarraume der Höhlen!<question type="0">Hast du die Altäre gelöst?<yes>Gut.</yes><no>Von ihnen gewinnt man einen Dreiteiligen Schlüssel, notwendig, um die Kammer des Kodexes zu betreten!</no></question></topic>
   </person>
   <person id="5" name="eine Torwache" pronoun="Er" turnAwayProb="0">
     <description>Eine Wache.</description>

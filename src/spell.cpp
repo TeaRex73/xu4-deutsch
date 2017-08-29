@@ -37,32 +37,32 @@ void spellMagicAttack(
 bool spellMagicAttackAt(
     const Coords &coords, MapTile attackTile, int attackDamage
 );
-static int spellAwaken(int player);
-static int spellBlink(int dir);
-static int spellCure(int player);
-static int spellDispel(int dir);
-static int spellEField(int param);
-static int spellFireball(int dir);
-static int spellGate(int phase);
-static int spellHeal(int player);
-static int spellIceball(int dir);
-static int spellJinx(int unused);
-static int spellKill(int dir);
-static int spellLight(int unused);
-static int spellMMissle(int dir);
-static int spellNegate(int unused);
-static int spellOpen(int unused);
-static int spellProtect(int unused);
-static int spellRez(int player);
-static int spellQuick(int unused);
-static int spellSleep(int unused);
-static int spellTremor(int unused);
-static int spellUndead(int unused);
-static int spellView(int unsued);
-static int spellWinds(int fromdir);
-static int spellXit(int unused);
-static int spellYup(int unused);
-static int spellZdown(int unused);
+static bool spellAwaken(int player);
+static bool spellBlink(int dir);
+static bool spellCure(int player);
+static bool spellDispel(int dir);
+static bool spellEField(int param);
+static bool spellFireball(int dir);
+static bool spellGate(int phase);
+static bool spellHeal(int player);
+static bool spellIceball(int dir);
+static bool spellJinx(int unused);
+static bool spellKill(int dir);
+static bool spellLight(int unused);
+static bool spellMMissle(int dir);
+static bool spellNegate(int unused);
+static bool spellOpen(int unused);
+static bool spellProtect(int unused);
+static bool spellRez(int player);
+static bool spellQuick(int unused);
+static bool spellSleep(int unused);
+static bool spellTremor(int unused);
+static bool spellUndead(int unused);
+static bool spellView(int unsued);
+static bool spellWinds(int fromdir);
+static bool spellXit(int unused);
+static bool spellYup(int unused);
+static bool spellZdown(int unused);
 
 /* masks for reagents */
 #define ASH (1 << REAG_ASH)
@@ -459,7 +459,7 @@ std::string spellGetErrorMessage(unsigned int spell, SpellCastError error)
  * Mix reagents for a spell.  Fails and returns false if the reagents
  * selected were not correct.
  */
-int spellMix(unsigned int spell, const Ingredients *ingredients)
+bool spellMix(unsigned int spell, const Ingredients *ingredients)
 {
     int regmask, reg;
     ASSERT(spell < N_SPELLS, "invalid spell: %d", spell);
@@ -470,10 +470,10 @@ int spellMix(unsigned int spell, const Ingredients *ingredients)
         }
     }
     if (regmask != spells[spell].components) {
-        return 0;
+        return false;
     }
     c->saveGame->mixtures[spell]++;
-    return 1;
+    return true;
 }
 
 Spell::Param spellGetParamType(unsigned int spell)
@@ -632,21 +632,22 @@ bool spellMagicAttackAt(
     return objectHit;
 }
 
-static int spellAwaken(int player)
+static bool spellAwaken(int player)
 {
     ASSERT(player < 8, "player out of range: %d", player);
     PartyMember *p = c->party->member(player);
     if ((player < c->party->size())
         && (p->getStatus() == STAT_SLEEPING)) {
         p->wakeUp();
-        return 1;
+        return true;
     }
-    return 0;
+    return false;
 }
 
-static int spellBlink(int dir)
+static bool spellBlink(int dir)
 {
-    int i, failed = 0, distance, diff, *var;
+    int i, distance, diff, *var;
+    bool success = true;
     Direction reverseDir = dirReverse((Direction)dir);
     MapCoords coords = c->location->coords;
     /* Blink doesn't work near the mouth of the abyss */
@@ -654,7 +655,7 @@ static int spellBlink(int dir)
        map, and that you can teleport to the abyss from the left edge of
        the map. At least in the original. This is now fixed. */
     if ((coords.x >= 192) && (coords.y >= 192)) {
-        return 0;
+        return false;
     }
     /* figure out what numbers we're working with */
     var = (dir & (DIR_WEST | DIR_EAST)) ? &coords.x : &coords.y;
@@ -682,19 +683,20 @@ static int spellBlink(int dir)
     if (c->location->map->tileTypeAt(coords, WITH_OBJECTS)->isWalkable()) {
         /* we didn't move! */
         if (c->location->coords == coords) {
-            failed = 1;
+            success = false;
         }
+        /* CHANGE: No teleporting onto isle of the abyss and surroundings */
         if ((coords.x >= 192) && (coords.y >= 192)) {
-            failed = 1;
+            success = false;
         }
         c->location->coords = coords;
     } else {
-        failed = 1;
+        success = false;
     }
-    return failed ? 0 : 1;
+    return success;
 } // spellBlink
 
-static int spellCure(int player)
+static bool spellCure(int player)
 {
     ASSERT(player < 8, "player out of range: %d", player);
     GameController::flashTile(
@@ -703,7 +705,7 @@ static int spellCure(int player)
     return c->party->member(player)->heal(HT_CURE);
 }
 
-static int spellDispel(int dir)
+static bool spellDispel(int dir)
 {
     MapTile *tile;
     MapCoords field;
@@ -739,7 +741,7 @@ static int spellDispel(int dir)
                 c->location->map->annotations->add(
                     field, newTile, false, true
                 );
-                return 1;
+                return true;
             }
         }
     }
@@ -748,7 +750,7 @@ static int spellDispel(int dir)
      */
     tile = c->location->map->tileAt(field, WITHOUT_OBJECTS);
     if (!tile->getTileType()->canDispel()) {
-        return 0;
+        return false;
     }
     /*
      * get a replacement tile for the field
@@ -757,10 +759,10 @@ static int spellDispel(int dir)
         c->location->getReplacementTile(field, tile->getTileType())
     );
     c->location->map->annotations->add(field, newTile, false, true);
-    return 1;
+    return true;
 } // spellDispel
 
-static int spellEField(int param)
+static bool spellEField(int param)
 {
     MapTile fieldTile(0);
     int fieldType;
@@ -789,7 +791,7 @@ static int spellEField(int param)
                 c->location->map->tileset->getByName("dungeon_sleep_field")->getId();
             break;
         default:
-            return 0;
+            return false;
         }
     } else {
         switch (fieldType) {
@@ -810,13 +812,13 @@ static int spellEField(int param)
                 c->location->map->tileset->getByName("sleep_field")->getId();
             break;
         default:
-            return 0;
+            return false;
         }
     }
     c->location->getCurrentPosition(&coords);
     coords.move((Direction)dir, c->location->map);
     if (MAP_IS_OOB(c->location->map, coords)) {
-        return 0;
+        return false;
     } else {
         /*
          * Observed behaviour on Amiga version of Ultima IV:
@@ -830,7 +832,7 @@ static int spellEField(int param)
         const Tile *tile =
             c->location->map->tileTypeAt(coords, WITH_GROUND_OBJECTS);
         if (!tile->isWalkable()) {
-            return 0;
+            return false;
         }
         /* Get rid of old field, if any */
         Annotation::List a =
@@ -845,16 +847,16 @@ static int spellEField(int param)
         }
         c->location->map->annotations->add(coords, fieldTile);
     }
-    return 1;
+    return true;
 } // spellEField
 
-static int spellFireball(int dir)
+static bool spellFireball(int dir)
 {
     spellMagicAttack("hit_flash", (Direction)dir, 24, 128);
-    return 1;
+    return true;
 }
 
-static int spellGate(int phase)
+static bool spellGate(int phase)
 {
     const Coords *moongate;
     GameController::flashTile(c->location->coords, "moongate", 4);
@@ -862,82 +864,82 @@ static int spellGate(int phase)
     if (moongate) {
         c->location->coords = *moongate;
     }
-    return 1;
+    return true;
 }
 
-static int spellHeal(int player)
+static bool spellHeal(int player)
 {
     ASSERT(player < 8, "player out of range: %d", player);
     GameController::flashTile(
         c->party->member(player)->getCoords(), "wisp", 2
     );
     c->party->member(player)->heal(HT_HEAL);
-    return 1;
+    return true;
 }
 
-static int spellIceball(int dir)
+static bool spellIceball(int dir)
 {
     spellMagicAttack("magic_flash", (Direction)dir, 32, 224);
-    return 1;
+    return true;
 }
 
-static int spellJinx(int unused)
+static bool spellJinx(int unused)
 {
     c->aura->set(Aura::JINX, 20);
-    return 1;
+    return true;
 }
 
-static int spellKill(int dir)
+static bool spellKill(int dir)
 {
     spellMagicAttack("whirlpool", (Direction)dir, -1, 232);
-    return 1;
+    return true;
 }
 
-static int spellLight(int unused)
+static bool spellLight(int unused)
 {
     c->party->lightTorch(100, false);
-    return 1;
+    return true;
 }
 
-static int spellMMissle(int dir)
+static bool spellMMissle(int dir)
 {
     spellMagicAttack("miss_flash", (Direction)dir, 16, 64);
-    return 1;
+    return true;
 }
 
-static int spellNegate(int unused)
+static bool spellNegate(int unused)
 {
     c->aura->set(Aura::NEGATE, 20);
-    return 1;
+    return true;
 }
 
-static int spellOpen(int unused)
+static bool spellOpen(int unused)
 {
     getChest(-2);
     // HACK: -2 will not prompt for opener
-    // CHANGE: And double the gold
-    return 1;
+    // CHANGE: And pay more gold
+    return true;
 }
 
-static int spellProtect(int unused)
+static bool spellProtect(int unused)
 {
     c->aura->set(Aura::PROTECTION, 20);
-    return 1;
+    return true;
 }
 
-static int spellRez(int player)
+static bool spellRez(int player)
 {
     ASSERT(player < 8, "player out of range: %d", player);
     return c->party->member(player)->heal(HT_RESURRECT);
 }
 
-static int spellQuick(int unused)
+static bool spellQuick(int unused)
 {
     c->aura->set(Aura::QUICKNESS, 20);
-    return 1;
+    return true;
 }
 
-static int spellSleep(int unused)
+static bool spellSleep(int unused)
 {
     CombatMap *cm = getCombatMap();
     CreatureVector creatures = cm->getCreatures();
@@ -956,10 +958,10 @@ static int spellSleep(int unused)
             soundPlay(SOUND_EVADE);
         }
     }
-    return 1;
+    return true;
 }
 
-static int spellTremor(int unused)
+static bool spellTremor(int unused)
 {
     CombatController *ct = spellCombatController();
     CreatureVector creatures = ct->getMap()->getCreatures();
@@ -991,10 +993,10 @@ static int spellTremor(int unused)
             }
         }
     }
-    return 1;
+    return true;
 } // spellTremor
 
-static int spellUndead(int unused)
+static bool spellUndead(int unused)
 {
     CombatController *ct = spellCombatController();
     CreatureVector creatures = ct->getMap()->getCreatures();
@@ -1007,55 +1009,55 @@ static int spellUndead(int unused)
             }
         }
     }
-    return 1;
+    return true;
 }
 
-static int spellView(int unsued)
+static bool spellView(int unsued)
 {
     peer(false);
-    return 1;
+    return true;
 }
 
-static int spellWinds(int fromdir)
+static bool spellWinds(int fromdir)
 {
     c->windDirection = fromdir;
-    return 1;
+    return true;
 }
 
-static int spellXit(int unused)
+static bool spellXit(int unused)
 {
     if (!c->location->map->isWorldMap()) {
         /* CHANGE: can't cast in Hythloth - too easy */
         if (c->location->map->id == MAP_HYTHLOTH) {
-            return 0;
+            return false;
         }
         /*Otherwise it always works */
         screenMessage("Verlasse...\n");
         game->exitToParentMap();
         musicMgr->play();
-        return 1;
+        return true;
     }
-    return 0;
+    return false;
 }
 
-static int spellYup(int unused)
+static bool spellYup(int unused)
 {
     MapCoords coords = c->location->coords;
     Dungeon *dungeon = dynamic_cast<Dungeon *>(c->location->map);
     /* can't cast in the Abyss CHANGE: or in Hythloth - too easy */
     if (c->location->map->id == MAP_ABYSS ||
         c->location->map->id == MAP_HYTHLOTH) {
-        return 0;
+        return false;
     }
     /* staying in the dungeon */
     else if (coords.z > 0) {
-        for (int i = 0; i < 0x80; i++) {
+        for (int i = 0; i < 0x100; i++) {
             coords = MapCoords(
                 xu4_random(8), xu4_random(8), c->location->coords.z - 1
             );
             if (dungeon->validTeleportLocation(coords)) {
                 c->location->coords = coords;
-                return 1;
+                return true;
             }
         }
     }
@@ -1064,37 +1066,37 @@ static int spellYup(int unused)
         screenMessage("Verlasse...\n");
         game->exitToParentMap();
         musicMgr->play();
-        return 1;
+        return true;
     }
     /* didn't find a place to go, failed! */
-    return 0;
+    return false;
 } // spellYup
 
-static int spellZdown(int unused)
+static bool spellZdown(int unused)
 {
     MapCoords coords = c->location->coords;
     Dungeon *dungeon = dynamic_cast<Dungeon *>(c->location->map);
     /* can't cast in the Abyss CHANGE: or in Hythloth - too easy */
     if (c->location->map->id == MAP_ABYSS ||
         c->location->map->id == MAP_HYTHLOTH) {
-        return 0;
+        return false;
     }
     /* can't go lower than level 8 */
     else if (coords.z >= 7) {
-        return 0;
+        return false;
     } else {
-        for (int i = 0; i < 0x80; i++) {
+        for (int i = 0; i < 0x100; i++) {
             coords = MapCoords(
                 xu4_random(8), xu4_random(8), c->location->coords.z + 1
             );
             if (dungeon->validTeleportLocation(coords)) {
                 c->location->coords = coords;
-                return 1;
+                return true;
             }
         }
     }
     /* didn't find a place to go, failed! */
-    return 0;
+    return false;
 } // spellZdown
 
 const Spell *getSpell(int i)

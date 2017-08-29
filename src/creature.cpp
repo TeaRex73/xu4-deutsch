@@ -323,6 +323,7 @@ CreatureState Creature::getState() const
     }
 } // Creature::getState
 
+
 /**
  * Performs a special action for the creature
  * Returns true if the action takes up the creatures
@@ -1098,7 +1099,7 @@ Creature *CreatureMgr::randomForTile(const Tile *tile)
     }
     if (c->saveGame->moves > 30000) {
         era = 0x0f;
-    } else if (c->saveGame->moves > 20000) {
+    } else if (c->saveGame->moves > 10000) {
         era = 0x07;
     } else {
         era = 0x03;
@@ -1107,35 +1108,6 @@ Creature *CreatureMgr::randomForTile(const Tile *tile)
     randTile += era & xu4_random(0x10) & xu4_random(0x10);
     return getByTile(randTile);
 } // CreatureMgr::randomForTile
-
-
-#if 0
-/**
- * Creates a random creature based on the dungeon level given
- */
-Creature *CreatureMgr::randomForDungeon(int dngLevel)
-{
-    static std::vector<CreatureId> id_list;
-    if (id_list.size() == 0) {
-        id_list.push_back(RAT_ID);
-        id_list.push_back(BAT_ID);
-        id_list.push_back(GIANT_SPIDER_ID);
-        id_list.push_back(GHOST_ID);
-        id_list.push_back(SLIME_ID);
-        id_list.push_back(TROLL_ID);
-        id_list.push_back(GREMLIN_ID);
-        id_list.push_back(REAPER_ID);
-        id_list.push_back(INSECT_SWARM_ID);
-        id_list.push_back(GAZER_ID);
-        id_list.push_back(PHANTOM_ID);
-        id_list.push_back(ORC_ID);
-        id_list.push_back(SKELETON_ID);
-        id_list.push_back(ROGUE_ID);
-    }
-    /* FIXME: how does u4dos do it? */
-    return getById(id_list[xu4_random(id_list.size())]);
-} // CreatureMgr::randomForDungeon
-#endif // if 0
 
 
 /**

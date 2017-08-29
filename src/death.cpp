@@ -32,7 +32,7 @@
 
 int timerCount;
 unsigned int timerMsg;
-int deathSequenceRunning = 0;
+bool deathSequenceRunning = false;
 
 void deathTimer(void *data);
 void deathRevive(void);
@@ -62,10 +62,11 @@ void deathStart(int delay)
     if (deathSequenceRunning) {
         return;
     }
+    deathSequenceRunning = true;
+    game->paused = true;
     c->willPassTurn = false;
     // stop playing music
     musicMgr->pause();
-    deathSequenceRunning = 1;
     timerCount = 0;
     timerMsg = 0;
     gameSetViewMode(VIEW_DEAD);
@@ -105,7 +106,6 @@ void deathRevive()
         game->exitToParentMap();
     }
     eventHandler->setController(game);
-    deathSequenceRunning = 0;
     gameSetViewMode(VIEW_NORMAL);
     /* Move our world map location to Lord British's Castle */
     c->location->coords = c->location->map->portals[0]->coords;
@@ -125,4 +125,6 @@ void deathRevive()
     screenRedrawScreen();
     c->lastCommandTime = std::time(nullptr);
     c->willPassTurn = true;
+    game->paused = false;
+    deathSequenceRunning = false;
 } // deathRevive

@@ -31,7 +31,7 @@ bool collisionOverride = false;
 void moveAvatar(MoveEvent &event)
 {
     MapCoords newCoords;
-    int slowed = 0;
+    bool slowed = false;
     SlowedType slowedType = SLOWED_BY_TILE;
     /* Check to see if we're on the balloon */
     if ((c->transportContext == TRANSPORT_BALLOON) && event.userEvent) {
@@ -181,7 +181,7 @@ void moveAvatarInDungeon(MoveEvent &event)
  * tile direction changed, or object simply cannot move
  * (fixed objects, nowhere to go, etc.)
  */
-int moveObject(Map *map, Creature *obj, MapCoords avatar)
+bool moveObject(Map *map, Creature *obj, MapCoords avatar)
 {
     int dirmask = DIR_NONE;
     Direction dir;
@@ -225,7 +225,7 @@ int moveObject(Map *map, Creature *obj, MapCoords avatar)
         new_coords.move(dir, c->location->map);
         obj->setLastDir(dir);
     } else {
-        return 0;
+        return false;
     }
     /* figure out what method to use to tell if the object is
        getting slowed */
@@ -248,11 +248,11 @@ int moveObject(Map *map, Creature *obj, MapCoords avatar)
     obj->setPrevCoords(obj->getCoords());
     /* see if the object needed to turn instead of move */
     if (obj->setDirection(dir)) {
-        return 0;
+        return false;
     }
     /* was the object slowed? */
     if (slowed) {
-        return 0;
+        return false;
     }
     /**
      * Set the new coordinates
@@ -260,14 +260,14 @@ int moveObject(Map *map, Creature *obj, MapCoords avatar)
     if (!(new_coords == obj->getCoords()) && !MAP_IS_OOB(map, new_coords)) {
         obj->setCoords(new_coords);
     }
-    return 1;
+    return true;
 } // moveObject
 
 
 /**
  * Moves an object in combat according to its chosen combat action
  */
-int moveCombatObject(int act, Map *map, Creature *obj, MapCoords target)
+bool moveCombatObject(int act, Map *map, Creature *obj, MapCoords target)
 {
     MapCoords new_coords = obj->getCoords();
     int valid_dirs = map->getValidMoves(new_coords, obj->getTile());
@@ -277,7 +277,7 @@ int moveCombatObject(int act, Map *map, Creature *obj, MapCoords target)
     int slowed = 0;
     /* fixed objects cannot move */
     if (obj->getMovementBehavior() == MOVEMENT_FIXED) {
-        return 0;
+        return false;
     }
     if (action == CA_FLEE) {
         /* run away from our target instead! */
@@ -305,7 +305,7 @@ int moveCombatObject(int act, Map *map, Creature *obj, MapCoords target)
         new_coords.move(dir, c->location->map);
         obj->setLastDir(dir);
     } else {
-        return 0;
+        return false;
     }
     /* figure out what method to use to tell if the object is
        getting slowed */
@@ -328,9 +328,9 @@ int moveCombatObject(int act, Map *map, Creature *obj, MapCoords target)
     if (!slowed) {
         // Set the new coordinates
         obj->setCoords(new_coords);
-        return 1;
+        return true;
     }
-    return 0;
+    return false;
 } // moveCombatObject
 
 

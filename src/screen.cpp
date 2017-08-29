@@ -1426,7 +1426,7 @@ static void screenGetLineTerms(
  * the line).  The line is defined by the terms a and b of the
  * equation "ax + b = y".
  */
-static int screenPointsOnSameSideOfLine(
+static bool screenPointsOnSameSideOfLine(
     int x1, int y1, int x2, int y2, double a, double b
 )
 {
@@ -1441,12 +1441,12 @@ static int screenPointsOnSameSideOfLine(
     if (((p1 > 0.0) && (p2 > 0.0))
         || ((p1 < 0.0) && (p2 < 0.0))
         || ((p1 == 0.0) && (p2 == 0.0))) {
-        return 1;
+        return true;
     }
-    return 0;
+    return false;
 }
 
-static int screenPointInTriangle(
+static bool screenPointInTriangle(
     int x, int y, int tx1, int ty1, int tx2, int ty2, int tx3, int ty3
 )
 {
@@ -1455,22 +1455,22 @@ static int screenPointInTriangle(
     screenGetLineTerms(tx2, ty2, tx3, ty3, &(a[1]), &(b[1]));
     screenGetLineTerms(tx3, ty3, tx1, ty1, &(a[2]), &(b[2]));
     if (!screenPointsOnSameSideOfLine(x, y, tx3, ty3, a[0], b[0])) {
-        return 0;
+        return false;
     }
     if (!screenPointsOnSameSideOfLine(x, y, tx1, ty1, a[1], b[1])) {
-        return 0;
+        return false;
     }
     if (!screenPointsOnSameSideOfLine(x, y, tx2, ty2, a[2], b[2])) {
-        return 0;
+        return false;
     }
-    return 1;
+    return true;
 }
 
 
 /**
  * Determine if the given point is within a mouse area.
  */
-int screenPointInMouseArea(int x, int y, MouseArea *area)
+bool screenPointInMouseArea(int x, int y, MouseArea *area)
 {
     ASSERT(
         area->npoints == 2 || area->npoints == 3,
@@ -1483,7 +1483,7 @@ int screenPointInMouseArea(int x, int y, MouseArea *area)
             && (y >= (int)(area->point[0].y * settings.scale))
             && (x < (int)(area->point[1].x * settings.scale))
             && (y < (int)(area->point[1].y * settings.scale))) {
-            return 1;
+            return true;
         }
     }
     /* three points define a triangle */
@@ -1499,7 +1499,7 @@ int screenPointInMouseArea(int x, int y, MouseArea *area)
             area->point[2].y * settings.scale
         );
     }
-    return 0;
+    return false;
 }
 
 void screenRedrawMapArea()

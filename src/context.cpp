@@ -35,7 +35,7 @@ Context::Context()
      windLock(false),
      aura(nullptr),
      horseSpeed(0),
-     opacity(0),
+     opacity(1),
      transportContext(),
      lastCommandTime(0),
      willPassTurn(false),
@@ -45,4 +45,9 @@ Context::Context()
 
 Context::~Context()
 {
+    delete saveGame;
+    delete stats;
+    delete aura;
+    delete party;
+    delete location;
 }
