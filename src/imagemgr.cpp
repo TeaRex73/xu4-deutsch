@@ -504,7 +504,7 @@ void ImageMgr::fixupIntro(Image *im, int prescale)
     }
 } // ImageMgr::fixupIntro
 
-void ImageMgr::fixupAbyssVision(Image *im, int prescale)
+void ImageMgr::fixupAbyssVision(Image *im, int)
 {
     static unsigned int *data = nullptr;
     /*
@@ -617,7 +617,7 @@ void ImageMgr::fixupAbacus(Image *im, int prescale)
  * Swap blue and green for the dungeon walls when facing north or
  * south.
  */
-void ImageMgr::fixupDungNS(Image *im, int prescale)
+void ImageMgr::fixupDungNS(Image *im, int)
 {
     for (int y = 0; y < im->height(); y++) {
         for (int x = 0; x < im->width(); x++) {
@@ -637,7 +637,7 @@ void ImageMgr::fixupDungNS(Image *im, int prescale)
  * The FMTowns images have a different screen dimension. This moves them up
  * to what xu4 is accustomed to.
  */
-void ImageMgr::fixupFMTowns(Image *im, int prescale)
+void ImageMgr::fixupFMTowns(Image *im, int)
 {
     for (int y = 20; y < im->height(); y++) {
         for (int x = 0; x < im->width(); x++) {

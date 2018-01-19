@@ -43,7 +43,7 @@ int scaler3x(const std::string &filter)
 /**
  * A simple row and column duplicating scaler.
  */
-Image *scalePoint(Image *src, int scale, int n)
+Image *scalePoint(Image *src, int scale, int)
 {
     int x, y, i, j;
     Image *dest;

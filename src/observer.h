@@ -30,7 +30,7 @@ public:
  */
 template<class O> class Observer<O, NoArg *> {
 public:
-    virtual void update(O observable, NoArg *arg)
+    virtual void update(O observable, NoArg *)
     {
         update(observable);
     }

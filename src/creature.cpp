@@ -721,7 +721,9 @@ void Creature::addStatus(StatusType s)
         break;
     default:
         ASSERT(
-            0, "Invalid status %d in Creature::addStatus", (int)status
+            0,
+            "Invalid status %d in Creature::addStatus",
+            static_cast<int>(status)
         );
     }
 }
@@ -766,7 +768,7 @@ int Creature::getAttackBonus() const
     return 0;
 }
 
-int Creature::getDefense(bool needsMystic) const
+int Creature::getDefense(bool) const
 {
     return 128;
 }
@@ -882,7 +884,7 @@ Creature *Creature::nearestOpponent(int *dist, bool ranged)
     return opponent;
 } // Creature::nearestOpponent
 
-void Creature::putToSleep(bool sound)
+void Creature::putToSleep(bool)
 {
     addStatus(STAT_SLEEPING);
 }

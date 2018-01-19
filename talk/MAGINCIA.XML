@@ -60,7 +60,7 @@
     <description>Ein dünnes Skelett.</description>
     <topic query="job">Ich klappere mit meinen Gebeinen.</topic>
     <topic query="health">Ungefähr wie gestern.</topic>
-    <topic query="GEBE">Gebeine, ihr Gebeine, ihr verdorrten Gebeine...<question type="0">Bist du tot?<yes>Ach, wie schade!</yes><no>Paß auf auf Nate!</no></question></topic>
+    <topic query="GEBE">Gebeine, ihr Gebeine, ihr verdorrten Gebeine...<question type="0">Bist du tot?<yes>Ach, wie schade!</yes><no>Hüte dich vor Nate!</no></question></topic>
     <topic query="HORN">Die Fürstin der Liebe hat eine Aufwartedame, sie kann dir mehr über das Horn sagen!</topic>
   </person>
   <person id="9" name="Wierdrum" pronoun="Es" turnAwayProb="0">

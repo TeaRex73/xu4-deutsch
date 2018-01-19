@@ -57,16 +57,16 @@ StatsArea::StatsArea()
             outputBuffer,
             sizeof(outputBuffer),
             "-%-11s%%s",
-            uppercase(getReagentName((Reagent)count)).c_str()
+            uppercase(getReagentName(static_cast<Reagent>(count))).c_str()
         );
         reagentsMixMenu.add(
             count,
-            new IntMenuItem(
+            new UnsignedShortMenuItem(
                 outputBuffer,
                 1,
                 0,
                 -1,
-                (int *)c->party->getReagentPtr((Reagent)count),
+                c->party->getReagentPtr(static_cast<Reagent>(count)),
                 0,
                 99,
                 1,
@@ -89,13 +89,13 @@ void StatsArea::setView(StatsView view)
  */
 void StatsArea::prevItem()
 {
-    view = (StatsView)(view - 1);
+    view = static_cast<StatsView>(view - 1);
     if (view < STATS_CHAR1) {
         view = STATS_MIXTURES;
     }
     if ((view <= STATS_CHAR8)
         && ((view - STATS_CHAR1 + 1) > c->party->size())) {
-        view = (StatsView)(STATS_CHAR1 - 1 + c->party->size());
+        view = static_cast<StatsView>(STATS_CHAR1 - 1 + c->party->size());
     }
     update();
 }
@@ -106,7 +106,7 @@ void StatsArea::prevItem()
  */
 void StatsArea::nextItem()
 {
-    view = (StatsView)(view + 1);
+    view = static_cast<StatsView>(view + 1);
     if (view > STATS_MIXTURES) {
         view = STATS_CHAR1;
     }
@@ -364,7 +364,9 @@ void StatsArea::showWeapons()
                 format,
                 w - WEAP_HANDS + 'A',
                 n,
-                uppercase(Weapon::get((WeaponType)w)->getAbbrev()).c_str()
+                uppercase(
+                    Weapon::get(static_cast<WeaponType>(w))->getAbbrev()
+                ).c_str()
             );
             if (line >= (STATS_AREA_HEIGHT)) {
                 line = 0;
@@ -393,7 +395,9 @@ void StatsArea::showArmor()
                 format,
                 a - ARMR_NONE + 'A',
                 c->saveGame->armor[a],
-                uppercase(Armor::get((ArmorType)a)->getName()).c_str()
+                uppercase(
+                    Armor::get(static_cast<ArmorType>(a))->getName()
+                ).c_str()
             );
         }
     }
@@ -429,7 +433,7 @@ void StatsArea::showItems()
         j = 0;
         for (i = 0; i < 8; i++) {
             if (c->saveGame->stones & (1 << i)) {
-                buffer[j++] = getStoneName((Virtue)i)[0];
+                buffer[j++] = getStoneName(static_cast<Virtue>(i))[0];
             }
         }
         buffer[j] = '\0';
@@ -439,7 +443,7 @@ void StatsArea::showItems()
         j = 0;
         for (i = 0; i < 8; i++) {
             if (c->saveGame->runes & (1 << i)) {
-                buffer[j++] = getVirtueName((Virtue)i)[0];
+                buffer[j++] = getVirtueName(static_cast<Virtue>(i))[0];
             }
         }
         buffer[j] = '\0';
@@ -599,9 +603,9 @@ bool ReagentsMenuController::keyPressed(int key)
             /* change whether or not it's selected */
             item->setSelected(!item->isSelected());
             if (item->isSelected()) {
-                ingredients->addReagent((Reagent)item->getId());
+                ingredients->addReagent(static_cast<Reagent>(item->getId()));
             } else {
-                ingredients->removeReagent((Reagent)item->getId());
+                ingredients->removeReagent(static_cast<Reagent>(item->getId()));
             }
         }
         break;

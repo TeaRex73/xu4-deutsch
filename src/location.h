@@ -21,10 +21,12 @@ typedef enum {
     CTX_SHRINE = 0x0020
 } LocationContext;
 
-#define CTX_ANY (LocationContext)(0xffff)
-#define CTX_NORMAL (LocationContext)(CTX_WORLDMAP | CTX_CITY)
-#define CTX_NON_COMBAT (LocationContext)(CTX_ANY & ~CTX_COMBAT)
-#define CTX_CAN_SAVE_GAME (LocationContext)(CTX_WORLDMAP | CTX_DUNGEON)
+#define CTX_ANY (static_cast<LocationContext>(0xffff))
+#define CTX_NORMAL (static_cast<LocationContext>(CTX_WORLDMAP | CTX_CITY))
+#define CTX_NON_COMBAT (static_cast<LocationContext>(CTX_ANY & ~CTX_COMBAT))
+#define CTX_CAN_SAVE_GAME ( \
+        static_cast<LocationContext>(CTX_WORLDMAP | CTX_DUNGEON) \
+    )
 
 class TurnCompleter;
 

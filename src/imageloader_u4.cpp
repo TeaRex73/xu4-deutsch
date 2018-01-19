@@ -42,7 +42,7 @@ Image *U4RawImageLoader::load(U4FILE *file, int width, int height, int bpp)
         bpp
     );
     long rawLen = file->length();
-    unsigned char *raw = (unsigned char *)std::malloc(rawLen);
+    unsigned char *raw = static_cast<unsigned char *>(std::malloc(rawLen));
     file->read(raw, 1, rawLen);
     long requiredLength = (width * height * bpp / 8);
     if (rawLen < requiredLength) {
@@ -93,12 +93,11 @@ Image *U4RleImageLoader::load(U4FILE *file, int width, int height, int bpp)
         bpp
     );
     long compressedLen = file->length();
-    unsigned char *compressed = (unsigned char *)std::malloc(compressedLen);
+    unsigned char *compressed =
+        static_cast<unsigned char *>(std::malloc(compressedLen));
     file->read(compressed, 1, compressedLen);
     unsigned char *raw = nullptr;
-    long rawLen = rleDecompressMemory(
-        compressed, compressedLen, (void **)&raw
-    );
+    long rawLen = rleDecompressMemory(compressed, compressedLen, &raw);
     std::free(compressed);
     compressed = nullptr;
     if (rawLen != (width * height * bpp / 8)) {
@@ -144,12 +143,11 @@ Image *U4LzwImageLoader::load(U4FILE *file, int width, int height, int bpp)
         bpp
     );
     long compressedLen = file->length();
-    unsigned char *compressed = (unsigned char *)std::malloc(compressedLen);
-    file->read(compressed, 1, (std::size_t)compressedLen);
+    unsigned char *compressed =
+        static_cast<unsigned char *>(std::malloc(compressedLen));
+    file->read(compressed, 1, static_cast<std::size_t>(compressedLen));
     unsigned char *raw = nullptr;
-    long rawLen = decompress_u4_memory(
-        compressed, compressedLen, (void **)&raw
-    );
+    long rawLen = decompress_u4_memory(compressed, compressedLen, &raw);
     std::free(compressed);
     compressed = nullptr;
     if (rawLen != (width * height * bpp / 8)) {

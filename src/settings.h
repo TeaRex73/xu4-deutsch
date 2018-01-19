@@ -182,7 +182,7 @@ public:
     int keyinterval;
     MouseOptions mouseOptions;
     int musicVol;
-    static const unsigned int scale = 1;
+    static const int scale = 1;
     bool screenShakes;
     int gamma;
     int shakeInterval;

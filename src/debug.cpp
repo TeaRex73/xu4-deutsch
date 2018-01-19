@@ -2,10 +2,6 @@
  * $Id$
  */
 
-#ifdef MACOSX
-#include <CoreServices/CoreServices.h>
-#endif
-
 #include "vc6.h" // Fixes things if you're using VC6, does nothing otherwise
 
 #include "debug.h"
@@ -111,20 +107,6 @@ Debug::Debug(const std::string &fn, const std::string &nm, bool append)
         disabled = true;
         return;
     }
-#ifdef MACOSX
-    /* In Mac OS X store debug files in a user-specific location */
-    FSRef folder;
-    OSErr err = FSFindFolder(
-        kUserDomain, kApplicationSupportFolderType, kCreateFolder, &folder
-    );
-    if (err == noErr) {
-        UInt8 path[2048];
-        if (FSRefMakePath(&folder, path, 2048) == noErr) {
-            filename = reinterpret_cast<const char *>(path);
-            filename += "/xu4/" + fn;
-        }
-    }
-#endif
     if (append) {
         file = FileSystem::openFile(filename, "at");
     } else {
@@ -153,26 +135,7 @@ void Debug::initGlobal(const std::string &filename)
     if (global) {
         std::fclose(global);
     }
-#ifdef MACOSX
-    /* In Mac OS X store debug files in a user-specific location */
-    std::string osxfname;
-    osxfname.reserve(2048);
-    FSRef folder;
-    OSErr err = FSFindFolder(
-        kUserDomain, kApplicationSupportFolderType, kCreateFolder, &folder
-    );
-    if (err == noErr) {
-        UInt8 path[2048];
-        if (FSRefMakePath(&folder, path, 2048) == noErr) {
-            osxfname.append(reinterpret_cast<const char *>(path));
-            osxfname += "/xu4/";
-            osxfname += filename;
-        }
-    }
-    global = osxfname.empty() ? nullptr : FileSystem::openFile(osxfname, "wt");
-#else
     global = FileSystem::openFile(filename, "wt");
-#endif
     if (!global) {
         // FIXME: throw exception here
     }

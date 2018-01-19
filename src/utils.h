@@ -51,6 +51,35 @@ inline void AdjustValue(int &v, int val, int max, int min)
     }
 }
 
+inline void AdjustValueMax(unsigned int &v, int val, unsigned int max)
+{
+    v += val;
+    if (v > max) {
+        v = max;
+    }
+}
+
+inline void AdjustValueMin(unsigned int &v, int val, unsigned int min)
+{
+    v += val;
+    if (v < min) {
+        v = min;
+    }
+}
+
+inline void AdjustValue(
+    unsigned int &v, int val, unsigned int max, unsigned int min
+)
+{
+    v += val;
+    if (v > max) {
+        v = max;
+    }
+    if (v < min) {
+        v = min;
+    }
+}
+
 inline void AdjustValueMax(short &v, int val, int max)
 {
     v += val;
@@ -78,7 +107,7 @@ inline void AdjustValue(short &v, int val, int max, int min)
     }
 }
 
-inline void AdjustValueMax(unsigned short &v, int val, int max)
+inline void AdjustValueMax(unsigned short &v, int val, unsigned int max)
 {
     v += val;
     if (v > max) {
@@ -86,7 +115,7 @@ inline void AdjustValueMax(unsigned short &v, int val, int max)
     }
 }
 
-inline void AdjustValueMin(unsigned short &v, int val, int min)
+inline void AdjustValueMin(unsigned short &v, int val, unsigned int min)
 {
     v += val;
     if (v < min) {
@@ -94,7 +123,9 @@ inline void AdjustValueMin(unsigned short &v, int val, int min)
     }
 }
 
-inline void AdjustValue(unsigned short &v, int val, int max, int min)
+inline void AdjustValue(
+    unsigned short &v, int val, unsigned int max, unsigned int min
+)
 {
     v += val;
     if (v > max) {
@@ -129,7 +160,11 @@ private:
     typedef std::map<std::string, std::clock_t> TimeMap;
 
 public:
-    Performance(const std::string &s)
+    Performance(const std::string &
+#ifndef NPERF
+				s
+#endif
+			   )
         :log(), filename(), s(), e(), times()
     {
 #ifndef NPERF
@@ -140,7 +175,12 @@ public:
     Performance(Performance &&) = delete;
     Performance &operator=(const Performance &) = delete;
     Performance &operator=(Performance &&) = delete;
-    void init(const std::string &s)
+
+    void init(const std::string &
+#ifndef NPERF
+			  s
+#endif
+			 )
     {
 #ifndef NPERF
         Path path(s);
@@ -174,7 +214,11 @@ public:
 #endif
     }
     
-    void end(const std::string &funcName)
+    void end(const std::string &
+#ifndef NPERF
+			 funcName
+#endif
+			)
     {
 #ifndef NPERF
         e = std::clock();
@@ -182,7 +226,11 @@ public:
 #endif
     }
     
-    void report(const char *pre = nullptr)
+    void report(const char *
+#ifndef NPERF
+				pre
+#endif
+			    = nullptr)
     {
 #ifndef NPERF
         static const double msec = double(CLOCKS_PER_SEC) / double(1000);

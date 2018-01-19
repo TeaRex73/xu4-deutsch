@@ -12,17 +12,17 @@
 /**
  * Decompress an RLE encoded file.
  */
-long rleDecompressFile(std::FILE *in, long inlen, void **out)
+long rleDecompressFile(std::FILE *in, long inlen, unsigned char **out)
 {
     long check;
-    void *indata;
+    unsigned char *indata;
     long outlen;
     /* input file should be longer than 0 bytes */
     if (inlen <= 0) {
         return -1;
     }
     /* load compressed file into memory */
-    indata = std::malloc(inlen);
+    indata = static_cast<unsigned char *>(std::malloc(inlen));
     check = std::fread(indata, 1, inlen, in);
     if (check != inlen) {
         std::perror("fread failed");
@@ -32,23 +32,22 @@ long rleDecompressFile(std::FILE *in, long inlen, void **out)
     return outlen;
 }
 
-long rleDecompressMemory(void *in, long inlen, void **out)
+long rleDecompressMemory(unsigned char *in, long inlen, unsigned char **out)
 {
-    unsigned char *indata, *outdata;
+    unsigned char *outdata;
     long outlen;
     /* input should be longer than 0 bytes */
     if (inlen <= 0) {
         return -1;
     }
-    indata = (unsigned char *)in;
     /* determine decompressed file size */
-    outlen = rleGetDecompressedSize(indata, inlen);
+    outlen = rleGetDecompressedSize(in, inlen);
     if (outlen <= 0) {
         return -1;
     }
     /* decompress file from inlen to outlen */
-    outdata = (unsigned char *)std::malloc(outlen);
-    rleDecompress(indata, inlen, outdata, outlen);
+    outdata = static_cast<unsigned char *>(std::malloc(outlen));
+    rleDecompress(in, inlen, outdata, outlen);
     *out = outdata;
     return outlen;
 }

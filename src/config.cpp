@@ -17,9 +17,6 @@
 #include <libxml/xinclude.h>
 #include <libxml/xpath.h>
 
-#if defined(MACOSX)
-#include <CoreFoundation/CoreFoundation.h>
-#endif
 // we rely on xinclude support
 #ifndef LIBXML_XINCLUDE_ENABLED
 #error "xinclude not available: libxml2 not compiled with xinclude support"
@@ -29,7 +26,7 @@
 #include "error.h"
 #include "settings.h"
 #include "u4file.h"
-
+#include "xml.h"
 
 
 extern bool verbose;
@@ -62,7 +59,7 @@ ConfigElement Config::getElement(const std::string &name) const
     std::string path = "/config/" + name;
     context = xmlXPathNewContext(doc);
     result = xmlXPathEvalExpression(
-        reinterpret_cast<const xmlChar *>(path.c_str()), context
+        c2xc(path.c_str()), context
     );
     if (xmlXPathNodeSetIsEmpty(result->nodesetval)) {
         errorFatal("no match for xpath %s\n", path.c_str());
@@ -116,7 +113,7 @@ std::vector<std::string> Config::getGames()
     return result;
 }
 
-void Config::setGame(const std::string &name)
+void Config::setGame(const std::string &)
 {
 }
 
@@ -150,7 +147,7 @@ void Config::accumError(void *l, const char *fmt, ...)
 }
 
 ConfigElement::ConfigElement(xmlNodePtr xmlNode)
-    :node(xmlNode), name(reinterpret_cast<const char *>(xmlNode->name))
+    :node(xmlNode), name(xc2c(xmlNode->name))
 {
 }
 
@@ -175,7 +172,7 @@ ConfigElement &ConfigElement::operator=(const ConfigElement &e)
 bool ConfigElement::exists(const std::string &name) const
 {
     xmlChar *prop =
-        xmlGetProp(node, reinterpret_cast<const xmlChar *>(name.c_str()));
+        xmlGetProp(node, c2xc(name.c_str()));
     bool exists = prop != nullptr;
     xmlFree(prop);
     return exists;
@@ -184,11 +181,11 @@ bool ConfigElement::exists(const std::string &name) const
 std::string ConfigElement::getString(const std::string &name) const
 {
     xmlChar *prop =
-        xmlGetProp(node, reinterpret_cast<const xmlChar *>(name.c_str()));
+        xmlGetProp(node, c2xc(name.c_str()));
     if (!prop) {
         return "";
     }
-    std::string result(reinterpret_cast<const char *>(prop));
+    std::string result(xc2c(prop));
     xmlFree(prop);
     return result;
 }
@@ -197,11 +194,11 @@ int ConfigElement::getInt(const std::string &name, int defaultValue) const
 {
     long result;
     xmlChar *prop;
-    prop = xmlGetProp(node, reinterpret_cast<const xmlChar *>(name.c_str()));
+    prop = xmlGetProp(node, c2xc(name.c_str()));
     if (!prop) {
         return defaultValue;
     }
-    result = std::strtol(reinterpret_cast<const char *>(prop), nullptr, 0);
+    result = std::strtol(xc2c(prop), nullptr, 0);
     xmlFree(prop);
     return static_cast<int>(result);
 }
@@ -210,11 +207,11 @@ bool ConfigElement::getBool(const std::string &name) const
 {
     int result;
     xmlChar *prop =
-        xmlGetProp(node, reinterpret_cast<const xmlChar *>(name.c_str()));
+        xmlGetProp(node, c2xc(name.c_str()));
     if (!prop) {
         return false;
     }
-    if (xmlStrcmp(prop, reinterpret_cast<const xmlChar *>("true")) == 0) {
+    if (xmlStrcmp(prop, c2xc("true")) == 0) {
         result = true;
     } else {
         result = false;
@@ -229,12 +226,12 @@ int ConfigElement::getEnum(
 {
     int result = -1, i;
     xmlChar *prop;
-    prop = xmlGetProp(node, reinterpret_cast<const xmlChar *>(name.c_str()));
+    prop = xmlGetProp(node, c2xc(name.c_str()));
     if (!prop) {
         return 0;
     }
     for (i = 0; enumValues[i]; i++) {
-        if (xmlStrcmp(prop, reinterpret_cast<const xmlChar *>(enumValues[i]))
+        if (xmlStrcmp(prop, c2xc(enumValues[i]))
             == 0) {
             result = i;
         }

@@ -14,9 +14,6 @@
 #include "debug.h"
 #include "utils.h"
 
-#ifdef MACOSX
-#include <libgen.h>
-#endif
 
 
 
@@ -181,7 +178,7 @@ bool u4isUpgradeInstalled()
         }
     }
     if (verbose) {
-        std::printf("u4isUpgradeInstalled %d\n", (int)result);
+        std::printf("u4isUpgradeInstalled %d\n", static_cast<int>(result));
     }
     return result;
 }

@@ -117,7 +117,12 @@ void Music::setSoundVolume_sys(int volume)
     /**
      * Use Channel 1 for sound effects
      */
-    Mix_Volume(1, int((double)MIX_MAX_VOLUME / MAX_VOLUME * volume));
+    Mix_Volume(
+        1,
+        static_cast<int>(
+            static_cast<double>(MIX_MAX_VOLUME) / MAX_VOLUME * volume
+        )
+    );
 }
 
 
@@ -135,10 +140,14 @@ bool Music::isPlaying_sys()
  */
 void Music::setMusicVolume_sys(int volume)
 {
-    Mix_VolumeMusic(int((double)MIX_MAX_VOLUME / MAX_VOLUME * volume));
+    Mix_VolumeMusic(
+        static_cast<int>(
+            static_cast<double>(MIX_MAX_VOLUME) / MAX_VOLUME * volume
+        )
+    );
 }
 
-void Music::fadeIn_sys(int msecs, bool loadFromMap)
+void Music::fadeIn_sys(int msecs, bool)
 {
     if (Mix_FadeInMusic(playing, NLOOPS, msecs) == -1) {
         errorWarning("Mix_FadeInMusic: %s\n", Mix_GetError());

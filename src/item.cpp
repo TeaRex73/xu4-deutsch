@@ -42,22 +42,22 @@ void putRuneInInventory(int virt);
 bool isStoneInInventory(int virt);
 void putStoneInInventory(int virt);
 bool isItemInInventory(int item);
-bool isSkullInInventory(int item);
+bool isSkullInInventory(int);
 void putItemInInventory(int item);
 void useBBC(int item);
-void useHorn(int item);
-void useWheel(int item);
-void useSkull(int item);
+void useHorn(int);
+void useWheel(int);
+void useSkull(int);
 void useStone(int item);
-void useKey(int item);
+void useKey(int);
 bool isMysticInInventory(int mystic);
 void putMysticInInventory(int mystic);
 bool isWeaponInInventory(int weapon);
 void putWeaponInInventory(int weapon);
-void useTelescope(int notused);
-bool isReagentInInventory(int reag);
+void useTelescope(int);
+bool isReagentInInventory(int);
 void putReagentInInventory(int reag);
-bool isAbyssOpened(const Portal *p);
+bool isAbyssOpened(const Portal *);
 void itemHandleStones(const std::string &color);
 
 static const ItemLocation items[] = {
@@ -446,7 +446,7 @@ bool isItemInInventory(int item)
     return c->saveGame->items & item;
 }
 
-bool isSkullInInventory(int unused)
+bool isSkullInInventory(int)
 {
     return c->saveGame->items & (ITEM_SKULL | ITEM_SKULL_DESTROYED);
 }
@@ -515,7 +515,7 @@ void useBBC(int item)
 /**
  * Uses the silver horn
  */
-void useHorn(int item)
+void useHorn(int)
 {
     screenMessage(
         "\n\nDAS HORN L[SST EINEN SCHAUERLICHEN KLANG ERSCHALLEN!\n"
@@ -528,7 +528,7 @@ void useHorn(int item)
 /**
  * Uses the wheel (if on board a ship)
  */
-void useWheel(int item)
+void useWheel(int)
 {
     if ((c->transportContext == TRANSPORT_SHIP)
         && (c->saveGame->shiphull == 50)) {
@@ -545,7 +545,7 @@ void useWheel(int item)
 /**
  * Uses or destroys the skull of Mondain
  */
-void useSkull(int item)
+void useSkull(int)
 {
     /* FIXME: check to see if the abyss must be opened first
        for the skull to be *able* to be destroyed */
@@ -714,7 +714,9 @@ void useStone(int item)
              && (c->location->context & CTX_DUNGEON)
              && (dynamic_cast<Dungeon *>(c->location->map)->currentToken()
                  == DUNGEON_ALTAR)) {
-        int virtueMask = getBaseVirtues((Virtue)c->location->coords.z);
+        int virtueMask = getBaseVirtues(
+            static_cast<Virtue>(c->location->coords.z)
+        );
         if (virtueMask > 0) {
             screenMessage(
                 "\n\nAls du dich n{herst, erschallt eine Stimme: Welche "
@@ -729,7 +731,9 @@ void useStone(int item)
         }
         std::string virtue = gameGetInput();
         if (xu4_strncasecmp(
-                virtue.c_str(), getVirtueName((Virtue)c->location->coords.z), 6
+                virtue.c_str(),
+                getVirtueName(static_cast<Virtue>(c->location->coords.z)),
+                6
             ) == 0) {
             /* now ask for stone */
             screenMessage(
@@ -757,7 +761,7 @@ void useStone(int item)
     }
 } // useStone
 
-void useKey(int item)
+void useKey(int)
 {
     screenMessage("\nSIE PASSEN HIER NICHT!\n");
 }
@@ -815,7 +819,7 @@ void putWeaponInInventory(int weapon)
     c->saveGame->weapons[weapon]++;
 }
 
-void useTelescope(int notused)
+void useTelescope(int)
 {
     screenMessage(
         "\nDU SIEHST EIN DREHRAD AM TELESKOPE, MIT MARKIERUNGEN VON "
@@ -830,7 +834,7 @@ void useTelescope(int notused)
     screenMessage("\n");
 }
 
-bool isReagentInInventory(int reag)
+bool isReagentInInventory(int)
 {
     return false;
 }
@@ -936,7 +940,7 @@ void itemUse(const std::string &shortname)
 /**
  * Checks to see if the abyss was opened
  */
-bool isAbyssOpened(const Portal *p)
+bool isAbyssOpened(const Portal *)
 {
     /* make sure the bell, book and candle have all been used */
     int items = c->saveGame->items;
@@ -961,7 +965,7 @@ void itemHandleStones(const std::string &color)
     for (int i = 0; i < 8; i++) {
         if ((xu4_strcasecmp(
                  deumlaut(color).c_str(),
-                 deumlaut(getStoneName((Virtue)i)).c_str()
+                 deumlaut(getStoneName(static_cast<Virtue>(i))).c_str()
              ) == 0)
             && isStoneInInventory(1 << i)) {
             found = true;

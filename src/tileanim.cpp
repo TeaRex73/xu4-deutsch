@@ -52,7 +52,8 @@ TileAnimTransform *TileAnimTransform::create(const ConfigElement &conf)
              i++) {
             if (i->getName() == "color") {
                 RGBA *rgba = loadColorFromConf(*i);
-                ((TileAnimPixelTransform *) transform)->colors.push_back(rgba);
+                static_cast<TileAnimPixelTransform *>(transform)
+                    ->colors.push_back(rgba);
             }
         }
         break;
@@ -80,9 +81,11 @@ TileAnimTransform *TileAnimTransform::create(const ConfigElement &conf)
             if (i->getName() == "color") {
                 RGBA *rgba = loadColorFromConf(*i);
                 if (i == children.begin()) {
-                    ((TileAnimPixelColorTransform *)transform)->start = rgba;
+                    static_cast<TileAnimPixelColorTransform *>(transform)
+                        ->start = rgba;
                 } else {
-                    ((TileAnimPixelColorTransform *)transform)->end = rgba;
+                    static_cast<TileAnimPixelColorTransform *>(transform)
+                        ->end = rgba;
                 }
             }
         }
@@ -159,7 +162,7 @@ bool TileAnimPixelTransform::drawsTile() const
     return false;
 }
 
-void TileAnimPixelTransform::draw(Image *dest, Tile *tile, MapTile &mapTile)
+void TileAnimPixelTransform::draw(Image *dest, Tile *tile, MapTile &)
 {
     RGBA *color = colors[xu4_random(colors.size())];
     int scale = tile->getScale();
@@ -254,7 +257,7 @@ bool TileAnimFrameTransform::drawsTile() const
     return true;
 }
 
-void TileAnimFrameTransform::draw(Image *dest, Tile *tile, MapTile &mapTile)
+void TileAnimFrameTransform::draw(Image *dest, Tile *tile, MapTile &)
 {
     if (++currentFrame >= tile->getFrames()) {
         currentFrame = 0;
@@ -349,8 +352,9 @@ TileAnimContext *TileAnimContext::create(const ConfigElement &conf)
         "south",
         nullptr
     };
-    TileAnimContext::Type type =
-        (TileAnimContext::Type)conf.getEnum("type", contextTypeEnumStrings);
+    TileAnimContext::Type type = static_cast<TileAnimContext::Type>(
+        conf.getEnum("type", contextTypeEnumStrings)
+    );
     switch (type) {
     case FRAME:
         context = new TileAnimFrameContext(conf.getInt("frame"));
@@ -409,9 +413,7 @@ TileAnimFrameContext::TileAnimFrameContext(int f)
 {
 }
 
-bool TileAnimFrameContext::isInContext(
-    Tile *t, MapTile &mapTile, Direction dir
-)
+bool TileAnimFrameContext::isInContext(Tile *, MapTile &mapTile, Direction)
 {
     return mapTile.frame == frame;
 }
@@ -426,9 +428,7 @@ TileAnimPlayerDirContext::TileAnimPlayerDirContext(Direction d)
 {
 }
 
-bool TileAnimPlayerDirContext::isInContext(
-    Tile *t, MapTile &mapTile, Direction d
-)
+bool TileAnimPlayerDirContext::isInContext(Tile *, MapTile &, Direction d)
 {
     return d == dir;
 }

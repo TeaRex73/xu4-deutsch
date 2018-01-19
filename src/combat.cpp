@@ -693,7 +693,7 @@ bool CombatController::attackHit(
 bool CombatController::attackAt(
     const Coords &coords,
     PartyMember *attacker,
-    int dir,
+    int,
     int range,
     int distance
 )
@@ -1319,7 +1319,7 @@ void CombatController::attack()
     }
 } // CombatController::attack
 
-void CombatController::update(Party *party, PartyEvent &event)
+void CombatController::update(Party *, PartyEvent &event)
 {
     if (event.type == PartyEvent::PLAYER_KILLED) {
         screenMessage(

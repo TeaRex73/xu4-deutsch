@@ -43,7 +43,7 @@ DialogueLoader *U4HWDialogueLoader::instance = DialogueLoader::registerLoader(
 /**
  * A special case dialogue loader for Hawkwind.
  */
-Dialogue *U4HWDialogueLoader::load(void *source)
+Dialogue *U4HWDialogueLoader::load(void *)
 {
     U4FILE *hawkwind = nullptr;
     switch (c->party->member(0)->getSex()) {
@@ -73,7 +73,7 @@ Dialogue *U4HWDialogueLoader::load(void *source)
         new Response("\n" + uppercase(hawkwindText[HW_DEFAULT]))
     );
     for (int v = 0; v < VIRT_MAX; v++) {
-        std::string virtue(getVirtueName((Virtue)v));
+        std::string virtue(getVirtueName(static_cast<Virtue>(v)));
         lowercase(virtue);
         virtue = virtue.substr(0, 4);
         dlg->addKeyword(
@@ -100,7 +100,8 @@ Response *hawkwindGetAdvice(const DynamicResponse *dynResp)
     /* check if asking about a virtue */
     for (int v = 0; v < VIRT_MAX; v++) {
         if (xu4_strncasecmp(
-                dynResp->getParam().c_str(), getVirtueName((Virtue)v), 4
+                dynResp->getParam().c_str(),
+                getVirtueName(static_cast<Virtue>(v)), 4
             ) == 0) {
             virtue = v;
             virtueLevel = c->saveGame->karma[v];
@@ -126,7 +127,7 @@ Response *hawkwindGetAdvice(const DynamicResponse *dynResp)
     return new Response(uppercase(text));
 } // hawkwindGetAdvice
 
-Response *hawkwindGetIntro(const DynamicResponse *dynResp)
+Response *hawkwindGetIntro(const DynamicResponse *)
 {
     Response *intro = new Response("");
     

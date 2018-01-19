@@ -602,7 +602,7 @@ void screenTextColor(int color)
     case FG_RED:
     case FG_YELLOW:
     case FG_WHITE:
-        charsetInfo->image->setFontColorFG((ColorFG)color);
+        charsetInfo->image->setFontColorFG(static_cast<ColorFG>(color));
     }
 }
 
@@ -723,7 +723,9 @@ void screenUpdateWind()
             WIND_AREA_Y,
             "BLICK %4s",
             uppercase(
-                getDirectionName((Direction)c->saveGame->orientation)
+                getDirectionName(
+                    static_cast<Direction>(c->saveGame->orientation)
+                )
             ).c_str()
         );
     }
@@ -737,7 +739,9 @@ void screenUpdateWind()
             WIND_AREA_X,
             WIND_AREA_Y,
             "WIND: %4s",
-            uppercase(getDirectionName((Direction)c->windDirection)).c_str()
+            uppercase(
+                getDirectionName(static_cast<Direction>(c->windDirection))
+            ).c_str()
         );
     }
     screenRedrawTextArea(
@@ -1322,7 +1326,7 @@ void screenFindLineOfSightEnhanced(
                             currentSegment * 2 + 1
                         ];
                         int shadowLength = shadowRaster[currentRaster][
-                            currentSegment* 2 + 2
+                            currentSegment * 2 + 2
                         ];
                         // update the raster length to make sure it fits in
                         // the viewport
@@ -1415,7 +1419,7 @@ static void screenGetLineTerms(
         *a = DBL_MAX;
         *b = x1;
     } else {
-        *a = ((double)(y2 - y1)) / ((double)(x2 - x1));
+        *a = static_cast<double>(y2 - y1) / static_cast<double>(x2 - x1);
         *b = y1 - ((*a) * x1);
     }
 }
@@ -1479,10 +1483,10 @@ bool screenPointInMouseArea(int x, int y, MouseArea *area)
     );
     /* two points define a rectangle */
     if (area->npoints == 2) {
-        if ((x >= (int)(area->point[0].x * settings.scale))
-            && (y >= (int)(area->point[0].y * settings.scale))
-            && (x < (int)(area->point[1].x * settings.scale))
-            && (y < (int)(area->point[1].y * settings.scale))) {
+        if ((x >= static_cast<int>(area->point[0].x * settings.scale))
+            && (y >= static_cast<int>(area->point[0].y * settings.scale))
+            && (x < static_cast<int>(area->point[1].x * settings.scale))
+            && (y < static_cast<int>(area->point[1].y * settings.scale))) {
             return true;
         }
     }
@@ -1610,7 +1614,7 @@ void screenShake(int iterations)
  * Draw a tile graphic on the screen.
  */
 void screenShowGemTile(
-    Layout *layout, Map *map, MapTile &t, bool focus, int x, int y
+    Layout *layout, Map *map, MapTile &t, bool, int x, int y
 )
 {
     // Make sure we account for tiles that look like other tiles

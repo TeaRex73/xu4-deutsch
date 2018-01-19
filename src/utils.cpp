@@ -22,7 +22,7 @@
  */
 void xu4_srandom()
 {
-    std::srand((unsigned int)std::time(nullptr));
+    std::srand(static_cast<unsigned int>(std::time(nullptr)));
 }
 
 
@@ -129,7 +129,7 @@ char *xu4_strdup(const char *s)
     if (copy == nullptr) {
         return nullptr;
     }
-    return (char *)std::memcpy(copy, s, length);
+    return static_cast<char *>(std::memcpy(copy, s, length));
 }
 
 /**
@@ -156,7 +156,7 @@ std::string uppercase(std::string val)
         if (*i == '~') {
             ret += "SS";
         } else {
-            ret += std::string(1, (char)xu4_toupper(*i));
+            ret += std::string(1, static_cast<char>(xu4_toupper(*i)));
         }
     }
     return ret;
@@ -190,7 +190,7 @@ std::string deumlaut(std::string val)
             ret += "ss";
             break;
         default:
-            ret += std::string(1, (char)xu4_toupper(*i));
+            ret += std::string(1, static_cast<char>(*i));
         }
     }
     return ret;

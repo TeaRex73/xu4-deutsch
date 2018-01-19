@@ -35,7 +35,8 @@ void moveAvatar(MoveEvent &event)
     SlowedType slowedType = SLOWED_BY_TILE;
     /* Check to see if we're on the balloon */
     if ((c->transportContext == TRANSPORT_BALLOON) && event.userEvent) {
-        event.result = (MoveResult)(MOVE_DRIFT_ONLY | MOVE_END_TURN);
+        event.result =
+            static_cast<MoveResult>(MOVE_DRIFT_ONLY | MOVE_END_TURN);
         return;
     }
     if (c->transportContext == TRANSPORT_SHIP) {
@@ -48,7 +49,7 @@ void moveAvatar(MoveEvent &event)
         if (c->party->getDirection() != event.dir) {
             c->party->setDirection(event.dir);
             event.result =
-                (MoveResult)(MOVE_TURNED | MOVE_END_TURN);
+                static_cast<MoveResult>(MOVE_TURNED | MOVE_END_TURN);
             return;
         }
     }
@@ -64,7 +65,7 @@ void moveAvatar(MoveEvent &event)
     newCoords.move(event.dir, c->location->map);
     /* see if we moved off the map */
     if (MAP_IS_OOB(c->location->map, newCoords)) {
-        event.result = (MoveResult)(
+        event.result = static_cast<MoveResult>(
             MOVE_MAP_CHANGE | MOVE_EXIT_TO_PARENT | MOVE_SUCCEEDED
         );
         return;
@@ -76,7 +77,8 @@ void moveAvatar(MoveEvent &event)
         );
         /* See if movement was blocked */
         if (!DIR_IN_MASK(event.dir, movementMask)) {
-            event.result = (MoveResult)(MOVE_BLOCKED | MOVE_END_TURN);
+            event.result =
+                static_cast<MoveResult>(MOVE_BLOCKED | MOVE_END_TURN);
             return;
         }
         /* Are we slowed by terrain or by wind direction? */
@@ -96,7 +98,8 @@ void moveAvatar(MoveEvent &event)
             break;
         }
         if (slowed) {
-            event.result = (MoveResult)(MOVE_SLOWED | MOVE_END_TURN);
+            event.result =
+                static_cast<MoveResult>(MOVE_SLOWED | MOVE_END_TURN);
             return;
         }
     }
@@ -108,11 +111,11 @@ void moveAvatar(MoveEvent &event)
 
        Object *destObj = c->location->map->objectAt(newCoords);
        if (destObj && destObj->getType() == Object::CREATURE) {
-       Creature *m = dynamic_cast<Creature*>(destObj);
+       Creature *m = dynamic_cast<Creature *>(destObj);
        //m->specialEffect();
        }
     */
-    event.result = (MoveResult)(MOVE_SUCCEEDED | MOVE_END_TURN);
+    event.result = static_cast<MoveResult>(MOVE_SUCCEEDED | MOVE_END_TURN);
 } // moveAvatar
 
 
@@ -123,11 +126,13 @@ void moveAvatarInDungeon(MoveEvent &event)
 {
     MapCoords newCoords;
     /* get our real direction */
-    Direction realDir =
-        dirNormalize((Direction)c->saveGame->orientation, event.dir);
+    Direction realDir = dirNormalize(
+        static_cast<Direction>(c->saveGame->orientation), event.dir
+    );
     int advancing = (realDir == c->saveGame->orientation),
-        retreating =
-        (realDir == dirReverse((Direction)c->saveGame->orientation));
+        retreating = (realDir == dirReverse(
+                          static_cast<Direction>(c->saveGame->orientation))
+                     );
     MapTile *tile;
     /* we're not in a dungeon, failed! */
     ASSERT(
@@ -147,7 +152,7 @@ void moveAvatarInDungeon(MoveEvent &event)
     /* see if we moved off the map (really, this should never
        happen in a dungeon) */
     if (MAP_IS_OOB(c->location->map, newCoords)) {
-        event.result = (MoveResult)(
+        event.result = static_cast<MoveResult>(
             MOVE_MAP_CHANGE | MOVE_EXIT_TO_PARENT | MOVE_SUCCEEDED
         );
         return;
@@ -165,13 +170,14 @@ void moveAvatarInDungeon(MoveEvent &event)
             movementMask = DIR_REMOVE_FROM_MASK(realDir, movementMask);
         }
         if (!DIR_IN_MASK(realDir, movementMask)) {
-            event.result = (MoveResult)(MOVE_BLOCKED | MOVE_END_TURN);
+            event.result =
+                static_cast<MoveResult>(MOVE_BLOCKED | MOVE_END_TURN);
             return;
         }
     }
     /* move succeeded */
     c->location->coords = newCoords;
-    event.result = (MoveResult)(MOVE_SUCCEEDED | MOVE_END_TURN);
+    event.result = static_cast<MoveResult>(MOVE_SUCCEEDED | MOVE_END_TURN);
 } // moveAvatarInDungeon
 
 
@@ -272,7 +278,7 @@ bool moveCombatObject(int act, Map *map, Creature *obj, MapCoords target)
     MapCoords new_coords = obj->getCoords();
     int valid_dirs = map->getValidMoves(new_coords, obj->getTile());
     Direction dir;
-    CombatAction action = (CombatAction)act;
+    CombatAction action = static_cast<CombatAction>(act);
     SlowedType slowedType = SLOWED_BY_TILE;
     int slowed = 0;
     /* fixed objects cannot move */
@@ -289,12 +295,12 @@ bool moveCombatObject(int act, Map *map, Creature *obj, MapCoords target)
         // If they're not fleeing, make sure they don't flee on accident
         if (new_coords.x == 0) {
             valid_dirs = DIR_REMOVE_FROM_MASK(DIR_WEST, valid_dirs);
-        } else if (new_coords.x >= (signed)(map->width - 1)) {
+        } else if (new_coords.x >= static_cast<int>(map->width - 1)) {
             valid_dirs = DIR_REMOVE_FROM_MASK(DIR_EAST, valid_dirs);
         }
         if (new_coords.y == 0) {
             valid_dirs = DIR_REMOVE_FROM_MASK(DIR_NORTH, valid_dirs);
-        } else if (new_coords.y >= (signed)(map->height - 1)) {
+        } else if (new_coords.y >= static_cast<int>(map->height - 1)) {
             valid_dirs = DIR_REMOVE_FROM_MASK(DIR_SOUTH, valid_dirs);
         }
         dir = new_coords.pathTo(
@@ -369,7 +375,7 @@ void movePartyMember(MoveEvent &event)
             ct->setExitDir(event.dir);
             c->location->map->removeObject((*party)[member]);
             (*party)[member] = nullptr;
-            event.result = (MoveResult)(
+            event.result = static_cast<MoveResult>(
                 MOVE_EXIT_TO_PARENT
                 | MOVE_MAP_CHANGE
                 | MOVE_SUCCEEDED
@@ -377,7 +383,7 @@ void movePartyMember(MoveEvent &event)
             );
             return;
         } else {
-            event.result = (MoveResult)(
+            event.result = static_cast<MoveResult>(
                 MOVE_MUST_USE_SAME_EXIT | MOVE_END_TURN
             );
             return;
@@ -388,7 +394,7 @@ void movePartyMember(MoveEvent &event)
         (*party)[member]->getTile()
     );
     if (!DIR_IN_MASK(event.dir, movementMask)) {
-        event.result = (MoveResult)(MOVE_BLOCKED | MOVE_END_TURN);
+        event.result = static_cast<MoveResult>(MOVE_BLOCKED | MOVE_END_TURN);
         return;
     }
     /* is the party member slowed? */
@@ -453,7 +459,7 @@ void movePartyMember(MoveEvent &event)
             }
         }
     } else {
-        event.result = (MoveResult)(MOVE_SLOWED | MOVE_END_TURN);
+        event.result = static_cast<MoveResult>(MOVE_SLOWED | MOVE_END_TURN);
         return;
     }
 } // movePartyMember
@@ -496,7 +502,8 @@ bool slowedByWind(int direction)
         return (c->saveGame->moves % 4) != 0;
     }
     /* 1 of 4 moves while moving directly away from wind fails */
-    else if (direction == dirReverse((Direction)c->windDirection)) {
+    else if (direction
+             == dirReverse(static_cast<Direction>(c->windDirection))) {
         return (c->saveGame->moves % 4) == 3;
     } else {
         return false;

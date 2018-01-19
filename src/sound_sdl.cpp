@@ -39,7 +39,7 @@ bool SoundManager::load_sys(Sound sound, const std::string &pathname)
 
 static volatile bool finished = false;
 
-void channel_finished(int channel)
+void channel_finished(int)
 {
     finished = true;
 }

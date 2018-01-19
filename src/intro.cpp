@@ -278,7 +278,7 @@ IntroController::IntroController()
             2,
             4,
             /*'s'*/ 0,
-            reinterpret_cast<int *>(&settingsChanged.scale),
+            &settingsChanged.scale,
             1,
             5,
             1
@@ -2239,12 +2239,12 @@ void IntroController::getTitleSourceData()
                     );
                 }
                 AnimPlot plot = {
-                    (std::uint8_t)x,
-                    (std::uint8_t)y,
-                    (std::uint8_t)color.r,
-                    (std::uint8_t)color.g,
-                    (std::uint8_t)color.b,
-                    (std::uint8_t)255
+                    static_cast<std::uint8_t>(x),
+                    static_cast<std::uint8_t>(y),
+                    static_cast<std::uint8_t>(color.r),
+                    static_cast<std::uint8_t>(color.g),
+                    static_cast<std::uint8_t>(color.b),
+                    static_cast<std::uint8_t>(255)
                 };
                 titles[i].plotData.push_back(plot);
                 titles[i].animStepMax += 2;
@@ -2268,12 +2268,12 @@ void IntroController::getTitleSourceData()
                     );
                     if (r || g || b) {
                         AnimPlot plot = {
-                            (std::uint8_t)(x + 1),
-                            (std::uint8_t)(y + 1),
-                            (std::uint8_t)r,
-                            (std::uint8_t)g,
-                            (std::uint8_t)b,
-                            (std::uint8_t)a
+                            static_cast<std::uint8_t>(x + 1),
+                            static_cast<std::uint8_t>(y + 1),
+                            static_cast<std::uint8_t>(r),
+                            static_cast<std::uint8_t>(g),
+                            static_cast<std::uint8_t>(b),
+                            static_cast<std::uint8_t>(a)
                         };
                         titles[i].plotData.push_back(plot);
                     }
@@ -2401,12 +2401,12 @@ bool IntroController::updateTitle()
     }
     // determine how much of the animation should have been drawn up until now
     timePercent =
-        (double)(timeCurrent - title->timeBase - title->timeDelay)
+        static_cast<double>(timeCurrent - title->timeBase - title->timeDelay)
         / title->timeDuration;
     if ((timePercent > 1) || bSkipTitles) {
         timePercent = 1;
     }
-    animStepTarget = (int)(title->animStepMax * timePercent);
+    animStepTarget = static_cast<int>(title->animStepMax * timePercent);
     // perform the animation
     switch (title->method) {
     case SIGNATURE:

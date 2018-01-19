@@ -332,7 +332,7 @@ void GameController::init()
                     std::fclose(dngMapFile);
                     errorFatal("DngMapFile read error!");
                 }
-                mapData = (unsigned char)intMapData;
+                mapData = static_cast<unsigned char>(intMapData);
                 switch (mapData & 0xF0) {
                 case 0x80:
                 case 0x90:
@@ -365,11 +365,13 @@ void GameController::init()
             MapCoords(c->saveGame->dngx, c->saveGame->dngy);
     } else {
         c->location->coords = MapCoords(
-            c->saveGame->x, c->saveGame->y, (int)c->saveGame->dnglevel
+            c->saveGame->x,
+            c->saveGame->y,
+            static_cast<int>(c->saveGame->dnglevel)
         );
     }
     c->saveGame->orientation =
-        (Direction)(c->saveGame->orientation + DIR_WEST);
+        static_cast<Direction>(c->saveGame->orientation + DIR_WEST);
     /**
      * Fix the coordinates if they're out of bounds.  This happens every
      * time on the world map because (z == -1) is no longer valid.
@@ -448,7 +450,8 @@ bool gameSave()
         save.dngy = c->saveGame->dngy;
     }
     save.location = c->location->map->id;
-    save.orientation = (Direction)(c->saveGame->orientation - DIR_WEST);
+    save.orientation =
+        static_cast<Direction>(c->saveGame->orientation - DIR_WEST);
     /* Done making sure the savegame struct is accurate */
     /****************************************************/
     saveGameFile = std::fopen(
@@ -840,7 +843,9 @@ void GameController::finishTurn()
         }
         /* handle dungeon traps */
         if (dungeon->currentToken() == DUNGEON_TRAP) {
-            dungeonHandleTrap((TrapType)dungeon->currentSubToken());
+            dungeonHandleTrap(
+                static_cast<TrapType>(dungeon->currentSubToken())
+            );
             // a little kludgey to have a second test for this
             // right here.  But without it you can survive an
             // extra turn after party death and do some things
@@ -885,7 +890,7 @@ void GameController::flashTile(
 /**
  * Provide feedback to user after a party event happens.
  */
-void GameController::update(Party *party, PartyEvent &event)
+void GameController::update(Party *, PartyEvent &event)
 {
     int i;
     switch (event.type) {
@@ -1774,7 +1779,7 @@ bool gameSpellMixHowMany(int spell, int num, Ingredients *ingredients)
     int i;
     /* entered 0 mixtures, don't mix anything! */
     if (num == 0) {
-        screenMessage("\nKEINER GEMISCHT!\n");
+        screenMessage("\nKEINE GEMISCHT!\n");
         ingredients->revert();
         return false;
     }
@@ -2054,7 +2059,7 @@ void castSpell(int player)
             screenMessage("RICHTUNG");
             Direction dir = gameGetDirection();
             if (dir != DIR_NONE) {
-                gameCastSpell(spell, player, (int)dir);
+                gameCastSpell(spell, player, static_cast<int>(dir));
             }
         }
         break;
@@ -2083,7 +2088,7 @@ void castSpell(int player)
             screenMessage("\n");
             Direction dir;
             if (c->location->context == CTX_DUNGEON) {
-                dir = (Direction)c->saveGame->orientation;
+                dir = static_cast<Direction>(c->saveGame->orientation);
             } else {
                 screenMessage("RICHTUNG");
                 dir = gameGetDirection();
@@ -2091,7 +2096,7 @@ void castSpell(int player)
             if (dir != DIR_NONE) {
                 /* Need to pack both dir and fieldType into param */
                 int param = fieldType << 4;
-                param |= (int)dir;
+                param |= static_cast<int>(dir);
                 gameCastSpell(spell, player, param);
             }
         } else {
@@ -2111,7 +2116,7 @@ void castSpell(int player)
         screenMessage("AUS RICHTUNG");
         Direction dir = gameGetDirection();
         if (dir != DIR_NONE) {
-            gameCastSpell(spell, player, (int)dir);
+            gameCastSpell(spell, player, static_cast<int>(dir));
         }
         break;
     }
@@ -2546,12 +2551,14 @@ void GameController::avatarMoved(MoveEvent &event)
                 tile = c->location->map->tileAt(new_coords, WITH_OBJECTS);
                 if (tile->getTileType()->isDoor()) {
                     openAt(new_coords);
-                    event.result =
-                        (MoveResult)(MOVE_SUCCEEDED | MOVE_END_TURN);
+                    event.result = static_cast<MoveResult>(
+                        MOVE_SUCCEEDED | MOVE_END_TURN
+                    );
                 } else if (tile->getTileType()->isLockedDoor()) {
                     jimmyAt(new_coords);
-                    event.result =
-                        (MoveResult)(MOVE_SUCCEEDED | MOVE_END_TURN);
+                    event.result = static_cast<MoveResult>(
+                        MOVE_SUCCEEDED | MOVE_END_TURN
+                    );
                 }
 #if 0
                 else if (mapPersonAt(c->location->map, new_coords)
@@ -2592,7 +2599,9 @@ void GameController::avatarMoved(MoveEvent &event)
     if ((c->transportContext & TRANSPORT_FOOT_OR_HORSE)
         && !(event.result & (MOVE_SLOWED | MOVE_BLOCKED))) {
         if (checkMoongates()) {
-            event.result = (MoveResult)(MOVE_MAP_CHANGE | MOVE_END_TURN);
+            event.result = static_cast<MoveResult>(
+                MOVE_MAP_CHANGE | MOVE_END_TURN
+            );
         }
     }
 } // GameController::avatarMoved
@@ -2604,13 +2613,16 @@ void GameController::avatarMoved(MoveEvent &event)
 void GameController::avatarMovedInDungeon(MoveEvent &event)
 {
     Dungeon *dungeon = dynamic_cast<Dungeon *>(c->location->map);
-    Direction realDir =
-        dirNormalize((Direction)c->saveGame->orientation, event.dir);
+    Direction realDir = dirNormalize(
+        static_cast<Direction>(c->saveGame->orientation),
+        event.dir
+    );
     if (!settings.filterMoveMessages) {
         if (event.userEvent) {
             if (event.result & MOVE_TURNED) {
-                if (dirRotateCCW((Direction)c->saveGame->orientation)
-                    == realDir) {
+                if (dirRotateCCW(
+                        static_cast<Direction>(c->saveGame->orientation)
+                    ) == realDir) {
                     screenMessage("Links um\n");
                 } else {
                     screenMessage("Rechts um\n");
@@ -2642,7 +2654,7 @@ void GameController::avatarMovedInDungeon(MoveEvent &event)
     if (event.result & MOVE_SUCCEEDED) {
         if (dungeon->currentToken() == DUNGEON_ROOM) {
             /* get room number */
-            int room = (int)dungeon->currentSubToken();
+            int room = static_cast<int>(dungeon->currentSubToken());
             /**
              * recalculate room for the abyss -- there are 16 rooms for every
              * 2 levels, each room marked with 0xD* where (* == room number
@@ -2703,7 +2715,7 @@ bool jimmyAt(const Coords &coords)
         screenMessage("\nENTRIEGELT!\n");
     } else {
         soundPlay(SOUND_ERROR);
-        screenMessage("%cKEINER ]BRIG!%c\n", FG_GREY, FG_WHITE);
+        screenMessage("%cKEINE ]BRIG!%c\n", FG_GREY, FG_WHITE);
     }
     return true;
 }
@@ -2778,8 +2790,9 @@ void readyWeapon(int player)
     // get the weapon to use
     c->stats->setView(STATS_WEAPONS);
     screenMessage("\nWAFFE-");
-    WeaponType weapon =
-        (WeaponType)AlphaActionController::get(WEAP_MAX + 'a' - 1, "WAFFE-");
+    WeaponType weapon = static_cast<WeaponType>(
+        AlphaActionController::get(WEAP_MAX + 'a' - 1, "WAFFE-")
+    );
     c->stats->setView(STATS_PARTY_OVERVIEW);
     if (weapon == -1) {
         return;
@@ -2802,12 +2815,13 @@ void readyWeapon(int player)
         soundPlay(SOUND_ERROR);
         screenMessage("%s\n", uppercase(w->getName()).c_str());
         screenMessage(
-            "\n%cEIN%s %s DARF DAS NICHT BENUTZEN!%c\n",
+            "\n%cEIN%s %s DARF %s BENUTZEN!%c\n",
             FG_GREY,
             (p->getSex() == SEX_FEMALE ? "E" : ""),
             uppercase(
                 getClassNameTranslated(p->getClass(), p->getSex())
             ).c_str(),
+            uppercase(w->getNeg()).c_str(),
             FG_WHITE
         );
         break;
@@ -2937,7 +2951,7 @@ bool mixReagentsForSpellU4(int spell)
             return true;
         }
         screenMessage("\n");
-        if (!ingredients.addReagent((Reagent)(choice - 'a'))) {
+        if (!ingredients.addReagent(static_cast<Reagent>(choice - 'a'))) {
             soundPlay(SOUND_ERROR);
             screenMessage("%cKEINE ]BRIG!%c\n", FG_GREY, FG_WHITE);
         }
@@ -3016,10 +3030,10 @@ void newOrder()
 /**
  * Peers at a city from A-P (Lycaeum telescope) and functions like a gem
  */
-bool gamePeerCity(int city, void *data)
+bool gamePeerCity(int city, void *)
 {
     Map *peerMap;
-    peerMap = mapMgr->get((MapId)(city + 1));
+    peerMap = mapMgr->get(static_cast<MapId>(city + 1));
     if (peerMap != nullptr) {
         game->setMap(peerMap, 1, nullptr);
         c->location->viewMode = VIEW_GEM;
@@ -3224,8 +3238,9 @@ void wearArmor(int player)
     }
     c->stats->setView(STATS_ARMOR);
     screenMessage("\nR]STUNG-");
-    ArmorType armor =
-        (ArmorType)AlphaActionController::get(ARMR_MAX + 'a' - 1, "R}STUNG-");
+    ArmorType armor = static_cast<ArmorType>(
+        AlphaActionController::get(ARMR_MAX + 'a' - 1, "R}STUNG-")
+    );
     c->stats->setView(STATS_PARTY_OVERVIEW);
     if (armor == -1) {
         return;
@@ -3248,12 +3263,13 @@ void wearArmor(int player)
         soundPlay(SOUND_ERROR);
         screenMessage("%s\n", uppercase(a->getName()).c_str());
         screenMessage(
-            "\n%cEIN%s %s DARF DAS NICHT BENUTZEN!%c\n",
+            "\n%cEIN%s %s DARF %s BENUTZEN!%c\n",
             FG_GREY,
             (p->getSex() == SEX_FEMALE ? "E" : ""),
             uppercase(
                 getClassNameTranslated(p->getClass(), p->getSex())
             ).c_str(),
+            uppercase(a->getNeg()).c_str(),
             FG_WHITE
         );
         break;
@@ -3309,7 +3325,10 @@ void GameController::timerFired()
         /* balloon moves about 4 times per second */
         if ((c->transportContext == TRANSPORT_BALLOON)
             && c->party->isFlying()) {
-            c->location->move(dirReverse((Direction)c->windDirection), false);
+            c->location->move(
+                dirReverse(static_cast<Direction>(c->windDirection)),
+                false
+            );
         }
         updateMoons(true);
         screenCycle();
@@ -3523,6 +3542,13 @@ void gameFixupObjects(Map *map)
             /* set tile / prevtile, fixes pirate ship direction */
             obj->setTile(tile);
             obj->setPrevTile(oldTile);
+            /* CHANGE: If first object in inanimate objects
+               section is a ship, it becomes the lastShip */
+            if (i == MONSTERTABLE_CREATURES_SIZE) {
+                if (tile.getTileType()->isShip()) {
+                    c->lastShip = obj;
+                }
+            }
         }
     }
 } // gameFixupObjects
@@ -4017,7 +4043,7 @@ void showMixturesSuper(int page = 0)
         const Spell *s = getSpell(i + 13 * page);
         int line = i + 8;
         screenTextAt(2, line, "%s", s->name);
-        std::snprintf(buf, 4, "%3d", c->saveGame->mixtures[i + 13 * page]);
+        std::snprintf(buf, 4, "%3hd", c->saveGame->mixtures[i + 13 * page]);
         screenTextAt(6, line, "%s", buf);
         screenShowChar(32, 9, line);
         int comp = s->components;

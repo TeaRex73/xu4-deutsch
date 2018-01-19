@@ -47,6 +47,11 @@ public:
         return abbr;
     }
     
+    const std::string &getNeg() const
+    {
+        return neg;
+    }
+    
     bool canReady(ClassType klass) const
     {
         return (canuse & (1 << klass)) != 0;
@@ -140,6 +145,7 @@ private:
     WeaponType type;
     std::string name;
     std::string abbr; /**< abbreviation for the weapon */
+    std::string neg; /**< negative of the name (needed in German) */
     unsigned char canuse; /**< bitmask of classes that can use */
     int range; /**< range of weapon */
     int damage; /**< damage of weapon */

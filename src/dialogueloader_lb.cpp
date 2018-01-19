@@ -29,7 +29,7 @@ DialogueLoader *U4LBDialogueLoader::instance = DialogueLoader::registerLoader(
  * "help" response is a special case that changes based on the
  * current party status.
  */
-Dialogue *U4LBDialogueLoader::load(void *source)
+Dialogue *U4LBDialogueLoader::load(void *)
 {
     U4FILE *britkey = u4fopen("britkey.ger");
     if (!britkey) {
@@ -75,8 +75,8 @@ Dialogue *U4LBDialogueLoader::load(void *source)
         new Response(
             "\n\nEr sagt:\nDer Gro~e Stygische Abgrund ist die dunkelste "
             "Nische des B|sen, die in Britannia }brig ist.\n\nMan sagt, "
-            "da~ in den tiefsten H|hlungen des Abgrunds die Kammer des "
-            "Codex liegt!\n\nMan sagt auch, da~ nur eine Person h|chster "
+            "da~ in den tiefsten H|hlungen des Abgrundes die Kammer des "
+            "Kodexes liegt!\n\nMan sagt auch, da~ nur eine Person h|chster "
             "Tugend diese Kammer betreten darf, so jemand wie ein "
             "Avatar!!!\n"
         )
@@ -117,7 +117,7 @@ Dialogue *U4LBDialogueLoader::load(void *source)
  * one quest item is complete, Lord British provides some direction to
  * the next one.
  */
-Response *lordBritishGetHelp(const DynamicResponse *resp)
+Response *lordBritishGetHelp(const DynamicResponse *)
 {
     int v;
     bool fullAvatar, partialAvatar;
@@ -176,7 +176,7 @@ Response *lordBritishGetHelp(const DynamicResponse *resp)
             "verwende seine Weisheit, um dir zu helfen, "
             "deine Tugend zu erweisen.\n\nWenn du bereit "
             "bist, wird Hawkwind dir raten, die Erh|hung "
-            "zum teilweisen Avatartum in einer Tugend zu "
+            "zum teilweisen Avatartume in einer Tugend zu "
             "erlangen.\n\nVersuche, ein Teil-Avatar in "
             "allen acht Tugenden zu werden, denn erst "
             "dann wirst du bereit sein, den Kodex zu "
@@ -193,7 +193,7 @@ Response *lordBritishGetHelp(const DynamicResponse *resp)
     } else if (!fullAvatar) {
         text = std::string(
             "Du kommst wirklich sehr gut voran auf dem "
-            "Pfad zum Avatartume! Versuche, die Erh|hung "
+            "Pfade zum Avatartume! Versuche, die Erh|hung "
             "in allen acht Tugenden zu erlangen!\n"
         );
     } else if (((c->saveGame->items & ITEM_BELL) == 0)
@@ -232,7 +232,7 @@ Response *lordBritishGetHelp(const DynamicResponse *resp)
     return new Response(std::string("Er sagt:\n") + text);
 } // lordBritishGetHelp
 
-Response *lordBritishGetIntro(const DynamicResponse *resp)
+Response *lordBritishGetIntro(const DynamicResponse *)
 {
     Response *intro = new Response("");
     intro->add(ResponsePart::STARTMUSIC_LB);

@@ -39,10 +39,10 @@ MapCoords &MapCoords::wrap(const Map *map)
         while (y < 0) {
             y += map->height;
         }
-        while (x >= (int)map->width) {
+        while (x >= static_cast<int>(map->width)) {
             x -= map->width;
         }
-        while (y >= (int)map->height) {
+        while (y >= static_cast<int>(map->height)) {
             y -= map->height;
         }
     }
@@ -55,19 +55,19 @@ MapCoords &MapCoords::putInBounds(const Map *map)
         if (x < 0) {
             x = 0;
         }
-        if (x >= (int)map->width) {
+        if (x >= static_cast<int>(map->width)) {
             x = map->width - 1;
         }
         if (y < 0) {
             y = 0;
         }
-        if (y >= (int)map->height) {
+        if (y >= static_cast<int>(map->height)) {
             y = map->height - 1;
         }
         if (z < 0) {
             z = 0;
         }
-        if (z >= (int)map->levels) {
+        if (z >= static_cast<int>(map->levels)) {
             z = map->levels - 1;
         }
     }
@@ -126,16 +126,18 @@ int MapCoords::getRelativeDirection(const MapCoords &c, const Map *map) const
     /* adjust our coordinates to find the closest path */
     if (map && (map->border_behavior == Map::BORDER_WRAP)) {
         MapCoords me = *this;
-        if (std::abs(me.x - c.x) > std::abs((int)(me.x + map->width - c.x))) {
+        if (std::abs(me.x - c.x)
+            > std::abs(static_cast<int>(me.x + map->width - c.x))) {
             me.x += map->width;
         } else if (std::abs(me.x - c.x)
-                   > std::abs((int)(me.x - map->width - c.x))) {
+                   > std::abs(static_cast<int>(me.x - map->width - c.x))) {
             me.x -= map->width;
         }
-        if (std::abs(me.y - c.y) > std::abs((int)(me.y + map->width - c.y))) {
+        if (std::abs(me.y - c.y)
+            > std::abs(static_cast<int>(me.y + map->width - c.y))) {
             me.y += map->height;
         } else if (std::abs(me.y - c.y)
-                   > std::abs((int)(me.y - map->width - c.y))) {
+                   > std::abs(static_cast<int>(me.y - map->width - c.y))) {
             me.y -= map->height;
         }
         dx = me.x - c.x;
@@ -455,9 +457,9 @@ void Map::findWalkability(Coords coords, int *path_data)
     int index = coords.x + (coords.y * width);
     if (mt->isWalkable()) {
         bool isBorderTile = (coords.x == 0)
-            || (coords.x == (int)(width - 1))
+            || (coords.x == static_cast<int>(width - 1))
             || (coords.y == 0)
-            || (coords.y == (int)(height - 1));
+            || (coords.y == static_cast<int>(height - 1));
         path_data[index] = isBorderTile ? 2 : 1;
         if ((coords.x > 0)
             && (path_data[coords.x - 1 + (coords.y * width)] < 0)) {
@@ -465,7 +467,7 @@ void Map::findWalkability(Coords coords, int *path_data)
                 Coords(coords.x - 1, coords.y, coords.z), path_data
             );
         }
-        if ((coords.x < (int)(width - 1))
+        if ((coords.x < static_cast<int>(width - 1))
             && (path_data[coords.x + 1 + (coords.y * width)] < 0)) {
             findWalkability(
                 Coords(coords.x + 1, coords.y, coords.z), path_data
@@ -477,7 +479,7 @@ void Map::findWalkability(Coords coords, int *path_data)
                 Coords(coords.x, coords.y - 1, coords.z), path_data
             );
         }
-        if ((coords.y < (int)(height - 1))
+        if ((coords.y < static_cast<int>(height - 1))
             && (path_data[coords.x + ((coords.y + 1) * width)] < 0)) {
             findWalkability(
                 Coords(coords.x, coords.y + 1, coords.z), path_data
@@ -525,7 +527,7 @@ Creature *Map::addCreature(const Creature *creature, Coords coords)
 /**
  * Adds an object to the given map
  */
-Object *Map::addObject(Object *obj, Coords coords)
+Object *Map::addObject(Object *obj, Coords)
 {
     objects.push_front(obj);
     obj->setCoords(obj->getCoords());
@@ -694,7 +696,9 @@ int Map::getValidMoves(MapCoords from, MapTile transport, bool wanders)
         isAvatar = false;
     }
     retval = 0;
-    for (d = DIR_WEST; d <= DIR_SOUTH; d = (Direction)(d + 1)) {
+    for (d = DIR_WEST;
+         d <= DIR_SOUTH;
+         d = static_cast<Direction>(d + 1)) {
         coords = from;
         ontoAvatar = 0;
         ontoCreature = 0;
@@ -886,8 +890,19 @@ bool Map::fillMonsterTable()
     /**
      * First, categorize all the objects we have
      */
+    /* CHANGE: lastShip, if it exists, is always the first
+       object in the inanimate objects section of the table */
+    if (c->lastShip != nullptr) {
+        if (c->lastShip->getMap() == this) {
+            nObjects++;
+            inanimate_objects.push_back(c->lastShip);
+        }
+    }
     for (current = objects.begin(); current != objects.end(); current++) {
         obj = *current;
+        if (obj == c->lastShip && obj->getMap() == this) {
+            continue;
+        }
         /* moving objects first */
         if ((obj->getType() == Object::CREATURE)
             /* && (obj->getMovementBehavior() != MOVEMENT_FIXED) */ ) {

@@ -499,8 +499,8 @@ void Image::performTransparencyHack(
                 int divisor =
                     1
                     + span * 2
-                    - std::abs((int)(ox - x))
-                    - std::abs((int)(oy - y));
+                    - std::abs(static_cast<int>(ox - x))
+                    - std::abs(static_cast<int>(oy - y));
                 unsigned int r, g, b, a;
                 getPixel(x, y, r, g, b, a);
                 if (a != IM_OPAQUE) {
@@ -537,21 +537,29 @@ void Image::putPixelIndex(int x, int y, unsigned int index, bool anyway)
 {
     int bpp;
     Uint8 *p;
+    Uint16 *p2;
+    Uint32 *p4;
     if (!__builtin_expect(screenMoving, true) && !anyway) {
         return;
     }
     bpp = surface->format->BytesPerPixel;
-    p = static_cast<Uint8 *>(surface->pixels)
-        + y * surface->pitch
-        + x * __builtin_expect(bpp, 1);
     switch (__builtin_expect(bpp, 1)) {
     case 1:
+        p = static_cast<Uint8 *>(surface->pixels)
+        + y * surface->pitch
+        + x * __builtin_expect(bpp, 1);
         *p = index;
         break;
     case 2:
-        *reinterpret_cast<Uint16 *>(p) = index;
+        p2 = static_cast<Uint16 *>(surface->pixels)
+            + (y * surface->pitch) / 2
+            + x;
+        *p2 = index;
         break;
     case 3:
+        p = static_cast<Uint8 *>(surface->pixels)
+            + y * surface->pitch
+            + x * 3;
         if (SDL_BYTEORDER == SDL_BIG_ENDIAN) {
             p[0] = (index >> 16) & 0xff;
             p[1] = (index >> 8) & 0xff;
@@ -563,7 +571,10 @@ void Image::putPixelIndex(int x, int y, unsigned int index, bool anyway)
         }
         break;
     case 4:
-        *reinterpret_cast<Uint32 *>(p) = index;
+        p4 = static_cast<Uint32 *>(surface->pixels)
+            + (y * surface->pitch) / 4
+            + x;
+        *p4 = index;
         break;
     }
 } // Image::putPixelIndex
@@ -625,17 +636,27 @@ void Image::getPixel(
  */
 void Image::getPixelIndex(int x, int y, unsigned int &index) const
 {
-    int bpp = surface->format->BytesPerPixel;
-    Uint8 *p =
-        static_cast<Uint8 *>(surface->pixels) + y * surface->pitch + x * bpp;
-    switch (bpp) {
+    Uint8 *p;
+    Uint16 *p2;
+    Uint32 *p4;
+    int bpp = surface->format->BytesPerPixel; 
+    switch (__builtin_expect(bpp, 1)) {
     case 1:
+        p = static_cast<Uint8 *>(surface->pixels)
+            + y * surface->pitch
+            + x;
         index = *p;
         break;
     case 2:
-        index = *reinterpret_cast<Uint16 *>(p);
+        p2 = static_cast<Uint16 *>(surface->pixels)
+            + (y * surface->pitch) / 2
+            + x;
+        index = *p2;
         break;
     case 3:
+        p = static_cast<Uint8 *>(surface->pixels)
+            + y * surface->pitch
+            + x * 3;
         if (SDL_BYTEORDER == SDL_BIG_ENDIAN) {
             index = p[0] << 16 | p[1] << 8 | p[2];
         } else {
@@ -643,7 +664,10 @@ void Image::getPixelIndex(int x, int y, unsigned int &index) const
         }
         break;
     case 4:
-        index = *reinterpret_cast<Uint32 *>(p);
+        p4 = static_cast<Uint32 *>(surface->pixels)
+            + (y * surface->pitch) / 4
+            + x;
+        index = *p4;
         break;
     default:
         index = 0;

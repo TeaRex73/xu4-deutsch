@@ -60,12 +60,12 @@ public:
     void update();
     virtual void update(Aura *aura);
 
-    virtual void update(Party *party, PartyEvent &event)
+    virtual void update(Party *, PartyEvent &)
     {
         update(); /* do a full update */
     }
     
-    virtual void update(Menu *menu, MenuEvent &event)
+    virtual void update(Menu *, MenuEvent &)
     {
         update(); /* do a full update */
     }

@@ -446,7 +446,7 @@ void WaitController::timerFired()
     }
 }
 
-bool WaitController::keyPressed(int key)
+bool WaitController::keyPressed(int)
 {
     return true;
 }

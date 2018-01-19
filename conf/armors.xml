@@ -8,31 +8,31 @@
 
 <!-- $Id$ -->
 <armors>
-    <armor name="KEINE" defense="96"/>    
-    <armor name="TUCH" defense="128"/>    
-    <armor name="LEDER" defense="144">
+    <armor name="KEINE" neg="KEIN NICHTS" defense="96"/>    
+    <armor name="TUCH" neg="KEINE TUCHR]STUNG" defense="128"/>    
+    <armor name="LEDER" neg="KEINE LEDERR]STUNG" defense="144">
         <constraint canuse="false" class="mage"/>
     </armor>
-    <armor name="KETTE" defense="160">        
+    <armor name="KETTE" neg="KEINE KETTENR]STUNG" defense="160">        
         <constraint canuse="false" class="all"/>
         <constraint canuse="true" class="fighter"/>
         <constraint canuse="true" class="tinker"/>
         <constraint canuse="true" class="paladin"/>
     </armor>
-    <armor name="PLATTE" defense="176">        
+    <armor name="PLATTE" neg="KEINE PLATTENR]STUNG" defense="176">        
         <constraint canuse="false" class="all"/>
         <constraint canuse="true" class="fighter"/>
         <constraint canuse="true" class="tinker"/>
         <constraint canuse="true" class="paladin"/>
     </armor>
-    <armor name="MAG. KETTE" defense="192">         
+    <armor name="MAG. KETTE" neg="KEINE MAGISCHE KETTENR]STUNG" defense="192">         
         <constraint canuse="false" class="all"/>
         <constraint canuse="true" class="fighter"/>
         <constraint canuse="true" class="paladin"/>
     </armor>
-    <armor name="MAG. PLATTE" defense="208">        
+    <armor name="MAG. PLATTE" neg="KEINE MAGISCHE PLATTENR]STUNG" defense="208">        
         <constraint canuse="false" class="all"/>
         <constraint canuse="true" class="paladin"/>
     </armor>
-    <armor name="MYST. ROBE" defense="248" mystic="true"/>    
+    <armor name="MYST. ROBE" neg="KEINE MYSTISCHE ROBE" defense="248" mystic="true"/>    
 </armors>

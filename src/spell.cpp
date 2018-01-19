@@ -46,23 +46,23 @@ static bool spellFireball(int dir);
 static bool spellGate(int phase);
 static bool spellHeal(int player);
 static bool spellIceball(int dir);
-static bool spellJinx(int unused);
+static bool spellJinx(int);
 static bool spellKill(int dir);
-static bool spellLight(int unused);
+static bool spellLight(int);
 static bool spellMMissle(int dir);
-static bool spellNegate(int unused);
-static bool spellOpen(int unused);
-static bool spellProtect(int unused);
+static bool spellNegate(int);
+static bool spellOpen(int);
+static bool spellProtect(int);
 static bool spellRez(int player);
-static bool spellQuick(int unused);
-static bool spellSleep(int unused);
-static bool spellTremor(int unused);
-static bool spellUndead(int unused);
-static bool spellView(int unsued);
+static bool spellQuick(int);
+static bool spellSleep(int);
+static bool spellTremor(int);
+static bool spellUndead(int);
+static bool spellView(int);
 static bool spellWinds(int fromdir);
-static bool spellXit(int unused);
-static bool spellYup(int unused);
-static bool spellZdown(int unused);
+static bool spellXit(int);
+static bool spellYup(int);
+static bool spellZdown(int);
 
 /* masks for reagents */
 #define ASH (1 << REAG_ASH)
@@ -127,7 +127,7 @@ static const Spell spells[] = {
     {
         "Energitus",
         ASH | SILK | PEARL,
-        (LocationContext)(CTX_COMBAT | CTX_DUNGEON),
+        static_cast<LocationContext>(CTX_COMBAT | CTX_DUNGEON),
         TRANSPORT_ANY,
         &spellEField,
         Spell::PARAM_TYPEDIR,
@@ -465,7 +465,7 @@ bool spellMix(unsigned int spell, const Ingredients *ingredients)
     ASSERT(spell < N_SPELLS, "invalid spell: %d", spell);
     regmask = 0;
     for (reg = 0; reg < REAG_MAX; reg++) {
-        if (ingredients->getReagent((Reagent)reg) > 0) {
+        if (ingredients->getReagent(static_cast<Reagent>(reg)) > 0) {
             regmask |= (1 << reg);
         }
     }
@@ -551,7 +551,7 @@ bool spellCast(
         /* recalculate spell speed - based on 5/sec */
         double MP_OF_LARGEST_SPELL = 45;
         int spellMp = spells[spell].mp;
-        time = (int)(
+        time = static_cast<int>(
             17790.4 / settings.spellEffectSpeed * spellMp / MP_OF_LARGEST_SPELL
         );
         soundPlay(SOUND_PREMAGIC_MANA_JUMBLE, false, time);
@@ -648,7 +648,7 @@ static bool spellBlink(int dir)
 {
     int i, distance, diff, *var;
     bool success = true;
-    Direction reverseDir = dirReverse((Direction)dir);
+    Direction reverseDir = dirReverse(static_cast<Direction>(dir));
     MapCoords coords = c->location->coords;
     /* Blink doesn't work near the mouth of the abyss */
     /* Note: This means you can teleport to Hythloth from the top of the
@@ -671,7 +671,7 @@ static bool spellBlink(int dir)
     }
     /* test our distance, and see if it works */
     for (i = 0; i < distance; i++) {
-        coords.move((Direction)dir, c->location->map);
+        coords.move(static_cast<Direction>(dir), c->location->map);
     }
     i = distance;
     /* begin walking backward until you find a valid spot */
@@ -717,7 +717,7 @@ static bool spellDispel(int dir)
     /*
      * find where we want to dispel the field
      */
-    field.move((Direction)dir, c->location->map);
+    field.move(static_cast<Direction>(dir), c->location->map);
     GameController::flashTile(field, "wisp", 4);
     /*
      * if there is a field annotation, remove it and replace it with a
@@ -816,7 +816,7 @@ static bool spellEField(int param)
         }
     }
     c->location->getCurrentPosition(&coords);
-    coords.move((Direction)dir, c->location->map);
+    coords.move(static_cast<Direction>(dir), c->location->map);
     if (MAP_IS_OOB(c->location->map, coords)) {
         return false;
     } else {
@@ -852,7 +852,7 @@ static bool spellEField(int param)
 
 static bool spellFireball(int dir)
 {
-    spellMagicAttack("hit_flash", (Direction)dir, 24, 128);
+    spellMagicAttack("hit_flash", static_cast<Direction>(dir), 24, 128);
     return true;
 }
 
@@ -879,11 +879,11 @@ static bool spellHeal(int player)
 
 static bool spellIceball(int dir)
 {
-    spellMagicAttack("magic_flash", (Direction)dir, 32, 224);
+    spellMagicAttack("magic_flash", static_cast<Direction>(dir), 32, 224);
     return true;
 }
 
-static bool spellJinx(int unused)
+static bool spellJinx(int)
 {
     c->aura->set(Aura::JINX, 20);
     return true;
@@ -891,11 +891,11 @@ static bool spellJinx(int unused)
 
 static bool spellKill(int dir)
 {
-    spellMagicAttack("whirlpool", (Direction)dir, -1, 232);
+    spellMagicAttack("whirlpool", static_cast<Direction>(dir), -1, 232);
     return true;
 }
 
-static bool spellLight(int unused)
+static bool spellLight(int)
 {
     c->party->lightTorch(100, false);
     return true;
@@ -903,17 +903,17 @@ static bool spellLight(int unused)
 
 static bool spellMMissle(int dir)
 {
-    spellMagicAttack("miss_flash", (Direction)dir, 16, 64);
+    spellMagicAttack("miss_flash", static_cast<Direction>(dir), 16, 64);
     return true;
 }
 
-static bool spellNegate(int unused)
+static bool spellNegate(int)
 {
     c->aura->set(Aura::NEGATE, 20);
     return true;
 }
 
-static bool spellOpen(int unused)
+static bool spellOpen(int)
 {
     getChest(-2);
     // HACK: -2 will not prompt for opener
@@ -921,7 +921,7 @@ static bool spellOpen(int unused)
     return true;
 }
 
-static bool spellProtect(int unused)
+static bool spellProtect(int)
 {
     c->aura->set(Aura::PROTECTION, 20);
     return true;
@@ -933,13 +933,13 @@ static bool spellRez(int player)
     return c->party->member(player)->heal(HT_RESURRECT);
 }
 
-static bool spellQuick(int unused)
+static bool spellQuick(int)
 {
     c->aura->set(Aura::QUICKNESS, 20);
     return true;
 }
 
-static bool spellSleep(int unused)
+static bool spellSleep(int)
 {
     CombatMap *cm = getCombatMap();
     CreatureVector creatures = cm->getCreatures();
@@ -961,7 +961,7 @@ static bool spellSleep(int unused)
     return true;
 }
 
-static bool spellTremor(int unused)
+static bool spellTremor(int)
 {
     CombatController *ct = spellCombatController();
     CreatureVector creatures = ct->getMap()->getCreatures();
@@ -996,7 +996,7 @@ static bool spellTremor(int unused)
     return true;
 } // spellTremor
 
-static bool spellUndead(int unused)
+static bool spellUndead(int)
 {
     CombatController *ct = spellCombatController();
     CreatureVector creatures = ct->getMap()->getCreatures();
@@ -1012,7 +1012,7 @@ static bool spellUndead(int unused)
     return true;
 }
 
-static bool spellView(int unsued)
+static bool spellView(int)
 {
     peer(false);
     return true;
@@ -1024,7 +1024,7 @@ static bool spellWinds(int fromdir)
     return true;
 }
 
-static bool spellXit(int unused)
+static bool spellXit(int)
 {
     if (!c->location->map->isWorldMap()) {
         /* CHANGE: can't cast in Hythloth - too easy */
@@ -1040,7 +1040,7 @@ static bool spellXit(int unused)
     return false;
 }
 
-static bool spellYup(int unused)
+static bool spellYup(int)
 {
     MapCoords coords = c->location->coords;
     Dungeon *dungeon = dynamic_cast<Dungeon *>(c->location->map);
@@ -1072,7 +1072,7 @@ static bool spellYup(int unused)
     return false;
 } // spellYup
 
-static bool spellZdown(int unused)
+static bool spellZdown(int)
 {
     MapCoords coords = c->location->coords;
     Dungeon *dungeon = dynamic_cast<Dungeon *>(c->location->map);

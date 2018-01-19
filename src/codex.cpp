@@ -362,7 +362,7 @@ static void codexHandleVirtues(const std::string &virtue)
 } // codexHandleVirtues
 
 static int codexInfinityIndex = 1;
-static bool codexHandleInfinityAnyKey(int key, void *data)
+static bool codexHandleInfinityAnyKey(int, void *)
 {
     eventHandler->popKeyHandler();
     switch (codexInfinityIndex) {
@@ -422,7 +422,7 @@ static void codexHandleInfinity(const std::string &answer)
     }
 } // codexHandleInfinity
 
-static bool codexHandleEndgameAnyKey(int key, void *data)
+static bool codexHandleEndgameAnyKey(int, void *)
 {
     static int index = 1;
     eventHandler->popKeyHandler();

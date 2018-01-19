@@ -214,7 +214,7 @@ void TextView::textAt(int x, int y, const char *fmt, ...)
         case FG_RED:
         case FG_YELLOW:
         case FG_WHITE:
-            setFontColorFG((ColorFG)buffer[i]);
+            setFontColorFG(static_cast<ColorFG>(buffer[i]));
             offset++;
             break;
         default:

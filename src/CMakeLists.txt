@@ -12,7 +12,6 @@ add_executable (xu4 annotation.cpp armor.cpp aura.cpp camp.cpp cheat.cpp city.cp
 	tileset.cpp tileview.cpp u4.cpp u4file.cpp u4_sdl.cpp utils.cpp unzip.c view.cpp weapon.cpp
 	xml.cpp lzw/hash.c lzw/lzw.c lzw/u6decode.cpp lzw/u4decode.cpp
 	#   WIN32 # Only if you don't want the DOS prompt to appear in the background in Windows
-   #MACOSX_BUNDLE
 )
 
 target_link_libraries (

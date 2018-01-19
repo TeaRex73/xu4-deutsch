@@ -62,7 +62,7 @@ bool KeyHandler::globalHandler(int key)
 /**
  * A default key handler that should be valid everywhere
  */
-bool KeyHandler::defaultHandler(int key, void *data)
+bool KeyHandler::defaultHandler(int key, void *)
 {
     bool valid = true;
     switch (key) {
@@ -95,7 +95,7 @@ bool KeyHandler::defaultHandler(int key, void *data)
 /**
  * A key handler that ignores keypresses
  */
-bool KeyHandler::ignoreKeys(int key, void *data)
+bool KeyHandler::ignoreKeys(int, void *)
 {
     return true;
 }
@@ -418,7 +418,7 @@ static void handleKeyDownEvent(
     }
 } // handleKeyDownEvent
 
-static Uint32 sleepTimerCallback(Uint32 interval, void *)
+static Uint32 sleepTimerCallback(Uint32, void *)
 {
     SDL_Event stopEvent;
     stopEvent.type = SDL_USEREVENT;

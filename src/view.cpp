@@ -61,7 +61,7 @@ void View::update()
 /**
  * Update a piece of the view to the screen.
  */
-void View::update(int x, int y, int width, int height)
+void View::update(int, int, int, int)
 {
     if (highlighted) {
         drawHighlighted();

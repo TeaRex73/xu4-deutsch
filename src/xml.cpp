@@ -84,7 +84,7 @@ xmlDocPtr xmlParse(const char *filename)
 
 void xmlAccumError(void *l, const char *fmt, ...)
 {
-    std::string *errorMessage = (std::string *)l;
+    std::string *errorMessage = static_cast<std::string *>(l);
     char buffer[1000];
     std::va_list args;
     va_start(args, fmt);
@@ -95,7 +95,7 @@ void xmlAccumError(void *l, const char *fmt, ...)
 
 bool xmlPropExists(xmlNodePtr node, const char *name)
 {
-    xmlChar *prop = xmlGetProp(node, (const xmlChar *)name);
+    xmlChar *prop = xmlGetProp(node, c2xc(name));
     bool exists = (prop != nullptr);
     if (prop) {
         xmlFree(prop);
@@ -106,14 +106,14 @@ bool xmlPropExists(xmlNodePtr node, const char *name)
 std::string xmlGetPropAsString(xmlNodePtr node, const char *name)
 {
     xmlChar *prop;
-    if (settings.validateXml && !xmlHasProp(node, (const xmlChar *)name)) {
+    if (settings.validateXml && !xmlHasProp(node, c2xc(name))) {
         return "";
     }
-    prop = xmlGetProp(node, (const xmlChar *)name);
+    prop = xmlGetProp(node, c2xc(name));
     if (!prop) {
         return "";
     }
-    std::string result((char *)prop);
+    std::string result(xc2c(prop));
     xmlFree(prop);
     return result;
 }
@@ -128,16 +128,16 @@ bool xmlGetPropAsBool(xmlNodePtr node, const char *name)
 {
     int result;
     xmlChar *prop;
-    if (settings.validateXml && !xmlHasProp(node, (const xmlChar *)name)) {
+    if (settings.validateXml && !xmlHasProp(node, c2xc(name))) {
         return false;
     }
-    prop = xmlGetProp(node, (const xmlChar *)name);
+    prop = xmlGetProp(node, c2xc(name));
     if (!prop) {
         return false;
     }
-    if (xmlStrcmp(prop, (const xmlChar *)"true") == 0) {
+    if (xmlStrcmp(prop, c2xc("true")) == 0) {
         result = true;
-    } else if (xmlStrcmp(prop, (const xmlChar *)"false") == 0) {
+    } else if (xmlStrcmp(prop, c2xc("false")) == 0) {
         result = false;
     } else {
         result = false;
@@ -155,16 +155,16 @@ int xmlGetPropAsInt(xmlNodePtr node, const char *name)
 {
     long result;
     xmlChar *prop;
-    if (settings.validateXml && !xmlHasProp(node, (const xmlChar *)name)) {
+    if (settings.validateXml && !xmlHasProp(node, c2xc(name))) {
         return 0;
     }
-    prop = xmlGetProp(node, (const xmlChar *)name);
+    prop = xmlGetProp(node, c2xc(name));
     if (!prop) {
         return 0;
     }
-    result = std::strtol((const char *)prop, nullptr, 0);
+    result = std::strtol(xc2c(prop), nullptr, 0);
     xmlFree(prop);
-    return (int)result;
+    return static_cast<int>(result);
 }
 
 int xmlGetPropAsEnum(
@@ -173,15 +173,15 @@ int xmlGetPropAsEnum(
 {
     int result = -1, i;
     xmlChar *prop;
-    if (settings.validateXml && !xmlHasProp(node, (const xmlChar *)name)) {
+    if (settings.validateXml && !xmlHasProp(node, c2xc(name))) {
         return 0;
     }
-    prop = xmlGetProp(node, (const xmlChar *)name);
+    prop = xmlGetProp(node, c2xc(name));
     if (!prop) {
         return 0;
     }
     for (i = 0; enumValues[i]; i++) {
-        if (xmlStrcmp(prop, (const xmlChar *)enumValues[i]) == 0) {
+        if (xmlStrcmp(prop, c2xc(enumValues[i])) == 0) {
             result = i;
         }
     }
@@ -201,8 +201,8 @@ int xmlPropCmp(xmlNodePtr node, const char *name, const char *s)
 {
     int result;
     xmlChar *prop;
-    prop = xmlGetProp(node, (const xmlChar *)name);
-    result = xmlStrcmp(prop, (const xmlChar *)s);
+    prop = xmlGetProp(node, c2xc(name));
+    result = xmlStrcmp(prop, c2xc(s));
     xmlFree(prop);
     return result;
 }
@@ -216,8 +216,8 @@ int xmlPropCaseCmp(xmlNodePtr node, const char *name, const char *s)
 {
     int result;
     xmlChar *prop;
-    prop = xmlGetProp(node, (const xmlChar *)name);
-    result = xmlStrcasecmp(prop, (const xmlChar *)s);
+    prop = xmlGetProp(node, c2xc(name));
+    result = xmlStrcasecmp(prop, c2xc(s));
     xmlFree(prop);
     return result;
 }

@@ -66,7 +66,7 @@ public:
     }
     
     void add(const ResponsePart &part);
-    virtual const std::vector<ResponsePart> &getParts() const;
+    const virtual std::vector<ResponsePart> &getParts();
     operator std::string() const;
     Response *addref();
     void release();
@@ -93,7 +93,7 @@ public:
     DynamicResponse &operator=(const DynamicResponse &) = delete;
     DynamicResponse &operator=(DynamicResponse &&) = delete;
     virtual ~DynamicResponse();
-    virtual const std::vector<ResponsePart> &getParts() const;
+    const virtual std::vector<ResponsePart> &getParts();
 
     const std::string &getParam() const
     {
@@ -206,12 +206,12 @@ public:
         return prompt;
     }
     
-    Response *getIntro(bool familiar = false)
+    Response *getIntro(bool = false)
     {
         return intro;
     }
     
-    Response *getLongIntro(bool familiar = false)
+    Response *getLongIntro(bool = false)
     {
         return longIntro;
     }

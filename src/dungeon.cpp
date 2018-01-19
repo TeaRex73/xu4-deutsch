@@ -215,7 +215,7 @@ void dungeonDrinkFountain()
         return;
     }
     Dungeon *dungeon = dynamic_cast<Dungeon *>(c->location->map);
-    FountainType type = (FountainType)dungeon->currentSubToken();
+    FountainType type = static_cast<FountainType>(dungeon->currentSubToken());
     switch (type) {
     case FOUNTAIN_NORMAL:
         screenMessage("\nHmm... Keine Wirkung!\n");
@@ -329,10 +329,10 @@ void dungeonTouchOrb()
 /**
  * Handles dungeon traps
  */
-bool dungeonHandleTrap(TrapType trap)
+bool dungeonHandleTrap(TrapType)
 {
     Dungeon *dungeon = dynamic_cast<Dungeon *>(c->location->map);
-    switch ((TrapType)dungeon->currentSubToken()) {
+    switch (static_cast<TrapType>(dungeon->currentSubToken())) {
     case TRAP_WINDS:
         screenMessage("\nWinde!\n");
         c->party->quenchTorch();

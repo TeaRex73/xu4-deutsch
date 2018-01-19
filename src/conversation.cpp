@@ -41,7 +41,7 @@ void Response::add(const ResponsePart &part)
     parts.push_back(part);
 }
 
-const std::vector<ResponsePart> &Response::getParts() const
+const std::vector<ResponsePart> &Response::getParts()
 {
     return parts;
 }
@@ -105,10 +105,9 @@ DynamicResponse::~DynamicResponse()
     delete currentResponse;
 }
 
-const std::vector<ResponsePart> &DynamicResponse::getParts() const
+const std::vector<ResponsePart> &DynamicResponse::getParts()
 {
-    // blah, must cast away constness
-    const_cast<DynamicResponse *>(this)->currentResponse = (*generator)(this);
+    currentResponse = (*generator)(this);
     return currentResponse->getParts();
 }
 

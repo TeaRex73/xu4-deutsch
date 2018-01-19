@@ -48,8 +48,8 @@ public:
     int x, y, width, height;
 };
 
-#define IM_OPAQUE (unsigned int)255
-#define IM_TRANSPARENT 0
+#define IM_OPAQUE 255u
+#define IM_TRANSPARENT 0u
 
 
 /**

@@ -259,7 +259,7 @@ void PartyMember::addStatus(StatusType s)
         ASSERT(
             0,
             "Invalid Status %d in PartyMember::addStatus",
-            (int)player->status
+            static_cast<int>(player->status)
         );
     }
     notifyOfChange();
@@ -432,7 +432,7 @@ void PartyMember::removeStatus(StatusType s)
         ASSERT(
             0,
             "Invalid Status %d in PartyMember::removeStatus",
-            (int)player->status
+            static_cast<int>(player->status)
         );
     }
     notifyOfChange();
@@ -781,7 +781,8 @@ std::string Party::translate(std::vector<std::string> &parts)
             std::size_t pos = str.find_first_of("1234567890");
             if (pos != std::string::npos) {
                 str = str.substr(pos);
-                int p_member = (int)std::strtol(str.c_str(), nullptr, 10);
+                int p_member =
+                    static_cast<int>(std::strtol(str.c_str(), nullptr, 10));
                 // Make the party member translate its
                 // own stuff
                 if (p_member > 0) {
@@ -808,7 +809,7 @@ std::string Party::translate(std::vector<std::string> &parts)
 
 void Party::adjustFood(int food)
 {
-    int oldFood = saveGame->food;
+    unsigned int oldFood = saveGame->food;
     AdjustValue(saveGame->food, food, 999900, 0);
     if ((saveGame->food / 100) != (oldFood / 100)) {
         notifyOfChange();
@@ -852,7 +853,9 @@ void Party::adjustKarma(KarmaAction action)
         // When donating all,
         // you get +3 HONOR in Apple 2, but not in in U4DOS.
         // TODO: Make this a configuration option.
-        AdjustValueMax(newKarma[VIRT_SACRIFICE], 5, maxVal[VIRT_SACRIFICE]);
+        AdjustValueMax(newKarma[VIRT_SACRIFICE], 3, maxVal[VIRT_SACRIFICE]);
+        AdjustValueMax(newKarma[VIRT_HONOR], 3, maxVal[VIRT_HONOR]);
+        // fallthrough
     case KA_GAVE_TO_BEGGAR:
         // In U4DOS, we only get +2 COMPASSION,
         // no HONOR or SACRIFICE even if
@@ -988,6 +991,7 @@ void Party::applyEffect(TileEffect effect)
         case EFFECT_NONE:
         case EFFECT_ELECTRICITY:
             members[i]->applyEffect(effect);
+            break;
         case EFFECT_LAVA:
         case EFFECT_FIRE:
         case EFFECT_SLEEP:
@@ -995,6 +999,7 @@ void Party::applyEffect(TileEffect effect)
             if (xu4_random(2) == 0) {
                 members[i]->applyEffect(effect);
             }
+            break;
         case EFFECT_POISON:
             if (xu4_random(5) == 0) {
                 members[i]->applyEffect(effect);
@@ -1038,7 +1043,7 @@ void Party::burnTorch(int turns)
  */
 bool Party::canEnterShrine(Virtue virtue)
 {
-    if (saveGame->runes & (1 << (int)virtue)) {
+    if (saveGame->runes & (1 << static_cast<int>(virtue))) {
         return true;
     } else {
         return false;
@@ -1058,7 +1063,7 @@ bool Party::canPersonJoin(std::string name, Virtue *v)
     for (i = 1; i < 8; i++) {
         if (name == saveGame->players[i].name) {
             if (v) {
-                *v = (Virtue)saveGame->players[i].klass;
+                *v = static_cast<Virtue>(saveGame->players[i].klass);
             }
             return true;
         }
@@ -1073,7 +1078,7 @@ bool Party::canPersonJoin(std::string name, Virtue *v)
 void Party::damageShip(unsigned int pts)
 {
     saveGame->shiphull -= pts;
-    if ((short)saveGame->shiphull < 0) {
+    if (static_cast<short>(saveGame->shiphull) < 0) {
         saveGame->shiphull = 0;
     }
     notifyOfChange();
@@ -1404,7 +1409,7 @@ int Party::getReagent(int reagent) const
     return c->saveGame->reagents[reagent];
 }
 
-short *Party::getReagentPtr(int reagent) const
+unsigned short *Party::getReagentPtr(int reagent) const
 {
     return &c->saveGame->reagents[reagent];
 }

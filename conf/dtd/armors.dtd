@@ -4,5 +4,6 @@
 
 <!ELEMENT armor ( constraint* ) >
 <!ATTLIST armor name       CDATA   #REQUIRED
+                neg        CDATA   #REQUIRED
                 defense    NMTOKEN #REQUIRED
                 mystic     %bool;  #IMPLIED>

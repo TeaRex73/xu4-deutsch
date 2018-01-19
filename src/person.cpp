@@ -517,7 +517,7 @@ std::string Person::beggarGetQuantityResponse(
 )
 {
     std::string reply;
-    cnv->quant = (int)std::strtol(response, nullptr, 10);
+    cnv->quant = static_cast<int>(std::strtol(response, nullptr, 10));
     cnv->state = Conversation::TALK;
     if (cnv->quant > 0) {
         if (c->party->donate(cnv->quant)) {

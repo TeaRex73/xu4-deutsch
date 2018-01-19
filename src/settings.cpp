@@ -21,8 +21,6 @@
 #if defined(_WIN32) || defined(__CYGWIN__)
 #include <windows.h>
 #include <shlobj.h>
-#elif defined(MACOSX)
-#include <CoreServices/CoreServices.h>
 #endif
 
 
@@ -254,32 +252,7 @@ void Settings::init(const bool useProfile, const std::string profileName)
         userPath += profileName.c_str();
         userPath += "/";
     } else {
-#if defined(MACOSX)
-        FSRef folder;
-        OSErr err = FSFindFolder(
-            kUserDomain, kApplicationSupportFolderType, kCreateFolder, &folder
-        );
-        if (err == noErr) {
-            UInt8 path[2048];
-            if (FSRefMakePath(&folder, path, 2048) == noErr) {
-                userPath.append(reinterpret_cast<const char *>(path));
-                userPath.append("/xu4/");
-            }
-        }
-        if (userPath.empty()) {
-            char *home = std::getenv("HOME");
-            if (home && home[0]) {
-                if (userPath.size() == 0) {
-                    userPath += home;
-                    userPath += "/.xu4";
-                    userPath += "/";
-                }
-            } else {
-                userPath = "./";
-            }
-        }
-
-#elif defined(__unix__)
+#if defined(__unix__)
         char *home = std::getenv("HOME");
         if (home && home[0]) {
             userPath += home;
@@ -288,7 +261,6 @@ void Settings::init(const bool useProfile, const std::string profileName)
         } else {
             userPath = "./";
         }
-
 #elif defined(_WIN32) || defined(__CYGWIN__)
         userPath = "./";
         LPMALLOC pMalloc = nullptr;
@@ -310,9 +282,9 @@ void Settings::init(const bool useProfile, const std::string profileName)
             }
             pMalloc->Release();
         }
-#else // if defined(MACOSX)
+#else // if defined(__unix__)
         userPath = "./";
-#endif // if defined(MACOSX)
+#endif // if defined(__unix__)
     }
     FileSystem::createDirectory(userPath);
     filename = userPath + SETTINGS_BASE_FILENAME;
@@ -336,7 +308,7 @@ Settings &Settings::getInstance()
 void Settings::setData(const SettingsData &data)
 {
     // bitwise copy is safe
-    *(SettingsData *)this = data;
+    *(static_cast<SettingsData *>(this)) = data;
 }
 
 
@@ -365,8 +337,8 @@ bool Settings::read()
                ); */
         }
         else if (std::strstr(buffer, "fullscreen=") == buffer) {
-            fullscreen = (int)std::strtoul(
-                buffer + std::strlen("fullscreen="), nullptr, 0
+            fullscreen = static_cast<int>(
+                std::strtoul(buffer + std::strlen("fullscreen="), nullptr, 0)
             );
         } else if (std::strstr(buffer, "filter=") == buffer) {
             filter = buffer + std::strlen("filter=");
@@ -377,150 +349,178 @@ bool Settings::read()
         } else if (std::strstr(buffer, "lineOfSight=") == buffer) {
             lineOfSight = buffer + std::strlen("lineOfSight=");
         } else if (std::strstr(buffer, "screenShakes=") == buffer) {
-            screenShakes = (int)std::strtoul(
-                buffer + std::strlen("screenShakes="), nullptr, 0
+            screenShakes = static_cast<int>(
+                std::strtoul(buffer + std::strlen("screenShakes="), nullptr, 0)
             );
         } else if (std::strstr(buffer, "gamma=") == buffer) {
-            gamma = (int)std::strtoul(
-                buffer + std::strlen("gamma="), nullptr, 0
+            gamma = static_cast<int>(
+                std::strtoul(buffer + std::strlen("gamma="), nullptr, 0)
             );
         } else if (std::strstr(buffer, "musicVol=") == buffer) {
-            musicVol = (int)std::strtoul(
-                buffer + std::strlen("musicVol="), nullptr, 0
+            musicVol = static_cast<int>(
+                std::strtoul(buffer + std::strlen("musicVol="), nullptr, 0)
             );
         } else if (std::strstr(buffer, "soundVol=") == buffer) {
-            soundVol = (int)std::strtoul(
-                buffer + std::strlen("soundVol="), nullptr, 0
+            soundVol = static_cast<int>(
+                std::strtoul(buffer + std::strlen("soundVol="), nullptr, 0)
             );
         } else if (std::strstr(buffer, "volumeFades=") == buffer) {
-            volumeFades = (int)std::strtoul(
-                buffer + std::strlen("volumeFades="), nullptr, 0
+            volumeFades = static_cast<int>(
+                std::strtoul(buffer + std::strlen("volumeFades="), nullptr, 0)
             );
         } else if (std::strstr(buffer, "shortcutCommands=") == buffer) {
-            shortcutCommands = (int)std::strtoul(
-                buffer + std::strlen("shortcutCommands="), nullptr, 0
+            shortcutCommands = static_cast<int>(
+                std::strtoul(
+                    buffer + std::strlen("shortcutCommands="), nullptr, 0
+                )
             );
         } else if (std::strstr(buffer, "keydelay=") == buffer) {
-            keydelay = (int)std::strtoul(
-                buffer + std::strlen("keydelay="), nullptr, 0
+            keydelay = static_cast<int>(
+                std::strtoul(buffer + std::strlen("keydelay="), nullptr, 0)
             );
         } else if (std::strstr(buffer, "keyinterval=") == buffer) {
-            keyinterval = (int)std::strtoul(
-                buffer + std::strlen("keyinterval="), nullptr, 0
+            keyinterval = static_cast<int>(
+                std::strtoul(buffer + std::strlen("keyinterval="), nullptr, 0)
             );
         } else if (std::strstr(buffer, "filterMoveMessages=") == buffer) {
-            filterMoveMessages = (int)std::strtoul(
-                buffer + std::strlen("filterMoveMessages="),
-                nullptr,
-                0
+            filterMoveMessages = static_cast<int>(
+                std::strtoul(
+                    buffer + std::strlen("filterMoveMessages="), nullptr, 0
+                )
             );
         } else if (std::strstr(buffer, "battlespeed=") == buffer) {
-            battleSpeed = (int)std::strtoul(
-                buffer + std::strlen("battlespeed="), nullptr, 0
+            battleSpeed = static_cast<int>(
+                std::strtoul(buffer + std::strlen("battlespeed="), nullptr, 0)
             );
         } else if (std::strstr(buffer, "enhancements=") == buffer) {
-            enhancements = (int)std::strtoul(
-                buffer + std::strlen("enhancements="), nullptr, 0
+            enhancements = static_cast<int>(
+                std::strtoul(buffer + std::strlen("enhancements="), nullptr, 0)
             );
         } else if (std::strstr(buffer, "gameCyclesPerSecond=") == buffer) {
-            gameCyclesPerSecond = (int)std::strtoul(
-                buffer + std::strlen("gameCyclesPerSecond="), nullptr, 0
+            gameCyclesPerSecond = static_cast<int>(
+                std::strtoul(
+                    buffer + std::strlen("gameCyclesPerSecond="), nullptr, 0
+                )
             );
         } else if (std::strstr(buffer, "debug=") == buffer) {
-            debug = (int)std::strtoul(
-                buffer + std::strlen("debug="), nullptr, 0
+            debug = static_cast<int>(
+                std::strtoul(buffer + std::strlen("debug="), nullptr, 0)
             );
         } else if (std::strstr(buffer, "battleDiff=") == buffer) {
             battleDiff = buffer + std::strlen("battleDiff=");
         } else if (std::strstr(buffer, "validateXml=") == buffer) {
-            validateXml = (int)std::strtoul(
-                buffer + std::strlen("validateXml="), nullptr, 0
+            validateXml = static_cast<int>(
+                std::strtoul(buffer + std::strlen("validateXml="), nullptr, 0)
             );
         } else if (std::strstr(buffer, "spellEffectSpeed=") == buffer) {
-            spellEffectSpeed = (int)std::strtoul(
-                buffer + std::strlen("spellEffectSpeed="), nullptr, 0
+            spellEffectSpeed = static_cast<int>(
+                std::strtoul(
+                    buffer + std::strlen("spellEffectSpeed="), nullptr, 0
+                )
             );
         } else if (std::strstr(buffer, "campTime=") == buffer) {
-            campTime = (int)std::strtoul(
-                buffer + std::strlen("campTime="), nullptr, 0
+            campTime = static_cast<int>(
+                std::strtoul(buffer + std::strlen("campTime="), nullptr, 0)
             );
         } else if (std::strstr(buffer, "innTime=") == buffer) {
-            innTime = (int)std::strtoul(
-                buffer + std::strlen("innTime="), nullptr, 0
+            innTime = static_cast<int>(
+                std::strtoul(buffer + std::strlen("innTime="), nullptr, 0)
             );
         } else if (std::strstr(buffer, "shrineTime=") == buffer) {
-            shrineTime = (int)std::strtoul(
-                buffer + std::strlen("shrineTime="), nullptr, 0
+            shrineTime = static_cast<int>(
+                std::strtoul(buffer + std::strlen("shrineTime="), nullptr, 0)
             );
         } else if (std::strstr(buffer, "shakeInterval=") == buffer) {
-            shakeInterval = (int)std::strtoul(
-                buffer + std::strlen("shakeInterval="), nullptr, 0
+            shakeInterval = static_cast<int>(
+                std::strtoul(
+                    buffer + std::strlen("shakeInterval="), nullptr, 0
+                )
             );
         } else if (std::strstr(buffer, "titleSpeedRandom=") == buffer) {
-            titleSpeedRandom = (int)std::strtoul(
-                buffer + std::strlen("titleSpeedRandom="), nullptr, 0
+            titleSpeedRandom = static_cast<int>(
+                std::strtoul(
+                    buffer + std::strlen("titleSpeedRandom="), nullptr, 0
+                )
             );
         } else if (std::strstr(buffer, "titleSpeedOther=") == buffer) {
-            titleSpeedOther = (int)std::strtoul(
-                buffer + std::strlen("titleSpeedOther="), nullptr, 0
+            titleSpeedOther = static_cast<int>(
+                std::strtoul(
+                    buffer + std::strlen("titleSpeedOther="), nullptr, 0
+                )
             );
         }
         /* minor enhancement options */
         else if (std::strstr(buffer, "activePlayer=") == buffer) {
-            enhancementsOptions.activePlayer = (int)std::strtoul(
-                buffer + std::strlen("activePlayer="), nullptr, 0
+            enhancementsOptions.activePlayer = static_cast<int>(
+                std::strtoul(buffer + std::strlen("activePlayer="), nullptr, 0)
             );
         } else if (std::strstr(buffer, "u5spellMixing=") == buffer) {
-            enhancementsOptions.u5spellMixing = (int)std::strtoul(
-                buffer + std::strlen("u5spellMixing="), nullptr, 0
+            enhancementsOptions.u5spellMixing = static_cast<int>(
+                std::strtoul(
+                    buffer + std::strlen("u5spellMixing="), nullptr, 0
+                )
             );
         } else if (std::strstr(buffer, "u5shrines=") == buffer) {
-            enhancementsOptions.u5shrines = (int)std::strtoul(
-                buffer + std::strlen("u5shrines="), nullptr, 0
+            enhancementsOptions.u5shrines = static_cast<int>(
+                std::strtoul(buffer + std::strlen("u5shrines="), nullptr, 0)
             );
         } else if (std::strstr(buffer, "slimeDivides=") == buffer) {
-            enhancementsOptions.slimeDivides = (int)std::strtoul(
-                buffer + std::strlen("slimeDivides="), nullptr, 0
+            enhancementsOptions.slimeDivides = static_cast<int>(
+                std::strtoul(buffer + std::strlen("slimeDivides="), nullptr, 0)
             );
         } else if (std::strstr(buffer, "gazerSpawnsInsects=") == buffer) {
-            enhancementsOptions.gazerSpawnsInsects = (int)std::strtoul(
-                buffer + std::strlen("gazerSpawnsInsects="), nullptr, 0
+            enhancementsOptions.gazerSpawnsInsects = static_cast<int>(
+                std::strtoul(
+                    buffer + std::strlen("gazerSpawnsInsects="), nullptr, 0
+                )
             );
         } else if (std::strstr(buffer, "textColorization=") == buffer) {
-            enhancementsOptions.textColorization = (int)std::strtoul(
-                buffer + std::strlen("textColorization="), nullptr, 0
+            enhancementsOptions.textColorization = static_cast<int>(
+                std::strtoul(
+                    buffer + std::strlen("textColorization="), nullptr, 0
+                )
             );
         } else if (std::strstr(buffer, "c64chestTraps=") == buffer) {
-            enhancementsOptions.c64chestTraps = (int)std::strtoul(
-                buffer + std::strlen("c64chestTraps="), nullptr, 0
+            enhancementsOptions.c64chestTraps = static_cast<int>(
+                std::strtoul(
+                    buffer + std::strlen("c64chestTraps="), nullptr, 0
+                )
             );
         } else if (std::strstr(buffer, "smartEnterKey=") == buffer) {
-            enhancementsOptions.smartEnterKey = (int)std::strtoul(
-                buffer + std::strlen("smartEnterKey="), nullptr, 0
+            enhancementsOptions.smartEnterKey = static_cast<int>(
+                std::strtoul(
+                    buffer + std::strlen("smartEnterKey="), nullptr, 0
+                )
             );
         }
         /* major enhancement options */
         else if (std::strstr(buffer, "peerShowsObjects=") == buffer) {
-            enhancementsOptions.peerShowsObjects = (int)std::strtoul(
-                buffer + std::strlen("peerShowsObjects="), nullptr, 0
+            enhancementsOptions.peerShowsObjects = static_cast<int>(
+                std::strtoul(
+                    buffer + std::strlen("peerShowsObjects="), nullptr, 0
+                )
             );
         } else if (std::strstr(buffer, "u5combat=") == buffer) {
-            enhancementsOptions.u5combat = (int)std::strtoul(
-                buffer + std::strlen("u5combat="), nullptr, 0
+            enhancementsOptions.u5combat = static_cast<int>(
+                std::strtoul(buffer + std::strlen("u5combat="), nullptr, 0)
             );
         } else if (std::strstr(buffer, "innAlwaysCombat=") == buffer) {
-            innAlwaysCombat = (int)std::strtoul(
-                buffer + std::strlen("innAlwaysCombat="), nullptr, 0
+            innAlwaysCombat = static_cast<int>(
+                std::strtoul(
+                    buffer + std::strlen("innAlwaysCombat="), nullptr, 0
+                )
             );
         } else if (std::strstr(buffer, "campingAlwaysCombat=") == buffer) {
-            campingAlwaysCombat = (int)std::strtoul(
-                buffer + std::strlen("campingAlwaysCombat="), nullptr, 0
+            campingAlwaysCombat = static_cast<int>(
+                std::strtoul(
+                    buffer + std::strlen("campingAlwaysCombat="), nullptr, 0
+                )
             );
         }
         /* mouse options */
         else if (std::strstr(buffer, "mouseEnabled=") == buffer) {
-            mouseOptions.enabled = (int)std::strtoul(
-                buffer + std::strlen("mouseEnabled="), nullptr, 0
+            mouseOptions.enabled = static_cast<int>(
+                std::strtoul(buffer + std::strlen("mouseEnabled="), nullptr, 0)
             );
         } else if (std::strstr(buffer, "logging=") == buffer) {
             logging = buffer + std::strlen("logging=");
@@ -529,24 +529,31 @@ bool Settings::read()
         }
         /* graphics enhancements options */
         else if (std::strstr(buffer, "renderTileTransparency=") == buffer) {
-            enhancementsOptions.u4TileTransparencyHack = (int)std::strtoul(
-                buffer + std::strlen("renderTileTransparency="), nullptr, 0
+            enhancementsOptions.u4TileTransparencyHack = static_cast<int>(
+                std::strtoul(
+                    buffer + std::strlen("renderTileTransparency="), nullptr, 0
+                )
             );
         } else if (std::strstr(buffer, "transparentTilePixelShadowOpacity=")
                    == buffer) {
             enhancementsOptions.u4TileTransparencyHackPixelShadowOpacity =
-                (int)std::strtoul(
-                    buffer + std::strlen("transparentTilePixelShadowOpacity="),
-                    nullptr,
-                    0
+                static_cast<int>(
+                    std::strtoul(
+                        buffer
+                        + std::strlen("transparentTilePixelShadowOpacity="),
+                        nullptr,
+                        0
+                    )
                 );
         } else if (std::strstr(buffer, "transparentTileShadowSize=")
                    == buffer) {
             enhancementsOptions.u4TileTransparencyHackShadowBreadth =
-                (int)std::strtoul(
-                    buffer + std::strlen("transparentTileShadowSize="),
-                    nullptr,
-                    0
+                static_cast<int>(
+                    std::strtoul(
+                        buffer + std::strlen("transparentTileShadowSize="),
+                        nullptr,
+                        0
+                    )
                 );
         }
         /**
@@ -561,16 +568,18 @@ bool Settings::read()
         else if (std::strstr(buffer, "attackspeed=") == buffer) {
             /* do nothing */
         } else if (std::strstr(buffer, "minorEnhancements=") == buffer) {
-            enhancements = (int)std::strtoul(
-                buffer + std::strlen("minorEnhancements="),
-                nullptr,
-                0
+            enhancements = static_cast<int>(
+                std::strtoul(
+                    buffer + std::strlen("minorEnhancements="),
+                    nullptr,
+                    0
+                )
             );
         } else if (std::strstr(buffer, "majorEnhancements=") == buffer) {
             /* do nothing */
         } else if (std::strstr(buffer, "vol=") == buffer) {
-            musicVol = soundVol = (int)std::strtoul(
-                buffer + std::strlen("vol="), nullptr, 0
+            musicVol = soundVol = static_cast<int>(
+                std::strtoul(buffer + std::strlen("vol="), nullptr, 0)
             );
         }
         /***/

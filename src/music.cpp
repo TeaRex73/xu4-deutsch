@@ -132,7 +132,7 @@ bool Music::load(Type music)
  * Ensures that the music is playing if it is supposed to be, or off
  * if it is supposed to be turned off.
  */
-void Music::callback(void *data)
+void Music::callback(void *)
 {
     eventHandler->getTimer()->remove(&Music::callback);
     if (musicMgr->on && !isPlaying()) {
@@ -147,8 +147,8 @@ void Music::callback(void *data)
 void Music::playCurrent()
 {
     if (introMid) {
-        int next = (int)introMid + 1;
-        if (next >= (int)EXTRA) next = 1;
+        int next = static_cast<int>(introMid + 1);
+        if (next >= static_cast<int>(EXTRA)) next = 1;
         introSwitch(next);
         return;
     }

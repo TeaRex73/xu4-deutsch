@@ -5,6 +5,7 @@
 <!ELEMENT weapon ( constraint* ) >
 <!ATTLIST weapon name                   CDATA   #REQUIRED
                  abbr                   CDATA   #REQUIRED
+                 neg                    CDATA   #REQUIRED
                  range                  NMTOKEN #IMPLIED
                  absolute_range         NMTOKEN #IMPLIED
                  damage                 NMTOKEN #REQUIRED

@@ -6,7 +6,9 @@
 
 #include <algorithm>
 #include "object.h"
+#include "context.h"
 #include "map.h"
+#include "player.h"
 
 std::set<Object *> Object::all_objects;
 
@@ -58,6 +60,9 @@ Object &Object::operator=(const Object &o)
 
 Object::~Object()
 {
+    if(c && (c->lastShip == this)) {
+        c->lastShip = nullptr;
+    }
     all_objects.erase(this);
 }
 

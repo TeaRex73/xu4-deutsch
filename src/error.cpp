@@ -38,11 +38,6 @@ void errorWarning(const char *fmt, ...)
     MessageBox(nullptr, buffer, "XU4 Warning", MB_OK | MB_ICONWARNING);
 }
 
-#elif defined(MACOSX)
-/*
- * MacOS X: errors functios defined in objective-c code elsewhere.
- */
-
 #elif GTK2_DIALOGS
 /*
  * Linux/Unix with GTK2: errors shown in message box

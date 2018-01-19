@@ -159,7 +159,7 @@ void U6Decode::get_string(Stack &stack, int codeword)
         stack.push(root);
     }
     // push the root at the leaf
-    stack.push((unsigned char)current_codeword);
+    stack.push(static_cast<unsigned char>(current_codeword));
 }
 
 
@@ -170,9 +170,9 @@ void U6Decode::get_string(Stack &stack, int codeword)
 // ---------------------------------------------------------------------------
 int U6Decode::lzw_decompress(
     unsigned char *source,
-    long source_length,
+    long /* source_length */,
     unsigned char *destination,
-    long destination_length
+    long /* destination_length */
 )
 {
     const int max_codeword_length = 12;
@@ -195,7 +195,9 @@ int U6Decode::lzw_decompress(
             dictionary_size = 0x200;
             dict.init();
             cW = get_next_codeword(bits_read, source, codeword_size);
-            output_root((unsigned char)cW, destination, bytes_written);
+            output_root(
+                static_cast<unsigned char>(cW), destination, bytes_written
+            );
             break;
         case 0x101:
             // end of compressed file has been reached
@@ -279,7 +281,7 @@ int U6Decode::lzw_decompress(FILE *input_file, FILE *output_file)
         // read the input file into the source buffer
         std::fseek(input_file, 4, SEEK_SET);
         if (std::fread(source_buffer, 1, source_buffer_size, input_file)
-            != (size_t) source_buffer_size) {
+            != static_cast<size_t>(source_buffer_size)) {
             perror("std::fread failed");
         }
         // decompress the input file

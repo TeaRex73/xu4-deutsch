@@ -24,13 +24,7 @@
 
 #include "config.h"
 #include "context.h"
-
-#if defined(MACOSX)
-#include "macosx/cursors.h"
-#else
 #include "cursors.h"
-#endif
-
 #include "debug.h"
 #include "dungeonview.h"
 #include "error.h"
@@ -116,7 +110,7 @@ void screenInit_sys()
     screen->w = 320 * settings.scale;
     screen->h = 200 * settings.scale;
     char *pix;
-    pix = (char *)(screen->pixels);
+    pix = static_cast<char *>(screen->pixels);
     pix += (screen->pitch * 20 * settings.scale
             + screen->format->BytesPerPixel * 32 * settings.scale);
     screen->pixels = pix;
@@ -336,7 +330,7 @@ void screenWait(int numberOfAnimationFrames)
 bool continueScreenRefresh = true;
 SDL_Thread *screenRefreshThread = nullptr;
 
-int screenRefreshThreadFunction(void *unused)
+int screenRefreshThreadFunction(void *)
 {
     while (continueScreenRefresh) {
         SDL_Delay(frameDuration);
@@ -467,11 +461,7 @@ Image *screenScaleDown(Image *src, int scale)
  * Create an SDL cursor object from an xpm.  Derived from example in
  * SDL documentation project.
  */
-#if defined(MACOSX)
-#define CURSORSIZE 16
-#else
 #define CURSORSIZE 32
-#endif
 
 SDL_Cursor *screenInitCursor(const char *const xpm[])
 {

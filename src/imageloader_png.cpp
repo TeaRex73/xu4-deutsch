@@ -24,8 +24,8 @@ static void png_read_xu4(
 {
     png_size_t check;
     U4FILE *file;
-    file = (U4FILE *)png_get_io_ptr(png_ptr);
-    check = file->read(data, (png_size_t)1, length);
+    file = static_cast<U4FILE *>(png_get_io_ptr(png_ptr));
+    check = file->read(data, static_cast<png_size_t>(1), length);
     if (check != length) {
         png_error(png_ptr, "Read Error");
     }
@@ -42,9 +42,11 @@ Image *PngImageLoader::load(
     if ((width != -1) || (height != -1) || (bpp != -1)) {
         errorWarning("dimensions set for PNG image, will be ignored");
     }
-    char header[8];
+    unsigned char header[8];
     file->read(header, 1, sizeof(header));
-    if (png_sig_cmp((png_byte *)header, 0, sizeof(header)) != 0) {
+    if (png_sig_cmp(
+            static_cast<png_byte *>(header), 0, sizeof(header)
+        ) != 0) {
         return nullptr;
     }
     png_structp png_ptr = png_create_read_struct(
@@ -56,14 +58,16 @@ Image *PngImageLoader::load(
     png_infop info_ptr = png_create_info_struct(png_ptr);
     if (!info_ptr) {
         png_destroy_read_struct(
-            &png_ptr, (png_infopp)nullptr, (png_infopp)nullptr
+            &png_ptr,
+            static_cast<png_infopp>(nullptr),
+            static_cast<png_infopp>(nullptr)
         );
         return nullptr;
     }
     png_infop end_info = png_create_info_struct(png_ptr);
     if (!end_info) {
         png_destroy_read_struct(
-            &png_ptr, &info_ptr, (png_infopp)nullptr
+            &png_ptr, &info_ptr, static_cast<png_infopp>(nullptr)
         );
         return nullptr;
     }

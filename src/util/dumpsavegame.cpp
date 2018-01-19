@@ -36,7 +36,7 @@ void showSaveGame(SaveGame *sg)
     std::printf(
         "moves: %-4d food: %-5g gold: %d\n",
         sg->moves,
-        ((double)sg->food) / 100.0,
+        static_cast<double>(sg->food) / 100.0,
         sg->gold
     );
     std::printf("karma: [ ");

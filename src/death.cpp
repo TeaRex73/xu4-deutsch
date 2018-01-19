@@ -81,7 +81,7 @@ void deathStart(int delay)
     );
 }
 
-void deathTimer(void *data)
+void deathTimer(void *)
 {
     timerCount++;
     if ((timerMsg < N_MSGS)

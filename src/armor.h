@@ -29,6 +29,11 @@ public:
         return name;  /**< Returns the name of the armor */
     }
 
+    const std::string &getNeg() const
+    {
+        return neg;  /**< Returns the negative name of the armor */
+    }
+
     /** Returns the defense value of the armor */
     int getDefense(bool needsMystic) const
     {
@@ -48,6 +53,7 @@ private:
     static std::vector<Armor> armors;
     ArmorType type;
     std::string name;
+    std::string neg;
     unsigned char canuse;
     int defense;
     unsigned short mask;

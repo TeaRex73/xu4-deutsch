@@ -19,4 +19,14 @@ int xmlGetPropAsEnum(
 int xmlPropCmp(xmlNodePtr node, const char *name, const char *s);
 int xmlPropCaseCmp(xmlNodePtr node, const char *name, const char *s);
 
+static inline const xmlChar *c2xc(const char *s)
+{
+    return reinterpret_cast<const xmlChar *>(s);
+}
+
+static inline const char *xc2c(const xmlChar *s)
+{
+    return reinterpret_cast<const char *>(s);
+}
+
 #endif /* XML_H */

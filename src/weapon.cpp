@@ -54,6 +54,7 @@ Weapon::Weapon(const ConfigElement &conf)
     :type(static_cast<WeaponType>(weapons.size())),
      name(conf.getString("name")),
      abbr(conf.getString("abbr")),
+     neg(conf.getString("neg")),
      canuse(0xFF),
      range(0),
      damage(conf.getInt("damage")),

@@ -294,7 +294,7 @@ bool CityMapLoader::load(Map *map)
         for (current = city->personroles.begin();
              current != city->personroles.end();
              current++) {
-            if ((unsigned int)(*current)->id == (i + 1)) {
+            if (static_cast<unsigned int>((*current)->id) == (i + 1)) {
                 if ((*current)->role == NPC_LORD_BRITISH) {
                     Dialogue *dlg =
                         DialogueLoader::getLoader("application/x-u4lbtlk")
@@ -590,7 +590,7 @@ bool DngMapLoader::load(Map *map)
                     Coords(0, 9, 0x16)
                 };
                 for (int j = 0;
-                     j < (int)(sizeof(tile) / sizeof(Coords));
+                     j < static_cast<int>(sizeof(tile) / sizeof(Coords));
                      j++) {
                     const int index = (tile[j].y * CON_WIDTH) + tile[j].x;
                     dungeon->rooms[i].map_data[index] =

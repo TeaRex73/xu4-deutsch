@@ -95,38 +95,38 @@ bool SaveGame::read(std::FILE *f)
             return false;
         }
     }
-    if (!readInt((unsigned int *)&food, f)
-        || !readShort((unsigned short *)&gold, f)) {
+    if (!readInt(&food, f)
+        || !readShort(&gold, f)) {
         return false;
     }
     for (i = 0; i < 8; i++) {
-        if (!readShort((unsigned short *)&(karma[i]), f)) {
+        if (!readShort(&(karma[i]), f)) {
             return false;
         }
     }
-    if (!readShort((unsigned short *)&torches, f)
-        || !readShort((unsigned short *)&gems, f)
-        || !readShort((unsigned short *)&keys, f)
-        || !readShort((unsigned short *)&sextants, f)) {
+    if (!readShort(&torches, f)
+        || !readShort(&gems, f)
+        || !readShort(&keys, f)
+        || !readShort(&sextants, f)) {
         return false;
     }
     for (i = 0; i < ARMR_MAX; i++) {
-        if (!readShort((unsigned short *)&(armor[i]), f)) {
+        if (!readShort(&(armor[i]), f)) {
             return false;
         }
     }
     for (i = 0; i < WEAP_MAX; i++) {
-        if (!readShort((unsigned short *)&(weapons[i]), f)) {
+        if (!readShort(&(weapons[i]), f)) {
             return false;
         }
     }
     for (i = 0; i < REAG_MAX; i++) {
-        if (!readShort((unsigned short *)&(reagents[i]), f)) {
+        if (!readShort(&(reagents[i]), f)) {
             return false;
         }
     }
     for (i = 0; i < SPELL_MAX; i++) {
-        if (!readShort((unsigned short *)&(mixtures[i]), f)) {
+        if (!readShort(&(mixtures[i]), f)) {
             return false;
         }
     }
@@ -224,8 +224,8 @@ bool SaveGamePlayerRecord::write(std::FILE *f) const
         || !writeShort(intel, f)
         || !writeShort(mp, f)
         || !writeShort(unknown, f)
-        || !writeShort((unsigned short)weapon, f)
-        || !writeShort((unsigned short)armor, f)) {
+        || !writeShort(weapon, f)
+        || !writeShort(armor, f)) {
         return false;
     }
     for (i = 0; i < 16; i++) {
@@ -233,9 +233,9 @@ bool SaveGamePlayerRecord::write(std::FILE *f) const
             return false;
         }
     }
-    if (!writeChar((unsigned char)sex, f)
-        || !writeChar((unsigned char)klass, f)
-        || !writeChar((unsigned char)status, f)) {
+    if (!writeChar(static_cast<unsigned char>(sex), f)
+        || !writeChar(static_cast<unsigned char>(klass), f)
+        || !writeChar(static_cast<unsigned char>(status), f)) {
         return false;
     }
     return true;
@@ -259,28 +259,29 @@ bool SaveGamePlayerRecord::read(std::FILE *f)
     if (!readShort(&s, f)) {
         return false;
     }
-    weapon = (WeaponType)s;
+    weapon = static_cast<WeaponType>(s);
     if (!readShort(&s, f)) {
         return false;
     }
-    armor = (ArmorType)s;
+    armor = static_cast<ArmorType>(s);
     for (i = 0; i < 16; i++) {
-        if (!readChar((unsigned char *)&(name[i]), f)) {
+        if (!readChar(&ch, f)) {
             return false;
         }
+        name[i] = static_cast<char>(ch);
     }
     if (!readChar(&ch, f)) {
         return false;
     }
-    sex = (SexType)ch;
+    sex = static_cast<SexType>(ch);
     if (!readChar(&ch, f)) {
         return false;
     }
-    klass = (ClassType)ch;
+    klass = static_cast<ClassType>(ch);
     if (!readChar(&ch, f)) {
         return false;
     }
-    status = (StatusType)ch;
+    status = static_cast<StatusType>(ch);
     return true;
 } // SaveGamePlayerRecord::read
 
@@ -352,7 +353,7 @@ bool saveGameMonstersWrite(SaveGameMonsterRecord *monsterTable, std::FILE *f)
     } else {
         max = MONSTERTABLE_SIZE * 8;
         for (i = 0; i < max; i++) {
-            if (!writeChar((unsigned char)0, f)) {
+            if (!writeChar(static_cast<unsigned char>(0), f)) {
                 return false;
             }
         }

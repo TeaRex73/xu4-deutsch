@@ -85,10 +85,10 @@ void Tile::loadProperties(const ConfigElement &conf)
     tiledInDungeon = conf.getBool("tiledInDungeon");
     if (conf.exists("directions")) {
         std::string dirs = conf.getString("directions");
-        if (dirs.length() != (unsigned int)frames) {
+        if (dirs.length() != static_cast<unsigned int>(frames)) {
             errorFatal(
                 "Error: %llu directions for tile but only %d frames",
-                (unsigned long long)dirs.length(),
+                static_cast<unsigned long long>(dirs.length()),
                 frames
             );
         }
@@ -270,7 +270,9 @@ Direction Tile::directionForFrame(int frame) const
 
 int Tile::frameForDirection(Direction d) const
 {
-    for (int i = 0; (unsigned int)i < directions.size() && i < frames; i++) {
+    for (int i = 0;
+         static_cast<unsigned int>(i) < directions.size() && i < frames;
+         i++) {
         if (directions[i] == d) {
             return i;
         }

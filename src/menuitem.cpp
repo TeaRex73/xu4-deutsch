@@ -29,7 +29,7 @@ MenuItem::MenuItem(std::string t, short xpos, short ypos, int sc)
 {
     // if the sc/scOffset is outside the range of the text std::string, assert
     ASSERT(
-        sc == -1 || (sc >= 0 && sc <= (int)text.length()),
+        sc == -1 || (sc >= 0 && sc <= static_cast<int>(text.length())),
         "sc value of %d out of range!",
         sc
     );
@@ -242,7 +242,7 @@ std::string IntMenuItem::getText() const
         std::snprintf(
             outputBuffer,
             sizeof(outputBuffer),
-            "%2d",
+            "%2hd",
             static_cast<short>((*val) & 0xFFFF)
         );
         break;
@@ -260,7 +260,7 @@ std::string IntMenuItem::getText() const
         std::snprintf(
             outputBuffer,
             sizeof(outputBuffer),
-            "%3g sec",
+            "%3.1f sec",
             static_cast<double>(*val) / 5
         );
         break;
@@ -283,16 +283,113 @@ std::string IntMenuItem::getText() const
     // on the menuOutputType selected. MENU_OUTPUT_INT always uses
     // %d, whereas all others use %s
     char buffer[64];
-    if (output != MENU_OUTPUT_INT) {
-        std::snprintf(buffer, sizeof(buffer), text.c_str(), outputBuffer);
-    } else {
+    if (output == MENU_OUTPUT_INT) {
         std::snprintf(buffer, sizeof(buffer), text.c_str(), *val);
+    } else {
+        std::snprintf(buffer, sizeof(buffer), text.c_str(), outputBuffer);
     }
     return buffer;
 } // IntMenuItem::getText
 
 
 void IntMenuItem::activate(MenuEvent &event)
+{
+    if ((event.getType() == MenuEvent::INCREMENT)
+        || (event.getType() == MenuEvent::ACTIVATE)) {
+        *val += increment;
+        if (*val > max) {
+            *val = min;
+        }
+    } else if (event.getType() == MenuEvent::DECREMENT) {
+        *val -= increment;
+        if (*val < min) {
+            *val = max;
+        }
+    }
+}
+
+UnsignedShortMenuItem::UnsignedShortMenuItem(
+    std::string text,
+    short x,
+    short y,
+    int shortcutKey,
+    unsigned short *val,
+    unsigned short min,
+    unsigned short max,
+    unsigned short increment,
+    menuOutputType output
+)
+    :MenuItem(text, x, y, shortcutKey),
+     val(val),
+     min(min),
+     max(max),
+     increment(increment),
+     output(output)
+{
+}
+
+std::string UnsignedShortMenuItem::getText() const
+{
+    // do custom formatting for some menu entries,
+    // and generate a string of the results
+    char outputBuffer[10];
+    switch (output) {
+    case MENU_OUTPUT_REAGENT:
+        std::snprintf(
+            outputBuffer,
+            sizeof(outputBuffer),
+            "%2hd",
+            (*val)
+        );
+        break;
+    case MENU_OUTPUT_GAMMA:
+        std::snprintf(
+            outputBuffer,
+            sizeof(outputBuffer),
+            "%.1f",
+            static_cast<double>(*val) / 100
+        );
+        break;
+    case MENU_OUTPUT_SHRINE:
+        std::snprintf(outputBuffer, sizeof(outputBuffer), "%hd sec", *val);
+        break;
+    case MENU_OUTPUT_SPELL:
+        std::snprintf(
+            outputBuffer,
+            sizeof(outputBuffer),
+            "%3.1f sec",
+            static_cast<double>(*val) / 5
+        );
+        break;
+    case MENU_OUTPUT_VOLUME:
+        if (*val == 0) {
+            std::snprintf(
+                outputBuffer, sizeof(outputBuffer), "Disabled");
+        } else if (*val == MAX_VOLUME) {
+            std::snprintf(outputBuffer, sizeof(outputBuffer), "Full");
+        } else {
+            std::snprintf(
+                outputBuffer, sizeof(outputBuffer), "%hd%%", *val * 10
+            );
+        }
+        break;
+    default:
+        break;
+    } // switch
+    // the buffer must contain a field character %d or %s depending
+    // on the menuOutputType selected. MENU_OUTPUT_INT always uses
+    // %d, whereas all others use %s
+    char buffer[64];
+    if (output == MENU_OUTPUT_INT) {
+        std::snprintf(buffer, sizeof(buffer), text.c_str(), *val);
+    } else {
+        std::snprintf(buffer, sizeof(buffer), text.c_str(), outputBuffer);
+    }
+    return buffer;
+} // UnsignedShortMenuItem::getText
+
+
+void UnsignedShortMenuItem::activate(MenuEvent &event)
 {
     if ((event.getType() == MenuEvent::INCREMENT)
         || (event.getType() == MenuEvent::ACTIVATE)) {

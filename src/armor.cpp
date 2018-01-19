@@ -54,6 +54,7 @@ const Armor *Armor::get(const std::string &name)
 Armor::Armor(const ConfigElement &conf)
     :type(static_cast<ArmorType>(armors.size())),
      name(conf.getString("name")),
+     neg(conf.getString("neg")),
      canuse(0xFF),
      defense(conf.getInt("defense")),
      mask(0),

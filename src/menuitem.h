@@ -40,7 +40,7 @@ public:
     {
     }
 
-    virtual void activate(MenuEvent &event)
+    virtual void activate(MenuEvent &)
     {
     }
 
@@ -159,6 +159,37 @@ public:
 protected:
     int *val;
     int min, max, increment;
+    menuOutputType output;
+};
+
+/**
+ * A menu item that cycles through a list of possible integer values,
+ * and displays the current setting as part of the text.
+ */
+class UnsignedShortMenuItem:public MenuItem {
+public:
+    UnsignedShortMenuItem(
+        std::string text,
+        short x,
+        short y,
+        int shortcutKey,
+        unsigned short *val,
+        unsigned short min,
+        unsigned short max,
+        unsigned short increment,
+        menuOutputType output = MENU_OUTPUT_INT
+    );
+    UnsignedShortMenuItem(const UnsignedShortMenuItem &) = delete;
+    UnsignedShortMenuItem(UnsignedShortMenuItem &&) = delete;
+    UnsignedShortMenuItem &operator=(const UnsignedShortMenuItem &) = delete;
+    UnsignedShortMenuItem &operator=(UnsignedShortMenuItem &&) = delete;
+
+    virtual void activate(MenuEvent &event);
+    virtual std::string getText() const;
+    
+protected:
+    unsigned short *val;
+    unsigned short min, max, increment;
     menuOutputType output;
 };
 

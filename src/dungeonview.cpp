@@ -54,13 +54,28 @@ void DungeonView::display(Context *c, TileView *view)
                 // FIXME: Maybe this should be in a loop
                 tiles = getTiles(y, -1);
                 type = tilesToGraphic(tiles);
-                drawWall(-1, y, (Direction)c->saveGame->orientation, type);
+                drawWall(
+                    -1,
+                    y,
+                    static_cast<Direction>(c->saveGame->orientation),
+                    type
+                );
                 tiles = getTiles(y, 1);
                 type = tilesToGraphic(tiles);
-                drawWall(1, y, (Direction)c->saveGame->orientation, type);
+                drawWall(
+                    1,
+                    y,
+                    static_cast<Direction>(c->saveGame->orientation),
+                    type
+                );
                 tiles = getTiles(y, 0);
                 type = tilesToGraphic(tiles);
-                drawWall(0, y, (Direction)c->saveGame->orientation, type);
+                drawWall(
+                    0,
+                    y,
+                    static_cast<Direction>(c->saveGame->orientation),
+                    type
+                );
                 // This only checks that the tile at
                 // y==3 is opaque
                 if ((y == 3) && !tiles.front().getTileType()->isOpaque()) {
@@ -116,7 +131,7 @@ void DungeonView::display(Context *c, TileView *view)
 
 void DungeonView::drawInDungeon(
     Tile *tile,
-    int x_offset,
+    int,
     int distance,
     Direction orientation,
     bool tiledWall
@@ -166,11 +181,11 @@ void DungeonView::drawInDungeon(
         scaled = screenScale(animated, dscale[distance] / 2, 1, 0);
     }
     if (tiledWall) {
-        int i_x = (int)(
+        int i_x = static_cast<int>(
             SCALED((VIEWPORT_W * tileWidth / 2.0) + this->x)
             - (scaled->width() / 2.0)
         );
-        int i_y = (int)(
+        int i_y = static_cast<int>(
             SCALED((VIEWPORT_H * tileHeight / 2.0) + this->y)
             - (scaled->height() / 2.0)
         );
@@ -189,11 +204,11 @@ void DungeonView::drawInDungeon(
         int y_offset = std::max(
             0, (dscale[distance] - offset_adj) * offset_multiplier
         );
-        int x = (int)(
+        int x = static_cast<int>(
             SCALED((VIEWPORT_W * tileWidth / 2.0) + this->x)
             - (scaled->width() / 2.0)
         );
-        int y = (int)(
+        int y = static_cast<int>(
             SCALED((VIEWPORT_H * tileHeight / 2.0) + this->y + y_offset)
             - (scaled->height() / 8.0)
         );

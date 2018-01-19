@@ -39,10 +39,6 @@
 #include "u4file.h"
 #include "utils.h"
 
-#if defined(MACOSX)
-#include "macosx/osxinit.h"
-#include "SDL.h"
-#endif
 
 bool verbose = false;
 int quit = 0;
@@ -56,9 +52,6 @@ int main(int argc, char *argv[])
 {
     U4FILE *avatar;
     Debug::initGlobal("debug/global.txt");
-#if defined(MACOSX)
-    osxInit(argv[0]);
-#endif
     if (!(avatar = u4fopen("AVATAR.EXE"))) {
         errorFatal(
             "xu4 erfordert die MS-DOS-Version von Ultima IV. "
@@ -81,10 +74,10 @@ int main(int argc, char *argv[])
      * if the -p or -profile arguments are passed to the application,
      * they need to be identified before the settings are initialized.
      */
-    for (i = 1; i < (unsigned int)argc; i++) {
+    for (i = 1; i < static_cast<unsigned int>(argc); i++) {
         if (((std::strcmp(argv[i], "-p") == 0)
              || (std::strcmp(argv[i], "-profile") == 0))
-            && ((unsigned int)argc > i + 1)) {
+            && (static_cast<unsigned int>(argc) > i + 1)) {
             // when grabbing the profile name:
             // 1. trim leading whitespace
             // 2. truncate the string at 20 characters
@@ -109,22 +102,22 @@ int main(int argc, char *argv[])
     /* initialize the settings */
     settings.init(useProfile, profileName);
     /* update the settings based upon command-line arguments */
-    for (i = 1; i < (unsigned int)argc; i++) {
+    for (i = 1; i < static_cast<unsigned int>(argc); i++) {
         if ((std::strcmp(argv[i], "-filter") == 0)
-            && ((unsigned int)argc > i + 1)) {
+            && (static_cast<unsigned int>(argc) > i + 1)) {
             settings.filter = argv[i + 1];
             i++;
         }
 #if 0
         else if ((std::strcmp(argv[i], "-scale") == 0)
-                 && ((unsigned int)argc > i + 1)) {
+                 && (static_cast<unsigned int>(argc) > i + 1)) {
             settings.scale = std::strtoul(argv[i + 1], nullptr, 0);
             i++;
         }
 #endif
         else if (((std::strcmp(argv[i], "-p") == 0)
                   || (std::strcmp(argv[i], "-profile") == 0))
-                 && ((unsigned int)argc > i + 1)) {
+                 && (static_cast<unsigned int>(argc) > i + 1)) {
             // do nothing
             i++;
         } else if ((std::strcmp(argv[i], "-i") == 0)
