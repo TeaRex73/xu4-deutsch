@@ -568,7 +568,7 @@ void Creature::act(CombatController *controller)
                 if (stealsGold() && (xu4_random(4) == 0)) {
                     // ITEM_STOLEN, gold
                     soundPlay(SOUND_ITEM_STOLEN, false);
-                    c->party->adjustGold(-(xu4_random(0x3f)));
+                    c->party->adjustGold(-(xu4_random(0x40)));
                 }
                 /* steal food if the creature steals food */
                 if (stealsFood()) {
@@ -1088,6 +1088,9 @@ Creature *CreatureMgr::randomForTile(const Tile *tile)
     int era;
     TileId randTile;
     if (tile->isSailable()) {
+        if (xu4_random(4)) {
+            return nullptr;
+        }
         randTile = creatures.find(PIRATE_ID)->second->getTile().getId();
         randTile += xu4_random(7);
         return getByTile(randTile);

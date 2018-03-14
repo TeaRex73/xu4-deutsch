@@ -116,7 +116,7 @@
         </tell_about>
 
         <tell_about choice="d">
-            UNSERE SCHLEUDERN WERDEN NUR AUS BESTEN LEDER UND SCHNUR GEMACHT. F]R {price}gs IST EINE DEIN.            
+            UNSERE SCHLEUDERN WERDEN NUR AUS BESTEM LEDER UND SCHNUR GEMACHT. F]R {price}gs IST EINE DEIN.            
         </tell_about>
 
         <tell_about choice="e">
@@ -602,7 +602,7 @@
     <script id="Tavern">
         <intro>
             <music type="shopping"/>
-            {owner} SAGT: WILLKOMMEN {name}. <redirect target="whatll_it_be"/>
+            {owner} SAGT: WILLKOMMEN {name}.<redirect target="whatll_it_be"/>
         </intro>
 
         <end>
@@ -924,7 +924,7 @@
         <gave_blood choice="j">
             <damage player="1" pts="100"/>
             <karma action="gave_blood"/>
-            DU BIST EINE GROSSE HILFE. WIR HABEN DRINGENDEN BEDARF! <redirect target="bye"/>
+            DU BIST EINE GROSSE HILFE. WIR HABEN DRINGENDEN BEDARF!<redirect target="bye"/>
         </gave_blood>
 
         <more_help>
@@ -964,7 +964,7 @@
             </if>
             {desc} KOSTET DICH {price}gs.
             <if test="{party:gold}&lt;{price}">
-                ICH SEHE AN DEINER B\RSE, DASS DU NICHT GENUG GOLD HAST. ICH KANN DIR NICHT HELFEN. <redirect target="more_help"/>
+                ICH SEHE AN DEINER B\RSE, DASS DU NICHT GENUG GOLD HAST. ICH KANN DIR NICHT HELFEN.<redirect target="more_help"/>
             </if>
             WILLST DU DAS BEZAHLEN?<input type="choice" options="jn" target="heal"/>            
         </will_pay>

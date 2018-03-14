@@ -6,6 +6,7 @@
 
 #include <cctype>
 #include <cstdio>
+#include <cstring>
 #include <map>
 #include <string>
 #include "script.h"
@@ -216,7 +217,8 @@ bool Script::load(
      * If the script is set to debug, then open our script debug file
      */
     if (xmlPropExists(root, "debug")) {
-        static const char *dbg_filename = "debug/script.txt";
+        char dbg_filename[256] = "debug/";
+		std::strcat(dbg_filename, std::tmpnam(NULL));
         // Our script is going to hog all the debug info
         if (xmlGetPropAsBool(root, "debug")) {
             debug = FileSystem::openFile(dbg_filename, "wt");

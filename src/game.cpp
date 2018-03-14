@@ -2202,14 +2202,14 @@ bool fireAt(const Coords &coords, bool originAvatar)
         /* inanimate objects get destroyed instantly, while creatures
            get a chance */
         else if (obj->getType() == Object::UNKNOWN) {
-            GameController::flashTile(coords, "hit_flash", 4);
             soundPlay(SOUND_NPC_STRUCK, false);
+            GameController::flashTile(coords, "hit_flash", 4);
             c->location->map->removeObject(obj);
         }
         /* only the avatar can hurt other creatures with cannon fire */
         else if (originAvatar) {
-            GameController::flashTile(coords, "hit_flash", 4);
             soundPlay(SOUND_NPC_STRUCK, false);
+            GameController::flashTile(coords, "hit_flash", 4);
             if (xu4_random(4) == 0) { /* reverse-engineered from u4dos */
                 c->location->map->removeObject(obj);
             }
@@ -2786,10 +2786,11 @@ void readyWeapon(int player)
         if (player == -1) {
             return;
         }
+		screenMessage("\n");
     }
     // get the weapon to use
     c->stats->setView(STATS_WEAPONS);
-    screenMessage("\nWAFFE-");
+    screenMessage("WAFFE-");
     WeaponType weapon = static_cast<WeaponType>(
         AlphaActionController::get(WEAP_MAX + 'a' - 1, "WAFFE-")
     );
@@ -3235,9 +3236,10 @@ void wearArmor(int player)
         if (player == -1) {
             return;
         }
+		screenMessage("\n");
     }
     c->stats->setView(STATS_ARMOR);
-    screenMessage("\nR]STUNG-");
+    screenMessage("R]STUNG-");
     ArmorType armor = static_cast<ArmorType>(
         AlphaActionController::get(ARMR_MAX + 'a' - 1, "R}STUNG-")
     );

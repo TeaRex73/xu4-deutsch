@@ -45,7 +45,7 @@ bool shrineCanEnter(const Portal *p)
     if (!c->party->canEnterShrine(shrine->getVirtue())) {
         soundPlay(SOUND_ERROR);
         screenMessage(
-            "Schrein Betreten\n\n"
+            "Schrein betreten\n\n"
             "DU TR[GST NICHT DIE RUNE DES EINTRITTS! "
             "EINE SELTSAME KRAFT H[LT DICH FERN!\n"
         );
@@ -286,6 +286,7 @@ void Shrine::askMantra()
         ReadChoiceController::get("");
         showVision(elevated);
         ReadChoiceController::get("");
+		screenMessage("\n");
         gameSetViewMode(VIEW_NORMAL);
         eject();
     }

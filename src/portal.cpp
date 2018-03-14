@@ -121,7 +121,7 @@ bool usePortalAt(
             case Map::CITY:
             {
                 City *city = dynamic_cast<City *>(destination);
-                screenMessage("%s Betreten\n\n", city->type.c_str());
+                screenMessage("%s betreten\n\n", city->type.c_str());
                 break;
             }
             case Map::SHRINE:
