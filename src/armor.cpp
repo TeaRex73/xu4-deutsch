@@ -18,7 +18,7 @@
 
 
 bool Armor::confLoaded = false;
-std::vector<Armor> Armor::armors;
+std::vector<Armor *> Armor::armors;
 
 
 /**
@@ -31,7 +31,7 @@ const Armor *Armor::get(ArmorType a)
     if (static_cast<unsigned int>(a) >= armors.size()) {
         return nullptr;
     }
-    return &armors[a];
+    return armors[a];
 }
 
 
@@ -43,8 +43,8 @@ const Armor *Armor::get(const std::string &name)
     // Load in XML if it hasn't been already
     loadConf();
     for (unsigned int i = 0; i < armors.size(); i++) {
-        if (xu4_strcasecmp(name.c_str(), armors[i].name.c_str()) == 0) {
-            return &armors[i];
+        if (xu4_strcasecmp(name.c_str(), armors[i]->name.c_str()) == 0) {
+            return armors[i];
         }
     }
     return nullptr;
@@ -95,6 +95,29 @@ Armor::Armor(const ConfigElement &conf)
     }
 }
 
+Armor::~Armor()
+{
+    for (std::vector<Armor *>::iterator i = armors.begin();
+         i != armors.end();
+         ) {
+        if (*i == this) {
+            i = armors.erase(i);
+        } else {
+            i++;
+        }
+    }
+}
+
+void Armor::cleanup()
+{
+    for (std::vector<Armor *>::iterator i = armors.begin();
+         i != armors.end();
+        ) { // no increment, deleting moves consecutive elements to 1st pos
+        delete *i;
+    }
+    armors.clear();
+}    
+
 void Armor::loadConf()
 {
     if (!confLoaded) {
@@ -111,6 +134,6 @@ void Armor::loadConf()
         if (i->getName() != "armor") {
             continue;
         }
-        armors.push_back(Armor(*i));
+        armors.push_back(new Armor(*i));
     }
 }

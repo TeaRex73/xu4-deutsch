@@ -86,7 +86,7 @@
   </person>
   <person id="12" name="Calabrini" pronoun="Er" turnAwayProb="0">
     <description>Einen großen Magier.</description>
-    <topic query="job">Ich grüße dich von der schönen Stadt Moonglow.<question type="0">Suchst Du ein Gasthaus oder Heilung?<yes>Welches davon?</yes><no>Vielleicht den Schrein, der auf einer Insel Richtung Norden liegt!</no></question></topic>
+    <topic query="job">Ich grüße dich von der schönen Stadt Glimmemond.<question type="0">Suchst Du ein Gasthaus oder Heilung?<yes>Welches davon?</yes><no>Vielleicht den Schrein, der auf einer Insel Richtung Norden liegt!</no></question></topic>
     <topic query="health">Prima.</topic>
     <topic query="GAST">Wir haben einen exzellenten Gasthof.</topic>
     <topic query="HEIL">Unser Heiler ist einer der Besten!</topic>

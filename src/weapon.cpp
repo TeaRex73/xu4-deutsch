@@ -17,7 +17,7 @@
 
 
 bool Weapon::confLoaded = false;
-std::vector<Weapon> Weapon::weapons;
+std::vector<Weapon *> Weapon::weapons;
 
 
 /**
@@ -30,7 +30,7 @@ const Weapon *Weapon::get(WeaponType w)
     if (static_cast<unsigned int>(w) >= weapons.size()) {
         return nullptr;
     }
-    return &weapons[w];
+    return weapons[w];
 }
 
 
@@ -42,8 +42,8 @@ const Weapon *Weapon::get(const std::string &name)
     // Load in XML if it hasn't been already
     loadConf();
     for (unsigned int i = 0; i < weapons.size(); i++) {
-        if (xu4_strcasecmp(name.c_str(), weapons[i].name.c_str()) == 0) {
-            return &weapons[i];
+        if (xu4_strcasecmp(name.c_str(), weapons[i]->name.c_str()) == 0) {
+            return weapons[i];
         }
     }
     return nullptr;
@@ -148,6 +148,29 @@ Weapon::Weapon(const ConfigElement &conf)
     }
 }
 
+Weapon::~Weapon()
+{
+    for (std::vector<Weapon *>::iterator i = weapons.begin();
+         i != weapons.end();
+         ) {
+        if (*i == this) {
+            i = weapons.erase(i);
+        } else {
+            i++;
+        }
+    }
+}
+
+void Weapon::cleanup()
+{
+    for (std::vector<Weapon *>::iterator i = weapons.begin();
+         i != weapons.end();
+        ) { // no increment, deleting moves consecutive elements to 1st pos
+        delete *i;
+    }
+    weapons.clear();
+}    
+
 void Weapon::loadConf()
 {
     if (confLoaded) {
@@ -163,6 +186,6 @@ void Weapon::loadConf()
         if (i->getName() != "weapon") {
             continue;
         }
-        weapons.push_back(Weapon(*i));
+        weapons.push_back(new Weapon(*i));
     }
 }

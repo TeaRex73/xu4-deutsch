@@ -14,6 +14,7 @@
 #include "u4.h"
 #include <cstdlib>
 #include <cstring>
+#include "armor.h"
 #include "config.h"
 #include "creature.h"
 #include "debug.h"
@@ -38,7 +39,7 @@
 #include "tileset.h"
 #include "u4file.h"
 #include "utils.h"
-
+#include "weapon.h"
 
 bool verbose = false;
 int quit = 0;
@@ -179,6 +180,8 @@ int main(int argc, char *argv[])
         soundDelete();
         screenDelete();
         Config::destroy();
+        Weapon::cleanup();
+        Armor::cleanup();
         Object::cleanup();
         DialogueLoader::cleanup();
         ImageLoader::cleanup();
@@ -212,6 +215,8 @@ int main(int argc, char *argv[])
     soundDelete();
     screenDelete();
     Config::destroy();
+    Weapon::cleanup();
+    Armor::cleanup();
     Object::cleanup();
     DialogueLoader::cleanup();
     ImageLoader::cleanup();

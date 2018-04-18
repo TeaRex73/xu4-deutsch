@@ -28,6 +28,8 @@ public:
         WEAP_DONTSHOWTRAVEL = 0x0200,
         WEAP_RANGEDONLY = 0x0400
     };
+
+    static void cleanup();
     
     static const Weapon *get(WeaponType w);
     static const Weapon *get(const std::string &name);
@@ -139,9 +141,10 @@ public:
     
 private:
     Weapon(const ConfigElement &conf);
+    ~Weapon();
     static void loadConf();
     static bool confLoaded;
-    static std::vector<Weapon> weapons;
+    static std::vector<Weapon *> weapons;
     WeaponType type;
     std::string name;
     std::string abbr; /**< abbreviation for the weapon */

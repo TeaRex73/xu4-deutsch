@@ -61,7 +61,7 @@
     <topic query="job">Ich bin ein Lehrer, ich bereichere junge Geister.</topic>
     <topic query="health">Mir geht es prima.</topic>
     <topic query="LEHR">Ich lehre vom Abgrunde.<question type="0">Weißt du vom Abgrunde?<yes>Ein Wort des Einlasses wird am letzten Tore benötigt!</yes><no>Lerne!</no></question></topic>
-    <topic query="WORT">Such Zair den Weisen in Paws, um mehr zu erfahren.</topic>
+    <topic query="WORT">Such Zair den Weisen in Pfoten, um mehr zu erfahren.</topic>
   </person>
   <person id="9" name="Carlyle" pronoun="Er" turnAwayProb="0">
     <description>Einen weisen Magier.</description>

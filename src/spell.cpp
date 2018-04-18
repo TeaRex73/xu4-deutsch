@@ -776,19 +776,23 @@ static bool spellEField(int param)
         switch (fieldType) {
         case ENERGYFIELD_FIRE:
             fieldTile =
-                c->location->map->tileset->getByName("dungeon_fire_field")->getId();
+                c->location->map->tileset
+                ->getByName("dungeon_fire_field")->getId();
             break;
         case ENERGYFIELD_LIGHTNING:
             fieldTile =
-                c->location->map->tileset->getByName("dungeon_energy_field")->getId();
+                c->location->map->tileset
+                ->getByName("dungeon_energy_field")->getId();
             break;
         case ENERGYFIELD_POISON:
             fieldTile =
-                c->location->map->tileset->getByName("dungeon_poison_field")->getId();
+                c->location->map->tileset
+                ->getByName("dungeon_poison_field")->getId();
             break;
         case ENERGYFIELD_SLEEP:
             fieldTile =
-                c->location->map->tileset->getByName("dungeon_sleep_field")->getId();
+                c->location->map->tileset
+                ->getByName("dungeon_sleep_field")->getId();
             break;
         default:
             return false;

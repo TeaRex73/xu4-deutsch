@@ -522,7 +522,7 @@
             <armor choice="f" name="MAG. KETTE" price="4000"/>
         </vendor>
 
-        <vendor id="PAWS" name="LEICHTSCHUTZ" owner="PIERRE">
+        <vendor id="PFOTEN" name="LEICHTSCHUTZ" owner="PIERRE">
             <armor choice="b" name="TUCH" price="50"/>
             <armor choice="c" name="LEDER" price="200"/>            
         </vendor>
@@ -587,11 +587,11 @@
             <end/>
         </bye>        
         
-        <vendor id="MOONGLOW" name=" DEN WEISEN DELIKATESSEN" owner="SHAMAN" price="25" quant="25"/>
+        <vendor id="GLIMMEMOND" name=" DEN WEISEN DELIKATESSEN" owner="SHAMAN" price="25" quant="25"/>
         <vendor id="BRITAIN" name=" ABENTEUER-KOST" owner="WINDRICK" price="40" quant="25"/>
-        <vendor id="YEW" name=" DEN TROCKENWAREN" owner="DONNAR" price="35" quant="25"/>
+        <vendor id="EIBE" name=" DEN TROCKENWAREN" owner="DONNAR" price="35" quant="25"/>
         <vendor id="SKARA BRAE" name=" SINNIER NAHRUNG" owner="MINTOL" price="20" quant="25"/>
-        <vendor id="PAWS" name="M DISCOUNTER" owner="MAX" price="30" quant="25"/>
+        <vendor id="PFOTEN" name="M DISCOUNTER" owner="MAX" price="30" quant="25"/>
     </script>
 
     <!--
@@ -747,7 +747,7 @@
             <topic choice="WEIS" price="10" redirect="save"/>
         </vendor>
 
-        <vendor id="PAWS" name="IN FOLLEYS KNEIPE" owner="GREG &amp; ROB" specialty="FOLLEY-FILET" spec_price="2" ale_price="2">
+        <vendor id="PFOTEN" name="IN FOLLEYS KNEIPE" owner="GREG &amp; ROB" specialty="FOLLEY-FILET" spec_price="2" ale_price="2">
             <topic choice="ALRA" price="40" redirect="save"/>
         </vendor>
         
@@ -849,7 +849,7 @@
             KOMM SCHON, LASS MICH DAS GOLD FALLEN H\REN!<redirect target="you_pay"/>
 	</gold_drop>
 
-        <vendor id="MOONGLOW" name="M MAGISCHEN KRAUT" owner="MARGOT">
+        <vendor id="GLIMMEMOND" name="M MAGISCHEN KRAUT" owner="MARGOT">
             <reagent choice="a" name="SCHWELASCHE" type="ash" price="2"/>
             <reagent choice="b" name="GINSENG" type="ginseng" price="5"/>
             <reagent choice="c" name="KNOBLAUCH" type="garlic" price="6"/>
@@ -867,7 +867,7 @@
             <reagent choice="f" name="SCHWARZPERL" type="pearl" price="8"/>
         </vendor>
 
-        <vendor id="PAWS" name=" MAGICK" owner="SHEILA">
+        <vendor id="PFOTEN" name=" MAGICK" owner="SHEILA">
             <reagent choice="a" name="SCHWELASCHE" type="ash" price="3"/>
             <reagent choice="b" name="GINSENG" type="ginseng" price="4"/>
             <reagent choice="c" name="KNOBLAUCH" type="garlic" price="2"/>
@@ -989,7 +989,7 @@
             <service choice="c" name="TOTE WECKEN" desc="EINE ERWECKUNG" price="500" type="resurrect"/>
         </vendor>
 
-        <vendor id="MOONGLOW" name="M HEILER" healer="HARMONY">
+        <vendor id="GLIMMEMOND" name="M HEILER" healer="HARMONY">
             <service choice="a" name="GIFT HEILEN" desc="EINE ENTGIFTUNG" price="5" type="cure"/>
             <service choice="b" name="WUNDEN HEILEN" desc="EINE WUNDHEILUNG" price="50" type="fullheal"/>
             <service choice="c" name="TOTE WECKEN" desc="EINE ERWECKUNG" price="500" type="resurrect"/>
@@ -1007,7 +1007,7 @@
             <service choice="c" name="TOTE WECKEN" desc="EINE ERWECKUNG" price="500" type="resurrect"/>
         </vendor>
 
-        <vendor id="YEW" name=" RECHTE HEILUNG" healer="JUSTIN">
+        <vendor id="EIBE" name=" RECHTE HEILUNG" healer="JUSTIN">
             <service choice="a" name="GIFT HEILEN" desc="EINE ENTGIFTUNG" price="5" type="cure"/>
             <service choice="b" name="WUNDEN HEILEN" desc="EINE WUNDHEILUNG" price="50" type="fullheal"/>
             <service choice="c" name="TOTE WECKEN" desc="EINE ERWECKUNG" price="500" type="resurrect"/>
@@ -1037,7 +1037,7 @@
             <service choice="c" name="TOTE WECKEN" desc="EINE ERWECKUNG" price="500" type="resurrect"/>
         </vendor>
 
-        <vendor id="COVE" name="M HEILERLADEN" healer="QUAT">
+        <vendor id="KLEINE BUCHT" name="M HEILERLADEN" healer="QUAT">
             <service choice="a" name="GIFT HEILEN" desc="EINE ENTGIFTUNG" price="5" type="cure"/>
             <service choice="b" name="WUNDEN HEILEN" desc="EINE WUNDHEILUNG" price="50" type="fullheal"/>
             <service choice="c" name="TOTE WECKEN" desc="EINE ERWECKUNG" price="500" type="resurrect"/>
@@ -1100,7 +1100,7 @@
         </cantpay>
 
         <!-- MOONGLOW -->
-        <vendor id="MOONGLOW" name="IM EHRLICHEN GASTHOFE" innkeeper="SCATU">
+        <vendor id="GLIMMEMOND" name="IM EHRLICHEN GASTHOFE" innkeeper="SCATU">
             <room choice="j" price="20" x="28" y="6"/>
             <ask choice="j">
                 WIR VERMIETEN EINEN RAUM MIT 2 BETTEN F]R 20gs.
@@ -1308,7 +1308,7 @@
             <end/>
         </cantpay>
 
-        <vendor id="PAWS" price="{math({party:members}*100)}"/>
+        <vendor id="PFOTEN" price="{math({party:members}*100)}"/>
     </script>
     
 </scripts>

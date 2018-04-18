@@ -115,7 +115,7 @@
     <!-- cities -->
     <map id="5" type="city" fname="moonglow.ult" width="32" height="32" levels="1"
      borderbehavior="exit" showavatar="true" music="1" tileset="base" tilemap="base">
-        <city name="MOONGLOW" type="Stadt" tlk_fname="moonglow.ger">
+        <city name="GLIMMEMOND" type="Stadt" tlk_fname="moonglow.ger">
             <personrole role="companion" id="32"/>
             <personrole role="foodvendor" id="26"/>
             <personrole role="reagentsvendor" id="24"/>
@@ -153,7 +153,7 @@
     </map>
     <map id="8" type="city" fname="yew.ult" width="32" height="32" levels="1"
      borderbehavior="exit" showavatar="true" music="1" tileset="base" tilemap="base">
-        <city name="YEW" type="Stadt" tlk_fname="yew.ger">
+        <city name="EIBE" type="Stadt" tlk_fname="yew.ger">
             <personrole role="companion" id="32"/>
             <personrole role="foodvendor" id="27"/>
             <personrole role="healer" id="26"/>
@@ -200,7 +200,7 @@
     <!-- Villages -->
     <map id="13" type="city" fname="paws.ult" width="32" height="32" levels="1"
      borderbehavior="exit" showavatar="true" music="1" tileset="base" tilemap="base">
-        <city name="PAWS" type="Dorf" tlk_fname="paws.ger">
+        <city name="PFOTEN" type="Dorf" tlk_fname="paws.ger">
             <personrole role="armorvendor" id="27"/>
             <personrole role="foodvendor" id="31"/>
             <personrole role="tavernkeeper" id="30"/>
@@ -231,7 +231,7 @@
     </map>
     <map id="16" type="city" fname="cove.ult" width="32" height="32" levels="1"
      borderbehavior="exit" showavatar="true" music="1" tileset="base" tilemap="base">
-        <city name="COVE" type="Dorf" tlk_fname="cove.ger">
+        <city name="KLEINE BUCHT" type="Dorf" tlk_fname="cove.ger">
             <personrole role="healer" id="31"/>
         </city>
         <label name="candle" x="22" y="1"/>

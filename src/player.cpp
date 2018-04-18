@@ -170,7 +170,7 @@ int PartyMember::getMaxMp() const
         ASSERT(0, "invalid player class: %d", player->klass);
     }
 
-    /* mp always maxes out at 50 */
+    /* mp always maxes out at 99 */
     if (max_mp > 99) {
         max_mp = 99;
     }

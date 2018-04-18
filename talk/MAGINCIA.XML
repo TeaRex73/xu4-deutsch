@@ -103,7 +103,7 @@
     <topic query="job">Ich bringe allem Leben in Magincia den Tod!</topic>
     <topic query="health">Blutdürstig!</topic>
     <topic query="STEI">Die ihn suchen, müssen in der Kneipe in Britain nach dem schwarzen Steine fragen!</topic>
-    <topic query="RUNE">Die heilige Rune der Demut wurde aus dieser Stadt verbannt. Frag Barren in Paws!</topic>
+    <topic query="RUNE">Die heilige Rune der Demut wurde aus dieser Stadt verbannt. Frag Barren in Pfoten!</topic>
   </person>
   <person id="15" name="Virtuebane" pronoun="Er" turnAwayProb="0">
     <description>Einen abscheulichen entsetzlichen Teufel!</description>

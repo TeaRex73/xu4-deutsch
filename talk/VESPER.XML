@@ -96,7 +96,7 @@
     <topic query="job">Ich bin ein Zauberlehrling!</topic>
     <topic query="health">Ich bin sehr mächtig!</topic>
     <topic query="ZAUB">Ich bin Calumnys Liebling!</topic>
-    <topic query="CALU">Er lebt in Yew!<question type="0">Bist du schon in Yew gewesen?<yes>Calumny kennt den Zauber Quicatus!</yes><no>Calumny kennt den Zauber Quicatus! Such ihn auf!</no></question></topic>
+    <topic query="CALU">Er lebt in Eibe!<question type="0">Bist du schon in Eibe gewesen?<yes>Calumny kennt den Zauber Quicatus!</yes><no>Calumny kennt den Zauber Quicatus! Such ihn auf!</no></question></topic>
   </person>
   <person id="14" name="Corkrin" pronoun="Er" turnAwayProb="0">
     <description>Einen kühnen Paladin.</description>
@@ -110,6 +110,6 @@
     <topic query="job">Ich bin ein Dieb, ich borge mir gerne Sachen aus!</topic>
     <topic query="health">Mir geht es sehr gut!</topic>
     <topic query="BORG">Was ich mir am liebsten ausborge, sind Pferde!</topic>
-    <topic query="PFER">Man kann im Dorfe Paws Pferde stehlen!<question type="0">Bist du ein Dieb?<yes>Paß auf den Bullen auf der Weide auf!</yes><no>Wahrscheinlich bist du ein Schwächling!</no></question></topic>
+    <topic query="PFER">Man kann im Dorfe Pfoten Pferde stehlen!<question type="0">Bist du ein Dieb?<yes>Paß auf den Bullen auf der Weide auf!</yes><no>Wahrscheinlich bist du ein Schwächling!</no></question></topic>
   </person>
 </dialogue>

@@ -16,6 +16,8 @@ class ConfigElement;
 
 class Armor {
 public:
+    static void cleanup();
+
     static const Armor *get(ArmorType a);
     static const Armor *get(const std::string &name);
 
@@ -48,9 +50,10 @@ public:
     
 private:
     Armor(const ConfigElement &conf);
+    ~Armor();
     static void loadConf();
     static bool confLoaded;
-    static std::vector<Armor> armors;
+    static std::vector<Armor *> armors;
     ArmorType type;
     std::string name;
     std::string neg;

@@ -81,8 +81,8 @@
     <description>Einen Waldläufer mit Blick in die Ferne.</description>
     <topic query="job">Ich suche das innere Licht!</topic>
     <topic query="health">Ganz ordentlich.</topic>
-    <topic query="LICH">Ich komme aus Skara Brae und bin auf meinem Wege nach Yew.<question type="0">Warst du schon in Skara Brae?<yes>Eine schöne Stadt!</yes><no>Es ist eine spirituelle Stadt!</no></question></topic>
-    <topic query="YEW ">Es ist eine Stadt, die auf der Tugend der Gerechtigkeit aufbaut!</topic>
+    <topic query="LICH">Ich komme aus Skara Brae und bin auf meinem Wege nach Eibe.<question type="0">Warst du schon in Skara Brae?<yes>Eine schöne Stadt!</yes><no>Es ist eine spirituelle Stadt!</no></question></topic>
+    <topic query="EIBE">Es ist eine Stadt, die auf der Tugend der Gerechtigkeit aufbaut!</topic>
   </person>
   <person id="12" name="Max" pronoun="Er" turnAwayProb="0">
     <description>Den Zimmerjungen.</description>

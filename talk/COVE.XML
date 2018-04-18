@@ -9,7 +9,7 @@
   </person>
   <person id="1" name="Frontis" pronoun="Er" turnAwayProb="0">
     <description>Einen kleinen Druiden.</description>
-    <topic query="job">Willkommen in Cove, der versteckten Stadt der Weisheit.</topic>
+    <topic query="job">Willkommen in der Kleinen Bucht, der versteckten Stadt der Weisheit.</topic>
     <topic query="health">Mir geht es gut.<question type="0">Geht es dir gut?<yes>Sehr gut.</yes><no>Besuch unsere Heiler, ich bin sicher, sie können dir helfen!</no></question></topic>
     <topic query="WEIS">In diesem Orte findet man viel Weisheit und Frieden.</topic>
     <topic query="FRIE">Finde Frieden in unserem Schreine.</topic>

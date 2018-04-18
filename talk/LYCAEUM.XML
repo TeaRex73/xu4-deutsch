@@ -54,7 +54,7 @@
     <topic query="job">Recherche.</topic>
     <topic query="health">Oh es geht mir prima, dir auch, hoffe ich.</topic>
     <topic query="RECH">Ich suche nach dem Buche der Gerechtigkeit!</topic>
-    <topic query="GERE">Es muß hier irgendwo sein!<question type="1">Kannst du sagen, daß du niemals auch nur &gt;ein&lt; Verbrechen begangen hast!?<yes>Ich glaube, du lügst und gibst an!</yes><no>Dann sprich mit dem Richter in Yew!</no></question></topic>
+    <topic query="GERE">Es muß hier irgendwo sein!<question type="1">Kannst du sagen, daß du niemals auch nur &gt;ein&lt; Verbrechen begangen hast!?<yes>Ich glaube, du lügst und gibst an!</yes><no>Dann sprich mit dem Richter in Eibe!</no></question></topic>
   </person>
   <person id="8" name="Tymus" pronoun="Er" turnAwayProb="0">
     <description>Einen stattlichen Zauberer.</description>
