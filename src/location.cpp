@@ -48,6 +48,10 @@ Location::Location(
 {
 }
 
+Location::~Location()
+{
+    delete prev;
+}
 
 /**
  * Return the entire stack of objects at the given location.

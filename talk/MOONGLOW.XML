@@ -75,7 +75,7 @@
     <topic query="job">Ich bewege die Sonne!</topic>
     <topic query="health">Gesundheit?</topic>
     <topic query="SONN">Die Monde sind meine Feinde!</topic>
-    <topic query="MOND">Wen ich sterbe, wird die Welt enden!<question type="0">Glaubst Du meine Geschichte!?!?<yes>Dann müssen wir die Monde fällen!</yes><no>Idiot, du mußt mich für irre halten!</no></question></topic>
+    <topic query="MOND">Wenn ich sterbe, wird die Welt enden!<question type="0">Glaubst Du meine Geschichte!?!?<yes>Dann müssen wir die Monde fällen!</yes><no>Idiot, du mußt mich für irre halten!</no></question></topic>
   </person>
   <person id="11" name="Inoo" pronoun="Sie" turnAwayProb="0">
     <description>Eine alte Zigeunerin.</description>

@@ -147,6 +147,9 @@ Image::~Image()
 void Image::setPalette(const RGBA *colors, unsigned int n_colors)
 {
     ASSERT(indexed, "imageSetPalette called on non-indexed image");
+    if (n_colors > 256) {
+        errorFatal("n_colors > 256 in Image::setPalette");
+    }
     SDL_Color *sdlcolors = new SDL_Color[n_colors];
     for (unsigned int i = 0; i < n_colors; i++) {
         sdlcolors[i].r = colors[i].r;

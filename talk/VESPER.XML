@@ -86,7 +86,7 @@
   </person>
   <person id="12" name="Shazbot" pronoun="Sie" turnAwayProb="0">
     <description>Eine komische Närrin.</description>
-    <topic query="job">Du denkst wohl, ich bin komisch!<question type="0">Nicht wahr?<yes>Sehr gut, ich versuch's zu sein!</yes><no>Ah, schade, ich dachte, ich wär's.</no></question></topic>
+    <topic query="job">Du findest mich wohl komisch!<question type="0">Nicht wahr?<yes>Sehr gut, ich versuch's zu sein!</yes><no>Ah, schade, ich dachte, ich wär's.</no></question></topic>
     <topic query="health">Mich juckt's ein bißchen!</topic>
     <topic query="KOMI">Wetten, du fragst mich nicht nach Nate der Schlange!</topic>
     <topic query="NATE">Nun, es ist 'ne lange Geschichte und wir haben nicht die Zeit.</topic>
@@ -110,6 +110,6 @@
     <topic query="job">Ich bin ein Dieb, ich borge mir gerne Sachen aus!</topic>
     <topic query="health">Mir geht es sehr gut!</topic>
     <topic query="BORG">Was ich mir am liebsten ausborge, sind Pferde!</topic>
-    <topic query="PFER">Man kann im Dorfe Pfoten Pferde stehlen!<question type="0">Bist du ein Dieb?<yes>Paß auf den Bullen auf der Weide auf!</yes><no>Wahrscheinlich bist du ein Schwächling!</no></question></topic>
+    <topic query="PFER">Man kann im Dorfe Pfoten Pferde stehlen!<question type="0">Bist du ein Dieb?<yes>Nimm dich in acht vor dem Bullen auf der Weide!</yes><no>Wahrscheinlich bist du ein Schwächling!</no></question></topic>
   </person>
 </dialogue>

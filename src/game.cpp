@@ -57,12 +57,7 @@
 #include "weapon.h"
 #include "dungeonview.h"
 
-#define sync()
-
-
-
 GameController *game = nullptr;
-
 
 /*-----------------*/
 /* Functions BEGIN */
@@ -2999,6 +2994,7 @@ void newOrder()
         return;
     }
     if (player1 == 0) {
+		soundPlay(SOUND_ERROR);
         screenMessage(
             "\n%s, DU MUSST F]HREN!\n",
             uppercase(c->party->member(0)->getName()).c_str()
@@ -3087,7 +3083,6 @@ void peer(bool useGem)
  */
 bool talkAt(const Coords &coords)
 {
-    extern int personIsVendor(const Person * person);
     City *city;
     /* can't have any conversations outside of town */
     if (!isCity(c->location->map)) {

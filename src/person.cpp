@@ -243,8 +243,8 @@ std::list<std::string> Person::getConversationText(
                             TEXT_AREA_Y + c->line
                         );
                         if (str.size()) {
-                            lowercase(str);
-                            str = str.substr(0, 4);
+                            str = deumlaut(lowercase(str));
+                            str = str.substr(0, 5);
                             script->setVar(script->getInputName(), str);
                         } else {
                             script->unsetVar(script->getInputName());
@@ -256,7 +256,7 @@ std::list<std::string> Person::getConversationText(
                         ReadPlayerController getPlayerCtrl;
                         eventHandler->pushController(&getPlayerCtrl);
                         int player = getPlayerCtrl.waitFor();
-                        if (player != -1) {
+                        if (player != -1 && player != 8) {
                             std::string player_str =
                                 std::to_string(player + 1);
                             script->setVar(script->getInputName(), player_str);

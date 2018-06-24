@@ -26,7 +26,7 @@
     <topic query="job">Ich bin ein alter Zauberer, aber habe viel zu zeigen!</topic>
     <topic query="health">Meine Knochen schmerzen, aber mein Geist ist noch scharf!</topic>
     <topic query="ZEIG">Hier in meinem Teleskope!</topic>
-    <topic query="TELE">Schau da am Ende nach, du wirst einen Drehknopf finden.<question type="0">Siehst du wo?<yes>Stell das Ziffernblatt ein und du wirst sehen!</yes><no>Schau nach!!!</no></question></topic>
+    <topic query="TELE">Schau da am Ende nach, du wirst einen Drehknopf finden.<question type="0">Siehst du wo?<yes>Stell das Ziffernblatt ein, und du wirst sehen!</yes><no>Schau nach!!!</no></question></topic>
   </person>
   <person id="4" name="Vater Antos" pronoun="Er" turnAwayProb="0">
     <description>Einen alten Druiden, der dir seltsam bekannt vorkommt.</description>
@@ -47,12 +47,12 @@
     <topic query="job">Ich berate.</topic>
     <topic query="health">Gut!</topic>
     <topic query="BERA">Du wärest gut beraten, den Seher oft zu besuchen!</topic>
-    <topic query="RUES">Ich trage mystische Rüstung.<question type="0">Bist du ein Teil-Avatar?<yes>Wenn du 8 Teile Avatar bist, such Zircon in Minoc auf und frag nach den mystischen!</yes><no>Leider.</no></question></topic>
+    <topic query="RUES">Ich trage mystische Rüstung.<question type="0">Bist du ein Teil-Avatar?<yes>Wenn du 8 Teile Avatar bist, such Zircon in Minoc auf und frag nach mystischem!</yes><no>Leider.</no></question></topic>
   </person>
   <person id="7" name="Estro" pronoun="Er" turnAwayProb="0">
     <description>Einen kurzgewachsenen Druiden.</description>
     <topic query="job">Recherche.</topic>
-    <topic query="health">Oh es geht mir prima, dir auch, hoffe ich.</topic>
+    <topic query="health">Oh, es geht mir prima, dir auch, hoffe ich.</topic>
     <topic query="RECH">Ich suche nach dem Buche der Gerechtigkeit!</topic>
     <topic query="GERE">Es muß hier irgendwo sein!<question type="1">Kannst du sagen, daß du niemals auch nur &gt;ein&lt; Verbrechen begangen hast!?<yes>Ich glaube, du lügst und gibst an!</yes><no>Dann sprich mit dem Richter in Eibe!</no></question></topic>
   </person>
@@ -81,7 +81,7 @@
     <description>Einen großen, wendigen Mann.</description>
     <topic query="job">Ich bin der Bibliothekar.</topic>
     <topic query="health">Mir geht es gut.</topic>
-    <topic query="BIBL">In diesen Räumen befindet sich der größte Schatz an Wissen in Britannia, außer dem Kodexe!<question type="0">Suchst du ein bestimmtes Buch?<yes>Welches Buch?</yes><no>Du darfst gerne stöbern.</no></question></topic>
+    <topic query="BIBL">In diesen Räumen befindet sich der zweitgrößte Schatz an Wissen in Britannia, nach dem Kodexe!<question type="0">Suchst du ein bestimmtes Buch?<yes>Welches Buch?</yes><no>Du darfst gerne stöbern.</no></question></topic>
     <topic query="WAHR">Schau unter 'W' nach.</topic>
   </person>
   <person id="12" name="Zajac" pronoun="Er" turnAwayProb="0">
@@ -96,20 +96,20 @@
     <topic query="job">Die Schätze zu bewachen.</topic>
     <topic query="health">Sehr gut.</topic>
     <topic query="SCHA">Die Schätze sind von großem Werte!</topic>
-    <topic query="WERT">Ja, viel Gold.<question type="0">Hast du vor zu stehlen?<yes>Ich werde dich nicht aufhalten,</yes><no>Gut, ich hab mir schon Sorgen gemacht!</no></question></topic>
+    <topic query="WERT">Ja, viel Gold.<question type="0">Hast du vor zu stehlen?<yes>Ich werde dich nicht aufhalten.</yes><no>Gut, ich hab mir schon Sorgen gemacht!</no></question></topic>
   </person>
   <person id="14" name="Nigel, zu deinen Diensten" pronoun="Er" turnAwayProb="0">
     <description>Einen edlen Zauberer.</description>
     <topic query="job">Ich lehre Zaubersprüche.</topic>
     <topic query="health">Ausreichend gut.</topic>
     <topic query="ZAUB">Ich habe eine Spezialität!<question type="0">Weißt du, was es ist?<yes>Wie nenne ich den Spruch?</yes><no>Tut mir leid.</no></question></topic>
-    <topic query="REVO">Ja, Resurrectus, man braucht: Asche, Ginseng, Knoblauch, Weben, Blutmoos, und Alraune!</topic>
+    <topic query="REVO">Ja, Resurrectus, man braucht: Asche, Ginseng, Knoblauch, Weben, Moos und Alraune!</topic>
   </person>
   <person id="15" name="Shylock der Sanftmütige" pronoun="Er" turnAwayProb="0">
     <description>Einen erbärmlichen Bettler.</description>
-    <topic query="job">Ich sitze und bettle oh... bitte...</topic>
-    <topic query="health">Mir ist kalt und ich bin krank! oh... bitte...<question type="0">Wirst du mir helfen? Oh... bitte...<yes>Oh... bitte...</yes><no>Oh... bitte...</no></question></topic>
-    <topic query="BETT">Ja, bitte gib mir Geld! oh... bitte...</topic>
+    <topic query="job">Ich sitze und bettle. Oh... bitte...</topic>
+    <topic query="health">Mir ist kalt und ich bin krank! Oh... bitte...<question type="0">Wirst du mir helfen? Oh... bitte...<yes>Oh... bitte...</yes><no>Oh... bitte...</no></question></topic>
+    <topic query="BETT">Ja, bitte gib mir Geld! Oh... bitte...</topic>
     <topic query="KRAN">Ich habe die schwarze Pest!</topic>
   </person>
 </dialogue>

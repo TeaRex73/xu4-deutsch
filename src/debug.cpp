@@ -191,7 +191,7 @@ void Debug::trace(
         }
         if (line > 0) {
             l_line = line;
-            char ln[8];
+            char ln[16];
             std::sprintf(ln, "%d", line);
             message += "line ";
             message += ln;

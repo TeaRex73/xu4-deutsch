@@ -40,6 +40,7 @@ public:
         TurnCompleter *turnCompleter,
         Location *prev
     );
+    ~Location();
     Location(const Location &) = delete;
     Location(Location &&) = delete;
     Location &operator=(const Location &) = delete;

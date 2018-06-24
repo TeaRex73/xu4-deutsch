@@ -2,6 +2,10 @@
 # $Id$
 #
 
+#CC=gcc-8
+#CXX=g++-8
+#CPP=cpp-8
+
 prefix=/usr/local
 bindir=$(prefix)/bin
 libdir=$(prefix)/lib
@@ -15,11 +19,11 @@ LIBS=-L/usr/lib -L/usr/lib/arm-linux-gnueabihf -L/lib/arm-linux-gnueabihf $(UILI
 # CCPREFIX=~/raspberry/tools/arm-bcm2708/arm-bcm2708hardfp-linux-gnueabi/bin/arm-bcm2708hardfp-linux-gnueabi-
 # CCPREFIX=~/raspberry/tools/arm-bcm2708/gcc-linaro-arm-linux-gnueabihf-raspbian/bin/arm-linux-gnueabihf-
 FEATURES=-UHAVE_BACKTRACE -DHAVE_VARIADIC_MACROS=1
-DEBUGCXXFLAGS=-O2 -DNPERF -marm -mfpu=vfp -march=armv6zk -mtune=arm1176jzf-s -mfloat-abi=hard -UDEBUG -DNEBUG -DRASB_PI -fno-exceptions -fno-non-call-exceptions -fno-common
-#DEBUGCXXFLAGS=-Og -g -DNPERF -march=native -mtune=native -DDEBUG -UNDEBUG -URASB_PI -fno-exceptions -fno-non-call-exceptions -fno-common
+DEBUGCXXFLAGS=-O2 -flto -DNPERF -marm -mfpu=vfp -march=armv6zk -mtune=arm1176jzf-s -mfloat-abi=hard -UDEBUG -DNEBUG -DRASB_PI -fno-exceptions -fno-non-call-exceptions -fno-common
+#DEBUGCXXFLAGS=-Og -g -DNPERF -DDEBUG -UNDEBUG -URASB_PI -fno-exceptions -fno-non-call-exceptions -fno-common
 COMMON_FLAGS=$(FEATURES) -Wall -Wextra -Werror -pipe -I. -I/usr/include/libxml2 -I/usr/include/SDL -I/usr/include -I/usr/local/include -I/include -I/usr/include/arm-linux-gnueabihf $(UIFLAGS) -I/usr/include/libxml2 -DICON_FILE=\"$(datadir)/pixmaps/u4.bmp\" -DVERSION=\"$(VERSION)\" $(DEBUGCXXFLAGS) $(LIBS)
-CFLAGS=$(COMMON_FLAGS) -Wno-unused-parameter
-CXXFLAGS=$(COMMON_FLAGS) -Weffc++ -Wold-style-cast
+CFLAGS=-std=gnu90 $(COMMON_FLAGS) -Wno-unused-parameter
+CXXFLAGS=-std=gnu++11 $(COMMON_FLAGS) -Weffc++ -Wold-style-cast
 INSTALL=install
 
 ifeq ($(STATIC_GCC_LIBS),true)

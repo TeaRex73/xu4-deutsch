@@ -43,7 +43,8 @@ void ProgressBar::draw()
     );
     bar->alphaOff();
     int pos = static_cast<int>(
-        (double(current - min) / double(max - min)) * (width - (bwidth * 2))
+        (static_cast<double>(current - min) / static_cast<double>(max - min))
+		* (width - (bwidth * 2))
     );
     // border color
     bar->fillRect(

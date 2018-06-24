@@ -124,6 +124,9 @@ Image *PngImageLoader::load(
         int num_pngpalette;
         png_colorp pngpalette;
         png_get_PLTE(png_ptr, info_ptr, &pngpalette, &num_pngpalette);
+        if (num_pngpalette > 256) {
+            errorFatal("PNG Palette with more than 256 entries!");
+        }
         RGBA *palette = new RGBA[num_pngpalette];
         for (int c = 0; c < num_pngpalette; c++) {
             palette[c].r = pngpalette[c].red;

@@ -92,7 +92,7 @@
     <topic query="RUNE">Die Rune des Verzichtes ist schwer zu bekommen. Sie liegt inmitten des Feuers der Schmiede!<question type="0">Hast du die Rune?<yes>Dann frag Alkerion nach dem Steine!</yes><no>Komm wieder, wenn du sie findest!</no></question></topic>
   </person>
   <person id="13" name="Azure" pronoun="Er" turnAwayProb="0">
-    <description>Einen Zinker am Tische.</description>
+    <description>Einen Zinker am Tresen.</description>
     <topic query="job">Ich schnitze Runen.</topic>
     <topic query="health">O.K.</topic>
     <topic query="RUNE">Ich schnitze Runen zum Zutritte in die Schreine!<question type="0">Suchst du eine Rune?<yes>Welche?</yes><no>Ich verstehe.</no></question></topic>

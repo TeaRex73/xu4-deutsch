@@ -107,6 +107,7 @@ DynamicResponse::~DynamicResponse()
 
 const std::vector<ResponsePart> &DynamicResponse::getParts()
 {
+    delete currentResponse;
     currentResponse = (*generator)(this);
     return currentResponse->getParts();
 }

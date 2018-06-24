@@ -4,7 +4,7 @@
     <description>Eine sehr große und breite Wache.</description>
     <topic query="job">Ich bin die oberste Wache im Dorfe Pfoten!</topic>
     <topic query="health">Exzellent.</topic>
-    <topic query="WACH">Pfoten ist ein tolles Dorf und wir halten es sicher!<question type="0">Willst du etwa auch Ärger machen?<yes>Dann gehst du besser weg!</yes><no>Gut.</no></question></topic>
+    <topic query="WACH">Pfoten ist ein tolles Dorf, und wir halten es sicher!<question type="0">Willst du etwa auch Ärger machen?<yes>Dann verschwindest du besser!</yes><no>Gut.</no></question></topic>
     <topic query="AERG">Piraten kommen von einer Insel im Osten!</topic>
   </person>
   <person id="1" name="Francesca" pronoun="Sie" turnAwayProb="0">
@@ -16,10 +16,10 @@
   </person>
   <person id="2" name="Sven" pronoun="Er" turnAwayProb="0">
     <description>Einen großen stämmigen Mann.</description>
-    <topic query="job">Ich bin 'n Holzfäller, jo.</topic>
+    <topic query="job">Ich bin 'n Holzfäller, jau.</topic>
     <topic query="health">Prima, danke.</topic>
-    <topic query="HOLZ">Mit meiner Axt kann ich se schnell umhaun, jo.</topic>
-    <topic query="AXT ">'ne fette Axt, jo.<question type="0">Biste 'n Holzfäller?<yes>Gut für dich, jo.</yes><no>Stärk deine Arme, jo!</no></question></topic>
+    <topic query="HOLZ">Mit meiner Axt kann ich se fix umhaun, jau.</topic>
+    <topic query="AXT ">'ne fette Axt, jau.<question type="0">Biste 'n Holzfäller?<yes>Gut für dich, jau.</yes><no>Stärk deine Arme, jau!</no></question></topic>
   </person>
   <person id="3" name="Zair der Weise" pronoun="Er" turnAwayProb="0">
     <description>Einen Mann von vielen Jahren.</description>

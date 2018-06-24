@@ -506,7 +506,8 @@ void EventHandler::run()
                     "diff = %ld, sum = %ld, avg = %f\n",
                     diff,
                     clocksum,
-                    ((double) clocksum) / ((double) keycount)
+                    static_cast<double>(clocksum)
+					/ static_cast<double>(keycount)
                 );
 #endif
 #endif

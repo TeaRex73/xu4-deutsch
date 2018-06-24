@@ -26,7 +26,7 @@
     <topic query="job">Ich spreche riesengroße Zauber!</topic>
     <topic query="health">Überragend!</topic>
     <topic query="ZAUB">Ich zaubere: Jinxus, Kilutus und Vietus!<question type="0">Weißt du, was diese Zauber gemeinsam haben?<yes>Was?</yes><no>Rate!</no></question></topic>
-    <topic query="SCHA">Ja, frag den Wirt des 'Axt&amp;Ale' in Vesper nach Schatten.</topic>
+    <topic query="SCHA">Ja, frag den Wirt des 'Axt &amp; Ale' in Vesper nach Schatten.</topic>
   </person>
   <person id="4" name="Granted" pronoun="Sie" turnAwayProb="0">
     <description>Eine hungrige Bettlerin.</description>
@@ -82,7 +82,7 @@
     <topic query="job">Ich queste.</topic>
     <topic query="health">Exzellent!</topic>
     <topic query="QUES">Viele Questen sind sehr gefährlich!<question type="1">Bist du in allen Dingen furchtlos?<yes>Angeberischer Narr!</yes><no>Gefahr ist wirklich!</no></question></topic>
-    <topic query="GEFA">Ich habe keine Angst vor Morgen; ich habe Gestern gesehen und ich liebe Heute.</topic>
+    <topic query="GEFA">Ich habe keine Angst vor dem Morgen; ich habe das Gestern gesehen und ich liebe das Heute.</topic>
   </person>
   <person id="12" name="das Ench der Spiritualität" pronoun="Es" turnAwayProb="0">
     <description>Ein silbernes Ench.</description>

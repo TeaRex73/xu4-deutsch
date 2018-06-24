@@ -4,7 +4,8 @@
    Read unzip.h for more info
 */
 
-#include "vc6.h" // Fixes things if you're using VC6, does nothing otherwise
+#include "vc6.h" /* Fixes things if you're using VC6,
+                    does nothing otherwise */
 
 #ifdef __cplusplus
 extern "C" {
@@ -127,7 +128,7 @@ typedef struct {
    for end of file.
    IN assertion: the stream s has been sucessfully opened for reading.
 */
-local inline int unzlocal_getByte(FILE *fin, int *pi)
+local int unzlocal_getByte(FILE *fin, int *pi)
 {
     unsigned char c;
     int err = fread(&c, 1, 1, fin);
@@ -147,7 +148,7 @@ local inline int unzlocal_getByte(FILE *fin, int *pi)
 /* ===========================================================================
    Reads a long in LSB order from the given gz_stream.
 */
-local inline int unzlocal_getShort(FILE *fin, uLong *pX)
+local int unzlocal_getShort(FILE *fin, uLong *pX)
 {
     uLong x;
     int i = 0;
@@ -166,7 +167,7 @@ local inline int unzlocal_getShort(FILE *fin, uLong *pX)
     return err;
 }
 
-local inline int unzlocal_getLong(FILE *fin, uLong *pX)
+local int unzlocal_getLong(FILE *fin, uLong *pX)
 {
     uLong x;
     int i = 0;

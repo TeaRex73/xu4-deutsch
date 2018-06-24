@@ -13,7 +13,7 @@
             <music type="shopping"/>
             WILLKOMMEN BEI {name}.
 
-            {owner} SAGT: WILLKOMMEN FREUND! WILLST DU KAUFEN ODER VERKAUFEN?<input type="choice" options="kv" target="buy_sell"/>
+            {owner} SAGT: WILLKOMMEN FREUND<if test="{party:member1:sex}=f">IN</if>! WILLST DU KAUFEN ODER VERKAUFEN?<input type="choice" options="kv" target="buy_sell"/>
         </intro>
 
         <end>
@@ -120,7 +120,7 @@
         </tell_about>
 
         <tell_about choice="e">
-	    DIESER STREITKOLBEN HAT EINEN GEH[RTETEN SCHAFT UND SEIN KOPF WIEGT F]NF PFUND, {price}gs SIND EIN SPOTTPREIS.
+            DIESER STREITKOLBEN HAT EINEN GEH[RTETEN SCHAFT UND SEIN KOPF WIEGT F]NF PFUND, {price}gs SIND EIN SPOTTPREIS.
         </tell_about>
 
         <tell_about choice="f">
@@ -128,27 +128,27 @@
         </tell_about>
 
         <tell_about choice="g">
-	    DIE HERVORRAGENDE AUSF]HRUNG DIESES SCHWERTES WIRD DEINE FEINDE DAS F]RCHTEN LEHREN, F]R {price}gs.
+            DIE HERVORRAGENDE AUSF]HRUNG DIESES SCHWERTES WIRD DEINE FEINDE DAS F]RCHTEN LEHREN, F]R {price}gs.
         </tell_about>
 
         <tell_about choice="h">
-	    UNSER BOGEN IST AUS BESTER EIBE, UND DIE PFEILE AUS WEIDE. GERADEZU GESTOHLEN F]R {price}gs.
+            UNSER BOGEN IST AUS BESTER EIBE, UND DIE PFEILE AUS WEIDE. GERADEZU GESTOHLEN F]R {price}gs.
         </tell_about>
 
         <tell_about choice="i">
-	    EINE ARMBRUST VON IOLO DEM BARDEN, ER MACHT DIE BESTEN DER WELT. F]R {price}gs GEH\RT SIE DIR.
+            EINE ARMBRUST VON IOLO DEM BARDEN, ER MACHT DIE BESTEN DER WELT. F]R {price}gs GEH\RT SIE DIR.
         </tell_about>
 
         <tell_about choice="j">
-	    \LAMPHOREN SIND HERVORRAGENDE WAFFEN UND ERZEUGEN EINE VERITABLE FLAMMENWAND. {price}gs PRO ST]CK.
+            \LAMPHOREN SIND HERVORRAGENDE WAFFEN UND ERZEUGEN EINE VERITABLE FLAMMENWAND. {price}gs PRO ST]CK.
         </tell_about>
 
         <tell_about choice="k">
-	    EINE HELLEBARDE IST EINE M[CHTIGE WAFFE, UM ]BER HINDERNISSE ANZUGREIFEN; EIN MUSS, UND NUR {price}gs.
+            EINE HELLEBARDE IST EINE M[CHTIGE WAFFE, UM ]BER HINDERNISSE ANZUGREIFEN; EIN MUSS, UND NUR {price}gs.
         </tell_about>
 
         <tell_about choice="l">
-	    DIESE MAGISCHE AXT KANNST DU NACH DEINEM FEINDE WERFEN, SIE KEHRT ZUR]CK. DAS ALLES F]R {price}gs.
+            DIESE MAGISCHE AXT KANNST DU NACH DEINEM FEINDE WERFEN, SIE KEHRT ZUR]CK. DAS ALLES F]R {price}gs.
         </tell_about>
 
         <tell_about choice="m">
@@ -239,7 +239,7 @@
         <sell default="true" redirect="bye"/>
         <sell choice="n">
             HMMPF. WAS WILLST DU NOCH VERKAUFEN?
-	    <redirect target="you_sell"/>
+            <redirect target="you_sell"/>
         </sell>
         <sell choice="j">            
             <lose type="weapon" subtype="{$weapon}" quantity="{$quantity}"/>
@@ -304,7 +304,7 @@
             <music type="shopping"/>
             WILLKOMMEN BEI {name}.
 
-            {owner} SAGT: WILLKOMMEN FREUND! WILLST DU KAUFEN ODER VERKAUFEN?<input type="choice" options="kv" target="buy_sell"/>
+            {owner} SAGT: WILLKOMMEN FREUND<if test="{party:member1:sex}=f">IN</if>! WILLST DU KAUFEN ODER VERKAUFEN?<input type="choice" options="kv" target="buy_sell"/>
         </intro>
 
         <end>
@@ -407,11 +407,11 @@
         </tell_about>
 
         <tell_about choice="f">
-	    MAGISCHE R]STUNG IST SELTEN UND TEUER. DIESES KETTENHEMD WIRD F]R {price}gs VERKAUFT.
+            MAGISCHE R]STUNG IST SELTEN UND TEUER. DIESES KETTENHEMD WIRD F]R {price}gs VERKAUFT.
         </tell_about>
 
         <tell_about choice="g">
-	    MAGISCHE PLATTENR]STUNG IST DER BESTE BEKANNTE SCHUTZ. NUR WIR HABEN SIE. KOSTEN: {price}gs.
+            MAGISCHE PLATTENR]STUNG IST DER BESTE BEKANNTE SCHUTZ. NUR WIR HABEN SIE. KOSTEN: {price}gs.
         </tell_about>
 
         <!-- input how many to buy -->
@@ -427,7 +427,7 @@
             <pay price="{price}" quantity="{$quantity}" cantpay="check_money"/>
             <add type="armor" subtype="{$armor}" quantity="{$quantity}"/>
             {owner} SAGT: GUTE WAHL!
-	    <redirect target="anything_else_buy"/>
+            <redirect target="anything_else_buy"/>
         </buy>
 
         <toobad>
@@ -461,7 +461,7 @@
 
             <if test="{party:armor:{name}}==0">
                 KOMM SCHON, DAS BESITZT DU NICHT.
-		<redirect target="bye"/>
+                <redirect target="bye"/>
             </if>
     
             <if test="{party:armor:{name}}&gt;1" redirect="sell_many"/>
@@ -545,8 +545,8 @@
             <music type="shopping"/>
             WILLKOMMEN BEI{name}.
         
-            {owner} SAGT: GUTEN TAG, UND WILLKOMMEN, FREUND.
-            <if test="{party:gold}&lt;{price}" redirect="come_back"/>
+            {owner} SAGT: GUTEN TAG, UND WILLKOMMEN, <if test="{party:member1:sex}=m">FREUND.</if><if test="{party:member1:sex}=f">FREUNDIN.</if><if test="{party:gold}&lt;{price}" redirect="come_back"/>
+	    
             BIST DU AN LEBENSMITTELN INTERESSIERT?<input type="choice" options="jn" target="ask"/>            
         </intro>
         
@@ -574,8 +574,9 @@
             DU KANNST DIR NUR {math({party:gold}/{price})} PAKETE LEISTEN.
             <redirect target="howmany"/>
         </cantpay>
-        <come_back>            
-            KOMM WIEDER, WENN DU ETWAS GELD HAST!
+        <come_back>
+	    <wait_for_keypress/>
+	    KOMM WIEDER, WENN DU ETWAS GELD HAST!
             <end/>
         </come_back>
         <come_again>
@@ -590,7 +591,7 @@
         <vendor id="GLIMMEMOND" name=" DEN WEISEN DELIKATESSEN" owner="SHAMAN" price="25" quant="25"/>
         <vendor id="BRITAIN" name=" ABENTEUER-KOST" owner="WINDRICK" price="40" quant="25"/>
         <vendor id="EIBE" name=" DEN TROCKENWAREN" owner="DONNAR" price="35" quant="25"/>
-        <vendor id="SKARA BRAE" name=" SINNIER NAHRUNG" owner="MINTOL" price="20" quant="25"/>
+        <vendor id="SKARA BRAE" name=" SINNIER-NAHRUNG" owner="MINTOL" price="20" quant="25"/>
         <vendor id="PFOTEN" name="M DISCOUNTER" owner="MAX" price="30" quant="25"/>
     </script>
 
@@ -617,13 +618,15 @@
         </whatll_it_be>
 
         <bye>            
-            BIS BALD, KUMPEL!
+            BIS BALD, <if test="{party:member1:sex}=m">KUMPEL!
+	    </if><if test="{party:member1:sex}=f">LADY!
+	    </if>
             <end/>
         </bye>
         
         <buy default="true" redirect="bye"/>
         <buy choice="f">
-            UNSERE SPEZIALIT[T IST {specialty}, KOSTET {spec_price}gs.<redirect target="how_many_plates"/>
+            UNSERE SPEZIALIT[T IST {specialty}, KOSTET {spec_price}gs. <redirect target="how_many_plates"/>
         </buy>       
 
         <how_many_plates>WIE VIELE TELLER DAVON SOLL ICH BRINGEN?<input name="quantity" type="number" target="food_buy"/>
@@ -639,12 +642,14 @@
         </food_buy>
 
         <cantpay_food>
+            <if test="{math({party:gold}/{spec_price})}==0" redirect="cantpay_ale"/>
             MENSCH, DU KANNST DIR DOCH NUR {math({party:gold}/{spec_price})} TELLER LEISTEN.
+            
             <redirect target="how_many_plates"/>
         </cantpay_food>
 
         <something_else>
-            NOCH WAS ANDRES?<input type="choice" options="jn" target="ask"/>
+            NOCH WAS ANDERES?<input type="choice" options="jn" target="ask"/>
         </something_else>
 
         <buy choice="b">
@@ -663,48 +668,53 @@
             <if test="{$price}={ale_price}" redirect="something_else"/>
             <if test="{$price}&gt;{ale_price}">
                 <var name="tip_total" value="{math({$price}-{ale_price})}"/>
-                WAS WILLST'N WISSSEN, MEIN FREUND?
+                WAS WILLST'N WISSSEN, <if test="{party:member1:sex}=f">MEINE FREUNDIN?
+		</if><if test="{party:member1:sex}=m">MEIN FREUND?
+		</if>
                 <input name="choice" type="text" target="topic"/>
             </if>
         </ale_buy>
 
         <cantpay_ale>
-            WIE'S SCHEINT HASTE KEINE KOHLE. GUTEN TAG!<redirect target="bye"/>            
+          WIE'S SCHEINT HASTE KEINE KOHLE. GUTEN TAG!
+          <end/>
         </cantpay_ale>
 
         <topic default="true">
             <if test="{isempty({$choice})}" redirect="something_else"/>            
-            F]RCHTE, ICH KANN DIR DA NICHT HELFEN, MEIN FREUND!
+            F]RCHTE, ICH KANN DIR DA NICHT HELFEN, <if test="{party:member1:sex}=f">MEINE FREUNDIN!
+	    </if><if test="{party:member1:sex}=m">MEIN FREUND!
+	    </if>
             <redirect target="something_else"/>
         </topic>        
 
-        <reply choice="SCHW">
-	    {owner} SAGT: ACH, DER SCHWARZE STEIN. JA, SCHON MAL VON GEH\RT. ABER DER EINZIGE, DER WEISS, WO ER LIEGT, IST DER ZAUBERER MERLIN.
+        <reply choice="schwa">
+            {owner} SAGT: ACH, DER SCHWARZE STEIN. JA, SCHON MAL VON GEH\RT. ABER DER EINZIGE, DER WEISS, WO ER LIEGT, IST DER ZAUBERER MERLIN.
             <redirect target="something_else"/>
         </reply>
 
-        <reply choice="SEXT">
+        <reply choice="sexta">
             {owner} SAGT: BEIM NAVIGIEREN IST 'N SEXTANT LEBENSWICHTIG... FRAG IN DEN GILDENL[DEN NACH GEGENSTAND "D"!
             <redirect target="something_else"/>
         </reply>
 
-        <reply choice="WEIS">
+        <reply choice="weiss">
             LASS MICH ]BERLEGEN... JA, 'S WAR DIESER ALTE EREMIT... SLOVEN! SCHWER ZU FINDEN, LEBT BEIM LOCH-SEE WIE MAN H\RT.
             <redirect target="something_else"/>
         </reply>
 
-        <reply choice="ALRA">
+        <reply choice="alrau">
             {owner} SAGT: DER LETZTE, VON DEM ICH WEISS, DASS ER NOCH ALRAUNE HATTE, WAR SO'N ALTER ALCHIMIST NAMENS CALUMNY.
             <redirect target="something_else"/>
         </reply>        
 
-        <reply choice="SCH[">
+        <reply choice="schae">
             {owner} SAGT: WENN DU DENN VON DIESEM B\SESTEN ALLER DINGE WISSEN MUSST... FINDE DEN BETTLER JUDE. ER IST SEHR, SEHR ARM!
             <redirect target="something_else"/>
         </reply>
         
-        <reply choice="SCHA">
-            {owner} SAGT: VON SCHATTEN WEISS ICH NUR SOVIEL... FRAG VIRGIL, SONST FINDS'TE KEINEN STIEL. VERSUCH'S IN TRINSIC!
+        <reply choice="schat">
+            {owner} SAGT: VON SCHATTEN WEISS ICH NUR SOVIEL... FRAG VIRGIL, SONST FIND'STE KEINEN STIEL. VERSUCH'S IN TRINSIC!
             <redirect target="something_else"/>
         </reply>
         
@@ -716,7 +726,10 @@
         </save>
         
         <sorry>
-            TUT MIR LEID, DABEI K\NNT' ICH DIR NICHT HELFEN, KUMPEL!<redirect target="something_else"/>
+            TUT MIR LEID, DABEI K\NNT' ICH DIR NICHT HELFEN, <if test="{party:member1:sex}=m">KUMPEL!
+	    </if><if test="{party:member1:sex}=f">LADY!
+	    </if>
+            <redirect target="something_else"/>
         </sorry>
 
         <foggy choice="null" redirect="sorry"/>
@@ -728,35 +741,38 @@
 
             Du gibst-<input name="payment" type="number" maxlen="2"/>
             <if test="{$payment}==0" redirect="sorry"/>
-        	<redirect target="foggy"/>
+                <redirect target="foggy"/>
         </foggy>
 
         <cantpay_topic>
-            SOVIEL HAST DU DOCH GAR NICHT, KUMPEL!<redirect target="sorry"/>
+            SOVIEL HAST DU DOCH GAR NICHT, <if test="{party:member1:sex}=m">KUMPEL!
+	    </if><if test="{party:member1:sex}=f">LADY!
+	    </if>
+            <redirect target="sorry"/>
         </cantpay_topic>
 
         <vendor id="BRITAIN" name="BEI DEN LAUNIGEN GEISTERN" owner="SAM" specialty="LAMMKOTLETTS" spec_price="4" ale_price="2">
-            <topic choice="SCHW" price="20" redirect="save"/>
+            <topic choice="schwa" price="20" redirect="save"/>
         </vendor>
         
         <vendor id="JHELOM" name="IN DER BLUTIGEN PINTE" owner="CELESTIAL" specialty="DRACHENTARTAR" spec_price="2" ale_price="2">
-            <topic choice="SEXT" price="30" redirect="save"/>
+            <topic choice="sexta" price="30" redirect="save"/>
         </vendor>
 
         <vendor id="TRINSIC" name="IM ZAPFHAHNE" owner="TERRAN" specialty="BRAUNE BOHNEN" spec_price="3" ale_price="2">
-            <topic choice="WEIS" price="10" redirect="save"/>
+            <topic choice="weiss" price="10" redirect="save"/>
         </vendor>
 
         <vendor id="PFOTEN" name="IN FOLLEYS KNEIPE" owner="GREG &amp; ROB" specialty="FOLLEY-FILET" spec_price="2" ale_price="2">
-            <topic choice="ALRA" price="40" redirect="save"/>
+            <topic choice="alrau" price="40" redirect="save"/>
         </vendor>
         
         <vendor id="BUKANIER-NEST" name="IN DER SPELUNKE ZUM KORSAREN" owner="DER C[P'N" specialty="HUNDEPASTETE" spec_price="4" ale_price="2">
-            <topic choice="SCH[" price="99" redirect="save"/>
+            <topic choice="schae" price="99" redirect="save"/>
         </vendor>
 
         <vendor id="VESPER" name="IM AXT &amp; ALE" owner="ARRON" specialty="GR]NER GRANUKIT" spec_price="2" ale_price="2">
-            <topic choice="SCHA" price="25" redirect="save"/>
+            <topic choice="schat" price="25" redirect="save"/>
         </vendor>
     </script>
 
@@ -824,7 +840,7 @@
             SEHR SCH\N, DAS MACHT DANN {math({price}*{$quantity})}gs.<redirect target="you_pay"/>
         </that_makes>
 
-	<you_pay>
+        <you_pay>
             DU ZAHLST:<input name="price" type="number" maxlen="2" target="buy"/>
         </you_pay>
 
@@ -847,7 +863,7 @@
 
         <gold_drop>
             KOMM SCHON, LASS MICH DAS GOLD FALLEN H\REN!<redirect target="you_pay"/>
-	</gold_drop>
+        </gold_drop>
 
         <vendor id="GLIMMEMOND" name="M MAGISCHEN KRAUT" owner="MARGOT">
             <reagent choice="a" name="SCHWELASCHE" type="ash" price="2"/>
@@ -897,7 +913,7 @@
             <music type="shopping"/>
             WILKOMMEN BEI{name}.
 
-            {healer} SAGT: FRIEDE UND FREUDE SEI MIT DIR, FREUND. BEN\TIGST DU HILFE?<input type="choice" options="jn" target="show_services"/>
+            {healer} SAGT: FRIEDE UND FREUDE SEI MIT DIR, FREUND<if test="{party:member1:sex}=f">IN</if>. BEN\TIGST DU HILFE?<input type="choice" options="jn" target="show_services"/>
         </intro>
 
         <end>
@@ -924,12 +940,11 @@
         <gave_blood choice="j">
             <damage player="1" pts="100"/>
             <karma action="gave_blood"/>
-            DU BIST EINE GROSSE HILFE. WIR HABEN DRINGENDEN BEDARF!<redirect target="bye"/>
+            DU BIST EINE GROSSE HILFE. WIR HABEN DRINGENDEN BEDARF!<wait_for_keypress/><redirect target="bye"/>
         </gave_blood>
 
         <more_help>
             <unset_context/>
-
             {healer} FRAGT: BRAUCHST DU NOCH MEHR HILFE?<input type="choice" options="jn" target="show_services"/>            
         </more_help>
 
@@ -953,7 +968,8 @@
         </who_needs>
 
         <will_pay choice="null">
-            NIEMAND?<redirect target="more_help"/>
+            NIEMAND?
+            <redirect target="more_help"/>
         </will_pay>
 
         <will_pay>
@@ -964,7 +980,7 @@
             </if>
             {desc} KOSTET DICH {price}gs.
             <if test="{party:gold}&lt;{price}">
-                ICH SEHE AN DEINER B\RSE, DASS DU NICHT GENUG GOLD HAST. ICH KANN DIR NICHT HELFEN.<redirect target="more_help"/>
+              ICH SEHE AN DEINER B\RSE, DASS DU NICHT GENUG GOLD HAST. ICH KANN DIR NICHT HELFEN.<wait_for_keypress/><redirect target="more_help"/>
             </if>
             WILLST DU DAS BEZAHLEN?<input type="choice" options="jn" target="heal"/>            
         </will_pay>
@@ -974,15 +990,19 @@
             <pay price="{price}" quantity="1"/>
             <cast_spell/>
             <heal type="{type}" player="{$player}"/>
+            
             <redirect target="more_help"/>
         </heal>
 
         <dont_need choice="a">
-            DU LEIDEST NICHT UNTER VERGIFTUNG!</dont_need>
+            DU LEIDEST NICHT UNTER VERGIFTUNG!
+        </dont_need>
         <dont_need choice="b">
-            DU BIST SCHON GANZ GESUND!</dont_need>
+            DU BIST SCHON GANZ GESUND!
+        </dont_need>
         <dont_need choice="c">
-            DU BIST NICHT TOT, NARR!</dont_need>
+            DU BIST NICHT TOT, NARR!
+        </dont_need>
         <vendor id="BRITANNIA" name=" DES K\NIGS HEILER" healer="PENDRAGON">
             <service choice="a" name="GIFT HEILEN" desc="EINE ENTGIFTUNG" price="5" type="cure"/>
             <service choice="b" name="WUNDEN HEILEN" desc="EINE WUNDHEILUNG" price="50" type="fullheal"/>
@@ -1088,7 +1108,7 @@
             SEHR GUT. W]NSCHE EINE ANGENEHME NACHT.
             <move x="{x}" y="{y}"/>            
             <random chance="25%">
-                <wait msecs="1000"/>
+                <wait msecs="2000"/>
                 OH, UND K]MMER DICH NICHT UM DIE GER[USCHE, DAS SIND NUR RATTEN!
             </random>
             <sleep/>
@@ -1137,7 +1157,7 @@
             <ask choice="j">
                 WIR HABEN DREI R[UME FREI, MIT 1, 2 ODER 3 BETTEN, F]R JE 30, 60 ODER 90 gs.
             
-		1, 2 ODER 3 BETTEN?<input type="choice" options="0123" target="rent"/>
+                1, 2 ODER 3 BETTEN?<input type="choice" options="0123" target="rent"/>
             </ask>
         </vendor>
 
@@ -1181,8 +1201,8 @@
         <intro>
             <music type="shopping"/>
             <ztats screen="equipment"/>
-            WARSCHAU, KAMERAD! DU WILLST VOM ALTEN {owner} KAUFEN?
-
+            WAHRSCHAU, <if test="{party:member1:sex}=m">MAAT!</if><if test="{party:member1:sex}=f">MIEN DEERN!</if> SICHER WILLST DU VOM ALTEN {owner} KAUFEN!
+	    
             {owner} SAGT: WILKOMMEN I{name}.
             WILLST DU MEINE BEUTE SEHEN?<input type="choice" options="jn" target="show_goods"/>
         </intro>
@@ -1194,13 +1214,15 @@
 
         <bye>
             <unset_context/>
-            {owner} SAGT: AUF BALD, KAMERAD!
+            {owner} SAGT: AUF BALD, <if test="{party:member1:sex}=m">MAAT!
+	    </if><if test="{party:member1:sex}=f">MIEN DEERN!
+	    </if>
             <end/>
         </bye>
         
         <show_goods default="true" redirect="bye"/>
         <show_goods choice="j">
-            {owner} SAGT: GUT, KAMERAD!
+            {owner} SAGT: GUT, <if test="{party:member1:sex}=m">MAAT!</if><if test="{party:member1:sex}=f">MIEN DEERN!</if>
             SCHAU HER, ICH HAB:
             {show_inventory:show_item}
             WAS SOLLS'N SEIN?<input type="choice" options="{inventory_choices}" target="tell_about"/>
@@ -1233,7 +1255,7 @@
 
         <buy_item default="true" choice="n">
           HMMM... GRUMMEL...
-	  <redirect target="see_more"/>
+          <redirect target="see_more"/>
         </buy_item>
         <buy_item choice="j">
             <redirect target="buy" choice="{$item}"/>
@@ -1278,7 +1300,7 @@
     <script id="Stable">
         <intro>
             <music type="shopping"/>
-            WILKOMMEN FREUND! KANN ICH DICH AN PFERDEN INERESSIEREN?<input type="choice" options="jn" target="ask"/>
+            WILKOMMEN <if test="{party:member1:sex}=f">FREUNDIN!</if><if test="{party:member1:sex}=m">FREUND!</if> KANN ICH DICH AN PFERDEN INERESSIEREN?<input type="choice" options="jn" target="ask"/>
         </intro>
 
         <end>

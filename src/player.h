@@ -140,6 +140,7 @@ public:
     int getRealLevel() const;
     int getMaxLevel() const;
     virtual void addStatus(StatusType status);
+	virtual void setStatus(StatusType status);
     void adjustMp(int pts);
     void advanceLevel();
     void applyEffect(TileEffect effect);

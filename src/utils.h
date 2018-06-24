@@ -9,6 +9,7 @@
 #include <ctime>
 #include <map>
 #include <string>
+#include <type_traits>
 #include <vector>
 
 #include <unistd.h>
@@ -24,116 +25,118 @@
  * See http://www.parashift.com/c++-faq-lite/inline-functions.html#faq-9.5
  * for more information.
  */
-inline void AdjustValueMax(int &v, int val, int max)
-{
-    v += val;
-    if (v > max) {
-        v = max;
-    }
-}
 
-inline void AdjustValueMin(int &v, int val, int min)
-{
-    v += val;
-    if (v < min) {
-        v = min;
-    }
-}
-
-inline void AdjustValue(int &v, int val, int max, int min)
-{
-    v += val;
-    if (v > max) {
-        v = max;
-    }
-    if (v < min) {
-        v = min;
-    }
-}
-
-inline void AdjustValueMax(unsigned int &v, int val, unsigned int max)
-{
-    v += val;
-    if (v > max) {
-        v = max;
-    }
-}
-
-inline void AdjustValueMin(unsigned int &v, int val, unsigned int min)
-{
-    v += val;
-    if (v < min) {
-        v = min;
-    }
-}
-
-inline void AdjustValue(
-    unsigned int &v, int val, unsigned int max, unsigned int min
+// for unsigned types, checks for overflow/underflow
+template<typename T, typename U> inline void AdjustValueMax_helper(
+    T &v, typename std::make_signed<T>::type val, U max, std::true_type
 )
 {
+    T old_v = v;
+    T maxt = static_cast<T>(max);
     v += val;
-    if (v > max) {
-        v = max;
-    }
-    if (v < min) {
-        v = min;
+    if (v > maxt || (val > 0 && v < old_v)) {
+        v = maxt;
     }
 }
 
-inline void AdjustValueMax(short &v, int val, int max)
-{
-    v += val;
-    if (v > max) {
-        v = max;
-    }
-}
-
-inline void AdjustValueMin(short &v, int val, int min)
-{
-    v += val;
-    if (v < min) {
-        v = min;
-    }
-}
-
-inline void AdjustValue(short &v, int val, int max, int min)
-{
-    v += val;
-    if (v > max) {
-        v = max;
-    }
-    if (v < min) {
-        v = min;
-    }
-}
-
-inline void AdjustValueMax(unsigned short &v, int val, unsigned int max)
-{
-    v += val;
-    if (v > max) {
-        v = max;
-    }
-}
-
-inline void AdjustValueMin(unsigned short &v, int val, unsigned int min)
-{
-    v += val;
-    if (v < min) {
-        v = min;
-    }
-}
-
-inline void AdjustValue(
-    unsigned short &v, int val, unsigned int max, unsigned int min
+// for signed types, no check since signed overflow is undefined behaviour
+template<typename T, typename U> inline void AdjustValueMax_helper(
+    T &v, typename std::make_signed<T>::type val, U max, std::false_type
 )
 {
+    T maxt = static_cast<T>(max);
     v += val;
-    if (v > max) {
-        v = max;
+    if (v > maxt) {
+        v = maxt;
     }
-    if (v < min) {
-        v = min;
+}
+
+// use tag dispatch to chose the right one
+template<typename T, typename U> inline void AdjustValueMax(
+    T &v, typename std::make_signed<T>::type val, U max
+)
+{
+    AdjustValueMax_helper(
+        v, val, max, typename std::is_unsigned<T>::type()
+    );
+}
+
+// for unsigned types, checks for overflow/underflow
+template<typename T, typename U> inline void AdjustValueMin_helper(
+    T &v, typename std::make_signed<T>::type val, U min, std::true_type
+)
+{
+    T old_v = v;
+    T mint = static_cast<T>(min);
+    v += val;
+    if (v < mint || (val < 0 && v > old_v)) {
+        v = mint;
     }
+}
+
+// for signed types, no check since signed overflow is undefined behaviour
+template<typename T, typename U> inline void AdjustValueMin_helper(
+    T &v, typename std::make_signed<T>::type val, U min, std::false_type
+)
+{
+    T mint = static_cast<T>(min);
+    v += val;
+    if (v < mint) {
+        v = mint;
+    }
+}
+
+// use tag dispatch to chose the right one
+template<typename T, typename U> inline void AdjustValueMin(
+    T &v, typename std::make_signed<T>::type val, U min
+)
+{
+    AdjustValueMin_helper(
+        v, val, min, typename std::is_unsigned<T>::type()
+    );
+}
+
+// for unsigned types, checks for overflow/underflow
+template<typename T, typename U> inline void AdjustValue_helper(
+    T &v, typename std::make_signed<T>::type val, U max, U min, std::true_type
+)
+{
+    T old_v = v;
+    T maxt = static_cast<T>(max);
+    T mint = static_cast<T>(min);
+    v += val;
+    if (v > maxt || (val > 0 && v < old_v)) {
+        v = maxt;
+    }
+    if (v < mint || (val < 0 && v > old_v)) {
+        v = mint;
+    }
+}
+
+// for signed types, no check since signed overflow is undefined behaviour
+template<typename T, typename U> inline void AdjustValue_helper(
+    T &v, typename std::make_signed<T>::type val, U max, U min, std::false_type
+)
+{
+    T maxt = static_cast<T>(max);
+    T mint = static_cast<T>(min);
+    v += val;
+    if (v > maxt) {
+        v = maxt;
+    }
+    if (v < mint) {
+        v = mint;
+    }
+}
+
+// use tag dispatch to chose the right one
+template<typename T, typename U> inline void AdjustValue(
+    T &v, typename std::make_signed<T>::type val, U max, U min
+)
+{
+    AdjustValue_helper(
+        v, val, max, min, typename std::is_unsigned<T>::type()
+    );
 }
 
 void xu4_srandom();

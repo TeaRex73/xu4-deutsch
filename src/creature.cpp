@@ -1066,8 +1066,8 @@ Creature *CreatureMgr::getByName(std::string name)
     CreatureMap::const_iterator i;
     for (i = creatures.begin(); i != creatures.end(); i++) {
         if (xu4_strcasecmp(
-                i->second->getName().c_str(),
-                name.c_str()
+                deumlaut(i->second->getName()).c_str(),
+                deumlaut(name).c_str()
             ) == 0) {
             return i->second;
         }

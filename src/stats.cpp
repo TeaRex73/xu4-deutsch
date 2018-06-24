@@ -312,7 +312,7 @@ void StatsArea::showPlayerDetails()
     int player = view - STATS_CHAR1;
     ASSERT(player < 8, "character number out of range: %d", player);
     PartyMember *p = c->party->member(player);
-    char title[6];
+    char title[16];
     std::sprintf(title, "SPL-%d", player + 1);
     setTitle(title);
     std::string nameStr = uppercase(p->getName());

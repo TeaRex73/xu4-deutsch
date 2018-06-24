@@ -96,7 +96,12 @@ std::string PartyMember::translate(std::vector<std::string> &parts)
             return getArmor()->getName();
         } else if (parts[0] == "sex") {
             std::string var = " ";
-            var[0] = getSex();
+            SexType s = getSex();
+            if (s == SEX_MALE) {
+                var[0] = 'm';
+            } else {
+                var[0] = 'f';
+            }
             return var;
         } else if (parts[0] == "class") {
             return getClassNameEnglish(getClass());
@@ -238,7 +243,6 @@ int PartyMember::getMaxLevel() const
     return level;
 }
 
-
 /**
  * Adds a status effect to the player
  */
@@ -250,7 +254,7 @@ void PartyMember::addStatus(StatusType s)
     case STAT_GOOD:
     case STAT_POISONED:
         setTile(tileForClass(getClass()));
-    break;
+		break;
     case STAT_SLEEPING:
     case STAT_DEAD:
         setTile(Tileset::findTileByName("corpse")->getId());
@@ -265,6 +269,31 @@ void PartyMember::addStatus(StatusType s)
     notifyOfChange();
 }
 
+/**
+ * Unconditionally sets a status effect for the player
+ */
+void PartyMember::setStatus(StatusType s)
+{
+    Creature::setStatus(s);
+    player->status = status;
+    switch (player->status) {
+    case STAT_GOOD:
+    case STAT_POISONED:
+        setTile(tileForClass(getClass()));
+		break;
+    case STAT_SLEEPING:
+    case STAT_DEAD:
+        setTile(Tileset::findTileByName("corpse")->getId());
+		break;
+    default:
+        ASSERT(
+            0,
+            "Invalid Status %d in PartyMember::setStatus",
+            static_cast<int>(player->status)
+        );
+    }
+    notifyOfChange();
+}
 
 /**
  * Adjusts the player's mp by 'pts'
@@ -423,11 +452,11 @@ void PartyMember::removeStatus(StatusType s)
     case STAT_GOOD:
     case STAT_POISONED:
         setTile(tileForClass(getClass()));
-    break;
+		break;
     case STAT_SLEEPING:
     case STAT_DEAD:
         setTile(Tileset::findTileByName("corpse")->getId());
-    break;
+		break;
     default:
         ASSERT(
             0,
@@ -1434,18 +1463,19 @@ void Party::swapPlayers(int p1, int p2)
 {
     ASSERT(p1 < saveGame->members, "p1 out of range: %d", p1);
     ASSERT(p2 < saveGame->members, "p2 out of range: %d", p2);
-    SaveGamePlayerRecord tmp = saveGame->players[p1];
+    SaveGamePlayerRecord tmp_rec = saveGame->players[p1];
     saveGame->players[p1] = c->saveGame->players[p2];
-    c->saveGame->players[p2] = tmp;
+    c->saveGame->players[p2] = tmp_rec;
     if (p1 == activePlayer) {
         activePlayer = p2;
     } else if (p2 == activePlayer) {
         activePlayer = p1;
     }
-    MapTile tmptile;
-    tmptile = member(p1)->getTile();
-    member(p1)->setTile(member(p2)->getTile());
-    member(p2)->setTile(tmptile);
+	PartyMember *tmp_memb = members[p1];
+	members[p1] = members[p2];
+	members[p2] = tmp_memb;
+    members[p1]->player = &(saveGame->players[p1]);
+	members[p2]->player = &(saveGame->players[p2]);
     notifyOfChange(0);
 }
 
@@ -1473,5 +1503,9 @@ int Party::size() const
  */
 PartyMember *Party::member(int index) const
 {
-    return members[index];
+    if (index >= 0 && index < static_cast<int>(members.size())) { 
+        return members[index];
+    } else {
+        return nullptr;
+    }
 }

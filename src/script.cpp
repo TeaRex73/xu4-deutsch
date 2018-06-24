@@ -218,7 +218,7 @@ bool Script::load(
      */
     if (xmlPropExists(root, "debug")) {
         char dbg_filename[256] = "debug/";
-		std::strcat(dbg_filename, std::tmpnam(NULL));
+		std::strcat(dbg_filename, /* std::tmpnam(NULL) */ "debug.txt");
         // Our script is going to hog all the debug info
         if (xmlGetPropAsBool(root, "debug")) {
             debug = FileSystem::openFile(dbg_filename, "wt");
