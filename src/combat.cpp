@@ -893,7 +893,7 @@ void CombatController::finishTurn()
     }
     quick = (*c->aura == Aura::QUICKNESS)
         && player
-        && (xu4_random(2) == 0) ? 1 : 0;
+        && ((xu4_random(2) == 0) ? true : false);
     /* check to see if the player gets to go again (and is still alive) */
     if (!quick || player->isDisabled()) {
         do {
@@ -1165,7 +1165,7 @@ bool CombatController::keyPressed(int key)
         }
         break;
     case 'v' + U4_ALT:
-        screenMessage("XU4G %s\n", VERSION);
+        screenMessage("%s\n", VERSION);
         break;
     case 'i':
     {

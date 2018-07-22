@@ -921,7 +921,6 @@ static bool spellOpen(int)
 {
     getChest(-2);
     // HACK: -2 will not prompt for opener
-    // CHANGE: And pay more gold
     return true;
 }
 

@@ -1510,10 +1510,12 @@ bool GameController::keyPressed(int key)
                 ASSERT(avatar, "no avatar tile found in tileset");
                 c->party->setTransport(avatar->getId());
                 c->horseSpeed = 0;
-                screenMessage("Gehen\n");
+                screenMessage("Zu Fu~ Gehen\n");
             } else {
                 soundPlay(SOUND_ERROR);
-                screenMessage("Gehen\n%cHIER NICHT!%c\n", FG_GREY, FG_WHITE);
+                screenMessage(
+                    "Zu Fu~ Gehen\n%cHIER NICHT!%c\n", FG_GREY, FG_WHITE
+                );
             }
             break;
         case 'h':
@@ -1559,7 +1561,7 @@ bool GameController::keyPressed(int key)
                 "D: Dietrich\n"
                 "E: Ende\n"
                 "F: Fackel\n"
-                "G: Gehen\n"
+                "G: Zu Fu~ Gehen\n"
                 "H: H}hott/Brrr\n"
                 "I: Info\n"
                 "(mehr)"
@@ -1657,7 +1659,7 @@ bool GameController::keyPressed(int key)
             break;
         }
         case 'v' + U4_ALT:
-            screenMessage("XU4G %s\n", VERSION);
+            screenMessage("%s\n", VERSION);
             endTurn = false;
             break;
             // Turn sound effects on/off
@@ -2220,7 +2222,9 @@ bool fireAt(const Coords &coords, bool originAvatar)
  */
 void getChest(int player)
 {
-    screenMessage("Truhe |ffnen\n");
+    if (player != -2) {
+        screenMessage("Truhe |ffnen\n");
+    }
     if (c->party->isFlying()) {
         soundPlay(SOUND_ERROR);
         screenMessage("%cNUR DRIFT!%c\n", FG_GREY, FG_WHITE);
@@ -2246,11 +2250,11 @@ void getChest(int player)
         if (player == -1) {
             screenMessage("Wer |ffnet-");
             player = gameGetPlayer(false, true, false);
+            if (player == -1) {
+                return;
+            }
+            screenMessage("\n");
         }
-        if (player == -1) {
-            return;
-        }
-        screenMessage("\n");
         if (obj) {
             c->location->map->removeObject(obj);
         } else {
@@ -2260,8 +2264,7 @@ void getChest(int player)
         // see if the chest is trapped and handle it
         if (getChestTrapHandler(player)) {
             screenMessage(
-                "\nSIE ENTH[LT:\n%02d-GOLD!\n",
-                c->party->getChest(player == -2)
+                "SIE ENTH[LT:\n%02d-GOLD!\n", c->party->getChest()
             );
         } else {
             screenMessage("%cTRUHE ZERST\\RT!%c\n", FG_RED, FG_WHITE);
@@ -2330,11 +2333,12 @@ bool getChestTrapHandler(int player)
             }
         } else {
             soundPlay(SOUND_FLEE);
-            screenMessage("VERMIEDEN!\n");
+            screenMessage("VERMIEDEN!\n\n");
             return true;
         }
         return false;
     }
+    screenMessage("\n");
     return true;
 } // getChestTrapHandler
 

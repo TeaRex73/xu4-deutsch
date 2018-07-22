@@ -1192,9 +1192,9 @@ void Party::endTurn()
 /**
  * Adds a chest worth of gold to the party's inventory
  */
-int Party::getChest(int more)
+int Party::getChest()
 {
-    int gold = xu4_random(50) + xu4_random(8) + (more ? 20 : 10);
+    int gold = xu4_random(50) + xu4_random(8) + 10;
     adjustGold(gold);
     return gold;
 }

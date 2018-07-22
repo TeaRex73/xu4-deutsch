@@ -228,7 +228,7 @@ public:
     void damageShip(unsigned int pts);
     bool donate(int quantity);
     void endTurn();
-    int  getChest(int more);
+    int  getChest();
     int  getTorchDuration() const;
     void healShip(unsigned int pts);
     bool isFlying() const;

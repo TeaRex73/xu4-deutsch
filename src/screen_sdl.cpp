@@ -378,7 +378,7 @@ Image *screenScale(Image *src, int scale, int n, int filter)
 {
     Image *dest = nullptr;
     bool isTransparent;
-    unsigned int transparentIndex;
+    unsigned int transparentIndex = 0;
     bool alpha = src->isAlphaOn();
     if (n == 0) {
         n = 1;

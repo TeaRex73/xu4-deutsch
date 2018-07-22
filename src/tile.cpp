@@ -85,10 +85,10 @@ void Tile::loadProperties(const ConfigElement &conf)
     tiledInDungeon = conf.getBool("tiledInDungeon");
     if (conf.exists("directions")) {
         std::string dirs = conf.getString("directions");
-        if (dirs.length() != static_cast<unsigned int>(frames)) {
+        if (dirs.length() != static_cast<std::size_t>(frames)) {
             errorFatal(
-                "Error: %llu directions for tile but only %d frames",
-                static_cast<unsigned long long>(dirs.length()),
+                "Error: %zu directions for tile but only %d frames",
+                dirs.length(),
                 frames
             );
         }
