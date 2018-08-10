@@ -9,6 +9,8 @@
 
 #include "sound_p.h"
 
+#include <atomic>
+
 #include <SDL.h>
 #include <SDL_mixer.h>
 
@@ -37,7 +39,7 @@ bool SoundManager::load_sys(Sound sound, const std::string &pathname)
     return true;
 }
 
-static volatile bool finished = false;
+static std::atomic_bool finished(false);
 
 void channel_finished(int)
 {

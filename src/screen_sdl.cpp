@@ -15,6 +15,7 @@
 #include "vc6.h" // Fixes things if you're using VC6, does nothing otherwise
 
 #include <algorithm>
+#include <atomic>
 #include <cstdio>
 #include <cstdlib>
 #include <functional>
@@ -327,7 +328,7 @@ void screenWait(int numberOfAnimationFrames)
     SDL_Delay(numberOfAnimationFrames * frameDuration);
 }
 
-bool continueScreenRefresh = true;
+std::atomic_bool continueScreenRefresh;
 SDL_Thread *screenRefreshThread = nullptr;
 
 int screenRefreshThreadFunction(void *)

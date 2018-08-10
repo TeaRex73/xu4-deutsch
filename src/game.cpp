@@ -256,7 +256,6 @@ void GameController::init()
     /* initialize conversation and game state variables */
     c->line = TEXT_AREA_H - 1;
     c->col = 0;
-    c->stats = new StatsArea();
     c->moonPhase = 0;
     c->windDirection = dirRandomDir(MASK_DIR_ALL);
     c->windCounter = 0;
@@ -291,6 +290,7 @@ void GameController::init()
     /* initialize our party */
     c->party = new Party(c->saveGame);
     c->party->addObserver(this);
+    c->stats = new StatsArea();
     /* set the map to the world map by default */
     setMap(mapMgr->get(MAP_WORLD), 0, nullptr);
     c->location->map->clearObjects();

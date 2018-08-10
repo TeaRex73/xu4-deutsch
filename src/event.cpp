@@ -109,7 +109,13 @@ Controller *EventHandler::getController() const
 
 void EventHandler::setController(Controller *c)
 {
-    while (popController() != nullptr) {}
+    while (!controllers.empty()) {
+        Controller *oc = controllers.back();
+        popController();
+        if (oc != c) {
+            delete oc;
+        }
+    }
     pushController(c);
 }
 

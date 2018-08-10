@@ -580,7 +580,9 @@ void EventHandler::popKeyHandler()
     if (khc == nullptr) {
         return;
     }
+    Controller *oc = controllers.back();
     popController();
+    delete oc;
 }
 
 

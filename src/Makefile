@@ -2,9 +2,9 @@
 # $Id$
 #
 
-#CC=gcc-8
-#CXX=g++-8
-#CPP=cpp-8
+CC=gcc-8.2.0
+CXX=g++-8.2.0
+CPP=cpp-8.2.0
 
 prefix=/usr/local
 bindir=$(prefix)/bin
