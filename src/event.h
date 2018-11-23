@@ -277,6 +277,7 @@ public:
     typedef std::list<MouseArea *> MouseAreaList;
     
     EventHandler();
+    ~EventHandler();
     static EventHandler *getInstance();
     static void sleep(unsigned int usec);
     static void wait_msecs(unsigned int msecs);

@@ -101,7 +101,6 @@ void CampController::begin()
         eventHandler->popController();
         game->exitToParentMap();
         musicMgr->play();
-        delete this;
     }
 } // CampController::begin
 
@@ -177,7 +176,7 @@ void InnController::begin()
         }
         screenMessage("\nMORGEN!\n");
     } else {
-        if (xu4_random(8) != 0) {
+        if (!settings.innAlwaysCombat && (xu4_random(8) != 0)) {
             maybeMeetIsaac();
             /* Wake everyone up! */
             for (int i = 0; i < c->party->size(); i++) {
@@ -190,7 +189,6 @@ void InnController::begin()
     }
     screenPrompt();
     musicMgr->play();
-    delete this;
 } // InnController::begin
 
 bool InnController::heal()

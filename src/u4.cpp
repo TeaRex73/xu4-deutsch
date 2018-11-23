@@ -168,6 +168,7 @@ int main(int argc, char *argv[])
         }
         eventHandler->pushController(intro);
         eventHandler->run();
+        eventHandler->setController(intro);
         eventHandler->popController();
         intro->deleteIntro();
     }
@@ -207,6 +208,7 @@ int main(int argc, char *argv[])
     }
     eventHandler->pushController(game);
     eventHandler->run();
+    eventHandler->setController(game);
     eventHandler->popController();
     Tileset::unloadAll();
     MapMgr::destroy();

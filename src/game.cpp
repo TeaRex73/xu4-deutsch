@@ -3343,9 +3343,8 @@ void GameController::timerFired()
         /*
          * force pass if no commands within last 20 seconds
          */
-        Controller *controller = eventHandler->getController();
         if (c->willPassTurn
-            && (controller != nullptr)
+            && (eventHandler->getController() != nullptr)
             && ((eventHandler->getController() == game)
                 || (dynamic_cast<CombatController *>(
                         eventHandler->getController()
@@ -3353,7 +3352,9 @@ void GameController::timerFired()
             && (gameTimeSinceLastCommand() > 20)) {
             /* pass the turn, and redraw the text area so the prompt is
                shown */
-            controller->keyPressed(U4_SPACE);
+            if (eventHandler->getController()) {
+                eventHandler->getController()->keyPressed(U4_SPACE);
+            }
             screenRedrawTextArea(
                 TEXT_AREA_X, TEXT_AREA_Y, TEXT_AREA_W, TEXT_AREA_H
             );

@@ -114,6 +114,9 @@ bool SettingsData::operator==(const SettingsData &s) const
     if (battleSpeed != s.battleSpeed) {
         return false;
     }
+    if (campingAlwaysCombat != s.campingAlwaysCombat) {
+        return false;
+    }
     if (campTime != s.campTime) {
         return false;
     }

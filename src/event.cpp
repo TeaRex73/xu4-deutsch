@@ -25,6 +25,15 @@ bool EventHandler::ended = false;
 unsigned int TimedEventMgr::instances = 0;
 EventHandler *EventHandler::instance = nullptr;
 
+EventHandler::~EventHandler()
+{
+    while (!controllers.empty()) {
+        Controller *controller = controllers.back();
+        popController();
+        delete controller;
+    }
+}
+
 EventHandler *EventHandler::getInstance()
 {
     if (instance == nullptr) {
@@ -118,7 +127,6 @@ void EventHandler::setController(Controller *c)
     }
     pushController(c);
 }
-
 
 /* TimedEvent functions */
 TimedEvent::TimedEvent(TimedEvent::Callback cb, int i, void *d)
