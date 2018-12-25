@@ -577,7 +577,7 @@ int PartyMember::getDefense(bool needsMystic) const
 {
     int res = Armor::get(player->armor)->getDefense(needsMystic);
     if (*c->aura == Aura::PROTECTION) {
-        return res / 2 + 128;
+        return res + 80;
     } else {
         return res;
     }

@@ -3861,6 +3861,7 @@ void gameLordBritishCheckLevels()
         if (player->getRealLevel() < player->getMaxLevel()) {
             // add an extra space to separate messages
             if (!advanced) {
+				ReadChoiceController::get("");
                 screenMessage("\n");
                 advanced = true;
             }
