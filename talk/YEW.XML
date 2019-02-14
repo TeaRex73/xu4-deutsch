@@ -25,7 +25,7 @@
     <description>Einen ernsten Druiden.</description>
     <topic query="job">Ich mache Zauber.</topic>
     <topic query="health">Gut.</topic>
-    <topic query="ZAUB">Ich habe Quicatus erfunden!<question type="0">Kannst du ihn zaubern?<yes>Er erfordert nur &gt;ein&lt; Blutmoos!</yes><no>Anfänger.</no></question></topic>
+    <topic query="ZAUB">Ich habe den Quicatus erfunden!<question type="0">Kannst du ihn zaubern?<yes>Er erfordert nur &gt;ein&lt; Blutmoos!</yes><no>Anfänger.</no></question></topic>
     <topic query="ALRA">Alraune wächst bei Neumond in den Fennen der Toten und auf der Blutigen Ebene, wo der Boden immer feucht ist.</topic>
   </person>
   <person id="4" name="Talfourd" pronoun="Er" turnAwayProb="0">

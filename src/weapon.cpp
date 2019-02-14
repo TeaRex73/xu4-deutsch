@@ -173,7 +173,7 @@ void Weapon::cleanup()
 
 void Weapon::loadConf()
 {
-    if (confLoaded) {
+    if (__builtin_expect(confLoaded, true)) {
         return;
     }
     confLoaded = true;

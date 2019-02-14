@@ -550,7 +550,7 @@ void Image::putPixelIndex(int x, int y, unsigned int index, bool anyway)
     case 1:
         p = static_cast<Uint8 *>(surface->pixels)
         + y * surface->pitch
-        + x * __builtin_expect(bpp, 1);
+        + x;
         *p = index;
         break;
     case 2:

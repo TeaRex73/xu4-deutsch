@@ -120,7 +120,7 @@ void Armor::cleanup()
 
 void Armor::loadConf()
 {
-    if (!confLoaded) {
+    if (!__builtin_expect(confLoaded, true)) {
         confLoaded = true;
     } else {
         return;

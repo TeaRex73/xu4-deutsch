@@ -4,12 +4,12 @@
     <description>Einen kleinen Jungen.</description>
     <topic query="job">Ich weiß, wie man den Abgrund betritt!</topic>
     <topic query="health">Mir geht es prima.</topic>
-    <topic query="ABGR">Dem Abgrunde kann man sich nur per Schiffe nähern!</topic>
+    <topic query="ABGR">Dem Abgrunde kann man sich nur per Schiff nähern!</topic>
     <topic query="SCHI">Das Schiff muß einen magisch verstärkten Rumpf haben!<question type="0">Hast du solch ein Gefährt?<yes>Frag Blissful nach dem Abgrunde.</yes><no>Frag Blissful nach dem Abgrunde.</no></question></topic>
   </person>
   <person id="1" name="Frontis" pronoun="Er" turnAwayProb="0">
     <description>Einen kleinen Druiden.</description>
-    <topic query="job">Willkommen in der Kleinen Bucht, der versteckten Stadt der Weisheit.</topic>
+    <topic query="job">Willkommen in der Nische, der versteckten Stadt der Weisheit.</topic>
     <topic query="health">Mir geht es gut.<question type="0">Geht es dir gut?<yes>Sehr gut.</yes><no>Besuch unsere Heiler, ich bin sicher, sie können dir helfen!</no></question></topic>
     <topic query="WEIS">In diesem Orte findet man viel Weisheit und Frieden.</topic>
     <topic query="FRIE">Finde Frieden in unserem Schreine.</topic>

@@ -208,7 +208,7 @@ bool InnController::heal()
 void InnController::maybeMeetIsaac()
 {
     // Does Isaac the Ghost pay a visit to the Avatar?
-    if ((c->location->map->id == 11) && (xu4_random(4) == 0)) {
+    if ((c->location->map->id == MAP_SKARABRAE) && (xu4_random(4) == 0)) {
         City *city = dynamic_cast<City *>(c->location->map);
         if ((city->extraDialogues.size() == 1)
             && (city->extraDialogues[0]->getName() == "Isaac")) {
