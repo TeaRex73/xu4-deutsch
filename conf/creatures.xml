@@ -76,5 +76,5 @@
     <creature id="55" name="D\\RFLER" tile="corpse" basehp="32" exp="13" good="true"/> <!-- Wounded Villager -->
     <creature id="56" name="ABENTEURER" tile="avatar" basehp="160" exp="11" good="true"/> <!-- Avatar tile -->
     <creature id="57" name="WASSER" tile="shallows" basehp="255" exp="16" good="true" swims="true"/> <!-- Water in LBs castle -->
-    <creature id="58" name="ENCH" tile="ankh" basehp="255" exp="16" good="true"/> <!-- Ankh in Skara Brae -->
+    <creature id="58" name="ANCH" tile="ankh" basehp="255" exp="16" good="true"/> <!-- Ankh in Skara Brae -->
 </creatures>

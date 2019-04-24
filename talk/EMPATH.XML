@@ -22,7 +22,7 @@
     <topic query="HORN">Es gibt einen Paladin namens Malchor. Er kann dich zum silbernen Horne führen!</topic>
   </person>
   <person id="3" name="Leben" pronoun="Es" turnAwayProb="0">
-    <description>Ein Ench.</description>
+    <description>Ein Anch.</description>
     <topic query="job">Ich schwinge mit Gedanken mit.</topic>
     <topic query="health">Ich existiere.</topic>
     <topic query="SCHW">Was sind deine Gedanken?</topic>
@@ -95,7 +95,7 @@
     <description>Einen murmelnden Bettler.</description>
     <topic query="job">Ich suche Erlösung.</topic>
     <topic query="health">Nicht so gut.</topic>
-    <topic query="MURM">Das... Ench... sprach zu mir!</topic>
+    <topic query="MURM">Das... Anch... sprach zu mir!</topic>
     <topic query="ERLO">Ich bin nur ein armer, mittelloser Bettler, ich habe nichts!<question type="0">Wirst du mir etwas Geld geben?<yes>Ich wäre soooo dankbar...</yes><no>Aber ich bin in ärgster Not!</no></question></topic>
   </person>
   <person id="14" name="Malchor" pronoun="Er" turnAwayProb="0">

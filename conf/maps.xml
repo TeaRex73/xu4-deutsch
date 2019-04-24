@@ -231,7 +231,7 @@
     </map>
     <map id="16" type="city" fname="cove.ult" width="32" height="32" levels="1"
      borderbehavior="exit" showavatar="true" music="1" tileset="base" tilemap="base">
-        <city name="NISCHE" type="Dorf" tlk_fname="cove.ger">
+        <city name="KESSELBUCHT" type="Dorf" tlk_fname="cove.ger">
             <personrole role="healer" id="31"/>
         </city>
         <label name="candle" x="22" y="1"/>

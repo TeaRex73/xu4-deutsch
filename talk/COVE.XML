@@ -9,9 +9,9 @@
   </person>
   <person id="1" name="Frontis" pronoun="Er" turnAwayProb="0">
     <description>Einen kleinen Druiden.</description>
-    <topic query="job">Willkommen in der Nische, der versteckten Stadt der Weisheit.</topic>
+    <topic query="job">Willkommen in der Kesselbucht, der versteckten Stadt der Weisheit.</topic>
     <topic query="health">Mir geht es gut.<question type="0">Geht es dir gut?<yes>Sehr gut.</yes><no>Besuch unsere Heiler, ich bin sicher, sie können dir helfen!</no></question></topic>
-    <topic query="WEIS">In diesem Orte findet man viel Weisheit und Frieden.</topic>
+    <topic query="WEIS">An diesem Orte findet man viel Weisheit und Frieden.</topic>
     <topic query="FRIE">Finde Frieden in unserem Schreine.</topic>
   </person>
   <person id="2" name="Sloven" pronoun="Er" turnAwayProb="0">
@@ -26,10 +26,10 @@
     <topic query="job">Ich studiere die magischen Künste.</topic>
     <topic query="health">Wirklich gut.</topic>
     <topic query="KUEN">Es liegt Wahrheit in der Magie!<question type="0">Widersprichst du mir?<yes>Nun, dann verschwinde!</yes><no>Gut.</no></question></topic>
-    <topic query="GATE">Da du das Ench trägst, werde ich es dir sagen. Ein Gatetus erfordert Asche, Perle, und Alraunenwurzel!</topic>
+    <topic query="GATE">Da du das Anch trägst, werde ich es dir sagen. Ein Gatetus erfordert Asche, Perle, und Alraunenwurzel!</topic>
   </person>
-  <person id="4" name="Das Ench" pronoun="Es" turnAwayProb="0">
-    <description>Ein glänzendes Ench!</description>
+  <person id="4" name="Das Anch" pronoun="Es" turnAwayProb="0">
+    <description>Ein glänzendes Anch!</description>
     <topic query="job">Ich schwinge mit Gedanken mit.<question type="0">Suchst du Hilfe?<yes>Was sind deine Gedanken?</yes><no>Oh.</no></question></topic>
     <topic query="health">Hell.</topic>
     <topic query="KODE">Die Kammer des Kodexes zu betreten.</topic>
@@ -67,7 +67,7 @@
     <description>Eine majestätische Seestute!</description>
     <topic query="job">Ich weiß viel vom Kodexe!</topic>
     <topic query="health">Mir geht es gut.</topic>
-    <topic query="KODE">Das Ench im Schreine weiß, wie man die Kammer des Kodexes betritt!</topic>
+    <topic query="KODE">Das Anch im Schreine weiß, wie man die Kammer des Kodexes betritt!</topic>
     <topic query="ABGR">Meditiere an den Schreinen von Ehrlichkeit, Mitgefühl und Tapferkeit je 3 Zyklen, um zu wissen, wie man ihn betritt!</topic>
   </person>
   <person id="10" name="Rabindranath Tagore" pronoun="Er" turnAwayProb="0">
