@@ -33,7 +33,7 @@
     <topic query="job">Ich schwinge mit Gedanken mit.<question type="0">Suchst du Hilfe?<yes>Was sind deine Gedanken?</yes><no>Oh.</no></question></topic>
     <topic query="health">Hell.</topic>
     <topic query="KODE">Die Kammer des Kodexes zu betreten.</topic>
-    <topic query="KAMM">Mann muß 8 Teile Avatar sein, den 3-teiligen Schlüssel haben, das Wort des Einlasses, und das reine Axiom kennen!</topic>
+    <topic query="KAMM">Mann muß 8 Teile Avatar sein, den 3-teiligen Schlüssel haben, das Wort des Überganges, und das reine Axiom kennen!</topic>
   </person>
   <person id="5" name="Paul" pronoun="Er" turnAwayProb="0">
     <description>Einen Barden, der dir merkwürdig bekannt vorkommt.</description>
@@ -82,7 +82,7 @@
     <topic query="job">Ich sitze und beobachte den Fluß.</topic>
     <topic query="health">Mir geht es gut.</topic>
     <topic query="FLUS">Er fließt endlos.<question type="0">Stimmt's?<yes>Gut.</yes><no>Wirklich.</no></question></topic>
-    <topic query="WORT">Die Fürsten der Burgen, welche die drei Prinzipien der Tugend repräsentieren, kennen jeder nur eine Silbe des Wortes des Einlasses!</topic>
+    <topic query="WORT">Die Fürsten der Burgen, welche die drei Prinzipien der Tugend repräsentieren, kennen jeder nur eine Silbe des Wortes des Überganges!</topic>
   </person>
   <person id="12" name="Spellbind" pronoun="Sie" turnAwayProb="0">
     <description>Eine schlanke Magierin.</description>

@@ -114,7 +114,7 @@ void codexStart()
     screenMessage("\nDu benutzt deinen Dreiteiligen Schl}ssel.\n");
     EventHandler::sleep(3000);
     screenMessage(
-        "\nEine Stimme erschallt:\n\"Wie lautet das Wort des Einlasses?\"\n\n"
+        "\nEine Stimme erschallt:\n\"Wie lautet das Wort des ]berganges?\"\n\n"
     );
     /**
      * Get the Word of Passage
@@ -153,15 +153,15 @@ static void codexEject(CodexEjectCode code)
             "erwiesen.\n\n"
         );
         EventHandler::sleep(2000);
-        screenMessage("\nEinla~ wird nicht gew{hrt.\n\n");
+        screenMessage("\n]bergang wird nicht gew{hrt.\n\n");
         break;
     case CODEX_EJECT_NO_FULL_AVATAR:
         screenMessage("\nDu bist nicht bereit.\n");
         EventHandler::sleep(2000);
-        screenMessage("\nEinla~ wird nicht gew{hrt.\n\n");
+        screenMessage("\n]bergang wird nicht gew{hrt.\n\n");
         break;
     case CODEX_EJECT_BAD_WOP:
-        screenMessage("\nEinla~ wird nicht gew{hrt.\n\n");
+        screenMessage("\n]bergang wird nicht gew{hrt.\n\n");
         break;
     case CODEX_EJECT_HONESTY:
     case CODEX_EJECT_COMPASSION:
@@ -245,7 +245,7 @@ static void codexHandleWOP(const std::string &word)
                 return;
             }
         }
-        screenMessage("\nEinla~ wird gew{hrt.\n");
+        screenMessage("\n]bergang wird gew{hrt.\n");
         EventHandler::sleep(4000);
         screenEraseMapArea();
         screenRedrawMapArea();
@@ -259,7 +259,7 @@ static void codexHandleWOP(const std::string &word)
     /* entered incorrectly - give 3 tries before ejecting */
     else if (tries++ < 3) {
         codexImpureThoughts();
-        screenMessage("\"Wie lautet das Wort des Einlasses?\"\n\n");
+        screenMessage("\"Wie lautet das Wort des ]berganges?\"\n\n");
         codexHandleWOP(gameGetInput());
     }
     /* 3 tries are up... eject! */
