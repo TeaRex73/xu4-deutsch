@@ -67,7 +67,7 @@
 	<label name="pirates"     x="218" y="224"/>
     </map>
 
-    <!-- Burgen -->
+    <!-- Castles -->
     <map id="1" type="city" fname="lcb_1.ult" width="32" height="32" levels="1" 
      borderbehavior="exit" showavatar="true" music="4" tileset="base" tilemap="base">
         <city name="BRITANNIA" type="Burg" tlk_fname="lcb.ger">
@@ -112,7 +112,7 @@
         <label name="mysticswords" x="8" y="15"/>
     </map>
 
-    <!-- cities -->
+    <!-- Cities -->
     <map id="5" type="city" fname="moonglow.ult" width="32" height="32" levels="1"
      borderbehavior="exit" showavatar="true" music="1" tileset="base" tilemap="base">
         <city name="GLIMMEMOND" type="Stadt" tlk_fname="moonglow.ger">
@@ -237,7 +237,7 @@
         <label name="candle" x="22" y="1"/>
     </map>
 
-    <!-- dungeons -->
+    <!-- Dungeons -->
     <map id="17" type="dungeon" fname="deceit.dng" width="8" height="8" levels="8"
      borderbehavior="wrap" firstperson="true" music="3" tileset="dungeon" tilemap="dungeon">
         <dungeon name="BETRUG" rooms="16"/>         
@@ -325,7 +325,7 @@
         <dungeon name="DER GROSSE STYGISCHE ABGRUND" rooms="64"/>        
     </map>
 
-    <!-- shrines -->
+    <!-- Shrines -->
     <map id="25" type="shrine" fname="shrine.con" width="11" height="11" levels="1"
      borderbehavior="fixed" music="8" tileset="base" tilemap="base">
         <shrine virtue="HONESTY" mantra="ahm"/> <!-- honesty -->
@@ -359,7 +359,7 @@
         <shrine virtue="HUMILITY" mantra="lum"/> <!-- humility -->
     </map>
 
-    <!-- combat maps -->
+    <!-- Combat Maps -->
     <map id="33" type="combat" fname="brick.con" width="11" height="11" levels="1"
      borderbehavior="fixed" nolineofsight="true" music="7" tileset="base" tilemap="base"/>
     <map id="34" type="combat" fname="bridge.con" width="11" height="11" levels="1"

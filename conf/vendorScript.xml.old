@@ -591,7 +591,7 @@
         <vendor id="GLIMMEMOND" name=" DEN WEISEN DELIKATESSEN" owner="SHAMAN" price="25" quant="25"/>
         <vendor id="BRITAIN" name=" ABENTEUER-KOST" owner="WINDRICK" price="40" quant="25"/>
         <vendor id="EIBE" name=" DEN TROCKENWAREN" owner="DONNAR" price="35" quant="25"/>
-        <vendor id="SKARA BRAE" name=" GANZ SCH\N WAS ZU KNABBBERN" owner="MINTOL" price="20" quant="25"/>
+        <vendor id="SKARA BRAE" name=" SINNIER-NAHRUNG" owner="MINTOL" price="20" quant="25"/>
         <vendor id="PFOTEN" name="M DISCOUNTER" owner="MAX" price="30" quant="25"/>
     </script>
 
