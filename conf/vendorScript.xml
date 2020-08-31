@@ -980,7 +980,14 @@
             </if>
             {desc} KOSTET DICH {price}gs.
             <if test="{party:gold}&lt;{price}">
-              ICH SEHE AN DEINER B\RSE, DASS DU NICHT GENUG GOLD HAST. ICH KANN DIR NICHT HELFEN.<wait_for_keypress/><redirect target="more_help"/>
+	      <if test="{type}=cure">
+	        ICH SEHE AN DEINER B\RSE, DASS DU NICHT GENUG GOLD HAST.<wait_for_keypress/>ICH WERDE DICH KOSTENLOS KURIEREN, ABER GIB ANDEREN, WANN IMMER DU KANNST!<wait_for_keypress/>
+	        <cast_spell/>
+	        <heal type="cure" player="{$player}"/>
+
+	        <redirect target="more_help"/>
+	      </if>
+	      ICH SEHE AN DEINER B\RSE, DASS DU NICHT GENUG GOLD HAST. ICH KANN DIR NICHT HELFEN.<wait_for_keypress/><redirect target="more_help"/>
             </if>
             WILLST DU DAS BEZAHLEN?<input type="choice" options="jn" target="heal"/>            
         </will_pay>
@@ -1004,63 +1011,63 @@
             DU BIST NICHT TOT, NARR!
         </dont_need>
         <vendor id="BRITANNIA" name=" DES K\NIGS HEILER" healer="PENDRAGON">
-            <service choice="a" name="GIFT HEILEN" desc="EINE ENTGIFTUNG" price="5" type="cure"/>
-            <service choice="b" name="WUNDEN HEILEN" desc="EINE WUNDHEILUNG" price="50" type="fullheal"/>
-            <service choice="c" name="TOTE WECKEN" desc="EINE ERWECKUNG" price="500" type="resurrect"/>
+            <service choice="a" name="GIFT KURIEREN" desc="EINE ENTGIFTUNG" price="100" type="cure"/>
+            <service choice="b" name="WUNDEN HEILEN" desc="EINE WUNDHEILUNG" price="200" type="fullheal"/>
+            <service choice="c" name="TOTE ERWECKEN" desc="EINE ERWECKUNG" price="300" type="resurrect"/>
         </vendor>
 
         <vendor id="GLIMMEMOND" name="M HEILER" healer="HARMONY">
-            <service choice="a" name="GIFT HEILEN" desc="EINE ENTGIFTUNG" price="5" type="cure"/>
-            <service choice="b" name="WUNDEN HEILEN" desc="EINE WUNDHEILUNG" price="50" type="fullheal"/>
-            <service choice="c" name="TOTE WECKEN" desc="EINE ERWECKUNG" price="500" type="resurrect"/>
+            <service choice="a" name="GIFT KURIEREN" desc="EINE ENTGIFTUNG" price="100" type="cure"/>
+            <service choice="b" name="WUNDEN HEILEN" desc="EINE WUNDHEILUNG" price="200" type="fullheal"/>
+            <service choice="c" name="TOTE ERWECKEN" desc="EINE ERWECKUNG" price="300" type="resurrect"/>
         </vendor>
 
         <vendor id="BRITAIN" name="M WUNDHEILER" healer="CELEST">
-            <service choice="a" name="GIFT HEILEN" desc="EINE ENTGIFTUNG" price="5" type="cure"/>
-            <service choice="b" name="WUNDEN HEILEN" desc="EINE WUNDHEILUNG" price="50" type="fullheal"/>
-            <service choice="c" name="TOTE WECKEN" desc="EINE ERWECKUNG" price="500" type="resurrect"/>
+            <service choice="a" name="GIFT KURIEREN" desc="EINE ENTGIFTUNG" price="100" type="cure"/>
+            <service choice="b" name="WUNDEN HEILEN" desc="EINE WUNDHEILUNG" price="200" type="fullheal"/>
+            <service choice="c" name="TOTE ERWECKEN" desc="EINE ERWECKUNG" price="300" type="resurrect"/>
         </vendor>
 
         <vendor id="JHELOM" name=" HEIL UND GESUND" healer="TRIPLET">
-            <service choice="a" name="GIFT HEILEN" desc="EINE ENTGIFTUNG" price="5" type="cure"/>
-            <service choice="b" name="WUNDEN HEILEN" desc="EINE WUNDHEILUNG" price="50" type="fullheal"/>
-            <service choice="c" name="TOTE WECKEN" desc="EINE ERWECKUNG" price="500" type="resurrect"/>
+            <service choice="a" name="GIFT KURIEREN" desc="EINE ENTGIFTUNG" price="100" type="cure"/>
+            <service choice="b" name="WUNDEN HEILEN" desc="EINE WUNDHEILUNG" price="200" type="fullheal"/>
+            <service choice="c" name="TOTE ERWECKEN" desc="EINE ERWECKUNG" price="300" type="resurrect"/>
         </vendor>
 
         <vendor id="EIBE" name=" RECHTE HEILUNG" healer="JUSTIN">
-            <service choice="a" name="GIFT HEILEN" desc="EINE ENTGIFTUNG" price="5" type="cure"/>
-            <service choice="b" name="WUNDEN HEILEN" desc="EINE WUNDHEILUNG" price="50" type="fullheal"/>
-            <service choice="c" name="TOTE WECKEN" desc="EINE ERWECKUNG" price="500" type="resurrect"/>
+            <service choice="a" name="GIFT KURIEREN" desc="EINE ENTGIFTUNG" price="100" type="cure"/>
+            <service choice="b" name="WUNDEN HEILEN" desc="EINE WUNDHEILUNG" price="200" type="fullheal"/>
+            <service choice="c" name="TOTE ERWECKEN" desc="EINE ERWECKUNG" price="300" type="resurrect"/>
         </vendor>        
 
         <vendor id="SKARA BRAE" name="M MYSTISCHEN HEILE" healer="SPIRAN">
-            <service choice="a" name="GIFT HEILEN" desc="EINE ENTGIFTUNG" price="5" type="cure"/>
-            <service choice="b" name="WUNDEN HEILEN" desc="EINE WUNDHEILUNG" price="50" type="fullheal"/>
-            <service choice="c" name="TOTE WECKEN" desc="EINE ERWECKUNG" price="500" type="resurrect"/>
+            <service choice="a" name="GIFT KURIEREN" desc="EINE ENTGIFTUNG" price="100" type="cure"/>
+            <service choice="b" name="WUNDEN HEILEN" desc="EINE WUNDHEILUNG" price="200" type="fullheal"/>
+            <service choice="c" name="TOTE ERWECKEN" desc="EINE ERWECKUNG" price="300" type="resurrect"/>
         </vendor>
 
         <vendor id="DAS LYZEUM" name=" DER WAHRHEIT HEILER" healer="STARFIRE">
-            <service choice="a" name="GIFT HEILEN" desc="EINE ENTGIFTUNG" price="5" type="cure"/>
-            <service choice="b" name="WUNDEN HEILEN" desc="EINE WUNDHEILUNG" price="50" type="fullheal"/>
-            <service choice="c" name="TOTE WECKEN" desc="EINE ERWECKUNG" price="500" type="resurrect"/>
+            <service choice="a" name="GIFT KURIEREN" desc="EINE ENTGIFTUNG" price="100" type="cure"/>
+            <service choice="b" name="WUNDEN HEILEN" desc="EINE WUNDHEILUNG" price="200" type="fullheal"/>
+            <service choice="c" name="TOTE ERWECKEN" desc="EINE ERWECKUNG" price="300" type="resurrect"/>
         </vendor>
 
         <vendor id="EMPATH-ABTEI" name=" DER LIEBE HEILER" healer="SALLE'">
-            <service choice="a" name="GIFT HEILEN" desc="EINE ENTGIFTUNG" price="5" type="cure"/>
-            <service choice="b" name="WUNDEN HEILEN" desc="EINE WUNDHEILUNG" price="50" type="fullheal"/>
-            <service choice="c" name="TOTE WECKEN" desc="EINE ERWECKUNG" price="500" type="resurrect"/>
+            <service choice="a" name="GIFT KURIEREN" desc="EINE ENTGIFTUNG" price="100" type="cure"/>
+            <service choice="b" name="WUNDEN HEILEN" desc="EINE WUNDHEILUNG" price="200" type="fullheal"/>
+            <service choice="c" name="TOTE ERWECKEN" desc="EINE ERWECKUNG" price="300" type="resurrect"/>
         </vendor>
 
         <vendor id="SCHLANGENFESTE" name=" DES MUTES HEILER" healer="WINDWALKER">
-            <service choice="a" name="GIFT HEILEN" desc="EINE ENTGIFTUNG" price="5" type="cure"/>
-            <service choice="b" name="WUNDEN HEILEN" desc="EINE WUNDHEILUNG" price="50" type="fullheal"/>
-            <service choice="c" name="TOTE WECKEN" desc="EINE ERWECKUNG" price="500" type="resurrect"/>
+            <service choice="a" name="GIFT KURIEREN" desc="EINE ENTGIFTUNG" price="100" type="cure"/>
+            <service choice="b" name="WUNDEN HEILEN" desc="EINE WUNDHEILUNG" price="200" type="fullheal"/>
+            <service choice="c" name="TOTE ERWECKEN" desc="EINE ERWECKUNG" price="300" type="resurrect"/>
         </vendor>
 
         <vendor id="KESSELBUCHT" name="M HEILERLADEN" healer="QUAT">
-            <service choice="a" name="GIFT HEILEN" desc="EINE ENTGIFTUNG" price="5" type="cure"/>
-            <service choice="b" name="WUNDEN HEILEN" desc="EINE WUNDHEILUNG" price="50" type="fullheal"/>
-            <service choice="c" name="TOTE WECKEN" desc="EINE ERWECKUNG" price="500" type="resurrect"/>
+            <service choice="a" name="GIFT KURIEREN" desc="EINE ENTGIFTUNG" price="100" type="cure"/>
+            <service choice="b" name="WUNDEN HEILEN" desc="EINE WUNDHEILUNG" price="200" type="fullheal"/>
+            <service choice="c" name="TOTE ERWECKEN" desc="EINE ERWECKUNG" price="300" type="resurrect"/>
         </vendor>
 
     </script>

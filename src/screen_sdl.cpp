@@ -3,13 +3,19 @@
  */
 
 #ifdef RASB_PI
-#define MY_WIDTH 384
-#define MY_HEIGHT 240
-#define FIXUP
+#  define MY_WIDTH 384
+#  ifdef PAL_TV
+#    define MY_HEIGHT 288
+#  else
+#    define MY_HEIGHT 240
+#  endif
+#  define MY_TOPDIST ((MY_HEIGHT - 200) / 2)
+#  define MY_LEFTDIST ((MY_WIDTH - 320) / 2)
+#  define FIXUP
 #else
-#define MY_WIDTH 320
-#define MY_HEIGHT 200
-#undef FIXUP
+#  define MY_WIDTH 320
+#  define MY_HEIGHT 200
+#  undef FIXUP
 #endif
 
 #include "vc6.h" // Fixes things if you're using VC6, does nothing otherwise
@@ -112,8 +118,8 @@ void screenInit_sys()
     screen->h = 200 * settings.scale;
     char *pix;
     pix = static_cast<char *>(screen->pixels);
-    pix += (screen->pitch * 20 * settings.scale
-            + screen->format->BytesPerPixel * 32 * settings.scale);
+    pix += (screen->pitch * MY_TOPDIST * settings.scale
+            + screen->format->BytesPerPixel * MY_LEFTDIST * settings.scale);
     screen->pixels = pix;
 #endif
     if (verbose) {

@@ -127,7 +127,7 @@ static const Spell spells[] = {
     {
         "Energitus",
         ASH | SILK | PEARL,
-        static_cast<LocationContext>(CTX_COMBAT | CTX_DUNGEON),
+        static_cast<LocationContext>(CTX_COMBAT | CTX_DUNGEON | CTX_CITY),
         TRANSPORT_ANY,
         &spellEField,
         Spell::PARAM_TYPEDIR,
@@ -235,7 +235,8 @@ static const Spell spells[] = {
     {
         "Quicatus",
         ASH | GINSENG | MOSS,
-        CTX_ANY, TRANSPORT_ANY,
+        CTX_ANY,
+		TRANSPORT_ANY,
         &spellQuick,
         Spell::PARAM_NONE,
         20

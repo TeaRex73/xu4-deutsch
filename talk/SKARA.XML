@@ -75,7 +75,7 @@
     <topic query="job">Ich schreibe Geschichten.</topic>
     <topic query="health">O.K.</topic>
     <topic query="GESC">Geschichten sind gut für den Geist!</topic>
-    <topic query="GEIS">Denk dran, niemand ist in dieser Welt überflüssig, der anderen ihre Lasten erleichtert!<question type="0">Bist du von guter Natur?<yes>Stell sicher, daß dein Netto-Gutes dein Netto-Böses klar übersteigt!</yes><no>Ich verstehe.</no></question></topic>
+    <topic query="GEIS">Denk dran, niemand ist in dieser Welt überflüssig, der anderen ihre Lasten erleichtert!<question type="0">Bist du von guter Natur?<yes>Sieh zu, daß dein Netto-Gutes dein Netto-Böses klar übersteigt!</yes><no>Ich verstehe.</no></question></topic>
   </person>
   <person id="11" name="White" pronoun="Er" turnAwayProb="0">
     <description>Einen gallanten Kämpfer.</description>
