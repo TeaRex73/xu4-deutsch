@@ -277,14 +277,14 @@
             <weapon choice="h" name="BOGEN" price="250"/>
         </vendor>
 
-        <vendor id="BUKANIER-NEST" name="HOOKS WEHR" owner="HOOK">
+        <vendor id="BUKANIER-NEST" name="HOOKS WEHRE" owner="HOOK">
             <weapon choice="i" name="ARMBRUST" price="600"/>
             <weapon choice="j" name="BRAND\L" price="5"/>
             <weapon choice="n" name="MAG. BOGEN" price="2000"/>
             <weapon choice="o" name="MAG. STAB" price="5000"/>
         </vendor>
 
-        <vendor id="VESPER" name="DES D\RFLERS WEHR" owner="WENDY">
+        <vendor id="VESPER" name="DES D\RFLERS WEHRE" owner="WENDY">
             <weapon choice="c" name="DOLCH" price="2"/>
             <weapon choice="d" name="SCHLEUDER" price="25"/>
             <weapon choice="h" name="BOGEN" price="250"/>
@@ -865,7 +865,7 @@
             KOMM SCHON, LASS MICH DAS GOLD FALLEN H\REN!<redirect target="you_pay"/>
         </gold_drop>
 
-        <vendor id="GLIMMEMOND" name="M MAGISCHEN KRAUT" owner="MARGOT">
+        <vendor id="GLIMMEMOND" name="M MAGISCHEN KRAUTE" owner="MARGOT">
             <reagent choice="a" name="SCHWELASCHE" type="ash" price="2"/>
             <reagent choice="b" name="GINSENG" type="ginseng" price="5"/>
             <reagent choice="c" name="KNOBLAUCH" type="garlic" price="6"/>
@@ -1157,7 +1157,7 @@
         </vendor>        
         
         <!-- MINOC -->
-        <vendor id="MINOC" name="IN DES WEGEFAHRERS GASTHOF" innkeeper="ESTRO" rooms="3">
+        <vendor id="MINOC" name="IN DES WANDERSMANNES GASTHOFE" innkeeper="ESTRO" rooms="3">
             <room choice="1" price="30" x="2" y="6"/>
             <room choice="2" price="60" x="2" y="2"/>
             <room choice="3" price="90" x="8" y="2"/>
