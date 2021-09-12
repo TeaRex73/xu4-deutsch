@@ -3,13 +3,13 @@
  */
 
 #ifdef RASB_PI
-#  define MY_WIDTH 384
+#  define MY_WIDTH 436
 #  ifdef PAL_TV
 #    define MY_HEIGHT 288
 #  else
 #    define MY_HEIGHT 240
 #  endif
-#  define MY_TOPDIST ((MY_HEIGHT - 200) / 2)
+#  define MY_TOPDIST ((MY_HEIGHT - 192) / 2)
 #  define MY_LEFTDIST ((MY_WIDTH - 320) / 2)
 #  define FIXUP
 #else

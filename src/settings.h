@@ -25,7 +25,11 @@
 #define MAX_SHAKE_INTERVAL 200
 #define MAX_VOLUME 10
 
-#define DEFAULT_SCALE 2
+#ifdef RASB_PI
+# define DEFAULT_SCALE 1
+#else
+# define DEFAULT_SCALE 2
+#endif
 #define DEFAULT_FULLSCREEN 0
 #define DEFAULT_FILTER "Point"
 #define DEFAULT_VIDEO_TYPE "EGA"
@@ -182,7 +186,7 @@ public:
     int keyinterval;
     MouseOptions mouseOptions;
     int musicVol;
-    static const int scale = 1;
+    static const int scale = DEFAULT_SCALE;
     bool screenShakes;
     int gamma;
     int shakeInterval;
