@@ -1104,7 +1104,7 @@ Creature *CreatureMgr::randomForTile(const Tile *tile)
     }
     if (c->saveGame->moves > 30000) {
         era = 0x0f;
-    } else if (c->saveGame->moves > 10000) {
+    } else if (c->saveGame->moves > 5000) {
         era = 0x07;
     } else {
         era = 0x03;

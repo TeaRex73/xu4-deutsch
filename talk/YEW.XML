@@ -4,7 +4,7 @@
     <description>Eine stille Druidin.</description>
     <topic query="job">Ich versuche, Gerechtigkeit zu verstehen.</topic>
     <topic query="health">Mir geht es gut.</topic>
-    <topic query="GERE">Wahre Gerechtigkeit befriedigt alle, falsche niemanden.</topic>
+    <topic query="GERE">Wahre Gerechtigkeit tut allen genüge, falsche niemandem.</topic>
     <topic query="VERS">Laß Gerechtigkeit deine Berufung sein, nicht deine Ausrede!<question type="0">Bist du gerecht?<yes>Schon viele Gräber wurden zu unrecht gefüllt im Namen der Gerechtigkeit.</yes><no>Leider.</no></question></topic>
   </person>
   <person id="1" name="eine Wache" pronoun="Sie" turnAwayProb="0">

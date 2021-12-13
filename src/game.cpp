@@ -1223,10 +1223,13 @@ bool GameController::keyPressed(int key)
         {
             int old_cycles = settings.gameCyclesPerSecond;
             if ((key == '+')
-                && (++settings.gameCyclesPerSecond > MAX_CYCLES_PER_SECOND)) {
+                && (++settings.gameCyclesPerSecond >= MAX_CYCLES_PER_SECOND)) {
                 settings.gameCyclesPerSecond = MAX_CYCLES_PER_SECOND;
-            } else if ((key == '-') && (--settings.gameCyclesPerSecond == 0)) {
-                settings.gameCyclesPerSecond = 1;
+            } else if (
+				(key == '-')
+				&& (--settings.gameCyclesPerSecond <= MIN_CYCLES_PER_SECOND)
+			) {
+                settings.gameCyclesPerSecond = MIN_CYCLES_PER_SECOND;
             } else if (key == U4_KEYPAD_ENTER) {
                 settings.gameCyclesPerSecond = DEFAULT_CYCLES_PER_SECOND;
             }

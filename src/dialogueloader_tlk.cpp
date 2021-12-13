@@ -146,7 +146,9 @@ Dialogue *U4TlkDialogueLoader::load(void *source)
         break;
     }
     dlg->addKeyword("beru", job);
+    dlg->addKeyword("was", job);
     dlg->addKeyword("gesu", health);
+    dlg->addKeyword("wie", health);
     dlg->addKeyword(strings[10], kw1);
     dlg->addKeyword(strings[11], kw2);
     // NOTE: We let the talker's custom keywords override the standard
@@ -157,29 +159,23 @@ Dialogue *U4TlkDialogueLoader::load(void *source)
     // more useful than "Fine." for health).
     std::string look = std::string("Du siehst ") + strings[2];
     dlg->addKeyword("schau", new Response(uppercase(look)));
-    dlg->addKeyword(
-        "name",
+    Response *name = new Response(uppercase(
+                                      dlg->getPronoun()
+                                      + " sagt:\nIch bin "
+                                      + dlg->getName()
+                                      + "."
+                                 ));
+    dlg->addKeyword("name", name);
+    dlg->addKeyword("wer", name);
+    Response *gib =
         new Response(uppercase(
-                         dlg->getPronoun()
-                         + " sagt:\nIch bin "
-                         + dlg->getName()
-                         + "."
-                     ))
-    );
-    dlg->addKeyword(
-        "gebe",
-        new Response(uppercase(
-                         dlg->getPronoun()
-                         + " sagt:\nIch brauche dein Gold nicht. Behalt es!"
-                     ))
-    );
-    dlg->addKeyword(
-        "gib",
-        new Response(uppercase(
-                         dlg->getPronoun()
-                         + " sagt:\nIch brauche dein Gold nicht. Behalt es!"
-                     ))
-    );
+                               dlg->getPronoun()
+                               + " sagt:\nIch brauche dein Gold nicht. "
+                                 "Behalt es!"
+                     ));
+
+    dlg->addKeyword("gebe", gib);
+    dlg->addKeyword("gib", gib);
     dlg->addKeyword(
         "begl",
         new Response(uppercase(
@@ -204,7 +200,7 @@ Dialogue *U4TlkDialogueLoader::load(void *source)
         new Response(uppercase(
                          dlg->getPronoun()
                          + " sagt:\nHallo Banjo Bob! Deine geheime Zahl ist "
-                         "4F4A4E0A"
+                           "4F4A4E0A"
                      ))
     );
     return dlg;

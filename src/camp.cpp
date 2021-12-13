@@ -143,9 +143,11 @@ void InnController::begin()
     gameUpdateScreen();
     /* in the original, the vendor music plays straight
        through sleeping */
+#if 0 // Not in German version
     if (settings.enhancements) {
         musicMgr->pause(); /* Stop Music */
     }
+#endif
     // EventHandler::wait_msecs(INN_FADE_OUT_TIME);
     // make sure everyone's asleep
     for (int i = 0; i < c->party->size(); i++) {

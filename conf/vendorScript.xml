@@ -277,14 +277,14 @@
             <weapon choice="h" name="BOGEN" price="250"/>
         </vendor>
 
-        <vendor id="BUKANIER-NEST" name="HOOKS WEHRE" owner="HOOK">
+        <vendor id="BUKANIER-NEST" name="HOOKS WEHR" owner="HOOK">
             <weapon choice="i" name="ARMBRUST" price="600"/>
             <weapon choice="j" name="BRAND\L" price="5"/>
             <weapon choice="n" name="MAG. BOGEN" price="2000"/>
             <weapon choice="o" name="MAG. STAB" price="5000"/>
         </vendor>
 
-        <vendor id="VESPER" name="DES D\RFLERS WEHRE" owner="WENDY">
+        <vendor id="VESPER" name="DES D\RFLERS WEHR" owner="WENDY">
             <weapon choice="c" name="DOLCH" price="2"/>
             <weapon choice="d" name="SCHLEUDER" price="25"/>
             <weapon choice="h" name="BOGEN" price="250"/>
