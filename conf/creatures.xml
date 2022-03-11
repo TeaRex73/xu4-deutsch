@@ -14,7 +14,7 @@
     <creature id="3" name="BARDE" tile="bard" basehp="48" exp="7" good="true" wontattack="true"/>
     <creature id="4" name="K[MPFER" tile="fighter" basehp="96" exp="7" good="true" wontattack="true"/>
     <creature id="5" name="DRUIDE" tile="druid" basehp="64" exp="10" good="true" wontattack="true"/>
-    <creature id="6" name="SCHMIED" tile="tinker" basehp="96" exp="9" good="true" wontattack="true"/>
+    <creature id="6" name="ZINKER" tile="tinker" basehp="96" exp="9" good="true" wontattack="true"/>
     <creature id="7" name="PALADIN" tile="paladin" basehp="128" exp="4" good="true" wontattack="true"/>
     <creature id="8" name="WALDL[UFER" tile="ranger" basehp="144" exp="3" good="true" wontattack="true"/>
     <creature id="9" name="HIRTE" tile="shepherd" basehp="48" exp="9" good="true" wontattack="true"/>

@@ -145,9 +145,9 @@ Dialogue *U4TlkDialogueLoader::load(void *source)
     default:
         break;
     }
-    dlg->addKeyword("beru", job);
+    dlg->addKeyword("beruf", job);
     dlg->addKeyword("was", job);
-    dlg->addKeyword("gesu", health);
+    dlg->addKeyword("gesundheit", health);
     dlg->addKeyword("wie", health);
     dlg->addKeyword(strings[10], kw1);
     dlg->addKeyword(strings[11], kw2);
@@ -158,7 +158,9 @@ Dialogue *U4TlkDialogueLoader::load(void *source)
     // HEAL for healer, which is unreachable in u4dos, but clearly
     // more useful than "Fine." for health).
     std::string look = std::string("Du siehst ") + strings[2];
-    dlg->addKeyword("schau", new Response(uppercase(look)));
+    dlg->addKeyword("schauen", new Response(uppercase(look)));
+    dlg->addKeyword("sieh", new Response(uppercase(look)));
+	dlg->addKeyword("sehen", new Response(uppercase(look)));
     Response *name = new Response(uppercase(
                                       dlg->getPronoun()
                                       + " sagt:\nIch bin "
@@ -174,10 +176,10 @@ Dialogue *U4TlkDialogueLoader::load(void *source)
                                  "Behalt es!"
                      ));
 
-    dlg->addKeyword("gebe", gib);
+    dlg->addKeyword("geben", gib);
     dlg->addKeyword("gib", gib);
     dlg->addKeyword(
-        "begl",
+        "begleiten",
         new Response(uppercase(
                          dlg->getPronoun()
                          + " sagt:\nIch kann dich nicht begleiten."
@@ -196,7 +198,7 @@ Dialogue *U4TlkDialogueLoader::load(void *source)
      * "Banjo" Bob Hardy was the programmer for the Amiga version.
      */
     dlg->addKeyword(
-        "ojna",
+        "ojnab",
         new Response(uppercase(
                          dlg->getPronoun()
                          + " sagt:\nHallo Banjo Bob! Deine geheime Zahl ist "

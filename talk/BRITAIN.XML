@@ -82,7 +82,7 @@
     <topic query="job">Ich kenne ein schreckliches Geheimnis!</topic>
     <topic query="health">Nicht so gut.</topic>
     <topic query="GEHE">Mondains Einfluß hat die Welt nicht verlassen!</topic>
-    <topic query="MOND">Ein Artefakt ist übrig! Ich hörte es im Neste der Bukanier!<question type="0">Willst du es finden und zerstören?<yes>Dann frag in der Kneipe dort nach dem Schädel!</yes><no>Oh.</no></question></topic>
+    <topic query="MOND">Ein Artefakt blieb erhalten! Ich hörte davon im Neste der Bukanier!<question type="0">Willst du es finden und zerstören?<yes>Dann frag in der Kneipe dort nach dem Schädel!</yes><no>Oh.</no></question></topic>
   </person>
   <person id="12" name="Shapero" pronoun="Er" turnAwayProb="0">
     <description>Einen Druiden.</description>

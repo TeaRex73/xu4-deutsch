@@ -65,6 +65,14 @@ Dialogue *U4LBDialogueLoader::load(void *)
     );
     for (unsigned int i = 0; i < lbKeywords.size(); i++) {
         dlg->addKeyword(lbKeywords[i], new Response(lbText[i] + "\n"));
+        if (lbKeywords[i] == "name") {
+            dlg->addKeyword("wer", new Response(lbText[i] + "\n"));
+        } else if (lbKeywords[i] == "schauen") {
+            dlg->addKeyword("sieh", new Response(lbText[i] + "\n"));
+            dlg->addKeyword("sehen", new Response(lbText[i] + "\n"));
+        } else if (lbKeywords[i] == "beruf") {
+            dlg->addKeyword("was", new Response(lbText[i] + "\n"));
+        }
     }
     /* since the original game files are a bit sketchy on
        the 'abyss' keyword,
@@ -84,7 +92,8 @@ Dialogue *U4LBDialogueLoader::load(void *)
     */
     Response *heal = new Response("Er sagt:\nMir geht es gut, danke.");
     heal->add(ResponsePart::HEALCONFIRM);
-    dlg->addKeyword("gesu", heal);
+    dlg->addKeyword("gesundheit", heal);
+    dlg->addKeyword("wie", heal);
     Response *bye = nullptr;
     if (c->party->size() > 1) {
         bye = new Response("Er sagt:\nLebt wohl, meine Freunde!");
@@ -104,9 +113,9 @@ Dialogue *U4LBDialogueLoader::load(void *)
     bye->add(ResponsePart::END);
     dlg->addKeyword("ade", bye);
     dlg->addKeyword("", bye);
-    dlg->addKeyword("helf", new DynamicResponse(&lordBritishGetHelp));
-    dlg->addKeyword("hilf", new DynamicResponse(&lordBritishGetHelp));
-    dlg->addKeyword("beis", new DynamicResponse(&lordBritishGetHelp));
+    dlg->addKeyword("helfen", new DynamicResponse(&lordBritishGetHelp));
+    dlg->addKeyword("hilfe", new DynamicResponse(&lordBritishGetHelp));
+    dlg->addKeyword("beistehen", new DynamicResponse(&lordBritishGetHelp));
     return dlg;
 } // U4LBDialogueLoader::load
 
