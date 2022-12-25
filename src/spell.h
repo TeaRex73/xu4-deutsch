@@ -60,13 +60,13 @@ struct Spell {
         PARAM_PHASE, /* phase required (gate) */
         PARAM_FROMDIR /* direction from required (winds) */
     } Param;
-    
+
     typedef enum {
         SFX_NONE, /* none */
         SFX_INVERT, /* invert the screen (moongates, most normal spells) */
         SFX_TREMOR /* tremor spell */
     } SpecialEffects;
-    
+
     const char *name;
     int components;
     LocationContext context;

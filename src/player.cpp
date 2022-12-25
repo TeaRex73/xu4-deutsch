@@ -1,4 +1,3 @@
-
 /*
  * $Id$
  */
@@ -73,21 +72,21 @@ std::string PartyMember::translate(std::vector<std::string> &parts)
         return "";
     } else if (parts.size() == 1) {
         if (parts[0] == "hp") {
-            return to_string(getHp());
+            return xu4_to_string(getHp());
         } else if (parts[0] == "max_hp") {
-            return to_string(getMaxHp());
+            return xu4_to_string(getMaxHp());
         } else if (parts[0] == "mp") {
-            return to_string(getMp());
+            return xu4_to_string(getMp());
         } else if (parts[0] == "max_mp") {
-            return to_string(getMaxMp());
+            return xu4_to_string(getMaxMp());
         } else if (parts[0] == "str") {
-            return to_string(getStr());
+            return xu4_to_string(getStr());
         } else if (parts[0] == "dex") {
-            return to_string(getDex());
+            return xu4_to_string(getDex());
         } else if (parts[0] == "int") {
-            return to_string(getInt());
+            return xu4_to_string(getInt());
         } else if (parts[0] == "exp") {
-            return to_string(getExp());
+            return xu4_to_string(getExp());
         } else if (parts[0] == "name") {
             return getName();
         } else if (parts[0] == "weapon") {
@@ -106,7 +105,7 @@ std::string PartyMember::translate(std::vector<std::string> &parts)
         } else if (parts[0] == "class") {
             return getClassNameEnglish(getClass());
         } else if (parts[0] == "level") {
-            return to_string(getRealLevel());
+            return xu4_to_string(getRealLevel());
         }
     } else if (parts.size() == 2) {
         if (parts[0] == "needs") {
@@ -254,7 +253,7 @@ void PartyMember::addStatus(StatusType s)
     case STAT_GOOD:
     case STAT_POISONED:
         setTile(tileForClass(getClass()));
-		break;
+                break;
     case STAT_SLEEPING:
     case STAT_DEAD:
         setTile(Tileset::findTileByName("corpse")->getId());
@@ -280,11 +279,11 @@ void PartyMember::setStatus(StatusType s)
     case STAT_GOOD:
     case STAT_POISONED:
         setTile(tileForClass(getClass()));
-		break;
+                break;
     case STAT_SLEEPING:
     case STAT_DEAD:
         setTile(Tileset::findTileByName("corpse")->getId());
-		break;
+                break;
     default:
         ASSERT(
             0,
@@ -353,7 +352,7 @@ void PartyMember::applyEffect(TileEffect effect)
     case EFFECT_LAVA:
     case EFFECT_FIRE:
         soundPlay(SOUND_PC_STRUCK, false);
-        applyDamage(32 + (xu4_random(64)));
+        applyDamage(xu4_random(30)); // From u4apple2
         break;
     case EFFECT_SLEEP:
         putToSleep();
@@ -452,11 +451,11 @@ void PartyMember::removeStatus(StatusType s)
     case STAT_GOOD:
     case STAT_POISONED:
         setTile(tileForClass(getClass()));
-		break;
+                break;
     case STAT_SLEEPING:
     case STAT_DEAD:
         setTile(Tileset::findTileByName("corpse")->getId());
-		break;
+                break;
     default:
         ASSERT(
             0,
@@ -575,12 +574,7 @@ int PartyMember::getAttackBonus() const
 
 int PartyMember::getDefense(bool needsMystic) const
 {
-    int res = Armor::get(player->armor)->getDefense(needsMystic);
-    if (*c->aura == Aura::PROTECTION) {
-        return res + 80;
-    } else {
-        return res;
-    }
+    return Armor::get(player->armor)->getDefense(needsMystic);
 }
 
 bool PartyMember::dealDamage(Creature *m, int damage)
@@ -778,27 +772,27 @@ std::string Party::translate(std::vector<std::string> &parts)
                 return "balloon";
             }
         } else if (parts[0] == "gold") {
-            return to_string(saveGame->gold);
+            return xu4_to_string(saveGame->gold);
         } else if (parts[0] == "food") {
-            return to_string(saveGame->food);
+            return xu4_to_string(saveGame->food);
         } else if (parts[0] == "members") {
-            return to_string(size());
+            return xu4_to_string(size());
         } else if (parts[0] == "keys") {
-            return to_string(saveGame->keys);
+            return xu4_to_string(saveGame->keys);
         } else if (parts[0] == "torches") {
-            return to_string(saveGame->torches);
+            return xu4_to_string(saveGame->torches);
         } else if (parts[0] == "gems") {
-            return to_string(saveGame->gems);
+            return xu4_to_string(saveGame->gems);
         } else if (parts[0] == "sextants") {
-            return to_string(saveGame->sextants);
+            return xu4_to_string(saveGame->sextants);
         } else if (parts[0] == "food") {
-            return to_string((saveGame->food / 100));
+            return xu4_to_string((saveGame->food / 100));
         } else if (parts[0] == "gold") {
-            return to_string(saveGame->gold);
+            return xu4_to_string(saveGame->gold);
         } else if (parts[0] == "party_members") {
-            return to_string(saveGame->members);
+            return xu4_to_string(saveGame->members);
         } else if (parts[0] == "moves") {
-            return to_string(saveGame->moves);
+            return xu4_to_string(saveGame->moves);
         }
     } else if (parts.size() >= 2) {
         if (parts[0].find_first_of("member") == 0) {
@@ -822,12 +816,12 @@ std::string Party::translate(std::vector<std::string> &parts)
             if (parts[0] == "weapon") {
                 const Weapon *w = Weapon::get(parts[1]);
                 if (w) {
-                    return to_string(saveGame->weapons[w->getType()]);
+                    return xu4_to_string(saveGame->weapons[w->getType()]);
                 }
             } else if (parts[0] == "armor") {
                 const Armor *a = Armor::get(parts[1]);
                 if (a) {
-                    return to_string(saveGame->armor[a->getType()]);
+                    return xu4_to_string(saveGame->armor[a->getType()]);
                 }
             }
         }
@@ -881,10 +875,10 @@ void Party::adjustKarma(KarmaAction action)
     case KA_GAVE_ALL_TO_BEGGAR:
         // When donating all,
         // you get +3 HONOR in Apple 2, but not in in U4DOS.
+        // That is arguably a bug, SACRIFICE should be it.
         // TODO: Make this a configuration option.
         AdjustValueMax(newKarma[VIRT_SACRIFICE], 3, maxVal[VIRT_SACRIFICE]);
-        AdjustValueMax(newKarma[VIRT_HONOR], 3, maxVal[VIRT_HONOR]);
-        // fallthrough
+        /* FALLTHROUGH */
     case KA_GAVE_TO_BEGGAR:
         // In U4DOS, we only get +2 COMPASSION,
         // no HONOR or SACRIFICE even if
@@ -1015,28 +1009,39 @@ void Party::adjustKarma(KarmaAction action)
 void Party::applyEffect(TileEffect effect)
 {
     int i;
-    for (i = 0; i < size(); i++) {
         switch (effect) {
-        case EFFECT_NONE:
-        case EFFECT_ELECTRICITY:
-            members[i]->applyEffect(effect);
-            break;
         case EFFECT_LAVA:
         case EFFECT_FIRE:
-        case EFFECT_SLEEP:
-        case EFFECT_POISONFIELD:
-            if (xu4_random(2) == 0) {
-                members[i]->applyEffect(effect);
-            }
-            break;
-        case EFFECT_POISON:
-            if (xu4_random(5) == 0) {
-                members[i]->applyEffect(effect);
-            }
+                if (c->transportContext == TRANSPORT_SHIP) {
+                        gameDamageShip(-1, 10);
+                } else if (c->transportContext != TRANSPORT_BALLOON) {
+                        gameDamageParty(0, 24);
+                }
+                break;
+        default:
+                for (i = 0; i < size(); i++) {
+                        switch (effect) {
+                        case EFFECT_NONE:
+                        case EFFECT_ELECTRICITY:
+                                members[i]->applyEffect(effect);
+                                break;
+                        case EFFECT_SLEEP:
+                        case EFFECT_POISONFIELD:
+                                if (xu4_random(2) == 0) {
+                                        members[i]->applyEffect(effect);
+                                }
+                                break;
+                        case EFFECT_POISON:
+                                if (xu4_random(8) == 0) {
+                                        members[i]->applyEffect(effect);
+                                        break;
+                                }
+                        default:
+                                break;
+                        }
+                }
         }
-    }
 }
-
 
 /**
  * Attempt to elevate in the given virtue
@@ -1194,7 +1199,7 @@ void Party::endTurn()
  */
 int Party::getChest()
 {
-    int gold = xu4_random(50) + xu4_random(8) + 10;
+    int gold = xu4_random(80) + xu4_random(8) + 10;
     adjustGold(gold);
     return gold;
 }
@@ -1466,16 +1471,19 @@ void Party::swapPlayers(int p1, int p2)
     SaveGamePlayerRecord tmp_rec = saveGame->players[p1];
     saveGame->players[p1] = c->saveGame->players[p2];
     c->saveGame->players[p2] = tmp_rec;
+
+        syncMembers();
+
     if (p1 == activePlayer) {
         activePlayer = p2;
     } else if (p2 == activePlayer) {
         activePlayer = p1;
     }
-	PartyMember *tmp_memb = members[p1];
-	members[p1] = members[p2];
-	members[p2] = tmp_memb;
+        PartyMember *tmp_memb = members[p1];
+        members[p1] = members[p2];
+        members[p2] = tmp_memb;
     members[p1]->player = &(saveGame->players[p1]);
-	members[p2]->player = &(saveGame->players[p2]);
+        members[p2]->player = &(saveGame->players[p2]);
     notifyOfChange(0);
 }
 
@@ -1503,7 +1511,7 @@ int Party::size() const
  */
 PartyMember *Party::member(int index) const
 {
-    if (index >= 0 && index < static_cast<int>(members.size())) { 
+    if (index >= 0 && index < static_cast<int>(members.size())) {
         return members[index];
     } else {
         return nullptr;

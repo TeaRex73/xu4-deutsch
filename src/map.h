@@ -5,6 +5,7 @@
 #ifndef MAP_H
 #define MAP_H
 
+#include <algorithm>
 #include <functional>
 #include <list>
 #include <map>
@@ -62,12 +63,12 @@ public:
         :Coords(initx, inity, initz)
     {
     }
-    
+
     MapCoords(const Coords &a)
         :Coords(a.x, a.y, a.z)
     {
     }
-    
+
     MapCoords &operator=(const Coords &a)
     {
         x = a.x;
@@ -80,16 +81,16 @@ public:
     {
         return static_cast<Coords>(*this) == static_cast<Coords>(a);
     }
-    
+
     bool operator!=(const MapCoords &a) const
     {
         return static_cast<Coords>(*this) != static_cast<Coords>(a);
     }
-    
+
     bool operator<(const MapCoords &a) const
     {
         return static_cast<Coords>(*this) < static_cast<Coords>(a);
-    }    
+    }
 
     MapCoords &wrap(const class Map *map);
     MapCoords &putInBounds(const class Map *map);
@@ -138,13 +139,13 @@ public:
         COMBAT,
         DUNGEON
     };
-    
+
     enum BorderBehavior {
         BORDER_WRAP,
         BORDER_EXIT2PARENT,
         BORDER_FIXED
     };
-    
+
     class Source {
     public:
         Source()
@@ -156,7 +157,7 @@ public:
             :fname(f), type(t)
         {
         }
-        
+
         std::string fname;
         Type type;
     };
@@ -183,7 +184,7 @@ public:
     void clearObjects();
     class Creature *moveObjects(MapCoords avatar);
     void resetObjectAnimations();
-    int getNumberOfCreatures();
+    int getNumberOfCreatures(int level = -1);
     int getValidMoves(
         MapCoords from, MapTile transport, bool wander = false
     );

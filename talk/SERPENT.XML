@@ -37,7 +37,7 @@
   </person>
   <person id="5" name="Shyra" pronoun="Sie" turnAwayProb="0">
     <description>Die Meisterin der Übungen.</description>
-    <topic query="job">Ich trainiere Krieger darin, mit Mut zu kämpfen!</topic>
+    <topic query="job">Ich trainiere Krieger darin, mit Mute zu kämpfen!</topic>
     <topic query="health">Top.</topic>
     <topic query="TRAI">Trainiere gut, und dein Mut kann mit dem Selbstvertrauen wachsen.<question type="0">Wirst du trainieren?<yes>Bravo!</yes><no>Bedauernswert.</no></question></topic>
     <topic query="RAEU">Im Altarraume des Mutes, benutze die roten, orangenen, violetten und weißen Steine!</topic>
@@ -58,7 +58,7 @@
   </person>
   <person id="8" name="Garam" pronoun="Er" turnAwayProb="0">
     <description>Einen kühnen Kämpfer.</description>
-    <topic query="job">Ich kämpfe mit Mut!<question type="0">Du auch?<yes>Gut.</yes><no>Dann trainiere!</no></question></topic>
+    <topic query="job">Ich kämpfe mit Mute!<question type="0">Du auch?<yes>Gut.</yes><no>Dann trainiere!</no></question></topic>
     <topic query="health">Sehr ordentlich.</topic>
     <topic query="MUT ">Mut macht aus Knaben Könige!</topic>
     <topic query="GLOC">Die Glocke des Mutes liegt am Grunde eines tiefen Brunnens auf See, bei Breite-N'A" Länge-L'A"</topic>

@@ -286,7 +286,7 @@ void Shrine::askMantra()
         ReadChoiceController::get("");
         showVision(elevated);
         ReadChoiceController::get("");
-		screenMessage("\n");
+                screenMessage("\n");
         gameSetViewMode(VIEW_NORMAL);
         eject();
     }

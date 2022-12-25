@@ -25,7 +25,7 @@ public:
     {
         return type; /**< Returns the ArmorType of the armor */
     }
-    
+
     const std::string &getName() const
     {
         return name;  /**< Returns the name of the armor */
@@ -47,7 +47,7 @@ public:
     {
         return canuse & (1 << klass);
     }
-    
+
 private:
     Armor(const ConfigElement &conf);
     ~Armor();

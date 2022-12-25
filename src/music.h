@@ -34,14 +34,14 @@ public:
         EXTRA,
         MAX
     };
-    
+
     Music();
     Music(const Music &) = delete;
     Music(Music &&) = delete;
     Music &operator=(const Music &) = delete;
     Music &operator=(Music &&) = delete;
     ~Music();
-    
+
     /** Returns an instance of the Music class */
     static Music *getInstance()
     {
@@ -62,26 +62,26 @@ public:
     void init()
     {
     }
-    
+
     void playCurrent();
     void play();
-    
+
     void pause()
     {
         introMid = NONE;
         current = NONE;
         stopMid();
     }
-    
+
     void stop()
     {
         on = false;    /**< Stop playing music */
         stopMid();
     }
-    
+
     void fadeOut(int msecs);
     void fadeIn(int msecs, bool loadFromMap);
-    
+
     void lordBritish()
     {
         playMid(RULEBRIT);    /**< Music when talk to L British */
@@ -91,12 +91,12 @@ public:
     {
         playMid(SHOPPING);    /**< Music when talk to Hawkwind */
     }
-    
+
     void shopping()
     {
         playMid(SHOPPING);    /**< Music when talki to vendor */
     }
-    
+
     void gem()
     {
         playMid(SHRINES); /**< Music when peering */
@@ -106,7 +106,7 @@ public:
     {
         playMid(EXTRA); /**< Music when starting a new game of ending */
     }
-    
+
     void intro()
     {
         if (!introMid) {

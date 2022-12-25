@@ -105,11 +105,11 @@
     <topic query="SKEL">Es kennt ein großes Geheimnis.</topic>
     <topic query="GEHE">Über den violetten Stein der Ehre!<question type="0">Hast du den violetten Stein?<yes>Benutz ihn weise!</yes><no>Such ihn, denn er ist sehr nützlich!</no></question></topic>
   </person>
-  <person id="15" name="eine Wache" pronoun="Sie" turnAwayProb="64">
+  <person id="15" name="eine Wache" pronoun="Sie" turnAwayProb="0">
     <description>Eine starke Wache.</description>
-    <topic query="job">Zu wachen.</topic>
+    <topic query="job">Mit Ehre zu wachen.</topic>
     <topic query="health">Wach.</topic>
-    <topic query="WACH">Wachend.</topic>
-    <topic query="STAR">Wache.</topic>
+    <topic query="EHRE">Ich tue meinen Dienst mit Ehre, doch ohne Stolz.</topic>
+    <topic query="STOL">Verwechsle nicht die Ehre mit dem Stolze!<question type="0">Kennst Du den Unterschied?<yes>Sie sind sehr verschieden!</yes><no>Stolz erhebt sich über Andere, Ehre erhebt sich gemeinsam mit Anderen!</no></question></topic>
   </person>
 </dialogue>

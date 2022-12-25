@@ -13,6 +13,13 @@
 /* VC8:
    Disable "'stricmp' was declared deprecated" compiler warning */
 #pragma warning(disable:4996)
+
+#if _MSC_VER > 1600
+#define strcasecmp _stricmp
+#define strncasecmp _strnicmp
+#define snprintf _snprintf_s
+#endif
+
 /* all:
    VC++ has no real equivalent of GCC's __builtin_expect, so NOP it */
 #define __builtin_expect(x, y) (x)

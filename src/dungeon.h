@@ -44,7 +44,7 @@ public:
          buffer()
     {
     }
-    
+
     Trigger triggers[DNGROOM_NTRIGGERS];
     unsigned char creature_tiles[16];
     unsigned char creature_start_x[16];

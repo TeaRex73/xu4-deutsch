@@ -3,12 +3,13 @@
 <!-- $Id$ -->
 <tileRules>
     <rule name="default"/>
-    <rule name="water" cantwalkon="all" swimable="true" sailable="true" onWaterOnlyReplacement="true"/>
+    <rule name="water" cantwalkon="all" swimable="true" sailable="true" onWaterOnlyReplacement="true" spawnsseamonster="true"/>
     <rule name="shallows" cantwalkon="all" swimable="true" onWaterOnlyReplacement="true"/>
-    <rule name="swamp" speed="slow" effect="poison" replacement="true"/>
-    <rule name="grass" canlandballoon="true" replacement="true"/>
-    <rule name="brush" speed="vslow" replacement="true"/>
-    <rule name="hills" speed="vvslow" replacement="true"/>
+    <rule name="swamp" speed="vslow" effect="poison"/>
+    <rule name="grass" canlandballoon="true" replacement="true" spawnslandmonster="true"/>
+    <rule name="brush" speed="slow" spawnslandmonster="true"/>
+    <rule name="forest" speed="vslow" spawnslandmonster="true"/>
+    <rule name="hills" speed="vvslow" spawnslandmonster="true"/>
     <rule name="mountains" cantwalkon="all" unflyable="true" creatureunwalkable="true"/>
     <rule name="lcb" cantwalkon="all" creatureunwalkable="true"/>
     <rule name="lcb_entrance" cantwalkon="south" cantwalkoff="north" creatureunwalkable="true"/>
@@ -25,13 +26,13 @@
     <rule name="secret_door" cantwalkon="retreat" wontwanderon="true"/>
     <rule name="chest" chest="true"/>
     <rule name="poison_field" speed="vslow" effect="poisonField" dispel="true" wontwanderon="true"/>
-    <rule name="energy_field" cantwalkon="all" speed="vvslow" effect="electricity" creatureunwalkable="true" unflyable="true" dispel="true"/>
-    <rule name="fire_field" speed="vslow" effect="fire" dispel="true" wontwanderon="true"/>
+    <rule name="energy_field" cantwalkon="all" effect="electricity" creatureunwalkable="true" unflyable="true" dispel="true"/>
+    <rule name="fire_field" speed="vvslow" effect="fire" dispel="true" wontwanderon="true"/>
     <rule name="sleep_field" speed="vslow" effect="sleep" dispel="true" wontwanderon="true"/>
     <rule name="lava" effect="lava" replacement="true" wontwanderon="true"/>
     <rule name="signs" cantwalkon="all" talkover="true"/>
     <rule name="spacers" cantwalkon="all"/>
-    <rule name="monster" cantwalkon="all" livingthing="true"/>    
+    <rule name="monster" cantwalkon="all" livingthing="true"/>
 
     <!-- Dungeon tile rules -->
     <rule name="dng_altar" creatureunwalkable="true" unflyable="true"/>
@@ -43,5 +44,5 @@
     <rule name="dng_energy_field" cantwalkon="all" speed="vvslow" effect="electricity" creatureunwalkable="true" unflyable="true" dispel="true"/>
     <rule name="dng_fire_field" speed="vslow" effect="fire" dispel="true" creatureunwalkable="true" unflyable="true"/>
     <rule name="dng_sleep_field" speed="vslow" effect="sleep" dispel="true" creatureunwalkable="true" unflyable="true"/>
-    
+
 </tileRules>

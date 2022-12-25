@@ -338,14 +338,13 @@ bool dungeonHandleTrap(TrapType)
         c->party->quenchTorch();
         break;
     case TRAP_FALLING_ROCK:
-        // Treat falling rocks and pits like bomb traps
-        // XXX: That's a little harsh.
+        // Treat falling rocks and pits like fire fields, like u4dos
         screenMessage("\nFelssturz!\n");
-        c->party->applyEffect(EFFECT_LAVA);
+        c->party->applyEffect(EFFECT_FIRE);
         break;
     case TRAP_PIT:
         screenMessage("\nFallgrube!\n");
-        c->party->applyEffect(EFFECT_LAVA);
+                c->party->applyEffect(EFFECT_FIRE);
         break;
     default:
         break;

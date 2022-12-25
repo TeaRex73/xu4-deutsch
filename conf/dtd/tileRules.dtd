@@ -21,7 +21,7 @@
                horse              %bool;   #IMPLIED
                lockeddoor         %bool;   #IMPLIED
                creatureunwalkable %bool;   #IMPLIED
-               wontwanderon       %bool;   #IMPLIED               
+               wontwanderon       %bool;   #IMPLIED
                replacement        %bool;   #IMPLIED
                onWaterOnlyReplacement %bool; #IMPLIED
                sailable           %bool;   #IMPLIED
@@ -30,4 +30,6 @@
                swimable           %bool;   #IMPLIED
                talkover           %bool;   #IMPLIED
                unflyable          %bool;   #IMPLIED
-               livingthing        %bool;   #IMPLIED>
+               livingthing        %bool;   #IMPLIED
+               spawnslandmonster  %bool;   #IMPLIED
+               spawnsseamonster   %bool;   #IMPLIED>

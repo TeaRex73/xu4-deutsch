@@ -65,7 +65,7 @@ public:
         :x(0), y(0), tile(0)
     {
     }
-    
+
     int x, y;
     MapTile tile;     /* base tile + tile frame */
 };
@@ -1496,6 +1496,7 @@ void IntroController::journeyOnward()
             validSave = true;
         }
         delete saveGame;
+                std::fclose(saveGameFile);
     }
     if (!validSave) {
         errorMessage = "Starte zuerst ein neues Spiel!";
@@ -1503,7 +1504,6 @@ void IntroController::journeyOnward()
         screenRedrawScreen();
         return;
     }
-    std::fclose(saveGameFile);
     EventHandler::setControllerDone();
 } // IntroController::journeyOnward
 

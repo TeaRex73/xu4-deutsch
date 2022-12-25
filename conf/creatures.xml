@@ -18,7 +18,7 @@
     <creature id="7" name="PALADIN" tile="paladin" basehp="128" exp="4" good="true" wontattack="true"/>
     <creature id="8" name="WALDL[UFER" tile="ranger" basehp="144" exp="3" good="true" wontattack="true"/>
     <creature id="9" name="HIRTE" tile="shepherd" basehp="48" exp="9" good="true" wontattack="true"/>
-    
+
     <!-- Misc town creatures -->
     <creature id="10" name="WACHE" tile="guard" basehp="128" exp="13" good="true" wontattack="true"/>
     <creature id="11" name="H[NDLER" tile="villager" basehp="48" exp="9" good="true" wontattack="true"/>
@@ -36,7 +36,7 @@
     <creature id="21" encounterSize="4" name="SEESCHLANGE" tile="sea_serpent" basehp="128" exp="9" ranged="true" worldrangedtile="hit_flash" rangedhittile="hit_flash" rangedmisstile="hit_flash" swims="true" leader="20"/>
     <creature id="22" encounterSize="8" name="SEEPFERD" tile="sea_horse" basehp="128" exp="9" movement="wanders" ranged="true" rangedhittile="magic_flash" rangedmisstile="magic_flash" swims="true" good="true" leader="19"/>
 
-	<!-- Forces of nature -->
+        <!-- Forces of nature -->
     <creature id="23" encounterSize="1" name="STRUDEL" forceOfNature="true" tile="whirlpool" basehp="255" exp="16" swims="true" movement="wanders" cantattack="true" canMoveOntoCreatures="true" canMoveOntoAvatar="true" wontattack="true"/>
     <creature id="24" encounterSize="1" name="WINDHOSE" forceOfNature="true" tile="twister" basehp="255" exp="16" flies="true" movement="wanders" cantattack="true" canMoveOntoCreatures="true" canMoveOntoAvatar="true" wontattack="true"/>
 

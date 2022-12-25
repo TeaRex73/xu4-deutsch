@@ -258,7 +258,7 @@ std::list<std::string> Person::getConversationText(
                         int player = getPlayerCtrl.waitFor();
                         if (player != -1 && player != 8) {
                             std::string player_str =
-                                std::to_string(player + 1);
+                                xu4_to_string(player + 1);
                             script->setVar(script->getInputName(), player_str);
                         } else {
                             script->unsetVar(script->getInputName());

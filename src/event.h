@@ -5,6 +5,7 @@
 #ifndef EVENT_H
 #define EVENT_H
 
+#include <atomic>
 #include <list>
 #include <string>
 #include <vector>
@@ -39,7 +40,7 @@
 #define U4_RIGHT_META 309
 #define U4_LEFT_META 310
 
-extern int eventTimerGranularity;
+extern std::atomic_int eventTimerGranularity;
 class EventHandler;
 class TextView;
 
@@ -53,7 +54,7 @@ public:
     KeyHandler(KeyHandler &&) = default;
     KeyHandler &operator=(const KeyHandler &) = delete;
     KeyHandler &operator=(KeyHandler &&) = default;
-    
+
     virtual ~KeyHandler()
     {
     }
@@ -66,7 +67,7 @@ public:
         int bufferLen;
         int screenX, screenY;
     } ReadBuffer;
-    
+
     typedef struct GetChoice {
         std::string choices;
         int (*handleChoice)(int);
@@ -134,7 +135,7 @@ public:
     ReadStringController(ReadStringController &&) = delete;
     ReadStringController &operator=(const ReadStringController &) = delete;
     ReadStringController &operator=(ReadStringController &&) = delete;
-    
+
     virtual bool keyPressed(int key);
     static std::string get(
         int maxlen, int screenX, int screenY, EventHandler *eh = nullptr
@@ -275,7 +276,7 @@ typedef void (*updateScreenCallback)();
 class EventHandler {
 public:
     typedef std::list<MouseArea *> MouseAreaList;
-    
+
     EventHandler();
     ~EventHandler();
     static EventHandler *getInstance();

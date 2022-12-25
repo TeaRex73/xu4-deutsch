@@ -36,7 +36,7 @@ static void png_read_xu4(
  * Loads in the PNG with the libpng library.
  */
 Image *PngImageLoader::load(
-    U4FILE *file, int width, int height, volatile int bpp
+    U4FILE *file, int width, int height, int bpp
 )
 {
     if ((width != -1) || (height != -1) || (bpp != -1)) {
@@ -100,7 +100,11 @@ Image *PngImageLoader::load(
         bpp = bit_depth * 3;
     } else if (color_type == PNG_COLOR_TYPE_RGB_ALPHA) {
         bpp = bit_depth * 4;
+    } else {
+                bpp = 0; //prevent "clobbered by longjmp" warning
+                errorFatal("Unsupported PNG_COLOR_TYPE!");
     }
+
     png_byte **row_pointers = png_get_rows(png_ptr, info_ptr);
     unsigned char *raw = new unsigned char[width * height * bpp / 8];
     unsigned char *p = raw;

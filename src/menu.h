@@ -31,22 +31,22 @@ public:
         :menu(menu), type(type), item(item)
     {
     }
-    
+
     const Menu *getMenu()
     {
         return menu;
     }
-    
+
     Type getType()
     {
         return type;
     }
-    
+
     const MenuItem *getMenuItem()
     {
         return item;
     }
-    
+
 private:
     const Menu *menu;
     Type type;

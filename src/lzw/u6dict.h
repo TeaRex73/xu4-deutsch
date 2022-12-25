@@ -9,7 +9,7 @@ public:
         :dict(), contains(0x102)
     {
     }
-    
+
     void init()
     {
         contains = 0x102;

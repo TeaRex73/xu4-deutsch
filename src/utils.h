@@ -153,7 +153,7 @@ std::string &trim(
 std::string lowercase(std::string val);
 std::string uppercase(std::string val);
 std::string deumlaut(std::string val);
-std::string to_string(int val);
+std::string xu4_to_string(int val);
 std::vector<std::string> split(
     const std::string &s, const std::string &separators
 );
@@ -165,9 +165,9 @@ private:
 public:
     Performance(const std::string &
 #ifndef NPERF
-				s
+                                s
 #endif
-			   )
+                           )
         :log(), filename(), s(), e(), times()
     {
 #ifndef NPERF
@@ -181,9 +181,9 @@ public:
 
     void init(const std::string &
 #ifndef NPERF
-			  s
+                          s
 #endif
-			 )
+                         )
     {
 #ifndef NPERF
         Path path(s);
@@ -196,7 +196,7 @@ public:
         }
 #endif
     }
-    
+
     void reset()
     {
 #ifndef NPERF
@@ -216,24 +216,24 @@ public:
         s = std::clock();
 #endif
     }
-    
+
     void end(const std::string &
 #ifndef NPERF
-			 funcName
+                         funcName
 #endif
-			)
+                        )
     {
 #ifndef NPERF
         e = std::clock();
         times[funcName] = e - s;
 #endif
     }
-    
+
     void report(const char *
 #ifndef NPERF
-				pre
+                                pre
 #endif
-			    = nullptr)
+                            = nullptr)
     {
 #ifndef NPERF
         static const double msec = double(CLOCKS_PER_SEC) / double(1000);

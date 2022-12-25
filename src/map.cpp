@@ -336,7 +336,7 @@ Object *Map::objectAt(const Coords &coords)
     return objAt;
 } // Map::objectAt
 
-    
+
 /**
  * Returns the portal for the correspoding action(s) given.
  * If there is no portal that corresponds to the actions flagged
@@ -662,16 +662,19 @@ void Map::clearObjects()
 
 
 /**
- * Returns the number of creatures on the given map
+ * Returns the number of creatures on the given map level,
+   or all levels if level == -1
  */
-int Map::getNumberOfCreatures()
+int Map::getNumberOfCreatures(int level)
 {
     ObjectDeque::const_iterator i;
     int n = 0;
     for (i = objects.begin(); i != objects.end(); i++) {
         Object *obj = *i;
         if (obj->getType() == Object::CREATURE) {
-            n++;
+            if (level == -1 || obj->getCoords().z == level) {
+                n++;
+            }
         }
     }
     return n;
@@ -872,6 +875,14 @@ const MapCoords &Map::getLabel(const std::string &name) const
     return i->second;
 }
 
+// helper function for Map::fillMonsterTable()
+static bool isCloser(const Object *a, const Object *b)
+{
+    MapCoords ma = a->getCoords();
+    MapCoords mb = b->getCoords();
+    return ma.distance(c->location->coords) < mb.distance(c->location->coords);
+}
+
 bool Map::fillMonsterTable()
 {
     ObjectDeque::iterator current;
@@ -921,6 +932,8 @@ bool Map::fillMonsterTable()
         }
     }
     /* limit forces of nature */
+    /* sort first so that, if any, those furthest away get thrown out */
+    std::sort(monsters.begin(), monsters.end(), isCloser);
     while(nForcesOfNature > MONSTERTABLE_FORCESOFNATURE_SIZE) {
         monsters.pop_back();
         nForcesOfNature--;
@@ -929,24 +942,43 @@ bool Map::fillMonsterTable()
     /**
      * Add other monsters to our whirlpools and storms
      */
+    /* sort first, see above */
+    std::sort(other_creatures.begin(), other_creatures.end(), isCloser);
     while (other_creatures.size()) {
         monsters.push_back(other_creatures.front());
         other_creatures.pop_front();
     }
     /* limit monsters */
-    while (nCreatures > MONSTERTABLE_CREATURES_SIZE) {
+    int limitForCreatures =
+        type == Map::DUNGEON ?
+        MONSTERTABLE_OBJECTS_SIZE :
+        MONSTERTABLE_CREATURES_SIZE;
+
+    while (nCreatures > limitForCreatures) {
         monsters.pop_back();
         nCreatures--;
     }
     /**
      * Add empty objects to our list to fill things up
      */
-    while (monsters.size() < MONSTERTABLE_CREATURES_SIZE) {
+    while (monsters.size() < static_cast<unsigned int>(limitForCreatures)) {
         monsters.push_back(&empty);
     }
     /**
      * Finally, add inanimate objects
      */
+    /* sort first, see above, but leave lastShip as first one if it exists */
+    if (inanimate_objects.size() && inanimate_objects[0] == c->lastShip) {
+        std::sort(
+            std::next(inanimate_objects.begin()),
+            inanimate_objects.end(),
+            isCloser
+        );
+    } else {
+        std::sort(
+            inanimate_objects.begin(), inanimate_objects.end(), isCloser
+        );
+    }
     while (inanimate_objects.size()) {
         monsters.push_back(inanimate_objects.front());
         inanimate_objects.pop_front();

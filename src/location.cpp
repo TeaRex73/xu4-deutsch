@@ -233,7 +233,7 @@ TileId Location::getReplacementTile(MapCoords atCoords, const Tile *forTile)
     } while (++loop_count < 128
              && searchQueue.size() > 0
              && searchQueue.size() < 64);
-    /* couldn't find a tile, give it the sad default */
+    /* couldn't find a tile, give it the classic default */
     if (isDungeon(map)) {
         return map->tileset->getByName("brick_floor")->getId();
     } else {

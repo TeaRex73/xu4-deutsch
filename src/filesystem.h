@@ -38,7 +38,7 @@ public:
     {
         return path; /**< Returns the full translated path */
     }
-    
+
     std::list<std::string> *getDirTree()
     {
         return &dirs; /**< Returns the list of directories in path */

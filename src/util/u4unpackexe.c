@@ -101,7 +101,7 @@ int main(int argc, char *argv[])
         );
         return (EXIT_FAILURE);
     }
-    
+
     /* Get the new stack location and the new entry point */
     newStackSeg = getWord(
         buffer + headerSize + oldEntrySeg*0x10 + oldEntryOfs + NEW_SEG1

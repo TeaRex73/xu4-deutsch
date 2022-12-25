@@ -438,7 +438,7 @@ bool TileAnimPlayerDirContext::isInContext(Tile *, MapTile &, Direction d)
  * TileAnimSet
  */
 TileAnimSet::TileAnimSet(const ConfigElement &conf)
-    :name(conf.getString("name")), tileanims() 
+    :name(conf.getString("name")), tileanims()
 
 {
     std::vector<ConfigElement> children = conf.getChildren();
@@ -505,7 +505,7 @@ TileAnim::~TileAnim()
         i++) {
         delete (*i);
     }
-}   
+}
 
 void TileAnim::draw(Image *dest, Tile *tile, MapTile &mapTile, Direction dir)
 {

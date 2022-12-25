@@ -183,11 +183,11 @@ void DungeonView::drawInDungeon(
     if (tiledWall) {
         int i_x = static_cast<int>(
             SCALED((VIEWPORT_W * tileWidth / 2.0) + this->x)
-            - (scaled->width() / 2.0)
+            - (scaled->width() / 2)
         );
         int i_y = static_cast<int>(
             SCALED((VIEWPORT_H * tileHeight / 2.0) + this->y)
-            - (scaled->height() / 2.0)
+            - (scaled->height() / 2)
         );
         int f_x = i_x + scaled->width();
         int f_y = i_y + scaled->height();
@@ -206,11 +206,11 @@ void DungeonView::drawInDungeon(
         );
         int x = static_cast<int>(
             SCALED((VIEWPORT_W * tileWidth / 2.0) + this->x)
-            - (scaled->width() / 2.0)
+            - (scaled->width() / 2)
         );
         int y = static_cast<int>(
             SCALED((VIEWPORT_H * tileHeight / 2.0) + this->y + y_offset)
-            - (scaled->height() / 8.0)
+            - (scaled->height() / 8)
         );
         scaled->drawSubRectOn(
             this->screen,

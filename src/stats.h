@@ -64,12 +64,12 @@ public:
     {
         update(); /* do a full update */
     }
-    
+
     virtual void update(Menu *, MenuEvent &)
     {
         update(); /* do a full update */
     }
-    
+
     void highlightPlayer(int player);
     void redraw();
 
@@ -120,7 +120,7 @@ public:
     ReagentsMenuController(ReagentsMenuController &&) = delete;
     ReagentsMenuController &operator=(const ReagentsMenuController &) = delete;
     ReagentsMenuController &operator=(ReagentsMenuController &&) = delete;
-    
+
     bool keyPressed(int key);
 
 private:

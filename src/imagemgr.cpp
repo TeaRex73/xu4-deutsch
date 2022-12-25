@@ -36,7 +36,7 @@ public:
          info()
     {
     }
-    
+
     ~ImageSet();
     std::string name;
     std::string location;
@@ -161,7 +161,7 @@ ImageSet *ImageMgr::loadImageSetFromConf(const ConfigElement &conf)
 ImageInfo *ImageMgr::loadImageInfoFromConf(const ConfigElement &conf)
 {
     ImageInfo *info;
-    
+
     static const char *fixupEnumStrings[] = {
         "none",
         "intro",
@@ -380,7 +380,7 @@ void ImageMgr::fixupIntro(Image *im, int prescale)
                   13 * prescale
         );
     }
-    
+
     /* --------------------------------------
      * copy "present" to new location between
      * "Origin Systems, Inc." and "Ultima IV"
@@ -459,7 +459,7 @@ void ImageMgr::fixupIntro(Image *im, int prescale)
         255, 250, 226, 226, 210, 194, 161, 161,
         129,  97,  97,  64,  64,  32,  32,   0
     };
-    
+
     i = 0;
     while (sigData[i] != 0) {
         /* (x/y) are unscaled coordinates, i.e. in 320x200 */

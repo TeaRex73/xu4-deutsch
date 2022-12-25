@@ -23,6 +23,7 @@
 #ifndef SCREEN_H
 #define SCREEN_H
 
+#include <atomic>
 #include <vector>
 #include <string>
 
@@ -126,8 +127,8 @@ void screenSetMouseCursor(MouseCursor cursor);
 bool screenPointInMouseArea(int x, int y, MouseArea *area);
 Image *screenScale(Image *src, int scale, int n, int filter);
 Image *screenScaleDown(Image *src, int scale);
-extern int screenCurrentCycle;
-extern volatile bool screenMoving;
+extern std::atomic_int screenCurrentCycle;
+extern std::atomic_bool screenMoving;
 
 #define SCR_CYCLE_MAX 16
 

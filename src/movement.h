@@ -5,6 +5,8 @@
 #ifndef MOVEMENT_H
 #define MOVEMENT_H
 
+#include <atomic>
+
 #include "direction.h"
 #include "map.h"
 
@@ -51,6 +53,6 @@ bool moveCombatObject(
 void movePartyMember(MoveEvent &event);
 bool slowedByTile(const Tile *tile);
 bool slowedByWind(int direction);
-extern bool collisionOverride;
+extern std::atomic_bool collisionOverride;
 
 #endif // ifndef MOVEMENT_H

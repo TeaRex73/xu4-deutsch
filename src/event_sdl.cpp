@@ -5,6 +5,7 @@
 #include "vc6.h" // Fixes things if you're using VC6, does nothing otherwise
 
 #include <SDL.h>
+#include <atomic>
 #include <cstdlib>
 #include <ctime>
 #include "u4.h"
@@ -21,7 +22,6 @@
 
 extern bool verbose;
 extern int quit;
-extern int eventTimerGranularity;
 
 KeyHandler::KeyHandler(Callback func, void *d, bool asyncronous)
     :handler(func), async(asyncronous), data(d)
@@ -441,7 +441,7 @@ void EventHandler::sleep(unsigned int usec)
     // to sleep from user input.
     // Make this static so that all instance stop.
     // (e.g., sleep calling sleep).
-    static volatile bool stopUserInput = true;
+    static std::atomic_bool stopUserInput(true);
     SDL_TimerID sleepingTimer = SDL_AddTimer(usec, sleepTimerCallback, 0);
     stopUserInput = true;
     while (stopUserInput) {
@@ -490,7 +490,8 @@ void EventHandler::run()
         case SDL_KEYDOWN:
             {
 #ifdef DEBUG
-                static volatile std::clock_t clocksum = 0, keycount = 0;
+                static std::atomic<std::clock_t> clocksum(0);
+                                static std::atomic_int keycount(0);
                 std::clock_t oldc, newc, diff;
                 oldc = std::clock();
 #endif
@@ -500,16 +501,14 @@ void EventHandler::run()
                 keycount++;
                 diff = newc - oldc;
                 clocksum += diff;
-#if 0
                 std::fprintf(
                     stderr,
                     "diff = %ld, sum = %ld, avg = %f\n",
-                    diff,
-                    clocksum,
-                    static_cast<double>(clocksum)
-					/ static_cast<double>(keycount)
+                    static_cast<long int>(diff),
+                    static_cast<long int>(static_cast<std::clock_t>(clocksum)),
+                    static_cast<double>(static_cast<std::clock_t>(clocksum))
+                                        / static_cast<double>(static_cast<int>(keycount))
                 );
-#endif
 #endif
                 break;
             }

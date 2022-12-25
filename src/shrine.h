@@ -20,7 +20,7 @@ public:
          mantra()
     {
     }
-    
+
     virtual std::string getName();
     Virtue getVirtue() const;
     std::string getMantra() const;

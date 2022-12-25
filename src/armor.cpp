@@ -116,7 +116,7 @@ void Armor::cleanup()
         delete *i;
     }
     armors.clear();
-}    
+}
 
 void Armor::loadConf()
 {

@@ -126,7 +126,7 @@ private:
     void showText(const std::string &text);
     void runMenu(Menu *menu, TextView *view, bool withBeasties);
 
-    
+
     /**
      * The states of the intro.
      */
@@ -135,7 +135,7 @@ private:
         INTRO_MAP, // displaying the animated intro map
         INTRO_MENU // displaying the main menu: journey onward, etc.
     } mode;
-    
+
     enum MenuConstants {
         MI_CONF_VIDEO,
         MI_CONF_SOUND,
@@ -217,7 +217,7 @@ private:
     bool justInitiatedNewGame;
     bool initiatingNewGame;
 
-    
+
     //
     // Title defs, structs, methods, and data members
     //
@@ -236,7 +236,7 @@ private:
         std::uint8_t x, y;
         std::uint8_t r, g, b, a;
     };
-    
+
     class AnimElement {
     public:
         ~AnimElement();
@@ -253,7 +253,7 @@ private:
         std::vector<AnimPlot> plotData; // plot data
         bool prescaled;
     };
-    
+
     void addTitle(
         int x, int y, int w, int h, AnimType method, int delay, int duration
     );

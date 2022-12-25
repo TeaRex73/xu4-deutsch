@@ -50,7 +50,7 @@ Script::Variable::Variable(const std::string &v)
 }
 
 Script::Variable::Variable(const int &v)
-    :i_val(v), s_val(std::to_string(v)), set(true)
+    :i_val(v), s_val(xu4_to_string(v)), set(true)
 {
 }
 
@@ -218,7 +218,7 @@ bool Script::load(
      */
     if (xmlPropExists(root, "debug")) {
         char dbg_filename[256] = "debug/";
-		std::strcat(dbg_filename, /* std::tmpnam(NULL) */ "debug.txt");
+                std::strcat(dbg_filename, /* std::tmpnam(NULL) */ "debug.txt");
         // Our script is going to hog all the debug info
         if (xmlGetPropAsBool(root, "debug")) {
             debug = FileSystem::openFile(dbg_filename, "wt");
@@ -715,7 +715,7 @@ void Script::translate(std::string *text)
         }
         // Get the current iterator for our loop
         else if (item == "iterator") {
-            prop = std::to_string(this->iterator);
+            prop = xu4_to_string(this->iterator);
         } else if ((pos = item.find("show_inventory:")) < item.length()) {
             pos = item.find(":");
             std::string itemScript = item.substr(pos + 1);
@@ -812,7 +812,7 @@ void Script::translate(std::string *text)
                     if (content.empty()) {
                         errorWarning("Error: empty math() function");
                     }
-                    prop = std::to_string(mathValue(content));
+                    prop = xu4_to_string(mathValue(content));
                 }
                 /**
                  * Does a true/false comparison on the content.
@@ -848,7 +848,7 @@ void Script::translate(std::string *text)
                 }
                 /* generate a random number */
                 else if (funcName == "random") {
-                    prop = std::to_string(
+                    prop = xu4_to_string(
                         xu4_random(
                             static_cast<int>(
                                 std::strtol(content.c_str(), nullptr, 10)
@@ -1725,7 +1725,7 @@ void Script::mathParseChildren(xmlNodePtr math, std::string *result)
         } else if (xmlStrcmp(current->name, c2xc("math")) == 0) {
             std::string children_results;
             mathParseChildren(current, &children_results);
-            *result = std::to_string(mathValue(children_results));
+            *result = xu4_to_string(mathValue(children_results));
         }
     }
 }

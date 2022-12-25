@@ -4,6 +4,7 @@
 
 #include "vc6.h" // Fixes things if you're using VC6, does nothing otherwise
 
+#include <atomic>
 #include <ctime>
 #include "u4.h"
 
@@ -32,7 +33,7 @@
 
 int timerCount;
 unsigned int timerMsg;
-bool deathSequenceRunning = false;
+std::atomic_bool deathSequenceRunning(false);
 
 void deathTimer(void *data);
 void deathRevive(void);

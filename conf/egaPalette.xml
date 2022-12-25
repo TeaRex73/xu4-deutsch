@@ -6,8 +6,8 @@
 
 <!-- $Id$ -->
 <!-- See: http://upload.wikimedia.org/wikipedia/commons/d/df/EGA_Table.PNG -->
-<egaPalette>    
-    <color red="0" green="0" blue="0"/>          <!-- APPLE black --> 
+<egaPalette>
+    <color red="0" green="0" blue="0"/>          <!-- APPLE black -->
     <color red="0" green="149" blue="255"/>     <!-- APPLE blue -->
     <color red="0" green="239" blue="0"/>      <!-- APPLE green -->
     <color red="255" green="255" blue="255"/>    <!-- APPLE white -->
@@ -15,7 +15,7 @@
     <color red="255" green="106" blue="0"/>     <!-- APPLE orange -->
     <color red="255" green="106" blue="0"/>     <!-- APPLE orange -->
     <color red="255" green="255" blue="255"/>    <!-- APPLE white -->
-    <color red="0" green="0" blue="0"/>          <!-- APPLE black --> 
+    <color red="0" green="0" blue="0"/>          <!-- APPLE black -->
     <color red="0" green="149" blue="255"/>     <!-- APPLE blue -->
     <color red="0" green="239" blue="0"/>      <!-- APPLE green -->
     <color red="0" green="149" blue="255"/>     <!-- APPLE blue -->

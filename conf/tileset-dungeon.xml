@@ -32,7 +32,7 @@
   <tile name="dungeon_room_c" image="tile_solid" rule="dng_room"/>
   <tile name="dungeon_room_d" image="tile_solid" rule="dng_room"/>
   <tile name="dungeon_room_e" image="tile_solid" rule="dng_room"/>
-  <tile name="dungeon_room_f" image="tile_solid" rule="dng_room"/>    
+  <tile name="dungeon_room_f" image="tile_solid" rule="dng_room"/>
   <tile name="dungeon_door" image="tile_door" rule="dng_door"/>
   <tile name="dungeon_altar" image="tile_altar" rule="dng_altar"/>
 </tileset>

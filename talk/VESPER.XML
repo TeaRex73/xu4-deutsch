@@ -22,7 +22,7 @@
     <topic query="SCHA">Ihn aus irgendeinem Grunde zu benutzen ist ein Zeichen großen Übels, und keine Tugend!</topic>
   </person>
   <person id="3" name="Reisender Dan" pronoun="Er" turnAwayProb="0">
-    <description>Einen kurzen runden Mann mit Hut und Weste.</description>
+    <description>Einen kurzen runden Mann mit Hute und Weste.</description>
     <topic query="job">Reisender Dan, der Zinkermann.</topic>
     <topic query="health">Mir geht's prima, danke.</topic>
     <topic query="ZINK">Ich bin hier, um für den Gildenladen Waren zu reparieren.<question type="0">Warst du schon im Gildenladen?<yes>Tolle Auswahl!</yes><no>Beste Preise!</no></question></topic>

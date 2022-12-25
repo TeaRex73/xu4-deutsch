@@ -160,7 +160,7 @@ Dialogue *U4TlkDialogueLoader::load(void *source)
     std::string look = std::string("Du siehst ") + strings[2];
     dlg->addKeyword("schauen", new Response(uppercase(look)));
     dlg->addKeyword("sieh", new Response(uppercase(look)));
-	dlg->addKeyword("sehen", new Response(uppercase(look)));
+        dlg->addKeyword("sehen", new Response(uppercase(look)));
     Response *name = new Response(uppercase(
                                       dlg->getPronoun()
                                       + " sagt:\nIch bin "

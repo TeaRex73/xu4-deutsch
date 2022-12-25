@@ -103,7 +103,7 @@ void xmlToTlk(xmlDocPtr doc, FILE *tlk)
                         fprintf(stderr, "keep your dialogue in .xml\n");
                         exit(1);
                     }
-                    
+
                     str[kw - (KEYWORD1 - RESPONSE1)] =
                         (char *)xmlNodeListGetString(doc, node->children, 1);
                     str[kw] = query;

@@ -85,7 +85,7 @@ void Object::setCoords(Coords c)
 {
     prevCoords = coords;
     coords = c;
-}    
+}
 
 bool Object::setDirection(Direction d)
 {

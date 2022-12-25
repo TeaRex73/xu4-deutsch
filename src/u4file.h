@@ -30,7 +30,7 @@ public:
     {
         return name;
     }
-    
+
     const std::string &getInternalPath() const
     {
         return path;
@@ -40,7 +40,7 @@ public:
     {
         return extension;
     }
-    
+
     const std::string &translate(const std::string &name) const;
 
 private:
@@ -67,7 +67,7 @@ public:
     {
         return packages;
     }
-    
+
 private:
     U4ZipPackageMgr();
     ~U4ZipPackageMgr();
@@ -118,7 +118,7 @@ public:
          defaultsHaveBeenInitd(false)
     {
     }
-    
+
     ~U4PATH();
     void initDefaultPaths();
     static U4PATH *instance;

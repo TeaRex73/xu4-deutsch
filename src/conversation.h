@@ -60,11 +60,11 @@ private:
 class Response {
 public:
     Response(const std::string &response);
-    
+
     virtual ~Response()
     {
     }
-    
+
     void add(const ResponsePart &part);
     const virtual std::vector<ResponsePart> &getParts();
     operator std::string() const;
@@ -134,7 +134,7 @@ public:
         Response *yesresp, *noresp;
     };
 
-    
+
     /**
      * A dialogue keyword.
      * It contains all the keywords that the talker will respond to, as
@@ -151,7 +151,7 @@ public:
         ~Keyword();
         bool operator==(const std::string &kw) const;
 
-        
+
         /*
          * Accessor methods
          */
@@ -159,24 +159,24 @@ public:
         {
             return keyword;
         }
-        
+
         Response *getResponse()
         {
             return response;
         }
-        
+
     private:
         std::string keyword;
         Response *response;
     };
 
-    
+
     /**
      * A mapping of keywords to the Keyword object that represents them
      */
     typedef std::map<std::string, Keyword *> KeywordMap;
 
-    
+
     /*
      * Constructors/Destructors
      */
@@ -187,7 +187,7 @@ public:
     Dialogue &operator=(Dialogue &&) = delete;
     virtual ~Dialogue();
 
-    
+
     /*
      * Accessor methods
      */
@@ -195,38 +195,38 @@ public:
     {
         return name;
     }
-    
+
     const std::string &getPronoun() const
     {
         return pronoun;
     }
-    
+
     const std::string &getPrompt() const
     {
         return prompt;
     }
-    
+
     Response *getIntro(bool = false)
     {
         return intro;
     }
-    
+
     Response *getLongIntro(bool = false)
     {
         return longIntro;
     }
-    
+
     Response *getDefaultAnswer()
     {
         return defaultAnswer;
     }
-    
+
     Dialogue::Question *getQuestion()
     {
         return question;
     }
 
-    
+
     /*
      * Getters
      */
@@ -234,47 +234,47 @@ public:
     {
         name = n;
     }
-    
+
     void setPronoun(const std::string &pn)
     {
         pronoun = pn;
     }
-    
+
     void setPrompt(const std::string &prompt)
     {
         this->prompt = prompt;
     }
-    
+
     void setIntro(Response *i)
     {
         intro = i;
     }
-    
+
     void setLongIntro(Response *i)
     {
         longIntro = i;
     }
-    
+
     void setDefaultAnswer(Response *a)
     {
         defaultAnswer = a;
     }
-    
+
     void setTurnAwayProb(int prob)
     {
         turnAwayProb = prob;
     }
-    
+
     void setQuestion(Question *q)
     {
         question = q;
     }
-    
+
     void addKeyword(const std::string &kw, Response *response);
     const ResponsePart &getAction() const;
     std::string dump(const std::string &arg);
 
-    
+
     /*
      * Operators
      */
@@ -332,14 +332,14 @@ public:
                    attacking you */
         DONE /**< The conversation is over */
     };
-    
+
     /** Different types of conversation input required */
     enum InputType {
         INPUT_STRING,
         INPUT_CHARACTER,
         INPUT_NONE
     };
-    
+
     /* Constructor/Destructors */
     Conversation();
     Conversation(const Conversation &) = delete;
@@ -366,7 +366,7 @@ public:
     int quant; /**< For vendor transactions */
     int player; /**< For vendor transactions */
     int price; /**< For vendor transactions */
-    
+
 private:
     Debug *logger;
 };

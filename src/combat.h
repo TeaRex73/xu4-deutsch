@@ -53,12 +53,12 @@ public:
     CombatController(CombatMap *m);
     CombatController(MapId id);
     virtual ~CombatController();
-    
+
     bool isCombatController() const
     {
         return true;
     }
-    
+
     bool isCamping() const;
     bool isWinOrLose() const;
     Direction getExitDir() const;
@@ -148,32 +148,32 @@ public:
     {
         return dungeonRoom;
     }
-    
+
     bool isAltarRoom() const
     {
         return altarRoom != VIRT_NONE;
     }
-    
+
     bool isContextual() const
     {
         return contextual;
     }
-    
+
     BaseVirtue getAltarRoom() const
     {
         return altarRoom;
     }
-    
+
     void setAltarRoom(BaseVirtue ar)
     {
         altarRoom = ar;
     }
-    
+
     void setDungeonRoom(bool d)
     {
         dungeonRoom = d;
     }
-    
+
     void setContextual(bool c)
     {
         contextual = c;

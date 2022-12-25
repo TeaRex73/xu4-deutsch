@@ -1,5 +1,5 @@
 /*
- * $Id$
+ * $id: tileanim.h 3019 2012-03-18 11:31:13Z daniel_santos $
  */
 
 #ifndef TILEANIM_H
@@ -35,7 +35,7 @@ public:
     virtual ~TileAnimTransform()
     {
     }
-    
+
     static TileAnimTransform *create(const ConfigElement &config);
     static RGBA *loadColorFromConf(const ConfigElement &conf);
     virtual void draw(Image *dest, Tile *tile, MapTile &mapTile) = 0;
@@ -103,7 +103,7 @@ public:
     TileAnimScrambleTransform()
     {
     }
-    
+
     virtual void draw(Image *dest, Tile *tile, MapTile &mapTile);
     virtual bool drawsTile() const;
 };
@@ -170,8 +170,8 @@ public:
         :animTransforms()
     {
     }
-    
-    
+
+
     static TileAnimContext *create(const ConfigElement &config);
     void add(TileAnimTransform *);
     virtual bool isInContext(Tile *t, MapTile &mapTile, Direction d) = 0;

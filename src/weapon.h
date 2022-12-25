@@ -30,7 +30,7 @@ public:
     };
 
     static void cleanup();
-    
+
     static const Weapon *get(WeaponType w);
     static const Weapon *get(const std::string &name);
 
@@ -38,77 +38,77 @@ public:
     {
         return type;
     }
-    
+
     const std::string &getName() const
     {
         return name;
     }
-    
+
     const std::string &getAbbrev() const
     {
         return abbr;
     }
-    
+
     const std::string &getNeg() const
     {
         return neg;
     }
-    
+
     bool canReady(ClassType klass) const
     {
         return (canuse & (1 << klass)) != 0;
     }
-    
+
     int getRange() const
     {
         return range;
     }
-    
+
     int getDamage() const
     {
         return damage;
     }
-    
+
     const std::string &getHitTile() const
     {
         return hittile;
     }
-    
+
     const std::string &getMissTile() const
     {
         return misstile;
     }
-    
+
     const std::string &leavesTile() const
     {
         return leavetile;
     }
-    
+
     unsigned short getFlags() const
     {
         return flags;
     }
-    
+
     bool loseWhenUsed() const
     {
         return flags & WEAP_LOSE;
     }
-    
+
     bool loseWhenRanged() const
     {
         return flags & WEAP_LOSEWHENRANGED;
     }
-    
+
     bool canChooseDistance() const
     {
         return flags & WEAP_CHOOSEDISTANCE;
     }
-    
+
     bool alwaysHits() const
     {
         return flags & WEAP_ALWAYSHITS;
     }
-    
+
     bool isMystic() const
     {
         return flags & WEAP_MYSTIC;
@@ -118,27 +118,27 @@ public:
     {
         return flags & WEAP_RANGEDONLY;
     }
-    
+
     bool canAttackThroughObjects() const
     {
         return flags & WEAP_ATTACKTHROUGHOBJECTS;
     }
-    
+
     bool rangeAbsolute() const
     {
         return flags & WEAP_ABSOLUTERANGE;
     }
-    
+
     bool returns() const
     {
         return flags & WEAP_RETURNS;
     }
-    
+
     bool showTravel() const
     {
         return !(flags & WEAP_DONTSHOWTRAVEL);
     }
-    
+
 private:
     Weapon(const ConfigElement &conf);
     ~Weapon();

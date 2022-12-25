@@ -59,7 +59,7 @@ int probe2(unsigned char root, int codeword)
             carry = (registers[j] >> 15) & 1;
             registers[j] = (registers[j] << 1) | oldCarry;
             /* make sure register stays 16 bit */
-            registers[j] = registers[j] & 0xffff; 
+            registers[j] = registers[j] & 0xffff;
         }
     }
     /* final touches */

@@ -26,11 +26,11 @@
  * The advantages over variable-length codewords are faster decompression and
  * simpler code.
  * 2) The dictionary is implemented as a hash table.
- * While the dictionary is supposed to implemented as a hash table in the LZW 
- * *en*coder (to speed up string searches), there is no reason not to implement
- * it as a simple array in the decoder. But since U4 uses a hash table in the
- * decoder, this C version must do the same (or it won't be able to decode the
- * U4 files).
+ * While the dictionary is supposed to be implemented as a hash table in the
+ * LZW *en*coder (to speed up string searches), there is no reason not to
+ * implement it as a simple array in the decoder. But since U4 uses a hash
+ * table in the decoder, this C version must do the same (or it won't be able
+ * to decode the U4 files).
  * An article on LZW data (de)compression can be found here:
  * http://dogma.net/markn/articles/lzw/lzw.htm
  */

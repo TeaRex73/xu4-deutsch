@@ -45,39 +45,39 @@ steal
 
 
 ccs2.wav
-	6s		bad command
-	15s		move
-	34s		blocked
-	90s		sleep
-	170s	heal (LB)
-	340s	moongate
-	365s	attack
-	366s	kill
-	368s	acid trap
-	394s	attack
-	398s	flee
-	404s	trap evaded
-	436s	move in combat
-	474		move slow
-	482s	attack
-	491s 	monster attack
-	492s    monster hit
-	532s	attack
-	533s	hit
+        6s              bad command
+        15s             move
+        34s             blocked
+        90s             sleep
+        170s    heal (LB)
+        340s    moongate
+        365s    attack
+        366s    kill
+        368s    acid trap
+        394s    attack
+        398s    flee
+        404s    trap evaded
+        436s    move in combat
+        474             move slow
+        482s    attack
+        491s    monster attack
+        492s    monster hit
+        532s    attack
+        533s    hit
 
 ccs3.wav
-	39s		monster attack
-	40s     monster hit
-	160s	monster range attack (nixie)
-	174s    monster range hit
-	307		move slow
-	308		move
-	313		poisoned!
-	370s	poison damage
-	886s	poison damage (2 PCs)
-	890s	poison damage (1 PC)
-	950s	sleep trap
-	1140s	poison damage (1 PC)
-	1190s	level up (LB)
-	1200s	heal (LB)
+        39s             monster attack
+        40s     monster hit
+        160s    monster range attack (nixie)
+        174s    monster range hit
+        307             move slow
+        308             move
+        313             poisoned!
+        370s    poison damage
+        886s    poison damage (2 PCs)
+        890s    poison damage (1 PC)
+        950s    sleep trap
+        1140s   poison damage (1 PC)
+        1190s   level up (LB)
+        1200s   heal (LB)
 -->

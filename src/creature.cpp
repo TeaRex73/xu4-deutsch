@@ -265,8 +265,7 @@ int Creature::getDamage() const
     int damage, val, x;
     val = basehp;
     x = xu4_random(val >> 2);
-    damage = (x >> 4) + ((x >> 2) & 0xfc);
-    damage += x % 10;
+    damage = (x >> 4) * 10 + (x % 10); //Formula from U4DOS
     return damage;
 }
 
@@ -417,20 +416,9 @@ bool Creature::specialEffect()
         ObjectDeque::iterator i;
         if (coords == c->location->coords) {
             soundPlay(SOUND_STORM, false, -1, true);
-            /* damage the ship */
-            if (c->transportContext == TRANSPORT_SHIP) {
-                /* FIXME: Check actual damage from u4dos */
-                for (int j = 0; j < xu4_random(3) + 2; j++) {
-                    gameDamageShip(3, 10);
-                    /* anything else but balloon damages the party */
-                }
-            } else if (c->transportContext != TRANSPORT_BALLOON) {
-                /* FIXME: formula for twister damage
-                   is guesstimated from u4dos */
-                for (int j = 0; j < xu4_random(3) + 2; j++) {
-                    gameDamageParty(0, 25);
-                }
-            }
+                        for (int j = 0; j < 4; j++) {
+                                c->party->applyEffect(EFFECT_FIRE);
+                        }
             return true;
         }
         /* See if the storm is on top of any objects and destroy them! */
@@ -456,7 +444,7 @@ bool Creature::specialEffect()
             && (c->transportContext == TRANSPORT_SHIP)) {
             soundPlay(SOUND_WHIRLPOOL, false, -1, true);
             /* Deal 10 damage to the ship */
-            gameDamageShip(-1, 10);
+                        c->party->applyEffect(EFFECT_FIRE);
             /* Send the party to Loch Lake */
             c->location->coords = c->location->map->getLabel(
                 "lockelake"
@@ -487,6 +475,7 @@ bool Creature::specialEffect()
                 i++;
             }
         }
+                break;
     }
     default:
         break;
@@ -499,6 +488,7 @@ void Creature::act(CombatController *controller)
     int dist;
     CombatAction action;
     Creature *target;
+        bool harder;
     /* see if creature wakes up if it is asleep */
     if ((getStatus() == STAT_SLEEPING) && (xu4_random(8) == 0)) {
         wakeUp();
@@ -556,7 +546,8 @@ void Creature::act(CombatController *controller)
     switch (action) {
     case CA_ATTACK:
         soundPlay(SOUND_NPC_ATTACK, false); // NPC_ATTACK, melee
-        if (controller->attackHit(this, target, false)) {
+                harder = (*c->aura == Aura::PROTECTION);
+        if (controller->attackHit(this, target, harder)) {
             // PC_STRUCK, melee and ranged
             soundPlay(SOUND_PC_STRUCK, false);
             GameController::flashTile(target->getCoords(), "hit_flash", 4);
@@ -1081,37 +1072,31 @@ Creature *CreatureMgr::getByName(std::string name)
  */
 Creature *CreatureMgr::randomForTile(const Tile *tile)
 {
-    /* FIXME: this is too dependent on the tile system, and easily
-       broken when tileset changes are made.  Methinks the logic
-       behind this should be moved to monsters.xml or another conf
-       file */
-    int era;
+    int era, tempRand;
     TileId randTile;
-    if (tile->isSailable()) {
-        if (xu4_random(4)) {
+    if (tile->spawnsSeaMonster()) {
+        if (xu4_random(8) != 0) {
             return nullptr;
         }
         randTile = creatures.find(PIRATE_ID)->second->getTile().getId();
-        randTile += xu4_random(7);
-        return getByTile(randTile);
-    } else if (tile->isSwimable()) {
-        randTile = creatures.find(NIXIE_ID)->second->getTile().getId();
-        randTile += xu4_random(4);
+        // Pirates are twice as likely as others
+        tempRand = xu4_random(8);
+        randTile += (tempRand == 7 ? 0 : tempRand);
         return getByTile(randTile);
     }
-    if (!tile->isCreatureWalkable() || !tile->willWanderOn()) {
-        return nullptr;
+    else if (tile->spawnsLandMonster()) {
+        if (c->saveGame->moves >= 30000) {
+            era = 0x0f;
+        } else if (c->saveGame->moves >= 10000) {
+            era = 0x07;
+        } else {
+            era = 0x03;
+        }
+        randTile = creatures.find(ORC_ID)->second->getTile().getId();
+        randTile += era & xu4_random(0x10) & xu4_random(0x10);
+        return getByTile(randTile);
     }
-    if (c->saveGame->moves > 30000) {
-        era = 0x0f;
-    } else if (c->saveGame->moves > 5000) {
-        era = 0x07;
-    } else {
-        era = 0x03;
-    }
-    randTile = creatures.find(ORC_ID)->second->getTile().getId();
-    randTile += era & xu4_random(0x10) & xu4_random(0x10);
-    return getByTile(randTile);
+    else return nullptr;
 } // CreatureMgr::randomForTile
 
 
@@ -1120,10 +1105,9 @@ Creature *CreatureMgr::randomForTile(const Tile *tile)
  */
 Creature *CreatureMgr::randomForDungeon(int dngLevel)
 {
-    int range = dngLevel < 5 ? 3 : 4;
-    CreatureId monster = RAT_ID + dngLevel + xu4_random(range);
-    if (monster >= MIMIC_ID) {
-        ++monster;
+    CreatureId monster = RAT_ID + dngLevel + xu4_random(4);
+    if (monster == MIMIC_ID) {
+        return nullptr;
     }
     return getById(monster);
 }

@@ -99,37 +99,37 @@ public:
     virtual std::string translate(std::vector<std::string> &parts);
 
     virtual int getHp() const;
-    
+
     int getMaxHp() const
     {
         return player->hpMax;
     }
-    
+
     int getExp() const
     {
         return player->xp;
     }
-    
+
     int getStr() const
     {
         return player->str;
     }
-    
+
     int getDex() const
     {
         return player->dex;
     }
-    
+
     int getInt() const
     {
         return player->intel;
     }
-    
+
     int getMp() const
     {
         return player->mp;
     }
-    
+
     int getMaxMp() const;
     const Weapon *getWeapon() const;
     const Armor *getArmor() const;
@@ -140,7 +140,7 @@ public:
     int getRealLevel() const;
     int getMaxLevel() const;
     virtual void addStatus(StatusType status);
-	virtual void setStatus(StatusType status);
+        virtual void setStatus(StatusType status);
     void adjustMp(int pts);
     void advanceLevel();
     void applyEffect(TileEffect effect);
@@ -188,7 +188,7 @@ public:
         PARTY_REVIVED,
         INVENTORY_ADDED,
     };
-    
+
     PartyEvent(Type type, PartyMember *partyMember)
         :type(type), player(partyMember)
     {

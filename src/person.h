@@ -60,7 +60,7 @@ public:
     {
         return npcType;
     }
-    
+
     void setNpcType(PersonNpcType t);
     std::list<std::string> getConversationText(
         Conversation *cnv, const char *inquiry

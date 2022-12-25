@@ -40,32 +40,32 @@ public:
     {
         return tile;      /**< Returns the annotation's tile */
     }
-    
+
     bool isVisualOnly() const
     {
         return visual;    /**< Tells if visual-only annotation */
     }
-    
+
     int getTTL() const
     {
         return ttl; /**< Returns number of turns of annotation */
     }
-    
+
     bool isCoverUp()
     {
         return coverUp;
     }
-    
+
     void setCoords(const Coords &c)
     {
         coords = c;       /**< Sets coords for the annotation */
     }
-    
+
     void setTile(const MapTile &t)
     {
         tile = t;         /**< Sets tile for the annotation */
     }
-    
+
     void setVisualOnly(bool v)
     {
         visual = v;       /**< Sets if annotation is visual-only */
@@ -75,7 +75,7 @@ public:
     {
         ttl = turns;      /**< Sets number of turns of annotation */
     }
-    
+
     void passTurn()
     {
         if (ttl > 0) {
@@ -116,7 +116,7 @@ public:
     void remove(Annotation &);
     void remove(Annotation::List);
     int size();
-    
+
 private:
     Annotation::List annotations;
     Annotation::List::iterator i;

@@ -169,7 +169,7 @@ void Weapon::cleanup()
         delete *i;
     }
     weapons.clear();
-}    
+}
 
 void Weapon::loadConf()
 {

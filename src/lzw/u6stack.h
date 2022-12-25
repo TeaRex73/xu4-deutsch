@@ -8,7 +8,7 @@ public:
         :stack()
     {
     }
-    
+
     bool is_empty()
     {
         return stack.size() == 0;

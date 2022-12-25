@@ -35,6 +35,8 @@ class TileAnim;
 #define MASK_WATER_REPLACEMENT 0x0800
 #define MASK_FOREGROUND 0x1000
 #define MASK_LIVING_THING 0x2000
+#define MASK_SPAWNS_LAND_MONSTER 0x4000
+#define MASK_SPAWNS_SEA_MONSTER 0x8000
 
 /* movement masks */
 #define MASK_SWIMABLE 0x0001
@@ -53,7 +55,7 @@ public:
     //disallow copy construction, assignment
     Tile(const Tile &) = delete;
     const Tile &operator=(const Tile &) = delete;
-    
+
     Tile(Tileset *tileset);
     void loadProperties(const ConfigElement &conf);
 
@@ -61,197 +63,207 @@ public:
     {
         return id;
     }
-    
+
     const std::string &getName() const
     {
         return name;
     }
-    
+
     int getWidth() const
     {
         return w;
     }
-    
+
     int getHeight() const
     {
         return h;
     }
-    
+
     int getFrames() const
     {
         return frames;
     }
-    
+
     int getScale() const
     {
         return scale;
     }
-    
+
     TileAnim *getAnim() const
     {
         return anim;
     }
-    
+
     Image *getImage();
-    
+
     const std::string &getLooksLike() const
     {
         return looks_like;
     }
-    
+
     bool isTiledInDungeon() const
     {
         return tiledInDungeon;
     }
-    
+
     bool isLandForeground() const
     {
         return foreground;
     }
-    
+
     bool isWaterForeground() const
     {
         return waterForeground;
     }
-    
-    bool canWalkOn(Direction d) const
+
+    int canWalkOn(Direction d) const
     {
-        return DIR_IN_MASK(d, rule->walkonDirs) != 0;
-    }
-    
-    bool canWalkOff(Direction d) const
-    {
-        return DIR_IN_MASK(d, rule->walkoffDirs) != 0;
+        return DIR_IN_MASK(d, rule->walkonDirs);
     }
 
-    
+    int canWalkOff(Direction d) const
+    {
+        return DIR_IN_MASK(d, rule->walkoffDirs);
+    }
+
+
     /**
      * All tiles that you can walk, swim, or sail on, can be
      * attacked over. All others must declare themselves
      */
-    bool canAttackOver() const
+    int canAttackOver() const
     {
         return isWalkable()
             || isSwimable()
             || isSailable()
             || (rule->mask & MASK_ATTACKOVER);
     }
-    
-    bool canLandBalloon() const
+
+    int canLandBalloon() const
     {
-        return (rule->mask & MASK_CANLANDBALLOON) != 0;
-    }
-    
-    bool isLivingObject() const
-    {
-        return (rule->mask & MASK_LIVING_THING) != 0;
+        return (rule->mask & MASK_CANLANDBALLOON);
     }
 
-    bool isReplacement() const
+    int isLivingObject() const
     {
-        return (rule->mask & MASK_REPLACEMENT) != 0;
+        return (rule->mask & MASK_LIVING_THING);
     }
-    
-    bool isWaterReplacement() const
+
+    int isReplacement() const
     {
-        return (rule->mask & MASK_WATER_REPLACEMENT) != 0;
+        return (rule->mask & MASK_REPLACEMENT);
     }
-    
-    bool isWalkable() const
+
+    int isWaterReplacement() const
+    {
+        return (rule->mask & MASK_WATER_REPLACEMENT);
+    }
+
+    int isWalkable() const
     {
         return rule->walkonDirs > 0;
     }
-    
+
     bool isCreatureWalkable() const
     {
         return canWalkOn(DIR_ADVANCE)
             && !(rule->movementMask & MASK_CREATURE_UNWALKABLE);
     }
-    
+
     bool willWanderOn() const
     {
         return canWalkOn(DIR_ADVANCE)
             && !(rule->movementMask & MASK_WONTWANDERON);
     }
-    
-    bool isDungeonWalkable() const; 
+
+        bool spawnsLandMonster() const
+        {
+                return (rule->mask & MASK_SPAWNS_LAND_MONSTER);
+        }
+
+        bool spawnsSeaMonster() const
+        {
+                return (rule->mask & MASK_SPAWNS_SEA_MONSTER);
+        }
+
+    bool isDungeonWalkable() const;
     bool isDungeonFloor() const;
 
-    bool isSwimable() const
+    int isSwimable() const
     {
-        return (rule->movementMask & MASK_SWIMABLE) != 0;
+        return (rule->movementMask & MASK_SWIMABLE);
     }
-    
-    bool isSailable() const
+
+    int isSailable() const
     {
-        return (rule->movementMask & MASK_SAILABLE) != 0;
+        return (rule->movementMask & MASK_SAILABLE);
     }
-    
+
     bool isWater() const
     {
         return isSwimable() || isSailable();
     }
-    
-    bool isFlyable() const
+
+    int isFlyable() const
     {
         return !(rule->movementMask & MASK_UNFLYABLE);
     }
-    
-    bool isDoor() const
+
+    int isDoor() const
     {
-        return (rule->mask & MASK_DOOR) != 0;
+        return (rule->mask & MASK_DOOR);
     }
-    
-    bool isLockedDoor() const
+
+    int isLockedDoor() const
     {
-        return (rule->mask & MASK_LOCKEDDOOR) != 0;
+        return (rule->mask & MASK_LOCKEDDOOR);
     }
-    
-    bool isChest() const
+
+    int isChest() const
     {
-        return (rule->mask & MASK_CHEST) != 0;
+        return (rule->mask & MASK_CHEST);
     }
-    
-    bool isShip() const
+
+    int isShip() const
     {
-        return (rule->mask & MASK_SHIP) != 0;
+        return (rule->mask & MASK_SHIP);
     }
-    
+
     bool isPirateShip() const
     {
         return name == "pirate_ship";
     }
-    
-    bool isHorse() const
+
+    int isHorse() const
     {
-        return (rule->mask & MASK_HORSE) != 0;
+        return (rule->mask & MASK_HORSE);
     }
-    
-    bool isBalloon() const
+
+    int isBalloon() const
     {
-        return (rule->mask & MASK_BALLOON) != 0;
+        return (rule->mask & MASK_BALLOON);
     }
-    
-    bool canDispel() const
+
+    int canDispel() const
     {
-        return (rule->mask & MASK_DISPEL) != 0;
+        return (rule->mask & MASK_DISPEL);
     }
-    
-    bool canTalkOver() const
+
+    int canTalkOver() const
     {
-        return (rule->mask & MASK_TALKOVER) != 0;
+        return (rule->mask & MASK_TALKOVER);
     }
-    
+
     TileSpeed getSpeed() const
     {
         return rule->speed;
     }
-    
+
     TileEffect getEffect() const
     {
         return rule->effect;
     }
-    
+
     bool isOpaque() const;
     bool isForeground() const;
     Direction directionForFrame(int frame) const;
@@ -261,17 +273,17 @@ public:
     {
         nextId = 0;
     }
-    
+
     static bool canTalkOverTile(const Tile *tile)
     {
-        return tile->canTalkOver();
+        return tile->canTalkOver() != 0;
     }
-    
+
     static bool canAttackOverTile(const Tile *tile)
     {
-        return tile->canAttackOver();
+        return tile->canAttackOver() != 0;
     }
-    
+
     void deleteImage();
 
 private:

@@ -16,7 +16,7 @@ public:
         :x(initx), y(inity), z(initz)
     {
     }
-        
+
     bool operator==(const Coords &a) const
     {
         return __builtin_expect((x == a.x), false)
@@ -30,13 +30,13 @@ public:
         {
             return x < a.x;
         }
-    
+
         if (__builtin_expect(!(y == a.y), true))
         {
             return y < a.y;
         }
         return z < a.z;
-    }    
+    }
 
     bool operator!=(const Coords &a) const
     {

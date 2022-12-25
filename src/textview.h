@@ -31,17 +31,17 @@ public:
     {
         return cursorX;
     }
-    
+
     int getCursorY() const
     {
         return cursorY;
     }
-    
+
     bool getCursorEnabled() const
     {
         return cursorEnabled;
     }
-    
+
     int getWidth() const
     {
         return columns;
@@ -56,7 +56,7 @@ public:
     {
         cursorFollowsText = follows;
     }
-    
+
     void setCursorPos(int x, int y, bool clearOld = true);
     void enableCursor();
     void disableCursor();

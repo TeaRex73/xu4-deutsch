@@ -22,7 +22,6 @@
 #include "music.h"
 #include "settings.h"
 #include "u4file.h"
-#include "music_sdl.h"
 #include "event.h"
 
 bool SoundManager::load_sys(Sound sound, const std::string &pathname)
@@ -58,8 +57,8 @@ void SoundManager::play_sys(
         finished = false;
         Mix_ChannelFinished(*channel_finished);
         if (!Mix_Playing(1)) {
-        finished = true;
-    }
+                        finished = true;
+                }
     }
     while (!onlyOnce && !finished) {
         EventHandler::sleep(10);

@@ -237,14 +237,14 @@ void CombatController::initDungeonRoom(int room, Direction from)
     map->setDungeonRoom(true);
     exitDir = DIR_NONE;
     /* FIXME: this probably isn't right way to see if you're entering
-       an altar room... but maybe it is */
+       an altar room... but maybe it is, u4apple2 does it the same way */
     if ((c->location->prev->map->id != MAP_ABYSS) && (room == 0xF)) {
         /* figure out which dungeon room they're entering */
-        if (c->location->prev->coords.x == 3) {
-            map->setAltarRoom(VIRT_LOVE);
-        } else if (c->location->prev->coords.x <= 2) {
+        if (c->location->prev->coords.x < 3) {
             map->setAltarRoom(VIRT_TRUTH);
-        } else {
+        } else if (c->location->prev->coords.x == 3) {
+            map->setAltarRoom(VIRT_LOVE);
+        } else { // i.e. if (c->location->prev->coords.x > 3)
             map->setAltarRoom(VIRT_COURAGE);
         }
     }
@@ -461,7 +461,7 @@ void CombatController::end(bool adjustKarma)
  */
 void CombatController::fillCreatureTable(const Creature *creature)
 {
-    int i, j;
+    int i, j, randval;
     if (creature != nullptr) {
         const Creature *baseCreature = creature, *current;
         int numCreatures = initialNumberOfCreatures(creature);
@@ -481,13 +481,14 @@ void CombatController::fillCreatureTable(const Creature *creature)
                 /* must have at least 1 creature of
                    type encountered */
                 (i != (numCreatures - 1))) {
-                if (xu4_random(32) == 0) {
-                    /* leader's leader */
+                                randval = xu4_random(32);
+                if (randval == 0) {
+                    /* leader's leader, 1/32 chance */
                     current = creatureMgr->getById(
                         creatureMgr->getById(baseCreature->getLeader())
                         ->getLeader()
                     );
-                } else if (xu4_random(8) == 0) { /* leader */
+                } else if (randval <= 3) { /* leader, 3/32 chance */
                     current = creatureMgr->getById(baseCreature->getLeader());
                 }
             }
@@ -512,21 +513,33 @@ int CombatController::initialNumberOfCreatures(const Creature *creature) const
         || map->isWorldMap()
         || (c->location->prev && c->location->prev->context & CTX_DUNGEON)) {
         ncreatures = xu4_random(8) + 1;
-        if (ncreatures == 1) {
+        if ((creature && (creature->getId() < PIRATE_ID)) // Can this happen??
+                        || ncreatures == 1) {
+                        // From u4dos and u4apple2, but why have all this complexity and
+                        // then use it only in 1/8 of cases? Changed in beta testing maybe?
             if (creature && (creature->getEncounterSize() > 0)) {
-                ncreatures = xu4_random(creature->getEncounterSize())
-                    + creature->getEncounterSize()
-                    + 1;
+                ncreatures = (
+                                        (
+                                                (
+                                                        xu4_random(creature->getEncounterSize())
+                                                        + creature->getEncounterSize()
+                                                )
+                                                / 2
+                                        )
+                                        + 1
+                                );
             } else {
                 ncreatures = 8;
             }
         }
         // CHANGE: base encounter size on level of avatar (potential
-        // party size), not on current actual party size
+        // party size), not on current actual party size, to encourage
+                // party buildup
         while (ncreatures > 2 * c->party->member(0)->getRealLevel()) {
-            ncreatures = xu4_random(16) + 1;
+            ncreatures = xu4_random(2 * c->party->member(0)->getRealLevel()) + 1;
         }
-    } else {
+    } else { // Towns
+                // Guards always appear in maximum size groups, others appear alone
         if (creature && (creature->getId() == GUARD_ID)) {
             ncreatures = c->party->member(0)->getRealLevel() * 2;
         } else {
@@ -718,7 +731,7 @@ bool CombatController::attackAt(
     /* Did the weapon miss? */
      /* non-magical weapon in the Abyss */
     if (((c->location->prev->map->id == MAP_ABYSS) && !weapon->isMystic())
-        /* player naturally missed */
+                /* player naturally missed */
         || !attackHit(attacker, creature, harder)) {
         screenMessage("VERFEHLT\n");
         /* show the 'miss' tile */
@@ -728,7 +741,7 @@ bool CombatController::attackAt(
         GameController::flashTile(coords, misstile, 1);
         // NPC_STRUCK, melee hit
         soundPlay(SOUND_NPC_STRUCK, false);
-        GameController::flashTile(coords, hittile, 3);
+        GameController::flashTile(coords, hittile, 4);
         /* apply the damage to the creature */
         if (!attacker->dealDamage(creature, attacker->getDamage())) {
             creature = nullptr;
@@ -757,7 +770,7 @@ bool CombatController::rangedAttack(const Coords &coords, Creature *attacker)
     /* Monster's ranged attacks never miss */
     GameController::flashTile(coords, misstile, 1);
     /* show the 'hit' tile */
-    GameController::flashTile(coords, hittile, 3);
+    GameController::flashTile(coords, hittile, 4);
     /* These effects happen whether or not the opponent was hit */
     switch (effect) {
     case EFFECT_ELECTRICITY:
@@ -810,10 +823,10 @@ bool CombatController::rangedAttack(const Coords &coords, Creature *attacker)
         /* FIXME: are there any special effects here? */
         soundPlay(SOUND_PC_STRUCK, false);
         screenMessage(
-            "\n%s\n%c%sGETROFFEN%c\n",
+            "\n%s\n%c%s%c\n",
             uppercase(target->getName()).c_str(),
             FG_RED,
-            effect == EFFECT_LAVA ? "LAVA-" : "FEURIG ",
+            effect == EFFECT_LAVA ? "LAVA-GETROFFEN" : "VERBRANNT",
             FG_WHITE
         );
         attacker->dealDamage(target, attacker->getDamage());
@@ -1478,7 +1491,7 @@ MapId CombatMap::mapForTile(
     if (fromShip && toShip) {
         return MAP_SHIPSHIP_CON;
     }
-    
+
     /* We can fight creatures and townsfolk */
     if (obj->getType() != Object::UNKNOWN) {
         const Tile *tileUnderneath = c->location->map->tileTypeAt(

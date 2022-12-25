@@ -13,15 +13,15 @@
 class FMTOWNSImageLoader:public ImageLoader {
 public:
     virtual Image *load(U4FILE *file, int width, int height, int bpp);
-    
+
     FMTOWNSImageLoader(int offset)
         :offset(offset)
     {
     }
-    
+
 protected:
     int offset;
-    
+
 private:
     static ImageLoader *instance_pic;
     static ImageLoader *instance_tif;

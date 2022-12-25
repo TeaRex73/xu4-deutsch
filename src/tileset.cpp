@@ -60,7 +60,7 @@ void TileRule::load()
         rule->initFromConf(*i);
         TileRule::rules[rule->name] = rule;
     }
-    
+
     if (TileRule::findByName("default") == nullptr) {
         errorFatal("no 'default' rule found in tile rules");
     }
@@ -92,7 +92,9 @@ bool TileRule::initFromConf(const ConfigElement &conf)
         { "replacement", MASK_REPLACEMENT },
         { "foreground", MASK_FOREGROUND },
         { "onWaterOnlyReplacement", MASK_WATER_REPLACEMENT },
-        { "livingthing", MASK_LIVING_THING }
+        { "livingthing", MASK_LIVING_THING },
+        { "spawnslandmonster", MASK_SPAWNS_LAND_MONSTER },
+        { "spawnsseamonster", MASK_SPAWNS_SEA_MONSTER }
     };
     static const struct {
         const char *name;

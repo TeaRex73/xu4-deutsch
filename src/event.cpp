@@ -18,7 +18,7 @@
 #include "textview.h"
 #include "utils.h"
 
-int eventTimerGranularity = 250;
+std::atomic_int eventTimerGranularity(250);
 extern int quit;
 bool EventHandler::controllerDone = false;
 bool EventHandler::ended = false;

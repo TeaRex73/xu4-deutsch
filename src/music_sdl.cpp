@@ -6,7 +6,6 @@
 #include "music.h"
 #include "sound.h"
 
-#include "music_sdl.h"
 #include "u4_sdl.h"
 #include "error.h"
 #include "config.h"

@@ -33,7 +33,7 @@ public:
          walkoffDirs(0)
     {
     }
-    
+
     static TileRule *findByName(const std::string &name);
     static void load();
     static void unloadAll();
@@ -72,7 +72,7 @@ public:
     Tileset(Tileset &&) = delete;
     Tileset &operator=(const Tileset &) = delete;
     Tileset &operator=(Tileset &&) = delete;
-    
+
     static void loadAll();
     static void unloadAll();
     static void unloadAllImages();

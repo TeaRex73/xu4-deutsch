@@ -49,7 +49,7 @@ public:
         :id(0), frame(0), freezeAnimation(false)
     {
     }
-    
+
     MapTile(const TileId &i, unsigned char f = 0)
         :id(i), frame(f), freezeAnimation(false)
     {
@@ -69,7 +69,7 @@ public:
         }
         return *this;
     }
-    
+
     TileId getId() const
     {
         return id;

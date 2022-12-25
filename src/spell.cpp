@@ -236,7 +236,7 @@ static const Spell spells[] = {
         "Quicatus",
         ASH | GINSENG | MOSS,
         CTX_ANY,
-		TRANSPORT_ANY,
+                TRANSPORT_ANY,
         &spellQuick,
         Spell::PARAM_NONE,
         20
@@ -586,8 +586,8 @@ void spellMagicAttack(
     CombatController *controller = spellCombatController();
     PartyMemberVector *party = controller->getParty();
     MapTile tile = c->location->map->tileset->getByName(tilename)->getId();
-    int attackDamage = ((minDamage >= 0) && (minDamage < maxDamage)) ?
-        xu4_random((maxDamage + 1) - minDamage) + minDamage :
+    int attackDamage = (minDamage >= 0) ?
+        (xu4_random(maxDamage) | minDamage) :
         maxDamage;
 
     std::vector<Coords> path = gameGetDirectionalActionPath(
@@ -622,13 +622,12 @@ bool spellMagicAttackAt(
         objectHit = true;
         /* show the 'hit' tile */
         soundPlay(SOUND_NPC_STRUCK);
-        GameController::flashTile(coords, attackTile, 6);
+        GameController::flashTile(coords, attackTile, 4);
         /* apply the damage to the creature */
         CombatController *controller = spellCombatController();
         controller->getCurrentPlayer()->dealDamage(
             creature, attackDamage
         );
-        GameController::flashTile(coords, attackTile, 2);
     }
     return objectHit;
 }
@@ -701,7 +700,7 @@ static bool spellCure(int player)
 {
     ASSERT(player < 8, "player out of range: %d", player);
     GameController::flashTile(
-        c->party->member(player)->getCoords(), "wisp", 2
+        c->party->member(player)->getCoords(), "wisp", 4
     );
     return c->party->member(player)->heal(HT_CURE);
 }
@@ -876,7 +875,7 @@ static bool spellHeal(int player)
 {
     ASSERT(player < 8, "player out of range: %d", player);
     GameController::flashTile(
-        c->party->member(player)->getCoords(), "wisp", 2
+        c->party->member(player)->getCoords(), "wisp", 4
     );
     c->party->member(player)->heal(HT_HEAL);
     return true;
@@ -952,12 +951,13 @@ static bool spellSleep(int)
     for (i = creatures.begin(); i != creatures.end(); i++) {
         Creature *m = *i;
         Coords coords = m->getCoords();
-        GameController::flashTile(coords, "wisp", 2);
+        GameController::flashTile(coords, "wisp", 4);
         if ((m->getResists() != EFFECT_SLEEP)
+                        && (m->getId() != BALRON_ID) // BUGFIX from u4apple2
             && (xu4_random(0xFF) >= m->getHp())) {
             soundPlay(SOUND_POISON_EFFECT);
             m->putToSleep();
-            GameController::flashTile(coords, "sleep_field", 6);
+            GameController::flashTile(coords, "sleep_field", 4);
         } else {
             soundPlay(SOUND_EVADE);
         }
@@ -973,7 +973,7 @@ static bool spellTremor(int)
     for (i = creatures.begin(); i != creatures.end(); i++) {
         Creature *m = *i;
         Coords coords = m->getCoords();
-        // GameController::flashTile(coords, "rocks", 2);
+        // GameController::flashTile(coords, "rocks", 4);
         /* creatures with over 192 hp are unaffected */
         if (m->getHp() > 192) {
             soundPlay(SOUND_EVADE);
@@ -982,7 +982,7 @@ static bool spellTremor(int)
             /* Deal maximum damage to creature */
             if (xu4_random(2) == 0) {
                 soundPlay(SOUND_NPC_STRUCK);
-                GameController::flashTile(coords, "hit_flash", 6);
+                GameController::flashTile(coords, "hit_flash", 4);
                 ct->getCurrentPlayer()->dealDamage(m, 0xFF);
             }
             /* Deal enough damage to creature to make it flee */

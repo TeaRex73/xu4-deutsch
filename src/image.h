@@ -42,7 +42,7 @@ public:
         :name(), srcImageName(), x(0), y(0), width(0), height(0)
     {
     }
-    
+
     std::string name;
     std::string srcImageName;
     int x, y, width, height;
@@ -70,7 +70,7 @@ public:
         HARDWARE,
         SOFTWARE
     };
-    
+
     static Image *create(int w, int h, bool indexed, Type type);
     static Image *createScreenImage();
     static Image *duplicate(Image *image);
@@ -159,7 +159,7 @@ public:
 
     /* image drawing methods */
 
-    
+
     /**
      * Draws the entire image onto the screen at the given offset.
      */
@@ -168,7 +168,7 @@ public:
         drawOn(nullptr, x, y);
     }
 
-    
+
     /**
      * Draws a piece of the image onto the screen at the given offset.
      * The area of the image to draw is defined by the rectangle rx, ry,
@@ -179,7 +179,7 @@ public:
         drawSubRectOn(nullptr, x, y, rx, ry, rw, rh);
     }
 
-    
+
     /**
      * Draws a piece of the image onto the screen, inverted.
      * The area of the image to draw is defined by the rectangle rx, ry,
@@ -215,27 +215,27 @@ public:
         int rh,
         bool anyway = false
     ) const;
-    
+
     int width() const
     {
         return w;
     }
-    
+
     int height() const
     {
         return h;
     }
-    
+
     bool isIndexed() const
     {
         return indexed;
     }
-    
+
     BackendSurface getSurface()
     {
         return surface;
     }
-    
+
     void save(const std::string &filename);
     void drawHighlighted();
 

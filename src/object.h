@@ -46,47 +46,47 @@ public:
     {
         return prevTile;
     }
-    
+
     const Coords &getCoords() const
     {
         return coords;
     }
-    
+
     const Coords &getPrevCoords() const
     {
         return prevCoords;
     }
-    
+
     ObjectMovementBehavior getMovementBehavior() const
     {
         return movement_behavior;
     }
-    
+
     Type getType() const
     {
         return objType;
     }
-    
+
     bool hasFocus() const
     {
         return focused;
     }
-    
+
     bool isVisible() const
     {
         return visible;
     }
-    
+
     bool isAnimated() const
     {
         return animated;
     }
-    
+
     void setTile(MapTile t)
     {
         tile = t;
     }
-    
+
     void setTile(Tile *t)
     {
         tile = t->getId();
@@ -96,39 +96,39 @@ public:
     {
         prevTile = t;
     }
-    
+
     void setCoords(Coords c);
-    
+
     void setPrevCoords(Coords c)
     {
         prevCoords = c;
     }
-    
+
     void setMovementBehavior(ObjectMovementBehavior b)
     {
         movement_behavior = b;
     }
-    
+
     void setType(Type t)
     {
         objType = t;
     }
-    
+
     void setFocus(bool f = true)
     {
         focused = f;
     }
-    
+
     void setVisible(bool v = true)
     {
         visible = v;
     }
-    
+
     void setAnimated(bool a = true)
     {
         animated = a;
     }
-    
+
     void setMap(class Map *m);
     Map *getMap();
     void remove(); /**< remove self from any maps that it's part of */

@@ -29,14 +29,14 @@ public:
     virtual ~ImageLoader()
     {
     }
-    
+
     virtual Image *load(
         U4FILE *file, int width, int height, int bpp
     ) = 0;
-    
+
     static ImageLoader *getLoader(const std::string &fileType);
     static void cleanup();
-    
+
 protected:
     static ImageLoader *registerLoader(
         ImageLoader *loader, const std::string &type

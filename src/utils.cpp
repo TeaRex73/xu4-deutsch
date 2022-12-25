@@ -41,7 +41,7 @@ int xu4_random(int upperRange)
     do {
         r = std::rand();
     } while (r > rand_limit);
-    return r % upperRange; 
+    return r % upperRange;
 }
 
 
@@ -200,7 +200,7 @@ std::string deumlaut(std::string val)
 /**
  * Converts an integer value to a string
  */
-std::string to_string(int val)
+std::string xu4_to_string(int val)
 {
     char buffer[16];
     std::sprintf(buffer, "%d", val);

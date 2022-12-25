@@ -642,7 +642,7 @@ void Image::getPixelIndex(int x, int y, unsigned int &index) const
     Uint8 *p;
     Uint16 *p2;
     Uint32 *p4;
-    int bpp = surface->format->BytesPerPixel; 
+    int bpp = surface->format->BytesPerPixel;
     switch (__builtin_expect(bpp, 1)) {
     case 1:
         p = static_cast<Uint8 *>(surface->pixels)

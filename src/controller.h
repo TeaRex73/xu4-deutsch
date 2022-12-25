@@ -55,7 +55,7 @@ public:
     WaitableController(WaitableController &&) = delete;
     WaitableController &operator=(const WaitableController &) = delete;
     WaitableController &operator=(WaitableController &&) = delete;
-    
+
     virtual T getValue()
     {
         return value;
@@ -70,14 +70,14 @@ public:
 
 protected:
     T value;
-    
+
     void doneWaiting()
     {
         if (exitWhenDone) {
             Controller_endWait();
         }
     }
-    
+
 private:
     bool exitWhenDone;
 };

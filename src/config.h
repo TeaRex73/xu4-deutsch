@@ -62,7 +62,7 @@ public:
     {
         return node;
     }
-    
+
 private:
     xmlNodePtr node;
     std::string name;

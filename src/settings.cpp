@@ -322,7 +322,7 @@ bool Settings::read()
 {
     char buffer[256];
     std::FILE *settingsFile;
-    extern int eventTimerGranularity;
+    extern std::atomic_int eventTimerGranularity;
 
     settingsFile = std::fopen(filename.c_str(), "rt");
     if (!settingsFile) {

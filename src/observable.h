@@ -32,14 +32,14 @@ public:
     }
 
     virtual ~Observable() = default;
-    
+
     void addObserver(Observer<O, A> *o)
     {
         typename std::vector<Observer<O, A> *>::iterator i;
         i = std::find(observers.begin(), observers.end(), o);
         if (i == observers.end()) { observers.push_back(o); }
     }
-    
+
     int countObservers() const
     {
         return observers.size();
@@ -56,12 +56,12 @@ public:
     {
         observers.clear();
     }
-    
+
     bool hasChanged() const
     {
         return changed;
     }
-    
+
     void notifyObservers(A arg)
     {
         if (!changed) {
@@ -90,7 +90,7 @@ protected:
     {
         changed = true;
     }
-    
+
 private:
     bool changed;
     std::vector<Observer<O, A> *> observers;

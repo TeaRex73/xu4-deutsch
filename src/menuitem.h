@@ -155,7 +155,7 @@ public:
 
     virtual void activate(MenuEvent &event);
     virtual std::string getText() const;
-    
+
 protected:
     int *val;
     int min, max, increment;
@@ -186,7 +186,7 @@ public:
 
     virtual void activate(MenuEvent &event);
     virtual std::string getText() const;
-    
+
 protected:
     unsigned short *val;
     unsigned short min, max, increment;

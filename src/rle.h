@@ -11,9 +11,9 @@ extern "C" {
 #else
 #define STDFILE FILE
 #endif
-    
+
 #define RLE_RUNSTART 02
-    
+
 long rleDecompressFile(STDFILE *in, long inlen, unsigned char **out);
 long rleDecompressMemory(unsigned char *in, long inlen, unsigned char **out);
 long rleGetDecompressedSize(unsigned char *indata, long inlen);

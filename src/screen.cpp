@@ -49,7 +49,7 @@ public:
          viewport({0, 0, 0, 0})
     {
     }
-    
+
     std::string name;
     LayoutType type;
     struct {
@@ -86,7 +86,7 @@ void screenFindLineOfSightEnhanced(
     std::vector<MapTile> viewportTiles[VIEWPORT_W][VIEWPORT_H]
 );
 int screenNeedPrompt = 1;
-int screenCurrentCycle = 0;
+std::atomic_int screenCurrentCycle(0);
 int screenCursorX = 0;
 int screenCursorY = 0;
 int screenCursorStatus = 0;
@@ -94,7 +94,7 @@ int screenCursorEnabled = 1;
 int screenLos[VIEWPORT_W][VIEWPORT_H];
 static const int BufferSize = 1024;
 extern bool verbose;
-volatile bool screenMoving;
+std::atomic_bool screenMoving;
 // Just extern the system functions here. That way people aren't
 // tempted to call them as part of the public API.
 extern void screenInit_sys();
@@ -405,7 +405,7 @@ std::vector<MapTile> screenViewportTile(
     MapCoords center = c->location->coords;
     static MapTile grass =
         c->location->map->tileset->getByName("grass")->getId();
-    
+
     if ((c->location->map->width <= width)
         && (c->location->map->height <= height)) {
         center.x = c->location->map->width / 2;
@@ -1202,7 +1202,7 @@ void screenFindLineOfSightEnhanced(
         yTile,
         xTileOffset,
         yTileOffset;
-    
+
     for (octant = 0; octant < _OCTANTS; octant++) {
         switch (octant) {
         case 0:
@@ -1766,7 +1766,7 @@ void screenGemUpdate()
                     )->getId();
 #else
                     tile = c->location->map->tileAt(
-                        c->location->coords, WITHOUT_OBJECTS 
+                        c->location->coords, WITHOUT_OBJECTS
                     )->getId();
 #endif
                 }

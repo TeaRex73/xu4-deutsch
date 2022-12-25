@@ -20,7 +20,7 @@
 #include "tile.h"
 #include "utils.h"
 
-bool collisionOverride = false;
+std::atomic_bool collisionOverride(false);
 
 
 /**
@@ -199,15 +199,21 @@ bool moveObject(Map *map, Creature *obj, MapCoords avatar)
     case MOVEMENT_FIXED:
         break;
     case MOVEMENT_WANDER:
-        /* World map wandering creatures always move, whereas
-           town creatures that wander sometimes stay put */
-        if (map->isWorldMap() || (xu4_random(2) == 0)) {
+        /* Wandering creatures actually wander just 50% of the time.
+           The other 50%, they move towards the player if on the world map,
+           whereas wandering town creatures stay put in that case */
+        if (obj->isForceOfNature() || xu4_random(2) == 0) {
             dir = dirRandomDir(
                 map->getValidMoves(new_coords, obj->getTile(), true),
                 obj->getLastDir()
             );
+            break;
         }
-        break;
+        if (!map->isWorldMap()) {
+            break; // stay put
+        }
+        // not wandering in this move AND on world map -> fall through
+        /* FALLTHROUGH */
     case MOVEMENT_FOLLOW_AVATAR:
     case MOVEMENT_ATTACK_AVATAR:
         dirmask = map->getValidMoves(new_coords, obj->getTile());

@@ -130,7 +130,7 @@ Response *hawkwindGetAdvice(const DynamicResponse *dynResp)
 Response *hawkwindGetIntro(const DynamicResponse *)
 {
     Response *intro = new Response("");
-    
+
     if ((c->party->member(0)->getStatus() == STAT_SLEEPING)
         || (c->party->member(0)->getStatus() == STAT_DEAD)) {
         intro->add(uppercase(

@@ -59,15 +59,15 @@ public:
         bool wait = false
     );
     void stop(int channel = 1);
-    
+
 private:
     bool init_sys();
-    
+
     void del()
     {
         del_sys();
     }
-    
+
     void del_sys();
     void play_sys(
         Sound sound,

@@ -83,10 +83,10 @@ public:
 class TurnCompleter {
 public:
     virtual ~TurnCompleter()
-	{
-	}
+        {
+        }
 
-	virtual void finishTurn() = 0;
+        virtual void finishTurn() = 0;
 };
 
 

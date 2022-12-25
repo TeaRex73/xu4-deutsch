@@ -113,7 +113,7 @@ public:
         :enabled(false)
     {
     }
-    
+
     bool operator==(const MouseOptions &) const;
     bool operator!=(const MouseOptions &) const;
     bool enabled;
@@ -167,7 +167,7 @@ public:
          game("Ultima IV")
     {
     }
-    
+
     virtual ~SettingsData() = default;
     bool operator==(const SettingsData &) const;
     bool operator!=(const SettingsData &) const;
@@ -229,7 +229,7 @@ public:
     void init(const bool useProfile, const std::string profileName);
 
     virtual ~Settings() = default;
-    
+
     static Settings &getInstance()
     {
         if (__builtin_expect((instance == nullptr), false)) {
@@ -237,7 +237,7 @@ public:
         }
         return *instance;
     }
-    
+
     void setData(const SettingsData &data);
     bool read();
     bool write();
@@ -246,7 +246,7 @@ public:
 
 private:
     typedef std::map<std::string, int, std::less<std::string> > SettingsMap;
-    
+
     Settings();
     static Settings *instance;
     std::string userPath;

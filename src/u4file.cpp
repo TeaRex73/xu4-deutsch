@@ -32,7 +32,7 @@ public:
     U4FILE_stdio(U4FILE_stdio &&) = delete;
     U4FILE_stdio &operator=(const U4FILE_stdio &) = delete;
     U4FILE_stdio &operator=(U4FILE_stdio &&) = delete;
-    
+
     static U4FILE *open(const std::string &fname);
     virtual void close();
     virtual int seek(long offset, int whence);
@@ -62,7 +62,7 @@ public:
     U4FILE_zip(U4FILE_zip &&) = delete;
     U4FILE_zip &operator=(const U4FILE_zip &) = delete;
     U4FILE_zip &operator=(U4FILE_zip &&) = delete;
-        
+
     static U4FILE *open(const std::string &fname, const U4ZipPackage *package);
     virtual void close();
     virtual int seek(long offset, int whence);
@@ -109,37 +109,38 @@ void U4PATH::initDefaultPaths()
     // root directories
     /*Try to cover all root possibilities. These can be added to
       by separate modules*/
-    rootResourcePaths.push_back("./");
-    rootResourcePaths.push_back("./ultima4g/");
-    rootResourcePaths.push_back("/usr/lib/u4g/");
-    rootResourcePaths.push_back("/usr/local/lib/u4g/");
+    rootResourcePaths.push_back("");
+    rootResourcePaths.push_back(".");
+    rootResourcePaths.push_back("./ultima4g");
+    rootResourcePaths.push_back("/usr/lib/u4g");
+    rootResourcePaths.push_back("/usr/local/lib/u4g");
     // The second (specific) part of the path searched will be these
     // various subdirectories
     /* the possible paths where u4 for DOS can be installed */
     u4ForDOSPaths.push_back("");
-    u4ForDOSPaths.push_back("u4g/");
-    u4ForDOSPaths.push_back("ultima4g/");
+    u4ForDOSPaths.push_back("u4g");
+    u4ForDOSPaths.push_back("ultima4g");
     /* the possible paths where the u4 zipfiles can be installed */
     u4ZipPaths.push_back("");
-    u4ZipPaths.push_back("u4g/");
+    u4ZipPaths.push_back("u4g");
     /* the possible paths where the u4 music files can be installed */
     musicPaths.push_back("");
-    musicPaths.push_back("mid/");
-    musicPaths.push_back("../mid/");
-    musicPaths.push_back("music/");
-    musicPaths.push_back("../music/");
+    musicPaths.push_back("mid");
+    musicPaths.push_back("../mid");
+    musicPaths.push_back("music");
+    musicPaths.push_back("../music");
     /* the possible paths where the u4 sound files can be installed */
     soundPaths.push_back("");
-    soundPaths.push_back("./sound/");
-    soundPaths.push_back("../sound/");
+    soundPaths.push_back("./sound");
+    soundPaths.push_back("../sound");
     /* the possible paths where the u4 config files can be installed */
     configPaths.push_back("");
-    configPaths.push_back("conf/");
-    configPaths.push_back("../conf/");
+    configPaths.push_back("conf");
+    configPaths.push_back("../conf");
     /* the possible paths where the u4 graphics files can be installed */
     graphicsPaths.push_back("");
-    graphicsPaths.push_back("./graphics/");
-    graphicsPaths.push_back("../graphics/");
+    graphicsPaths.push_back("./graphics");
+    graphicsPaths.push_back("../graphics");
 } // U4PATH::initDefaultPaths
 
 
@@ -694,28 +695,50 @@ std::string u4find_path(
 )
 {
     std::FILE *f = nullptr;
+    // Try absolute first
     char path[2048]; // Sometimes paths get big.
-    for (std::list<std::string>::iterator rootItr =
-             u4Path.rootResourcePaths.begin();
-         rootItr != u4Path.rootResourcePaths.end() && !f;
-         rootItr++) {
-        for (std::list<std::string>::iterator subItr =
-                 specificSubPaths.begin();
-             subItr != specificSubPaths.end() && !f;
-             ++subItr) {
-            std::snprintf(
-                path,
-                sizeof(path),
-                "%s/%s/%s",
-                rootItr->c_str(),
-                subItr->c_str(),
-                fname.c_str()
-            );
+
+    f = std::fopen(fname.c_str(), "rb");
+    if (f)
+        std::strcpy(path, fname.c_str());
+
+    // Try 'file://' protocol if specified
+    if (f == nullptr) {
+        const std::string file_url_prefix("file://");
+
+        if(fname.compare(0, file_url_prefix.length(), file_url_prefix) == 0) {
+            std::strcpy(path, fname.substr(file_url_prefix.length()).c_str());
             if (verbose) {
                 std::printf("trying to open %s\n", path);
             }
-            if ((f = std::fopen(path, "rb")) != nullptr) {
-                break;
+            f = std::fopen(path, "rb");
+        }
+    }
+
+    // Try paths
+    if (f == nullptr) {
+        for (std::list<std::string>::iterator rootItr =
+                 u4Path.rootResourcePaths.begin();
+             rootItr != u4Path.rootResourcePaths.end() && !f;
+             rootItr++) {
+            for (std::list<std::string>::iterator subItr =
+                     specificSubPaths.begin();
+                 subItr != specificSubPaths.end() && !f;
+                 ++subItr) {
+                std::snprintf(
+                    path,
+                    sizeof(path),
+                    "%s/%s/%s",
+                    rootItr->c_str(),
+                    subItr->c_str(),
+                    fname.c_str()
+                );
+                if (verbose) {
+                    std::printf("trying to open %s\n", path);
+                }
+                if ((f = std::fopen(path, "rb")) != nullptr) {
+                    break;
+                }
             }
         }
     }

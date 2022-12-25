@@ -43,7 +43,7 @@ public:
         virtual ~Provider()
         {
         }
-        
+
         virtual std::string translate(std::vector<std::string> &parts) = 0;
     };
 
@@ -69,7 +69,7 @@ private:
         std::string s_val;
         bool set;
     };
-    
+
 public:
     /**
      * A script return code
@@ -80,7 +80,7 @@ public:
         RET_STOP
     };
 
-    
+
     /**
      * The current state of the script
      */
@@ -104,7 +104,7 @@ public:
         INPUT_KEYPRESS
     };
 
-    
+
     /**
      * The action that the script is taking
      */
@@ -135,7 +135,7 @@ public:
         ACTION_SET_VARIABLE,
         ACTION_ZTATS
     };
-    
+
     Script();
     Script(const Script &) = delete;
     Script(Script &&) = delete;

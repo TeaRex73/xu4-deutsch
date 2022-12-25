@@ -75,12 +75,12 @@ public:
     );
     void display(Context *c, TileView *view);
     DungeonGraphicType tilesToGraphic(const std::vector<MapTile> &tiles);
-    
+
     bool toggle3DDungeonView()
     {
         return screen3dDungeonViewEnabled = !screen3dDungeonViewEnabled;
     }
-    
+
     std::vector<MapTile> getTiles(int fwd, int side);
 };
 

@@ -106,7 +106,7 @@ public:
          subImages()
     {
     }
-         
+
     ~ImageInfo();
     ImageInfo(const ImageInfo &) = delete;
     ImageInfo(ImageInfo &&) = delete;

@@ -103,11 +103,11 @@ extern "C" {
         uLong size_filename;      /* filename length               2 bytes */
         uLong size_file_extra;    /* extra field length            2 bytes */
         uLong size_file_comment;  /* file comment length           2 bytes */
-    
+
         uLong disk_num_start;     /* disk number start             2 bytes */
         uLong internal_fa;        /* internal file attributes      2 bytes */
         uLong external_fa;        /* external file attributes      4 bytes */
-    
+
         tm_unz tmu_date;
     } unz_file_info;
 
@@ -173,7 +173,7 @@ extern "C" {
       return UNZ_OK if there is no problem
     */
 
-    
+
     extern int ZEXPORT unzGoToNextFile OF((unzFile file));
     /*
       Set the current file of the zipfile to the next file.
@@ -181,7 +181,7 @@ extern "C" {
       return UNZ_END_OF_LIST_OF_FILE if the actual file was the latest.
     */
 
-    
+
     extern int ZEXPORT unzLocateFile OF((
         unzFile file, const char *szFileName, int iCaseSensitivity
     ));
@@ -220,7 +220,7 @@ extern "C" {
       szComment (commentBufferSize is the size of the buffer)
     */
 
-    
+
     /*******************************************************************/
     /* for reading the content of the current zipfile, you can open it,
        read data from it, and close it (you can close it before reading all
@@ -233,7 +233,7 @@ extern "C" {
       If there is no error, the return value is UNZ_OK.
     */
 
-    
+
     extern int ZEXPORT unzCloseCurrentFile OF((unzFile file));
     /*
       Close the file in zip opened with unzOpenCurrentFile
@@ -255,19 +255,19 @@ extern "C" {
       (UNZ_ERRNO for IO error, or zLib error for uncompress error)
     */
 
-    
+
     extern z_off_t ZEXPORT unztell OF((unzFile file));
     /*
       Give the current position in uncompressed data
     */
 
-    
+
     extern int ZEXPORT unzeof OF((unzFile file));
     /*
       return 1 if the end of file was reached, 0 elsewhere
     */
 
-    
+
     extern int ZEXPORT unzGetLocalExtrafield OF((
         unzFile file, voidp buf, unsigned int len
     ));

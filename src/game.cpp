@@ -4,6 +4,7 @@
 
 #include "vc6.h" // Fixes things if you're using VC6, does nothing otherwise
 
+#include <atomic>
 #include <cctype>
 #include <cstring>
 #include <ctime>
@@ -496,27 +497,27 @@ bool gameSave()
      */
     if (c->location->context & CTX_DUNGEON) {
         unsigned int x, y, z;
-        typedef std::map<const Creature *, int> DngCreatureIdMap;
+        typedef std::map<CreatureId, int> DngCreatureIdMap;
         static DngCreatureIdMap id_map;
         /**
          * Map creatures to u4dos dungeon creature Ids
          */
         if (id_map.size() == 0) {
-            id_map[creatureMgr->getById(RAT_ID)] = 1;
-            id_map[creatureMgr->getById(BAT_ID)] = 2;
-            id_map[creatureMgr->getById(GIANT_SPIDER_ID)] = 3;
-            id_map[creatureMgr->getById(GHOST_ID)] = 4;
-            id_map[creatureMgr->getById(SLIME_ID)] = 5;
-            id_map[creatureMgr->getById(TROLL_ID)] = 6;
-            id_map[creatureMgr->getById(GREMLIN_ID)] = 7;
-            id_map[creatureMgr->getById(MIMIC_ID)] = 8;
-            id_map[creatureMgr->getById(REAPER_ID)] = 9;
-            id_map[creatureMgr->getById(INSECT_SWARM_ID)] = 10;
-            id_map[creatureMgr->getById(GAZER_ID)] = 11;
-            id_map[creatureMgr->getById(PHANTOM_ID)] = 12;
-            id_map[creatureMgr->getById(ORC_ID)] = 13;
-            id_map[creatureMgr->getById(SKELETON_ID)] = 14;
-            id_map[creatureMgr->getById(ROGUE_ID)] = 15;
+            id_map[RAT_ID] = 1;
+            id_map[BAT_ID] = 2;
+            id_map[GIANT_SPIDER_ID] = 3;
+            id_map[GHOST_ID] = 4;
+            id_map[SLIME_ID] = 5;
+            id_map[TROLL_ID] = 6;
+            id_map[GREMLIN_ID] = 7;
+            id_map[MIMIC_ID] = 8;
+            id_map[REAPER_ID] = 9;
+            id_map[INSECT_SWARM_ID] = 10;
+            id_map[GAZER_ID] = 11;
+            id_map[PHANTOM_ID] = 12;
+            id_map[ORC_ID] = 13;
+            id_map[SKELETON_ID] = 14;
+            id_map[ROGUE_ID] = 15;
         }
         dngMapFile = std::fopen(
             (settings.getUserPath() + DNGMAP_SAV_BASE_FILENAME).c_str(), "wb"
@@ -529,13 +530,9 @@ bool gameSave()
             for (y = 0; y < c->location->map->height; y++) {
                 for (x = 0; x < c->location->map->width; x++) {
                     unsigned char tile = c->location->map->ttrti(
-#if 0
-                        *c->location->map->getTileFromData(MapCoords(x, y, z))
-#else
                         *c->location->map->tileAt(
                             MapCoords(x, y, z), WITHOUT_OBJECTS
                         )
-#endif
                     );
 
                     /**
@@ -554,7 +551,8 @@ bool gameSave()
                             c->location->map->objectAt(MapCoords(x, y, z));
                         if (obj && (obj->getType() == Object::CREATURE)) {
                             const Creature *m = dynamic_cast<Creature *>(obj);
-                            DngCreatureIdMap::iterator m_id = id_map.find(m);
+                            DngCreatureIdMap::iterator m_id =
+                                id_map.find(m->getId());
                             if (m_id != id_map.end()) {
                                 tile |= m_id->second;
                             }
@@ -763,7 +761,7 @@ bool GameController::exitToParentMap()
  */
 void GameController::finishTurn()
 {
-    extern bool deathSequenceRunning;
+    extern std::atomic_bool deathSequenceRunning;
     if (deathSequenceRunning) {
         /* none of this makes sense if party is already dead */
         return;
@@ -1213,79 +1211,100 @@ bool GameController::keyPressed(int key)
         case ' ':
             screenMessage("Aussetzen\n");
             break;
-        case 26:
+        case 26: // Game sends this when party asleep -> no settings.debug mask
             /* Ctrl-Z */
             screenMessage("Zzzzz\n");
             break;
         case '+':
         case '-':
         case U4_KEYPAD_ENTER:
-        {
-            int old_cycles = settings.gameCyclesPerSecond;
-            if ((key == '+')
-                && (++settings.gameCyclesPerSecond >= MAX_CYCLES_PER_SECOND)) {
-                settings.gameCyclesPerSecond = MAX_CYCLES_PER_SECOND;
-            } else if (
-				(key == '-')
-				&& (--settings.gameCyclesPerSecond <= MIN_CYCLES_PER_SECOND)
-			) {
-                settings.gameCyclesPerSecond = MIN_CYCLES_PER_SECOND;
-            } else if (key == U4_KEYPAD_ENTER) {
-                settings.gameCyclesPerSecond = DEFAULT_CYCLES_PER_SECOND;
-            }
-            if (old_cycles != settings.gameCyclesPerSecond) {
-                eventTimerGranularity = (1000 / settings.gameCyclesPerSecond);
-                eventHandler->getTimer()->reset(eventTimerGranularity);
-                if (settings.gameCyclesPerSecond
-                    == DEFAULT_CYCLES_PER_SECOND) {
-                    screenMessage("Speed: Normal\n");
-                } else if (key == '+') {
-                    screenMessage(
-                        "Speed Up (%d)\n", settings.gameCyclesPerSecond
-                    );
-                } else {
-                    screenMessage(
-                        "Speed Down (%d)\n", settings.gameCyclesPerSecond
-                    );
+            if (settings.debug) {
+                int old_cycles = settings.gameCyclesPerSecond;
+                if ((key == '+')
+                    && (++settings.gameCyclesPerSecond
+                        >= MAX_CYCLES_PER_SECOND)) {
+                    settings.gameCyclesPerSecond = MAX_CYCLES_PER_SECOND;
+                } else if (
+                    (key == '-')
+                    && (--settings.gameCyclesPerSecond
+                        <= MIN_CYCLES_PER_SECOND)
+                ) {
+                    settings.gameCyclesPerSecond = MIN_CYCLES_PER_SECOND;
+                } else if (key == U4_KEYPAD_ENTER) {
+                    settings.gameCyclesPerSecond = DEFAULT_CYCLES_PER_SECOND;
                 }
-            } else if (settings.gameCyclesPerSecond
-                       == DEFAULT_CYCLES_PER_SECOND) {
-                screenMessage("Speed: Normal\n");
+                if (old_cycles != settings.gameCyclesPerSecond) {
+                    eventTimerGranularity =
+                        (1000 / settings.gameCyclesPerSecond);
+                    eventHandler->getTimer()->reset(eventTimerGranularity);
+                    if (settings.gameCyclesPerSecond
+                        == DEFAULT_CYCLES_PER_SECOND) {
+                        screenMessage("Speed: Normal\n");
+                    } else if (key == '+') {
+                        screenMessage(
+                            "Speed Up (%d)\n", settings.gameCyclesPerSecond
+                        );
+                    } else {
+                        screenMessage(
+                            "Speed Down (%d)\n", settings.gameCyclesPerSecond
+                        );
+                    }
+                } else if (settings.gameCyclesPerSecond
+                           == DEFAULT_CYCLES_PER_SECOND) {
+                    screenMessage("Speed: Normal\n");
+                }
+                endTurn = false;
+            } else {
+                valid = false;
             }
-            endTurn = false;
             break;
-        }
         /* handle music volume adjustments */
         case ',':
-            // decrease the volume if possible
-            screenMessage(
-                "Music: %d%s\n", musicMgr->decreaseMusicVolume(), "%"
-            );
-            endTurn = false;
+            if (settings.debug) {
+                // decrease the volume if possible
+                screenMessage(
+                    "Music: %d%s\n", musicMgr->decreaseMusicVolume(), "%"
+                );
+                endTurn = false;
+            } else {
+                valid = false;
+            }
             break;
         case '.':
-            // increase the volume if possible
-            screenMessage(
-                "Music: %d%s\n", musicMgr->increaseMusicVolume(), "%"
-            );
-            endTurn = false;
+            if (settings.debug) {
+                // increase the volume if possible
+                screenMessage(
+                    "Music: %d%s\n", musicMgr->increaseMusicVolume(), "%"
+                );
+                endTurn = false;
+            } else {
+                valid = false;
+            }
             break;
             /* handle sound volume adjustments */
         case '<':
-            // decrease the volume if possible
-            screenMessage(
-                "Sound: %d%s\n", musicMgr->decreaseSoundVolume(), "%"
-            );
-            soundPlay(SOUND_FLEE);
-            endTurn = false;
+            if (settings.debug) {
+                // decrease the volume if possible
+                screenMessage(
+                    "Sound: %d%s\n", musicMgr->decreaseSoundVolume(), "%"
+                );
+                soundPlay(SOUND_FLEE);
+                endTurn = false;
+            } else {
+                valid = false;
+            }
             break;
         case '>':
-            // increase the volume if possible
-            screenMessage(
-                "Sound: %d%s\n", musicMgr->increaseSoundVolume(), "%"
-            );
-            soundPlay(SOUND_FLEE);
-            endTurn = false;
+            if (settings.debug) {
+                // increase the volume if possible
+                screenMessage(
+                    "Sound: %d%s\n", musicMgr->increaseSoundVolume(), "%"
+                );
+                soundPlay(SOUND_FLEE);
+                endTurn = false;
+            } else {
+                valid = false;
+            }
             break;
         case 'a':
             attack();
@@ -1845,6 +1864,7 @@ bool ZtatsController::keyPressed(int key)
     case U4_ESC:
     case U4_SPACE:
     case U4_ENTER:
+        c->stats->setView(StatsView(STATS_PARTY_OVERVIEW));
         doneWaiting();
         return true;
     default:
@@ -2192,12 +2212,7 @@ bool fireAt(const Coords &coords, bool originAvatar)
         /* Is it a pirate ship firing at US? */
         if (hitsAvatar) {
             GameController::flashTile(coords, "hit_flash", 4);
-            if (c->transportContext == TRANSPORT_SHIP) {
-                gameDamageShip(-1, 10);
-            } else {
-                /* party gets hurt between 10-25 damage */
-                gameDamageParty(10, 25);
-            }
+            c->party->applyEffect(EFFECT_FIRE);
         }
         /* inanimate objects get destroyed instantly, while creatures
            get a chance */
@@ -2339,7 +2354,7 @@ bool getChestTrapHandler(int player)
             screenMessage("VERMIEDEN!\n\n");
             return true;
         }
-        return false;
+        return trapType != EFFECT_LAVA; //xu4-enhanced: Bomb traps destroy
     }
     screenMessage("\n");
     return true;
@@ -2788,7 +2803,7 @@ void readyWeapon(int player)
         if (player == -1) {
             return;
         }
-		screenMessage("\n");
+        screenMessage("\n");
     }
     // get the weapon to use
     c->stats->setView(STATS_WEAPONS);
@@ -3001,7 +3016,7 @@ void newOrder()
         return;
     }
     if (player1 == 0) {
-		soundPlay(SOUND_ERROR);
+        soundPlay(SOUND_ERROR);
         screenMessage(
             "\n%s, DU MUSST F]HREN!\n",
             uppercase(c->party->member(0)->getName()).c_str()
@@ -3238,7 +3253,7 @@ void wearArmor(int player)
         if (player == -1) {
             return;
         }
-		screenMessage("\n");
+        screenMessage("\n");
     }
     c->stats->setView(STATS_ARMOR);
     screenMessage("R]STUNG-");
@@ -3374,6 +3389,7 @@ void gameCheckHullIntegrity()
 {
     int i;
     bool killAll = false;
+
     /* see if the ship has sunk */
     if ((c->transportContext == TRANSPORT_SHIP)
         && (c->saveGame->shiphull <= 0)) {
@@ -3525,7 +3541,12 @@ void gameFixupObjects(Map *map)
             // into base tilemap
             MapTile tile = TileMap::get("base")->translate(monster->tile),
                 oldTile = TileMap::get("base")->translate(monster->prevTile);
-            if (i < MONSTERTABLE_CREATURES_SIZE) {
+            int limitForCreatures =
+                map->type == Map::DUNGEON ?
+                MONSTERTABLE_OBJECTS_SIZE :
+                MONSTERTABLE_CREATURES_SIZE;
+
+            if (i < limitForCreatures) {
                 Creature *creature = creatureMgr->getByTile(tile);
                 /* make sure we really have a creature */
                 if (creature) {
@@ -3616,20 +3637,16 @@ bool creatureRangeAttack(const Coords &coords, Creature *m)
     // Does the attack hit the avatar?
     if (coords == c->location->coords) {
         /* always displays as a 'hit' */
-        GameController::flashTile(coords, tile, 3);
-        /* FIXME: check actual damage from u4dos -- values here are guessed */
-        if (c->transportContext == TRANSPORT_SHIP) {
-            gameDamageShip(-1, 10);
-        } else {
-            gameDamageParty(10, 25);
-        }
+        GameController::flashTile(coords, tile, 4);
+        /* Actual damage from u4dos */
+        c->party->applyEffect(EFFECT_FIRE);
         return true;
     }
     // Destroy objects that were hit
     else if (obj) {
         if (((obj->getType() == Object::CREATURE) && m->isAttackable())
             || (obj->getType() == Object::UNKNOWN)) {
-            GameController::flashTile(coords, tile, 3);
+            GameController::flashTile(coords, tile, 4);
             c->location->map->removeObject(obj);
             return true;
         }
@@ -3718,6 +3735,11 @@ void gameDamageParty(int minDamage, int maxDamage)
     int i;
     int damage;
     int lastdmged = -1;
+    extern std::atomic_bool deathSequenceRunning;
+    if (deathSequenceRunning) {
+        /* none of this makes sense if party is already dead */
+        return;
+    }
     soundPlay(SOUND_PC_STRUCK, false, -1, true);
     for (i = 0; i < c->party->size(); i++) {
         if (c->party->member(i)->getStatus() != STAT_DEAD
@@ -3748,6 +3770,11 @@ void gameDamageParty(int minDamage, int maxDamage)
 void gameDamageShip(int minDamage, int maxDamage)
 {
     int damage;
+    extern std::atomic_bool deathSequenceRunning;
+    if (deathSequenceRunning) {
+        /* none of this makes sense if party is already dead */
+        return;
+    }
     if (c->transportContext == TRANSPORT_SHIP) {
         damage = ((minDamage >= 0) && (minDamage < maxDamage)) ?
             xu4_random((maxDamage + 1) - minDamage) + minDamage :
@@ -3797,6 +3824,7 @@ void GameController::creatureCleanup(bool allCreatures)
             && (allCreatures || ((o_coords.z == c->location->coords.z)
                 && (o_coords.distance(c->location->coords, c->location->map)
                     > MAX_CREATURE_DISTANCE)))) {
+
             /* delete the object and remove it from the map */
             i = map->removeObject(i);
         } else {
@@ -3811,19 +3839,37 @@ void GameController::creatureCleanup(bool allCreatures)
  */
 void GameController::checkRandomCreatures()
 {
+    int i;
+    bool isDungeon = c->location->context & CTX_DUNGEON;
     bool canSpawnHere =
-        c->location->map->isWorldMap() || c->location->context & CTX_DUNGEON;
-    int spawnDivisor = c->location->context & CTX_DUNGEON ?
+        c->location->map->isWorldMap() || isDungeon;
+    int spawnDivisor = isDungeon ?
+#if  0
         (32 - (c->location->coords.z << 2)) :
-        32;
+#else
+        1 :
+#endif
+        16;
+    int numberOfCreatures =
+        c->location->map->getNumberOfCreatures(
+            isDungeon ? c->location->coords.z : -1
+        );
+    int maxCreatures =
+        isDungeon ?
+        MAX_CREATURES_PER_LEVEL :
+        MAX_CREATURES_ON_MAP;
     /* If there are too many creatures already,
      * or we're not on outdoors/in a dungeon, don't worry about it! */
-    if (!canSpawnHere
-        || (c->location->map->getNumberOfCreatures() >= MAX_CREATURES_ON_MAP)
-        || (xu4_random(spawnDivisor) != 0)) {
+    if (
+        (!canSpawnHere)
+        || (numberOfCreatures >= maxCreatures)
+        || (xu4_random(spawnDivisor) != 0)
+    ) {
         return;
     }
-    gameSpawnCreature(nullptr);
+    for (i = numberOfCreatures; i < maxCreatures; i++) {
+        gameSpawnCreature(nullptr);
+    }
 }
 
 
@@ -3864,7 +3910,7 @@ void gameLordBritishCheckLevels()
         if (player->getRealLevel() < player->getMaxLevel()) {
             // add an extra space to separate messages
             if (!advanced) {
-				ReadChoiceController::get("");
+                ReadChoiceController::get("");
                 screenMessage("\n");
                 advanced = true;
             }
@@ -3881,49 +3927,49 @@ void gameLordBritishCheckLevels()
  */
 bool gameSpawnCreature(const Creature *m)
 {
-    int t, i;
+    static const int MAX_TRIES = 0x100;
     const Creature *creature;
     MapCoords coords = c->location->coords;
+
     if (c->location->context & CTX_DUNGEON) {
         /* FIXME: for some reason dungeon monsters aren't spawning
            correctly */
         bool found = false;
         MapCoords new_coords;
-        for (i = 0; i < 0x100; i++) {
-            new_coords = MapCoords(
-                xu4_random(c->location->map->width),
-                xu4_random(c->location->map->height),
-                coords.z
-            );
-            const Tile *tile =
-                c->location->map->tileTypeAt(new_coords, WITH_OBJECTS);
-            if (tile->isCreatureWalkable() && tile->willWanderOn()) {
-                found = true;
-                break;
-            }
+        new_coords = MapCoords(
+            xu4_random(c->location->map->width),
+            xu4_random(c->location->map->height),
+            coords.z
+        );
+        const Tile *tile =
+            c->location->map->tileTypeAt(new_coords, WITH_OBJECTS);
+        // U4DOS: Dungeon monsters spawn only on unoccupied floor tiles
+        if (tile->isDungeonFloor()) {
+            found = true;
         }
         if (!found) {
             return false;
         }
         coords = new_coords;
-    } else {
-        int dx = 0, dy = 0;
+    } else { // not dungeon
+        int dx, dy, xrem, xbase, yrem, ybase;
         bool ok = false;
         int tries = 0;
-        static const int MAX_TRIES = 0x100;
         while (!ok && (tries < MAX_TRIES)) {
-            dx = 7;
-            dy = xu4_random(7);
-            if (xu4_random(2)) {
-                dx = -dx;
-            }
-            if (xu4_random(2)) {
-                dy = -dy;
-            }
-            if (xu4_random(2)) {
-                t = dx;
-                dx = dy;
-                dy = t;
+            xrem = coords.x % 16;
+            yrem = coords.y % 16;
+            xbase = xrem < 8 ? -xrem - 16 : -xrem;
+            ybase = yrem < 8 ? -yrem - 16 : -yrem;
+            dx = xbase + xu4_random(32);
+            dy = ybase + xu4_random(32);
+
+            // Make sure it's not in view of the player if not cheat-summoned
+            if (
+                !m
+                && std::abs(dx) <= (VIEWPORT_W / 2)
+                && std::abs(dy) <= (VIEWPORT_H / 2)
+            ) {
+                return false;
             }
             /* make sure we can spawn the creature there */
             if (m) {
@@ -3965,8 +4011,10 @@ bool gameSpawnCreature(const Creature *m)
     }
     if (creature) {
         c->location->map->addCreature(creature, coords);
+        return true;
+    } else {
+        return false;
     }
-    return true;
 } // gameSpawnCreature
 
 

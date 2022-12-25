@@ -32,7 +32,7 @@ public:
         :coords(), mapid(0)
     {
     }
-    
+
     MapCoords coords;
     MapId mapid;
 };
@@ -52,13 +52,13 @@ public:
          exitPortal(false)
     {
     }
-    
+
     ~Portal();
     Portal(const Portal &) = delete;
     Portal(Portal &&) = delete;
     Portal &operator=(const Portal &) = delete;
     Portal &operator=(Portal &&) = delete;
-    
+
     MapCoords coords;
     MapId destid;
     MapCoords start;
