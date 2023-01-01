@@ -257,7 +257,7 @@ void PartyMember::addStatus(StatusType s)
     case STAT_SLEEPING:
     case STAT_DEAD:
         setTile(Tileset::findTileByName("corpse")->getId());
-    break;
+        break;
     default:
         ASSERT(
             0,
@@ -279,11 +279,11 @@ void PartyMember::setStatus(StatusType s)
     case STAT_GOOD:
     case STAT_POISONED:
         setTile(tileForClass(getClass()));
-                break;
+        break;
     case STAT_SLEEPING:
     case STAT_DEAD:
         setTile(Tileset::findTileByName("corpse")->getId());
-                break;
+        break;
     default:
         ASSERT(
             0,
@@ -415,7 +415,7 @@ bool PartyMember::heal(HealType type)
         if ((getStatus() == STAT_DEAD) || (player->hp == player->hpMax)) {
             return false;
         }
-        player->hp += 75 + (xu4_random(0x100) % 0x19);
+        player->hp += 75 + xu4_random(24);
         break;
     case HT_CAMPHEAL:
         if ((getStatus() == STAT_DEAD) || (player->hp == player->hpMax)) {
@@ -1009,38 +1009,39 @@ void Party::adjustKarma(KarmaAction action)
 void Party::applyEffect(TileEffect effect)
 {
     int i;
-        switch (effect) {
-        case EFFECT_LAVA:
-        case EFFECT_FIRE:
-                if (c->transportContext == TRANSPORT_SHIP) {
-                        gameDamageShip(-1, 10);
-                } else if (c->transportContext != TRANSPORT_BALLOON) {
-                        gameDamageParty(0, 24);
+
+    switch (effect) {
+    case EFFECT_LAVA:
+    case EFFECT_FIRE:
+        if (c->transportContext == TRANSPORT_SHIP) {
+            gameDamageShip(-1, 10);
+        } else if (c->transportContext != TRANSPORT_BALLOON) {
+            gameDamageParty(0, 24);
+        }
+        break;
+    default:
+        for (i = 0; i < size(); i++) {
+            switch (effect) {
+            case EFFECT_NONE:
+            case EFFECT_ELECTRICITY:
+                members[i]->applyEffect(effect);
+                break;
+            case EFFECT_SLEEP:
+            case EFFECT_POISONFIELD:
+                if (xu4_random(2) == 0) {
+                    members[i]->applyEffect(effect);
                 }
                 break;
-        default:
-                for (i = 0; i < size(); i++) {
-                        switch (effect) {
-                        case EFFECT_NONE:
-                        case EFFECT_ELECTRICITY:
-                                members[i]->applyEffect(effect);
-                                break;
-                        case EFFECT_SLEEP:
-                        case EFFECT_POISONFIELD:
-                                if (xu4_random(2) == 0) {
-                                        members[i]->applyEffect(effect);
-                                }
-                                break;
-                        case EFFECT_POISON:
-                                if (xu4_random(8) == 0) {
-                                        members[i]->applyEffect(effect);
-                                        break;
-                                }
-                        default:
-                                break;
-                        }
+            case EFFECT_POISON:
+                if (xu4_random(8) == 0) {
+                    members[i]->applyEffect(effect);
+                    break;
                 }
+            default:
+                break;
+            }
         }
+    }
 }
 
 /**
@@ -1144,11 +1145,21 @@ bool Party::donate(int quantity)
 void Party::endTurn()
 {
     int i;
-    saveGame->moves++;
+
+    /* u4apple2:
+       Moves don't increase during combat. This is important
+       for the game balance because of the eras of encounters.
+       Increasing moves in combat makes the game get harder too
+       quickly.
+    */
+    if ((c->location->context & CTX_NON_COMBAT) == c->location->context) {
+        saveGame->moves++;
+    }
+
     for (i = 0; i < size(); i++) {
         /* Handle player status (only for non-combat turns) */
         if ((c->location->context & CTX_NON_COMBAT) == c->location->context) {
-            /* party members eat food (also non-combat) */
+            /* party members eat food (also not during combat) */
             if (!members[i]->isDead()) {
                 adjustFood(-1);
             }

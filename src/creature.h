@@ -26,7 +26,6 @@ typedef std::vector<class Creature *> CreatureVector;
 /* Creatures on world map */
 
 #define MAX_CREATURES_ON_MAP 4
-#define MAX_CREATURES_PER_LEVEL 2
 #define MAX_CREATURE_DISTANCE 24
 
 /* Creature ids */
@@ -201,11 +200,6 @@ public:
         return resists;
     }
 
-    Direction getLastDir()
-    {
-        return lastDir;
-    }
-
     void setName(std::string s)
     {
         name = s;
@@ -224,11 +218,6 @@ public:
     virtual void setHp(int points)
     {
         hp = points;
-    }
-
-    void setLastDir(Direction d)
-    {
-        lastDir = d;
     }
 
     bool isGood() const
@@ -419,7 +408,6 @@ protected:
     int encounterSize;
     unsigned char resists;
     CreatureId spawn;
-    Direction lastDir;
 };
 
 

@@ -170,24 +170,22 @@ void InnController::begin()
     heal();
     /* Is there a special encounter during your stay? */
     // mwinterrowd suggested code, based on u4dos
-    if (c->party->member(0)->isDead()) {
-        maybeMeetIsaac();
+    if (c->party->member(0)->isDead()
+        || (!settings.innAlwaysCombat && (xu4_random(4) != 0))) {
+        bool metIsaac = maybeMeetIsaac();
         /* Wake everyone up! */
         for (int i = 0; i < c->party->size(); i++) {
             c->party->member(i)->wakeUp();
         }
-        screenMessage("\nMORGEN!\n");
+        /* The "eerie noise" text goes here (in u4apple2, u4dos doesn't
+           have it at all), not in a non-existing rat enconter */
+        screenMessage(
+            metIsaac ?
+            "\nDU ERWACHST VON EINEM SCHAURIGEN GER[USCHE!\n\n" :
+            "\nMORGEN!\n"
+        );
     } else {
-        if (!settings.innAlwaysCombat && (xu4_random(4) != 0)) {
-            maybeMeetIsaac();
-            /* Wake everyone up! */
-            for (int i = 0; i < c->party->size(); i++) {
-                c->party->member(i)->wakeUp();
-            }
-            screenMessage("\nMORGEN!\n");
-        } else {
-            maybeAmbush();
-        }
+        maybeAmbush();
     }
     screenPrompt();
     musicMgr->play();
@@ -207,9 +205,10 @@ bool InnController::heal()
     return healed;
 }
 
-void InnController::maybeMeetIsaac()
+bool InnController::maybeMeetIsaac()
 {
     // Does Isaac the Ghost pay a visit to the Avatar?
+    // He does so in 1 of 4 cases in the inn of Skara Brae
     if ((c->location->map->id == MAP_SKARABRAE) && (xu4_random(4) == 0)) {
         City *city = dynamic_cast<City *>(c->location->map);
         if ((city->extraDialogues.size() == 1)
@@ -222,7 +221,7 @@ void InnController::maybeMeetIsaac()
                 Person *p = dynamic_cast<Person *>(*i);
                 if (p && (p->getName() == "Isaac")) {
                     p->setCoords(coords);
-                    return;
+                    return true;
                 }
             }
             // Otherwise, we need to create Isaac
@@ -234,44 +233,40 @@ void InnController::maybeMeetIsaac()
             Isaac->setPrevTile(Isaac->getTile());
             // Add Isaac near the Avatar
             city->addPerson(Isaac);
+            return true;
         }
     }
+    return false;
 } // InnController::maybeMeetIsaac
 
 void InnController::maybeAmbush()
 {
     MapId mapid;
     Creature *creature;
-    bool showMessage = true;
+
     /* Wake up the Avatar! */
     c->party->member(0)->wakeUp();
+
     /* Rats seem much more rare than meeting
-       rogues in the streets */
-    if (xu4_random(4) == 0) {
-        /* Rats! */
-        mapid = MAP_BRICK_CON;
-        creature = c->location->map->addCreature(
-            creatureMgr->getById(RAT_ID), c->location->coords
-        );
-        screenMessage(
-            "\nDU ERWACHST VON EINEM SCHAURIGEN GER[USCHE!\n\n"
-        );
-    } else {
-        /* While strolling down the street,
-           attacked by rogues! */
-        mapid = MAP_INN_CON;
-        creature = c->location->map->addCreature(
-            creatureMgr->getById(ROGUE_ID), c->location->coords
-        );
-        screenMessage(
-            "\nMITTEN IN DER NACHT, W[HREND EINES KLEINEN SPAZIERGANGS...\n\n"
-        );
-        showMessage = false;
-    }
+       rogues in the streets
+       - in fact, rat encounters in the inn don't exist at all in u4dos
+       or u4apple2, removing them. The "eerie noise" text belongs to
+       meeting Isaac, not to an encouter */
+
+    /* While strolling down the street,
+       attacked by rogues! */
+    mapid = MAP_INN_CON;
+    creature = c->location->map->addCreature(
+        creatureMgr->getById(ROGUE_ID),
+        c->location->coords
+    );
+    screenMessage(
+        "\nMITTEN IN DER NACHT, W[HREND EINES KLEINEN SPAZIERGANGS...\n\n"
+    );
     map = getCombatMap(mapMgr->get(mapid));
     game->setMap(map, true, nullptr, this);
     init(creature);
-    showCombatMessage(showMessage);
+    showCombatMessage(false);
     CombatController::begin();
 } // InnController::maybeAmbush
 

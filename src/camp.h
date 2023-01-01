@@ -29,7 +29,7 @@ public:
 
 private:
     bool heal();
-    void maybeMeetIsaac();
+    bool maybeMeetIsaac();
     void maybeAmbush();
 };
 

@@ -10,6 +10,8 @@
 #include <libxml/xmlmemory.h>
 #include <libxml/parser.h>
 
+#define TLK_BUF_SIZE 384
+
 xmlNodePtr addAsText(xmlDocPtr doc, xmlNodePtr node, const char *in)
 {
     const char *begin, *end;
@@ -39,7 +41,7 @@ void xmlToTlk(xmlDocPtr doc, FILE *tlk)
     xmlNodePtr root, person, node;
     const char *val;
     char *ptr;
-    char tlk_buffer[384];
+    char tlk_buffer[TLK_BUF_SIZE];
     enum {
         NAME,
         PRONOUN,
@@ -187,7 +189,7 @@ xmlDocPtr tlkToXml(FILE *tlk)
     xmlDocPtr doc;
     xmlNodePtr root, node;
     int i;
-    char tlk_buffer[288];
+    char tlk_buffer[TLK_BUF_SIZE];
     char buf[100];
     char *response1, *response2, *question, *yes, *no;
     doc = xmlNewDoc((const xmlChar *)"1.0");

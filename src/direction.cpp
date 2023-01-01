@@ -91,21 +91,30 @@ Direction dirRandomDir(int valid_directions_mask, Direction preferred)
 {
     int i, n;
     Direction d[4];
+    Direction disliked = dirReverse(preferred);
     n = 0;
     for (i = DIR_WEST; i <= DIR_SOUTH; i++) {
-        if (DIR_IN_MASK(i, valid_directions_mask)) {
+        if (
+            DIR_IN_MASK(i, valid_directions_mask)
+            && static_cast<Direction>(i) != disliked
+        ) {
             d[n] = static_cast<Direction>(i);
             n++;
         }
     }
+    // If nothing found + in 1/8 of other cases, allow disliked direction
+    if (
+        (n == 0 || xu4_random(8) == 0)
+        && DIR_IN_MASK(disliked, valid_directions_mask)) {
+        d[n] = disliked;
+        n++;
+    }
+    // Still nowhere to go -> stay put
     if (n == 0) {
         return DIR_NONE;
     }
-    if ((preferred == DIR_NONE)
-        || !DIR_IN_MASK(preferred, valid_directions_mask)) {
-        return d[xu4_random(n)];
-    }
-    return xu4_random(2) ? preferred : d[xu4_random(n)];
+
+    return d[xu4_random(n)];
 }
 
 

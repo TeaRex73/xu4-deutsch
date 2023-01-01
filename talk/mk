@@ -3,7 +3,7 @@ pushd . || exit 1
 cd ~/u4/talk || exit 1
 if grep '[^ <>]\{17,\}' *.XML | grep -v turnAwayProb | grep -v 'space="preserve"'; then exit 0; fi
 rm -rf 2* || exit 1
-for i in *.XML; do cat "$i" | recode UTF-8..ISO646-DE > "2$i" && /usr/local/lib/u4g/tlkconv --fromxml "2$i" "${i%%XML}GER" || exit 1; done
+for i in *.XML; do cat "$i" | recode UTF-8..ISO646-DE > "2$i" && echo tlkconv --fromxml "2$i" "${i%%XML}GER" && /usr/local/lib/u4g/tlkconv --fromxml "2$i" "${i%%XML}GER" || exit 1; done
 rm -rf 2* || exit 1
 mv *.GER ~/U4N/ULTIMA4/ || exit 1
 cd  ~/U4N/ULTIMA4/ || exit 1

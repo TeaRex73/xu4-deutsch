@@ -344,7 +344,7 @@ bool dungeonHandleTrap(TrapType)
         break;
     case TRAP_PIT:
         screenMessage("\nFallgrube!\n");
-                c->party->applyEffect(EFFECT_FIRE);
+        c->party->applyEffect(EFFECT_FIRE);
         break;
     default:
         break;

@@ -603,9 +603,13 @@ bool ReagentsMenuController::keyPressed(int key)
             /* change whether or not it's selected */
             item->setSelected(!item->isSelected());
             if (item->isSelected()) {
-                ingredients->addReagent(static_cast<Reagent>(item->getId()));
+                ingredients->addReagent(
+                    static_cast<Reagent>(item->getId())
+                );
             } else {
-                ingredients->removeReagent(static_cast<Reagent>(item->getId()));
+                ingredients->removeReagent(
+                    static_cast<Reagent>(item->getId())
+                );
             }
         }
         break;

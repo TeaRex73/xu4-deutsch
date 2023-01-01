@@ -15,6 +15,7 @@
 #include <ctime>
 
 
+static int rand_limit_precalc[256];
 
 
 /**
@@ -22,7 +23,11 @@
  */
 void xu4_srandom()
 {
+    int i;
     std::srand(static_cast<unsigned int>(std::time(nullptr)));
+    for (i = 1; i <= 256; i++) {
+        rand_limit_precalc[i - 1] = RAND_MAX - (((RAND_MAX % i) + 1) % i);
+    }
 }
 
 
@@ -37,7 +42,11 @@ int xu4_random(int upperRange)
     if (upperRange <= 1) {
         return 0;
     }
-    rand_limit = RAND_MAX - (((RAND_MAX % upperRange) + 1) % upperRange);
+    if (__builtin_expect((upperRange > 256), false)) {
+        rand_limit = RAND_MAX - (((RAND_MAX % upperRange) + 1) % upperRange);
+    } else {
+        rand_limit = rand_limit_precalc[upperRange - 1];
+    }
     do {
         r = std::rand();
     } while (r > rand_limit);

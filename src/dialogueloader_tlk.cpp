@@ -160,20 +160,20 @@ Dialogue *U4TlkDialogueLoader::load(void *source)
     std::string look = std::string("Du siehst ") + strings[2];
     dlg->addKeyword("schauen", new Response(uppercase(look)));
     dlg->addKeyword("sieh", new Response(uppercase(look)));
-        dlg->addKeyword("sehen", new Response(uppercase(look)));
+    dlg->addKeyword("sehen", new Response(uppercase(look)));
     Response *name = new Response(uppercase(
                                       dlg->getPronoun()
                                       + " sagt:\nIch bin "
                                       + dlg->getName()
                                       + "."
-                                 ));
+                                  ));
     dlg->addKeyword("name", name);
     dlg->addKeyword("wer", name);
     Response *gib =
         new Response(uppercase(
-                               dlg->getPronoun()
-                               + " sagt:\nIch brauche dein Gold nicht. "
-                                 "Behalt es!"
+                         dlg->getPronoun()
+                         + " sagt:\nIch brauche dein Gold nicht. "
+                         "Behalt es!"
                      ));
 
     dlg->addKeyword("geben", gib);
@@ -202,7 +202,7 @@ Dialogue *U4TlkDialogueLoader::load(void *source)
         new Response(uppercase(
                          dlg->getPronoun()
                          + " sagt:\nHallo Banjo Bob! Deine geheime Zahl ist "
-                           "4F4A4E0A"
+                         "4F4A4E0A"
                      ))
     );
     return dlg;

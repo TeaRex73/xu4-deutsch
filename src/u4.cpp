@@ -56,7 +56,7 @@ int main(int argc, char *argv[])
     if (!(avatar = u4fopen("AVATAR.EXE"))) {
         errorFatal(
             "xu4 erfordert die MS-DOS-Version von Ultima IV. "
-            "Diese muss sich im gleichen Verzeichnis befinden "
+            "Diese muss sich im gleichen Verzeichnisse befinden "
             "wie die ausfuehrbare Datei, oder in einem "
             "Unterverzeichnisse davon namens \"ultima4\"."
             "\n\nDies kannst Du erreichen, indem Du"
@@ -78,7 +78,7 @@ int main(int argc, char *argv[])
     for (i = 1; i < static_cast<unsigned int>(argc); i++) {
         if (((std::strcmp(argv[i], "-p") == 0)
              || (std::strcmp(argv[i], "-profile") == 0)
-                         || (std::strcmp(argv[i], "--profile") == 0))
+             || (std::strcmp(argv[i], "--profile") == 0))
             && (static_cast<unsigned int>(argc) > i + 1)) {
             // when grabbing the profile name:
             // 1. trim leading whitespace
@@ -107,86 +107,86 @@ int main(int argc, char *argv[])
     for (i = 1; i < static_cast<unsigned int>(argc); i++) {
         if ((std::strcmp(argv[i], "-filter") == 0)
             || (std::strcmp(argv[i], "--filter") == 0)) {
-                        if (static_cast<unsigned int>(argc) > i + 1) {
-                                settings.filter = argv[i + 1];
-                                i++;
-                        } else errorFatal(
-                                "%s is invalid alone: Requires a string for input."
-                                " See --help for more detail.\n",
-                                argv[i]
-                        );
+            if (static_cast<unsigned int>(argc) > i + 1) {
+                settings.filter = argv[i + 1];
+                i++;
+            } else errorFatal(
+                "%s is invalid alone: Requires a string for input."
+                " See --help for more detail.\n",
+                argv[i]
+            );
 #if 0
-                }  else if ((std::strcmp(argv[i], "-scale") == 0)
-                                        && (static_cast<unsigned int>(argc) > i + 1)) {
+        }  else if ((std::strcmp(argv[i], "-scale") == 0)
+                    && (static_cast<unsigned int>(argc) > i + 1)) {
             settings.scale = std::strtoul(argv[i + 1], nullptr, 0);
             i++;
 #endif
         } else if ((std::strcmp(argv[i], "-p") == 0)
-                                   || (std::strcmp(argv[i], "-profile") == 0)
-                                   || (std::strcmp(argv[i], "--profile") == 0)) {
-                        if (static_cast<unsigned int>(argc) > i + 1) {
-                                // do nothing
-                                i++;
-                        } else errorFatal(
-                                "%s is invalid alone: Requires a number for input."
-                                " See --help for more detail.\n",
-                                argv[i]
-                        );
+                   || (std::strcmp(argv[i], "-profile") == 0)
+                   || (std::strcmp(argv[i], "--profile") == 0)) {
+            if (static_cast<unsigned int>(argc) > i + 1) {
+                // do nothing
+                i++;
+            } else errorFatal(
+                "%s is invalid alone: Requires a number for input."
+                " See --help for more detail.\n",
+                argv[i]
+            );
         } else if ((std::strcmp(argv[i], "-i") == 0)
                    || (std::strcmp(argv[i], "-skipintro") == 0)
-                                   || (std::strcmp(argv[i], "--skipintro") == 0)) {
+                   || (std::strcmp(argv[i], "--skipintro") == 0)) {
             skipIntro = 1;
         } else if ((std::strcmp(argv[i], "-v") == 0)
                    || (std::strcmp(argv[i], "-verbose") == 0)
-                                   || (std::strcmp(argv[i], "--verbose") == 0)) {
+                   || (std::strcmp(argv[i], "--verbose") == 0)) {
             verbose = true;
         } else if ((std::strcmp(argv[i], "-f") == 0)
                    || (std::strcmp(argv[i], "-fullscreen") == 0)
-                                   || (std::strcmp(argv[i], "--fullscreen") == 0)) {
+                   || (std::strcmp(argv[i], "--fullscreen") == 0)) {
             settings.fullscreen = 1;
         } else if ((std::strcmp(argv[i], "-q") == 0)
                    || (std::strcmp(argv[i], "-quiet") == 0)
-                                   || (std::strcmp(argv[i], "--quiet") == 0)) {
+                   || (std::strcmp(argv[i], "--quiet") == 0)) {
             settings.musicVol = 0;
             settings.soundVol = 0;
         } else if ((std::strcmp(argv[i], "-h") == 0)
-                                   || (std::strcmp(argv[i], "-help") == 0)
-                                   || (std::strcmp(argv[i], "--help") == 0)) {
-                        std::printf("xu4g: Ultima IV Neu Geschaffen und auf Deutsch\n");
-                        std::printf("v%s\n\n", VERSION);
+                   || (std::strcmp(argv[i], "-help") == 0)
+                   || (std::strcmp(argv[i], "--help") == 0)) {
+            std::printf("xu4g: Ultima IV Neu Geschaffen und auf Deutsch\n");
+            std::printf("v%s\n\n", VERSION);
 
-                        std::printf("-v, --verbose            Fuehrt xu4g im"
-                                                " ausfuehrlichen Modus aus."
-                                                " Mehr Konsolenausgabe.\n");
-                        std::printf("-q, --quiet              Setzt alle Lautstaerkeregler"
-                                                " auf Null.\n");
-                        std::printf("-f, --fullscreen         Fuehrt xu5g im Vollbildmodus"
-                                                " aus.\n");
-                        std::printf("-i, --skip-intro         Ueberspringt das Intro und"
-                                                " laedt den letzten Spielstand.\n");
+            std::printf("-v, --verbose            Fuehrt xu4g im"
+                        " ausfuehrlichen Modus aus."
+                        " Mehr Konsolenausgabe.\n");
+            std::printf("-q, --quiet              Setzt alle Lautstaerkeregler"
+                        " auf Null.\n");
+            std::printf("-f, --fullscreen         Fuehrt xu5g im Vollbildmodus"
+                        " aus.\n");
+            std::printf("-i, --skip-intro         Ueberspringt das Intro und"
+                        " laedt den letzten Spielstand.\n");
 #if 0
-                        std::printf("\n-s <Ganzzahl>,\n");
-                        std::printf("--scale <Ganzzahl>       Spezifiziert"
-                                                " Vergroesserungsfaktor.\n");
+            std::printf("\n-s <Ganzzahl>,\n");
+            std::printf("--scale <Ganzzahl>       Spezifiziert"
+                        " Vergroesserungsfaktor.\n");
 #endif
-                        std::printf("-p <Zeichenkette>,\n");
-                        std::printf("--profile <Zeichenkette> Uebergibt dem Programm"
-                                                " zusaetzliche Parameter.\n");
-                        std::printf("--filter <Zeichenkette>  Spezifiziert"
-                                                " Filteroptionen.\n");
+            std::printf("-p <Zeichenkette>,\n");
+            std::printf("--profile <Zeichenkette> Uebergibt dem Programm"
+                        " zusaetzliche Parameter.\n");
+            std::printf("--filter <Zeichenkette>  Spezifiziert"
+                        " Filteroptionen.\n");
 
-                        std::printf("\n-h, --help               Zeigt diese"
-                                                " Nachricht an.\n");
+            std::printf("\n-h, --help               Zeigt diese"
+                        " Nachricht an.\n");
 
-                        std::printf("\nHomepage der englischen Version:"
-                                                " http://xu4.sourceforge.com\n");
+            std::printf("\nHomepage der englischen Version:"
+                        " http://xu4.sourceforge.com\n");
 
-                        return 0;
-                } else errorFatal(
-                        "Parameter unbekannt: %s\n\nVerwende --help, um eine Liste der"
-                        " unterstuetzten Parameter anzuzeigen.\n",
-                        argv[i]
-                );
+            return 0;
+        } else errorFatal(
+            "Parameter unbekannt: %s\n\nVerwende --help, um eine Liste der"
+            " unterstuetzten Parameter anzuzeigen.\n",
+            argv[i]
+        );
     }
 
     xu4_srandom();

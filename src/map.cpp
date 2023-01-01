@@ -210,16 +210,14 @@ Direction MapCoords::pathAway(
 /**
  * Finds the movement distance (not using diagonals) from point a to point b
  * on a map, taking into account map boundaries and such.  If the two coords
- * are not on the same z-plane, then this function returns -1;
+ * are not on the same z-plane, the function returns -1.
  */
 int MapCoords::movementDistance(const MapCoords &c, const Map *map) const
 {
     int dirmask = DIR_NONE;
     int dist = 0;
     MapCoords me = *this;
-    if (z != c.z) {
-        return -1;
-    }
+    if (z != c.z) return -1;
     /* get the direction(s) to the coordinates */
     dirmask = getRelativeDirection(c, map);
     while ((me.x != c.x) || (me.y != c.y)) {
@@ -247,15 +245,12 @@ int MapCoords::movementDistance(const MapCoords &c, const Map *map) const
 /**
  * Finds the distance (using diagonals) from point a to point b on a map
  * If the two coordinates are not on the same z-plane, then this function
- * returns -1. This function also takes into account map boundaries.
+ * adds 256 per level. This function also takes into account map boundaries.
  */
 int MapCoords::distance(const MapCoords &c, const Map *map) const
 {
     int dist = movementDistance(c, map);
-    if (dist <= 0) {
-        return dist;
-    }
-
+    if (dist < 0) return dist;
     /* calculate how many fewer movements there would have been */
     dist -=
         (std::abs(x - c.x) < std::abs(y - c.y)) ?
@@ -505,10 +500,11 @@ Creature *Map::addCreature(const Creature *creature, Coords coords)
     m->setCoords(coords);
     m->setPrevCoords(coords);
     /* initialize the creature before placing it */
-    if (m->wanders()) {
-        m->setMovementBehavior(MOVEMENT_WANDER);
-    } else if (m->isStationary()) {
+    if (m->isStationary()) {
         m->setMovementBehavior(MOVEMENT_FIXED);
+    } else if (m->wanders() || type == Map::DUNGEON) {
+        // U4DOS: All Dungeon creatures wander, except stationary ones
+        m->setMovementBehavior(MOVEMENT_WANDER);
     } else {
         m->setMovementBehavior(MOVEMENT_ATTACK_AVATAR);
     }
@@ -518,8 +514,8 @@ Creature *Map::addCreature(const Creature *creature, Coords coords)
     }
     /* place the creature on the map */
     objects.push_back(m);
-    m->setCoords(coords);
-    m->setPrevCoords(coords);
+    // m->setCoords(coords);
+    // m->setPrevCoords(coords);
     return m;
 } // Map::addCreature
 
@@ -545,8 +541,8 @@ Object *Map::addObject(MapTile tile, MapTile prevtile, Coords coords)
     obj->setCoords(coords);
     obj->setPrevCoords(coords);
     objects.push_front(obj);
-    obj->setCoords(coords);
-    obj->setPrevCoords(coords);
+    // obj->setCoords(coords);
+    // obj->setPrevCoords(coords);
     return obj;
 }
 
@@ -808,7 +804,8 @@ int Map::getValidMoves(MapCoords from, MapTile transport, bool wanders)
                 }
             }
             // ghosts and other incorporeal creatures
-            else if (m->isIncorporeal()) {
+            // u4apple2: they can't go through dungeon walls
+            else if (m->isIncorporeal() && type != Map::DUNGEON) {
                 // can move anywhere but onto water, unless of course the
                 // creature can swim
                 if (!(tile.getTileType()->isSwimable()
@@ -880,7 +877,11 @@ static bool isCloser(const Object *a, const Object *b)
 {
     MapCoords ma = a->getCoords();
     MapCoords mb = b->getCoords();
-    return ma.distance(c->location->coords) < mb.distance(c->location->coords);
+    Coords coords = c->location->coords;
+    if ((ma.z != coords.z) || (mb.z != coords.z)) {
+        return std::abs(ma.z - coords.z) < std::abs(mb.z - coords.z);
+    }
+    return ma.distance(coords) < mb.distance(coords);
 }
 
 bool Map::fillMonsterTable()
@@ -951,7 +952,7 @@ bool Map::fillMonsterTable()
     /* limit monsters */
     int limitForCreatures =
         type == Map::DUNGEON ?
-        MONSTERTABLE_OBJECTS_SIZE :
+        MONSTERTABLE_SIZE :
         MONSTERTABLE_CREATURES_SIZE;
 
     while (nCreatures > limitForCreatures) {
@@ -965,29 +966,36 @@ bool Map::fillMonsterTable()
         monsters.push_back(&empty);
     }
     /**
-     * Finally, add inanimate objects
+     * Finally, add inanimate objects (not in dungeon - there can't be any)
      */
-    /* sort first, see above, but leave lastShip as first one if it exists */
-    if (inanimate_objects.size() && inanimate_objects[0] == c->lastShip) {
-        std::sort(
-            std::next(inanimate_objects.begin()),
-            inanimate_objects.end(),
-            isCloser
-        );
-    } else {
-        std::sort(
-            inanimate_objects.begin(), inanimate_objects.end(), isCloser
-        );
-    }
-    while (inanimate_objects.size()) {
-        monsters.push_back(inanimate_objects.front());
-        inanimate_objects.pop_front();
-    }
-    /* limit objects */
-    while (nObjects > MONSTERTABLE_OBJECTS_SIZE) {
-        monsters.pop_back();
-        nObjects--;
-    }
+    if (type != Map::DUNGEON) {
+        /* sort first, see above, but leave lastShip as first one
+           if it exists */
+        if (
+            inanimate_objects.size()
+            && inanimate_objects[0] == c->lastShip
+            && inanimate_objects[0]->getMap() == this
+        ) {
+            std::sort(
+                std::next(inanimate_objects.begin()),
+                inanimate_objects.end(),
+                isCloser
+            );
+        } else {
+            std::sort(
+                inanimate_objects.begin(), inanimate_objects.end(), isCloser
+            );
+        }
+        while (inanimate_objects.size()) {
+            monsters.push_back(inanimate_objects.front());
+            inanimate_objects.pop_front();
+        }
+        /* limit objects */
+        while (nObjects > MONSTERTABLE_OBJECTS_SIZE) {
+            monsters.pop_back();
+            nObjects--;
+        }
+    } // if (type != Map::DUNGEON)
     /**
      * Fill in the blanks
      */

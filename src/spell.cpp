@@ -236,7 +236,7 @@ static const Spell spells[] = {
         "Quicatus",
         ASH | GINSENG | MOSS,
         CTX_ANY,
-                TRANSPORT_ANY,
+        TRANSPORT_ANY,
         &spellQuick,
         Spell::PARAM_NONE,
         20
@@ -647,7 +647,7 @@ static bool spellAwaken(int player)
 static bool spellBlink(int dir)
 {
     int i, distance, diff, *var;
-    bool success = true;
+    bool success;
     Direction reverseDir = dirReverse(static_cast<Direction>(dir));
     MapCoords coords = c->location->coords;
     /* Blink doesn't work near the mouth of the abyss */
@@ -684,12 +684,13 @@ static bool spellBlink(int dir)
         /* we didn't move! */
         if (c->location->coords == coords) {
             success = false;
-        }
-        /* CHANGE: No teleporting onto isle of the abyss and surroundings */
-        if ((coords.x >= 192) && (coords.y >= 192)) {
+        } else if ((coords.x >= 192) && (coords.y >= 192)) {
+            /* CHANGE: No teleporting onto isle of abyss and surroundings */
             success = false;
+        } else {
+            c->location->coords = coords;
+            success = true;
         }
-        c->location->coords = coords;
     } else {
         success = false;
     }
@@ -889,7 +890,7 @@ static bool spellIceball(int dir)
 
 static bool spellJinx(int)
 {
-    c->aura->set(Aura::JINX, 20);
+    c->aura->set(Aura::JINX, 10);
     return true;
 }
 
@@ -913,7 +914,7 @@ static bool spellMMissle(int dir)
 
 static bool spellNegate(int)
 {
-    c->aura->set(Aura::NEGATE, 20);
+    c->aura->set(Aura::NEGATE, 10);
     return true;
 }
 
@@ -926,7 +927,7 @@ static bool spellOpen(int)
 
 static bool spellProtect(int)
 {
-    c->aura->set(Aura::PROTECTION, 20);
+    c->aura->set(Aura::PROTECTION, 10);
     return true;
 }
 
@@ -938,7 +939,7 @@ static bool spellRez(int player)
 
 static bool spellQuick(int)
 {
-    c->aura->set(Aura::QUICKNESS, 20);
+    c->aura->set(Aura::QUICKNESS, 10);
     return true;
 }
 
@@ -952,8 +953,10 @@ static bool spellSleep(int)
         Creature *m = *i;
         Coords coords = m->getCoords();
         GameController::flashTile(coords, "wisp", 4);
+        // BUGFIX from u4apple2: Balron resists sleep AND fire, which our
+        // creatures.xml file cannot currenty model
         if ((m->getResists() != EFFECT_SLEEP)
-                        && (m->getId() != BALRON_ID) // BUGFIX from u4apple2
+            && (m->getId() != BALRON_ID)
             && (xu4_random(0xFF) >= m->getHp())) {
             soundPlay(SOUND_POISON_EFFECT);
             m->putToSleep();

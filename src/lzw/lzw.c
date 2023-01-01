@@ -276,7 +276,9 @@ int getNextCodeword(long *bitsRead, unsigned char *compressedMem)
 
 
 /* increment position pointer, but do not write root to memory */
-void discardRoot(unsigned char root, unsigned char *destination, long *position)
+void discardRoot(
+	unsigned char root, unsigned char *destination, long *position
+)
 {
     (*position)++;
 }

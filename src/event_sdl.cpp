@@ -506,8 +506,8 @@ void EventHandler::run()
                     "diff = %ld, sum = %ld, avg = %f\n",
                     static_cast<long int>(diff),
                     static_cast<long int>(static_cast<std::clock_t>(clocksum)),
-                    static_cast<double>(static_cast<std::clock_t>(clocksum))
-                                        / static_cast<double>(static_cast<int>(keycount))
+                    (static_cast<double>(static_cast<std::clock_t>(clocksum))
+                     / static_cast<double>(static_cast<int>(keycount)))
                 );
 #endif
                 break;

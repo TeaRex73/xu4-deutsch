@@ -9,6 +9,7 @@
 #include <deque>
 #include <set>
 #include "coords.h"
+#include "direction.h"
 #include "debug.h"
 #include "tile.h"
 #include "types.h"
@@ -56,6 +57,8 @@ public:
     {
         return prevCoords;
     }
+
+    Direction getLastDir() const;
 
     ObjectMovementBehavior getMovementBehavior() const
     {

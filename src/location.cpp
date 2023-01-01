@@ -75,11 +75,7 @@ std::vector<MapTile> Location::tilesAt(MapCoords coords, bool &focus)
         if (avatar) {
             tiles.push_back(c->party->getTransport());
         } else {
-#if 0
-            tiles.push_back(*map->getTileFromData(coords));
-#else
             tiles.push_back(*map->tileAt(coords, WITHOUT_OBJECTS));
-#endif
         }
         return tiles;
     }
@@ -100,11 +96,19 @@ std::vector<MapTile> Location::tilesAt(MapCoords coords, bool &focus)
             }
         }
     }
-    /* then the avatar is drawn (unless on a ship) */
+    /* then forces of nature, because they must appear on top of the avatar */
+    if (obj && obj->isVisible() && m && m->isForceOfNature()) {
+        focus = focus || obj->hasFocus();
+        MapTile visibleCreatureAndObjectTile = obj->getTile();
+        // Sleeping creatures and persons have their animation frozen
+        if (m && m->isAsleep()) {
+            visibleCreatureAndObjectTile.freezeAnimation = true;
+        }
+        tiles.push_back(visibleCreatureAndObjectTile);
+    }
+    /* then the avatar is drawn */
     if ((map->flags & SHOW_AVATAR)
-        && (c->transportContext != TRANSPORT_SHIP)
         && avatar) {
-        // tiles.push_back(map->tileset->getByName("avatar")->id);
         tiles.push_back(c->party->getTransport());
     }
     /* then camouflaged creatures that have a disguise */
@@ -117,8 +121,8 @@ std::vector<MapTile> Location::tilesAt(MapCoords coords, bool &focus)
             map->tileset->getByName(m->getCamouflageTile())->getId()
         );
     }
-    /* then visible creatures and objects */
-    else if (obj && obj->isVisible()) {
+    /* then visible creatures and objects except forces of nature */
+    else if (obj && obj->isVisible() && (!m || !m->isForceOfNature())) {
         focus = focus || obj->hasFocus();
         MapTile visibleCreatureAndObjectTile = obj->getTile();
         // Sleeping creatures and persons have their animation frozen
@@ -126,13 +130,6 @@ std::vector<MapTile> Location::tilesAt(MapCoords coords, bool &focus)
             visibleCreatureAndObjectTile.freezeAnimation = true;
         }
         tiles.push_back(visibleCreatureAndObjectTile);
-    }
-    /* then the party's ship (because twisters and whirlpools get
-       displayed on top of ships) */
-    if ((map->flags & SHOW_AVATAR)
-        && (c->transportContext == TRANSPORT_SHIP)
-        && avatar) {
-        tiles.push_back(c->party->getTransport());
     }
     /* then permanent annotations */
     for (i = a.begin(); i != a.end(); i++) {

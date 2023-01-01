@@ -199,10 +199,11 @@ bool moveObject(Map *map, Creature *obj, MapCoords avatar)
     case MOVEMENT_FIXED:
         break;
     case MOVEMENT_WANDER:
-        /* Wandering creatures actually wander just 50% of the time.
+        /* Except in Dungeons, wandering creatures actually wander
+           just 50% of the time in U4DOS.
            The other 50%, they move towards the player if on the world map,
            whereas wandering town creatures stay put in that case */
-        if (obj->isForceOfNature() || xu4_random(2) == 0) {
+        if (map->type == Map::DUNGEON || xu4_random(2) == 0) {
             dir = dirRandomDir(
                 map->getValidMoves(new_coords, obj->getTile(), true),
                 obj->getLastDir()
@@ -235,7 +236,6 @@ bool moveObject(Map *map, Creature *obj, MapCoords avatar)
     /* now, get a new x and y for the object */
     if (dir) {
         new_coords.move(dir, c->location->map);
-        obj->setLastDir(dir);
     } else {
         return false;
     }
@@ -315,7 +315,6 @@ bool moveCombatObject(int act, Map *map, Creature *obj, MapCoords target)
     }
     if (dir) {
         new_coords.move(dir, c->location->map);
-        obj->setLastDir(dir);
     } else {
         return false;
     }
@@ -336,6 +335,7 @@ bool moveCombatObject(int act, Map *map, Creature *obj, MapCoords target)
     default:
         break;
     }
+    obj->setPrevCoords(obj->getCoords());
     /* if the object wasn't slowed... */
     if (!slowed) {
         // Set the new coordinates
@@ -510,7 +510,7 @@ bool slowedByWind(int direction)
     /* 1 of 4 moves while moving directly away from wind fails */
     else if (direction
              == dirReverse(static_cast<Direction>(c->windDirection))) {
-        return (c->saveGame->moves % 4) == 3;
+        return (c->saveGame->moves % 4) == 0;
     } else {
         return false;
     }

@@ -31,7 +31,6 @@ Context::Context()
      stats(nullptr),
      moonPhase(0),
      windDirection(0),
-     windCounter(0),
      windLock(false),
      aura(nullptr),
      horseSpeed(0),

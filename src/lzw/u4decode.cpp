@@ -110,15 +110,15 @@ long decompress_u4_memory(unsigned char *in, long inlen, unsigned char **out)
 
 
 /*
- * Returns the size of a file, and moves the file pointer to the beginning.
+ * Returns the size of a file, and moves the file ptr to the beginning.
  * The file must already be open when this function is called.
  */
 long getFilesize(FILE *input_file)
 {
     long file_length;
-    std::fseek(input_file, 0, SEEK_END);   /* move file pointer to file end */
+    std::fseek(input_file, 0, SEEK_END);   /* move file ptr to file end */
     file_length = std::ftell(input_file);
-    std::fseek(input_file, 0, SEEK_SET);   /* move file pointer to file start */
+    std::fseek(input_file, 0, SEEK_SET);   /* move file ptr to file start */
     return file_length;
 }
 
@@ -139,11 +139,11 @@ unsigned char mightBeValidCompressedFile(FILE *input_file)
     c1 = (input_filesize * 8) % 12 == 0;
     c2 = (input_filesize * 8 - 4) % 12 == 0;
     /* read first byte */
-    std::fseek(input_file, 0, SEEK_SET);   /* move file pointer to file start */
+    std::fseek(input_file, 0, SEEK_SET);   /* move file ptr to file start */
     if (std::fread(&firstByte, 1, 1, input_file) != 1) {
         perror("fread failed");
     }
-    std::fseek(input_file, 0, SEEK_SET);   /* move file pointer to file start */
+    std::fseek(input_file, 0, SEEK_SET);   /* move file ptr to file start */
     c3 = (firstByte >> 4) == 0;
     /* check if upper 4 bits are 0 */
     return (c1 || c2) && c3;

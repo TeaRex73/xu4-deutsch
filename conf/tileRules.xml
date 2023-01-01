@@ -11,8 +11,8 @@
     <rule name="forest" speed="vslow" spawnslandmonster="true"/>
     <rule name="hills" speed="vvslow" spawnslandmonster="true"/>
     <rule name="mountains" cantwalkon="all" unflyable="true" creatureunwalkable="true"/>
-    <rule name="lcb" cantwalkon="all" creatureunwalkable="true"/>
-    <rule name="lcb_entrance" cantwalkon="south" cantwalkoff="north" creatureunwalkable="true"/>
+    <rule name="lcb" cantwalkon="all" creatureunwalkable="true" unflyable="true"/>
+    <rule name="lcb_entrance" cantwalkon="south" cantwalkoff="north" creatureunwalkable="true" unflyable="true"/>
     <rule name="ship" ship="true" creatureunwalkable="true"/>
     <rule name="horse" horse="true" creatureunwalkable="true"/>
     <rule name="floors" replacement="true"/>
@@ -35,14 +35,13 @@
     <rule name="monster" cantwalkon="all" livingthing="true"/>
 
     <!-- Dungeon tile rules -->
-    <rule name="dng_altar" creatureunwalkable="true" unflyable="true"/>
     <rule name="dng_door" cantwalkon="retreat"/>
     <rule name="dng_room" creatureunwalkable="true" cantwalkon="retreat" unflyable="true"/>
     <rule name="dng_trap" creatureunwalkable="true" unflyable="true"/>
     <rule name="dng_fountain" creatureunwalkable="true" unflyable="true"/>
     <rule name="dng_poison_field" speed="vslow" effect="poisonField" dispel="true" creatureunwalkable="true" unflyable="true"/>
-    <rule name="dng_energy_field" cantwalkon="all" speed="vvslow" effect="electricity" creatureunwalkable="true" unflyable="true" dispel="true"/>
-    <rule name="dng_fire_field" speed="vslow" effect="fire" dispel="true" creatureunwalkable="true" unflyable="true"/>
+    <rule name="dng_energy_field" cantwalkon="all" effect="electricity" creatureunwalkable="true" unflyable="true" dispel="true"/>
+    <rule name="dng_fire_field" speed="vvslow" effect="fire" dispel="true" creatureunwalkable="true" unflyable="true"/>
     <rule name="dng_sleep_field" speed="vslow" effect="sleep" dispel="true" creatureunwalkable="true" unflyable="true"/>
 
 </tileRules>

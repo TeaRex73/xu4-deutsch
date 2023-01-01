@@ -63,42 +63,42 @@ GameController *game = nullptr;
 /*-----------------*/
 /* Functions BEGIN */
 /* main game functions */
-void gameAdvanceLevel(PartyMember *player);
-void gameInnHandler(void);
-void gameLostEighth(Virtue virtue);
-void gamePartyStarving(void);
-std::time_t gameTimeSinceLastCommand(void);
-bool gameSave(void);
+static std::time_t gameTimeSinceLastCommand(void);
+static bool gameSave(void);
 
 /* spell functions */
-void gameCastSpell(unsigned int spell, int caster, int param);
-bool gameSpellMixHowMany(int spell, int num, Ingredients *ingredients);
-void mixReagents();
-bool mixReagentsForSpellU4(int spell);
-bool mixReagentsForSpellU5(int spell);
-void mixReagentsSuper();
-void newOrder();
+static void gameCastSpell(unsigned int spell, int caster, int param);
+static bool gameSpellMixHowMany(int spell, int num, Ingredients *ingredients);
+static void mixReagents();
+static bool mixReagentsForSpellU4(int spell);
+static bool mixReagentsForSpellU5(int spell);
+#if 0
+static void mixReagentsSuper();
+#endif
+static void newOrder();
 
 /* conversation functions */
-bool talkAt(const Coords &coords);
-void talkRunConversation(Conversation &conv, Person *talker, bool showPrompt);
+static bool talkAt(const Coords &coords, int distance);
+static void talkRunConversation(
+    Conversation &conv, Person *talker, bool showPrompt
+);
 
 /* action functions */
-bool attackAt(const Coords &coords);
-bool destroyAt(const Coords &coords);
-bool getChestTrapHandler(int player);
-bool jimmyAt(const Coords &coords);
-bool openAt(const Coords &coords);
-void wearArmor(int player = -1);
-void ztatsFor(int player = -1);
+static bool attackAt(const Coords &coords);
+static bool destroyAt(const Coords &coords);
+static bool getChestTrapHandler(int player);
+static bool jimmyAt(const Coords &coords);
+static bool openAt(const Coords &coords);
+static void wearArmor(int player = -1);
+static void ztatsFor(int player = -1);
 
 /* checking functions */
-void gameLordBritishCheckLevels(void);
+static void gameLordBritishCheckLevels(void);
 
 /* creature functions */
 void gameDestroyAllCreatures(void);
-void gameFixupObjects(Map *map);
-void gameCreatureAttack(Creature *obj);
+static void gameFixupObjects(Map *map);
+static void gameCreatureAttack(Creature *obj);
 
 /* Functions END */
 /*---------------*/
@@ -259,7 +259,6 @@ void GameController::init()
     c->col = 0;
     c->moonPhase = 0;
     c->windDirection = dirRandomDir(MASK_DIR_ALL);
-    c->windCounter = 0;
     c->windLock = false;
     c->aura = new Aura();
     c->horseSpeed = 0;
@@ -346,11 +345,11 @@ void GameController::init()
             std::fclose(dngMapFile);
         } // if(dngMapFile)
     } else {
-        /* initialize the moons (must be done from the world map) */
-        initMoons();
         /* Enable opacity iff not flying (can fly only on the world map) */
         c->opacity = !c->saveGame->balloonstate;
     } // if(map->type != Map::WORLD)
+    /* initialize the moons */
+    initMoons();
     /**
      * Translate info from the savegame to something we can use
      */
@@ -426,7 +425,7 @@ void GameController::init()
 /**
  * Saves the game state into party.sav and monsters.sav.
  */
-bool gameSave()
+static bool gameSave()
 {
     std::FILE *saveGameFile, *monstersFile, *dngMapFile;
     SaveGame save = *c->saveGame;
@@ -556,6 +555,9 @@ bool gameSave()
                             if (m_id != id_map.end()) {
                                 tile |= m_id->second;
                             }
+                        }
+                        if (obj && (obj->getTile().getTileType()->isChest())) {
+                            tile = (tile & 0x0f) | DUNGEON_CHEST;
                         }
                     }
                     // Write the tile
@@ -975,7 +977,7 @@ void gameSpellEffect(int spell, int player, Sound sound)
     game->paused = false;
 } // gameSpellEffect
 
-void gameCastSpell(unsigned int spell, int caster, int param)
+static void gameCastSpell(unsigned int spell, int caster, int param)
 {
     SpellCastError spellError;
     std::string msg;
@@ -1490,6 +1492,7 @@ bool GameController::keyPressed(int key)
             break;
         case 'v':
             c->willPassTurn = false;
+            musicMgr->pause();
             screenMessage("Verwenden...\nWELCHES DING:\n?");
             if (settings.enhancements) {
                 /* a little xu4 enhancement: show items in inventory when
@@ -1505,6 +1508,7 @@ bool GameController::keyPressed(int key)
             }
             c->lastCommandTime = std::time(nullptr);
             c->willPassTurn = true;
+            musicMgr->play();
             break;
         case 'x':
             if (musicMgr->toggle()) {
@@ -1793,7 +1797,7 @@ Direction gameGetDirection()
     }
 }
 
-bool gameSpellMixHowMany(int spell, int num, Ingredients *ingredients)
+static bool gameSpellMixHowMany(int spell, int num, Ingredients *ingredients)
 {
     int i;
     /* entered 0 mixtures, don't mix anything! */
@@ -1893,7 +1897,7 @@ void destroy()
     screenMessage("%cDA IST NICHTS!%c\n", FG_GREY, FG_WHITE);
 }
 
-bool destroyAt(const Coords &coords)
+static bool destroyAt(const Coords &coords)
 {
     Object *obj = c->location->map->objectAt(coords);
     if (obj) {
@@ -1942,7 +1946,7 @@ void attack()
  * Attempts to attack a creature at map coordinates x,y.  If no
  * creature is present at that point, zero is returned.
  */
-bool attackAt(const Coords &coords)
+static bool attackAt(const Coords &coords)
 {
     Object *under;
     const Tile *ground;
@@ -2303,7 +2307,7 @@ void getChest(int player)
  * Returns true if trap was either not there or avoided
  * Returns false if trap was set off (destroying gold along with chest)
  **/
-bool getChestTrapHandler(int player)
+static bool getChestTrapHandler(int player)
 {
     TileEffect trapType = EFFECT_FIRE;
     int passTest = !xu4_random(2); /* xu4-enhanced */
@@ -2407,7 +2411,7 @@ void GameController::updateMoons(bool showmoongates)
 {
     int realMoonPhase, oldTrammel, trammelSubphase;
     const Coords *gate;
-    if (c->location->map->isWorldMap()) {
+    if (c->location->map->isWorldMap() || !showmoongates) {
         oldTrammel = c->saveGame->trammelphase;
         if (++c->moonPhase >= MOON_PHASES * MOON_SECONDS_PER_PHASE * 4) {
             c->moonPhase = 0;
@@ -2718,7 +2722,7 @@ void jimmy()
  * door is replaced by a permanent annotation of an unlocked door
  * tile.
  */
-bool jimmyAt(const Coords &coords)
+static bool jimmyAt(const Coords &coords)
 {
     MapTile *tile = c->location->map->tileAt(coords, WITH_OBJECTS);
     if (!tile->getTileType()->isLockedDoor()) {
@@ -2769,7 +2773,7 @@ void opendoor()
  * Attempts to open a door at map coordinates x,y.  The door is
  * replaced by a temporary annotation of a floor tile for 4 turns.
  */
-bool openAt(const Coords &coords)
+static bool openAt(const Coords &coords)
 {
     const Tile *tile = c->location->map->tileTypeAt(coords, WITH_OBJECTS);
     if (!tile->isDoor() && !tile->isLockedDoor()) {
@@ -2867,10 +2871,11 @@ void talk()
         &Tile::canTalkOverTile,
         true
     );
+    int dist = 1;
     for (std::vector<Coords>::iterator i = path.begin();
          i != path.end();
          i++) {
-        if (talkAt(*i)) {
+        if (talkAt(*i, dist++)) {
             return;
         }
     }
@@ -2881,11 +2886,12 @@ void talk()
  * Mixes reagents.  Prompts for a spell, then which reagents to
  * include in the mix.
  */
-void mixReagents()
+static void mixReagents()
 {
     /*  uncomment this line to activate new spell mixing code */
     // return mixReagentsSuper();
     bool done = false;
+    musicMgr->pause();
     while (!done) {
         screenMessage("Mischen\n");
         // Verify that there are reagents remaining in the inventory
@@ -2939,6 +2945,7 @@ void mixReagents()
     }
     c->stats->setView(STATS_PARTY_OVERVIEW);
     screenMessage("\n\n");
+    musicMgr->play();
 } // mixReagents
 
 
@@ -2946,7 +2953,7 @@ void mixReagents()
  * Prompts for spell reagents to mix in the traditional Ultima IV
  * style.
  */
-bool mixReagentsForSpellU4(int spell)
+static bool mixReagentsForSpellU4(int spell)
 {
     Ingredients ingredients;
     screenMessage("REAGENZ-");
@@ -2982,7 +2989,7 @@ bool mixReagentsForSpellU4(int spell)
 /**
  * Prompts for spell reagents to mix with an Ultima V-like menu.
  */
-bool mixReagentsForSpellU5(int spell)
+static bool mixReagentsForSpellU5(int spell)
 {
     Ingredients ingredients;
 
@@ -3008,7 +3015,7 @@ bool mixReagentsForSpellU5(int spell)
  * Exchanges the position of two players in the party.  Prompts the
  * user for the player numbers.
  */
-void newOrder()
+static void newOrder()
 {
     screenMessage("Ordnung {ndern\nTAUSCHE-");
     int player1 = gameGetPlayer(true, false, false);
@@ -3103,7 +3110,7 @@ void peer(bool useGem)
  * Begins a conversation with the NPC at map coordinates x,y.  If no
  * NPC is present at that point, zero is returned.
  */
-bool talkAt(const Coords &coords)
+static bool talkAt(const Coords &coords, int distance)
 {
     City *city;
     /* can't have any conversations outside of town */
@@ -3115,6 +3122,10 @@ bool talkAt(const Coords &coords)
     Person *talker = city->personAt(coords);
     /* make sure we have someone we can talk with */
     if (!talker || !talker->canConverse()) {
+        return false;
+    }
+    /* Prevent talking to ghosts & skeletons over the counter */
+    if (distance > 1 && (talker->getId() != VILLAGER_ID)) {
         return false;
     }
     /* No response from alerted guards... does any monster both
@@ -3151,7 +3162,9 @@ bool talkAt(const Coords &coords)
 /**
  * Executes the current conversation until it is done.
  */
-void talkRunConversation(Conversation &conv, Person *talker, bool showPrompt)
+static void talkRunConversation(
+    Conversation &conv, Person *talker, bool showPrompt
+)
 {
     c->willPassTurn = false;
     while (conv.state != Conversation::DONE) {
@@ -3244,7 +3257,7 @@ void talkRunConversation(Conversation &conv, Person *talker, bool showPrompt)
  * Changes a player's armor.  Prompts for the player and/or the armor
  * type if not provided.
  */
-void wearArmor(int player)
+static void wearArmor(int player)
 {
     // get the player if not provided
     if (player == -1) {
@@ -3299,7 +3312,7 @@ void wearArmor(int player)
 /**
  * Called when the player selects a party member for ztats
  */
-void ztatsFor(int player)
+static void ztatsFor(int player)
 {
     // get the player if not provided
     if (player == -1) {
@@ -3335,11 +3348,16 @@ void GameController::timerFired()
         }
     }
     if (!paused && !pausedTimer) {
-        if (++c->windCounter >= MOON_SECONDS_PER_PHASE * 4) {
-            if ((xu4_random(8) == 0) && !c->windLock) {
-                c->windDirection = dirRandomDir(MASK_DIR_ALL);
+        // From u4apple2 1/256 chance of wind change on every refresh cycle
+        // Wind never changes to opposite direction
+        if ((xu4_random(256) == 0) && !c->windLock) {
+            if (xu4_random(2) == 0) {
+                c->windDirection =
+                    dirRotateCW(static_cast<Direction>(c->windDirection));
+            } else {
+                c->windDirection =
+                    dirRotateCCW(static_cast<Direction>(c->windDirection));
             }
-            c->windCounter = 0;
         }
         /* balloon moves about 4 times per second */
         if ((c->transportContext == TRANSPORT_BALLOON)
@@ -3526,7 +3544,7 @@ bool GameController::checkMoongates()
  * Fixes objects initially loaded by saveGameMonstersRead,
  * and alters movement behavior accordingly to match the creature
  */
-void gameFixupObjects(Map *map)
+static void gameFixupObjects(Map *map)
 {
     int i;
     Object *obj;
@@ -3543,7 +3561,7 @@ void gameFixupObjects(Map *map)
                 oldTile = TileMap::get("base")->translate(monster->prevTile);
             int limitForCreatures =
                 map->type == Map::DUNGEON ?
-                MONSTERTABLE_OBJECTS_SIZE :
+                MONSTERTABLE_SIZE :
                 MONSTERTABLE_CREATURES_SIZE;
 
             if (i < limitForCreatures) {
@@ -3579,7 +3597,7 @@ void gameFixupObjects(Map *map)
     }
 } // gameFixupObjects
 
-std::time_t gameTimeSinceLastCommand()
+static std::time_t gameTimeSinceLastCommand()
 {
     return std::time(nullptr) - c->lastCommandTime;
 }
@@ -3588,7 +3606,7 @@ std::time_t gameTimeSinceLastCommand()
 /**
  * Handles what happens when a creature attacks you
  */
-void gameCreatureAttack(Creature *m)
+static void gameCreatureAttack(Creature *m)
 {
     Object *under;
     const Tile *ground;
@@ -3743,7 +3761,7 @@ void gameDamageParty(int minDamage, int maxDamage)
     soundPlay(SOUND_PC_STRUCK, false, -1, true);
     for (i = 0; i < c->party->size(); i++) {
         if (c->party->member(i)->getStatus() != STAT_DEAD
-            && xu4_random(2) > 0) {
+            && xu4_random(2) != 0) {
             damage = ((minDamage >= 0) && (minDamage < maxDamage)) ?
                 xu4_random((maxDamage + 1) - minDamage) + minDamage :
                 maxDamage;
@@ -3833,6 +3851,11 @@ void GameController::creatureCleanup(bool allCreatures)
     }
 }
 
+static int maxCreaturesPerLevel(int level)
+{
+    static int c_per_l[8] = {1, 2, 3, 4, 4, 5, 6, 7};
+    return c_per_l[level];
+}
 
 /**
  * Checks creature conditions and spawns new creatures if necessary
@@ -3856,7 +3879,7 @@ void GameController::checkRandomCreatures()
         );
     int maxCreatures =
         isDungeon ?
-        MAX_CREATURES_PER_LEVEL :
+        maxCreaturesPerLevel(c->location->coords.z) :
         MAX_CREATURES_ON_MAP;
     /* If there are too many creatures already,
      * or we're not on outdoors/in a dungeon, don't worry about it! */
@@ -3902,7 +3925,7 @@ void GameController::checkBridgeTrolls()
 /**
  * Check the levels of each party member while talking to Lord British
  */
-void gameLordBritishCheckLevels()
+static void gameLordBritishCheckLevels()
 {
     bool advanced = false;
     for (int i = 0; i < c->party->size(); i++) {
@@ -4113,7 +4136,8 @@ void showMixturesSuper(int page = 0)
     }
 }
 
-void mixReagentsSuper()
+#if 0
+static void mixReagentsSuper()
 {
     screenMessage("Mische Reagenzien\n");
     static int page = 0;
@@ -4216,3 +4240,4 @@ void mixReagentsSuper()
     }
     c->location->viewMode = oldlocation;
 } // mixReagentsSuper
+#endif

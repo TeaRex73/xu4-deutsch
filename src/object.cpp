@@ -107,6 +107,22 @@ Map *Object::getMap()
     return maps.back();
 }
 
+Direction Object::getLastDir() const
+{
+    Coords c = getCoords();
+    Coords p = getPrevCoords();
+    int x = c.x, y = c.y, px = p.x, py = p.y;
+    if (x == px) {
+        if (y < py) return DIR_NORTH;
+        if (y > py) return DIR_SOUTH;
+    }
+    if (y == py) {
+        if (x < px) return DIR_WEST;
+        if (x > px) return DIR_EAST;
+    }
+    return DIR_NONE;
+}
+
 void Object::remove()
 {
     unsigned int size = maps.size();

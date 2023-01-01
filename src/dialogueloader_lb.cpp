@@ -113,9 +113,11 @@ Dialogue *U4LBDialogueLoader::load(void *)
     bye->add(ResponsePart::END);
     dlg->addKeyword("ade", bye);
     dlg->addKeyword("", bye);
-    dlg->addKeyword("helfen", new DynamicResponse(&lordBritishGetHelp));
-    dlg->addKeyword("hilfe", new DynamicResponse(&lordBritishGetHelp));
-    dlg->addKeyword("beistehen", new DynamicResponse(&lordBritishGetHelp));
+    Response *getHelp = new DynamicResponse(&lordBritishGetHelp);
+    dlg->addKeyword("helfen", getHelp);
+    dlg->addKeyword("hilfe", getHelp);
+    dlg->addKeyword("beistehen", getHelp);
+    dlg->addKeyword("rat", getHelp);
     return dlg;
 } // U4LBDialogueLoader::load
 

@@ -48,7 +48,6 @@ public:
     StatsArea *stats;
     int moonPhase;
     int windDirection;
-    int windCounter;
     bool windLock;
     Aura *aura;
     int horseSpeed;

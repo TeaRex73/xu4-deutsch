@@ -260,16 +260,16 @@ bool CityMapLoader::load(Map *map)
     for (i = 0; i < CITY_MAX_PERSONS; i++) {
         people[i]->getStart().z = 0;
     }
-        // Move Shamino one square westward if player is a ranger
-        // so that he can talk to the Ankh without killing anybody
-        if ((city->id == MAP_SKARABRAE)
-                && (c->party->member(0)->getClass() == CLASS_RANGER)) {
-                for (i = 0; i < CITY_MAX_PERSONS; i++) {
-                        if (conv_idx[i] == 1) {
-                                (people[i]->getStart().x)--;
-                        }
-                }
+    // Move Shamino one square westward if player is a ranger
+    // so that he can talk to the Ankh without killing anybody
+    if ((city->id == MAP_SKARABRAE)
+        && (c->party->member(0)->getClass() == CLASS_RANGER)) {
+        for (i = 0; i < CITY_MAX_PERSONS; i++) {
+            if (conv_idx[i] == 1) {
+                (people[i]->getStart().x)--;
+            }
         }
+    }
     for (i = 0; i < CITY_MAX_PERSONS; i++) {
         dialogues[i] = dlgLoader->load(tlk);
         if (!dialogues[i]) {

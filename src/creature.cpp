@@ -59,8 +59,7 @@ Creature::Creature(MapTile tile)
      slowedType(SLOWED_BY_TILE),
      encounterSize(0),
      resists(0),
-     spawn(0),
-     lastDir(DIR_NONE)
+     spawn(0)
 {
     Creature *m = creatureMgr->getByTile(tile);
     if (m) {
@@ -244,7 +243,6 @@ void Creature::load(const ConfigElement &conf)
            incorporeal creatures (ghosts, zorns) */
         slowedType = SLOWED_BY_NOTHING;
     }
-    lastDir = DIR_NONE;
 } // Creature::load
 
 bool Creature::isAttackable() const

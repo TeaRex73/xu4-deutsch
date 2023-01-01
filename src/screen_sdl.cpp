@@ -3,7 +3,7 @@
  */
 
 #ifdef RASB_PI
-#  define MY_WIDTH 436
+#  define MY_WIDTH 416
 #  ifdef PAL_TV
 #    define MY_HEIGHT 288
 #  else
@@ -334,7 +334,7 @@ void screenWait(int numberOfAnimationFrames)
     SDL_Delay(numberOfAnimationFrames * frameDuration);
 }
 
-std::atomic_bool continueScreenRefresh;
+std::atomic_bool continueScreenRefresh(false);
 SDL_Thread *screenRefreshThread = nullptr;
 
 int screenRefreshThreadFunction(void *)

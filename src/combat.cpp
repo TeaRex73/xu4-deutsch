@@ -481,7 +481,7 @@ void CombatController::fillCreatureTable(const Creature *creature)
                 /* must have at least 1 creature of
                    type encountered */
                 (i != (numCreatures - 1))) {
-                                randval = xu4_random(32);
+                randval = xu4_random(32);
                 if (randval == 0) {
                     /* leader's leader, 1/32 chance */
                     current = creatureMgr->getById(
@@ -506,6 +506,7 @@ int CombatController::initialNumberOfCreatures(const Creature *creature) const
 {
     int ncreatures;
     Map *map = c->location->prev ? c->location->prev->map : c->location->map;
+    int maxsize = 2 * c->party->member(0)->getRealLevel();
     /* if in an unusual combat situation, generally we stick
        to normal encounter sizes (such as encounters from sleeping in
        an inn, etc.) */
@@ -514,34 +515,34 @@ int CombatController::initialNumberOfCreatures(const Creature *creature) const
         || (c->location->prev && c->location->prev->context & CTX_DUNGEON)) {
         ncreatures = xu4_random(8) + 1;
         if ((creature && (creature->getId() < PIRATE_ID)) // Can this happen??
-                        || ncreatures == 1) {
-                        // From u4dos and u4apple2, but why have all this complexity and
-                        // then use it only in 1/8 of cases? Changed in beta testing maybe?
+            || ncreatures == 1) {
+            // From u4dos and u4apple2, but why have all this complexity and
+            // then use it only in 1/8 of cases? Changed in beta testing maybe?
             if (creature && (creature->getEncounterSize() > 0)) {
                 ncreatures = (
-                                        (
-                                                (
-                                                        xu4_random(creature->getEncounterSize())
-                                                        + creature->getEncounterSize()
-                                                )
-                                                / 2
-                                        )
-                                        + 1
-                                );
+                    (
+                        (
+                            xu4_random(creature->getEncounterSize())
+                            + creature->getEncounterSize()
+                        )
+                        / 2
+                    )
+                    + 1
+                );
             } else {
                 ncreatures = 8;
             }
         }
         // CHANGE: base encounter size on level of avatar (potential
         // party size), not on current actual party size, to encourage
-                // party buildup
-        while (ncreatures > 2 * c->party->member(0)->getRealLevel()) {
-            ncreatures = xu4_random(2 * c->party->member(0)->getRealLevel()) + 1;
+        // party buildup
+        while (ncreatures > maxsize) {
+            ncreatures = xu4_random(maxsize) + 1;
         }
     } else { // Towns
-                // Guards always appear in maximum size groups, others appear alone
+        // Guards always appear in maximum size groups, others appear alone
         if (creature && (creature->getId() == GUARD_ID)) {
-            ncreatures = c->party->member(0)->getRealLevel() * 2;
+            ncreatures = maxsize;
         } else {
             ncreatures = 1;
         }
@@ -1166,9 +1167,11 @@ bool CombatController::keyPressed(int key)
         }
         break;
     case 'v':
+        musicMgr->pause();
         screenMessage("Verwenden...\nWELCHES DING:\n?");
         c->stats->setView(STATS_ITEMS);
         itemUse(gameGetInput().c_str());
+        musicMgr->play();
         break;
     case 'x':
         if (musicMgr->toggle()) {

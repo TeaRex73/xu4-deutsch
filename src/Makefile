@@ -19,7 +19,7 @@ LIBS=-L/usr/lib -L/usr/lib/arm-linux-gnueabihf -L/lib/arm-linux-gnueabihf $(UILI
 # CCPREFIX=~/raspberry/tools/arm-bcm2708/arm-bcm2708hardfp-linux-gnueabi/bin/arm-bcm2708hardfp-linux-gnueabi-
 # CCPREFIX=~/raspberry/tools/arm-bcm2708/gcc-linaro-arm-linux-gnueabihf-raspbian/bin/arm-linux-gnueabihf-
 FEATURES=-UHAVE_BACKTRACE -DHAVE_VARIADIC_MACROS=1
-DEBUGCXXFLAGS=-O2 -fno-lto -DNPERF -marm -mfpu=vfp -march=armv6zk -mtune=arm1176jzf-s -mfloat-abi=hard -UDEBUG -DNDEBUG -DRASB_PI -DNTSC_TV -fno-exceptions -fno-non-call-exceptions -fno-common
+DEBUGCXXFLAGS=-O3 -fno-lto -DNPERF -marm -mfpu=vfp -march=armv6zk -mtune=arm1176jzf-s -mfloat-abi=hard -UDEBUG -DNDEBUG -DRASB_PI -DNTSC_TV -fno-exceptions -fno-non-call-exceptions -fno-common
 #DEBUGCXXFLAGS=-O2 -g -march=native -mtune=native -DNPERF -DDEBUG -UNDEBUG -URASB_PI -fno-exceptions -fno-non-call-exceptions -fno-common
 COMMON_FLAGS=$(FEATURES) -Wall -Wextra -Werror -I. -I/usr/include/libxml2 -I/usr/include/SDL -I/usr/include -I/usr/local/include -I/include -I/usr/include/arm-linux-gnueabihf $(UIFLAGS) -I/usr/include/libxml2 -DICON_FILE=\"$(datadir)/pixmaps/u4.bmp\" $(DEBUGCXXFLAGS) $(LIBS)
 CFLAGS=-std=gnu90 $(COMMON_FLAGS) -Wno-unused-parameter
