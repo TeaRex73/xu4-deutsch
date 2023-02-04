@@ -24,7 +24,7 @@ void Music::create_sys()
      * initialize sound subsystem
      */
     TRACE_LOCAL(*logger, "Initializing SDL sound subsystem");
-    int audio_rate = 22050;
+    int audio_rate = 48000;
     Uint16 audio_format = AUDIO_S16LSB; /* 16-bit stereo */
     int audio_channels = 2;
     int audio_buffers = 1024;
@@ -39,7 +39,7 @@ void Music::create_sys()
     if (Mix_OpenAudio(
             audio_rate, audio_format, audio_channels, audio_buffers
         )) {
-    errorWarning("Unable to open audio!");
+        errorWarning("Unable to open audio!");
         this->functional = false;
         return;
     }

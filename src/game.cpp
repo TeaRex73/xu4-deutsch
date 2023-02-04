@@ -949,6 +949,7 @@ void gameSpellEffect(int spell, int player, Sound sound)
         c->stats->highlightPlayer(player);
     }
     time = settings.spellEffectSpeed * 800 / settings.gameCyclesPerSecond;
+    time -= time % 10;
     soundPlay(sound, false, time);
     ///The following effect multipliers are not accurate
     if (spell == 't') {
@@ -2200,9 +2201,11 @@ bool fireAt(const Coords &coords, bool originAvatar)
     }
     /* See if it's an object to be destroyed (the avatar cannot destroy
        the balloon) */
-    else if (obj
-             && (obj->getType() == Object::UNKNOWN)
-             && !(obj->getTile().getTileType()->isBalloon() && originAvatar)) {
+    else if (
+        obj
+        && (obj->getType() == Object::UNKNOWN)
+        && !(obj->getTile().getTileType()->isBalloon() && originAvatar)
+    ) {
         validObject = true;
     }
     /* Does the cannon hit the avatar? */
@@ -2230,7 +2233,10 @@ bool fireAt(const Coords &coords, bool originAvatar)
             soundPlay(SOUND_NPC_STRUCK, false);
             GameController::flashTile(coords, "hit_flash", 4);
             if (xu4_random(4) == 0) { /* reverse-engineered from u4dos */
-                c->location->map->removeObject(obj);
+                Creature *m = dynamic_cast<Creature *>(obj);
+                if (!m || m->getId() != LORDBRITISH_ID) {
+                    c->location->map->removeObject(obj);
+                }
             }
         }
         objectHit = true;
@@ -3348,9 +3354,11 @@ void GameController::timerFired()
         }
     }
     if (!paused && !pausedTimer) {
-        // From u4apple2 1/256 chance of wind change on every refresh cycle
+        // From u4apple2: 1/256 chance of wind change on every refresh cycle
+        // u4appke2 refresh cycles happen about 6.4 times per second
+        // since we use 4 second refresh cyles we use 1/160 chance instead
         // Wind never changes to opposite direction
-        if ((xu4_random(256) == 0) && !c->windLock) {
+        if ((xu4_random(160) == 0) && !c->windLock) {
             if (xu4_random(2) == 0) {
                 c->windDirection =
                     dirRotateCW(static_cast<Direction>(c->windDirection));
@@ -3359,7 +3367,9 @@ void GameController::timerFired()
                     dirRotateCCW(static_cast<Direction>(c->windDirection));
             }
         }
-        /* balloon moves about 4 times per second */
+        /* balloon moves about 4.8 times per second on u4apple2
+           i.e. 3 of 4 refresh cycles. We move it 4 times per second which
+           is close enough for me */
         if ((c->transportContext == TRANSPORT_BALLOON)
             && c->party->isFlying()) {
             c->location->move(
@@ -3770,7 +3780,7 @@ void gameDamageParty(int minDamage, int maxDamage)
             soundPlay(SOUND_NPC_STRUCK, false);
             screenShake(1);
             lastdmged = i;
-            EventHandler::sleep(25);
+            EventHandler::sleep(50);
         }
     }
     // Un-highlight the last player

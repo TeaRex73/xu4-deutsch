@@ -695,7 +695,7 @@ bool CombatController::attackHit(
     ASSERT(attacker != nullptr, "attacker must not be nullptr");
     ASSERT(defender != nullptr, "defender must not be nullptr");
     int attackValue =
-        xu4_random(0x100) + attacker->getAttackBonus();
+        attacker->getAttackBonus();
     int defenseValue =
         defender->getDefense((c->location->prev->map->id == MAP_ABYSS));
     bool naturalHit = (attackValue > defenseValue);
@@ -778,7 +778,7 @@ bool CombatController::rangedAttack(const Coords &coords, Creature *attacker)
         /* FIXME: are there any special effects here? */
         soundPlay(SOUND_PC_STRUCK, false);
         screenMessage(
-            "\n%s\n%cELEKTRISIERT%c\n",
+            "\n%s\n%cELEKTRISIERT!%c\n",
             uppercase(target->getName()).c_str(),
             FG_BLUE,
             FG_WHITE
@@ -787,37 +787,34 @@ bool CombatController::rangedAttack(const Coords &coords, Creature *attacker)
         break;
     case EFFECT_POISON:
     case EFFECT_POISONFIELD:
-        /* see if the player is poisoned */
-        if ((xu4_random(2) == 0)
-            && (target->getStatus() != STAT_POISONED)) {
-        target->wakeUp(); // can't sleep and be pois. at the same time
         // POISON_EFFECT, ranged hit
-            soundPlay(SOUND_POISON_EFFECT, false);
-            screenMessage(
-                "\n%s\n%cVERGIFTET%c\n",
-                uppercase(target->getName()).c_str(),
-                FG_GREEN,
-                FG_WHITE
-            );
+        soundPlay(SOUND_POISON_EFFECT, false);
+        screenMessage(
+            "\n%s\n%cVERGIFTET!%c\n",
+            uppercase(target->getName()).c_str(),
+            FG_GREEN,
+            FG_WHITE
+        );
+        /* see if the player is in fact poisoned */
+        if ((xu4_random(2) == 0)
+            && (target->getStatus() == STAT_GOOD)) {
             target->addStatus(STAT_POISONED);
-        }
-        // else screenMessage("Failed.\n");
+        } else screenMessage("FEHLSCHLAG.\n");
         break;
     case EFFECT_SLEEP:
+        // SLEEP, ranged hit, plays even if sleep
+        // failed or PC already asleep
+        soundPlay(SOUND_SLEEP, false);
+        screenMessage(
+            "\n%s\n%cBET[UBT!%c\n",
+            uppercase(target->getName()).c_str(),
+            FG_PURPLE,
+            FG_WHITE
+        );
         /* see if the player is put to sleep */
         if (xu4_random(2) == 0) {
-            // SLEEP, ranged hit, plays even if sleep
-            // failed or PC already asleep
-            soundPlay(SOUND_SLEEP, false);
-            screenMessage(
-                "\n%s\n%cBET[UBT%c\n",
-                uppercase(target->getName()).c_str(),
-                FG_PURPLE,
-                FG_WHITE
-            );
             target->putToSleep();
-        }
-        // else screenMessage("Failed.\n");
+        } else screenMessage("FEHLSCHLAG.\n");
         break;
     case EFFECT_LAVA:
     case EFFECT_FIRE:
@@ -827,7 +824,7 @@ bool CombatController::rangedAttack(const Coords &coords, Creature *attacker)
             "\n%s\n%c%s%c\n",
             uppercase(target->getName()).c_str(),
             FG_RED,
-            effect == EFFECT_LAVA ? "LAVA-GETROFFEN" : "VERBRANNT",
+            effect == EFFECT_LAVA ? "LAVA-GETROFFEN!" : "FEUER-GETROFFEN!",
             FG_WHITE
         );
         attacker->dealDamage(target, attacker->getDamage());
@@ -838,14 +835,14 @@ bool CombatController::rangedAttack(const Coords &coords, Creature *attacker)
         if (hittile ==
             Tileset::findTileByName("magic_flash")->getId()) {
             screenMessage(
-                "\n%s\n%cMAGIE-GETROFFEN%c\n",
+                "\n%s\n%cMAGIE-GETROFFEN!%c\n",
                 uppercase(target->getName()).c_str(),
                 FG_BLUE,
                 FG_WHITE
             );
         } else {
             screenMessage(
-                "\n%s\nGETROFFEN\n", uppercase(target->getName()).c_str()
+                "\n%s\nGETROFFEN!\n", uppercase(target->getName()).c_str()
             );
         }
         attacker->dealDamage(target, attacker->getDamage());
@@ -935,6 +932,8 @@ void CombatController::finishTurn()
                 /* give a slight pause in case party
                    members are asleep for awhile */
                 EventHandler::sleep(50);
+                /* prevent turn-passing while all are asleep */
+                c->lastCommandTime = std::time(nullptr);
                 /* adjust moves */
                 c->party->endTurn();
                 /* count down our aura (if we have one) */
@@ -1239,7 +1238,7 @@ bool CombatController::keyPressed(int key)
         break;
     } // switch
     if (valid) {
-        c->lastCommandTime = time(nullptr);
+        c->lastCommandTime = std::time(nullptr);
         if (eventHandler->getController() == this) {
             c->location->turnCompleter->finishTurn();
         }

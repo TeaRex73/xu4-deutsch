@@ -13,6 +13,7 @@ Aura::Aura()
 
 void Aura::setDuration(int d)
 {
+    if (duration >= d) return;
     duration = d;
     setChanged();
     notifyObservers(nullptr);
@@ -20,6 +21,7 @@ void Aura::setDuration(int d)
 
 void Aura::set(Type t, int d)
 {
+    if (type == t && duration >= d) return;
     type = t;
     duration = d;
     setChanged();
@@ -28,6 +30,7 @@ void Aura::set(Type t, int d)
 
 void Aura::setType(Type t)
 {
+    if (type == t) return;
     type = t;
     setChanged();
     notifyObservers(nullptr);

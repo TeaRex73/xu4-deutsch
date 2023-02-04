@@ -67,7 +67,7 @@ bool KeyHandler::defaultHandler(int key, void *)
     bool valid = true;
     switch (key) {
     case '`':
-        if (c && c->location) {
+        if (settings.debug && c && c->location) {
             std::printf(
                 "x = %d, y = %d, level = %d, tile = %d (%s)\n",
                 c->location->coords.x,
@@ -423,11 +423,15 @@ static Uint32 sleepTimerCallback(Uint32, void *)
     SDL_Event stopEvent;
     stopEvent.type = SDL_USEREVENT;
     stopEvent.user.code = 1;
-    stopEvent.user.data1 = 0;
-    stopEvent.user.data2 = 0;
+    stopEvent.user.data1 = nullptr;
+    stopEvent.user.data2 = nullptr;
     SDL_PushEvent(&stopEvent);
     return 0;
 }
+
+static std::atomic_bool stopUserInput(true);
+static SDL_TimerID sleepingTimer(static_cast<SDL_TimerID>(0));
+
 
 /**
  * Delays program execution for the specified number of milliseconds.
@@ -435,15 +439,16 @@ static Uint32 sleepTimerCallback(Uint32, void *)
  * while some important event happens (e.g., getting hit by a cannon ball
  * or a spell effect).
  */
-void EventHandler::sleep(unsigned int usec)
+void EventHandler::sleep(unsigned int msec)
 {
     // Start a timer for the amount of time we want
     // to sleep from user input.
     // Make this static so that all instance stop.
     // (e.g., sleep calling sleep).
-    static std::atomic_bool stopUserInput(true);
-    SDL_TimerID sleepingTimer = SDL_AddTimer(usec, sleepTimerCallback, 0);
     stopUserInput = true;
+    sleepingTimer =
+        SDL_AddTimer(msec, sleepTimerCallback, nullptr);
+
     while (stopUserInput) {
         SDL_Event event;
         SDL_WaitEvent(&event);
@@ -464,7 +469,10 @@ void EventHandler::sleep(unsigned int usec)
             if (event.user.code == 0) {
                 eventHandler->getTimer()->tick();
             } else if (event.user.code == 1) {
-                SDL_RemoveTimer(sleepingTimer);
+                if (sleepingTimer) {
+                    SDL_RemoveTimer(sleepingTimer);
+                    sleepingTimer = nullptr;
+                }
                 stopUserInput = false;
             }
             break;
@@ -491,7 +499,7 @@ void EventHandler::run()
             {
 #ifdef DEBUG
                 static std::atomic<std::clock_t> clocksum(0);
-                                static std::atomic_int keycount(0);
+                static std::atomic_int keycount(0);
                 std::clock_t oldc, newc, diff;
                 oldc = std::clock();
 #endif
@@ -519,7 +527,15 @@ void EventHandler::run()
             handleMouseMotionEvent(event);
             break;
         case SDL_USEREVENT:
-            eventHandler->getTimer()->tick();
+            if (event.user.code == 0) {
+                eventHandler->getTimer()->tick();
+            } else if (event.user.code == 1) {
+                if (sleepingTimer) {
+                    SDL_RemoveTimer(sleepingTimer);
+                    sleepingTimer = nullptr;
+                }
+                stopUserInput = false;
+            }
             break;
         case SDL_ACTIVEEVENT:
             handleActiveEvent(event, updateScreen);

@@ -564,17 +564,17 @@ bool PartyMember::applyDamage(int damage, bool)
 
 int PartyMember::getAttackBonus() const
 {
-    if (
-        Weapon::get(player->weapon)->alwaysHits() /* || (player->dex >= 40) */
-    ) {
-        return 255;
+    if (Weapon::get(player->weapon)->alwaysHits()) {
+        return 1;
     }
-    return player->dex;
+    return static_cast<int>(xu4_random(256) < (128 + 2 * player->dex));
 }
 
 int PartyMember::getDefense(bool needsMystic) const
 {
-    return Armor::get(player->armor)->getDefense(needsMystic);
+    return static_cast<int>(
+        xu4_random(256) < Armor::get(player->armor)->getDefense(needsMystic)
+    );
 }
 
 bool PartyMember::dealDamage(Creature *m, int damage)
@@ -1483,19 +1483,21 @@ void Party::swapPlayers(int p1, int p2)
     saveGame->players[p1] = c->saveGame->players[p2];
     c->saveGame->players[p2] = tmp_rec;
 
-        syncMembers();
+    syncMembers();
 
     if (p1 == activePlayer) {
         activePlayer = p2;
     } else if (p2 == activePlayer) {
         activePlayer = p1;
     }
-        PartyMember *tmp_memb = members[p1];
-        members[p1] = members[p2];
-        members[p2] = tmp_memb;
+#if 0
+    PartyMember *tmp_memb = members[p1];
+    members[p1] = members[p2];
+    members[p2] = tmp_memb;
+#endif
     members[p1]->player = &(saveGame->players[p1]);
-        members[p2]->player = &(saveGame->players[p2]);
-    notifyOfChange(0);
+    members[p2]->player = &(saveGame->players[p2]);
+    notifyOfChange();
 }
 
 void Party::syncMembers()

@@ -486,7 +486,7 @@ void Creature::act(CombatController *controller)
     int dist;
     CombatAction action;
     Creature *target;
-        bool harder;
+    bool harder;
     /* see if creature wakes up if it is asleep */
     if ((getStatus() == STAT_SLEEPING) && (xu4_random(8) == 0)) {
         wakeUp();
@@ -544,7 +544,7 @@ void Creature::act(CombatController *controller)
     switch (action) {
     case CA_ATTACK:
         soundPlay(SOUND_NPC_ATTACK, false); // NPC_ATTACK, melee
-                harder = (*c->aura == Aura::PROTECTION);
+        harder = (*c->aura == Aura::PROTECTION);
         if (controller->attackHit(this, target, harder)) {
             // PC_STRUCK, melee and ranged
             soundPlay(SOUND_PC_STRUCK, false);
@@ -570,6 +570,21 @@ void Creature::act(CombatController *controller)
             GameController::flashTile(
                 target->getCoords(), "miss_flash", 1
             );
+        }
+        // u4apple2: stealing happens even if the creature misses
+        if (target && isPartyMember(target)) {
+            /* steal gold if the creature steals gold */
+            if (stealsGold() && (xu4_random(4) == 0)) {
+                // ITEM_STOLEN, gold
+                soundPlay(SOUND_ITEM_STOLEN, false);
+                c->party->adjustGold(-(xu4_random(0x40)));
+            }
+            /* steal food if the creature steals food */
+            if (stealsFood()) {
+                // ITEM_STOLEN, food
+                soundPlay(SOUND_ITEM_STOLEN, false);
+                c->party->adjustFood(-2500);
+            }
         }
         break;
     case CA_CAST_SLEEP:
@@ -724,7 +739,7 @@ void Creature::applyTileEffect(TileEffect effect)
         switch (effect) {
         case EFFECT_SLEEP:
             /* creature fell asleep! */
-            if ((resists != EFFECT_SLEEP) && (xu4_random(0xFF) >= hp)) {
+            if ((resists != EFFECT_SLEEP) && (xu4_random(256) >= hp)) {
                 putToSleep();
             }
             break;
@@ -733,7 +748,7 @@ void Creature::applyTileEffect(TileEffect effect)
             /* deal 0 - 127 damage to the creature
                if it is not immune to fire damage */
             if ((resists != EFFECT_FIRE) && (resists != EFFECT_LAVA)) {
-                applyDamage(xu4_random(0x7F), false);
+                applyDamage(xu4_random(128), false);
             }
             break;
         case EFFECT_POISONFIELD:
@@ -741,7 +756,7 @@ void Creature::applyTileEffect(TileEffect effect)
                if it is not immune to poison field damage */
             if (resists != EFFECT_POISONFIELD) {
                 wakeUp(); /* just to be fair - poison wakes up players too */
-                applyDamage(xu4_random(0x7F), false);
+                applyDamage(xu4_random(128), false);
             }
             break;
         case EFFECT_POISON:
@@ -754,12 +769,12 @@ void Creature::applyTileEffect(TileEffect effect)
 
 int Creature::getAttackBonus() const
 {
-    return 0;
+    return 1;
 }
 
 int Creature::getDefense(bool) const
 {
-    return 128;
+    return 0;
 }
 
 bool Creature::divide()

@@ -270,7 +270,7 @@ void dungeonTouchOrb()
         return;
     }
     int stats = 0;
-    int damage = 0;
+    int damage = 100;
     /* Get current position and find a replacement tile for it */
     Tile *orb_tile = c->location->map->tileset->getByName("magic_orb");
     MapTile replacementTile(
@@ -306,17 +306,17 @@ void dungeonTouchOrb()
     if (stats & STATSBONUS_STR) {
         screenMessage("Str + 5\n");
         AdjustValueMax(c->saveGame->players[player].str, 5, 50);
-        damage += 200;
+        damage *= 2;
     }
     if (stats & STATSBONUS_DEX) {
         screenMessage("Ges + 5\n");
         AdjustValueMax(c->saveGame->players[player].dex, 5, 50);
-        damage += 200;
+        damage *= 2;
     }
     if (stats & STATSBONUS_INT) {
         screenMessage("Int + 5\n");
         AdjustValueMax(c->saveGame->players[player].intel, 5, 50);
-        damage += 200;
+        damage *= 2;
     }
     /* deal damage to the party member who touched the orb */
     soundPlay(SOUND_PC_STRUCK, false);

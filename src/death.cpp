@@ -23,6 +23,7 @@
 #include "portal.h"
 #include "screen.h"
 #include "settings.h"
+#include "sound.h"
 #include "stats.h"
 #include "utils.h"
 
@@ -31,12 +32,12 @@
 #define REVIVE_CASTLE_X 19
 #define REVIVE_CASTLE_Y 8
 
-int timerCount;
-unsigned int timerMsg;
+static int timerCount;
+static unsigned int timerMsg;
 std::atomic_bool deathSequenceRunning(false);
 
-void deathTimer(void *data);
-void deathRevive(void);
+static void deathTimer(void *data);
+static void deathRevive(void);
 
 const struct {
     int timeout; /* pause in seconds */
@@ -60,14 +61,14 @@ const struct {
 
 void deathStart(int delay)
 {
-    if (deathSequenceRunning) {
+    if (deathSequenceRunning.exchange(true)) {
         return;
     }
-    deathSequenceRunning = true;
     game->paused = true;
     c->willPassTurn = false;
     // stop playing music
     musicMgr->pause();
+    soundStop();
     timerCount = 0;
     timerMsg = 0;
     gameSetViewMode(VIEW_DEAD);
@@ -82,7 +83,7 @@ void deathStart(int delay)
     );
 }
 
-void deathTimer(void *)
+static void deathTimer(void *)
 {
     timerCount++;
     if ((timerMsg < N_MSGS)
@@ -101,7 +102,7 @@ void deathTimer(void *)
     }
 }
 
-void deathRevive()
+static void deathRevive()
 {
     while (!c->location->map->isWorldMap() && c->location->prev != nullptr) {
         game->exitToParentMap();

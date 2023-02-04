@@ -139,7 +139,11 @@ static void codexEject(CodexEjectCode code)
         { 158, 21 },
         { 105, 183 },
         { 23, 129 },
-        { 186, 171 }
+        { 186, 171 },
+        { 216, 106 },
+        { 29, 48 },
+        { 145, 243 },
+        { 89, 106 }
     };
     switch (code) {
     case CODEX_EJECT_NO_3_PART_KEY:
@@ -200,11 +204,11 @@ static void codexEject(CodexEjectCode code)
     game->exitToParentMap();
     musicMgr->play();
     /**
-     * if being ejected because of a missed virtue question,
+     * if being ejected because of a missed virtue/principle question,
      * then teleport the party to the starting location for
-     * that virtue.
+     * that virtue/principle (Castle Britannia for missed final question).
      */
-    if ((code >= CODEX_EJECT_HONESTY) && (code <= CODEX_EJECT_HUMILITY)) {
+    if ((code >= CODEX_EJECT_HONESTY) && (code <= CODEX_EJECT_BAD_INFINITY)) {
         int virtue = code - CODEX_EJECT_HONESTY;
         c->location->coords.x = startLocations[virtue].x;
         c->location->coords.y = startLocations[virtue].y;
@@ -306,12 +310,6 @@ static void codexHandleVirtues(const std::string &virtue)
         current++;
         tries = 1;
         EventHandler::sleep(2000);
-        if (current == VIRT_MAX) {
-            screenMessage(
-                "\nDu bist wohlversiert in den Tugenden des Avatars.\n"
-            );
-            EventHandler::sleep(5000);
-        }
         screenMessage("\n\nDie Stimme fragt:\n");
         EventHandler::sleep(2000);
         screenMessage("\n%s\n\n", codexVirtueQuestions[current].c_str());
@@ -327,6 +325,12 @@ static void codexHandleVirtues(const std::string &virtue)
                          )
                      ).c_str()
                  ) == 0)) {
+        if (current == VIRT_MAX) {
+            screenMessage(
+                "\nDu bist wohlversiert in den Tugenden des Avatars.\n"
+            );
+            EventHandler::sleep(5000);
+        }
         screenDrawImageInMapArea(codexImageNames[current]);
         screenRedrawMapArea();
         current++;

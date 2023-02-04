@@ -280,7 +280,7 @@ public:
     EventHandler();
     ~EventHandler();
     static EventHandler *getInstance();
-    static void sleep(unsigned int usec);
+    static void sleep(unsigned int msec);
     static void wait_msecs(unsigned int msecs);
     static void wait_cycles(unsigned int cycles);
     static void setControllerDone(bool exit = true);

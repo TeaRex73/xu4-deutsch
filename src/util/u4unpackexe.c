@@ -79,10 +79,12 @@ int main(int argc, char *argv[])
             argv[1],
             BASE_HEADER_SIZE
         );
+        free(buffer);
         return (EXIT_FAILURE);
     }
     if (getWord(buffer) != MZ_SIG) {
         printf("%s doesn't have an 'MZ' signature!\n", argv[1]);
+        free(buffer);
         return (EXIT_FAILURE);
     }
     /* Get the old entry point */
@@ -99,6 +101,7 @@ int main(int argc, char *argv[])
             argv[1],
             FAR_RET_SIZE
         );
+        free(buffer);
         return (EXIT_FAILURE);
     }
 
@@ -128,10 +131,12 @@ int main(int argc, char *argv[])
     file = fopen(argv[2],"wb");
     if (!file) {
         printf("Couldn't open %s for writing!\n", argv[2]);
+        free(buffer);
         return (EXIT_FAILURE);
     }
     fwrite(buffer, 1, outfileSize, file);
     fclose(file);
+    free(buffer);
     return (EXIT_SUCCESS);
 }
 

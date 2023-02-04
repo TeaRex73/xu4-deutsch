@@ -213,7 +213,8 @@ public:
     Party &operator=(Party &&) = delete;
     virtual ~Party();
     void notifyOfChange(
-        PartyMember *partyMember = 0, PartyEvent::Type = PartyEvent::GENERIC
+        PartyMember *partyMember = nullptr,
+        PartyEvent::Type = PartyEvent::GENERIC
     );
     // Used to translate script values into something useful
     virtual std::string translate(std::vector<std::string> &parts);

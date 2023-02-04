@@ -1,4 +1,4 @@
-/*
+ /*
  * SoundMgr_SDL.cpp
  *
  *  Created on: 2011-01-27
@@ -38,11 +38,11 @@ bool SoundManager::load_sys(Sound sound, const std::string &pathname)
     return true;
 }
 
-static std::atomic_bool finished(false);
+static std::atomic_bool finished;
 
-void channel_finished(int)
+static void channel_finished(int channel)
 {
-    finished = true;
+    if (channel == 1) finished = true;
 }
 
 void SoundManager::play_sys(
@@ -52,29 +52,31 @@ void SoundManager::play_sys(
     /**
      * Use Channel 1 for sound effects
      */
-    finished = true;
+    // make sure finished is in the right state. prevent race conditions.
     if (Mix_Playing(1)) {
         finished = false;
-        Mix_ChannelFinished(*channel_finished);
-        if (!Mix_Playing(1)) {
-                        finished = true;
-                }
     }
-    while (!onlyOnce && !finished) {
-        EventHandler::sleep(10);
+    if (!Mix_Playing(1)) {
+        finished = true;
     }
-    if (!onlyOnce || !Mix_Playing(1)) {
-        if (Mix_PlayChannelTimed(
+    // spin lock - EventHandler::sleep() might block far too long
+    while (!onlyOnce && !finished) /* do nothing */ ;
+    if (finished || !onlyOnce) {
+        finished = false;
+        if (
+            Mix_PlayChannelTimed(
                 1,
                 soundChunk[sound],
                 (specificDurationInTicks == -1) ? 0 : -1,
                 specificDurationInTicks
-            ) == -1) {
-            std::fprintf(
-                stderr, "Error playing sound %d: %s\n", sound, Mix_GetError()
+            ) < 0
+        ) {
+            errorFatal(
+                "Error playing sound %d: %s\n", sound, Mix_GetError()
             );
         }
-        while(wait && !finished) continue;
+        // spin lock, see above
+        while (wait && !finished) /* do nothing */ ;
     }
 }
 
@@ -84,18 +86,22 @@ void SoundManager::stop_sys(int channel)
     if (!musicMgr->functional || !settings.soundVol) {
         return;
     }
-    if (Mix_Playing(channel)) {
+    if (!finished) {
         Mix_HaltChannel(channel);
     }
 }
 
 bool SoundManager::init_sys()
 {
+    finished = true;
+    Mix_ChannelFinished(&channel_finished);
     return true;
 }
 
 void SoundManager::del_sys()
 {
+    stop_sys(1);
+    Mix_ChannelFinished(nullptr);
     for (int i = 0; i < SOUND_MAX; i++) {
         if (soundChunk[i] != nullptr) {
             Mix_FreeChunk(soundChunk[i]);

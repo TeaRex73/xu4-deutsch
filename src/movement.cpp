@@ -197,6 +197,7 @@ bool moveObject(Map *map, Creature *obj, MapCoords avatar)
     dir = DIR_NONE;
     switch (obj->getMovementBehavior()) {
     case MOVEMENT_FIXED:
+        /* stationary, e.g. reaper, keep DIR_NONE */
         break;
     case MOVEMENT_WANDER:
         /* Except in Dungeons, wandering creatures actually wander
