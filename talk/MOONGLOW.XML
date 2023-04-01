@@ -78,7 +78,7 @@
     <topic query="MOND">Wenn ich sterbe, wird die Welt enden!<question type="0">Glaubst Du meine Geschichte!?!?<yes>Dann müssen wir die Monde fällen!</yes><no>Idiot, du mußt mich für irre halten!</no></question></topic>
   </person>
   <person id="11" name="Inoo" pronoun="Sie" turnAwayProb="0">
-    <description>Eine alte Zigeunerin.</description>
+    <description>Eine alte Wahrsagerin.</description>
     <topic query="job">Ich bin Hellseherin, ich lese Handlinien.</topic>
     <topic query="health">Ich sehe voraus, daß es mir heute gut gehen wird!</topic>
     <topic query="HAND">Handlinien erzählen Schicksale!</topic>

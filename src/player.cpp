@@ -253,7 +253,7 @@ void PartyMember::addStatus(StatusType s)
     case STAT_GOOD:
     case STAT_POISONED:
         setTile(tileForClass(getClass()));
-                break;
+        break;
     case STAT_SLEEPING:
     case STAT_DEAD:
         setTile(Tileset::findTileByName("corpse")->getId());
@@ -455,7 +455,7 @@ void PartyMember::removeStatus(StatusType s)
     case STAT_SLEEPING:
     case STAT_DEAD:
         setTile(Tileset::findTileByName("corpse")->getId());
-                break;
+        break;
     default:
         ASSERT(
             0,

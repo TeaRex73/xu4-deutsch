@@ -120,7 +120,7 @@ public:
         const Portal *portal,
         TurnCompleter *turnCompleter = nullptr
     );
-    bool exitToParentMap();
+    bool exitToParentMap(bool shouldQuenchTorch = true);
     virtual void finishTurn();
     virtual void update(Party *party, PartyEvent &event);
     virtual void update(Location *location, MoveEvent &event);

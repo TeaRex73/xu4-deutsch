@@ -194,6 +194,7 @@ Dialogue::Dialogue()
      keywords(),
      responses(),
      turnAwayProb(0),
+     attackProb(0),
      question(nullptr)
 {
 }
@@ -247,7 +248,7 @@ const ResponsePart &Dialogue::getAction() const
         return ResponsePart::NONE;
     } else {
         musicMgr->play();
-        if (attackProb - prob < 0x40) {
+        if (prob >= attackProb) {
             return ResponsePart::END;
         } else {
             return ResponsePart::ATTACK;

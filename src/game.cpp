@@ -671,7 +671,9 @@ void GameController::setMap(
      *  previous location, as there may still be ones in the stack we
      * want to keep */
     if (!saveLocation) {
-        exitToParentMap();
+        // don't quench torch if going through altar room into other dungeon
+        bool shouldQuenchTorch = (map->type != Map::DUNGEON);
+        exitToParentMap(shouldQuenchTorch);
     }
     switch (map->type) {
     case Map::WORLD:
@@ -710,10 +712,9 @@ void GameController::setMap(
     c->party->setActivePlayer(activePlayer);
     /* now, actually set our new tileset */
     mapArea.setTileset(map->tileset);
-    if (isCity(map)) {
-        City *city = dynamic_cast<City *>(map);
-        city->addPeople();
-    }
+    /* add inhabitants */
+    City *city = dynamic_cast<City *>(map);
+    if (city) city->addPeople();
 } // GameController::setMap
 
 
@@ -722,7 +723,7 @@ void GameController::setMap(
  * This restores all relevant information from the previous location,
  * such as the map, map position, etc. (such as exiting a city)
  **/
-bool GameController::exitToParentMap()
+bool GameController::exitToParentMap(bool shouldQuenchTorch)
 {
     if (!c->location) {
         return false;
@@ -744,7 +745,7 @@ bool GameController::exitToParentMap()
                 dungeon->tempDataSubTokens.clear();
             }
             /* quench the torch if we're on the world map */
-            if (c->location->prev->map->isWorldMap()) {
+            if (c->location->prev->map->isWorldMap() && shouldQuenchTorch) {
                 c->party->quenchTorch();
             }
         }
@@ -3863,7 +3864,14 @@ void GameController::creatureCleanup(bool allCreatures)
 
 static int maxCreaturesPerLevel(int level)
 {
-    static int c_per_l[8] = {1, 2, 3, 4, 4, 5, 6, 7};
+    // not quite the same algorithm as in u4dos or u4apple2
+    // but the two differ as well, and the u4dos algorithm
+    // where each level has specfic but overlapping ranges
+    // in the fixed-size monster table doesn't map well to
+    // our object deques.
+    // this allows a maximum of 20 monsters per dungeon.
+    // u4dos allows 28, u4apple2 just 16
+    static int c_per_l[8] = {1, 1, 2, 2, 3, 3, 4, 4};
     return c_per_l[level];
 }
 

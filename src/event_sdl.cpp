@@ -66,7 +66,7 @@ bool KeyHandler::defaultHandler(int key, void *)
 {
     bool valid = true;
     switch (key) {
-    case '`':
+    case '^':
         if (settings.debug && c && c->location) {
             std::printf(
                 "x = %d, y = %d, level = %d, tile = %d (%s)\n",
@@ -342,29 +342,30 @@ static void handleKeyDownEvent(
     if (event.key.keysym.unicode <= 0xff) {
         key = event.key.keysym.unicode;
         if (key > 0x7f) {
+            // Translate German chars from Unicode to ISO 646.
             switch (key) {
-            case 0xe4:
+            case 0xe4: // a umlaut
                 key = '{';
                 break;
-            case 0xc4:
+            case 0xc4: // A umlaut
                 key = '[';
                 break;
-            case 0xf6:
+            case 0xf6: // o umlaut
                 key = '|';
                 break;
-            case 0xd6:
+            case 0xd6: // O umlaut
                 key = '\\';
                 break;
-            case 0xfc:
+            case 0xfc: // u umlaut
                 key = '}';
                 break;
-            case 0xdc:
+            case 0xdc: // U umlaut
                 key = ']';
                 break;
-            case 0xdf:
+            case 0xdf: // sz ligature
                 key = '~';
                 break;
-            case 0xa7:
+            case 0xa7: // paragraph sign
                 key = '@';
                 break;
             default:
@@ -485,6 +486,8 @@ void EventHandler::sleep(unsigned int msec)
     }
 } // EventHandler::sleep
 
+#define MAXEVENTS 128
+
 void EventHandler::run()
 {
     if (updateScreen) {
@@ -493,6 +496,22 @@ void EventHandler::run()
     screenRedrawScreen();
     while (!ended && !controllerDone) {
         SDL_Event event;
+        SDL_Event all_events[MAXEVENTS];
+        int i, numevents;
+        // The following throws out all earlier keypresses if SPACE is pressed
+        numevents = SDL_PeepEvents(
+            all_events, MAXEVENTS, SDL_PEEKEVENT, SDL_KEYDOWNMASK
+        );
+        if (numevents > 1) {
+            for (i = numevents - 1; i > 0; i--) {
+                if (all_events[i].key.keysym.sym == SDLK_SPACE) {
+                    SDL_PeepEvents(
+                        all_events, i, SDL_GETEVENT, SDL_KEYDOWNMASK
+                    );
+                    break;
+                }
+            }
+        }
         SDL_WaitEvent(&event);
         switch (event.type) {
         case SDL_KEYDOWN:

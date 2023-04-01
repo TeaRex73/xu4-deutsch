@@ -263,6 +263,8 @@ public:
     void setTurnAwayProb(int prob)
     {
         turnAwayProb = prob;
+        attackProb = prob - 0x40;
+        if (attackProb < 0) attackProb = 0;
     }
 
     void setQuestion(Question *q)
@@ -289,10 +291,8 @@ private:
     Response *defaultAnswer;
     KeywordMap keywords;
     std::vector<Response *> responses;
-    union {
-        int turnAwayProb;
-        int attackProb;
-    };
+    int turnAwayProb;
+    int attackProb;
     Question *question;
 };
 

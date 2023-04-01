@@ -2281,7 +2281,7 @@ void IntroController::getTitleSourceData()
             }
             titles[i].animStepMax = titles[i].plotData.size();
             // let's do this here so it doesn't slow us down later
-			std::random_shuffle(
+            std::random_shuffle(
                 titles[i].plotData.begin(), titles[i].plotData.end()
             );
             break;

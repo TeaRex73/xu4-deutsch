@@ -27,7 +27,7 @@ CXXFLAGS=-std=gnu++11 $(COMMON_FLAGS) -Weffc++ -Wold-style-cast
 INSTALL=install
 
 ifeq ($(STATIC_GCC_LIBS),true)
-    LDFLAGS+=-L. -static-libgcc
+    LDFLAGS+=-L. -static-libgcc -static-libstdc++
 endif
 
 include Makefile.common

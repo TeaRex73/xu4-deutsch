@@ -27,13 +27,13 @@
 void print_trace(std::FILE *file)
 {
     /* Code Taken from GNU C Library manual */
-    void *array[10];
+    void *array[256];
     int size;
     char **strings;
     int i;
-    size = backtrace(array, 10);
+    size = backtrace(array, 256);
     strings = backtrace_symbols(array, size);
-    std::fprintf(file, "Stack trace:\n");
+    std::fprintf(file, "Stack trace (size %d):\n", size);
     /* start at one to omit print_trace */
     for (i = 1; i < size; i++) {
         std::fprintf(file, "%s\n", strings[i]);

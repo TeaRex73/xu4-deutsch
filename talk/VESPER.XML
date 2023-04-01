@@ -12,7 +12,7 @@
     <topic query="job">Uff, ich taff!</topic>
     <topic query="health">Uff, ich taff!</topic>
     <topic query="TAFF">Uff, ich taff!</topic>
-    <topic query="UFF  ">Ich taff!<question type="0">Uff, du taff?<yes>Uff, du taff!</yes><no>Uff, ich taff!</no></question></topic>
+    <topic query="UFF ">Ich taff!<question type="0">Uff, du taff?<yes>Uff, du taff!</yes><no>Uff, ich taff!</no></question></topic>
   </person>
   <person id="2" name="Servile" pronoun="Er" turnAwayProb="0">
     <description>Einen sanften Hirten.</description>
