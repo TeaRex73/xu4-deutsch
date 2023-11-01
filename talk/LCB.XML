@@ -32,7 +32,7 @@
     <description>Eine Person mit einer weißen Mütze.</description>
     <topic query="job">Ich bin der Chefkoch.</topic>
     <topic query="health">Gut... außer daß ich mir in den Finger geschnitten habe!</topic>
-    <topic query="LEBE">Lebensmittel, ruhmreiche Lebensmittel, zu kochen ist mein Leben!</topic>
+    <topic query="ESSE">Lebensmittel, ruhmreiche Lebensmittel, zu kochen ist mein Leben!</topic>
     <topic query="KOCH">Kochen ist angewandte Kunst.<question type="0">Ißt du?<yes>Dann versuch mal meine Suppe!</yes><no>Dann mußt du ein Spiritualist sein!</no></question></topic>
   </person>
   <person id="5" name="ein Schnitter" pronoun="Er" turnAwayProb="50">

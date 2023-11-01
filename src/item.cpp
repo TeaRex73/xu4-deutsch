@@ -12,6 +12,7 @@
 #include "context.h"
 #include "debug.h"
 #include "dungeon.h"
+#include "event.h"
 #include "game.h"
 #include "location.h"
 #include "map.h"
@@ -695,6 +696,7 @@ void useStone(int item)
                     /* start chamber of the codex
                        sequence... */
                     else {
+                        EventHandler::simulateDiskLoad(2000, false);
                         codexStart();
                     }
                 } else {

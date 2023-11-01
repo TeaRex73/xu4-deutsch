@@ -439,12 +439,29 @@ bool screenTileUpdate(TileView *view, const Coords &coords, bool redraw)
     // Get the screen coordinates
     int x = coords.x;
     int y = coords.y;
-    if ((c->location->map->width > VIEWPORT_W)
-        || (c->location->map->height > VIEWPORT_H)) {
-        // Center the coordinates to the viewport if you're
-        // on centered-view map.
-        x = x - c->location->coords.x + VIEWPORT_W / 2;
-        y = y - c->location->coords.y + VIEWPORT_H / 2;
+    int width = c->location->map->width;
+    int height = c->location->map->height;
+    if ((width > VIEWPORT_W)
+        || (height > VIEWPORT_H)) {
+        // Center the coordinates to the viewport if you're on centered-view
+        // map. Wrap so cannon fire works across edge of map.
+        x -= c->location->coords.x;
+        while (x < -(width / 2)) {
+            x += width;
+        }
+        while (x > (width / 2)) {
+            x -= width;
+        }
+        x += VIEWPORT_W / 2;
+
+        y -= c->location->coords.y;
+        while (y < -(height / 2)) {
+            y += height;
+        }
+        while (y > (height / 2)) {
+            y -= height;
+        }
+        y += VIEWPORT_H / 2;
     }
     // Draw if it is on screen
     if ((x >= 0)

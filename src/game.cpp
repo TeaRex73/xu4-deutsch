@@ -1441,6 +1441,7 @@ bool GameController::keyPressed(int key)
             screenMessage("Ende&Speichern\n%d Z]GE...\n", c->saveGame->moves);
             if (c->location->context & CTX_CAN_SAVE_GAME) {
                 gameSave();
+                EventHandler::simulateDiskLoad(2000);
                 screenMessage("\nGESPEICHERT!\n\nReise beenden?");
                 int c = ReadChoiceController::get("jn\015 \033");
                 if (c == 'j') {
@@ -1466,6 +1467,7 @@ bool GameController::keyPressed(int key)
                 );
             } else {
                 screenMessage("Nachschauen...\n");
+                EventHandler::simulateDiskLoad(2000);
                 const ItemLocation *item = itemAtLocation(
                     c->location->map, c->location->coords
                 );
@@ -1494,8 +1496,9 @@ bool GameController::keyPressed(int key)
             break;
         case 'v':
             c->willPassTurn = false;
-            musicMgr->pause();
-            screenMessage("Verwenden...\nWELCHES DING:\n?");
+            screenMessage("Verwenden...\n");
+            EventHandler::simulateDiskLoad(2000);
+            screenMessage("WELCHES DING:\n?");
             if (settings.enhancements) {
                 /* a little xu4 enhancement: show items in inventory when
                    prompted for an item to use */
@@ -1510,7 +1513,6 @@ bool GameController::keyPressed(int key)
             }
             c->lastCommandTime = std::time(nullptr);
             c->willPassTurn = true;
-            musicMgr->play();
             break;
         case 'x':
             if (musicMgr->toggle()) {
@@ -1984,12 +1986,14 @@ static bool attackAt(const Coords &coords)
             && (m->getMovementBehavior() != MOVEMENT_ATTACK_AVATAR))) {
         c->party->adjustKarma(KA_ATTACKED_GOOD);
     }
+    EventHandler::simulateDiskLoad(1000, false);
     CombatController *cc = new CombatController(
         CombatMap::mapForTile(
             ground, c->party->getTransport().getTileType(), m
         )
     );
     cc->init(m);
+    musicMgr->play();
     cc->begin();
     return true;
 } // attackAt
@@ -2613,9 +2617,52 @@ void GameController::avatarMoved(MoveEvent &event)
             }
         }
     }
+    /* simulate disk load when part of next 16x16 square becomes visible */
+    if ((event.result & MOVE_SUCCEEDED) &&
+        (c->location->context == CTX_WORLDMAP)) {
+        unsigned int globalX = c->location->coords.x >> 4;
+        unsigned int globalY = c->location->coords.y >> 4;
+        unsigned int localX  = c->location->coords.x & 0xF;
+        unsigned int localY  = c->location->coords.y & 0xF;
+        unsigned int activeX = c->location->coords.active_x;
+        unsigned int activeY = c->location->coords.active_y;
+        if (
+            (event.dir == DIR_WEST ) &&
+            (globalX == activeX) &&
+            (localX == 4)
+        ) {
+            c->location->coords.active_x = (activeX - 1) & 0xF;
+            EventHandler::simulateDiskLoad(500);
+        }
+        if (
+            (event.dir == DIR_NORTH) &&
+            (globalY == activeY) &&
+            (localY ==  4)
+        ) {
+            c->location->coords.active_y = (activeY - 1) & 0xF;
+            EventHandler::simulateDiskLoad(500);
+        }
+        if (
+            (event.dir == DIR_EAST ) &&
+            (globalX == ((activeX + 1) & 0xF)) &&
+            (localX == 11)
+        ) {
+            c->location->coords.active_x = (activeX + 1) & 0xF;
+            EventHandler::simulateDiskLoad(500);
+        }
+        if (
+            (event.dir == DIR_SOUTH) &&
+            (globalY == ((activeY + 1) & 0xF)) &&
+            (localY == 11)
+        ) {
+            c->location->coords.active_y = (activeY + 1) & 0xF;
+            EventHandler::simulateDiskLoad(500);
+        }
+    }
     /* exited map */
     if (event.result & MOVE_EXIT_TO_PARENT) {
         screenMessage("%cVERLASSEN...%c\n", FG_GREY, FG_WHITE);
+        EventHandler::simulateDiskLoad(2000, false);
         exitToParentMap();
         musicMgr->play();
     }
@@ -2675,6 +2722,7 @@ void GameController::avatarMovedInDungeon(MoveEvent &event)
     /* if we're exiting the map, do this */
     if (event.result & MOVE_EXIT_TO_PARENT) {
         screenMessage("%cVERLASSEN...%c\n", FG_GREY, FG_WHITE);
+        EventHandler::simulateDiskLoad(2000, false);
         exitToParentMap();
         musicMgr->play();
     }
@@ -2695,8 +2743,10 @@ void GameController::avatarMovedInDungeon(MoveEvent &event)
             Dungeon *dng = dynamic_cast<Dungeon *>(c->location->map);
             dng->currentRoom = room;
             /* set the map and start combat! */
+            EventHandler::simulateDiskLoad(1000, false);
             CombatController *cc = new CombatController(dng->roomMaps[room]);
             cc->initDungeonRoom(room, dirReverse(realDir));
+            musicMgr->play();
             cc->begin();
         }
     }
@@ -2898,10 +2948,10 @@ static void mixReagents()
     /*  uncomment this line to activate new spell mixing code */
     // return mixReagentsSuper();
     bool done = false;
-    musicMgr->pause();
+    screenMessage("Mischen...\n");
+    EventHandler::simulateDiskLoad(2000);
     while (!done) {
-        screenMessage("Mischen\n");
-        // Verify that there are reagents remaining in the inventory
+            // Verify that there are reagents remaining in the inventory
         bool found = false;
         for (int i = 0; i < 8; i++) {
             if (c->saveGame->reagents[i] > 0) {
@@ -2952,7 +3002,6 @@ static void mixReagents()
     }
     c->stats->setView(STATS_PARTY_OVERVIEW);
     screenMessage("\n\n");
-    musicMgr->play();
 } // mixReagents
 
 
@@ -3140,6 +3189,13 @@ static bool talkAt(const Coords &coords, int distance)
     if ((talker->getMovementBehavior() == MOVEMENT_ATTACK_AVATAR)
         && (talker->getId() != PYTHON_ID)) {
         return false;
+    }
+    /* if we've come that far, it's certain that there is
+       somebody to talk to... so delay now. */
+    if (talker->getNpcType() >= NPC_VENDOR_WEAPONS) {
+        EventHandler::simulateDiskLoad(2000, false);
+    } else {
+        EventHandler::simulateDiskLoad(500, false);
     }
     /* if we're talking to Lord British and the avatar is dead,
        LB resurrects them! */
@@ -3532,6 +3588,7 @@ bool GameController::checkMoongates()
         )) {
         // Default spell effect (screen inversion, no 'spell' sound effects)
         gameSpellEffect(-1, -1, SOUND_MOONGATE);
+        EventHandler::simulateDiskLoad(2000);
         c->location->coords = dest;
         gameSpellEffect(-1, -1, SOUND_MOONGATE); // Again, after arriving
         if (moongateIsEntryToShrineOfSpirituality(trammel, felucca)) {
@@ -3635,12 +3692,14 @@ static void gameCreatureAttack(Creature *m)
             ground = under->getTile().getTileType();
         }
     }
+    EventHandler::simulateDiskLoad(1000, false);
     CombatController *cc = new CombatController(
         CombatMap::mapForTile(
             ground, c->party->getTransport().getTileType(), m
         )
     );
     cc->init(m);
+    musicMgr->play();
     cc->begin();
 }
 
@@ -3849,11 +3908,27 @@ void GameController::creatureCleanup(bool allCreatures)
     for (i = map->objects.begin(); i != map->objects.end();) {
         Object *obj = *i;
         MapCoords o_coords = obj->getCoords();
+        unsigned int globalX = o_coords.x >> 4u;
+        unsigned int globalY = o_coords.y >> 4u;
         if ((obj->getType() == Object::CREATURE)
-            && (allCreatures || ((o_coords.z == c->location->coords.z)
-                && (o_coords.distance(c->location->coords, c->location->map)
-                    > MAX_CREATURE_DISTANCE)))) {
-
+            && (allCreatures ||
+                (
+                    (o_coords.z == c->location->coords.z)
+                    && (
+                        (
+                            (globalX != c->location->coords.active_x)
+                            && (globalX !=
+                                (((c->location->coords.active_x) + 1u) & 0xFu))
+                        )
+                        || (
+                            (globalY != c->location->coords.active_y)
+                            && (globalY !=
+                                (((c->location->coords.active_y) + 1u) & 0xFu))
+                        )
+                    )
+                )
+               )
+           ) {
             /* delete the object and remove it from the map */
             i = map->removeObject(i);
         } else {
@@ -3993,18 +4068,18 @@ bool gameSpawnCreature(const Creature *m)
         }
         coords = new_coords;
     } else { // not dungeon
-        int dx, dy, xrem, xbase, yrem, ybase;
+        unsigned int x, y;
+        int dx, dy;
         bool ok = false;
         int tries = 0;
         while (!ok && (tries < MAX_TRIES)) {
-            xrem = coords.x % 16;
-            yrem = coords.y % 16;
-            xbase = xrem < 8 ? -xrem - 16 : -xrem;
-            ybase = yrem < 8 ? -yrem - 16 : -yrem;
-            dx = xbase + xu4_random(32);
-            dy = ybase + xu4_random(32);
-
-            // Make sure it's not in view of the player if not cheat-summoned
+            x = (c->location->coords.active_x << 4u) + xu4_random(32);
+            y = (c->location->coords.active_y << 4u) + xu4_random(32);
+            x &= 0xFFu;
+            y &= 0xFFu;
+            dx = static_cast<int>(x) - coords.x;
+            dy = static_cast<int>(y) - coords.y;
+           // Make sure it's not in view of the player if not cheat-summoned
             if (
                 !m
                 && std::abs(dx) <= (VIEWPORT_W / 2)

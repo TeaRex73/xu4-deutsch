@@ -282,6 +282,7 @@ public:
     static EventHandler *getInstance();
     static void sleep(unsigned int msec);
     static void wait_msecs(unsigned int msecs);
+    static void simulateDiskLoad(int duration, bool reenableMusic = true);
     static void wait_cycles(unsigned int cycles);
     static void setControllerDone(bool exit = true);
     static bool getControllerDone();

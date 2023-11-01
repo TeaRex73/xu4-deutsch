@@ -688,6 +688,7 @@ static bool spellBlink(int dir)
             /* CHANGE: No teleporting onto isle of abyss and surroundings */
             success = false;
         } else {
+            EventHandler::simulateDiskLoad(2000);
             c->location->coords = coords;
             success = true;
         }
@@ -867,6 +868,7 @@ static bool spellGate(int phase)
     GameController::flashTile(c->location->coords, "moongate", 4);
     moongate = moongateGetGateCoordsForPhase(phase);
     if (moongate) {
+        EventHandler::simulateDiskLoad(2000);
         c->location->coords = *moongate;
     }
     return true;
@@ -1040,6 +1042,7 @@ static bool spellXit(int)
         }
         /*Otherwise it always works */
         screenMessage("Verlasse...\n");
+        EventHandler::simulateDiskLoad(2000, false);
         game->exitToParentMap();
         musicMgr->play();
         return true;
@@ -1071,6 +1074,7 @@ static bool spellYup(int)
     /* exiting the dungeon */
     else {
         screenMessage("Verlasse...\n");
+        EventHandler::simulateDiskLoad(2000, false);
         game->exitToParentMap();
         musicMgr->play();
         return true;

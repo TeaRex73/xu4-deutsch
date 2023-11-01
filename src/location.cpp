@@ -46,6 +46,10 @@ Location::Location(
      turnCompleter(turnCompleter),
      prev(prev)
 {
+    if (context != CTX_WORLDMAP) {
+        coords.active_x = 0;
+        coords.active_y = 0;
+    }
 }
 
 Location::~Location()

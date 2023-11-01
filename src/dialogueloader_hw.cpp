@@ -145,6 +145,7 @@ Response *hawkwindGetIntro(const DynamicResponse *)
                        + " "
                        + hawkwindText[HW_ISREVIVED] + "\n"
                    ));
+        intro->add(ResponsePart::STOPMUSIC);
         intro->add(ResponsePart::END);
     } else {
         intro->add(ResponsePart::STARTMUSIC_HW);

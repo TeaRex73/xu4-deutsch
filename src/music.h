@@ -66,6 +66,9 @@ public:
     void playCurrent();
     void play();
 
+    void freeze();
+    void thaw();
+
     void pause()
     {
         introMid = NONE;

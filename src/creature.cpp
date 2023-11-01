@@ -414,9 +414,9 @@ bool Creature::specialEffect()
         ObjectDeque::iterator i;
         if (coords == c->location->coords) {
             soundPlay(SOUND_STORM, false, -1, true);
-                        for (int j = 0; j < 4; j++) {
-                                c->party->applyEffect(EFFECT_FIRE);
-                        }
+            for (int j = 0; j < 4; j++) {
+                c->party->applyEffect(EFFECT_FIRE);
+            }
             return true;
         }
         /* See if the storm is on top of any objects and destroy them! */
@@ -442,14 +442,21 @@ bool Creature::specialEffect()
             && (c->transportContext == TRANSPORT_SHIP)) {
             soundPlay(SOUND_WHIRLPOOL, false, -1, true);
             /* Deal 10 damage to the ship */
-                        c->party->applyEffect(EFFECT_FIRE);
+            c->party->applyEffect(EFFECT_FIRE);
             /* Send the party to Loch Lake */
+            MapCoords old_c = c->location->coords;
             c->location->coords = c->location->map->getLabel(
                 "lockelake"
             );
-            /* Teleport the whirlpool that sent you there
-               far away from loch lake */
-            this->setCoords(Coords(0, 0, 0));
+            /* Teleport the whirlpool far away */
+            int newx = 128, newy = 128;
+            if (old_c.x >= 64 && old_c.x < 192) {
+                newx = 0;
+            }
+            if (old_c.y >= 64 && old_c.y < 192) {
+                newy = 0;
+            }
+            this->setCoords(Coords(newx, newy, 0));
             retval = true;
             break;
         }

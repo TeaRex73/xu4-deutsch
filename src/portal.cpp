@@ -12,6 +12,7 @@
 #include "city.h"
 #include "context.h"
 #include "dungeon.h"
+#include "event.h"
 #include "game.h"
 #include "location.h"
 #include "mapmgr.h"
@@ -162,12 +163,15 @@ bool usePortalAt(
     }
     /* portal just exits to parent map */
     if (portal->exitPortal) {
+        EventHandler::simulateDiskLoad(2000, false);
         game->exitToParentMap();
         musicMgr->play();
         return true;
     } else if (portal->destid == location->map->id) {
+        /* Same map => no delay */
         location->coords = portal->start;
     } else {
+        EventHandler::simulateDiskLoad(2000, false);
         game->setMap(destination, portal->saveLocation, portal);
         musicMgr->play();
     }

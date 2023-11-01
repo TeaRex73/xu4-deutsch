@@ -12,9 +12,11 @@
 #include "context.h"
 #include "debug.h"
 #include "location.h"
+#include "music.h"
 #include "savegame.h"
 #include "screen.h"
 #include "settings.h"
+#include "sound.h"
 #include "textview.h"
 #include "utils.h"
 
@@ -58,6 +60,22 @@ void EventHandler::wait_msecs(unsigned int msecs)
     EventHandler::sleep(msecs % msecs_per_cycle);
 }
 
+/**
+ * Simulates the delay caused by loading stuff from flopp disk
+ */
+void EventHandler::simulateDiskLoad(int duration, bool reenableMusic)
+{
+    if (reenableMusic) musicMgr->freeze(); else musicMgr->pause();
+    soundStop();
+    screenDisableCursor();
+    screenHideCursor();
+    screenMoving = false;
+    wait_msecs(duration);
+    screenMoving = true;
+    screenEnableCursor();
+    screenShowCursor();
+    if (reenableMusic) musicMgr->thaw();
+}
 
 /**
  * Waits a given number of game cycles before continuing

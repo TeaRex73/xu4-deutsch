@@ -10,6 +10,7 @@
 #include "annotation.h"
 #include "context.h"
 #include "debug.h"
+#include "event.h"
 #include "game.h"
 #include "item.h"
 #include "location.h"
@@ -173,6 +174,7 @@ void dungeonSearch(void)
         token = DUNGEON_CORRIDOR;
     }
     screenMessage("Nachschauen...\n");
+    EventHandler::simulateDiskLoad(2000);
     switch (token) {
     case DUNGEON_MAGIC_ORB:
         dungeonTouchOrb();

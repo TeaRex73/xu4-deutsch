@@ -53,6 +53,11 @@ typedef std::vector<MapTile> MapData;
 #define WITH_GROUND_OBJECTS 1
 #define WITH_OBJECTS 2
 
+// Coordinates to upper left of 4 active chunks
+#define C2A(n) \
+    ((static_cast<unsigned int>(n) & 0xFu) >= 8u ? \
+     ((static_cast<unsigned int>(n) >> 4u) & 0xFu) : \
+     (((static_cast<unsigned int>(n) >> 4u) - 1u) & 0xFu))
 
 /**
  * MapCoords class
@@ -60,12 +65,16 @@ typedef std::vector<MapTile> MapData;
 class MapCoords:public Coords {
 public:
     MapCoords(int initx = 0, int inity = 0, int initz = 0)
-        :Coords(initx, inity, initz)
+        :Coords(initx, inity, initz),
+         active_x(C2A(initx)),
+         active_y(C2A(inity))
     {
     }
 
     MapCoords(const Coords &a)
-        :Coords(a.x, a.y, a.z)
+        :Coords(a.x, a.y, a.z),
+         active_x(C2A(a.x)),
+         active_y(C2A(a.y))
     {
     }
 
@@ -117,6 +126,7 @@ public:
     ) const;
     int distance(const MapCoords &c, const class Map *map = nullptr) const;
     static MapCoords nowhere;
+    unsigned int active_x, active_y;
 };
 
 /**

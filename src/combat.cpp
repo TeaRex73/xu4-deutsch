@@ -1166,8 +1166,9 @@ bool CombatController::keyPressed(int key)
         }
         break;
     case 'v':
-        musicMgr->pause();
-        screenMessage("Verwenden...\nWELCHES DING:\n?");
+        screenMessage("Verwenden...\n");
+        EventHandler::simulateDiskLoad(2000);
+        screenMessage("WELCHES DING:\n?");
         c->stats->setView(STATS_ITEMS);
         itemUse(gameGetInput().c_str());
         musicMgr->play();

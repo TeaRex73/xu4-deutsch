@@ -107,6 +107,15 @@ void Music::stopMid()
     Mix_HaltMusic();
 }
 
+void Music::freeze()
+{
+    Mix_PauseMusic();
+}
+
+void Music::thaw()
+{
+    Mix_ResumeMusic();
+}
 
 /**
  * Set, increase, and decrease sound volume
