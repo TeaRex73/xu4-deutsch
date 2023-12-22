@@ -308,7 +308,7 @@ void SaveGamePlayerRecord::init()
 
 bool saveGameMonstersWrite(SaveGameMonsterRecord *monsterTable, std::FILE *f)
 {
-    int i, max;
+    int i;
     if (monsterTable) {
         for (i = 0; i < MONSTERTABLE_SIZE; i++) {
             if (!writeChar(monsterTable[i].tile, f)) {
@@ -351,7 +351,7 @@ bool saveGameMonstersWrite(SaveGameMonsterRecord *monsterTable, std::FILE *f)
             }
         }
     } else {
-        max = MONSTERTABLE_SIZE * 8;
+        int max = MONSTERTABLE_SIZE * 8;
         for (i = 0; i < max; i++) {
             if (!writeChar(static_cast<unsigned char>(0), f)) {
                 return false;

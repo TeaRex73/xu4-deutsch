@@ -28,7 +28,7 @@ Image *U5LzwImageLoader::load(U4FILE *file, int width, int height, int bpp)
     if ((width == -1) || (height == -1) || (bpp == -1)) {
         errorFatal("dimensions not set for u5lzw image");
     }
-    ASSERT(
+    U4ASSERT(
         bpp == 4 || bpp == 8 || bpp == 24 || bpp == 32, "invalid bpp: %d", bpp
     );
     long compressedLen = file->length();

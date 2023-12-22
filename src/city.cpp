@@ -20,7 +20,7 @@
 City::City()
     :Map(),
      name(),
-     type(),
+     cityType(),
      persons(),
      tlk_fname(),
      personroles(),
@@ -34,27 +34,27 @@ City::~City()
 {
     for (PersonList::iterator i = persons.begin();
          i != persons.end();
-         i++) {
+         ++i) {
         delete *i;
     }
     for (PersonRoleList::iterator j = personroles.begin();
          j != personroles.end();
-         j++) {
+         ++j) {
         delete *j;
     }
     for (std::vector<Dialogue *>::iterator k = normalDialogues.begin();
          k != normalDialogues.end();
-         k++) {
+         ++k) {
         delete *k;
     }
     for (std::vector<Dialogue *>::iterator l = extraDialogues.begin();
          l != extraDialogues.end();
-         l++) {
+         ++l) {
         delete *l;
     }
     for (std::vector<Person *>::iterator m = personObjects.begin();
          m != personObjects.end();
-         m++) {
+         ++m) {
         removeObject(*m);
     }
 }
@@ -63,7 +63,7 @@ City::~City()
 /**
  * Returns the name of the city
  */
-std::string City::getName()
+std::string City::getName() const
 {
     return name;
 }
@@ -95,7 +95,7 @@ void City::addPeople()
     PersonList::iterator current;
     // Make sure the city has no people in it already
     removeAllPeople();
-    for (current = persons.begin(); current != persons.end(); current++) {
+    for (current = persons.begin(); current != persons.end(); ++current) {
         Person *p = *current;
         if ((p->getTile() != 0)
             && !(c->party->canPersonJoin(p->getName(), nullptr)
@@ -116,7 +116,7 @@ void City::removeAllPeople()
         if (isPerson(*obj)) {
             obj = removeObject(obj);
         } else {
-            obj++;
+            ++obj;
         }
     }
 }
@@ -144,8 +144,7 @@ Person *City::personAt(const Coords &coords)
  */
 bool isCity(Map *punknown)
 {
-    City *pCity;
-    if ((pCity = dynamic_cast<City *>(punknown)) != nullptr) {
+    if (dynamic_cast<City *>(punknown) != nullptr) {
         return true;
     } else {
         return false;

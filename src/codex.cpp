@@ -227,7 +227,6 @@ static void codexEject(CodexEjectCode code)
 static void codexHandleWOP(const std::string &word)
 {
     static int tries = 1;
-    int i;
     eventHandler->popKeyHandler();
     /* slight pause before continuing */
     screenMessage("\n");
@@ -243,7 +242,7 @@ static void codexHandleWOP(const std::string &word)
             return;
         }
         /* eject them if they're not a full avatar at this point */
-        for (i = 0; i < VIRT_MAX; i++) {
+        for (int i = 0; i < VIRT_MAX; i++) {
             if (c->saveGame->karma[i] != 0) {
                 codexEject(CODEX_EJECT_NO_FULL_AVATAR);
                 return;
@@ -442,7 +441,7 @@ static bool codexHandleEndgameAnyKey(int, void *)
             screenRedrawMapArea();
             musicMgr->create_or_win();
             screenMessage("\n\n%s", codexEndgameText2[0].c_str());
-        } else if (index > 7) {
+        } else {
             screenMessage("%s", codexEndgameText2[index - 7].c_str());
         }
         index++;

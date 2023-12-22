@@ -1,4 +1,4 @@
-/*
+ /*
  * $Id$
  */
 
@@ -92,13 +92,15 @@ public:
     friend class Party;
     PartyMember(Party *p, SaveGamePlayerRecord *pr);
     PartyMember(const PartyMember &p) = default;
+    PartyMember(PartyMember &&p) = default;
     PartyMember &operator=(const PartyMember &p) = default;
+    PartyMember &operator=(PartyMember &&p) = default;
     virtual ~PartyMember();
     void notifyOfChange();
     // Used to translate script values into something useful
-    virtual std::string translate(std::vector<std::string> &parts);
+    virtual std::string translate(std::vector<std::string> &parts) override;
 
-    virtual int getHp() const;
+    virtual int getHp() const override;
 
     int getMaxHp() const
     {
@@ -133,36 +135,36 @@ public:
     int getMaxMp() const;
     const Weapon *getWeapon() const;
     const Armor *getArmor() const;
-    virtual std::string getName() const;
+    virtual std::string getName() const override;
     SexType getSex() const;
     ClassType getClass() const;
-    virtual CreatureState getState() const;
+    virtual CreatureState getState() const override;
     int getRealLevel() const;
     int getMaxLevel() const;
-    virtual void addStatus(StatusType status);
-        virtual void setStatus(StatusType status);
+    virtual void addStatus(StatusType s) override;
+    virtual void setStatus(StatusType s) override;
     void adjustMp(int pts);
     void advanceLevel();
     void applyEffect(TileEffect effect);
     void awardXp(int xp);
     bool heal(HealType type);
-    virtual void removeStatus(StatusType status);
-    virtual void setHp(int hp);
+    virtual void removeStatus(StatusType s) override;
+    virtual void setHp(int hp) override;
     void setMp(int mp);
     EquipError setArmor(const Armor *a);
     EquipError setWeapon(const Weapon *w);
-    virtual bool applyDamage(int damage, bool byplayer = false);
-    virtual int getAttackBonus() const;
-    virtual int getDefense(bool needsMystic) const;
-    virtual bool dealDamage(Creature *m, int damage);
-    int getDamage();
-    virtual const std::string &getHitTile() const;
-    virtual const std::string &getMissTile() const;
-    bool isDead();
-    bool isDisabled();
+    virtual bool applyDamage(int damage, bool byplayer = false) override;
+    virtual int getAttackBonus() const override;
+    virtual int getDefense(bool needsMystic) const override;
+    virtual bool dealDamage(Creature *m, int damage) override;
+    int getDamage() const;
+    virtual const std::string &getHitTile() const override;
+    virtual const std::string &getMissTile() const override;
+    bool isDead() const;
+    bool isDisabled() const;
     int  loseWeapon();
-    virtual void putToSleep(bool sound = true);
-    virtual void wakeUp();
+    virtual void putToSleep(bool sound = true) override;
+    virtual void wakeUp() override;
 
 protected:
     static MapTile tileForClass(int klass);
@@ -206,26 +208,26 @@ class Party
      public Script::Provider {
 public:
     friend class PartyMember;
-    Party(SaveGame *saveGame);
+    explicit Party(SaveGame *s);
     Party(const Party &) = delete;
     Party(Party &&) = delete;
     Party &operator=(const Party &) = delete;
     Party &operator=(Party &&) = delete;
     virtual ~Party();
     void notifyOfChange(
-        PartyMember *partyMember = nullptr,
-        PartyEvent::Type = PartyEvent::GENERIC
+        PartyMember *pm = nullptr,
+        PartyEvent::Type eventType = PartyEvent::GENERIC
     );
     // Used to translate script values into something useful
-    virtual std::string translate(std::vector<std::string> &parts);
+    virtual std::string translate(std::vector<std::string> &parts) override;
     void adjustFood(int food);
     void adjustGold(int gold);
     void adjustKarma(KarmaAction action);
     void applyEffect(TileEffect effect);
     bool attemptElevation(Virtue virtue);
     void burnTorch(int turns = 1);
-    bool canEnterShrine(Virtue virtue);
-    bool canPersonJoin(std::string name, Virtue *v);
+    bool canEnterShrine(Virtue virtue) const;
+    bool canPersonJoin(const std::string &name, Virtue *v) const;
     void damageShip(unsigned int pts);
     bool donate(int quantity);
     void endTurn();
@@ -233,21 +235,21 @@ public:
     int  getTorchDuration() const;
     void healShip(unsigned int pts);
     bool isFlying() const;
-    bool isImmobilized();
-    bool isDead();
-    bool isPersonJoined(std::string name);
-    CannotJoinError join(std::string name);
+    bool isImmobilized() const;
+    bool isDead() const;
+    bool isPersonJoined(const std::string &name) const;
+    CannotJoinError join(const std::string &name);
     bool lightTorch(int duration = 100, bool loseTorch = true);
     void quenchTorch();
     void reviveParty();
     MapTile getTransport() const;
-    void setTransport(MapTile transport);
+    void setTransport(MapTile tile);
     void setShipHull(int str);
     Direction getDirection() const;
     void setDirection(Direction dir);
     void adjustReagent(int reagent, int amt);
-    int getReagent(int reagent) const;
-    unsigned short *getReagentPtr(int reagent) const;
+    static int getReagent(int reagent);
+    static unsigned short *getReagentPtr(int reagent);
     void setActivePlayer(int p);
     int getActivePlayer() const;
     void swapPlayers(int p1, int p2);

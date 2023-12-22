@@ -74,9 +74,6 @@ bool SettingsEnhancementOptions::operator==(
     if (u4TileTransparencyHack != s.u4TileTransparencyHack) {
         return false;
     }
-    if (u4TileTransparencyHack != s.u4TileTransparencyHack) {
-        return false;
-    }
     if (u4TileTransparencyHackPixelShadowOpacity
         != s.u4TileTransparencyHackPixelShadowOpacity) {
         return false;
@@ -248,7 +245,7 @@ Settings::Settings()
 /**
  * Initialize the settings.
  */
-void Settings::init(const bool useProfile, const std::string profileName)
+void Settings::init(const bool useProfile, const std::string &profileName)
 {
     if (useProfile) {
         userPath = "./profiles/";
@@ -322,7 +319,6 @@ bool Settings::read()
 {
     char buffer[256];
     std::FILE *settingsFile;
-    extern std::atomic_int eventTimerGranularity;
 
     settingsFile = std::fopen(filename.c_str(), "rt");
     if (!settingsFile) {
@@ -593,6 +589,7 @@ bool Settings::read()
         }
     }
     std::fclose(settingsFile);
+    // set global timer granularity
     eventTimerGranularity = (1000 / gameCyclesPerSecond);
     return true;
 } // Settings::read
@@ -718,12 +715,12 @@ bool Settings::write()
 /**
  * Return the path where user settings are stored.
  */
-const std::string &Settings::getUserPath()
+const std::string &Settings::getUserPath() const
 {
     return userPath;
 }
 
-const std::vector<std::string> &Settings::getBattleDiffs()
+const std::vector<std::string> &Settings::getBattleDiffs() const
 {
     return battleDiffs;
 }

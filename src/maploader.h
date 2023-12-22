@@ -51,7 +51,7 @@ private:
 
 class CityMapLoader:public MapLoader {
 public:
-    virtual bool load(Map *map);
+    virtual bool load(Map *map) override;
 
 private:
     static MapLoader *instance;
@@ -59,7 +59,7 @@ private:
 
 class ConMapLoader:public MapLoader {
 public:
-    virtual bool load(Map *map);
+    virtual bool load(Map *map) override;
 
 private:
     static MapLoader *instance;
@@ -67,16 +67,16 @@ private:
 
 class DngMapLoader:public MapLoader {
 public:
-    virtual bool load(Map *map);
+    virtual bool load(Map *map) override;
 
 private:
     static MapLoader *instance;
-    void initDungeonRoom(Dungeon *dng, int room);
+    static void initDungeonRoom(Dungeon *dng, int room);
 };
 
 class WorldMapLoader:public MapLoader {
 public:
-    virtual bool load(Map *map);
+    virtual bool load(Map *map) override;
 
 private:
     static MapLoader *instance;

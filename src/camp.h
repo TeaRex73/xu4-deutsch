@@ -13,23 +13,23 @@
 class CampController:public CombatController {
 public:
     CampController();
-    virtual void init(Creature *m);
-    virtual void begin();
-    virtual void end(bool adjustKarma);
+    virtual void init(Creature *m) override;
+    virtual void begin() override;
+    virtual void end(bool adjustKarma) override;
 
 private:
-    bool heal();
+    static bool heal();
 };
 
 class InnController:public CombatController {
 public:
     InnController();
-    virtual void begin();
-    virtual void awardLoot();
+    virtual void begin() override;
+    virtual void awardLoot() override;
 
 private:
-    bool heal();
-    bool maybeMeetIsaac();
+    static bool heal();
+    static bool maybeMeetIsaac();
     void maybeAmbush();
 };
 

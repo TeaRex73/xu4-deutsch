@@ -9,12 +9,12 @@ public:
     {
     }
 
-    bool is_empty()
+    bool is_empty() const
     {
         return stack.size() == 0;
     }
 
-    bool is_full()
+    bool is_full() const
     {
         return stack.size() == stack_size;
     }
@@ -38,7 +38,7 @@ public:
         return element;
     }
 
-    unsigned char gettop()
+    unsigned char gettop() const
     {
         if (!is_empty()) {
             return stack.back();

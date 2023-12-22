@@ -34,13 +34,15 @@ public:
     U4FILE_stdio &operator=(U4FILE_stdio &&) = delete;
 
     static U4FILE *open(const std::string &fname);
-    virtual void close();
-    virtual int seek(long offset, int whence);
-    virtual long tell();
-    virtual std::size_t read(void *ptr, std::size_t size, std::size_t nmemb);
-    virtual int getc();
-    virtual int putc(int c);
-    virtual long length();
+    virtual void close() override;
+    virtual int seek(long offset, int whence) override;
+    virtual long tell() override;
+    virtual std::size_t read(
+        void *ptr, std::size_t size, std::size_t nmemb
+    ) override;
+    virtual int getc() override;
+    virtual int putc(int c) override;
+    virtual long length() override;
 private:
     std::FILE *file;
 };
@@ -64,13 +66,15 @@ public:
     U4FILE_zip &operator=(U4FILE_zip &&) = delete;
 
     static U4FILE *open(const std::string &fname, const U4ZipPackage *package);
-    virtual void close();
-    virtual int seek(long offset, int whence);
-    virtual long tell();
-    virtual std::size_t read(void *ptr, std::size_t size, std::size_t nmemb);
-    virtual int getc();
-    virtual int putc(int c);
-    virtual long length();
+    virtual void close() override;
+    virtual int seek(long offset, int whence) override;
+    virtual long tell() override;
+    virtual std::size_t read(
+        void *ptr, std::size_t size, std::size_t nmemb
+    ) override;
+    virtual int getc() override;
+    virtual int putc(int c) override;
+    virtual long length() override;
 private:
     unzFile zfile;
     long length_cached;
@@ -165,13 +169,11 @@ bool u4isUpgradeAvailable()
  */
 bool u4isUpgradeInstalled()
 {
-    U4FILE *u4f = nullptr;
-    long filelength;
     bool result = false;
     /* FIXME: Is there a better way to determine this? */
-    u4f = u4fopen("ega.drv");
+    U4FILE *u4f = u4fopen("ega.drv");
     if (u4f) {
-        filelength = u4f->length();
+        long filelength = u4f->length();
         u4fclose(u4f);
         /* see if (ega.drv > 5k).  If so, the upgrade is installed */
         if (filelength > (5 * 1024)) {
@@ -206,7 +208,7 @@ const std::string &U4ZipPackage::translate(const std::string &name) const
 {
     std::map<std::string, std::string>::const_iterator i =
         translations.find(name);
-    if (i != translations.end()) {
+    if (i != translations.cend()) {
         return i->second;
     } else {
         return name;
@@ -237,7 +239,6 @@ void U4ZipPackageMgr::add(U4ZipPackage *package)
 U4ZipPackageMgr::U4ZipPackageMgr()
     :packages()
 {
-    unzFile f;
     std::string upg_pathname(u4find_path("u4upgrad.zip", u4Path.u4ZipPaths));
     if (!upg_pathname.empty()) {
         /* upgrade zip is present */
@@ -340,7 +341,7 @@ U4ZipPackageMgr::U4ZipPackageMgr()
         break;
     } while (!flag);
     if (flag) {
-        f = unzOpen(pathname.c_str());
+        unzFile f = unzOpen(pathname.c_str());
         if (!f) {
             return;
         }
@@ -367,7 +368,7 @@ U4ZipPackageMgr::~U4ZipPackageMgr()
 {
     for (std::vector<U4ZipPackage *>::iterator i = packages.begin();
          i != packages.end();
-         i++) {
+         ++i) {
         delete *i;
     }
 }
@@ -465,7 +466,7 @@ int U4FILE_zip::seek(long offset, int whence)
 {
     char *buf;
     long pos;
-    ASSERT(
+    U4ASSERT(
         whence != SEEK_END,
         "seeking with whence == SEEK_END not allowed with zipfiles"
     );
@@ -481,7 +482,7 @@ int U4FILE_zip::seek(long offset, int whence)
         unzOpenCurrentFile(zfile);
         pos = 0;
     }
-    ASSERT(offset - pos > 0, "error in U4FILE_zip::seek");
+    U4ASSERT(offset - pos > 0, "error in U4FILE_zip::seek");
     buf = new char[offset - pos];
     unzReadCurrentFile(zfile, buf, offset - pos);
     delete[] buf;
@@ -516,7 +517,7 @@ int U4FILE_zip::getc()
 
 int U4FILE_zip::putc(int c)
 {
-    ASSERT(0, "zipfiles must be read-only!");
+    U4ASSERT(0, "zipfiles must be read-only!");
     return c;
 }
 
@@ -548,7 +549,6 @@ long U4FILE_zip::length()
 U4FILE *u4fopen(const std::string &fname)
 {
     U4FILE *u4f = nullptr;
-    unsigned int i;
     if (verbose) {
         std::printf("looking for %s\n", fname.c_str());
     }
@@ -558,9 +558,9 @@ U4FILE *u4fopen(const std::string &fname)
     const std::vector<U4ZipPackage *> &packages =
         U4ZipPackageMgr::getInstance()->getPackages();
     for (std::vector<U4ZipPackage *>::const_reverse_iterator j =
-             packages.rbegin();
-         j != packages.rend();
-         j++) {
+             packages.crbegin();
+         j != packages.crend();
+         ++j) {
         u4f = U4FILE_zip::open(fname, *j);
         if (u4f) {
             return u4f;  /* file was found, return it! */
@@ -577,7 +577,7 @@ U4FILE *u4fopen(const std::string &fname)
             pathname = u4find_path(fname_copy, u4Path.u4ForDOSPaths);
         }
         if (pathname.empty()) {
-            for (i = 0; fname_copy[i] != '\0'; i++) {
+            for (int i = 0; fname_copy[i] != '\0'; i++) {
                 if (std::islower(fname_copy[i])) {
                     fname_copy[i] = std::toupper(fname_copy[i]);
                 }
@@ -675,7 +675,7 @@ std::vector<std::string> u4read_stringtable(
     std::string buffer;
     int i;
     std::vector<std::string> strs;
-    ASSERT(offset < u4flength(f), "offset begins beyond end of file");
+    U4ASSERT(offset < u4flength(f), "offset begins beyond end of file");
     if (offset != -1) {
         f->seek(offset, SEEK_SET);
     }
@@ -717,13 +717,13 @@ std::string u4find_path(
 
     // Try paths
     if (f == nullptr) {
-        for (std::list<std::string>::iterator rootItr =
-                 u4Path.rootResourcePaths.begin();
-             rootItr != u4Path.rootResourcePaths.end() && !f;
-             rootItr++) {
-            for (std::list<std::string>::iterator subItr =
-                     specificSubPaths.begin();
-                 subItr != specificSubPaths.end() && !f;
+        for (std::list<std::string>::const_iterator rootItr =
+                 u4Path.rootResourcePaths.cbegin();
+             rootItr != u4Path.rootResourcePaths.cend() && !f;
+             ++rootItr) {
+            for (std::list<std::string>::const_iterator subItr =
+                     specificSubPaths.cbegin();
+                 subItr != specificSubPaths.cend() && !f;
                  ++subItr) {
                 std::snprintf(
                     path,

@@ -17,9 +17,9 @@ typedef SDL_Surface *BackendSurface;
 
 #define DARK_GRAY_HALO RGBA(14, 15, 16, 255)
 
-class RGBA {
+class __attribute__((aligned (4))) RGBA {
 public:
-    RGBA(int r, int g, int b, int a)
+    RGBA(std::uint8_t r, std::uint8_t g, std::uint8_t b, std::uint8_t a)
         :r(r), g(g), b(b), a(a)
     {
     }
@@ -29,7 +29,7 @@ public:
     {
     }
 
-    unsigned int r, g, b, a;
+    std::uint8_t r, g, b, a;
 };
 
 bool operator==(const RGBA &lhs, const RGBA &rhs);
@@ -64,7 +64,9 @@ class Image {
 public:
     // disallow assignments, copy contruction
     Image(const Image &) = delete;
+    Image(Image &&) = delete;
     const Image &operator=(const Image &) = delete;
+    const Image &operator=(Image &&) = delete;
 
     enum Type {
         HARDWARE,
@@ -84,19 +86,19 @@ public:
         unsigned int numFrames,
         unsigned int currentFrameIndex,
         unsigned int haloWidth,
-        unsigned int haloOpacityIncrementByPixelDistance
+        unsigned int hoibpd // haloOpacityIncrementByPixelDistance
     );
     void setTransparentIndex(unsigned int index);
     bool setFontColor(ColorFG fg, ColorBG bg);
     bool setFontColorFG(ColorFG fg);
     bool setFontColorBG(ColorBG bg);
     // returns the color of the specified palette index
-    RGBA getPaletteColor(int index);
+    RGBA getPaletteColor(int index) const;
     // sets the specified palette index to the specified RGB color
     bool setPaletteIndex(unsigned int index, RGBA color);
     // returns the palette index of the specified RGB color
-    int getPaletteIndex(RGBA color);
-    RGBA setColor(
+    int getPaletteIndex(RGBA color) const;
+    static RGBA setColor(
         std::uint8_t r,
         std::uint8_t g,
         std::uint8_t b,
@@ -126,34 +128,34 @@ public:
     void putPixel(
         int x,
         int y,
-        int r,
-        int g,
-        int b,
-        int a,
+        std::uint8_t r,
+        std::uint8_t g,
+        std::uint8_t b,
+        std::uint8_t a,
         bool anyway = false
-    ); // TODO Consider using &
+    ) const; // TODO Consider using &
     void putPixelIndex(
         int x, int y, unsigned int index, bool anyway = false
-    );
+    ) const;
     void fillRect(
         int x,
         int y,
         int w,
         int h,
-        int r,
-        int g,
-        int b,
-        int a = IM_OPAQUE,
+        std::uint8_t r,
+        std::uint8_t g,
+        std::uint8_t b,
+        std::uint8_t a = IM_OPAQUE,
         bool anyway = false
     );
     /* reading from image */
     void getPixel(
         int x,
         int y,
-        unsigned int &r,
-        unsigned int &g,
-        unsigned int &b,
-        unsigned int &a
+        std::uint8_t &r,
+        std::uint8_t &g,
+        std::uint8_t &b,
+        std::uint8_t &a
     ) const;
     void getPixelIndex(int x, int y, unsigned int &index) const;
 
@@ -237,7 +239,7 @@ public:
     }
 
     void save(const std::string &filename);
-    void drawHighlighted();
+    void drawHighlighted() const;
 
 private:
     unsigned int w, h;

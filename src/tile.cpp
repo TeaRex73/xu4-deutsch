@@ -18,7 +18,6 @@
 #include "tilemap.h"
 #include "tileset.h"
 #include "utils.h"
-#include "assert.h"
 
 TileId Tile::nextId = 0;
 
@@ -154,34 +153,34 @@ void Tile::loadImage()
         if (info->image) {
             info->image->alphaOff();
         }
-        if (info) {
-            w = subimage ?
-                subimage->width * scale :
-                info->width * scale / info->prescale;
-            h = subimage ?
-                (subimage->height * scale) / frames :
-                (info->height * scale / info->prescale) / frames;
-            image = Image::create(
-                w, h * frames, false, Image::HARDWARE
+
+        w = subimage ?
+            subimage->width * scale :
+            info->width * scale / info->prescale;
+        h = subimage ?
+            (subimage->height * scale) / frames :
+            (info->height * scale / info->prescale) / frames;
+        image = Image::create(
+            w, h * frames, false, Image::HARDWARE
+        );
+        image->alphaOff();
+        /* draw the tile from the image we found
+           to our tile image */
+        if (subimage) {
+            Image *tiles = info->image;
+            tiles->drawSubRectOn(
+                image,
+                0,
+                0,
+                subimage->x * scale,
+                subimage->y * scale,
+                subimage->width * scale,
+                subimage->height * scale
             );
-            image->alphaOff();
-            /* draw the tile from the image we found
-               to our tile image */
-            if (subimage) {
-                Image *tiles = info->image;
-                tiles->drawSubRectOn(
-                    image,
-                    0,
-                    0,
-                    subimage->x * scale,
-                    subimage->y * scale,
-                    subimage->width * scale,
-                    subimage->height * scale
-                );
-            } else {
-                info->image->drawOn(image, 0, 0);
-            }
+        } else {
+            info->image->drawOn(image, 0, 0);
         }
+
         info->image->alphaOff();
         if (animationRule.size() > 0) {
             extern TileAnimSet *tileanims;
@@ -245,7 +244,6 @@ bool Tile::isDungeonFloor() const
 
 bool Tile::isOpaque() const
 {
-    extern Context *c;
     return c->opacity ? opaque : false;
 }
 

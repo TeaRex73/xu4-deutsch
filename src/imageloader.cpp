@@ -17,7 +17,7 @@ std::map<std::string, ImageLoader *> *ImageLoader::loaderMap = nullptr;
  */
 ImageLoader *ImageLoader::getLoader(const std::string &fileType)
 {
-    ASSERT(
+    U4ASSERT(
         loaderMap != nullptr,
         "ImageLoader::getLoader loaderMap not initialized"
     );
@@ -49,7 +49,7 @@ void ImageLoader::cleanup()
     for (std::map<std::string, ImageLoader *>::iterator i =
              loaderMap->begin();
          i != loaderMap->end();
-         i++) {
+         ++i) {
         delete i->second;
     }
     delete loaderMap;
@@ -166,6 +166,6 @@ void ImageLoader::setFromRawData(
         }
         break;
     default:
-        ASSERT(0, "invalid bits-per-pixel (bpp): %d", bpp);
+        U4ASSERT(0, "invalid bits-per-pixel (bpp): %d", bpp);
     } // switch
 } // ImageLoader::setFromRawData

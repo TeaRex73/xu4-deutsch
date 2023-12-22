@@ -69,12 +69,12 @@ bool KeyHandler::defaultHandler(int key, void *)
     case '^':
         if (settings.debug && c && c->location) {
             std::printf(
-                "x = %d, y = %d, level = %d, tile = %d (%s)\n",
+                "x = %d, y = %d, level = %d, tile = %u (%s)\n",
                 c->location->coords.x,
                 c->location->coords.y,
                 c->location->coords.z,
                 c->location->map->ttrti(
-                    *c->location->map->tileAt(
+                    c->location->map->tileAt(
                         c->location->coords, WITH_OBJECTS
                     )
                 ),
@@ -109,13 +109,13 @@ bool KeyHandler::ignoreKeys(int, void *)
  * does not process the keystroke, then the key handler
  * handles it itself by calling its handler callback function.
  */
-bool KeyHandler::handle(int key)
+bool KeyHandler::handle(int key) const
 {
     bool processed = false;
     if (!isKeyIgnored(key)) {
         processed = globalHandler(key);
         if (!processed) {
-            processed = handler(key, data);
+            processed = (*handler)(key, data);
         }
     }
     return processed;
@@ -125,7 +125,7 @@ bool KeyHandler::handle(int key)
 /**
  * Returns true if the key or key combination is always ignored by xu4
  */
-bool KeyHandler::isKeyIgnored(int key)
+bool KeyHandler::isKeyIgnored(int key) const
 {
     switch (key) {
     case U4_RIGHT_SHIFT:
@@ -148,7 +148,7 @@ bool KeyHandler::operator==(Callback cb) const
     return (handler == cb) ? true : false;
 }
 
-KeyHandlerController::KeyHandlerController(KeyHandler *handler)
+KeyHandlerController::KeyHandlerController(const KeyHandler *handler)
     :handler(handler)
 {
 }
@@ -160,11 +160,11 @@ KeyHandlerController::~KeyHandlerController()
 
 bool KeyHandlerController::keyPressed(int key)
 {
-    ASSERT(handler != nullptr, "key handler must be initialized");
+    U4ASSERT(handler != nullptr, "key handler must be initialized");
     return handler->handle(key);
 }
 
-KeyHandler *KeyHandlerController::getKeyHandler()
+const KeyHandler *KeyHandlerController::getKeyHandler() const
 {
     return handler;
 }
@@ -497,13 +497,12 @@ void EventHandler::run()
     while (!ended && !controllerDone) {
         SDL_Event event;
         SDL_Event all_events[MAXEVENTS];
-        int i, numevents;
         // The following throws out all earlier keypresses if SPACE is pressed
-        numevents = SDL_PeepEvents(
+        int numevents = SDL_PeepEvents(
             all_events, MAXEVENTS, SDL_PEEKEVENT, SDL_KEYDOWNMASK
         );
         if (numevents > 1) {
-            for (i = numevents - 1; i > 0; i--) {
+            for (int i = numevents - 1; i > 0; i--) {
                 if (all_events[i].key.keysym.sym == SDLK_SPACE) {
                     SDL_PeepEvents(
                         all_events, i, SDL_GETEVENT, SDL_KEYDOWNMASK
@@ -592,9 +591,9 @@ bool EventHandler::timerQueueEmpty()
 /**
  * Adds a key handler to the stack.
  */
-void EventHandler::pushKeyHandler(KeyHandler kh)
+void EventHandler::pushKeyHandler(const KeyHandler &kh)
 {
-    KeyHandler *new_kh = new KeyHandler(std::move(kh));
+    const KeyHandler *new_kh = &kh; // new KeyHandler(std::move(kh));
     KeyHandlerController *khc = new KeyHandlerController(new_kh);
     pushController(khc);
 }
@@ -624,18 +623,13 @@ void EventHandler::popKeyHandler()
  * Returns a pointer to the current key handler.
  * Returns nullptr if there is no key handler.
  */
-KeyHandler *EventHandler::getKeyHandler() const
+const KeyHandler *EventHandler::getKeyHandler() const
 {
     if (controllers.empty()) {
         return nullptr;
     }
     KeyHandlerController *khc =
         dynamic_cast<KeyHandlerController *>(controllers.back());
-    ASSERT(
-        khc != nullptr,
-        "EventHandler::getKeyHandler called when controller wasn't a "
-        "keyhandler"
-    );
     if (khc == nullptr) {
         return nullptr;
     }
@@ -650,10 +644,10 @@ KeyHandler *EventHandler::getKeyHandler() const
  * only key handler left. Use this function only if you
  * are sure the key handlers in the stack are disposable.
  */
-void EventHandler::setKeyHandler(KeyHandler kh)
+void EventHandler::setKeyHandler(const KeyHandler &kh)
 {
     while (popController() != nullptr) {}
-    pushKeyHandler(std::move(kh));
+    pushKeyHandler(kh);
 }
 
 MouseArea *EventHandler::mouseAreaForPoint(int x, int y)

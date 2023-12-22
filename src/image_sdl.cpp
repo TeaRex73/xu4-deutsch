@@ -21,7 +21,7 @@
 #include "settings.h"
 #include "error.h"
 
-int myfprintf(FILE *stream, const char *format, ...)
+int myfprintf(std::FILE *stream, const char *format, ...)
 {
     int result;
     std::va_list args;
@@ -98,7 +98,7 @@ Image *Image::createScreenImage()
     Image *screen = new Image();
 
     screen->surface = SDL_GetVideoSurface();
-    ASSERT(
+    U4ASSERT(
         screen->surface != nullptr,
         "SDL_GetVideoSurface() returned a nullptr screen surface!"
     );
@@ -115,14 +115,14 @@ Image *Image::createScreenImage()
  */
 Image *Image::duplicate(Image *image)
 {
-    bool alphaOn = image->isAlphaOn();
+    bool alphaState = image->isAlphaOn();
     Image *im = create(image->width(), image->height(), false, HARDWARE);
     /* Turn alpha off before blitting to non-screen surfaces */
-    if (alphaOn) {
+    if (alphaState) {
         image->alphaOff();
     }
     image->drawOn(im, 0, 0);
-    if (alphaOn) {
+    if (alphaState) {
         image->alphaOn();
     }
     im->backgroundColor = image->backgroundColor;
@@ -146,7 +146,7 @@ Image::~Image()
  */
 void Image::setPalette(const RGBA *colors, unsigned int n_colors)
 {
-    ASSERT(indexed, "imageSetPalette called on non-indexed image");
+    U4ASSERT(indexed, "imageSetPalette called on non-indexed image");
     if (n_colors > 256) {
         errorFatal("n_colors > 256 in Image::setPalette");
     }
@@ -167,7 +167,7 @@ void Image::setPalette(const RGBA *colors, unsigned int n_colors)
  */
 void Image::setPaletteFromImage(const Image *src)
 {
-    ASSERT(
+    U4ASSERT(
         indexed && src->indexed,
         "imageSetPaletteFromImage called on non-indexed image"
     );
@@ -179,7 +179,7 @@ void Image::setPaletteFromImage(const Image *src)
 
 
 // returns the color of the specified palette index
-RGBA Image::getPaletteColor(int index)
+RGBA Image::getPaletteColor(int index) const
 {
     RGBA color = RGBA(0, 0, 0, 0);
     if (indexed) {
@@ -193,7 +193,7 @@ RGBA Image::getPaletteColor(int index)
 
 
 /* returns the palette index of the specified RGB color */
-int Image::getPaletteIndex(RGBA color)
+int Image::getPaletteIndex(RGBA color) const
 {
     if (!indexed) {
         return -1;
@@ -400,7 +400,7 @@ bool Image::getTransparentIndex(unsigned int &index) const
 
 void Image::initializeToBackgroundColor(RGBA backgroundColor)
 {
-    ASSERT(!indexed, "Indexed not supported");
+    U4ASSERT(!indexed, "Indexed not supported");
     this->backgroundColor = backgroundColor;
     this->fillRect(
         0,
@@ -429,7 +429,15 @@ void Image::alphaOff()
     surface->flags &= ~SDL_SRCALPHA;
 }
 
-void Image::putPixel(int x, int y, int r, int g, int b, int a, bool anyway)
+void Image::putPixel(
+    int x,
+    int y,
+    std::uint8_t r,
+    std::uint8_t g,
+    std::uint8_t b,
+    std::uint8_t a,
+    bool anyway
+) const
 {
     putPixelIndex(
         x,
@@ -471,7 +479,7 @@ void Image::performTransparencyHack(
     unsigned int bottom = std::min(h, top + frameHeight);
     for (y = top; y < bottom; y++) {
         for (x = 0; x < w; x++) {
-            unsigned int r, g, b, a;
+            std::uint8_t r, g, b, a;
             getPixel(x, y, r, g, b, a);
             if ((r == t_r) && (g == t_g) && (b == t_b)) {
                 putPixel(x, y, r, g, b, IM_TRANSPARENT);
@@ -485,13 +493,12 @@ void Image::performTransparencyHack(
             }
         }
     }
-    int ox, oy;
     for (std::list<std::pair<unsigned int, unsigned int> >::iterator xy
              = opaqueXYs.begin();
          xy != opaqueXYs.end();
          ++xy) {
-        ox = xy->first;
-        oy = xy->second;
+        int ox = xy->first;
+        int oy = xy->second;
         int span = int(haloWidth);
         unsigned int x_start = std::max(0, ox - span);
         unsigned int x_finish = std::min(int(w), ox + span + 1);
@@ -504,7 +511,7 @@ void Image::performTransparencyHack(
                     + span * 2
                     - std::abs(static_cast<int>(ox - x))
                     - std::abs(static_cast<int>(oy - y));
-                unsigned int r, g, b, a;
+                std::uint8_t r, g, b, a;
                 getPixel(x, y, r, g, b, a);
                 if (a != IM_OPAQUE) {
                     putPixel(
@@ -536,7 +543,7 @@ void Image::setTransparentIndex(unsigned int index)
  * indexed mode, then the index is simply the palette entry number.
  * If the image is RGB, it is a packed RGB triplet.
  */
-void Image::putPixelIndex(int x, int y, unsigned int index, bool anyway)
+void Image::putPixelIndex(int x, int y, unsigned int index, bool anyway) const
 {
     int bpp;
     Uint8 *p;
@@ -587,7 +594,15 @@ void Image::putPixelIndex(int x, int y, unsigned int index, bool anyway)
  * Fills a rectangle in the image with a given color.
  */
 void Image::fillRect(
-    int x, int y, int w, int h, int r, int g, int b, int a, bool anyway
+    int x,
+    int y,
+    int w,
+    int h,
+    std::uint8_t r,
+    std::uint8_t g,
+    std::uint8_t b,
+    std::uint8_t a,
+    bool anyway
 )
 {
     SDL_Rect dest;
@@ -615,10 +630,10 @@ void Image::fillRect(
 void Image::getPixel(
     int x,
     int y,
-    unsigned int &r,
-    unsigned int &g,
-    unsigned int &b,
-    unsigned int &a
+    std::uint8_t &r,
+    std::uint8_t &g,
+    std::uint8_t &b,
+    std::uint8_t &a
 ) const
 {
     unsigned int index = 0;
@@ -727,7 +742,7 @@ void Image::drawSubRectOn(
     if (__builtin_expect(d == nullptr, true)) {
         destSurface = SDL_GetVideoSurface();
     } else {
-        destSurface = d->surface;
+        if (d) destSurface = d->surface; else return; // make cppcheck happy
     }
     src.x = rx;
     src.y = ry;
@@ -805,7 +820,7 @@ void Image::save(const std::string &filename)
 }
 
 
-void Image::drawHighlighted()
+void Image::drawHighlighted() const
 {
     RGBA c;
     for (unsigned int i = 0; i < h; i++) {

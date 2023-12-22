@@ -14,15 +14,15 @@ class GameController;
 
 class CheatMenuController:public WaitableController<void *> {
 public:
-    CheatMenuController(GameController *game);
+    explicit CheatMenuController(GameController *game);
     CheatMenuController(const CheatMenuController &) = delete;
     CheatMenuController(CheatMenuController &&) = delete;
     CheatMenuController &operator=(const CheatMenuController &) = delete;
     CheatMenuController &operator=(CheatMenuController &&) = delete;
-    bool keyPressed(int key);
+    virtual bool keyPressed(int key) override;
 
 private:
-    void summonCreature(const std::string &name);
+    static void summonCreature(const std::string &name);
     GameController *game;
 };
 
@@ -34,7 +34,7 @@ private:
  */
 class WindCmdController:public WaitableController<void *> {
 public:
-    bool keyPressed(int key);
+    virtual bool keyPressed(int key) override;
 };
 
 #endif /* CHEAT_H */

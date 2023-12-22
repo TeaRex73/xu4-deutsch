@@ -52,12 +52,11 @@ MapMgr::MapMgr()
 {
     TRACE(*logger, "creating MapMgr");
     const Config *config = Config::getInstance();
-    Map *map;
     std::vector<ConfigElement> maps = config->getElement("maps").getChildren();
-    for (std::vector<ConfigElement>::iterator i = maps.begin();
-         i != maps.end();
-         i++) {
-        map = initMapFromConf(*i);
+    for (std::vector<ConfigElement>::const_iterator i = maps.cbegin();
+         i != maps.cend();
+         ++i) {
+        Map *map = initMapFromConf(*i);
         /* map actually gets loaded later, when it's needed */
         registerMap(map);
     }
@@ -67,7 +66,7 @@ MapMgr::~MapMgr()
 {
     for (std::vector<Map *>::iterator i = mapList.begin();
          i != mapList.end();
-         i++) {
+         ++i) {
         delete *i;
     }
     delete logger;
@@ -78,9 +77,9 @@ void MapMgr::unloadMap(MapId id)
     delete mapList[id];
     const Config *config = Config::getInstance();
     std::vector<ConfigElement> maps = config->getElement("maps").getChildren();
-    for (std::vector<ConfigElement>::const_iterator i = maps.begin();
-         i != maps.end();
-         i++) {
+    for (std::vector<ConfigElement>::const_iterator i = maps.cbegin();
+         i != maps.cend();
+         ++i) {
         if (id == static_cast<MapId>(i->getInt("id"))) {
             Map *map = initMapFromConf(*i);
             mapList[id] = map;
@@ -123,14 +122,15 @@ Map *MapMgr::get(MapId id)
         MapLoader *loader = MapLoader::getLoader(mapList[id]->type);
         if (loader == nullptr) {
             errorFatal("can't load map of type \"%d\"", mapList[id]->type);
+        } else {
+            TRACE_LOCAL(
+                *logger,
+                std::string("loading map data for map \'")
+                + mapList[id]->fname
+                + "\'"
+            );
+            loader->load(mapList[id]);
         }
-        TRACE_LOCAL(
-            *logger,
-            std::string("loading map data for map \'")
-            + mapList[id]->fname
-            + "\'"
-        );
-        loader->load(mapList[id]);
     }
     return mapList[id];
 }
@@ -204,9 +204,9 @@ Map *MapMgr::initMapFromConf(const ConfigElement &mapConf)
     map->tileset = Tileset::get(mapConf.getString("tileset"));
     map->tilemap = TileMap::get(mapConf.getString("tilemap"));
     std::vector<ConfigElement> children = mapConf.getChildren();
-    for (std::vector<ConfigElement>::iterator i = children.begin();
-         i != children.end();
-         i++) {
+    for (std::vector<ConfigElement>::const_iterator i = children.cbegin();
+         i != children.cend();
+         ++i) {
         if (i->getName() == "city") {
             City *city = dynamic_cast<City *>(map);
             initCityFromConf(*i, city);
@@ -234,12 +234,12 @@ Map *MapMgr::initMapFromConf(const ConfigElement &mapConf)
 void MapMgr::initCityFromConf(const ConfigElement &cityConf, City *city)
 {
     city->name = cityConf.getString("name");
-    city->type = cityConf.getString("type");
+    city->cityType = cityConf.getString("type");
     city->tlk_fname = cityConf.getString("tlk_fname");
     std::vector<ConfigElement> children = cityConf.getChildren();
-    for (std::vector<ConfigElement>::iterator i = children.begin();
-         i != children.end();
-         i++) {
+    for (std::vector<ConfigElement>::const_iterator i = children.cbegin();
+         i != children.cend();
+         ++i) {
         if (i->getName() == "personrole") {
             city->personroles.push_back(initPersonRoleFromConf(*i));
         }
@@ -331,9 +331,9 @@ Portal *MapMgr::initPortalFromConf(const ConfigElement &portalConf)
     }
     portal->exitPortal = portalConf.getBool("exits");
     std::vector<ConfigElement> children = portalConf.getChildren();
-    for (std::vector<ConfigElement>::iterator i = children.begin();
-         i != children.end();
-         i++) {
+    for (std::vector<ConfigElement>::const_iterator i = children.cbegin();
+         i != children.cend();
+         ++i) {
         if (i->getName() == "retroActiveDest") {
             portal->retroActiveDest = new PortalDestination;
             portal->retroActiveDest->coords =

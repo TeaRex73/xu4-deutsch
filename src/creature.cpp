@@ -4,6 +4,7 @@
 
 #include "vc6.h" // Fixes things if you're using VC6, does nothing otherwise
 
+#include <algorithm>
 #include <cstdlib>
 #include <cstring>
 
@@ -28,8 +29,7 @@ CreatureMgr *CreatureMgr::instance = nullptr;
 
 bool isCreature(Object *punknown)
 {
-    Creature *m;
-    if ((m = dynamic_cast<Creature *>(punknown)) != nullptr) {
+    if (dynamic_cast<Creature *>(punknown) != nullptr) {
         return true;
     } else {
         return false;
@@ -166,7 +166,9 @@ void Creature::load(const ConfigElement &conf)
     /* get ranged hit tile */
     if (conf.exists("rangedhittile")) {
         if (conf.getString("rangedhittile") == "random") {
-            mattr = static_cast<CreatureAttrib>(mattr | MATTR_RANDOMRANGED);
+            /* mattr is still zero here, which cppcheck doesn't like */
+            mattr =
+                static_cast<CreatureAttrib>(/* mattr | */ MATTR_RANDOMRANGED);
         } else {
             setHitTile(conf.getString("rangedhittile"));
         }
@@ -324,7 +326,7 @@ CreatureState Creature::getState() const
 /**
  * Performs a special action for the creature
  * Returns true if the action takes up the creatures
- * whole turn (i.e. it cant move afterwords)
+ * whole turn (i.e. it can't move afterwords)
  */
 bool Creature::specialAction()
 {
@@ -356,13 +358,15 @@ bool Creature::specialAction()
             std::vector<Coords> path = gameGetDirectionalActionPath(
                 dir, MASK_DIR_ALL, coords, 1, 3, nullptr, false
             );
-            for (std::vector<Coords>::iterator i = path.begin();
-                 i != path.end();
-                 i++) {
-                if (creatureRangeAttack(*i, this)) {
-                    break;
-                }
-            }
+            static_cast<void>(
+                std::any_of(
+                    path.cbegin(),
+                    path.cend(),
+                    [&](const Coords &v) {
+                        return creatureRangeAttack(v, this);
+                    }
+                )
+            );
         }
         break;
     case PIRATE_ID:
@@ -381,13 +385,15 @@ bool Creature::specialAction()
             std::vector<Coords> path = gameGetDirectionalActionPath(
                 dir, broadsidesDirs, coords, 1, 3, nullptr, false
             );
-            for (std::vector<Coords>::iterator i = path.begin();
-                 i != path.end();
-                 i++) {
-                if (fireAt(*i, false)) {
-                    break;
-                }
-            }
+            static_cast<void>(
+                std::any_of(
+                    path.cbegin(),
+                    path.cend(),
+                    [&](const Coords &v) {
+                        return fireAt(v, false);
+                    }
+                )
+            );
         } else {
             retval = false;
         }
@@ -430,7 +436,7 @@ bool Creature::specialEffect()
                 i = c->location->map->removeObject(i);
                 retval = true;
             } else {
-                i++;
+                ++i;
             }
         }
         break;
@@ -468,16 +474,16 @@ bool Creature::specialEffect()
             if ((this != obj) && (obj->getCoords() == coords)) {
                 Creature *m = dynamic_cast<Creature *>(obj);
                 /* Make sure the object isn't a flying creature or object */
-                if (!m || (m && (m->swims() || m->sails()) && !m->flies())) {
+                if (!m || ((m->swims() || m->sails()) && !m->flies())) {
                     /* Destroy the object it met with */
                     soundPlay(SOUND_NPC_STRUCK, false);
                     i = c->location->map->removeObject(i);
                     retval = true;
                 } else {
-                    i++;
+                    ++i;
                 }
             } else {
-                i++;
+                ++i;
             }
         }
                 break;
@@ -556,23 +562,7 @@ void Creature::act(CombatController *controller)
             // PC_STRUCK, melee and ranged
             soundPlay(SOUND_PC_STRUCK, false);
             GameController::flashTile(target->getCoords(), "hit_flash", 4);
-            if (!dealDamage(target, getDamage())) {
-                target = nullptr;
-            }
-            if (target && isPartyMember(target)) {
-                /* steal gold if the creature steals gold */
-                if (stealsGold() && (xu4_random(4) == 0)) {
-                    // ITEM_STOLEN, gold
-                    soundPlay(SOUND_ITEM_STOLEN, false);
-                    c->party->adjustGold(-(xu4_random(0x40)));
-                }
-                /* steal food if the creature steals food */
-                if (stealsFood()) {
-                    // ITEM_STOLEN, food
-                    soundPlay(SOUND_ITEM_STOLEN, false);
-                    c->party->adjustFood(-2500);
-                }
-            }
+            dealDamage(target, getDamage());
         } else {
             GameController::flashTile(
                 target->getCoords(), "miss_flash", 1
@@ -602,8 +592,8 @@ void Creature::act(CombatController *controller)
         if (!isPartyMember(this)) {
             PartyMemberVector party =
                 controller->getMap()->getPartyMembers();
-            PartyMemberVector::iterator j;
-            for (j = party.begin(); j != party.end(); j++) {
+            PartyMemberVector::const_iterator j;
+            for (j = party.cbegin(); j != party.cend(); ++j) {
                 if (xu4_random(2) == 0) {
                     (*j)->putToSleep();
                 }
@@ -660,15 +650,13 @@ void Creature::act(CombatController *controller)
             &Tile::canAttackOverTile,
             false
         );
-        bool hit = false;
-        for (std::vector<Coords>::iterator i = path.begin();
-             i != path.end();
-             i++) {
-            if (controller->rangedAttack(*i, this)) {
-                hit = true;
-                break;
+        bool hit = std::any_of(
+            path.cbegin(),
+            path.cend(),
+            [&](const Coords &v) {
+                return controller->rangedAttack(v, this);
             }
-        }
+        );
         if (!hit && (path.size() > 0)) {
             controller->rangedMiss(path[path.size() - 1], this);
         }
@@ -731,7 +719,7 @@ void Creature::addStatus(StatusType s)
         setAnimated(false); /* freeze creature */
         break;
     default:
-        ASSERT(
+        U4ASSERT(
             0,
             "Invalid status %d in Creature::addStatus",
             static_cast<int>(status)
@@ -859,10 +847,10 @@ Creature *Creature::nearestOpponent(int *dist, bool ranged)
 {
     Creature *opponent = nullptr;
     int d, leastDist = 0xFFFF;
-    ObjectDeque::iterator i;
+    ObjectDeque::const_iterator i;
     bool jinx = (*c->aura == Aura::JINX);
     Map *map = getMap();
-    for (i = map->objects.begin(); i != map->objects.end(); i++) {
+    for (i = map->objects.cbegin(); i != map->objects.cend(); ++i) {
         if (!isCreature(*i)) {
             continue;
         }
@@ -1021,9 +1009,9 @@ void CreatureMgr::loadAll()
     const Config *config = Config::getInstance();
     std::vector<ConfigElement> creatureConfs =
         config->getElement("creatures").getChildren();
-    for (std::vector<ConfigElement>::iterator i = creatureConfs.begin();
-         i != creatureConfs.end();
-         i++) {
+    for (std::vector<ConfigElement>::const_iterator i = creatureConfs.cbegin();
+         i != creatureConfs.cend();
+         ++i) {
         if (i->getName() != "creature") {
             continue;
         }
@@ -1041,13 +1029,18 @@ void CreatureMgr::loadAll()
  */
 Creature *CreatureMgr::getByTile(MapTile tile)
 {
-    CreatureMap::const_iterator i;
-    for (i = creatures.begin(); i != creatures.end(); i++) {
-        if (i->second->getTile() == tile) {
-            return i->second;
+    CreatureMap::const_iterator i = std::find_if(
+        creatures.cbegin(),
+        creatures.cend(),
+        [&](const std::pair<CreatureId, Creature *> &v) {
+            return v.second->getTile() == tile;
         }
+    );
+    if (i != creatures.cend()) {
+        return i->second;
+    } else {
+        return nullptr;
     }
-    return nullptr;
 }
 
 
@@ -1059,7 +1052,7 @@ Creature *CreatureMgr::getByTile(MapTile tile)
 Creature *CreatureMgr::getById(CreatureId id)
 {
     CreatureMap::const_iterator i = creatures.find(id);
-    if (i != creatures.end()) {
+    if (i != creatures.cend()) {
         return i->second;
     } else {
         return nullptr;
@@ -1072,10 +1065,10 @@ Creature *CreatureMgr::getById(CreatureId id)
  * or returns nullptr if no creature can be found with
  * that name (case insensitive)
  */
-Creature *CreatureMgr::getByName(std::string name)
+Creature *CreatureMgr::getByName(const std::string &name)
 {
     CreatureMap::const_iterator i;
-    for (i = creatures.begin(); i != creatures.end(); i++) {
+    for (i = creatures.cbegin(); i != creatures.cend(); ++i) {
         if (xu4_strcasecmp(
                 deumlaut(i->second->getName()).c_str(),
                 deumlaut(name).c_str()
@@ -1092,19 +1085,18 @@ Creature *CreatureMgr::getByName(std::string name)
  */
 Creature *CreatureMgr::randomForTile(const Tile *tile)
 {
-    int era, tempRand;
-    TileId randTile;
     if (tile->spawnsSeaMonster()) {
         if (xu4_random(8) != 0) {
             return nullptr;
         }
-        randTile = creatures.find(PIRATE_ID)->second->getTile().getId();
+        TileId randTile = creatures.find(PIRATE_ID)->second->getTile().getId();
         // Pirates are twice as likely as others
-        tempRand = xu4_random(8);
+        int tempRand = xu4_random(8);
         randTile += (tempRand == 7 ? 0 : tempRand);
         return getByTile(randTile);
     }
     else if (tile->spawnsLandMonster()) {
+        int era;
         if (c->saveGame->moves >= 30000) {
             era = 0x0f;
         } else if (c->saveGame->moves >= 10000) {
@@ -1112,7 +1104,7 @@ Creature *CreatureMgr::randomForTile(const Tile *tile)
         } else {
             era = 0x03;
         }
-        randTile = creatures.find(ORC_ID)->second->getTile().getId();
+        TileId randTile = creatures.find(ORC_ID)->second->getTile().getId();
         randTile += era & xu4_random(0x10) & xu4_random(0x10);
         return getByTile(randTile);
     }
@@ -1139,31 +1131,36 @@ Creature *CreatureMgr::randomForDungeon(int dngLevel)
 Creature *CreatureMgr::randomAmbushing()
 {
     CreatureMap::const_iterator i;
-    int numAmbushingCreatures = 0, randCreature;
+    static int numAmbushingCreatures = -1;
     /* first, find out how many creatures exist that might ambush you */
-    for (i = creatures.begin(); i != creatures.end(); i++) {
-        if (i->second->ambushes()) {
-            numAmbushingCreatures++;
-        }
+    /* this is done only once */
+    if (numAmbushingCreatures == -1) {
+        numAmbushingCreatures = std::count_if(
+            creatures.cbegin(),
+            creatures.cend(),
+            [&](const std::pair<CreatureId, Creature *> &v) {
+                return v.second->ambushes();
+            }
+        );
     }
     if (numAmbushingCreatures > 0) {
-        /* now, randomely select one of them */
-        randCreature = xu4_random(numAmbushingCreatures);
-        numAmbushingCreatures = 0;
+        /* now, randomly select one of them */
+        int randCreature = xu4_random(numAmbushingCreatures);
+        int countAmbushingCreatures = 0;
         /* now, find the one we selected */
-        for (i = creatures.begin(); i != creatures.end(); i++) {
+        for (i = creatures.cbegin(); i != creatures.cend(); ++i) {
             if (i->second->ambushes()) {
                 /* found the creature - return it! */
-                if (numAmbushingCreatures == randCreature) {
+                if (countAmbushingCreatures == randCreature) {
                     return i->second;
                 }
                 /* move on to the next creature */
                 else {
-                    numAmbushingCreatures++;
+                    countAmbushingCreatures++;
                 }
             }
         }
     }
-    ASSERT(0, "failed to find an ambushing creature");
+    U4ASSERT(0, "failed to find an ambushing creature");
     return nullptr;
 } // CreatureMgr::randomAmbushing

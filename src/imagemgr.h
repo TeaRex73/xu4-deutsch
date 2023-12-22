@@ -127,7 +127,7 @@ public:
                          fixes to the image */
     Image *image; /**< the image we're describing */
     std::map<std::string, SubImage *> subImages;
-    bool hasBlackBackground();
+    bool hasBlackBackground() const;
 };
 
 
@@ -141,7 +141,7 @@ public:
     ImageInfo *get(const std::string &name, bool returnUnscaled = false);
     SubImage *getSubImage(const std::string &name);
     void freeIntroBackgrounds();
-    const std::vector<std::string> &getSetNames();
+    const std::vector<std::string> &getSetNames() const;
     U4FILE *getImageFile(ImageInfo *info);
     bool imageExists(ImageInfo *info);
 
@@ -154,19 +154,19 @@ private:
     ~ImageMgr();
     void init();
     ImageSet *loadImageSetFromConf(const ConfigElement &conf);
-    ImageInfo *loadImageInfoFromConf(const ConfigElement &conf);
-    SubImage *loadSubImageFromConf(
+    static ImageInfo *loadImageInfoFromConf(const ConfigElement &conf);
+    static SubImage *loadSubImageFromConf(
         const ImageInfo *info, const ConfigElement &conf
     );
     ImageSet *getSet(const std::string &setname);
     ImageInfo *getInfo(const std::string &name);
-    ImageInfo *getInfoFromSet(const std::string &name, ImageSet *set);
-    std::string guessFileType(const std::string &filename);
-    void fixupIntro(Image *im, int prescale);
-    void fixupAbyssVision(Image *im, int prescale);
-    void fixupAbacus(Image *im, int prescale);
-    void fixupDungNS(Image *im, int prescale);
-    void fixupFMTowns(Image *im, int prescale);
+    ImageInfo *getInfoFromSet(const std::string &name, ImageSet *imageset);
+    static std::string guessFileType(const std::string &filename);
+    static void fixupIntro(Image *im, int prescale);
+    static void fixupAbyssVision(Image *im, int prescale);
+    static void fixupAbacus(Image *im, int prescale);
+    static void fixupDungNS(Image *im, int prescale);
+    static void fixupFMTowns(Image *im, int prescale);
     void update(Settings *newSettings);
     static ImageMgr *instance;
     static ImageInfo *screenInfo;

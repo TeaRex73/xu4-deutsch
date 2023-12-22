@@ -64,7 +64,7 @@ public:
 void screenLoadGraphicsFromConf(void);
 Layout *screenLoadLayoutFromConf(const ConfigElement &conf);
 void screenShowGemTile(
-    Layout *layout, Map *map, MapTile &t, bool focus, int x, int y
+    Layout *layout, Map *map, MapTile t, bool focus, int x, int y
 );
 std::vector<Layout *> layouts;
 std::vector<TileAnimSet *> tileanimSets;
@@ -125,9 +125,9 @@ void screenInit()
     KeyHandler::setKeyRepeat(settings.keydelay, settings.keyinterval);
     /* find the tile animations for our tileset */
     tileanims = nullptr;
-    for (std::vector<TileAnimSet *>::const_iterator i = tileanimSets.begin();
-         i != tileanimSets.end();
-         i++) {
+    for (std::vector<TileAnimSet *>::const_iterator i = tileanimSets.cbegin();
+         i != tileanimSets.cend();
+         ++i) {
         TileAnimSet *set = *i;
         if (set->name == settings.videoType) {
             tileanims = set;
@@ -186,12 +186,12 @@ void screenInit()
 void screenDelete()
 {
     std::vector<Layout *>::const_iterator i;
-    for (i = layouts.begin(); i != layouts.end(); i++) {
+    for (i = layouts.cbegin(); i != layouts.cend(); ++i) {
         delete (*i);
     }
     layouts.clear();
     std::vector<TileAnimSet *>::const_iterator j;
-    for (j = tileanimSets.begin(); j != tileanimSets.end(); j++) {
+    for (j = tileanimSets.cbegin(); j != tileanimSets.cend(); ++j) {
         delete (*j);
     }
     screenDelete_sys();
@@ -247,8 +247,6 @@ void screenMessage(const char *fmt, ...)
         return;
     }
     char buffer[BufferSize];
-    unsigned int i;
-    int wordlen;
     std::va_list args;
     va_start(args, fmt);
     std::vsnprintf(buffer, BufferSize, fmt, args);
@@ -259,9 +257,10 @@ void screenMessage(const char *fmt, ...)
         screenScrollMessageArea();
         c->line--;
     }
-    for (i = 0; i < std::strlen(buffer); i++) {
+    for (unsigned int i = 0; i < std::strlen(buffer); i++) {
         // include whitespace and color-change codes
-        wordlen = std::strcspn(buffer + i, " \b\t\n\024\025\026\027\030\031");
+        int wordlen =
+            std::strcspn(buffer + i, " \b\t\n\024\025\026\027\030\031");
         /* backspace */
         if (buffer[i] == '\b') {
             c->col--;
@@ -332,9 +331,10 @@ void screenLoadGraphicsFromConf()
     const Config *config = Config::getInstance();
     std::vector<ConfigElement> graphicsConf =
         config->getElement("graphics").getChildren();
-    for (std::vector<ConfigElement>::iterator conf = graphicsConf.begin();
-         conf != graphicsConf.end();
-         conf++) {
+    for (std::vector<ConfigElement>::const_iterator conf =
+             graphicsConf.cbegin();
+         conf != graphicsConf.cend();
+         ++conf) {
         if (conf->getName() == "layout") {
             layouts.push_back(screenLoadLayoutFromConf(*conf));
         } else if (conf->getName() == "tileanimset") {
@@ -343,7 +343,7 @@ void screenLoadGraphicsFromConf()
     }
     gemLayoutNames.clear();
     std::vector<Layout *>::const_iterator i;
-    for (i = layouts.begin(); i != layouts.end(); i++) {
+    for (i = layouts.cbegin(); i != layouts.cend(); ++i) {
         Layout *layout = *i;
         if (layout->type == LAYOUT_GEM) {
             gemLayoutNames.push_back(layout->name);
@@ -352,7 +352,7 @@ void screenLoadGraphicsFromConf()
     /*
      * Find gem layout to use.
      */
-    for (i = layouts.begin(); i != layouts.end(); i++) {
+    for (i = layouts.cbegin(); i != layouts.cend(); ++i) {
         Layout *layout = *i;
         if ((layout->type == LAYOUT_GEM)
             && (layout->name == settings.gemLayout)) {
@@ -382,9 +382,9 @@ Layout *screenLoadLayoutFromConf(const ConfigElement &conf)
         conf.getEnum("type", typeEnumStrings)
     );
     std::vector<ConfigElement> children = conf.getChildren();
-    for (std::vector<ConfigElement>::iterator i = children.begin();
-         i != children.end();
-         i++) {
+    for (std::vector<ConfigElement>::const_iterator i = children.cbegin();
+         i != children.cend();
+         ++i) {
         if (i->getName() == "tileshape") {
             layout->tileshape.width = i->getInt("width");
             layout->tileshape.height = i->getInt("height");
@@ -398,7 +398,7 @@ Layout *screenLoadLayoutFromConf(const ConfigElement &conf)
     return layout;
 } // screenLoadLayoutFromConf
 
-std::vector<MapTile> screenViewportTile(
+static std::vector<MapTile> screenViewportTile(
     unsigned int width, unsigned int height, int x, int y, bool &focus
 )
 {
@@ -419,12 +419,41 @@ std::vector<MapTile> screenViewportTile(
     /* off the edge of the map: pad with grass tiles */
     if (MAP_IS_OOB(c->location->map, tc)) {
         focus = false;
-        std::vector<MapTile> result;
-        result.push_back(grass);
-        return result;
+        std::vector<MapTile> resultGrass(1, grass);
+        return resultGrass;
     }
     return c->location->tilesAt(tc, focus);
 } // screenViewportTile
+
+static MapTile screenViewportTileGem(
+    unsigned int width, unsigned int height, int x, int y, bool &focus
+)
+{
+    MapCoords center(
+        ((c->location->coords.active_x + 1) << 4u) & 0xFF,
+        ((c->location->coords.active_y + 1) << 4u) & 0xFF,
+        c->location->coords.z
+    );
+    static MapTile grass =
+        c->location->map->tileset->getByName("grass")->getId();
+
+    if ((c->location->map->width <= width)
+        && (c->location->map->height <= height)) {
+        center.x = c->location->map->width / 2;
+        center.y = c->location->map->height / 2;
+    }
+    MapCoords tc = center;
+    tc.x += x - (width / 2);
+    tc.y += y - (height / 2);
+    /* Wrap the location if we can */
+    tc.wrap(c->location->map);
+    /* off the edge of the map: pad with grass tiles */
+    if (MAP_IS_OOB(c->location->map, tc)) {
+        focus = false;
+        return grass;
+    }
+    return c->location->tilesAt(tc, focus).front();
+} // screenViewportTileGem
 
 bool screenTileUpdate(TileView *view, const Coords &coords, bool redraw)
 {
@@ -444,22 +473,27 @@ bool screenTileUpdate(TileView *view, const Coords &coords, bool redraw)
     if ((width > VIEWPORT_W)
         || (height > VIEWPORT_H)) {
         // Center the coordinates to the viewport if you're on centered-view
-        // map. Wrap so cannon fire works across edge of map.
+        // map.
+        // Then wrap so that cannon fire works across edge of main map.
         x -= c->location->coords.x;
-        while (x < -(width / 2)) {
-            x += width;
-        }
-        while (x > (width / 2)) {
-            x -= width;
+        if (c->location->map->border_behavior == Map::BORDER_WRAP) {
+            while (x < -(width / 2)) {
+                x += width;
+            }
+            while (x > (width / 2)) {
+                x -= width;
+            }
         }
         x += VIEWPORT_W / 2;
 
         y -= c->location->coords.y;
-        while (y < -(height / 2)) {
-            y += height;
-        }
-        while (y > (height / 2)) {
-            y -= height;
+        if (c->location->map->border_behavior == Map::BORDER_WRAP) {
+            while (y < -(height / 2)) {
+                y += height;
+            }
+            while (y > (height / 2)) {
+                y -= height;
+            }
         }
         y += VIEWPORT_H / 2;
     }
@@ -486,7 +520,7 @@ bool screenTileUpdate(TileView *view, const Coords &coords, bool redraw)
  */
 void screenUpdate(TileView *view, bool showmap, bool blackout)
 {
-    ASSERT(c != nullptr, "context has not yet been initialized");
+    U4ASSERT(c != nullptr, "context has not yet been initialized");
     screenLock();
     if (blackout) {
         screenEraseMapArea();
@@ -545,8 +579,8 @@ void screenDrawImage(const std::string &name, int x, int y)
     SubImage *subimage = imageMgr->getSubImage(name);
     if (subimage) {
         info = imageMgr->get(subimage->srcImageName);
-        info->image->alphaOn();
         if (info) {
+            info->image->alphaOn();
             info->image->drawSubRect(
                 x,
                 y,
@@ -578,15 +612,16 @@ void screenDrawImageInMapArea(const std::string &name)
             "\thttp://xu4.sourceforge.net/",
             settings.game.c_str()
         );
+    } else {
+        info->image->drawSubRect(
+            BORDER_WIDTH * settings.scale,
+            BORDER_HEIGHT * settings.scale,
+            BORDER_WIDTH * settings.scale,
+            BORDER_HEIGHT * settings.scale,
+            VIEWPORT_W * TILE_WIDTH * settings.scale,
+            VIEWPORT_H * TILE_HEIGHT * settings.scale
+        );
     }
-    info->image->drawSubRect(
-        BORDER_WIDTH * settings.scale,
-        BORDER_HEIGHT * settings.scale,
-        BORDER_WIDTH * settings.scale,
-        BORDER_HEIGHT * settings.scale,
-        VIEWPORT_W * TILE_WIDTH * settings.scale,
-        VIEWPORT_H * TILE_HEIGHT * settings.scale
-    );
 }
 
 
@@ -656,7 +691,7 @@ void screenShowChar(int chr, int x, int y)
  */
 void screenScrollMessageArea()
 {
-    ASSERT(
+    U4ASSERT(
         charsetInfo != nullptr && charsetInfo->image != nullptr,
         "charset not initialized!"
     );
@@ -694,7 +729,7 @@ void screenCycle()
 void screenUpdateCursor()
 {
     int phase = screenCurrentCycle * SCR_CYCLE_PER_SECOND / SCR_CYCLE_MAX;
-    ASSERT(
+    U4ASSERT(
         phase >= 0 && phase < 4,
         "derived an invalid cursor phase: %d",
         phase
@@ -1210,8 +1245,6 @@ void screenFindLineOfSightEnhanced(
     const int _NUM_RASTERS_COLS = 4;
     int octant;
     int
-        xOrigin,
-        yOrigin,
         xSign = 1,
         ySign = 1,
         reflect = false,
@@ -1264,12 +1297,12 @@ void screenFindLineOfSightEnhanced(
             break;
         } // switch
         // determine the origin point for the current LOS octant
-        xOrigin = VIEWPORT_W / 2;
-        yOrigin = VIEWPORT_H / 2;
+        const int xOrigin = VIEWPORT_W / 2;
+        const int yOrigin = VIEWPORT_H / 2;
         // make sure the segment doesn't reach out of bounds
         int maxWidth = xOrigin;
         int maxHeight = yOrigin;
-        int currentRaster = 0;
+        int currentRaster;
         // just in case the viewport isn't square, swap the
         // width and height
         if (reflect) {
@@ -1493,7 +1526,7 @@ static bool screenPointInTriangle(
  */
 bool screenPointInMouseArea(int x, int y, MouseArea *area)
 {
-    ASSERT(
+    U4ASSERT(
         area->npoints == 2 || area->npoints == 3,
         "unsupported number of points in area: %d",
         area->npoints
@@ -1562,10 +1595,6 @@ void screenEraseTextArea(int x, int y, int width, int height)
  */
 void screenShake(int iterations)
 {
-    const int shakeOffset = 2;
-    unsigned short i;
-    Image *screen = imageMgr->get("screen")->image;
-    Image *bottom;
     // the MSVC8 binary was generating a Access Violation when using
     // drawSubRectOn() or drawOn() to draw the screen surface on top
     // of itself.  Occured on settings.scale 2 and 4 only.
@@ -1574,7 +1603,9 @@ void screenShake(int iterations)
     if (settings.screenShakes) {
         // specify the size of the offset, and create a buffer
         // to store the offset row plus 1
-        bottom = Image::create(
+        const int shakeOffset = 2;
+        Image *screen = imageMgr->get("screen")->image;
+        Image *bottom = Image::create(
             SCALED(320), SCALED(shakeOffset + 1), false, Image::HARDWARE
         );
         bottom->alphaOff();
@@ -1583,7 +1614,7 @@ void screenShake(int iterations)
         // usual places
         screenMoving = false;
         // do the actual shaking
-        for (i = 0; i < iterations; i++) {
+        for (int i = 0; i < iterations; i++) {
             // store the bottom row
             screen->drawOn(bottom, 0, SCALED((shakeOffset + 1) - 200));
             // shift the screen down and make the top row black
@@ -1631,18 +1662,18 @@ void screenShake(int iterations)
  * Draw a tile graphic on the screen.
  */
 void screenShowGemTile(
-    Layout *layout, Map *map, MapTile &t, bool, int x, int y
+    Layout *layout, Map *map, MapTile t, bool, int x, int y
 )
 {
     // Make sure we account for tiles that look like other tiles
     // (dungeon tiles, mainly)
-    std::string looks_like = t.getTileType()->getLooksLike();
+    const std::string &looks_like = t.getTileType()->getLooksLike();
     if (!looks_like.empty()) {
         t = map->tileset->getByName(looks_like)->getId();
     }
     unsigned int tile = map->ttrti(t);
     if (map->type == Map::DUNGEON) {
-        ASSERT(charsetInfo, "charset not initialized");
+        U4ASSERT(charsetInfo, "charset not initialized");
         std::map<std::string, int>::iterator charIndex =
             dungeonTileChars.find(t.getTileType()->getName());
         if (charIndex != dungeonTileChars.end()) {
@@ -1702,7 +1733,7 @@ Layout *screenGetGemLayout(const Map *map)
 {
     if (map->type == Map::DUNGEON) {
         std::vector<Layout *>::const_iterator i;
-        for (i = layouts.begin(); i != layouts.end(); i++) {
+        for (i = layouts.cbegin(); i != layouts.cend(); ++i) {
             Layout *layout = *i;
             if (layout->type == LAYOUT_DUNGEONGEM) {
                 return layout;
@@ -1780,11 +1811,11 @@ void screenGemUpdate()
 #if 0
                     tile = c->location->map->getTileFromData(
                         c->location->coords
-                    )->getId();
+                    ).getId();
 #else
                     tile = c->location->map->tileAt(
                         c->location->coords, WITHOUT_OBJECTS
-                    )->getId();
+                    ).getId();
 #endif
                 }
             }
@@ -1815,13 +1846,13 @@ void screenGemUpdate()
         for (x = 0; x < layout->viewport.width; x++) {
             for (y = 0; y < layout->viewport.height; y++) {
                 bool focus;
-                tile = screenViewportTile(
+                tile = screenViewportTileGem(
                     layout->viewport.width,
                     layout->viewport.height,
                     x,
                     y,
                     focus
-                ).front();
+                );
                 screenShowGemTile(layout, c->location->map, tile, focus, x, y);
             }
         }

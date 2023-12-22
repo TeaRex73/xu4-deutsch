@@ -25,7 +25,7 @@ class TextView:public View {
 public:
     TextView(int x, int y, int columns, int rows);
     virtual ~TextView();
-    void reinit();
+    virtual void reinit() override;
 
     int getCursorX() const
     {
@@ -47,8 +47,8 @@ public:
         return columns;
     }
 
-    void drawChar(int chr, int x, int y);
-    void drawCharMasked(int chr, int x, int y, unsigned char mask);
+    void drawChar(int chr, int x, int y) const;
+    void drawCharMasked(int chr, int x, int y, unsigned char mask) const;
     void textAt(int x, int y, const char *fmt, ...) PRINTF_LIKE(4, 5);
     void scroll();
 
@@ -63,13 +63,13 @@ public:
     void drawCursor();
     static void cursorTimer(void *data);
     // functions to modify the charset font palette
-    void setFontColor(ColorFG fg, ColorBG bg);
-    void setFontColorFG(ColorFG fg);
-    void setFontColorBG(ColorBG bg);
+    static void setFontColor(ColorFG fg, ColorBG bg);
+    static void setFontColorFG(ColorFG fg);
+    static void setFontColorBG(ColorBG bg);
     // functions to add color to strings
     void textSelectedAt(int x, int y, const char *text);
-    std::string colorizeStatus(char statustype);
-    std::string colorizeString(
+    static std::string colorizeStatus(char statustype);
+    static std::string colorizeString(
         std::string input,
         ColorFG color,
         unsigned int colorstart,

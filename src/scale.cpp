@@ -10,10 +10,10 @@
 
 
 
-Image *scalePoint(Image *src, int scale, int n);
-Image *scale2xBilinear(Image *src, int scale, int n);
-Image *scale2xSaI(Image *src, int scale, int N);
-Image *scaleScale2x(Image *src, int scale, int N);
+static Image *scalePoint(Image *src, int scale, int);
+static Image *scale2xBilinear(Image *src, int scale, int N);
+static Image *scale2xSaI(Image *src, int scale, int N);
+static Image *scaleScale2x(Image *src, int scale, int N);
 
 Scaler scalerGet(const std::string &filter)
 {
@@ -43,7 +43,7 @@ int scaler3x(const std::string &filter)
 /**
  * A simple row and column duplicating scaler.
  */
-Image *scalePoint(Image *src, int scale, int)
+static Image *scalePoint(Image *src, int scale, int)
 {
     int x, y, i, j;
     Image *dest;
@@ -79,13 +79,13 @@ Image *scalePoint(Image *src, int scale, int)
  * A scaler that interpolates each intervening pixel from it's two
  * neighbors.
  */
-Image *scale2xBilinear(Image *src, int scale, int n)
+static Image *scale2xBilinear(Image *src, int scale, int N)
 {
     int i, x, y, xoff, yoff;
     RGBA a, b, c, d;
     Image *dest;
     /* this scaler works only with images scaled by 2x */
-    ASSERT(scale == 2, "invalid scale: %d", scale);
+    U4ASSERT(scale == 2, "invalid scale: %d", scale);
     dest = Image::create(
         src->width() * scale,
         src->height() * scale,
@@ -108,11 +108,11 @@ Image *scale2xBilinear(Image *src, int scale, int n)
      * [   A   ] [  (A+B)/2  ]
      * [(A+C)/2] [(A+B+C+D)/4]
      */
-    for (i = 0; i < n; i++) {
-        for (y = (src->height() / n) * i;
-             y < (src->height() / n) * (i + 1);
+    for (i = 0; i < N; i++) {
+        for (y = (src->height() / N) * i;
+             y < (src->height() / N) * (i + 1);
              y++) {
-            if (y == (src->height() / n) * (i + 1) - 1) {
+            if (y == (src->height() / N) * (i + 1) - 1) {
                 yoff = 0;
             } else {
                 yoff = 1;
@@ -158,12 +158,12 @@ Image *scale2xBilinear(Image *src, int scale, int n)
     return dest;
 } // scale2xBilinear
 
-int colorEqual(RGBA a, RGBA b)
+static int colorEqual(RGBA a, RGBA b)
 {
     return a.r == b.r && a.g == b.g && a.b == b.b && a.a == b.a;
 }
 
-RGBA colorAverage(RGBA a, RGBA b)
+static RGBA colorAverage(RGBA a, RGBA b)
 {
     RGBA result;
     result.r = (a.r + b.r) >> 1;
@@ -173,7 +173,9 @@ RGBA colorAverage(RGBA a, RGBA b)
     return result;
 }
 
-int _2xSaI_GetResult1(RGBA a, RGBA b, RGBA c, RGBA d)
+static int _2xSaI_GetResult1(
+    RGBA a, RGBA b, RGBA c, RGBA d
+)
 {
     int x = 0;
     int y = 0;
@@ -197,7 +199,9 @@ int _2xSaI_GetResult1(RGBA a, RGBA b, RGBA c, RGBA d)
     return r;
 } // _2xSaI_GetResult1
 
-int _2xSaI_GetResult2(RGBA a, RGBA b, RGBA c, RGBA d)
+static int _2xSaI_GetResult2(
+    RGBA a, RGBA b, RGBA c, RGBA d
+)
 {
     int x = 0;
     int y = 0;
@@ -226,14 +230,14 @@ int _2xSaI_GetResult2(RGBA a, RGBA b, RGBA c, RGBA d)
  * A more sophisticated scaler that interpolates each new pixel the
  * surrounding pixels.
  */
-Image *scale2xSaI(Image *src, int scale, int N)
+static Image *scale2xSaI(Image *src, int scale, int N)
 {
     int ii, x, y, xoff0, xoff1, xoff2, yoff0, yoff1, yoff2;
     RGBA a, b, c, d, e, f, g, h, i, j, k, l, m, n, o, p;
     RGBA prod0, prod1, prod2;
     Image *dest;
     /* this scaler works only with images scaled by 2x */
-    ASSERT(scale == 2, "invalid scale: %d", scale);
+    U4ASSERT(scale == 2, "invalid scale: %d", scale);
     dest = Image::create(
         src->width() * scale,
         src->height() * scale,
@@ -430,7 +434,7 @@ Image *scale2xSaI(Image *src, int scale, int N)
  * A more sophisticated scaler that doesn't interpolate, but avoids
  * the stair step effect by detecting angles.
  */
-Image *scaleScale2x(Image *src, int scale, int n)
+static Image *scaleScale2x(Image *src, int scale, int N)
 {
     int ii, x, y, xoff0, xoff1, yoff0, yoff1;
     RGBA a, b, c, d, e, f, g, h, i;
@@ -438,7 +442,7 @@ Image *scaleScale2x(Image *src, int scale, int n)
     RGBA e4, e5, e6, e7;
     Image *dest;
     /* this scaler works only with images scaled by 2x or 3x */
-    ASSERT(scale == 2 || scale == 3, "invalid scale: %d", scale);
+    U4ASSERT(scale == 2 || scale == 3, "invalid scale: %d", scale);
     dest = Image::create(
         src->width() * scale,
         src->height() * scale,
@@ -462,16 +466,16 @@ Image *scaleScale2x(Image *src, int scale, int n)
      * D E F
      * G H I
      */
-    for (ii = 0; ii < n; ii++) {
-        for (y = (src->height() / n) * ii;
-             y < (src->height() / n) * (ii + 1);
+    for (ii = 0; ii < N; ii++) {
+        for (y = (src->height() / N) * ii;
+             y < (src->height() / N) * (ii + 1);
              y++) {
             if (y == 0) {
                 yoff0 = 0;
             } else {
                 yoff0 = -1;
             }
-            if (y == (src->height() / n) * (ii + 1) - 1) {
+            if (y == (src->height() / N) * (ii + 1) - 1) {
                 yoff1 = 0;
             } else {
                 yoff1 = 1;

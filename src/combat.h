@@ -50,11 +50,11 @@ public:
     CombatController &operator=(const CombatController &) = delete;
     CombatController &operator=(CombatController &&) = delete;
 
-    CombatController(CombatMap *m);
-    CombatController(MapId id);
+    explicit CombatController(CombatMap *m);
+    explicit CombatController(MapId id);
     virtual ~CombatController();
 
-    bool isCombatController() const
+    virtual bool isCombatController() const override
     {
         return true;
     }
@@ -84,7 +84,9 @@ public:
     void placeCreatures();
     void placePartyMembers();
     bool setActivePlayer(int player);
-    bool attackHit(Creature *attacker, Creature *defender, bool harder);
+    static bool attackHit(
+        Creature *attacker, Creature *defender, bool harder
+    );
     virtual void awardLoot();
     void attack();
     bool attackAt(
@@ -99,17 +101,19 @@ public:
     bool returnWeaponToOwner(
         const Coords &coords, int distance, int dir, const Weapon *weapon
     );
+#if 0
     static void attackFlash(
         const Coords &coords, MapTile tile, int timeFactor
     );
     static void attackFlash(
         const Coords &coords, const std::string &tilename, int timeFactor
     );
+#endif
     static void doScreenAnimationsWhilePausing(int timeFactor);
-    virtual bool keyPressed(int key);
-    virtual void finishTurn();
-    void movePartyMember(MoveEvent &event);
-    virtual void update(Party *party, PartyEvent &event);
+    virtual bool keyPressed(int key) override;
+    virtual void finishTurn() override;
+    void movePartyMember(const MoveEvent &event);
+    virtual void update(Party *party, PartyEvent &event) override;
 
 protected:
     CombatController();
@@ -138,10 +142,10 @@ public:
     CombatMap();
     CreatureVector getCreatures();
     PartyMemberVector getPartyMembers();
-    PartyMember *partyMemberAt(Coords coords);
-    Creature *creatureAt(Coords coords);
+    PartyMember *partyMemberAt(const Coords &coords);
+    Creature *creatureAt(const Coords &coords);
     static MapId mapForTile(
-        const Tile *ground, const Tile *transport, Object *obj
+        const Tile *groundTile, const Tile *transport, Object *obj
     );
 
     bool isDungeonRoom() const

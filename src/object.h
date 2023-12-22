@@ -32,18 +32,18 @@ public:
         PARTYMEMBER
     };
 
-    Object(Type type = UNKNOWN);
+    explicit Object(Type type = UNKNOWN);
     Object(const Object &o);
     Object &operator=(const Object &o);
     virtual ~Object();
     static void cleanup();
 
-    MapTile &getTile()
+    MapTile getTile() const
     {
         return tile;
     }
 
-    MapTile &getPrevTile()
+    MapTile getPrevTile() const
     {
         return prevTile;
     }
@@ -100,9 +100,9 @@ public:
         prevTile = t;
     }
 
-    void setCoords(Coords c);
+    void setCoords(const Coords &c);
 
-    void setPrevCoords(Coords c)
+    void setPrevCoords(const Coords &c)
     {
         prevCoords = c;
     }

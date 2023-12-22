@@ -54,9 +54,11 @@ class Tile {
 public:
     //disallow copy construction, assignment
     Tile(const Tile &) = delete;
+    Tile(Tile &&) = delete;
     const Tile &operator=(const Tile &) = delete;
+    const Tile &operator=(Tile &&) = delete;
 
-    Tile(Tileset *tileset);
+    explicit Tile(Tileset *tileset);
     void loadProperties(const ConfigElement &conf);
 
     TileId getId() const

@@ -14,7 +14,7 @@ std::map<std::string, DialogueLoader *> *DialogueLoader::loaderMap = nullptr;
 
 DialogueLoader *DialogueLoader::getLoader(const std::string &mimeType)
 {
-    ASSERT(
+    U4ASSERT(
         loaderMap != nullptr,
         "DialogueLoader::getLoader loaderMap not initialized"
     );
@@ -40,7 +40,7 @@ void DialogueLoader::cleanup()
     for (std::map<std::string, DialogueLoader *>::iterator i =
              loaderMap->begin();
          i != loaderMap->end();
-         i++) {
+         ++i) {
         delete i->second;
     }
     delete loaderMap;

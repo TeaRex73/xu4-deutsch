@@ -24,7 +24,7 @@ ImageView::~ImageView()
 /**
  * Draw the image at the optionally specified offset.
  */
-void ImageView::draw(const std::string &imageName, int x, int y)
+void ImageView::draw(const std::string &imageName, int x, int y) const
 {
     ImageInfo *info = imageMgr->get(imageName);
     if (info) {

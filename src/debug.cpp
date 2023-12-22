@@ -59,15 +59,15 @@ void print_trace(std::FILE *file)
 
 /**
  * Stub for systems without variadic macros.  Unfortunately, this
- * assert won't be very useful.
+ * U4ASSERT won't be very useful.
  */
-void ASSERT(bool exp, const char *desc, ...)
+void U4ASSERT(bool exp, const char *desc, ...)
 {
 #ifndef NDEBUG
     std::va_list args;
     va_start(args, desc);
     if (!exp) {
-        std::fprintf(stderr, "Assert fehlgeschlagen: ");
+        std::fprintf(stderr, "U4ASSERT fehlgeschlagen: ");
         std::vfprintf(stderr, desc, args);
         std::fprintf(stderr, "\n");
         std::abort();
@@ -159,20 +159,20 @@ void Debug::trace(
         return;
     }
     bool brackets = false;
-    std::string message, filename;
+    std::string message, _filename;
     Path path(fn);
-    filename = path.getFilename();
+    _filename = path.getFilename();
     if (!file) {
         return;
     }
     if (!msg.empty()) {
         message += msg;
     }
-    if (!filename.empty() || (line > 0)) {
+    if (!_filename.empty() || (line > 0)) {
         brackets = true;
         message += " [";
     }
-    if ((l_filename == filename)
+    if ((l_filename == _filename)
         && (l_func == func)
         && (l_line == line)) {
         message += "...";
@@ -183,9 +183,9 @@ void Debug::trace(
         } else {
             l_func.erase();
         }
-        if (!filename.empty()) {
-            l_filename = filename;
-            message += filename + ": ";
+        if (!_filename.empty()) {
+            l_filename = _filename;
+            message += _filename + ": ";
         } else {
             l_filename.erase();
         }

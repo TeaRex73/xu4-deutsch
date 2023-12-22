@@ -281,28 +281,26 @@ bool CheatMenuController::keyPressed(int key)
                 ship = c->location->map->tileset->getByName("ship")->getId(),
                 balloon = c->location->map->tileset->getByName("balloon")
                 ->getId();
-            MapTile *choice;
-            Tile *tile;
+            MapTile choice;
             screenMessage("ERZEUGE TRASNPORT!\nWELCHEN? ");
             // Get the transport of choice
             char transport = ReadChoiceController::get("spb \033\015");
             switch (transport) {
             case 's':
-                choice = &ship;
+                choice = ship;
                 break;
             case 'p':
-                choice = &horse;
+                choice = horse;
                 break;
             case 'b':
-                choice = &balloon;
+                choice = balloon;
                 break;
             default:
-                choice = nullptr;
                 break;
             }
-            if (choice) {
+            if (choice.getId()) {
                 ReadDirController readDir;
-                tile = c->location->map->tileset->get(choice->getId());
+                Tile *tile = c->location->map->tileset->get(choice.getId());
                 screenMessage("\n%s\n", tile->getName().c_str());
                 // Get the direction in which to
                 // create the transport
@@ -311,31 +309,28 @@ bool CheatMenuController::keyPressed(int key)
                 coords.move(readDir.waitFor(), c->location->map);
                 if (coords != c->location->coords) {
                     bool ok = false;
-                    MapTile *ground =
+                    MapTile ground =
                         c->location->map->tileAt(coords, WITHOUT_OBJECTS);
                     screenMessage(
                         "%s\n", getDirectionName(readDir.getValue())
                     );
                     switch (transport) {
                     case 's':
-                        ok = ground->getTileType()->isSailable();
+                        ok = ground.getTileType()->isSailable();
                         break;
                     case 'p':
                     case 'b':
-                        ok = ground->getTileType()->isWalkable();
+                        ok = ground.getTileType()->isWalkable();
                         break;
                     default:
                         break;
                     }
-                    if (choice && ok) {
-                        c->location->map->addObject(*choice, *choice, coords);
+                    if (ok) {
+                        c->location->map->addObject(choice, choice, coords);
                         screenMessage(
                             "%s ERZEUGT!\n", tile->getName().c_str()
                         );
-                    } else if (!choice) {
-                        soundPlay(SOUND_ERROR);
-                        screenMessage("UNG]LTIGER\nTRANSPORT!\n");
-                    } else {
+                     } else {
                         soundPlay(SOUND_ERROR);
                         screenMessage(
                             "KANN %s NICHT PLATZIEREN!\n",

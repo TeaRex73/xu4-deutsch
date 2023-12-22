@@ -18,7 +18,7 @@ struct RGBA;
  */
 class U4RawImageLoader:public ImageLoader {
 public:
-    virtual Image *load(U4FILE *file, int width, int height, int bpp);
+    virtual Image *load(U4FILE *file, int width, int height, int bpp) override;
 
 private:
     static ImageLoader *instance;
@@ -33,7 +33,7 @@ private:
  */
 class U4RleImageLoader:public ImageLoader {
 public:
-    virtual Image *load(U4FILE *file, int width, int height, int bpp);
+    virtual Image *load(U4FILE *file, int width, int height, int bpp) override;
 
 private:
     static ImageLoader *instance;
@@ -48,7 +48,7 @@ private:
  */
 class U4LzwImageLoader:public ImageLoader {
 public:
-    virtual Image *load(U4FILE *file, int width, int height, int bpp);
+    virtual Image *load(U4FILE *file, int width, int height, int bpp) override;
 
 private:
     static ImageLoader *instance;
@@ -57,9 +57,9 @@ private:
 class U4PaletteLoader {
 public:
     static void cleanup();
-    RGBA *loadBWPalette();
-    RGBA *loadEgaPalette();
-    RGBA *loadVgaPalette();
+    static RGBA *loadBWPalette();
+    static RGBA *loadEgaPalette();
+    static RGBA *loadVgaPalette();
 
 private:
     static RGBA *bwPalette;

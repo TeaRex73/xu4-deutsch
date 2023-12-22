@@ -77,8 +77,8 @@ bool SoundManager::init()
     soundChunk.resize(SOUND_MAX, nullptr);
     std::vector<ConfigElement> soundConfs =
         config->getElement("sound").getChildren();
-    std::vector<ConfigElement>::const_iterator i = soundConfs.begin();
-    std::vector<ConfigElement>::const_iterator theEnd = soundConfs.end();
+    std::vector<ConfigElement>::const_iterator i = soundConfs.cbegin();
+    std::vector<ConfigElement>::const_iterator theEnd = soundConfs.cend();
     for (; i != theEnd; ++i) {
         if (i->getName() != "track") {
             continue;
@@ -90,7 +90,7 @@ bool SoundManager::init()
 
 bool SoundManager::load(Sound sound)
 {
-    ASSERT(
+    U4ASSERT(
         sound < SOUND_MAX, "Attempted to load an invalid sound in soundLoad()"
     );
     // If music didn't initialize correctly, then we can't play it anyway
@@ -112,7 +112,7 @@ void SoundManager::play(
     Sound sound, bool onlyOnce, int specificDurationInTicks, bool wait
 )
 {
-    ASSERT(
+    U4ASSERT(
         sound < SOUND_MAX, "Attempted to play an invalid sound in soundPlay()"
     );
     // If music didn't initialize correctly, then we can't play it anyway

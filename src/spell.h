@@ -44,8 +44,8 @@ public:
     bool removeReagent(Reagent reagent);
     int getReagent(Reagent reagent) const;
     void revert();
-    bool checkMultiple(int mixes) const;
-    void multiply(int mixes);
+    bool checkMultiple(int batches) const;
+    void multiply(int batches);
 
 private:
     unsigned short reagents[REAG_MAX];

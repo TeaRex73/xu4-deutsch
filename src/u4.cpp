@@ -97,7 +97,6 @@ int main(int argc, char *argv[])
             if (!profileName.empty()) {
                 useProfile = true;
             }
-            i++;
             break;
         }
     }

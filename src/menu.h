@@ -32,17 +32,17 @@ public:
     {
     }
 
-    const Menu *getMenu()
+    const Menu *getMenu() const
     {
         return menu;
     }
 
-    Type getType()
+    Type getType() const
     {
         return type;
     }
 
-    const MenuItem *getMenuItem()
+    const MenuItem *getMenuItem() const
     {
         return item;
     }
@@ -63,13 +63,11 @@ public:
     Menu();
     ~Menu();
     void removeAll();
-    void add(
-        int id, std::string text, short x, short y, int shortcutKey = -1
-    );
+    void add(int id, const std::string &text, short x, short y, int sc = -1);
     MenuItem *add(int id, MenuItem *item);
-    void addShortcutKey(int id, int shortcutKey);
-    void setClosesMenu(int id);
-    MenuItemList::iterator getCurrent();
+    void addShortcutKey(int id, int shortcutKey) const;
+    void setClosesMenu(int id) const;
+    MenuItemList::iterator getCurrent() const;
     void setCurrent(MenuItemList::iterator i);
     void setCurrent(int id);
     void show(TextView *view);
@@ -110,7 +108,7 @@ public:
     MenuController(MenuController &&) = delete;
     MenuController &operator=(const MenuController &) = delete;
     MenuController &operator=(MenuController &&) = delete;
-    bool keyPressed(int key);
+    bool keyPressed(int key) override;
 
 protected:
     Menu *menu;

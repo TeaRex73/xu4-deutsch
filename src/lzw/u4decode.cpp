@@ -33,7 +33,7 @@
  * -1 if there was an error
  * the decompressed file length, on success
  */
-long decompress_u4_file(FILE *in, long filesize, unsigned char **out)
+long decompress_u4_file(std::FILE *in, long filesize, unsigned char **out)
 {
     unsigned char *compressed_mem, *decompressed_mem;
     long compressed_filesize, decompressed_filesize;
@@ -113,7 +113,7 @@ long decompress_u4_memory(unsigned char *in, long inlen, unsigned char **out)
  * Returns the size of a file, and moves the file ptr to the beginning.
  * The file must already be open when this function is called.
  */
-long getFilesize(FILE *input_file)
+long getFilesize(std::FILE *input_file)
 {
     long file_length;
     std::fseek(input_file, 0, SEEK_END);   /* move file ptr to file end */
@@ -127,7 +127,7 @@ long getFilesize(FILE *input_file)
  * If the input file is a valid LZW-compressed file, the upper 4 bits of
  * the first byte must be 0, because the first codeword is always a root.
  */
-unsigned char mightBeValidCompressedFile(FILE *input_file)
+unsigned char mightBeValidCompressedFile(std::FILE *input_file)
 {
     unsigned char firstByte;
     unsigned char c1, c2, c3;   /* booleans */

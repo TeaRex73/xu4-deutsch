@@ -56,15 +56,15 @@ public:
         int x_offset,
         int distance,
         Direction orientation,
-        bool tiled
+        bool tiledWall
     );
-    int graphicIndex(
+    static int graphicIndex(
         int xoffset,
         int distance,
         Direction orientation,
         DungeonGraphicType type
     );
-    void drawTile(
+    static void drawTile(
         Tile *tile, int x_offset, int distance, Direction orientation
     );
     void drawWall(
@@ -74,14 +74,16 @@ public:
         DungeonGraphicType type
     );
     void display(Context *c, TileView *view);
-    DungeonGraphicType tilesToGraphic(const std::vector<MapTile> &tiles);
+    static DungeonGraphicType tilesToGraphic(
+        const std::vector<MapTile> &tiles
+    );
 
     bool toggle3DDungeonView()
     {
         return screen3dDungeonViewEnabled = !screen3dDungeonViewEnabled;
     }
 
-    std::vector<MapTile> getTiles(int fwd, int side);
+    static std::vector<MapTile> getTiles(int fwd, int side);
 };
 
 #endif /* DUNGEONVIEW_H */

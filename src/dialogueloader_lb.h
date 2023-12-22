@@ -13,7 +13,7 @@
  */
 class U4LBDialogueLoader:public DialogueLoader {
 public:
-    virtual Dialogue *load(void *source);
+    virtual Dialogue *load(void *source) override;
 
  private:
     static DialogueLoader *instance;

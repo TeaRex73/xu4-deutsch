@@ -139,9 +139,11 @@ typedef enum {
  */
 class Creature:public Object {
 public:
-    Creature(MapTile tile = MapTile(0));
+    explicit Creature(MapTile tile = MapTile(0));
     Creature(const Creature &c) = default;
+    Creature(Creature &&c) = default;
     Creature &operator=(const Creature &c) = default;
+    Creature &operator=(Creature &&c) = default;
     virtual ~Creature() = default;
     void load(const ConfigElement &conf);
 
@@ -200,7 +202,7 @@ public:
         return resists;
     }
 
-    void setName(std::string s)
+    void setName(const std::string &s)
     {
         name = s;
     }
@@ -365,12 +367,12 @@ public:
     }
 
     void setRandomRanged();
-    int setInitialHp(int hp = -1);
+    int setInitialHp(int points = -1);
     bool specialAction();
     bool specialEffect();
     /* combat methods */
     void act(CombatController *controller);
-    virtual void addStatus(StatusType status);
+    virtual void addStatus(StatusType s);
     void applyTileEffect(TileEffect effect);
     virtual int getAttackBonus() const;
     virtual int getDefense(bool needsMystic) const;
@@ -382,8 +384,8 @@ public:
     bool hideOrShow();
     Creature *nearestOpponent(int *dist, bool ranged);
     virtual void putToSleep(bool sound = true);
-    virtual void removeStatus(StatusType status);
-    virtual void setStatus(StatusType status);
+    virtual void removeStatus(StatusType s);
+    virtual void setStatus(StatusType s);
     virtual void wakeUp();
     virtual bool applyDamage(int damage, bool byplayer = true);
     virtual bool dealDamage(Creature *m, int damage);
@@ -427,9 +429,9 @@ public:
     void loadAll();
     Creature *getByTile(MapTile tile);
     Creature *getById(CreatureId id);
-    Creature *getByName(std::string name);
+    Creature *getByName(const std::string &name);
     Creature *randomForTile(const Tile *tile);
-    Creature *randomForDungeon(int dnglevel);
+    Creature *randomForDungeon(int dngLevel);
     Creature *randomAmbushing();
 
 private:

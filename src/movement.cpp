@@ -31,7 +31,6 @@ std::atomic_bool collisionOverride(false);
 void moveAvatar(MoveEvent &event)
 {
     MapCoords newCoords;
-    bool slowed = false;
     SlowedType slowedType = SLOWED_BY_TILE;
     /* Check to see if we're on the balloon */
     if ((c->transportContext == TRANSPORT_BALLOON) && event.userEvent) {
@@ -82,6 +81,7 @@ void moveAvatar(MoveEvent &event)
             return;
         }
         /* Are we slowed by terrain or by wind direction? */
+        bool slowed = false;
         switch (slowedType) {
         case SLOWED_BY_TILE:
             // TODO: CHEST: Make a user option to not make
@@ -133,9 +133,9 @@ void moveAvatarInDungeon(MoveEvent &event)
         retreating = (realDir == dirReverse(
                           static_cast<Direction>(c->saveGame->orientation))
                      );
-    MapTile *tile;
+    MapTile tile;
     /* we're not in a dungeon, failed! */
-    ASSERT(
+    U4ASSERT(
         c->location->context & CTX_DUNGEON,
         "moveAvatarInDungeon() called outside of dungeon, failed!"
     );
@@ -163,10 +163,10 @@ void moveAvatarInDungeon(MoveEvent &event)
             c->party->getTransport()
         );
         if (advancing
-            && !tile->getTileType()->canWalkOn(DIR_ADVANCE)) {
+            && !tile.getTileType()->canWalkOn(DIR_ADVANCE)) {
             movementMask = DIR_REMOVE_FROM_MASK(realDir, movementMask);
         } else if (retreating
-                   && !tile->getTileType()->canWalkOn(DIR_RETREAT)) {
+                   && !tile.getTileType()->canWalkOn(DIR_RETREAT)) {
             movementMask = DIR_REMOVE_FROM_MASK(realDir, movementMask);
         }
         if (!DIR_IN_MASK(realDir, movementMask)) {
@@ -187,7 +187,7 @@ void moveAvatarInDungeon(MoveEvent &event)
  * tile direction changed, or object simply cannot move
  * (fixed objects, nowhere to go, etc.)
  */
-bool moveObject(Map *map, Creature *obj, MapCoords avatar)
+bool moveObject(const Map *map, Creature *obj, const MapCoords &avatar)
 {
     int dirmask = DIR_NONE;
     Direction dir;
@@ -280,7 +280,9 @@ bool moveObject(Map *map, Creature *obj, MapCoords avatar)
 /**
  * Moves an object in combat according to its chosen combat action
  */
-bool moveCombatObject(int act, Map *map, Creature *obj, MapCoords target)
+bool moveCombatObject(
+    int act, const Map *map, Creature *obj, const MapCoords &target
+)
 {
     MapCoords new_coords = obj->getCoords();
     int valid_dirs = map->getValidMoves(new_coords, obj->getTile());
@@ -298,7 +300,7 @@ bool moveCombatObject(int act, Map *map, Creature *obj, MapCoords target)
             target, valid_dirs, nullptr, obj->getLastDir()
         );
     } else {
-        ASSERT(action == CA_ADVANCE, "action must be CA_ADVANCE or CA_FLEE");
+        U4ASSERT(action == CA_ADVANCE, "action must be CA_ADVANCE or CA_FLEE");
         // If they're not fleeing, make sure they don't flee on accident
         if (new_coords.x == 0) {
             valid_dirs = DIR_REMOVE_FROM_MASK(DIR_WEST, valid_dirs);

@@ -85,22 +85,22 @@ public:
     IntroController &operator=(const IntroController &) = delete;
     IntroController &operator=(IntroController &&) = delete;
     bool init();
-    bool hasInitiatedNewGame();
+    bool hasInitiatedNewGame() const;
     void deleteIntro();
-    bool keyPressed(int key);
+    virtual bool keyPressed(int key) override;
     unsigned char *getSigData();
     void updateScreen();
-    void timerFired();
+    virtual void timerFired() override;
     void preloadMap();
-    void update(Menu *menu, MenuEvent &event);
-    void updateConfMenu(MenuEvent &event);
-    void updateVideoMenu(MenuEvent &event);
-    void updateGfxMenu(MenuEvent &event);
-    void updateSoundMenu(MenuEvent &event);
-    void updateInputMenu(MenuEvent &event);
-    void updateSpeedMenu(MenuEvent &event);
-    void updateGameplayMenu(MenuEvent &event);
-    void updateInterfaceMenu(MenuEvent &event);
+    virtual void update(Menu *menu, MenuEvent &event) override;
+    void updateConfMenu(const MenuEvent &event);
+    void updateVideoMenu(const MenuEvent &event);
+    void updateGfxMenu(const MenuEvent &event);
+    void updateSoundMenu(const MenuEvent &event) const;
+    void updateInputMenu(const MenuEvent &event);
+    void updateSpeedMenu(const MenuEvent &event) const;
+    void updateGameplayMenu(const MenuEvent &event) const;
+    void updateInterfaceMenu(const MenuEvent &event);
     void initTitles();
     bool updateTitle();
 
@@ -109,14 +109,16 @@ private:
     void drawMapStatic();
     void drawMapAnimated();
     void drawBeasties(bool musicon = true);
-    void drawBeastie(int beast, int vertoffset, int frame);
-    void animateTree(const std::string &frame);
-    void drawCard(int pos, int card);
-    void drawAbacusBeads(int row, int selectedVirtue, int rejectedVirtue);
+    void drawBeastie(int beast, int vertoffset, int frame) const;
+    void animateTree(const std::string &frame) const;
+    void drawCard(int pos, int card) const;
+    void drawAbacusBeads(
+        int row, int selectedVirtue, int rejectedVirtue
+    ) const;
     void initQuestionTree();
     bool doQuestion(int answer);
-    void initPlayers(SaveGame *saveGame);
-    std::string getQuestion(SexType sex, int v1, int v2);
+    void initPlayers(SaveGame *saveGame) const;
+    std::string getQuestion(SexType sex, int v1, int v2) const;
     void initiateNewGame();
     void finishInitiateGame(const std::string &nameBuffer, SexType sex);
     void startQuestions(SexType sex);
@@ -232,9 +234,9 @@ private:
         MAP
     };
 
-    struct AnimPlot {
-        std::uint8_t x, y;
+    struct __attribute__((aligned (4))) AnimPlot {
         std::uint8_t r, g, b, a;
+        std::uint8_t x, y;
     };
 
     class AnimElement {

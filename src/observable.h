@@ -62,7 +62,7 @@ public:
         return changed;
     }
 
-    void notifyObservers(A arg)
+    void notifyObservers(const A &arg)
     {
         if (!changed) {
             return;
@@ -74,7 +74,7 @@ public:
         typename std::vector<Observer<O, A> *> tmp = observers;
         typename std::vector<Observer<O, A> *>::iterator i;
         clearChanged();
-        for (i = tmp.begin(); i != tmp.end(); i++) {
+        for (i = tmp.begin(); i != tmp.end(); ++i) {
             Observer<O, A> *observer = *i;
             observer->update(static_cast<O>(this), arg);
         }

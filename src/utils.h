@@ -140,7 +140,7 @@ template<typename T, typename U> inline void AdjustValue(
 }
 
 void xu4_srandom();
-int xu4_random(int upperval);
+int xu4_random(int upperRange);
 int xu4_islower(int c);
 int xu4_toupper(int c);
 int xu4_tolower(int c);
@@ -150,9 +150,9 @@ char *xu4_strdup(const char *s);
 std::string &trim(
     std::string &val, const std::string &chars_to_trim = "\t\013\014 \n\r"
 );
-std::string lowercase(std::string val);
-std::string uppercase(std::string val);
-std::string deumlaut(std::string val);
+std::string lowercase(const std::string &val);
+std::string uppercase(const std::string &val);
+std::string deumlaut(const std::string &val);
 std::string xu4_to_string(int val);
 std::vector<std::string> split(
     const std::string &s, const std::string &separators
@@ -163,7 +163,7 @@ private:
     typedef std::map<std::string, std::clock_t> TimeMap;
 
 public:
-    Performance(const std::string &
+    explicit Performance(const std::string &
 #ifndef NPERF
                                 s
 #endif
@@ -240,9 +240,9 @@ public:
         TimeMap::const_iterator i;
         std::clock_t total = 0;
         std::map<double, std::string> percentages;
-        std::map<double, std::string>::iterator perc;
+        std::map<double, std::string>::const_iterator percMap;
         if (pre) { std::fprintf(log, "%s", pre); }
-        for (i = times.begin(); i != times.end(); i++) {
+        for (i = times.cbegin(); i != times.cend(); ++i) {
             std::fprintf(
                 log,
                 "%s [%0.2f msecs]\n",
@@ -251,14 +251,16 @@ public:
             );
             total += i->second;
         }
-        for (i = times.begin(); i != times.end(); i++) {
+        for (i = times.cbegin(); i != times.cend(); ++i) {
             double perc = 100.0 * double(i->second) / total;
             percentages[perc] = i->first;
         }
         std::fprintf(log, "\n");
-        for (perc = percentages.begin(); perc != percentages.end(); perc++) {
+        for (percMap = percentages.cbegin();
+             percMap != percentages.cend();
+             ++percMap) {
             std::fprintf(
-                log, "%0.1f%% - %s\n", perc->first, perc->second.c_str()
+                log, "%0.1f%% - %s\n", percMap->first, percMap->second.c_str()
             );
         }
         std::fprintf(log, "\nTotal [%0.2f msecs]\n", double(total) / msec);

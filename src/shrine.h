@@ -25,13 +25,13 @@ public:
     Virtue getVirtue() const;
     std::string getMantra() const;
     void setVirtue(Virtue v);
-    void setMantra(std::string mantra);
+    void setMantra(const std::string &m);
     void enter();
     void enhancedSequence();
     void meditationCycle();
     void askMantra();
-    void eject();
-    void showVision(bool elevated);
+    static void eject();
+    void showVision(bool elevated) const;
 
 private:
     std::string name;

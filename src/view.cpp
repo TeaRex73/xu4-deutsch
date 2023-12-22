@@ -89,9 +89,8 @@ void View::unhighlight()
     highlightX = highlightY = highlightW = highlightH = 0;
 }
 
-void View::drawHighlighted()
+void View::drawHighlighted() const
 {
-    Image *screen = imageMgr->get("screen")->image;
     Image *tmp = Image::create(
         SCALED(highlightW), SCALED(highlightH), false, Image::HARDWARE
     ); /* was SOFTWARE */

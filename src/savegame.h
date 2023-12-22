@@ -27,7 +27,7 @@ class Object;
  * The list of all weapons.  These values are used in both the
  * inventory fields and character records of the savegame.
  */
-enum WeaponType {
+enum WeaponType: unsigned short {
     WEAP_HANDS,
     WEAP_STAFF,
     WEAP_DAGGER,
@@ -52,7 +52,7 @@ enum WeaponType {
  * The list of all armor types.  These values are used in both the
  * inventory fields and character records of the savegame.
  */
-enum ArmorType {
+enum ArmorType: unsigned short {
     ARMR_NONE,
     ARMR_CLOTH,
     ARMR_LEATHER,
@@ -69,7 +69,7 @@ enum ArmorType {
  * The list of sex values for the savegame character records.  The
  * values match the male and female symbols in the character set.
  */
-enum SexType {
+enum SexType: unsigned char {
     SEX_MALE = 0xb,
     SEX_FEMALE = 0xc
 };
@@ -78,7 +78,7 @@ enum SexType {
 /**
  * The list of class types for the savegame character records.
  */
-enum ClassType {
+enum ClassType: unsigned char {
     CLASS_MAGE,
     CLASS_BARD,
     CLASS_FIGHTER,
@@ -94,7 +94,7 @@ enum ClassType {
  * The list of status values for the savegame character records.  The
  * values match the letter thats appear in the ztats area.
  */
-enum StatusType {
+enum StatusType: unsigned char {
     STAT_GOOD = 'G',
     STAT_POISONED = 'V',
     STAT_SLEEPING = 'S',
@@ -103,7 +103,7 @@ enum StatusType {
 
 
 
-enum Virtue {
+enum Virtue: unsigned char {
     VIRT_HONESTY,
     VIRT_COMPASSION,
     VIRT_VALOR,
@@ -115,14 +115,14 @@ enum Virtue {
     VIRT_MAX
 };
 
-enum BaseVirtue {
+enum BaseVirtue: unsigned char {
     VIRT_NONE = 0x00,
     VIRT_TRUTH = 0x01,
     VIRT_LOVE = 0x02,
     VIRT_COURAGE = 0x04
 };
 
-enum Reagent {
+enum Reagent: unsigned char {
     REAG_ASH,
     REAG_GINSENG,
     REAG_GARLIC,
@@ -136,7 +136,7 @@ enum Reagent {
 
 #define SPELL_MAX 26
 
-enum Item {
+enum Item: unsigned short {
     ITEM_SKULL = 0x01,
     ITEM_SKULL_DESTROYED = 0x02,
     ITEM_CANDLE = 0x04,
@@ -152,7 +152,7 @@ enum Item {
     ITEM_BELL_USED = 0x1000
 };
 
-enum Stone {
+enum Stone: unsigned char {
     STONE_BLUE = 0x01,
     STONE_YELLOW = 0x02,
     STONE_RED = 0x04,
@@ -163,7 +163,7 @@ enum Stone {
     STONE_BLACK = 0x80
 };
 
-enum Rune {
+enum Rune: unsigned char {
     RUNE_HONESTY = 0x01,
     RUNE_COMPASSION = 0x02,
     RUNE_VALOR = 0x04,
@@ -182,6 +182,7 @@ struct SaveGamePlayerRecord {
     bool write(std::FILE *f) const;
     bool read(std::FILE *f);
     void init();
+
     unsigned short hp;
     unsigned short hpMax;
     unsigned short xp;
@@ -200,7 +201,7 @@ struct SaveGamePlayerRecord {
 /**
  * How Ultima IV stores monster information
  */
-typedef struct _SaveGameMonsterRecord {
+struct SaveGameMonsterRecord {
     unsigned char tile;
     unsigned char x;
     unsigned char y;
@@ -209,7 +210,7 @@ typedef struct _SaveGameMonsterRecord {
     unsigned char prevy;
     unsigned char z;
     unsigned char unused;
-} SaveGameMonsterRecord;
+};
 
 
 /**
@@ -219,6 +220,7 @@ struct SaveGame {
     bool write(std::FILE *f) const;
     bool read(std::FILE *f);
     void init(const SaveGamePlayerRecord *avatarInfo);
+
     unsigned int unknown1;
     unsigned int moves;
     SaveGamePlayerRecord players[8];

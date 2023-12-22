@@ -40,12 +40,12 @@ using namespace U6Decode;
 
 Dict dict;
 
-unsigned char U6Decode::read1(FILE *f)
+unsigned char U6Decode::read1(std::FILE *f)
 {
     return std::fgetc(f);
 }
 
-long U6Decode::read4(FILE *f)
+long U6Decode::read4(std::FILE *f)
 {
     unsigned char b0, b1, b2, b3;
     b0 = std::fgetc(f);
@@ -55,7 +55,7 @@ long U6Decode::read4(FILE *f)
     return b0 + (b1 << 8) + (b2 << 16) + (b3 << 24);
 }
 
-long U6Decode::get_filesize(FILE *input_file)
+long U6Decode::get_filesize(std::FILE *input_file)
 {
     long file_length;
     std::fseek(input_file, 0, SEEK_END);
@@ -67,7 +67,7 @@ long U6Decode::get_filesize(FILE *input_file)
 // this function only checks a few *necessary* conditions
 // returns "false" if the file doesn't satisfy these conditions
 // return "true" otherwise
-bool U6Decode::is_valid_lzw_file(FILE *input_file)
+bool U6Decode::is_valid_lzw_file(std::FILE *input_file)
 {
     // file must contain 4-byte size header and space for 9-bit value 0x100
     if (get_filesize(input_file) < 6) {
@@ -92,12 +92,11 @@ bool U6Decode::is_valid_lzw_file(FILE *input_file)
     return true;
 }
 
-long U6Decode::get_uncompressed_size(FILE *input_file)
+long U6Decode::get_uncompressed_size(std::FILE *input_file)
 {
-    long uncompressed_file_length;
     if (is_valid_lzw_file(input_file)) {
         std::fseek(input_file, 0, SEEK_SET);
-        uncompressed_file_length = read4(input_file);
+        long uncompressed_file_length = read4(input_file);
         std::fseek(input_file, 0, SEEK_SET);
         return uncompressed_file_length;
     } else {
@@ -109,7 +108,7 @@ long U6Decode::get_uncompressed_size(FILE *input_file)
 // Read the next code word from the source buffer
 // ----------------------------------------------
 int U6Decode::get_next_codeword(
-    long &bits_read, unsigned char *source, int codeword_size
+    long &bits_read, const unsigned char *source, int codeword_size
 )
 {
     unsigned char b0, b1, b2;
@@ -150,11 +149,9 @@ void U6Decode::output_root(
 
 void U6Decode::get_string(Stack &stack, int codeword)
 {
-    unsigned char root;
-    int current_codeword;
-    current_codeword = codeword;
+    int current_codeword = codeword;
     while (current_codeword > 0xff) {
-        root = dict.get_root(current_codeword);
+        unsigned char root = dict.get_root(current_codeword);
         current_codeword = dict.get_codeword(current_codeword);
         stack.push(root);
     }
@@ -182,11 +179,10 @@ int U6Decode::lzw_decompress(
     int next_free_codeword = 0x102;
     int dictionary_size = 0x200;
     long bytes_written = 0;
-    int cW;
     int pW = 0;
     unsigned char C;
-    while (! end_marker_reached) {
-        cW = get_next_codeword(bits_read, source, codeword_size);
+    while (!end_marker_reached) {
+        int cW = get_next_codeword(bits_read, source, codeword_size);
         switch (cW) {
         case 0x100:
             // re-init the dictionary
@@ -264,20 +260,17 @@ int U6Decode::lzw_decompress(
 // -----------------
 // from file to file
 // -----------------
-int U6Decode::lzw_decompress(FILE *input_file, FILE *output_file)
+int U6Decode::lzw_decompress(std::FILE *input_file, std::FILE *output_file)
 {
-    unsigned char *source_buffer;
-    unsigned char *destination_buffer;
-    long source_buffer_size;
-    long destination_buffer_size;
-    int error_code;
     if (is_valid_lzw_file(input_file)) {
         // determine the buffer sizes
-        source_buffer_size = get_filesize(input_file) - 4;
-        destination_buffer_size = get_uncompressed_size(input_file);
+        long source_buffer_size = get_filesize(input_file) - 4;
+        long destination_buffer_size = get_uncompressed_size(input_file);
         // create the buffer
-        source_buffer = new unsigned char[source_buffer_size];
-        destination_buffer = new unsigned char[destination_buffer_size];
+        unsigned char *source_buffer =
+            new unsigned char[source_buffer_size];
+        unsigned char *destination_buffer =
+            new unsigned char[destination_buffer_size];
         // read the input file into the source buffer
         std::fseek(input_file, 4, SEEK_SET);
         if (std::fread(source_buffer, 1, source_buffer_size, input_file)
@@ -285,7 +278,7 @@ int U6Decode::lzw_decompress(FILE *input_file, FILE *output_file)
             perror("std::fread failed");
         }
         // decompress the input file
-        error_code = lzw_decompress(
+        int error_code = lzw_decompress(
             source_buffer,
             source_buffer_size,
             destination_buffer,
@@ -317,14 +310,12 @@ int U6Decode::lzw_decompress(FILE *input_file, FILE *output_file)
 // ----------------------------------------------------------
 int one_argument(char *file_name)
 {
-    FILE *compressed_file;
-    long uncompressed_size;
-    compressed_file = std::fopen(file_name,"rb");
+    std::FILE *compressed_file = std::fopen(file_name,"rb");
     if (compressed_file == nullptr) {
         printf("Couldn't open the file.\n");
         return EXIT_FAILURE;
     } else {
-        uncompressed_size = get_uncompressed_size(compressed_file);
+        long uncompressed_size = get_uncompressed_size(compressed_file);
         if (uncompressed_size == -1) {
             printf("The input file is not a valid LZW-compressed file.\n");
             return EXIT_FAILURE;
@@ -347,8 +338,8 @@ int one_argument(char *file_name)
 // -----------------------------------------------------------
 int two_arguments(char *source_file_name, char *destination_file_name)
 {
-    FILE *source;
-    FILE *destination;
+    std::FILE *source;
+    std::FILE *destination;
     if (strcmp(source_file_name, destination_file_name) == 0) {
         printf("Source and destination must not be identical.\n");
         return EXIT_FAILURE;

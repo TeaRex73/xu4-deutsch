@@ -32,7 +32,7 @@ Location *locationPop(Location **stack);
  * start a new stack if 'prev' is nullptr
  */
 Location::Location(
-    MapCoords coords,
+    const MapCoords &coords,
     Map *map,
     int viewmode,
     LocationContext ctx,
@@ -46,9 +46,9 @@ Location::Location(
      turnCompleter(turnCompleter),
      prev(prev)
 {
-    if (context != CTX_WORLDMAP) {
-        coords.active_x = 0;
-        coords.active_y = 0;
+    if (this->context != CTX_WORLDMAP) {
+        this->coords.active_x = 0;
+        this->coords.active_y = 0;
     }
 }
 
@@ -60,11 +60,11 @@ Location::~Location()
 /**
  * Return the entire stack of objects at the given location.
  */
-std::vector<MapTile> Location::tilesAt(MapCoords coords, bool &focus)
+std::vector<MapTile> Location::tilesAt(const MapCoords &coords, bool &focus)
 {
     std::vector<MapTile> tiles;
-    std::list<Annotation *> a = map->annotations->ptrsToAllAt(coords);
-    std::list<Annotation *>::iterator i;
+    std::list<const Annotation *> a = map->annotations->ptrsToAllAt(coords);
+    std::list<const Annotation *>::const_iterator i;
     Object *obj = map->objectAt(coords);
     Creature *m = dynamic_cast<Creature *>(obj);
     focus = false;
@@ -79,7 +79,7 @@ std::vector<MapTile> Location::tilesAt(MapCoords coords, bool &focus)
         if (avatar) {
             tiles.push_back(c->party->getTransport());
         } else {
-            tiles.push_back(*map->tileAt(coords, WITHOUT_OBJECTS));
+            tiles.push_back(map->tileAt(coords, WITHOUT_OBJECTS));
         }
         return tiles;
     }
@@ -88,7 +88,7 @@ std::vector<MapTile> Location::tilesAt(MapCoords coords, bool &focus)
         tiles.push_back(c->party->getTransport());
     }
     /* Add visual-only annotations to the list */
-    for (i = a.begin(); i != a.end(); i++) {
+    for (i = a.cbegin(); i != a.cend(); ++i) {
         if ((*i)->isVisualOnly()) {
             tiles.push_back((*i)->getTile());
             /* If this is the first cover-up annotation,
@@ -105,8 +105,8 @@ std::vector<MapTile> Location::tilesAt(MapCoords coords, bool &focus)
         focus = focus || obj->hasFocus();
         MapTile visibleCreatureAndObjectTile = obj->getTile();
         // Sleeping creatures and persons have their animation frozen
-        if (m && m->isAsleep()) {
-            visibleCreatureAndObjectTile.freezeAnimation = true;
+        if (m->isAsleep()) {
+            visibleCreatureAndObjectTile.setFreezeAnimation(true);
         }
         tiles.push_back(visibleCreatureAndObjectTile);
     }
@@ -131,12 +131,12 @@ std::vector<MapTile> Location::tilesAt(MapCoords coords, bool &focus)
         MapTile visibleCreatureAndObjectTile = obj->getTile();
         // Sleeping creatures and persons have their animation frozen
         if (m && m->isAsleep()) {
-            visibleCreatureAndObjectTile.freezeAnimation = true;
+            visibleCreatureAndObjectTile.setFreezeAnimation(true);
         }
         tiles.push_back(visibleCreatureAndObjectTile);
     }
     /* then permanent annotations */
-    for (i = a.begin(); i != a.end(); i++) {
+    for (i = a.cbegin(); i != a.cend(); ++i) {
         if (!(*i)->isVisualOnly()) {
             tiles.push_back((*i)->getTile());
             /* If this is the first cover-up annotation,
@@ -149,13 +149,13 @@ std::vector<MapTile> Location::tilesAt(MapCoords coords, bool &focus)
         }
     }
     /* finally the base tile */
-    MapTile tileFromMapData = *map->getTileFromData(coords);
-    const Tile *tileType = map->getTileFromData(coords)->getTileType();
+    MapTile tileFromMapData = map->getTileFromData(coords);
+    const Tile *tileType = tileFromMapData.getTileType();
     if (tileType->isLivingObject()) {
         // This animation should be frozen because a living
         // object represented on the map data is usually a statue
         // of a monster or something
-        tileFromMapData.freezeAnimation = true;
+        tileFromMapData.setFreezeAnimation(true);
     }
     tiles.push_back(tileFromMapData);
     /* But if the base tile requires a background, we must find it */
@@ -175,7 +175,9 @@ std::vector<MapTile> Location::tilesAt(MapCoords coords, bool &focus)
  * (or waterReplacement) tile in tiles.xml.  If a valid replacement
  * cannot be found, it returns a "best guess" tile.
  */
-TileId Location::getReplacementTile(MapCoords atCoords, const Tile *forTile)
+TileId Location::getReplacementTile(
+    const MapCoords &atCoords, const Tile *forTile
+)
 {
     std::map<TileId, int> validMapTileCount;
     const static int dirs[][2] = {

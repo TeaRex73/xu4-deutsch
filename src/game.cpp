@@ -4,6 +4,7 @@
 
 #include "vc6.h" // Fixes things if you're using VC6, does nothing otherwise
 
+#include <algorithm>
 #include <atomic>
 #include <cctype>
 #include <cstring>
@@ -98,7 +99,7 @@ static void gameLordBritishCheckLevels(void);
 /* creature functions */
 void gameDestroyAllCreatures(void);
 static void gameFixupObjects(Map *map);
-static void gameCreatureAttack(Creature *obj);
+static void gameCreatureAttack(Creature *m);
 
 /* Functions END */
 /*---------------*/
@@ -166,7 +167,7 @@ bool ReadPlayerController::keyPressed(int key)
     return valid;
 }
 
-int ReadPlayerController::getPlayer()
+int ReadPlayerController::getPlayer() const
 {
     return value - '1';
 }
@@ -240,7 +241,6 @@ void GameController::initScreenWithoutReloadingState()
 
 void GameController::init()
 {
-    std::FILE *saveGameFile, *monstersFile, *dngMapFile;
     TRACE(gameDbg, "gameInit() running.");
     initScreen();
 #if 0
@@ -268,7 +268,7 @@ void GameController::init()
     c->lastShip = nullptr;
     /* load in the save game */
     // First the temporary just-inited save game...
-    saveGameFile = std::fopen(
+    std::FILE *saveGameFile = std::fopen(
         (tmpstr + PARTY_SAV_BASE_FILENAME).c_str(), "rb"
     );
     if (!saveGameFile) {
@@ -302,32 +302,31 @@ void GameController::init()
     Map *map = mapMgr->get(MapId(c->saveGame->location));
     TRACE_LOCAL(gameDbg, "Initializing start location.");
     /* if our map is not the world map, then load our map */
-    ASSERT(
+    U4ASSERT(
         map-> type == Map::WORLD || map->type == Map::DUNGEON,
         "Initial Map must be World or Dungeon map!"
     );
     if (map->type != Map::WORLD) {
         setMap(map, 1, nullptr);
-        dngMapFile = std::fopen(
+        std::FILE *dngMapFile = std::fopen(
             (settings.getUserPath() + DNGMAP_SAV_BASE_FILENAME).c_str(), "rb"
         );
         if (dngMapFile) {
             Dungeon *dungeon = dynamic_cast<Dungeon *>(map);
-            ASSERT(dungeon, "Map to Dungeon Conversion failed!");
+            U4ASSERT(dungeon, "Map to Dungeon Conversion failed!");
             dungeon->tempData = dungeon->data;
             dungeon->data.clear();
             dungeon->tempDataSubTokens = dungeon->dataSubTokens;
             dungeon->dataSubTokens.clear();
-            unsigned int i;
-            int intMapData;
-            unsigned char mapData;
-            for (i = 0; i < (DNG_HEIGHT * DNG_WIDTH * dungeon->levels); i++) {
-                intMapData = std::fgetc(dngMapFile);
+            for (unsigned int i = 0;
+                 i < (DNG_HEIGHT * DNG_WIDTH * dungeon->levels);
+                 i++) {
+                int intMapData = std::fgetc(dngMapFile);
                 if (intMapData == EOF) {
                     std::fclose(dngMapFile);
                     errorFatal("DngMapFile read error!");
                 }
-                mapData = static_cast<unsigned char>(intMapData);
+                unsigned char mapData = static_cast<unsigned char>(intMapData);
                 switch (mapData & 0xF0) {
                 case 0x80:
                 case 0x90:
@@ -340,7 +339,7 @@ void GameController::init()
                 MapTile tile = map->tfrti(mapData);
                 /* determine what type of tile it is */
                 dungeon->data.push_back(tile);
-                dungeon->dataSubTokens.push_back(mapData % 16);
+                dungeon->dataSubTokens.push_back(mapData & 0x0F);
             }
             std::fclose(dngMapFile);
         } // if(dngMapFile)
@@ -381,7 +380,7 @@ void GameController::init()
     ++pb;
 #endif
     /* load in monsters.sav */
-    monstersFile = std::fopen(
+    std::FILE *monstersFile = std::fopen(
         (tmpstr + MONSTERS_SAV_BASE_FILENAME).c_str(), "rb"
     );
     if (!monstersFile) {
@@ -396,14 +395,14 @@ void GameController::init()
     gameFixupObjects(c->location->map);
     /* we have previous creature information as well, load it! */
     if (c->location->prev) {
-        monstersFile = std::fopen(
+        std::FILE *outMonstFile = std::fopen(
             (settings.getUserPath() + OUTMONST_SAV_BASE_FILENAME).c_str(), "rb"
         );
-        if (monstersFile) {
+        if (outMonstFile) {
             saveGameMonstersRead(
-                c->location->prev->map->monsterTable, monstersFile
+                c->location->prev->map->monsterTable, outMonstFile
             );
-            std::fclose(monstersFile);
+            std::fclose(outMonstFile);
         }
         gameFixupObjects(c->location->prev->map);
     }
@@ -427,7 +426,6 @@ void GameController::init()
  */
 static bool gameSave()
 {
-    std::FILE *saveGameFile, *monstersFile, *dngMapFile;
     SaveGame save = *c->saveGame;
     /*************************************************/
     /* Make sure the savegame struct is accurate now */
@@ -449,7 +447,7 @@ static bool gameSave()
         static_cast<Direction>(c->saveGame->orientation - DIR_WEST);
     /* Done making sure the savegame struct is accurate */
     /****************************************************/
-    saveGameFile = std::fopen(
+    std::FILE *saveGameFile = std::fopen(
         (settings.getUserPath() + PARTY_SAV_BASE_FILENAME).c_str(), "wb"
     );
     if (!saveGameFile) {
@@ -468,7 +466,7 @@ static bool gameSave()
     fsync(fileno(saveGameFile));
     std::fclose(saveGameFile);
     sync();
-    monstersFile = std::fopen(
+    std:: FILE *monstersFile = std::fopen(
         (settings.getUserPath() + MONSTERS_SAV_BASE_FILENAME).c_str(), "wb"
     );
     if (!monstersFile) {
@@ -518,7 +516,7 @@ static bool gameSave()
             id_map[SKELETON_ID] = 14;
             id_map[ROGUE_ID] = 15;
         }
-        dngMapFile = std::fopen(
+        std::FILE *dngMapFile = std::fopen(
             (settings.getUserPath() + DNGMAP_SAV_BASE_FILENAME).c_str(), "wb"
         );
         if (!dngMapFile) {
@@ -529,7 +527,7 @@ static bool gameSave()
             for (y = 0; y < c->location->map->height; y++) {
                 for (x = 0; x < c->location->map->width; x++) {
                     unsigned char tile = c->location->map->ttrti(
-                        *c->location->map->tileAt(
+                        c->location->map->tileAt(
                             MapCoords(x, y, z), WITHOUT_OBJECTS
                         )
                     );
@@ -581,10 +579,10 @@ static bool gameSave()
         /**
          * Write outmonst.sav
          */
-        monstersFile = std::fopen(
+        std:: FILE *outMonstFile = std::fopen(
             (settings.getUserPath() + OUTMONST_SAV_BASE_FILENAME).c_str(), "wb"
         );
-        if (!monstersFile) {
+        if (!outMonstFile) {
             screenMessage("Error opening " OUTMONST_SAV_BASE_FILENAME "\n");
             return false;
         }
@@ -593,18 +591,18 @@ static bool gameSave()
         /* fill the monster table so we can save it */
         c->location->prev->map->fillMonsterTable();
         if (!saveGameMonstersWrite(
-                c->location->prev->map->monsterTable, monstersFile
+                c->location->prev->map->monsterTable, outMonstFile
             )) {
             screenMessage("Error writing to " OUTMONST_SAV_BASE_FILENAME "\n");
-            std::fflush(monstersFile);
-            fsync(fileno(monstersFile));
-            std::fclose(monstersFile);
+            std::fflush(outMonstFile);
+            fsync(fileno(outMonstFile));
+            std::fclose(outMonstFile);
             sync();
             return false;
         }
-        std::fflush(monstersFile);
-        fsync(fileno(monstersFile));
-        std::fclose(monstersFile);
+        std::fflush(outMonstFile);
+        fsync(fileno(outMonstFile));
+        std::fclose(outMonstFile);
         sync();
     }
     return true;
@@ -644,7 +642,7 @@ void gameUpdateScreen()
         /* still testing */
         break;
     default:
-        ASSERT(0, "invalid view mode: %d", c->location->viewMode);
+        U4ASSERT(0, "invalid view mode: %d", c->location->viewMode);
     }
 }
 
@@ -865,7 +863,9 @@ void GameController::finishTurn()
  * This is used for 'being hit' or 'being missed'
  * by weapons, cannon fire, spells, etc.
  */
-void GameController::flashTile(const Coords &coords, MapTile tile, int frames)
+void GameController::flashTile(
+    const Coords &coords, MapTile tile, int frames
+)
 {
     c->location->map->annotations->add(coords, tile, true);
     screenTileUpdate(&game->mapArea, coords);
@@ -879,7 +879,7 @@ void GameController::flashTile(
 )
 {
     Tile *tile = c->location->map->tileset->getByName(tilename);
-    ASSERT(tile, "no tile named '%s' found in tileset", tilename.c_str());
+    U4ASSERT(tile, "no tile named '%s' found in tileset", tilename.c_str());
     flashTile(coords, tile->getId(), timeFactor);
 }
 
@@ -982,9 +982,8 @@ void gameSpellEffect(int spell, int player, Sound sound)
 static void gameCastSpell(unsigned int spell, int caster, int param)
 {
     SpellCastError spellError;
-    std::string msg;
     if (!spellCast(spell, caster, param, &spellError, true)) {
-        msg = spellGetErrorMessage(spell, spellError);
+        std::string msg = spellGetErrorMessage(spell, spellError);
         if (!msg.empty()) {
             soundPlay(SOUND_FLEE);
             screenMessage("%s", msg.c_str());
@@ -1001,8 +1000,6 @@ bool GameController::keyPressed(int key)
 {
     bool valid = true;
     bool endTurn = true;
-    Object *obj;
-    MapTile *tile;
     if ((key >= 'A') && (key <= ']')) {
         key = xu4_tolower(key);
     }
@@ -1015,7 +1012,7 @@ bool GameController::keyPressed(int key)
          * action they want */
         /* Do they want to board something? */
         if (c->transportContext == TRANSPORT_FOOT) {
-            obj = c->location->map->objectAt(c->location->coords);
+            Object *obj = c->location->map->objectAt(c->location->coords);
             if (obj &&
                 (obj->getTile().getTileType()->isShip()
                  || obj->getTile().getTileType()->isHorse()
@@ -1068,10 +1065,10 @@ bool GameController::keyPressed(int key)
         }
         /* Get Chest? */
         if (!c->party->isFlying()) {
-            tile = c->location->map->tileAt(
+            MapTile tile = c->location->map->tileAt(
                 c->location->coords, WITH_GROUND_OBJECTS
             );
-            if (tile->getTileType()->isChest()) {
+            if (tile.getTileType()->isChest()) {
                 key = 't';
             }
         }
@@ -1443,8 +1440,8 @@ bool GameController::keyPressed(int key)
                 gameSave();
                 EventHandler::simulateDiskLoad(2000);
                 screenMessage("\nGESPEICHERT!\n\nReise beenden?");
-                int c = ReadChoiceController::get("jn\015 \033");
-                if (c == 'j') {
+                int choice = ReadChoiceController::get("jn\015 \033");
+                if (choice == 'j') {
                     quit = 1;
                     EventHandler::end();
                 }
@@ -1504,7 +1501,7 @@ bool GameController::keyPressed(int key)
                    prompted for an item to use */
                 c->stats->setView(STATS_ITEMS);
             }
-            itemUse(gameGetInput().c_str());
+            itemUse(gameGetInput());
             if (c->location->viewMode == VIEW_CODEX) {
                 break;
             }
@@ -1537,7 +1534,7 @@ bool GameController::keyPressed(int key)
                     c->lastShip = obj;
                 }
                 Tile *avatar = c->location->map->tileset->getByName("avatar");
-                ASSERT(avatar, "no avatar tile found in tileset");
+                U4ASSERT(avatar, "no avatar tile found in tileset");
                 c->party->setTransport(avatar->getId());
                 c->horseSpeed = 0;
                 screenMessage("Zu Fu~ Gehen\n");
@@ -1777,7 +1774,7 @@ int gameGetPlayer(bool canBeDisabled, bool canBeActivePlayer, bool zeroIsValid)
         screenMessage("%cAUSSER GEFECHT!%c\n", FG_GREY, FG_WHITE);
         return -1;
     }
-    ASSERT(
+    U4ASSERT(
         (player == 8) || (player < c->party->size()),
         "player %d, but only %d members\n",
         player,
@@ -1803,7 +1800,6 @@ Direction gameGetDirection()
 
 static bool gameSpellMixHowMany(int spell, int num, Ingredients *ingredients)
 {
-    int i;
     /* entered 0 mixtures, don't mix anything! */
     if (num == 0) {
         screenMessage("\nKEINE GEMISCHT!\n");
@@ -1834,7 +1830,7 @@ static bool gameSpellMixHowMany(int spell, int num, Ingredients *ingredients)
         screenMessage("ERFOLG!\n\n");
         /* mix the extra spells */
         ingredients->multiply(num);
-        for (i = 0; i < num - 1; i++) {
+        for (int i = 0; i < num - 1; i++) {
             spellMix(spell, ingredients);
         }
     } else {
@@ -1890,12 +1886,16 @@ void destroy()
     std::vector<Coords> path = gameGetDirectionalActionPath(
         MASK_DIR(dir), MASK_DIR_ALL, c->location->coords, 1, 1, nullptr, true
     );
-    for (std::vector<Coords>::iterator i = path.begin();
-         i != path.end();
-         i++) {
-        if (destroyAt(*i)) {
-            return;
-        }
+    if (
+        std::any_of(
+            path.cbegin(),
+            path.cend(),
+            [&](const Coords &v) {
+                return destroyAt(v);
+            }
+        )
+    ) {
+        return;
     }
     soundPlay(SOUND_ERROR);
     screenMessage("%cDA IST NICHTS!%c\n", FG_GREY, FG_WHITE);
@@ -1906,10 +1906,10 @@ static bool destroyAt(const Coords &coords)
     Object *obj = c->location->map->objectAt(coords);
     if (obj) {
         if (isCreature(obj)) {
-            Creature *c = dynamic_cast<Creature *>(obj);
-            screenMessage("%s ZERST\\RT!\n", uppercase(c->getName()).c_str());
+            Creature *m = dynamic_cast<Creature *>(obj);
+            screenMessage("%s ZERST\\RT!\n", uppercase(m->getName()).c_str());
         } else {
-            Tile *t = c->location->map->tileset->get(obj->getTile().id);
+            Tile *t = c->location->map->tileset->get(obj->getTile().getId());
             screenMessage("%s ZERST\\RT!\n", uppercase(t->getName()).c_str());
         }
         c->location->map->removeObject(obj);
@@ -1934,12 +1934,16 @@ void attack()
     std::vector<Coords> path = gameGetDirectionalActionPath(
         MASK_DIR(dir), MASK_DIR_ALL, c->location->coords, 1, 1, nullptr, true
     );
-    for (std::vector<Coords>::iterator i = path.begin();
-         i != path.end();
-         i++) {
-        if (attackAt(*i)) {
-            return;
-        }
+    if (
+        std::any_of(
+            path.cbegin(),
+            path.cend(),
+            [&](const Coords &v) {
+                return attackAt(v);
+            }
+        )
+    ) {
+        return;
     }
     soundPlay(SOUND_ERROR);
     screenMessage("%cKEIN FEIND!%c\n", FG_GREY, FG_WHITE);
@@ -2182,13 +2186,15 @@ void fire()
         nullptr,
         false
     );
-    for (std::vector<Coords>::iterator i = path.begin();
-         i != path.end();
-         i++) {
-        if (fireAt(*i, true)) {
-            return;
-        }
-    }
+    static_cast<void>(
+        std::any_of(
+            path.cbegin(),
+            path.cend(),
+            [&](const Coords &v) {
+                return fireAt(v, true);
+            }
+        )
+    );
 } // fire
 
 bool fireAt(const Coords &coords, bool originAvatar)
@@ -2238,7 +2244,6 @@ bool fireAt(const Coords &coords, bool originAvatar)
             soundPlay(SOUND_NPC_STRUCK, false);
             GameController::flashTile(coords, "hit_flash", 4);
             if (xu4_random(4) == 0) { /* reverse-engineered from u4dos */
-                Creature *m = dynamic_cast<Creature *>(obj);
                 if (!m || m->getId() != LORDBRITISH_ID) {
                     c->location->map->removeObject(obj);
                 }
@@ -2340,7 +2345,7 @@ static bool getChestTrapHandler(int player)
             trapType = EFFECT_LAVA;
             break; /* bomb trap (6% chance - 1/16) */
         default:
-            ASSERT(0, "Wrong logic in getChestTrapHandler()!");
+            U4ASSERT(0, "Wrong logic in getChestTrapHandler()!");
         }
         /* apply the effects from the trap */
         if (trapType == EFFECT_FIRE) {
@@ -2403,8 +2408,8 @@ void GameController::initMoons()
     int trammelphase = c->saveGame->trammelphase,
         feluccaphase = c->saveGame->feluccaphase;
 
-    ASSERT(c != nullptr, "Game context doesn't exist!");
-    ASSERT(c->saveGame != nullptr, "Savegame doesn't exist!");
+    U4ASSERT(c != nullptr, "Game context doesn't exist!");
+    U4ASSERT(c->saveGame != nullptr, "Savegame doesn't exist!");
     c->saveGame->trammelphase = c->saveGame->feluccaphase = 0;
     c->moonPhase = 0;
     while ((c->saveGame->trammelphase != trammelphase)
@@ -2420,21 +2425,20 @@ void GameController::initMoons()
  */
 void GameController::updateMoons(bool showmoongates)
 {
-    int realMoonPhase, oldTrammel, trammelSubphase;
-    const Coords *gate;
     if (c->location->map->isWorldMap() || !showmoongates) {
-        oldTrammel = c->saveGame->trammelphase;
+        int oldTrammel = c->saveGame->trammelphase;
         if (++c->moonPhase >= MOON_PHASES * MOON_SECONDS_PER_PHASE * 4) {
             c->moonPhase = 0;
         }
-        trammelSubphase = c->moonPhase % (MOON_SECONDS_PER_PHASE * 4 * 3);
-        realMoonPhase = (c->moonPhase / (4 * MOON_SECONDS_PER_PHASE));
+        int trammelSubphase = c->moonPhase % (MOON_SECONDS_PER_PHASE * 4 * 3);
+        int realMoonPhase = (c->moonPhase / (4 * MOON_SECONDS_PER_PHASE));
         c->saveGame->trammelphase = realMoonPhase / 3;
         c->saveGame->feluccaphase = realMoonPhase % 8;
         if (c->saveGame->trammelphase > 7) {
             c->saveGame->trammelphase = 7;
         }
         if (showmoongates) {
+            const Coords *gate;
             /* update the moongates if trammel changed */
             if (trammelSubphase == 0) {
                 gate = moongateGetGateCoordsForPhase(oldTrammel);
@@ -2566,7 +2570,7 @@ void GameController::avatarMoved(MoveEvent &event)
                 screenMessage("%cNUR DRIFT!%c\n", FG_GREY, FG_WHITE);
                 break;
             default:
-                ASSERT(
+                U4ASSERT(
                     0,
                     "bad transportContext %d in avatarMoved()",
                     c->transportContext
@@ -2578,15 +2582,15 @@ void GameController::avatarMoved(MoveEvent &event)
             /* if shortcuts are enabled, try them! */
             if (settings.shortcutCommands) {
                 MapCoords new_coords = c->location->coords;
-                MapTile *tile;
+                MapTile tile;
                 new_coords.move(event.dir, c->location->map);
                 tile = c->location->map->tileAt(new_coords, WITH_OBJECTS);
-                if (tile->getTileType()->isDoor()) {
+                if (tile.getTileType()->isDoor()) {
                     openAt(new_coords);
                     event.result = static_cast<MoveResult>(
                         MOVE_SUCCEEDED | MOVE_END_TURN
                     );
-                } else if (tile->getTileType()->isLockedDoor()) {
+                } else if (tile.getTileType()->isLockedDoor()) {
                     jimmyAt(new_coords);
                     event.result = static_cast<MoveResult>(
                         MOVE_SUCCEEDED | MOVE_END_TURN
@@ -2762,12 +2766,16 @@ void jimmy()
     std::vector<Coords> path = gameGetDirectionalActionPath(
         MASK_DIR(dir), MASK_DIR_ALL, c->location->coords, 1, 1, nullptr, true
     );
-    for (std::vector<Coords>::iterator i = path.begin();
-         i != path.end();
-         i++) {
-        if (jimmyAt(*i)) {
-            return;
-        }
+    if (
+        std::any_of(
+            path.cbegin(),
+            path.cend(),
+            [&](const Coords &v) {
+                return jimmyAt(v);
+            }
+        )
+    ) {
+        return;
     }
     soundPlay(SOUND_ERROR);
     screenMessage("%cWOZU?%c\n", FG_GREY, FG_WHITE);
@@ -2781,13 +2789,13 @@ void jimmy()
  */
 static bool jimmyAt(const Coords &coords)
 {
-    MapTile *tile = c->location->map->tileAt(coords, WITH_OBJECTS);
-    if (!tile->getTileType()->isLockedDoor()) {
+    MapTile tile = c->location->map->tileAt(coords, WITH_OBJECTS);
+    if (!tile.getTileType()->isLockedDoor()) {
         return false;
     }
     if (c->saveGame->keys) {
         Tile *door = c->location->map->tileset->getByName("door");
-        ASSERT(door, "no door tile found in tileset");
+        U4ASSERT(door, "no door tile found in tileset");
         c->saveGame->keys--;
         c->location->map->annotations->add(coords, door->getId());
         screenMessage("\nENTRIEGELT!\n");
@@ -2814,12 +2822,16 @@ void opendoor()
     std::vector<Coords> path = gameGetDirectionalActionPath(
         MASK_DIR(dir), MASK_DIR_ALL, c->location->coords, 1, 1, nullptr, true
     );
-    for (std::vector<Coords>::iterator i = path.begin();
-         i != path.end();
-         i++) {
-        if (openAt(*i)) {
-            return;
-        }
+    if (
+        std::any_of(
+            path.cbegin(),
+            path.cend(),
+            [&](const Coords &v) {
+                return openAt(v);
+            }
+        )
+    ) {
+        return;
     }
     soundPlay(SOUND_ERROR);
     screenMessage("%cHIER NICHT!%c\n", FG_GREY, FG_WHITE);
@@ -2842,7 +2854,7 @@ static bool openAt(const Coords &coords)
         return true;
     }
     Tile *floor = c->location->map->tileset->getByName("brick_floor");
-    ASSERT(floor, "no floor tile found in tileset");
+    U4ASSERT(floor, "no floor tile found in tileset");
     c->location->map->annotations->add(
         coords, floor->getId(), false, true
     )->setTTL(4);
@@ -2873,7 +2885,7 @@ void readyWeapon(int player)
         AlphaActionController::get(WEAP_MAX + 'a' - 1, "WAFFE-")
     );
     c->stats->setView(STATS_PARTY_OVERVIEW);
-    if (weapon == -1) {
+    if (weapon == USHRT_MAX) {
         return;
     }
     PartyMember *p = c->party->member(player);
@@ -2929,12 +2941,16 @@ void talk()
         true
     );
     int dist = 1;
-    for (std::vector<Coords>::iterator i = path.begin();
-         i != path.end();
-         i++) {
-        if (talkAt(*i, dist++)) {
-            return;
-        }
+    if (
+        std::any_of(
+            path.cbegin(),
+            path.cend(),
+            [&](const Coords &v) {
+                return talkAt(v, dist++);
+            }
+        )
+    ) {
+        return;
     }
     screenMessage("KOMISCH, KEINE ANTWORT!\n");
 }
@@ -3119,11 +3135,14 @@ bool gamePeerCity(int city, void *)
     if (peerMap != nullptr) {
         game->setMap(peerMap, 1, nullptr);
         c->location->viewMode = VIEW_GEM;
+        EventHandler::simulateDiskLoad(2000, false);
         game->paused = true;
         game->pausedTimer = 0;
+        musicMgr->gem();
         screenDisableCursor();
         ReadChoiceController::get("\015 \033");
         game->exitToParentMap();
+        musicMgr->play();
         screenEnableCursor();
         game->paused = false;
         return true;
@@ -3138,7 +3157,7 @@ bool gamePeerCity(int city, void *)
 void peer(bool useGem)
 {
     if (useGem) {
-        if (c->saveGame->gems <= 0) {
+        if (c->saveGame->gems == 0) {
             soundPlay(SOUND_ERROR);
             screenMessage(
                 "Juwel ansehen\n%cKEINE ]BRIG!%c\n", FG_GREY, FG_WHITE
@@ -3148,6 +3167,7 @@ void peer(bool useGem)
         c->saveGame->gems--;
         screenMessage("Juwel ansehen\n");
     }
+    EventHandler::simulateDiskLoad(2000, false);
     game->paused = true;
     game->pausedTimer = 0;
     musicMgr->gem();
@@ -3337,7 +3357,7 @@ static void wearArmor(int player)
         AlphaActionController::get(ARMR_MAX + 'a' - 1, "R}STUNG-")
     );
     c->stats->setView(STATS_PARTY_OVERVIEW);
-    if (armor == -1) {
+    if (armor == USHRT_MAX) {
         return;
     }
     const Armor *a = Armor::get(armor);
@@ -3412,8 +3432,8 @@ void GameController::timerFired()
     }
     if (!paused && !pausedTimer) {
         // From u4apple2: 1/256 chance of wind change on every refresh cycle
-        // u4appke2 refresh cycles happen about 6.4 times per second
-        // since we use 4 second refresh cyles we use 1/160 chance instead
+        // u4apple2 refresh cycles happen about 6.4 times per second
+        // since we use 0.25 second refresh cyles we use 1/160 chance instead
         // Wind never changes to opposite direction
         if ((xu4_random(160) == 0) && !c->windLock) {
             if (xu4_random(2) == 0) {
@@ -3472,12 +3492,11 @@ void GameController::timerFired()
  */
 void gameCheckHullIntegrity()
 {
-    int i;
     bool killAll = false;
 
     /* see if the ship has sunk */
     if ((c->transportContext == TRANSPORT_SHIP)
-        && (c->saveGame->shiphull <= 0)) {
+        && (c->saveGame->shiphull == 0)) {
         screenMessage("\nDEIN SCHIFF SINKT!\n\n");
         killAll = true;
     }
@@ -3499,7 +3518,7 @@ void gameCheckHullIntegrity()
         killAll = true;
     }
     if (killAll) {
-        for (i = 0; i < c->party->size(); i++) {
+        for (int i = 0; i < c->party->size(); i++) {
             c->party->member(i)->setHp(0);
             c->party->member(i)->setStatus(STAT_DEAD);
         }
@@ -3519,8 +3538,6 @@ void gameCheckHullIntegrity()
  */
 void GameController::checkSpecialCreatures(Direction dir)
 {
-    int i;
-    Object *obj;
     static const struct {
         int x, y;
         Direction dir;
@@ -3542,8 +3559,8 @@ void GameController::checkSpecialCreatures(Direction dir)
         && (c->location->coords.x == 0xdd)
         && (c->location->coords.y == 0xe0)) {
         creatureCleanup(true);
-        for (i = 0; i < 8; i++) {
-            obj = c->location->map->addCreature(
+        for (int i = 0; i < 8; i++) {
+            Object *obj = c->location->map->addCreature(
                 creatureMgr->getById(PIRATE_ID),
                 MapCoords(pirateInfo[i].x,
                           pirateInfo[i].y)
@@ -3562,7 +3579,7 @@ void GameController::checkSpecialCreatures(Direction dir)
         && (c->location->coords.y < 217)
         && (*c->aura != Aura::HORN)) {
         creatureCleanup(true);
-        for (i = 0; i < 8; i++) {
+        for (int i = 0; i < 8; i++) {
             c->location->map->addCreature(
                 creatureMgr->getById(DAEMON_ID),
                 MapCoords(
@@ -3592,12 +3609,11 @@ bool GameController::checkMoongates()
         c->location->coords = dest;
         gameSpellEffect(-1, -1, SOUND_MOONGATE); // Again, after arriving
         if (moongateIsEntryToShrineOfSpirituality(trammel, felucca)) {
-            Shrine *shrine_spirituality;
-            shrine_spirituality =
-                dynamic_cast<Shrine *>(mapMgr->get(MAP_SHRINE_SPIRITUALITY));
             if (!c->party->canEnterShrine(VIRT_SPIRITUALITY)) {
                 return true;
             }
+            Shrine *shrine_spirituality =
+                dynamic_cast<Shrine *>(mapMgr->get(MAP_SHRINE_SPIRITUALITY));
             setMap(shrine_spirituality, 1, nullptr);
             musicMgr->play();
             shrine_spirituality->enter();
@@ -3857,14 +3873,13 @@ void gameDamageParty(int minDamage, int maxDamage)
  */
 void gameDamageShip(int minDamage, int maxDamage)
 {
-    int damage;
     extern std::atomic_bool deathSequenceRunning;
     if (deathSequenceRunning) {
         /* none of this makes sense if party is already dead */
         return;
     }
     if (c->transportContext == TRANSPORT_SHIP) {
-        damage = ((minDamage >= 0) && (minDamage < maxDamage)) ?
+        int damage = ((minDamage >= 0) && (minDamage < maxDamage)) ?
             xu4_random((maxDamage + 1) - minDamage) + minDamage :
             maxDamage;
         soundPlay(SOUND_PC_STRUCK, false);
@@ -3932,7 +3947,7 @@ void GameController::creatureCleanup(bool allCreatures)
             /* delete the object and remove it from the map */
             i = map->removeObject(i);
         } else {
-            i++;
+            ++i;
         }
     }
 }
@@ -3946,7 +3961,7 @@ static int maxCreaturesPerLevel(int level)
     // our object deques.
     // this allows a maximum of 20 monsters per dungeon.
     // u4dos allows 28, u4apple2 just 16
-    static int c_per_l[8] = {1, 1, 2, 2, 3, 3, 4, 4};
+    const int c_per_l[8] = {1, 1, 2, 2, 3, 3, 4, 4};
     return c_per_l[level];
 }
 
@@ -3956,10 +3971,11 @@ static int maxCreaturesPerLevel(int level)
 void GameController::checkRandomCreatures()
 {
     int i;
-    bool isDungeon = c->location->context & CTX_DUNGEON;
+    bool inDungeon = c->location->context & CTX_DUNGEON;
     bool canSpawnHere =
-        c->location->map->isWorldMap() || isDungeon;
-    int spawnDivisor = isDungeon ?
+        c->location->map->isWorldMap() || inDungeon;
+    if (!canSpawnHere) return; // can spawn only outdoors or in a dungeon
+    int spawnDivisor = inDungeon ?
 #if  0
         (32 - (c->location->coords.z << 2)) :
 #else
@@ -3968,19 +3984,15 @@ void GameController::checkRandomCreatures()
         16;
     int numberOfCreatures =
         c->location->map->getNumberOfCreatures(
-            isDungeon ? c->location->coords.z : -1
+            inDungeon ? c->location->coords.z : -1
         );
     int maxCreatures =
-        isDungeon ?
+        inDungeon ?
         maxCreaturesPerLevel(c->location->coords.z) :
         MAX_CREATURES_ON_MAP;
-    /* If there are too many creatures already,
-     * or we're not on outdoors/in a dungeon, don't worry about it! */
-    if (
-        (!canSpawnHere)
-        || (numberOfCreatures >= maxCreatures)
-        || (xu4_random(spawnDivisor) != 0)
-    ) {
+    /* If there are too many creatures already, don't worry about it! */
+    if ((numberOfCreatures >= maxCreatures)
+        || (xu4_random(spawnDivisor) != 0)) {
         return;
     }
     for (i = numberOfCreatures; i < maxCreatures; i++) {
@@ -4000,7 +4012,7 @@ void GameController::checkBridgeTrolls()
     }
     // TODO: CHEST: Make a user option to not make chests block bridge trolls
     if (!c->location->map->isWorldMap()
-        || (c->location->map->tileAt(c->location->coords, WITH_OBJECTS)->id
+        || (c->location->map->tileAt(c->location->coords, WITH_OBJECTS).getId()
             != bridge->getId())
         || (xu4_random(8) != 0)) {
         return;
@@ -4068,13 +4080,14 @@ bool gameSpawnCreature(const Creature *m)
         }
         coords = new_coords;
     } else { // not dungeon
-        unsigned int x, y;
         int dx, dy;
         bool ok = false;
         int tries = 0;
         while (!ok && (tries < MAX_TRIES)) {
-            x = (c->location->coords.active_x << 4u) + xu4_random(32);
-            y = (c->location->coords.active_y << 4u) + xu4_random(32);
+            unsigned int x =
+                (c->location->coords.active_x << 4u) + xu4_random(32);
+            unsigned int y =
+                (c->location->coords.active_y << 4u) + xu4_random(32);
             x &= 0xFFu;
             y &= 0xFFu;
             dx = static_cast<int>(x) - coords.x;
@@ -4139,15 +4152,14 @@ bool gameSpawnCreature(const Creature *m)
  */
 void gameDestroyAllCreatures(void)
 {
-    int i;
     gameSpellEffect('t', -1, SOUND_MAGIC); /* same effect as tremor */
     if (c->location->context & CTX_COMBAT) {
         /* destroy all creatures in combat */
-        for (i = 0; i < AREA_CREATURES; i++) {
+        for (int i = 0; i < AREA_CREATURES; i++) {
             CombatMap *cm = getCombatMap();
             CreatureVector creatures = cm->getCreatures();
             CreatureVector::iterator obj;
-            for (obj = creatures.begin(); obj != creatures.end(); obj++) {
+            for (obj = creatures.begin(); obj != creatures.end(); ++obj) {
                 if ((*obj)->getId() != LORDBRITISH_ID) {
                     cm->removeObject(*obj);
                 }
@@ -4164,10 +4176,10 @@ void gameDestroyAllCreatures(void)
                 if (m->getId() != LORDBRITISH_ID) {
                     current = map->removeObject(current);
                 } else {
-                    current++;
+                    ++current;
                 }
             } else {
-                current++;
+                ++current;
             }
         }
     }
@@ -4182,16 +4194,16 @@ void gameDestroyAllCreatures(void)
  */
 bool GameController::createBalloon(Map *map)
 {
-    ObjectDeque::iterator i;
+    ObjectDeque::const_iterator i;
     /* see if the balloon has already been created (and not destroyed) */
-    for (i = map->objects.begin(); i != map->objects.end(); i++) {
+    for (i = map->objects.cbegin(); i != map->objects.cend(); ++i) {
         Object *obj = *i;
         if (obj->getTile().getTileType()->isBalloon()) {
             return false;
         }
     }
     const Tile *balloon = map->tileset->getByName("balloon");
-    ASSERT(balloon, "no balloon tile found in tileset");
+    U4ASSERT(balloon, "no balloon tile found in tileset");
     map->addObject(
         balloon->getId(), balloon->getId(), map->getLabel("balloon")
     );
@@ -4213,14 +4225,14 @@ void showMixturesSuper(int page = 0)
         const Spell *s = getSpell(i + 13 * page);
         int line = i + 8;
         screenTextAt(2, line, "%s", s->name);
-        std::snprintf(buf, 4, "%3hd", c->saveGame->mixtures[i + 13 * page]);
+        std::snprintf(buf, 4, "%3hu", c->saveGame->mixtures[i + 13 * page]);
         screenTextAt(6, line, "%s", buf);
         screenShowChar(32, 9, line);
         int comp = s->components;
         for (int j = 0; j < 8; j++) {
             screenTextColor(colors[j]);
             screenShowChar(
-                comp & (1 << j) ? CHARSET_BULLET : ' ', 10 + j, line
+                (comp & (1 << j)) ? CHARSET_BULLET : ' ', 10 + j, line
             );
         }
         screenTextColor(FG_WHITE);

@@ -92,7 +92,7 @@ const std::vector<std::string> &screenGetGemLayoutNames();
 const std::vector<std::string> &screenGetFilterNames();
 const std::vector<std::string> &screenGetLineOfSightStyles();
 void screenDrawImage(const std::string &name, int x = 0, int y = 0);
-void screenDrawImageInMapArea(const std::string &bkgd);
+void screenDrawImageInMapArea(const std::string &name);
 void screenCycle();
 void screenEraseMapArea();
 void screenEraseTextArea(int x, int y, int width, int height);
@@ -115,9 +115,6 @@ void screenUpdate(TileView *view, bool showmap, bool blackout);
 void screenUpdateCursor();
 void screenUpdateMoons();
 void screenUpdateWind();
-std::vector<MapTile> screenViewportTile(
-    unsigned int width, unsigned int height, int x, int y, bool &focus
-);
 void screenShowCursor();
 void screenHideCursor();
 void screenEnableCursor();

@@ -18,7 +18,7 @@
 
 
 
-Response *hawkwindGetAdvice(const DynamicResponse *kw);
+Response *hawkwindGetAdvice(const DynamicResponse *dynResp);
 Response *hawkwindGetIntro(const DynamicResponse *dynResp);
 
 /* Hawkwind text indexes */
@@ -54,7 +54,7 @@ Dialogue *U4HWDialogueLoader::load(void *)
         hawkwind = u4fopen("hawkwinf.ger");
         break;
     default:
-        ASSERT(0, "Invalid Sex %d!", c->party->member(0)->getSex());
+        U4ASSERT(0, "Invalid Sex %d!", c->party->member(0)->getSex());
     }
     if (!hawkwind) {
         return nullptr;
@@ -75,7 +75,9 @@ Dialogue *U4HWDialogueLoader::load(void *)
     for (int v = 0; v < VIRT_MAX; v++) {
         std::string virtue(getVirtueName(static_cast<Virtue>(v)));
         lowercase(virtue);
-        virtue = virtue.substr(0, 4);
+        if (virtue.size() > 4) {
+            virtue.resize(4);
+        }
         dlg->addKeyword(
             virtue, new DynamicResponse(&hawkwindGetAdvice, virtue)
         );

@@ -27,6 +27,7 @@ const ResponsePart ResponsePart::STARTMUSIC_SILENCE(
 );
 const ResponsePart ResponsePart::STOPMUSIC("<STOPMUSIC>", "", true);
 const ResponsePart ResponsePart::HAWKWIND("<HAWKWIND>", "", true);
+const ResponsePart ResponsePart::DISKLOAD("<DISKLOAD>", "", true);
 const unsigned int Conversation::BUFFERLEN = 16;
 
 
@@ -49,9 +50,9 @@ const std::vector<ResponsePart> &Response::getParts()
 Response::operator std::string() const
 {
     std::string result;
-    for (std::vector<ResponsePart>::const_iterator i = parts.begin();
-         i != parts.end();
-         i++) {
+    for (std::vector<ResponsePart>::const_iterator i = parts.cbegin();
+         i != parts.cend();
+         ++i) {
         result += *i;
     }
     return result;
@@ -129,7 +130,7 @@ Dialogue::Question::~Question()
     noresp->release();
 }
 
-std::string Dialogue::Question::getText()
+std::string Dialogue::Question::getText() const
 {
     return text;
 }
@@ -208,7 +209,7 @@ Dialogue::~Dialogue()
     delete defaultAnswer;
     for (KeywordMap::iterator i = keywords.begin();
          i != keywords.end();
-         i++) {
+         ++i) {
         delete i->second;
     }
     delete question;
@@ -224,14 +225,14 @@ void Dialogue::addKeyword(const std::string &kw, Response *response)
 
 Dialogue::Keyword *Dialogue::operator[](const std::string &kw)
 {
-    KeywordMap::iterator i = keywords.find(kw);
+    KeywordMap::const_iterator i = keywords.find(kw);
     // If they entered the keyword verbatim, return it!
-    if (i != keywords.end()) {
+    if (i != keywords.cend()) {
         return i->second;
     }
     // Otherwise, go find one that fits the description.
     else {
-        for (i = keywords.begin(); i != keywords.end(); i++) {
+        for (i = keywords.cbegin(); i != keywords.cend(); ++i) {
             if ((*i->second) == kw) {
                 return i->second;
             }
@@ -262,9 +263,9 @@ std::string Dialogue::dump(const std::string &arg)
 
     if (arg == "") {
         result = "keywords:\n";
-        for (KeywordMap::iterator i = keywords.begin();
-             i != keywords.end();
-             i++) {
+        for (KeywordMap::const_iterator i = keywords.cbegin();
+             i != keywords.cend();
+             ++i) {
             result += i->first + "\n";
         }
     } else if (keywords.find(arg) != keywords.end()) {
@@ -296,25 +297,25 @@ Conversation::~Conversation()
     delete script;
 }
 
-Conversation::InputType Conversation::getInputRequired(int *bufferlen)
+Conversation::InputType Conversation::getInputRequired(int *bufferLen) const
 {
     switch (state) {
     case BUY_QUANTITY:
     case SELL_QUANTITY:
-        *bufferlen = 2;
+        *bufferLen = 2;
         return INPUT_STRING;
     case TALK:
     case BUY_PRICE:
     case TOPIC:
-        *bufferlen = BUFFERLEN;
+        *bufferLen = BUFFERLEN;
         return INPUT_STRING;
     case GIVEBEGGAR:
-        *bufferlen = 2;
+        *bufferLen = 2;
         return INPUT_STRING;
     case ASK:
     case ASKYESNO:
     case CONFIRMATION:
-        *bufferlen = 4;
+        *bufferLen = 4;
         return INPUT_STRING;
     case VENDORQUESTION:
     case BUY_ITEM:
@@ -329,7 +330,7 @@ Conversation::InputType Conversation::getInputRequired(int *bufferlen)
     case ADVANCELEVELS:
         return INPUT_NONE;
     default:
-        ASSERT(0, "invalid state: %d", state);
+        U4ASSERT(0, "invalid state: %d", state);
     } // switch
     return INPUT_NONE;
 }

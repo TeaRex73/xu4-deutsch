@@ -41,12 +41,12 @@ private:
  */
 class ConfigElement {
 public:
-    ConfigElement(xmlNodePtr xmlNode);
+    explicit ConfigElement(xmlNodePtr xmlNode);
     ConfigElement(const ConfigElement &e);
     ~ConfigElement();
     ConfigElement &operator=(const ConfigElement &e);
 
-    const std::string getName() const
+    const std::string &getName() const
     {
         return name;
     }

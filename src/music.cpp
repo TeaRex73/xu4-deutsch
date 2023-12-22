@@ -61,8 +61,8 @@ Music::Music()
     TRACE_LOCAL(*logger, "Loading music tracks");
     std::vector<ConfigElement> musicConfs =
         config->getElement("music").getChildren();
-    std::vector<ConfigElement>::const_iterator i = musicConfs.begin();
-    std::vector<ConfigElement>::const_iterator theEnd = musicConfs.end();
+    std::vector<ConfigElement>::const_iterator i = musicConfs.cbegin();
+    std::vector<ConfigElement>::const_iterator theEnd = musicConfs.cend();
     for (; i != theEnd; ++i) {
         if (i->getName() != "track") {
             continue;
@@ -100,7 +100,7 @@ Music::~Music()
 
 bool Music::load(Type music)
 {
-    ASSERT(
+    U4ASSERT(
         music < MAX,
         "Attempted to load an invalid piece of music in Music::load()"
     );

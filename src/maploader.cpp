@@ -59,7 +59,7 @@ MapLoader *WorldMapLoader::instance = MapLoader::registerLoader(
  */
 MapLoader *MapLoader::getLoader(Map::Type type)
 {
-    ASSERT(
+    U4ASSERT(
         loaderMap != nullptr,
         "ImageLoader::getLoader loaderMap not initialized"
     );
@@ -90,7 +90,7 @@ void MapLoader::cleanup()
     for (std::map<Map::Type, MapLoader *>::iterator i =
              loaderMap->begin();
          i != loaderMap->end();
-         i++) {
+         ++i) {
         if (i->first != Map::SHRINE) {
             delete i->second;
         }
@@ -175,15 +175,13 @@ bool MapLoader::loadData(Map *map, U4FILE *f)
 
 bool MapLoader::isChunkCompressed(Map *map, int chunk)
 {
-    CompressedChunkList::iterator i;
-    for (i = map->compressed_chunks.begin();
-         i != map->compressed_chunks.end();
-         i++) {
-        if (chunk == *i) {
-            return true;
+    return std::any_of(
+        map->compressed_chunks.cbegin(),
+        map->compressed_chunks.cend(),
+        [&](const int &v) {
+            return chunk == v;
         }
-    }
-    return false;
+    );
 }
 
 
@@ -207,15 +205,15 @@ bool CityMapLoader::load(Map *map)
         errorFatal("unable to load map data");
     }
     /* the map must be 32x32 to be read from an .ULT file */
-    ASSERT(
+    U4ASSERT(
         city->width == CITY_WIDTH,
-        "map width is %d, should be %d",
+        "map width is %u, should be %d",
         city->width,
         CITY_WIDTH
     );
-    ASSERT(
+    U4ASSERT(
         city->height == CITY_HEIGHT,
-        "map height is %d, should be %d",
+        "map height is %u, should be %d",
         city->height,
         CITY_HEIGHT
     );
@@ -240,14 +238,14 @@ bool CityMapLoader::load(Map *map)
         u4fgetc(ult);
     }
     for (i = 0; i < CITY_MAX_PERSONS; i++) {
-        unsigned char c = u4fgetc(ult);
-        if (c == 0) {
+        unsigned char ch = u4fgetc(ult);
+        if (ch == 0) {
             people[i]->setMovementBehavior(MOVEMENT_FIXED);
-        } else if (c == 1) {
+        } else if (ch == 1) {
             people[i]->setMovementBehavior(MOVEMENT_WANDER);
-        } else if (c == 0x80) {
+        } else if (ch == 0x80) {
             people[i]->setMovementBehavior(MOVEMENT_FOLLOW_AVATAR);
-        } else if (c == 0xFF) {
+        } else if (ch == 0xFF) {
             people[i]->setMovementBehavior(MOVEMENT_ATTACK_AVATAR);
         } else {
             return false;
@@ -260,7 +258,7 @@ bool CityMapLoader::load(Map *map)
     for (i = 0; i < CITY_MAX_PERSONS; i++) {
         people[i]->getStart().z = 0;
     }
-    // Move Shamino one square westward if player is a ranger
+    // CHANGE: Move Shamino one square westward if player is a ranger
     // so that he can talk to the Ankh without killing anybody
     if ((city->id == MAP_SKARABRAE)
         && (c->party->member(0)->getClass() == CLASS_RANGER)) {
@@ -300,10 +298,10 @@ bool CityMapLoader::load(Map *map)
      * Assign roles to certain people
      */
     for (i = 0; i < CITY_MAX_PERSONS; i++) {
-        PersonRoleList::iterator current;
-        for (current = city->personroles.begin();
-             current != city->personroles.end();
-             current++) {
+        PersonRoleList::const_iterator current;
+        for (current = city->personroles.cbegin();
+             current != city->personroles.cend();
+             ++current) {
             if (static_cast<unsigned int>((*current)->id) == (i + 1)) {
                 if ((*current)->role == NPC_LORD_BRITISH) {
                     Dialogue *dlg =
@@ -345,36 +343,35 @@ bool CityMapLoader::load(Map *map)
  */
 bool ConMapLoader::load(Map *map)
 {
-    int i;
     U4FILE *con = u4fopen(map->fname);
     if (!con) {
         errorFatal("unable to load map data");
     }
     /* the map must be 11x11 to be read from a .CON file */
-    ASSERT(
+    U4ASSERT(
         map->width == CON_WIDTH,
-        "map width is %d, should be %d",
+        "map width is %u, should be %d",
         map->width,
         CON_WIDTH
     );
-    ASSERT(
+    U4ASSERT(
         map->height == CON_HEIGHT,
-        "map height is %d, should be %d",
+        "map height is %u, should be %d",
         map->height,
         CON_HEIGHT
     );
     if (map->type != Map::SHRINE) {
         CombatMap *cm = getCombatMap(map);
-        for (i = 0; i < AREA_CREATURES; i++) {
+        for (int i = 0; i < AREA_CREATURES; i++) {
             cm->creature_start[i] = MapCoords(u4fgetc(con));
         }
-        for (i = 0; i < AREA_CREATURES; i++) {
+        for (int i = 0; i < AREA_CREATURES; i++) {
             cm->creature_start[i].y = u4fgetc(con);
         }
-        for (i = 0; i < AREA_PLAYERS; i++) {
+        for (int i = 0; i < AREA_PLAYERS; i++) {
             cm->player_start[i] = MapCoords(u4fgetc(con));
         }
-        for (i = 0; i < AREA_PLAYERS; i++) {
+        for (int i = 0; i < AREA_PLAYERS; i++) {
             cm->player_start[i].y = u4fgetc(con);
         }
         u4fseek(con, 16L, SEEK_CUR);
@@ -398,15 +395,15 @@ bool DngMapLoader::load(Map *map)
         errorFatal("unable to load map data");
     }
     /* the map must be 8x8 to be read from a .DNG file */
-    ASSERT(
+    U4ASSERT(
         dungeon->width == DNG_WIDTH,
-        "map width is %d, should be %d",
+        "map width is %u, should be %d",
         dungeon->width,
         DNG_WIDTH
     );
-    ASSERT(
+    U4ASSERT(
         dungeon->height == DNG_HEIGHT,
-        "map height is %d, should be %d",
+        "map height is %u, should be %d",
         dungeon->height,
         DNG_HEIGHT
     );
@@ -427,7 +424,7 @@ bool DngMapLoader::load(Map *map)
         for (j = 0; j < DNGROOM_NTRIGGERS; j++) {
             int tmp;
             dungeon->rooms[i].triggers[j].tile =
-                TileMap::get("base")->translate(u4fgetc(dng)).id;
+                TileMap::get("base")->translate(u4fgetc(dng)).getId();
             tmp = u4fgetc(dng);
             if (tmp == EOF) {
                 return false;
@@ -517,7 +514,7 @@ bool DngMapLoader::load(Map *map)
         /* translate each creature tile to a tile id */
         for (j = 0; j < sizeof(dungeon->rooms[i].creature_tiles); j++) {
             dungeon->rooms[i].creature_tiles[j] = TileMap::get("base")
-                ->translate(dungeon->rooms[i].creature_tiles[j]).id;
+                ->translate(dungeon->rooms[i].creature_tiles[j]).getId();
         }
         /* translate each map tile to a tile id */
         for (j = 0; j < sizeof(room_tiles); j++) {
@@ -548,7 +545,7 @@ bool DngMapLoader::load(Map *map)
                 }, y1[8] = {
                     0x3, 0x2, 0x3, 0x2, 0x1, 0x3, 0x2, 0x1
                 };
-                for (int j = 0; j < 8; j++) {
+                for (j = 0; j < 8; j++) {
                     dungeon->rooms[i].party_east_start_x[j] = x1[j];
                     dungeon->rooms[i].party_east_start_y[j] = y1[j];
                 }
@@ -559,7 +556,7 @@ bool DngMapLoader::load(Map *map)
                 }, y2[8] = {
                     0x8, 0x8, 0x9, 0x9, 0x9, 0xA, 0xA, 0xA
                 };
-                for (int j = 0; j < 8; j++) {
+                for (j = 0; j < 8; j++) {
                     dungeon->rooms[i].party_east_start_x[j] = x2[j];
                     dungeon->rooms[i].party_east_start_y[j] = y2[j];
                 }
@@ -571,7 +568,7 @@ bool DngMapLoader::load(Map *map)
                 }, y1[3] = {
                     0x5, 0x5, 0x6
                 };
-                for (int j = 0; j < 3; j++) {
+                for (j = 0; j < 3; j++) {
                     dungeon->rooms[i].creature_start_x[j] = x1[j];
                     dungeon->rooms[i].creature_start_y[j] = y1[j];
                 }
@@ -582,7 +579,7 @@ bool DngMapLoader::load(Map *map)
                 }, y2[8] = {
                     0x9, 0x8, 0x9, 0x8, 0x7, 0x9, 0x8, 0x7
                 };
-                for (int j = 0; j < 8; j++) {
+                for (j = 0; j < 8; j++) {
                     dungeon->rooms[i].party_west_start_x[j] = x2[j];
                     dungeon->rooms[i].party_west_start_y[j] = y2[j];
                 }
@@ -599,7 +596,7 @@ bool DngMapLoader::load(Map *map)
                     Coords(1, 8, 0x16),
                     Coords(0, 9, 0x16)
                 };
-                for (int j = 0;
+                for (j = 0;
                      j < static_cast<int>(sizeof(tile) / sizeof(Coords));
                      j++) {
                     const int index = (tile[j].y * CON_WIDTH) + tile[j].x;
@@ -644,6 +641,7 @@ bool WorldMapLoader::load(Map *map)
     U4FILE *world = u4fopen(map->fname);
     if (!world) {
         errorFatal("unable to load map data");
+        return false; // never executed, makes cppcheck happy
     }
     if (!loadData(map, world)) {
         return false;

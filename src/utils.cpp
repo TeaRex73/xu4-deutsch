@@ -144,24 +144,25 @@ char *xu4_strdup(const char *s)
 /**
  * Converts the string to lowercase
  */
-std::string lowercase(std::string val)
+std::string lowercase(const std::string &val)
 {
-    std::string::iterator i;
-    for (i = val.begin(); i != val.end(); i++) {
-        *i = xu4_tolower(*i);
+    std::string ret = "";
+    std::string::const_iterator i;
+    for (i = val.cbegin(); i != val.cend(); ++i) {
+        ret += std::string(1, static_cast<char>(xu4_tolower(*i)));
     }
-    return val;
+    return ret;
 }
 
 
 /**
  * Converts the string to uppercase
  */
-std::string uppercase(std::string val)
+std::string uppercase(const std::string &val)
 {
     std::string ret = "";
-    std::string::iterator i;
-    for (i = val.begin(); i != val.end(); i++) {
+    std::string::const_iterator i;
+    for (i = val.cbegin(); i != val.cend(); ++i) {
         if (*i == '~') {
             ret += "SS";
         } else {
@@ -171,11 +172,11 @@ std::string uppercase(std::string val)
     return ret;
 }
 
-std::string deumlaut(std::string val)
+std::string deumlaut(const std::string &val)
 {
     std::string ret = "";
-    std::string::iterator i;
-    for (i = val.begin(); i != val.end(); i++) {
+    std::string::const_iterator i;
+    for (i = val.cbegin(); i != val.cend(); ++i) {
         switch (*i) {
         case '[':
             ret += "AE";
@@ -213,7 +214,7 @@ std::string xu4_to_string(int val)
 {
     char buffer[16];
     std::sprintf(buffer, "%d", val);
-    return buffer;
+    return std::string(buffer);
 }
 
 

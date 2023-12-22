@@ -71,10 +71,10 @@ void TileView::reinit()
     animated->alphaOff();
 }
 
-void TileView::loadTile(MapTile &mapTile)
+void TileView::loadTile(MapTile mapTile)
 {
     // This attempts to preload tiles in advance
-    Tile *tile = tileset->get(mapTile.id);
+    Tile *tile = tileset->get(mapTile.getId());
     if (tile) {
         tile->getImage();
     }
@@ -82,13 +82,13 @@ void TileView::loadTile(MapTile &mapTile)
     // imagesets
 }
 
-void TileView::drawTile(MapTile &mapTile, bool focus, int x, int y)
+void TileView::drawTile(MapTile mapTile, bool focus, int x, int y)
 {
-    Tile *tile = tileset->get(mapTile.id);
+    Tile *tile = tileset->get(mapTile.getId());
     Image *image = tile->getImage();
 
-    ASSERT(x < columns, "x value of %d out of range", x);
-    ASSERT(y < rows, "y value of %d out of range", y);
+    U4ASSERT(x < columns, "x value of %d out of range", x);
+    U4ASSERT(y < rows, "y value of %d out of range", y);
 
     // Blank scratch pad
     animated->fillRect(
@@ -123,7 +123,7 @@ void TileView::drawTile(MapTile &mapTile, bool focus, int x, int y)
             SCALED(x * tileWidth + this->x),
             SCALED(y * tileHeight + this->y),
             0,
-            SCALED(tileHeight * mapTile.frame),
+            SCALED(tileHeight * mapTile.getFrame()),
             SCALED(tileWidth), SCALED(tileHeight)
         );
     }
@@ -135,8 +135,8 @@ void TileView::drawTile(MapTile &mapTile, bool focus, int x, int y)
 
 void TileView::drawTile(std::vector<MapTile> &tiles, bool focus, int x, int y)
 {
-    ASSERT(x < columns, "x value of %d out of range", x);
-    ASSERT(y < rows, "y value of %d out of range", y);
+    U4ASSERT(x < columns, "x value of %d out of range", x);
+    U4ASSERT(y < rows, "y value of %d out of range", y);
     animated->fillRect(
         0, 0, SCALED(tileWidth), SCALED(tileHeight), 0, 0, 0, 255
     );
@@ -152,8 +152,8 @@ void TileView::drawTile(std::vector<MapTile> &tiles, bool focus, int x, int y)
     for (std::vector<MapTile>::reverse_iterator t = tiles.rbegin();
          t != tiles.rend();
          ++t) {
-        MapTile &frontTile = *t;
-        Tile *frontTileType = tileset->get(frontTile.id);
+        MapTile frontTile = *t;
+        Tile *frontTileType = tileset->get(frontTile.getId());
         if (!frontTileType) {
             // TODO, this leads to an error.
             // It happens after graphics mode changes.
@@ -177,7 +177,7 @@ void TileView::drawTile(std::vector<MapTile> &tiles, bool focus, int x, int y)
                 0,
                 0,
                 0,
-                SCALED(tileHeight * frontTile.frame),
+                SCALED(tileHeight * frontTile.getFrame()),
                 SCALED(tileWidth),
                 SCALED(tileHeight)
             );
@@ -202,10 +202,10 @@ void TileView::drawTile(std::vector<MapTile> &tiles, bool focus, int x, int y)
 /**
  * Draw a focus rectangle around the tile
  */
-void TileView::drawFocus(int x, int y)
+void TileView::drawFocus(int x, int y) const
 {
-    ASSERT(x < columns, "x value of %d out of range", x);
-    ASSERT(y < rows, "y value of %d out of range", y);
+    U4ASSERT(x < columns, "x value of %d out of range", x);
+    U4ASSERT(y < rows, "y value of %d out of range", y);
     /*
      * draw the focus rectangle around the tile
      */

@@ -4,6 +4,7 @@
 
 #include "vc6.h" // Fixes things if you're using VC6, does nothing otherwise
 
+#include <algorithm>
 #include <vector>
 
 #include "tilemap.h"
@@ -38,9 +39,9 @@ void TileMap::loadAll()
     TRACE_LOCAL(dbg, "Loading tilemaps from config");
     conf = config->getElement("tilesets").getChildren();
     /* load all of the tilemaps */
-    for (std::vector<ConfigElement>::iterator i = conf.begin();
-         i != conf.end();
-         i++) {
+    for (std::vector<ConfigElement>::const_iterator i = conf.cbegin();
+         i != conf.cend();
+         ++i) {
         if (i->getName() == "tilemap") {
             /* load the tilemap ! */
             load(*i);
@@ -54,9 +55,9 @@ void TileMap::loadAll()
  */
 void TileMap::unloadAll()
 {
-    TileIndexMapMap::iterator map;
+    TileIndexMapMap::const_iterator map;
     /* free all the memory for the tile maps */
-    for (map = tileMaps.begin(); map != tileMaps.end(); map++) {
+    for (map = tileMaps.cbegin(); map != tileMaps.cend(); ++map) {
         delete map->second;
     }
     /* Clear the map so we don't attempt to delete the memory again
@@ -79,9 +80,9 @@ void TileMap::load(const ConfigElement &tilemapConf)
     std::string tileset = tilemapConf.getString("tileset");
     int index = 0;
     std::vector<ConfigElement> children = tilemapConf.getChildren();
-    for (std::vector<ConfigElement>::iterator i = children.begin();
-         i != children.end();
-         i++) {
+    for (std::vector<ConfigElement>::const_iterator i = children.cbegin();
+         i != children.cend();
+         ++i) {
         if (i->getName() != "mapping") {
             continue;
         }
@@ -107,15 +108,15 @@ void TileMap::load(const ConfigElement &tilemapConf)
             frames = i->getInt("frames");
         }
         /* insert the tile into the tile map */
-        for (int i = 0; i < frames; i++) {
-            if (i < t->getFrames()) {
-                tm->tilemap[index + i] =
-                    MapTile(t->getId(), i);
+        for (int j = 0; j < frames; j++) {
+            if (j < t->getFrames()) {
+                tm->tilemap[index + j] =
+                    MapTile(t->getId(), j);
             }
             /* frame fell out of the scope of the tile --
                frame is set to 0 */
             else {
-                tm->tilemap[index + i] =
+                tm->tilemap[index + j] =
                     MapTile(t->getId(), 0);
             }
         }
@@ -129,7 +130,7 @@ void TileMap::load(const ConfigElement &tilemapConf)
 /**
  * Returns the Tile index map with the specified name
  */
-TileMap *TileMap::get(std::string name)
+TileMap *TileMap::get(const std::string &name)
 {
     if (tileMaps.find(name) != tileMaps.end()) {
         return tileMaps[name];
@@ -147,17 +148,20 @@ MapTile TileMap::translate(unsigned int index)
     return tilemap[index];
 }
 
-unsigned int TileMap::untranslate(MapTile &tile)
+unsigned int TileMap::untranslate(MapTile tile) const
 {
     unsigned int index = 0;
-    for (std::map<unsigned int, MapTile>::iterator i = tilemap.begin();
-         i != tilemap.end();
-         i++) {
-        if (i->second == tile) {
-            index = i->first;
-            break;
-        }
+    std::map<unsigned int, MapTile>::const_iterator i =
+        std::find_if(
+            tilemap.cbegin(),
+            tilemap.cend(),
+            [&](const std::pair<unsigned int, MapTile> &v) {
+                return v.second == tile;
+            }
+        );
+    if (i != tilemap.cend()) {
+        index = i->first;
     }
-    index += tile.frame;
+    index += tile.getFrame();
     return index;
 }

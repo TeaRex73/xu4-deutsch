@@ -137,8 +137,6 @@ bool xmlGetPropAsBool(xmlNodePtr node, const char *name)
     }
     if (xmlStrcmp(prop, c2xc("true")) == 0) {
         result = true;
-    } else if (xmlStrcmp(prop, c2xc("false")) == 0) {
-        result = false;
     } else {
         result = false;
     }

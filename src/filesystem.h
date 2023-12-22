@@ -29,7 +29,7 @@
  */
 class Path {
 public:
-    Path(const std::string &p);
+    explicit Path(const std::string &p);
     bool exists() const;
     bool isFile() const;
     bool isDir() const;

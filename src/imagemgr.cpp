@@ -22,7 +22,7 @@ ImageInfo *ImageMgr::screenInfo = nullptr;
 
 Image *screenScale(Image *src, int scale, int n, int filter);
 
-bool ImageInfo::hasBlackBackground()
+bool ImageInfo::hasBlackBackground() const
 {
     return this->filetype == "image/x-u4raw";
 }
@@ -48,7 +48,7 @@ ImageMgr *ImageMgr::instance = nullptr;
 
 ImageMgr *ImageMgr::getInstance()
 {
-    if (instance == nullptr) {
+    if (__builtin_expect(instance == nullptr, false)) {
         instance = new ImageMgr();
         instance->init();
     }
@@ -77,7 +77,7 @@ ImageMgr::~ImageMgr()
     for (std::map<std::string, ImageSet *>::iterator i =
              imageSets.begin();
          i != imageSets.end();
-         i++) {
+         ++i) {
         delete i->second;
     }
     delete logger;
@@ -112,9 +112,10 @@ void ImageMgr::init()
     const Config *config = Config::getInstance();
     std::vector<ConfigElement> graphicsConf =
         config->getElement("graphics").getChildren();
-    for (std::vector<ConfigElement>::iterator conf = graphicsConf.begin();
-         conf != graphicsConf.end();
-         conf++) {
+    for (std::vector<ConfigElement>::const_iterator conf =
+             graphicsConf.cbegin();
+         conf != graphicsConf.cend();
+         ++conf) {
         if (conf->getName() == "imageset") {
             ImageSet *set = loadImageSetFromConf(*conf);
             imageSets[set->name] = set;
@@ -124,9 +125,9 @@ void ImageMgr::init()
     }
     imageSetNames.clear();
     for (std::map<std::string, ImageSet *>::const_iterator set =
-             imageSets.begin();
-         set != imageSets.end();
-         set++) {
+             imageSets.cbegin();
+         set != imageSets.cend();
+         ++set) {
         imageSetNames.push_back(set->first);
     }
     update(&settings);
@@ -141,9 +142,9 @@ ImageSet *ImageMgr::loadImageSetFromConf(const ConfigElement &conf)
     set->extends = conf.getString("extends");
     TRACE(*logger, std::string("loading image set ") + set->name);
     std::vector<ConfigElement> children = conf.getChildren();
-    for (std::vector<ConfigElement>::iterator i = children.begin();
-         i != children.end();
-         i++) {
+    for (std::vector<ConfigElement>::const_iterator i = children.cbegin();
+         i != children.cend();
+         ++i) {
         if (i->getName() == "image") {
             ImageInfo *info = loadImageInfoFromConf(*i);
             std::map<std::string, ImageInfo *>::iterator dup =
@@ -190,9 +191,9 @@ ImageInfo *ImageMgr::loadImageInfoFromConf(const ConfigElement &conf)
     );
     info->image = nullptr;
     std::vector<ConfigElement> children = conf.getChildren();
-    for (std::vector<ConfigElement>::iterator i = children.begin();
-         i != children.end();
-         i++) {
+    for (std::vector<ConfigElement>::const_iterator i = children.cbegin();
+         i != children.cend();
+         ++i) {
         if (i->getName() == "subimage") {
             SubImage *subimage = loadSubImageFromConf(info, *i);
             info->subImages[subimage->name] = subimage;
@@ -234,7 +235,6 @@ SubImage *ImageMgr::loadSubImageFromConf(
 void ImageMgr::fixupIntro(Image *im, int prescale)
 {
     const unsigned char *sigData;
-    int i, x, y;
     bool alpha = im->isAlphaOn();
     RGBA color;
     sigData = intro->getSigData();
@@ -426,29 +426,30 @@ void ImageMgr::fixupIntro(Image *im, int prescale)
                 BKGD_BORDERS,
                 settings.game.c_str()
             );
+        } else {
+            delete borderInfo->image;
+            borderInfo->image = nullptr;
+            borderInfo = imageMgr->get(BKGD_BORDERS, true);
+            im->setPaletteFromImage(borderInfo->image);
+            // update the color of "and" and "present"
+            im->setPaletteIndex(15, im->setColor(255, 255, 255));
+            // update the color of "Origin Systems, Inc."
+            im->setPaletteIndex(9, im->setColor(255, 255, 255));
+            borderInfo->image->save("border.png");
+            // update the border appearance
+            borderInfo->image->alphaOff();
+            borderInfo->image->drawSubRectOn(im, 0, 96, 0, 0, 16, 56);
+            for (int i = 0; i < 9; i++) {
+                borderInfo->image->drawSubRectOn(
+                    im, 16 + (i * 32), 96, 144, 0, 48, 48
+                );
+            }
+            im->drawSubRectInvertedOn(im, 0, 144, 0, 104, 320, 40);
+            im->drawSubRectOn(im, 0, 184, 0, 96, 320, 8);
+            borderInfo->image->alphaOn();
+            delete borderInfo->image;
+            borderInfo->image = nullptr;
         }
-        delete borderInfo->image;
-        borderInfo->image = nullptr;
-        borderInfo = imageMgr->get(BKGD_BORDERS, true);
-        im->setPaletteFromImage(borderInfo->image);
-        // update the color of "and" and "present"
-        im->setPaletteIndex(15, im->setColor(255, 255, 255));
-        // update the color of "Origin Systems, Inc."
-        im->setPaletteIndex(9, im->setColor(255, 255, 255));
-        borderInfo->image->save("border.png");
-        // update the border appearance
-        borderInfo->image->alphaOff();
-        borderInfo->image->drawSubRectOn(im, 0, 96, 0, 0, 16, 56);
-        for (int i = 0; i < 9; i++) {
-            borderInfo->image->drawSubRectOn(
-                im, 16 + (i * 32), 96, 144, 0, 48, 48
-            );
-        }
-        im->drawSubRectInvertedOn(im, 0, 144, 0, 104, 320, 40);
-        im->drawSubRectOn(im, 0, 184, 0, 96, 320, 8);
-        borderInfo->image->alphaOn();
-        delete borderInfo->image;
-        borderInfo->image = nullptr;
     }
     /* -----------------------------
      * draw "Lord British" signature
@@ -460,11 +461,10 @@ void ImageMgr::fixupIntro(Image *im, int prescale)
         129,  97,  97,  64,  64,  32,  32,   0
     };
 
-    i = 0;
-    while (sigData[i] != 0) {
+    for (int i = 0; sigData[i] != 0; i += 2) {
         /* (x/y) are unscaled coordinates, i.e. in 320x200 */
-        x = sigData[i] + 0x14;
-        y = 0xBF - sigData[i + 1];
+        int x = sigData[i] + 0x14;
+        int y = 0xBF - sigData[i + 1];
         if (settings.videoType != "EGA") {
             // yellow gradient
             color = im->setColor(
@@ -480,7 +480,6 @@ void ImageMgr::fixupIntro(Image *im, int prescale)
             color.g,
             color.b
         );
-        i += 2;
     }
     /* --------------------------------------------------------------
      * draw the red line between "Origin Systems, Inc." and "present"
@@ -491,7 +490,7 @@ void ImageMgr::fixupIntro(Image *im, int prescale)
     } else {
         color = im->setColor(0, 149, 255); // blue for EGA
     }
-    for (i = 84; i < 236; i++) { // 152 px wide
+    for (int i = 84; i < 236; i++) { // 152 px wide
         im->fillRect(
             i * prescale,
             31 * prescale,
@@ -909,13 +908,12 @@ ImageInfo *ImageMgr::get(const std::string &name, bool returnUnscaled)
  */
 SubImage *ImageMgr::getSubImage(const std::string &name)
 {
-    std::string setname;
     ImageSet *set = baseSet;
     while (set != nullptr) {
-        for (std::map<std::string, ImageInfo *>::iterator i =
-                 set->info.begin();
-             i != set->info.end();
-             i++) {
+        for (std::map<std::string, ImageInfo *>::const_iterator i =
+                 set->info.cbegin();
+             i != set->info.cend();
+             ++i) {
             ImageInfo *info = i->second;
             std::map<std::string, SubImage *>::iterator j =
                 info->subImages.find(name);
@@ -937,12 +935,12 @@ void ImageMgr::freeIntroBackgrounds()
     for (std::map<std::string, ImageSet *>::iterator i =
              imageSets.begin();
          i != imageSets.end();
-         i++) {
+         ++i) {
         ImageSet *set = i->second;
         for (std::map<std::string, ImageInfo *>::iterator j =
                  set->info.begin();
              j != set->info.end();
-             j++) {
+             ++j) {
             ImageInfo *info = j->second;
             if ((info->image != nullptr) && info->introOnly) {
                 delete info->image;
@@ -952,7 +950,7 @@ void ImageMgr::freeIntroBackgrounds()
     }
 }
 
-const std::vector<std::string> &ImageMgr::getSetNames()
+const std::vector<std::string> &ImageMgr::getSetNames() const
 {
     return imageSetNames;
 }
@@ -976,7 +974,7 @@ ImageSet::~ImageSet()
 {
     for (std::map<std::string, ImageInfo *>::iterator i = info.begin();
          i != info.end();
-         i++) {
+         ++i) {
         ImageInfo *imageInfo = i->second;
         if (imageInfo->name != "screen") {
             delete imageInfo;
@@ -989,7 +987,7 @@ ImageInfo::~ImageInfo()
     for (std::map<std::string, SubImage *>::iterator i =
              subImages.begin();
          i != subImages.end();
-         i++) {
+         ++i) {
         delete i->second;
     }
     delete image;

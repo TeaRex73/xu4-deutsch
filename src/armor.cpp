@@ -57,13 +57,13 @@ Armor::Armor(const ConfigElement &conf)
      neg(conf.getString("neg")),
      canuse(0xFF),
      defense(conf.getInt("defense")),
-     mask(0),
      mystic(conf.getBool("mystic"))
 {
-    std::vector<ConfigElement> contraintConfs = conf.getChildren();
-    for (std::vector<ConfigElement>::iterator i = contraintConfs.begin();
-         i != contraintConfs.end();
-         i++) {
+    std::vector<ConfigElement> constraintConfs = conf.getChildren();
+    for (std::vector<ConfigElement>::const_iterator i =
+             constraintConfs.cbegin();
+         i != constraintConfs.cend();
+         ++i) {
         unsigned char mask = 0;
         if (i->getName() != "constraint") {
             continue;
@@ -103,7 +103,7 @@ Armor::~Armor()
         if (*i == this) {
             i = armors.erase(i);
         } else {
-            i++;
+            ++i;
         }
     }
 }
@@ -128,9 +128,9 @@ void Armor::loadConf()
     const Config *config = Config::getInstance();
     std::vector<ConfigElement> armorConfs =
         config->getElement("armors").getChildren();
-    for (std::vector<ConfigElement>::iterator i = armorConfs.begin();
-         i != armorConfs.end();
-         i++) {
+    for (std::vector<ConfigElement>::const_iterator i = armorConfs.cbegin();
+         i != armorConfs.cend();
+         ++i) {
         if (i->getName() != "armor") {
             continue;
         }

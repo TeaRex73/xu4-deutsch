@@ -54,8 +54,8 @@ private:
     class Variable {
     public:
         Variable();
-        Variable(const std::string &v);
-        Variable(const int &v);
+        explicit Variable(const std::string &v);
+        explicit Variable(const int &v);
         int &getInt();
         std::string &getString();
         void setValue(const int &v);
@@ -158,25 +158,25 @@ public:
     );
     void _continue();
     void resetState();
-    void setState(State state);
-    State getState();
+    void setState(State s);
+    State getState() const;
     void setTarget(const std::string &val);
     void setChoices(const std::string &val);
     void setVar(const std::string &name, const std::string &val);
     void setVar(const std::string &name, int val);
     void unsetVar(const std::string &name);
-    std::string getTarget();
-    InputType getInputType();
-    std::string getInputName();
-    std::string getChoices();
-    int getInputMaxLen();
+    std::string getTarget() const;
+    InputType getInputType() const;
+    std::string getInputName() const;
+    std::string getChoices() const;
+    int getInputMaxLen() const;
 
 private:
-    void translate(std::string *script);
+    void translate(std::string *text);
     xmlNodePtr find(
         xmlNodePtr node,
-        const std::string &script,
-        const std::string &choice = "",
+        const std::string &script_to_find,
+        const std::string &id = "",
         bool _default = false
     );
     std::string getPropAsStr(
@@ -203,7 +203,7 @@ private:
     ReturnCode random(xmlNodePtr script, xmlNodePtr current);
     ReturnCode move(xmlNodePtr script, xmlNodePtr current);
     ReturnCode sleep(xmlNodePtr script, xmlNodePtr current);
-    ReturnCode cursor(xmlNodePtr script, xmlNodePtr current);
+    static ReturnCode cursor(xmlNodePtr script, xmlNodePtr current);
     ReturnCode pay(xmlNodePtr script, xmlNodePtr current);
     ReturnCode _if(xmlNodePtr script, xmlNodePtr current);
     ReturnCode input(xmlNodePtr script, xmlNodePtr current);
@@ -218,19 +218,19 @@ private:
     ReturnCode setId(xmlNodePtr script, xmlNodePtr current);
     ReturnCode ztats(xmlNodePtr script, xmlNodePtr current);
     void mathParseChildren(xmlNodePtr math, std::string *result);
-    int mathValue(const std::string &str);
-    int math(int lval, int rval, std::string &op);
-    bool mathParse(
+    static int mathValue(const std::string &str);
+    static int math(int lval, int rval, const std::string &op);
+    static bool mathParse(
         const std::string &str, int *lval, int *rval, std::string *op
     );
-    void parseOperation(
+    static void parseOperation(
         const std::string &str,
-        std::string *lval,
-        std::string *rval,
+        std::string *left,
+        std::string *right,
         std::string *op
     );
-    bool compare(const std::string &str);
-    void funcParse(
+    bool compare(const std::string &statement);
+    static void funcParse(
         const std::string &str, std::string *funcName, std::string *contents
     );
 

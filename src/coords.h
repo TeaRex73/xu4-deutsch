@@ -12,7 +12,7 @@ class Coords {
 public:
     int x, y, z;
 
-    Coords(int initx = 0, int inity = 0, int initz = 0)
+    explicit Coords(int initx = 0, int inity = 0, int initz = 0)
         :x(initx), y(inity), z(initz)
     {
     }

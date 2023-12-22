@@ -4,6 +4,7 @@
 
 #include "vc6.h" // Fixes things if you're using VC6, does nothing otherwise
 
+#include <algorithm>
 #include <cctype>
 #include <list>
 
@@ -210,25 +211,31 @@ TimedEventMgr::List::iterator TimedEventMgr::remove(List::iterator i)
     }
 }
 
-void TimedEventMgr::remove(TimedEvent *event)
+void TimedEventMgr::remove(const TimedEvent *event)
 {
-    List::iterator i;
-    for (i = events.begin(); i != events.end(); i++) {
-        if ((*i) == event) {
-            remove(i);
-            break;
+    List::iterator i = std::find_if(
+        events.begin(),
+        events.end(),
+        [&](const TimedEvent *v) {
+            return v == event;
         }
+    );
+    if (i != events.end()) {
+        remove(i);
     }
 }
 
-void TimedEventMgr::remove(TimedEvent::Callback callback, void *data)
+void TimedEventMgr::remove(TimedEvent::Callback callback, const void *data)
 {
-    List::iterator i;
-    for (i = events.begin(); i != events.end(); i++) {
-        if (((*i)->getCallback() == callback) && ((*i)->getData() == data)) {
-            remove(i);
-            break;
+    List::iterator i = std::find_if(
+        events.begin(),
+        events.end(),
+        [&](TimedEvent *v) {
+            return v->getCallback() == callback && v->getData() == data;
         }
+    );
+    if (i != events.end()) {
+        remove(i);
     }
 }
 
@@ -241,12 +248,12 @@ void TimedEventMgr::tick()
 {
     List::iterator i;
     lock();
-    for (i = events.begin(); i != events.end(); i++) {
+    for (i = events.begin(); i != events.end(); ++i) {
         (*i)->tick();
     }
     unlock();
     // Remove events that have been deferred for removal
-    for (i = deferredRemovals.begin(); i != deferredRemovals.end(); i++) {
+    for (i = deferredRemovals.begin(); i != deferredRemovals.end(); ++i) {
         events.remove(*i);
     }
 }

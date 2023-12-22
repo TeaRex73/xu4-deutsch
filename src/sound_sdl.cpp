@@ -55,12 +55,18 @@ void SoundManager::play_sys(
     // make sure finished is in the right state. prevent race conditions.
     if (Mix_Playing(1)) {
         finished = false;
+    } else {
+        finished = true;
     }
+    // if it just stopped now, ensure there'll be no endless loop
     if (!Mix_Playing(1)) {
         finished = true;
     }
     // spin lock - EventHandler::sleep() might block far too long
-    while (!onlyOnce && !finished) /* do nothing */ ;
+    // SDL_Delay(1) to yield thread, since otherwise valgrind can't debug this
+    while (!onlyOnce && !finished) {
+        SDL_Delay(1);
+    }
     if (finished || !onlyOnce) {
         finished = false;
         if (
@@ -76,7 +82,9 @@ void SoundManager::play_sys(
             );
         }
         // spin lock, see above
-        while (wait && !finished) /* do nothing */ ;
+        while (wait && !finished) {
+            SDL_Delay(1);
+        }
     }
 }
 

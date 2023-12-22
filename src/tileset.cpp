@@ -28,8 +28,8 @@ TileRuleMap TileRule::rules;
  */
 TileRule *TileRule::findByName(const std::string &name)
 {
-    TileRuleMap::iterator i = rules.find(name);
-    if (i != rules.end()) {
+    TileRuleMap::const_iterator i = rules.find(name);
+    if (i != rules.cend()) {
         return i->second;
     }
     return nullptr;
@@ -37,8 +37,8 @@ TileRule *TileRule::findByName(const std::string &name)
 
 void TileRule::unloadAll()
 {
-    TileRuleMap::iterator i;
-    for (i = rules.begin(); i != rules.end(); i++) {
+    TileRuleMap::const_iterator i;
+    for (i = rules.cbegin(); i != rules.cend(); ++i) {
         delete i->second;
     }
     rules.clear();
@@ -53,9 +53,9 @@ void TileRule::load()
     const Config *config = Config::getInstance();
     std::vector<ConfigElement> rules =
         config->getElement("tileRules").getChildren();
-    for (std::vector<ConfigElement>::iterator i = rules.begin();
-         i != rules.end();
-         i++) {
+    for (std::vector<ConfigElement>::const_iterator i = rules.cbegin();
+         i != rules.cend();
+         ++i) {
         TileRule *rule = new TileRule;
         rule->initFromConf(*i);
         TileRule::rules[rule->name] = rule;
@@ -214,9 +214,9 @@ void Tileset::loadAll()
         TileRule::load();
     }
     // load all of the tilesets
-    for (std::vector<ConfigElement>::iterator i = conf.begin();
-         i != conf.end();
-         i++) {
+    for (std::vector<ConfigElement>::const_iterator i = conf.cbegin();
+         i != conf.cend();
+         ++i) {
         if (i->getName() == "tileset") {
             Tileset *tileset = new Tileset;
             tileset->load(*i);
@@ -235,12 +235,12 @@ void Tileset::loadAll()
  */
 void Tileset::unloadAll()
 {
-    TilesetMap::iterator i;
+    TilesetMap::const_iterator i;
     // unload all tilemaps
     TileMap::unloadAll();
     TileRule::unloadAll();
     unloadAllImages();
-    for (i = tilesets.begin(); i != tilesets.end(); i++) {
+    for (i = tilesets.cbegin(); i != tilesets.cend(); ++i) {
         i->second->unload();
         delete i->second;
     }
@@ -254,8 +254,8 @@ void Tileset::unloadAll()
  */
 void Tileset::unloadAllImages()
 {
-    TilesetMap::iterator i;
-    for (i = tilesets.begin(); i != tilesets.end(); i++) {
+    TilesetMap::const_iterator i;
+    for (i = tilesets.cbegin(); i != tilesets.cend(); ++i) {
         i->second->unloadImages();
     }
     Tile::resetNextId();
@@ -280,8 +280,8 @@ Tileset *Tileset::get(const std::string &name)
  */
 Tile *Tileset::findTileByName(const std::string &name)
 {
-    TilesetMap::iterator i;
-    for (i = tilesets.begin(); i != tilesets.end(); i++) {
+    TilesetMap::const_iterator i;
+    for (i = tilesets.cbegin(); i != tilesets.cend(); ++i) {
         Tile *t = i->second->getByName(name);
         if (t) {
             return t;
@@ -292,8 +292,8 @@ Tile *Tileset::findTileByName(const std::string &name)
 
 Tile *Tileset::findTileById(TileId id)
 {
-    TilesetMap::iterator i;
-    for (i = tilesets.begin(); i != tilesets.end(); i++) {
+    TilesetMap::const_iterator i;
+    for (i = tilesets.cbegin(); i != tilesets.cend(); ++i) {
         Tile *t = i->second->get(id);
         if (t) {
             return t;
@@ -321,9 +321,9 @@ void Tileset::load(const ConfigElement &tilesetConf)
     TRACE_LOCAL(dbg, "\tLoading Tiles...");
     int index = 0;
     std::vector<ConfigElement> children = tilesetConf.getChildren();
-    for (std::vector<ConfigElement>::iterator i = children.begin();
-         i != children.end();
-         i++) {
+    for (std::vector<ConfigElement>::const_iterator i = children.cbegin();
+         i != children.cend();
+         ++i) {
         if (i->getName() != "tile") {
             continue;
         }
@@ -338,12 +338,12 @@ void Tileset::load(const ConfigElement &tilesetConf)
     totalFrames = index;
 } // Tileset::load
 
-void Tileset::unloadImages()
+void Tileset::unloadImages() const
 {
-    Tileset::TileIdMap::iterator i;
+    Tileset::TileIdMap::const_iterator i;
     /* free all the image memory and nullify so that reloading can
        automatically take place lazily */
-    for (i = tiles.begin(); i != tiles.end(); i++) {
+    for (i = tiles.cbegin(); i != tiles.cend(); ++i) {
         i->second->deleteImage();
     }
 }
@@ -353,9 +353,9 @@ void Tileset::unloadImages()
  */
 void Tileset::unload()
 {
-    Tileset::TileIdMap::iterator i;
+    Tileset::TileIdMap::const_iterator i;
     /* free all the memory for the tiles */
-    for (i = tiles.begin(); i != tiles.end(); i++) {
+    for (i = tiles.cbegin(); i != tiles.cend(); ++i) {
         delete i->second;
     }
     tiles.clear();

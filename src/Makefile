@@ -19,10 +19,10 @@ LIBS=-L/usr/lib -L/usr/lib/arm-linux-gnueabihf -L/lib/arm-linux-gnueabihf $(UILI
 # CCPREFIX=~/raspberry/tools/arm-bcm2708/arm-bcm2708hardfp-linux-gnueabi/bin/arm-bcm2708hardfp-linux-gnueabi-
 # CCPREFIX=~/raspberry/tools/arm-bcm2708/gcc-linaro-arm-linux-gnueabihf-raspbian/bin/arm-linux-gnueabihf-
 FEATURES=-UHAVE_BACKTRACE -DHAVE_VARIADIC_MACROS=1
-DEBUGCXXFLAGS=-Os -g -fno-lto -DNPERF -marm -mfpu=vfp -march=armv6zk -mtune=arm1176jzf-s -mfloat-abi=hard -UDEBUG -DNDEBUG -DRASB_PI -DNTSC_TV -fno-exceptions -fno-non-call-exceptions -fno-common
+DEBUGCXXFLAGS=-Os -g -flto -DNPERF -marm -mfpu=vfp -march=armv6zk -mtune=arm1176jzf-s -mfloat-abi=hard -UDEBUG -DNDEBUG -DRASB_PI -DNTSC_TV -fno-exceptions -fno-non-call-exceptions -fno-common
 #DEBUGCXXFLAGS=-O2 -g -march=native -mtune=native -DNPERF -DDEBUG -UNDEBUG -URASB_PI -fno-exceptions -fno-non-call-exceptions -fno-common
 COMMON_FLAGS=$(FEATURES) -Wall -Wextra -Werror -I. -I/usr/include/libxml2 -I/usr/include/SDL -I/usr/include -I/usr/local/include -I/include -I/usr/include/arm-linux-gnueabihf $(UIFLAGS) -I/usr/include/libxml2 -DICON_FILE=\"$(datadir)/pixmaps/u4.bmp\" $(DEBUGCXXFLAGS) $(LIBS)
-CFLAGS=-std=gnu90 $(COMMON_FLAGS) -Wno-unused-parameter
+CFLAGS=-std=gnu90 $(COMMON_FLAGS)
 CXXFLAGS=-std=gnu++11 $(COMMON_FLAGS) -Weffc++ -Wold-style-cast
 INSTALL=install
 
@@ -42,20 +42,20 @@ install-prog::
 	$(INSTALL) -D -s u4unpackexe $(libdir)/u4g/u4unpackexe
 
 install-conf::
-	$(INSTALL) ../conf/*.xml $(libdir)/u4g
+	$(INSTALL) -m 644 ../conf/*.xml $(libdir)/u4g
 	mkdir -p $(libdir)/u4g/dtd
-	$(INSTALL) ../conf/dtd/*.dtd $(libdir)/u4g/dtd
+	$(INSTALL) -m 644 ../conf/dtd/*.dtd $(libdir)/u4g/dtd
 
 install:: install-prog install-conf
-	$(INSTALL) -D ../icons/u4.bmp $(datadir)/pixmaps/u4.bmp
-	$(INSTALL) -D ../icons/u4.png $(datadir)/pixmaps/u4.png
+	$(INSTALL) -D -m 644 ../icons/u4.bmp $(datadir)/pixmaps/u4.bmp
+	$(INSTALL) -D -m 644 ../icons/u4.png $(datadir)/pixmaps/u4.png
 	mkdir -p $(libdir)/u4g/music
-#	$(INSTALL) ../mid/*.mid $(libdir)/u4g/music
-#	$(INSTALL) ../mid/*.it $(libdir)/u4g/music
-	$(INSTALL) ../music/*.wav $(libdir)/u4g/music
+#	$(INSTALL) -m 644 ../mid/*.mid $(libdir)/u4g/music
+#	$(INSTALL) -m 644 ../mid/*.it $(libdir)/u4g/music
+	$(INSTALL) -m 644 ../music/*.wav $(libdir)/u4g/music
 	mkdir -p $(libdir)/u4g/sound
-#	$(INSTALL) ../sound/*.ogg $(libdir)/u4g/sound
-	$(INSTALL) ../sound/*.wav $(libdir)/u4g/sound
+#	$(INSTALL) -m 644 ../sound/*.ogg $(libdir)/u4g/sound
+	$(INSTALL) -m 644 ../sound/*.wav $(libdir)/u4g/sound
 	mkdir -p $(libdir)/u4g/graphics
 	mkdir -p $(libdir)/u4g/graphics/ega
 	mkdir -p $(libdir)/u4g/graphics/hires
@@ -63,14 +63,14 @@ install:: install-prog install-conf
 	mkdir -p $(libdir)/u4g/graphics/vga
 	mkdir -p $(libdir)/u4g/graphics/vga2
 	mkdir -p $(libdir)/u4g/graphics/new
-	$(INSTALL) ../graphics/ega/*.png $(libdir)/u4g/graphics/ega
-	$(INSTALL) ../graphics/hires/*.png $(libdir)/u4g/graphics/hires
-	$(INSTALL) ../graphics/hires/*.vga $(libdir)/u4g/graphics/hires
-	$(INSTALL) ../graphics/png/*.png $(libdir)/u4g/graphics/png
-	$(INSTALL) ../graphics/vga/*.png $(libdir)/u4g/graphics/vga
-	$(INSTALL) ../graphics/vga2/*.png $(libdir)/u4g/graphics/vga2
-	$(INSTALL) ../graphics/new/* $(libdir)/u4g/graphics/new
-	$(INSTALL) -D ../u4.desktop $(datadir)/applications/u4.desktop
+	$(INSTALL) -m 644 ../graphics/ega/*.png $(libdir)/u4g/graphics/ega
+	$(INSTALL) -m 644 ../graphics/hires/*.png $(libdir)/u4g/graphics/hires
+	$(INSTALL) -m 644 ../graphics/hires/*.vga $(libdir)/u4g/graphics/hires
+	$(INSTALL) -m 644 ../graphics/png/*.png $(libdir)/u4g/graphics/png
+	$(INSTALL) -m 644 ../graphics/vga/*.png $(libdir)/u4g/graphics/vga
+	$(INSTALL) -m 644 ../graphics/vga2/*.png $(libdir)/u4g/graphics/vga2
+	$(INSTALL) -m 644 ../graphics/new/* $(libdir)/u4g/graphics/new
+	$(INSTALL) -D -m 644 ../u4.desktop $(datadir)/applications/u4.desktop
 
 
 # use GCC's automatic dependency generation

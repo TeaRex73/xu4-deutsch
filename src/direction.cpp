@@ -31,7 +31,7 @@ Direction dirReverse(Direction dir)
     case DIR_ADVANCE:
     case DIR_RETREAT:
     default:
-        ASSERT(0, "invalid direction: %d", dir);
+        U4ASSERT(0, "invalid direction: %d", dir);
         return DIR_NONE;
     }
 }
@@ -173,7 +173,7 @@ int directionToKey(Direction dir)
     case DIR_ADVANCE:
     case DIR_RETREAT:
     default:
-        ASSERT(0, "Invalid diration passed to directionToKey()");
+        U4ASSERT(0, "Invalid diration passed to directionToKey()");
         return 0;
     }
 }

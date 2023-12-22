@@ -47,9 +47,9 @@ TileAnimTransform *TileAnimTransform::create(const ConfigElement &conf)
             conf.getInt("y")
         );
         std::vector<ConfigElement> children = conf.getChildren();
-        for (std::vector<ConfigElement>::iterator i = children.begin();
-             i != children.end();
-             i++) {
+        for (std::vector<ConfigElement>::const_iterator i = children.cbegin();
+             i != children.cend();
+             ++i) {
             if (i->getName() == "color") {
                 RGBA *rgba = loadColorFromConf(*i);
                 static_cast<TileAnimPixelTransform *>(transform)
@@ -75,9 +75,9 @@ TileAnimTransform *TileAnimTransform::create(const ConfigElement &conf)
             conf.getInt("height")
         );
         std::vector<ConfigElement> children = conf.getChildren();
-        for (std::vector<ConfigElement>::iterator i = children.begin();
-             i != children.end();
-             i++) {
+        for (std::vector<ConfigElement>::const_iterator i = children.cbegin();
+             i != children.cend();
+             ++i) {
             if (i->getName() == "color") {
                 RGBA *rgba = loadColorFromConf(*i);
                 if (i == children.begin()) {
@@ -130,7 +130,9 @@ bool TileAnimInvertTransform::drawsTile() const
     return false;
 }
 
-void TileAnimInvertTransform::draw(Image *dest, Tile *tile, MapTile &mapTile)
+void TileAnimInvertTransform::draw(
+    Image *dest, Tile *tile, MapTile mapTile
+)
 {
     int scale = tile->getScale();
     tile->getImage()->drawSubRectInvertedOn(
@@ -138,7 +140,7 @@ void TileAnimInvertTransform::draw(Image *dest, Tile *tile, MapTile &mapTile)
         x * scale,
         y * scale,
         x * scale,
-        (tile->getHeight() * mapTile.frame) + (y * scale),
+        (tile->getHeight() * mapTile.getFrame()) + (y * scale),
         w * scale, h * scale
     );
 }
@@ -150,8 +152,8 @@ TileAnimPixelTransform::TileAnimPixelTransform(int x, int y)
 
 TileAnimPixelTransform::~TileAnimPixelTransform()
 {
-    std::vector<RGBA *>::iterator i;
-    for (i = colors.begin(); i != colors.end(); i++) {
+    std::vector<RGBA *>::const_iterator i;
+    for (i = colors.cbegin(); i != colors.cend(); ++i) {
         delete (*i);
     }
     colors.clear();
@@ -162,7 +164,7 @@ bool TileAnimPixelTransform::drawsTile() const
     return false;
 }
 
-void TileAnimPixelTransform::draw(Image *dest, Tile *tile, MapTile &)
+void TileAnimPixelTransform::draw(Image *dest, Tile *tile, MapTile )
 {
     RGBA *color = colors[xu4_random(colors.size())];
     int scale = tile->getScale();
@@ -188,7 +190,9 @@ TileAnimScrollTransform::TileAnimScrollTransform(int i)
 {
 }
 
-void TileAnimScrollTransform::draw(Image *dest, Tile *tile, MapTile &mapTile)
+void TileAnimScrollTransform::draw(
+    Image *dest, Tile *tile, MapTile mapTile
+)
 {
     if (increment == 0) {
         increment = tile->getScale();
@@ -207,7 +211,7 @@ void TileAnimScrollTransform::draw(Image *dest, Tile *tile, MapTile &mapTile)
         0,
         current,
         0,
-        tile->getHeight() * mapTile.frame,
+        tile->getHeight() * mapTile.getFrame(),
         tile->getWidth(),
         tile->getHeight() - current
     );
@@ -217,7 +221,8 @@ void TileAnimScrollTransform::draw(Image *dest, Tile *tile, MapTile &mapTile)
             0,
             0,
             0,
-            (tile->getHeight() * mapTile.frame) + tile->getHeight() - current,
+            (tile->getHeight() * mapTile.getFrame())
+            + tile->getHeight() - current,
             tile->getWidth(),
             current
         );
@@ -229,7 +234,9 @@ bool TileAnimScrambleTransform::drawsTile() const
     return true;
 }
 
-void TileAnimScrambleTransform::draw(Image *dest, Tile *tile, MapTile &mapTile)
+void TileAnimScrambleTransform::draw(
+    Image *dest, Tile *tile, MapTile mapTile
+)
 {
     int scale = tile->getScale();
     for (int i = 0; i < tile->getHeight() / scale; i++) {
@@ -239,7 +246,7 @@ void TileAnimScrambleTransform::draw(Image *dest, Tile *tile, MapTile &mapTile)
                 j * scale,
                 i * scale,
                 xu4_random(tile->getWidth() / scale) * scale,
-                (tile->getHeight() * mapTile.frame
+                (tile->getHeight() * mapTile.getFrame()
                  + xu4_random(tile->getHeight()))
                 / scale * scale,
                 scale,
@@ -257,7 +264,7 @@ bool TileAnimFrameTransform::drawsTile() const
     return true;
 }
 
-void TileAnimFrameTransform::draw(Image *dest, Tile *tile, MapTile &)
+void TileAnimFrameTransform::draw(Image *dest, Tile *tile, MapTile )
 {
     if (++currentFrame >= tile->getFrames()) {
         currentFrame = 0;
@@ -292,7 +299,7 @@ bool TileAnimPixelColorTransform::drawsTile() const
 }
 
 void TileAnimPixelColorTransform::draw(
-    Image *dest, Tile *tile, MapTile &mapTile
+    Image *dest, Tile *tile, MapTile mapTile
 )
 {
     RGBA diff = *end;
@@ -306,7 +313,7 @@ void TileAnimPixelColorTransform::draw(
             RGBA pixelAt;
             tileImage->getPixel(
                 i,
-                j + (mapTile.frame * tile->getHeight()),
+                j + (mapTile.getFrame() * tile->getHeight()),
                 pixelAt.r,
                 pixelAt.g,
                 pixelAt.b,
@@ -373,9 +380,9 @@ TileAnimContext *TileAnimContext::create(const ConfigElement &conf)
      */
     if (context) {
         std::vector<ConfigElement> children = conf.getChildren();
-        for (std::vector<ConfigElement>::iterator i = children.begin();
-             i != children.end();
-             i++) {
+        for (std::vector<ConfigElement>::const_iterator i = children.cbegin();
+             i != children.cend();
+             ++i) {
             if (i->getName() == "transform") {
                 TileAnimTransform *transform = TileAnimTransform::create(*i);
                 context->add(transform);
@@ -390,7 +397,7 @@ TileAnimContext::~TileAnimContext()
 {
     for (TileAnimTransformList::iterator i = animTransforms.begin();
          i != animTransforms.end();
-         i++) {
+         ++i) {
         delete (*i);
         (*i) = nullptr;
     }
@@ -413,9 +420,11 @@ TileAnimFrameContext::TileAnimFrameContext(int f)
 {
 }
 
-bool TileAnimFrameContext::isInContext(Tile *, MapTile &mapTile, Direction)
+bool TileAnimFrameContext::isInContext(
+    Tile *, MapTile mapTile, Direction
+)
 {
-    return mapTile.frame == frame;
+    return mapTile.getFrame() == frame;
 }
 
 
@@ -428,7 +437,9 @@ TileAnimPlayerDirContext::TileAnimPlayerDirContext(Direction d)
 {
 }
 
-bool TileAnimPlayerDirContext::isInContext(Tile *, MapTile &, Direction d)
+bool TileAnimPlayerDirContext::isInContext(
+    Tile *, MapTile , Direction d
+)
 {
     return d == dir;
 }
@@ -442,9 +453,9 @@ TileAnimSet::TileAnimSet(const ConfigElement &conf)
 
 {
     std::vector<ConfigElement> children = conf.getChildren();
-    for (std::vector<ConfigElement>::iterator i = children.begin();
-         i != children.end();
-         i++) {
+    for (std::vector<ConfigElement>::const_iterator i = children.cbegin();
+         i != children.cend();
+         ++i) {
         if (i->getName() == "tileanim") {
             TileAnim *anim = new TileAnim(*i);
             tileanims[anim->name] = anim;
@@ -454,8 +465,8 @@ TileAnimSet::TileAnimSet(const ConfigElement &conf)
 
 TileAnimSet::~TileAnimSet()
 {
-    TileAnimMap::iterator i;
-    for (i = tileanims.begin(); i != tileanims.end(); i++) {
+    TileAnimMap::const_iterator i;
+    for (i = tileanims.cbegin(); i != tileanims.cend(); ++i) {
         delete (i->second);
     }
 }
@@ -480,9 +491,9 @@ TileAnim::TileAnim(const ConfigElement &conf)
      random(conf.exists("random") ? conf.getInt("random") : 0)
 {
     std::vector<ConfigElement> children = conf.getChildren();
-    for (std::vector<ConfigElement>::iterator i = children.begin();
-         i != children.end();
-         i++) {
+    for (std::vector<ConfigElement>::const_iterator i = children.cbegin();
+         i != children.cend();
+         ++i) {
         if (i->getName() == "transform") {
             TileAnimTransform *transform = TileAnimTransform::create(*i);
             transforms.push_back(transform);
@@ -495,19 +506,22 @@ TileAnim::TileAnim(const ConfigElement &conf)
 
 TileAnim::~TileAnim()
 {
-    for(std::vector<TileAnimTransform *>::iterator i = transforms.begin();
+    for(std::vector<TileAnimTransform *>::const_iterator i =
+            transforms.cbegin();
         i != transforms.end();
-        i++) {
+        ++i) {
         delete (*i);
     }
-    for(std::vector<TileAnimContext *>::iterator i = contexts.begin();
-        i != contexts.end();
-        i++) {
+    for(std::vector<TileAnimContext *>::const_iterator i = contexts.cbegin();
+        i != contexts.cend();
+        ++i) {
         delete (*i);
     }
 }
 
-void TileAnim::draw(Image *dest, Tile *tile, MapTile &mapTile, Direction dir)
+void TileAnim::draw(
+    Image *dest, Tile *tile, MapTile mapTile, Direction dir
+) const
 {
     std::vector<TileAnimTransform *>::const_iterator t;
     std::vector<TileAnimContext *>::const_iterator c;
@@ -515,13 +529,13 @@ void TileAnim::draw(Image *dest, Tile *tile, MapTile &mapTile, Direction dir)
     /* nothing to do, draw the tile and return! */
     if ((random && (xu4_random(100) > random))
         || (!transforms.size() && !contexts.size())
-        || mapTile.freezeAnimation) {
+        || mapTile.getFreezeAnimation()) {
         tile->getImage()->drawSubRectOn(
             dest,
             0,
             0,
             0,
-            mapTile.frame * tile->getHeight(),
+            mapTile.getFrame() * tile->getHeight(),
             tile->getWidth(),
             tile->getHeight()
         );
@@ -530,7 +544,7 @@ void TileAnim::draw(Image *dest, Tile *tile, MapTile &mapTile, Direction dir)
     /**
      * Do global transforms
      */
-    for (t = transforms.begin(); t != transforms.end(); t++) {
+    for (t = transforms.cbegin(); t != transforms.cend(); ++t) {
         TileAnimTransform *transform = *t;
         if (!transform->random ||
             (xu4_random(100) < transform->random)) {
@@ -540,7 +554,7 @@ void TileAnim::draw(Image *dest, Tile *tile, MapTile &mapTile, Direction dir)
                     0,
                     0,
                     0,
-                    mapTile.frame * tile->getHeight(),
+                    mapTile.getFrame() * tile->getHeight(),
                     tile->getWidth(), tile->getHeight()
                 );
             }
@@ -551,13 +565,13 @@ void TileAnim::draw(Image *dest, Tile *tile, MapTile &mapTile, Direction dir)
     /**
      * Do contextual transforms
      */
-    for (c = contexts.begin(); c != contexts.end(); c++) {
+    for (c = contexts.cbegin(); c != contexts.cend(); ++c) {
         if ((*c)->isInContext(tile, mapTile, dir)) {
             TileAnimContext::TileAnimTransformList
                 ctx_transforms = (*c)->getTransforms();
-            for (t = ctx_transforms.begin();
-                 t != ctx_transforms.end();
-                 t++) {
+            for (t = ctx_transforms.cbegin();
+                 t != ctx_transforms.cend();
+                 ++t) {
                 TileAnimTransform *transform = *t;
                 if (!transform->random
                     || (xu4_random(100) < transform->random)) {
@@ -567,7 +581,7 @@ void TileAnim::draw(Image *dest, Tile *tile, MapTile &mapTile, Direction dir)
                             0,
                             0,
                             0,
-                            mapTile.frame * tile->getHeight(),
+                            mapTile.getFrame() * tile->getHeight(),
                             tile->getWidth(),
                             tile->getHeight()
                         );

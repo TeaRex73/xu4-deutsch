@@ -16,7 +16,7 @@ class ConfigElement;
 
 class Weapon {
 public:
-    enum Flags {
+    enum Flags: unsigned short {
         WEAP_LOSE = 0x0001,
         WEAP_LOSEWHENRANGED = 0x0002,
         WEAP_CHOOSEDISTANCE = 0x0004,
@@ -140,7 +140,7 @@ public:
     }
 
 private:
-    Weapon(const ConfigElement &conf);
+    explicit Weapon(const ConfigElement &conf);
     ~Weapon();
     static void loadConf();
     static bool confLoaded;

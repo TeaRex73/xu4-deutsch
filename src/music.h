@@ -59,15 +59,15 @@ public:
 
     static void callback(void *);
 
-    void init()
+    static void init()
     {
     }
 
     void playCurrent();
     void play();
 
-    void freeze();
-    void thaw();
+    static void freeze();
+    static void thaw();
 
     void pause()
     {
@@ -76,13 +76,13 @@ public:
         stopMid();
     }
 
-    void stop()
+    static void stop()
     {
         on = false;    /**< Stop playing music */
         stopMid();
     }
 
-    void fadeOut(int msecs);
+    static void fadeOut(int msecs);
     void fadeIn(int msecs, bool loadFromMap);
 
     void lordBritish()
@@ -107,7 +107,7 @@ public:
 
     void create_or_win()
     {
-        playMid(EXTRA); /**< Music when starting a new game of ending */
+        playMid(EXTRA); /**< Music for starting game or game won */
     }
 
     void intro()
@@ -120,18 +120,18 @@ public:
 
     void introSwitch(int n);
     bool toggle();
-    int decreaseMusicVolume();
-    int increaseMusicVolume();
+    static int decreaseMusicVolume();
+    static int increaseMusicVolume();
 
-    void setMusicVolume(int volume)
+    static void setMusicVolume(int volume)
     {
         setMusicVolume_sys(volume);
     }
 
-    int decreaseSoundVolume();
-    int increaseSoundVolume();
+    static int decreaseSoundVolume();
+    static int increaseSoundVolume();
 
-    void setSoundVolume(int volume)
+    static void setSoundVolume(int volume)
     {
         setSoundVolume_sys(volume);
     }
@@ -146,17 +146,17 @@ public:
 private:
     void create_sys();
     void destroy_sys();
-    void setMusicVolume_sys(int volume);
-    void setSoundVolume_sys(int volume);
-    void fadeOut_sys(int msecs);
+    static void setMusicVolume_sys(int volume);
+    static void setSoundVolume_sys(int volume);
+    static void fadeOut_sys(int msecs);
     void fadeIn_sys(int msecs, bool loadFromMap);
-    bool isPlaying_sys();
+    static bool isPlaying_sys();
     static Music *instance;
     static bool fading;
     static bool on;
     bool load_sys(const std::string &pathname);
     void playMid(Type music);
-    void stopMid();
+    static void stopMid();
     bool load(Type music);
 };
 

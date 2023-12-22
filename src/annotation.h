@@ -36,7 +36,7 @@ public:
         return coords;    /**< Returns coordinates of annotation */
     }
 
-    MapTile &getTile()
+    MapTile getTile() const
     {
         return tile;      /**< Returns the annotation's tile */
     }
@@ -51,7 +51,7 @@ public:
         return ttl; /**< Returns number of turns of annotation */
     }
 
-    bool isCoverUp()
+    bool isCoverUp() const
     {
         return coverUp;
     }
@@ -61,7 +61,7 @@ public:
         coords = c;       /**< Sets coords for the annotation */
     }
 
-    void setTile(const MapTile &t)
+    void setTile(MapTile t)
     {
         tile = t;         /**< Sets tile for the annotation */
     }
@@ -103,23 +103,22 @@ class AnnotationMgr {
 public:
     AnnotationMgr();
     Annotation *add(
-        Coords coords,
+        const Coords &coords,
         MapTile tile,
         bool visual = false,
-        bool isCoverUp = false
+        bool coverUp = false
     );
-    Annotation::List allAt(Coords pos);
-    std::list<Annotation *> ptrsToAllAt(Coords pos);
+    Annotation::List allAt(const Coords &coords) const;
+    std::list<const Annotation *> ptrsToAllAt(const Coords &coords) const;
     void clear();
     void passTurn();
-    void remove(Coords pos, MapTile tile);
-    void remove(Annotation &);
-    void remove(Annotation::List);
-    int size();
+    void remove(const Coords &coords, MapTile tile);
+    void remove(const Annotation &a);
+    void remove(const Annotation::List &l);
+    int size() const;
 
 private:
     Annotation::List annotations;
-    Annotation::List::iterator i;
 };
 
 #endif // ifndef ANNOTATION_H

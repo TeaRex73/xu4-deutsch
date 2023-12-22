@@ -10,7 +10,7 @@
 
 class ProgressBar:public View {
 public:
-    ProgressBar(int x, int y, int width, int height, int min, int max);
+    ProgressBar(int x, int y, int width, int height, int _min, int _max);
     virtual ProgressBar &operator++();
     virtual ProgressBar &operator--();
     virtual void draw();

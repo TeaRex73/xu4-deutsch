@@ -44,8 +44,7 @@ int chars_needed(
  */
 bool isPerson(Object *punknown)
 {
-    Person *p;
-    if ((p = dynamic_cast<Person *>(punknown)) != nullptr) {
+    if (dynamic_cast<Person *>(punknown) != nullptr) {
         return true;
     } else {
         return false;
@@ -59,11 +58,11 @@ bool isPerson(Object *punknown)
 std::list<std::string> replySplit(const std::string &text)
 {
     std::string str = text;
-    int pos, real_lines;
+    int real_lines;
     std::list<std::string> reply;
     /* skip over any initial newlines */
-    if ((pos = str.find("\n\n")) == 0) {
-        str = str.substr(pos + 1);
+    if (str.compare(0, 2, "\n\n") == 0) {
+        str = str.substr(1);
     }
     unsigned int num_chars = chars_needed(
         str.c_str(), TEXT_AREA_W, TEXT_AREA_H, &real_lines
@@ -162,7 +161,7 @@ void Person::setDialogue(Dialogue *d)
 void Person::setNpcType(PersonNpcType t)
 {
     npcType = t;
-    ASSERT(!isVendor() || dialogue == nullptr, "vendor has dialogue");
+    U4ASSERT(!isVendor() || dialogue == nullptr, "vendor has dialogue");
 }
 
 std::list<std::string> Person::getConversationText(
@@ -242,9 +241,11 @@ std::list<std::string> Person::getConversationText(
                             TEXT_AREA_X + c->col,
                             TEXT_AREA_Y + c->line
                         );
-                        if (str.size()) {
+                        if (int strsize = str.size()) {
                             str = deumlaut(lowercase(str));
-                            str = str.substr(0, 5);
+                            if (strsize > 5) {
+                                str.resize(5);
+                            }
                             script->setVar(script->getInputName(), str);
                         } else {
                             script->unsetVar(script->getInputName());
@@ -291,21 +292,21 @@ std::list<std::string> Person::getConversationText(
             text += getResponse(cnv, inquiry) + "\n";
             break;
         case Conversation::CONFIRMATION:
-            ASSERT(
+            U4ASSERT(
                 npcType == NPC_LORD_BRITISH, "invalid state: %d", cnv->state
             );
             text += lordBritishGetQuestionResponse(cnv, inquiry);
             break;
         case Conversation::ASK:
         case Conversation::ASKYESNO:
-            ASSERT(
+            U4ASSERT(
                 npcType != NPC_HAWKWIND,
                 "invalid state for hawkwind conversation"
             );
             text += talkerGetQuestionResponse(cnv, inquiry);
             break;
         case Conversation::GIVEBEGGAR:
-            ASSERT(
+            U4ASSERT(
                 npcType == NPC_TALKER_BEGGAR, "invalid npc type: %d", npcType
             );
             text = beggarGetQuantityResponse(cnv, inquiry);
@@ -315,7 +316,7 @@ std::list<std::string> Person::getConversationText(
             /* handled elsewhere */
             break;
         default:
-            ASSERT(0, "invalid state: %d", cnv->state);
+            U4ASSERT(0, "invalid state: %d", cnv->state);
         }
     }
     return replySplit(text);
@@ -345,7 +346,7 @@ std::string Person::getPrompt(Conversation *cnv)
     return prompt;
 }
 
-
+#if 0 // unused and broken
 /**
  * Returns the valid keyboard choices for a given conversation.
  */
@@ -361,10 +362,11 @@ const char *Person::getChoices(Conversation *cnv)
     case Conversation::PLAYER:
         return "012345678\015 \033";
     default:
-        ASSERT(0, "invalid state: %d", cnv->state);
+        U4ASSERT(0, "invalid state: %d", cnv->state);
     }
     return nullptr;
 }
+#endif
 
 std::string Person::getIntro(Conversation *cnv)
 {
@@ -389,9 +391,9 @@ std::string Person::processResponse(Conversation *cnv, Response *response)
 {
     std::string text;
     const std::vector<ResponsePart> &parts = response->getParts();
-    for (std::vector<ResponsePart>::const_iterator i = parts.begin();
-         i != parts.end();
-         i++) {
+    for (std::vector<ResponsePart>::const_iterator i = parts.cbegin();
+         i != parts.cend();
+         ++i) {
         // check for command triggers
         if (i->isCommand()) {
             runCommand(cnv, *i);
@@ -431,8 +433,10 @@ void Person::runCommand(Conversation *cnv, const ResponsePart &command)
         musicMgr->play();
     } else if (command == ResponsePart::HAWKWIND) {
         c->party->adjustKarma(KA_HAWKWIND);
+    } else if (command == ResponsePart::DISKLOAD) {
+        EventHandler::simulateDiskLoad(2000);
     } else {
-        ASSERT(
+        U4ASSERT(
             0,
             "unknown command trigger in dialogue response: %s\n",
             std::string(command).c_str()
@@ -445,7 +449,6 @@ std::string Person::getResponse(Conversation *cnv, const char *inquiry)
     std::string reply;
     Virtue v;
     const ResponsePart &action = dialogue->getAction();
-    reply = "\n";
     /* Does the person take action during the conversation? */
     if (action == ResponsePart::END) {
         runCommand(cnv, action);
@@ -514,7 +517,7 @@ std::string Person::talkerGetQuestionResponse(
 
 std::string Person::beggarGetQuantityResponse(
     Conversation *cnv, const char *response
-)
+) const
 {
     std::string reply;
     cnv->quant = static_cast<int>(std::strtol(response, nullptr, 10));
@@ -618,7 +621,7 @@ int chars_needed(
     int lines = 0;
     while ((pos = text.find("\n\n")) < text.length()) {
         std::string p = text.substr(0, pos);
-        lines += linecount(p.c_str(), columnmax);
+        lines += linecount(p, columnmax);
         if (lines <= linesdesired) {
             paragraphs += p + "\n";
         } else {
@@ -628,7 +631,7 @@ int chars_needed(
     }
     // Seems to be some sort of clang compilation bug in this code,
     // that causes this addition to not work correctly.
-    int totalPossibleLines = lines + linecount(text.c_str(), columnmax);
+    int totalPossibleLines = lines + linecount(text, columnmax);
     if (totalPossibleLines <= linesdesired) {
         paragraphs += text;
     }

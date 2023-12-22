@@ -12,17 +12,17 @@
  */
 class Controller {
 public:
-    Controller(int timerInterval = 1);
+    explicit Controller(int timerInterval = 1);
     virtual ~Controller();
 
     /* methods for interacting with event manager */
-    virtual bool  isCombatController() const
+    virtual bool isCombatController() const
     {
         return false;
     }
 
     bool notifyKeyPressed(int key);
-    int getTimerInterval();
+    int getTimerInterval() const;
     static void timerCallback(void *data);
     /* control methods subclasses may want to override */
     virtual bool keyPressed(int key) = 0;
@@ -71,7 +71,7 @@ public:
 protected:
     T value;
 
-    void doneWaiting()
+    void doneWaiting() const
     {
         if (exitWhenDone) {
             Controller_endWait();

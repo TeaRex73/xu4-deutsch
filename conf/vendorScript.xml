@@ -13,7 +13,7 @@
             <music type="shopping"/>
             WILLKOMMEN BEI {name}.
 
-            {owner} SAGT: WILLKOMMEN FREUND<if test="{party:member1:sex}=f">IN</if>! WILLST DU KAUFEN ODER VERKAUFEN?<input type="choice" options="kv" target="buy_sell"/>
+            {owner} SAGT: WILLKOMMEN <if test="{party:member1:sex}=f">FREUNDIN!</if><if test="{party:member1:sex}=m">FREUND!</if> WILLST DU KAUFEN ODER VERKAUFEN?<input type="choice" options="kv" target="buy_sell"/>
         </intro>
 
         <end>
@@ -23,7 +23,7 @@
 
         <bye>
             {owner} SAGT: LEBE WOHL!
-        <end/>
+            <end/>
         </bye>
 
         <!--
@@ -120,7 +120,7 @@
         </tell_about>
 
         <tell_about choice="e">
-            DIESER STREITKOLBEN HAT EINEN GEH[RTETEN SCHAFT UND SEIN KOPF WIEGT F]NF PFUND, {price}gs SIND EIN SPOTTPREIS.
+            DIESER STREITKOLBEN HAT EINEN GEH[RTETEN SCHAFT, UND SEIN KOPF WIEGT F]NF PFUND, {price}gs SIND EIN SPOTTPREIS.
         </tell_about>
 
         <tell_about choice="f">
@@ -302,9 +302,9 @@
         <intro>
             <ztats screen="armor"/>
             <music type="shopping"/>
-            WILLKOMMEN BEI {name}.
+            WILLKOMMEN BEI {name}
 
-            {owner} SAGT: WILLKOMMEN FREUND<if test="{party:member1:sex}=f">IN</if>! WILLST DU KAUFEN ODER VERKAUFEN?<input type="choice" options="kv" target="buy_sell"/>
+            {owner} SAGT: WILLKOMMEN <if test="{party:member1:sex}=f">FREUNDIN!</if><if test="{party:member1:sex}=m">FREUND!</if> WILLST DU KAUFEN ODER VERKAUFEN?<input type="choice" options="kv" target="buy_sell"/>
         </intro>
 
         <end>
@@ -314,7 +314,7 @@
 
         <bye>
             {owner} SAGT: ADE.
-        <end/>
+            <end/>
         </bye>
 
        <!--
@@ -503,31 +503,31 @@
             SCH\N! WAS NOCH <redirect target="you_sell"/>
         </sell>
 
-        <vendor id="BRITAIN" name="WINDSOR SCHUTZMACHEREI" owner="WINSTON">
+        <vendor id="BRITAIN" name="WINDSOR SCHUTZMACHEREI." owner="WINSTON">
             <armor choice="b" name="TUCH" price="50"/>
             <armor choice="c" name="LEDER" price="200"/>
             <armor choice="d" name="KETTE" price="600"/>
         </vendor>
 
-        <vendor id="JHELOM" name="VALIANTS SCHUTZMACHEREI" owner="VALIANT">
+        <vendor id="JHELOM" name="VALIANTS SCHUTZMACHEREI." owner="VALIANT">
             <armor choice="d" name="KETTE" price="600"/>
             <armor choice="e" name="PLATTE" price="2000"/>
             <armor choice="f" name="MAG. KETTE" price="4000"/>
             <armor choice="g" name="MAG. PLATTE" price="7000"/>
         </vendor>
 
-        <vendor id="TRINSIC" name="DER DECKUNG GMBH &amp; CO. KG" owner="JEAN">
+        <vendor id="TRINSIC" name="DER DECKUNG GMBH &amp; CO. KG!" owner="JEAN">
             <armor choice="b" name="TUCH" price="50"/>
             <armor choice="d" name="KETTE" price="600"/>
             <armor choice="f" name="MAG. KETTE" price="4000"/>
         </vendor>
 
-        <vendor id="PFOTEN" name="LEICHTSCHUTZ" owner="PIERRE">
+        <vendor id="PFOTEN" name="LEICHTSCHUTZ." owner="PIERRE">
             <armor choice="b" name="TUCH" price="50"/>
             <armor choice="c" name="LEDER" price="200"/>
         </vendor>
 
-        <vendor id="BUKANIER-NEST" name="DEM EINFACHEN SCHUTZE" owner="LIMPY">
+        <vendor id="BUKANIER-NEST" name="DEM EINFACHEN SCHUTZE." owner="LIMPY">
             <armor choice="b" name="TUCH" price="50"/>
             <armor choice="c" name="LEDER" price="200"/>
             <armor choice="d" name="KETTE" price="600"/>
@@ -545,8 +545,9 @@
             <music type="shopping"/>
             WILLKOMMEN BEI{name}.
 
-            {owner} SAGT: GUTEN TAG, UND WILLKOMMEN, <if test="{party:member1:sex}=m">FREUND.</if><if test="{party:member1:sex}=f">FREUNDIN.</if><if test="{party:gold}&lt;{price}" redirect="come_back"/>
-        
+            {owner} SAGT: GUTEN TAG, UND WILLKOMMEN, <if test="{party:member1:sex}=f">FREUNDIN.
+            </if><if test="{party:member1:sex}=m">FREUND.
+            </if><if test="{party:gold}&lt;{price}" redirect="come_back"/>
             BIST DU AN LEBENSMITTELN INTERESSIERT?<input type="choice" options="jn" target="ask"/>
         </intro>
 
@@ -913,7 +914,7 @@
             <music type="shopping"/>
             WILKOMMEN BEI{name}.
 
-            {healer} SAGT: FRIEDE UND FREUDE SEI MIT DIR, FREUND<if test="{party:member1:sex}=f">IN</if>. BEN\TIGST DU HILFE?<input type="choice" options="jn" target="show_services"/>
+            {healer} SAGT: FRIEDE UND FREUDE SEI MIT DIR, <if test="{party:member1:sex}=f">FREUNDIN.</if><if test="{party:member1:sex}=m">FREUND.</if> BEN\TIGST DU HILFE?<input type="choice" options="jn" target="show_services"/>
         </intro>
 
         <end>
@@ -1208,8 +1209,8 @@
         <intro>
             <music type="shopping"/>
             <ztats screen="equipment"/>
-            WAHRSCHAU, <if test="{party:member1:sex}=m">MAAT!</if><if test="{party:member1:sex}=f">MIEN DEERN!</if> SICHER WILLST DU VOM ALTEN {ownerdat} KAUFEN!
-        
+            WAHRSCHAU, MIEN <if test="{party:member1:sex}=m">JONG!</if><if test="{party:member1:sex}=f">DEERN!</if> SICHER WILLST DU VOM ALTEN {ownerdat} KAUFEN!
+
             {owner} SAGT: WILKOMMEN I{name}.
             WILLST DU MEINE BEUTE SEHEN?<input type="choice" options="jn" target="show_goods"/>
         </intro>
@@ -1220,16 +1221,17 @@
         </end>
 
         <bye>
-            <unset_context/>
-            {owner} SAGT: AUF BALD, <if test="{party:member1:sex}=m">MAAT!
-            </if><if test="{party:member1:sex}=f">MIEN DEERN!
+            {owner} SAGT: AUF BALD, MIEN <if test="{party:member1:sex}=m">JONG!
+            </if><if test="{party:member1:sex}=f">DEERN!
             </if>
             <end/>
         </bye>
 
         <show_goods default="true" redirect="bye"/>
         <show_goods choice="j">
-            {owner} SAGT: GUT, <if test="{party:member1:sex}=m">MAAT!</if><if test="{party:member1:sex}=f">MIEN DEERN!</if>
+            {owner} SAGT: GUT, MIEN <if test="{party:member1:sex}=m">JONG!
+            </if><if test="{party:member1:sex}=f">DEERN!
+            </if>
             SCHAU HER, ICH HAB:
             {show_inventory:show_item}
             WAS SOLLS'N SEIN?<input type="choice" options="{inventory_choices}" target="tell_about"/>

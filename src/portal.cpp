@@ -61,7 +61,7 @@ void createDngLadder(
  * a portal based on the ladder and uses it.
  */
 bool usePortalAt(
-    Location *location, MapCoords coords, PortalTriggerAction action
+    Location *location, const MapCoords &coords, PortalTriggerAction action
 )
 {
     Map *destination;
@@ -87,9 +87,10 @@ bool usePortalAt(
             return false;
         }
     }
+    // at this point, we know portal is not nullptr
+
     /* conditions not met for portal to work */
-    if (portal
-        && portal->portalConditionsMet
+    if (portal->portalConditionsMet
         && !(*portal->portalConditionsMet)(portal)) {
         return false;
     }
@@ -122,7 +123,7 @@ bool usePortalAt(
             case Map::CITY:
             {
                 City *city = dynamic_cast<City *>(destination);
-                screenMessage("%s betreten\n\n", city->type.c_str());
+                screenMessage("%s betreten\n\n", city->cityType.c_str());
                 break;
             }
             case Map::SHRINE:

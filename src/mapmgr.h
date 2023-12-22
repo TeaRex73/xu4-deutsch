@@ -90,7 +90,7 @@ public:
     static MapMgr *getInstance();
     static void destroy();
     Map *get(MapId id);
-    Map *initMap(Map::Type type);
+    static Map *initMap(Map::Type type);
     void unloadMap(MapId id);
 
 private:
@@ -102,21 +102,23 @@ private:
     ~MapMgr();
     void registerMap(Map *map);
     Map *initMapFromConf(const ConfigElement &mapConf);
-    void initCityFromConf(const ConfigElement &cityConf, City *city);
-    PersonRole *initPersonRoleFromConf(const ConfigElement &cityConf);
-    Portal *initPortalFromConf(const ConfigElement &portalConf);
-    void initShrineFromConf(
+    static void initCityFromConf(const ConfigElement &cityConf, City *city);
+    static PersonRole *initPersonRoleFromConf(
+        const ConfigElement &personRoleConf
+    );
+    static Portal *initPortalFromConf(const ConfigElement &portalConf);
+    static void initShrineFromConf(
         const ConfigElement &shrineConf, Shrine *shrine
     );
-    void initDungeonFromConf(
+    static void initDungeonFromConf(
         const ConfigElement &dungeonConf, Dungeon *dungeon
     );
     void initDungeonRoom(Dungeon *dng, int room);
-    void createMoongateFromConf(const ConfigElement &moongateConf);
-    int initCompressedChunkFromConf(
+    static void createMoongateFromConf(const ConfigElement &moongateConf);
+    static int initCompressedChunkFromConf(
         const ConfigElement &compressedChunkConf
     );
-    std::pair<std::string, MapCoords> initLabelFromConf(
+    static std::pair<std::string, MapCoords> initLabelFromConf(
         const ConfigElement &labelConf
     );
     static MapMgr *instance;

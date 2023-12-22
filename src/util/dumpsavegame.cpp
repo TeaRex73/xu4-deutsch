@@ -14,7 +14,7 @@ char *itemsString(unsigned short items);
 int main(int argc, char *argv[])
 {
     SaveGame sg;
-    FILE *in;
+    std::FILE *in;
     if (argc != 2) {
         std::fprintf(stderr, "usage: %s party.sav\n", argv[0]);
         exit(1);
@@ -169,7 +169,7 @@ char *itemsString(unsigned short items)
     buffer[0] = '\0';
     if (items & ITEM_SKULL) {
         std::strcat(
-            std::strcat(buffer, first ? "" : ", "), getItemName(ITEM_SKULL)
+            buffer, getItemName(ITEM_SKULL)
         );
         first = 0;
     }
@@ -241,7 +241,7 @@ char *itemsString(unsigned short items)
     }
     if (items & 0x8000) {
         std::strcat(std::strcat(buffer, first ? "" : ", "), "(bit 16)");
-        first = 0;
+        /* first = 0; */
     }
     return buffer;
 }

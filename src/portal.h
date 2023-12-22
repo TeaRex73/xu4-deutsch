@@ -76,7 +76,7 @@ void createDngLadder(
 );
 
 bool usePortalAt(
-    Location *location, MapCoords coords,PortalTriggerAction action
+    Location *location, const MapCoords &coords, PortalTriggerAction action
 );
 
 #endif // ifndef PORTAL_H

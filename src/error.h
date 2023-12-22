@@ -11,7 +11,7 @@
 #define PRINTF_LIKE(x, y) /* nothing */
 #endif
 
-void errorFatal(const char *fmt, ...) PRINTF_LIKE(1, 2);
+[[noreturn]] void errorFatal(const char *fmt, ...) PRINTF_LIKE(1, 2);
 void errorWarning(const char *fmt, ...) PRINTF_LIKE(1, 2);
 
 #endif

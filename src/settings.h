@@ -29,7 +29,7 @@
 #ifdef RASB_PI
 # define DEFAULT_SCALE 1
 #else
-# define DEFAULT_SCALE 2
+# define DEFAULT_SCALE 1
 #endif
 #define DEFAULT_FULLSCREEN 0
 #define DEFAULT_FILTER "Point"
@@ -226,7 +226,7 @@ class Settings
     :public SettingsData,
      public Observable<Settings *> {
 public:
-    void init(const bool useProfile, const std::string profileName);
+    void init(const bool useProfile, const std::string &profileName);
 
     virtual ~Settings() = default;
 
@@ -241,8 +241,8 @@ public:
     void setData(const SettingsData &data);
     bool read();
     bool write();
-    const std::string &getUserPath();
-    const std::vector<std::string> &getBattleDiffs();
+    const std::string &getUserPath() const;
+    const std::vector<std::string> &getBattleDiffs() const;
 
 private:
     typedef std::map<std::string, int, std::less<std::string> > SettingsMap;

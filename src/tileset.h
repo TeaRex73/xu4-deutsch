@@ -38,7 +38,7 @@ public:
     static void load();
     static void unloadAll();
     static TileRuleMap rules; // A map of rule names to rules
-    bool initFromConf(const ConfigElement &tileRuleConf);
+    bool initFromConf(const ConfigElement &conf);
     std::string name;
     unsigned short mask;
     unsigned short movementMask;
@@ -81,7 +81,7 @@ public:
     static Tile *findTileById(TileId id);
     void load(const ConfigElement &tilesetConf);
     void unload();
-    void unloadImages();
+    void unloadImages() const;
     Tile *get(TileId id);
     Tile *getByName(const std::string &name);
     std::string getImageName() const;

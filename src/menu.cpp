@@ -4,6 +4,8 @@
 
 #include "vc6.h" // Fixes things if you're using VC6, does nothing otherwise
 
+#include <algorithm>
+
 #include "menu.h"
 
 #include "error.h"
@@ -23,14 +25,14 @@ Menu::Menu()
 
 Menu::~Menu()
 {
-    for (MenuItemList::iterator i = items.begin(); i != items.end(); i++) {
+    for (MenuItemList::iterator i = items.begin(); i != items.end(); ++i) {
         delete *i;
     }
 }
 
 void Menu::removeAll()
 {
-    for (MenuItemList::iterator i = items.begin(); i != items.end(); i++) {
+    for (MenuItemList::iterator i = items.begin(); i != items.end(); ++i) {
         delete *i;
     }
     items.clear();
@@ -40,7 +42,7 @@ void Menu::removeAll()
 /**
  * Adds an item to the menu list and returns the menu
  */
-void Menu::add(int id, std::string text, short x, short y, int sc)
+void Menu::add(int id, const std::string &text, short x, short y, int sc)
 {
     MenuItem *item = new MenuItem(text, x, y, sc);
     item->setId(id);
@@ -54,23 +56,31 @@ MenuItem *Menu::add(int id, MenuItem *item)
     return item;
 }
 
-void Menu::addShortcutKey(int id, int shortcutKey)
+void Menu::addShortcutKey(int id, int shortcutKey) const
 {
-    for (MenuItemList::iterator i = items.begin(); i != items.end(); i++) {
-        if ((*i)->getId() == id) {
-            (*i)->addShortcutKey(shortcutKey);
-            break;
+    MenuItemList::const_iterator i = std::find_if(
+        items.cbegin(),
+        items.cend(),
+        [&](const MenuItem *v) {
+            return v->getId() == id;
         }
+    );
+    if (i != items.cend()) {
+        (*i)->addShortcutKey(shortcutKey);
     }
 }
 
-void Menu::setClosesMenu(int id)
+void Menu::setClosesMenu(int id) const
 {
-    for (MenuItemList::iterator i = items.begin(); i != items.end(); i++) {
-        if ((*i)->getId() == id) {
-            (*i)->setClosesMenu(true);
-            break;
+    MenuItemList::const_iterator i = std::find_if(
+        items.cbegin(),
+        items.cend(),
+        [&](const MenuItem *v) {
+            return v->getId() == id;
         }
+    );
+    if (i != items.cend()) {
+        (*i)->setClosesMenu(true);
     }
 }
 
@@ -78,7 +88,7 @@ void Menu::setClosesMenu(int id)
 /**
  * Returns the menu item that is currently selected/highlighted
  */
-Menu::MenuItemList::iterator Menu::getCurrent()
+Menu::MenuItemList::iterator Menu::getCurrent() const
 {
     return selected;
 }
@@ -106,7 +116,7 @@ void Menu::show(TextView *view)
     if (title.length() > 0) {
         view->textAt(titleX, titleY, "%s", title.c_str());
     }
-    for (current = items.begin(); current != items.end(); current++) {
+    for (current = items.begin(); current != items.end(); ++current) {
         MenuItem *mi = *current;
         if (mi->isVisible()) {
             std::string text(mi->getText());
@@ -118,7 +128,7 @@ void Menu::show(TextView *view)
                     mi->getX(),
                     mi->getY(),
                     view->colorizeString(
-                        text.c_str(), FG_YELLOW, mi->getScOffset(), 1
+                        text, FG_YELLOW, mi->getScOffset(), 1
                     ).c_str()
                 );
                 // hack for the custom U5 mix reagents menu
@@ -135,7 +145,7 @@ void Menu::show(TextView *view)
                     mi->getY(),
                     "%s",
                     view->colorizeString(
-                        text.c_str(), FG_YELLOW, mi->getScOffset(), 1
+                        text, FG_YELLOW, mi->getScOffset(), 1
                     ).c_str()
                 );
             }
@@ -152,7 +162,7 @@ void Menu::show(TextView *view)
 bool Menu::isVisible()
 {
     bool visible = false;
-    for (current = items.begin(); current != items.end(); current++) {
+    for (current = items.begin(); current != items.end(); ++current) {
         if ((*current)->isVisible()) {
             visible = true;
         }
@@ -192,12 +202,12 @@ void Menu::prev()
         if (i == items.begin()) {
             i = items.end();
         }
-        i--;
+        --i;
         while (!(*i)->isVisible()) {
             if (i == items.begin()) {
                 i = items.end();
             }
-            i--;
+            --i;
         }
     }
     setCurrent(i);
@@ -210,7 +220,7 @@ void Menu::prev()
 void Menu::highlight(MenuItem *item)
 {
     // unhighlight all menu items first
-    for (current = items.begin(); current != items.end(); current++) {
+    for (current = items.begin(); current != items.end(); ++current) {
         (*current)->setHighlighted(false);
     }
     if (item) {
@@ -244,8 +254,8 @@ Menu::MenuItemList::iterator Menu::begin_visible()
         return items.end();
     }
     current = items.begin();
-    while (!(*current)->isVisible() && current != items.end()) {
-        current++;
+    while (current != items.end() && !(*current)->isVisible()) {
+        ++current;
     }
     return current;
 }
@@ -263,7 +273,7 @@ void Menu::reset(bool highlightFirst)
     /* get the first visible menu item */
     selected = begin_visible();
     /* un-highlight and deselect each menu item */
-    for (current = items.begin(); current != items.end(); current++) {
+    for (current = items.begin(); current != items.end(); ++current) {
         (*current)->setHighlighted(false);
         (*current)->setSelected(false);
     }
@@ -285,12 +295,14 @@ Menu::MenuItemList::iterator Menu::getById(int id)
     if (id == -1) {
         return getCurrent();
     }
-    for (current = items.begin(); current != items.end(); current++) {
-        if ((*current)->getId() == id) {
-            return current;
+    current = std::find_if(
+        items.begin(),
+        items.end(),
+        [&](const MenuItem *v) {
+            return v->getId() == id;
         }
-    }
-    return items.end();
+    );
+    return current;
 }
 
 
@@ -329,15 +341,16 @@ void Menu::activateItem(int id, MenuEvent::Type action)
         errorFatal(
             "Error: Unable to find menu item with id '%d'", id
         );
+    } else {
+        /* make sure the action given will activate the menu item */
+        if (mi->getClosesMenu()) {
+            setClosed(true);
+        }
+        MenuEvent event(this, action, mi);
+        mi->activate(event);
+        setChanged();
+        notifyObservers(event);
     }
-    /* make sure the action given will activate the menu item */
-    if (mi->getClosesMenu()) {
-        setClosed(true);
-    }
-    MenuEvent event(this, action, mi);
-    mi->activate(event);
-    setChanged();
-    notifyObservers(event);
 } // Menu::activateItem
 
 
@@ -349,7 +362,7 @@ bool Menu::activateItemByShortcut(int key, MenuEvent::Type action)
 {
     for (MenuItemList::iterator i = items.begin();
          i != items.end();
-         i++) {
+         ++i) {
         const std::set<int> &shortcuts = (*i)->getShortcutKeys();
         if (shortcuts.find(key) != shortcuts.end()) {
             activateItem((*i)->getId(), action);

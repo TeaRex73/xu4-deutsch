@@ -59,12 +59,13 @@ long rleDecompressMemory(unsigned char *in, long inlen, unsigned char **out)
 long rleGetDecompressedSize(unsigned char *indata, long inlen)
 {
     unsigned char *p;
-    unsigned char ch, count;
     long len = 0;
     p = indata;
     while ((p - indata) < inlen) {
+        unsigned char ch;
         ch = *p++;
         if (ch == RLE_RUNSTART) {
+            unsigned char count;
             count = *p++;
             p++;
             len += count;
@@ -88,12 +89,13 @@ long rleDecompress(
 {
     int i;
     unsigned char *p, *q;
-    unsigned char ch, count, val;
     p = indata;
     q = outdata;
     while ((p - indata) < inlen) {
+        unsigned char ch;
         ch = *p++;
         if (ch == RLE_RUNSTART) {
+            unsigned char count, val;
             count = *p++;
             val = *p++;
             for (i = 0; i < count; i++) {

@@ -58,14 +58,14 @@ public:
     void prevItem();
     void nextItem();
     void update();
-    virtual void update(Aura *aura);
+    virtual void update(Aura *aura) override;
 
-    virtual void update(Party *, PartyEvent &)
+    virtual void update(Party *, PartyEvent &) override
     {
         update(); /* do a full update */
     }
 
-    virtual void update(Menu *, MenuEvent &)
+    virtual void update(Menu *, MenuEvent &) override
     {
         update(); /* do a full update */
     }
@@ -121,7 +121,7 @@ public:
     ReagentsMenuController &operator=(const ReagentsMenuController &) = delete;
     ReagentsMenuController &operator=(ReagentsMenuController &&) = delete;
 
-    bool keyPressed(int key);
+    bool keyPressed(int key) override;
 
 private:
     Ingredients *ingredients;

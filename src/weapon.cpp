@@ -115,9 +115,10 @@ Weapon::Weapon(const ConfigElement &conf)
         leavetile = conf.getString("leavetile");
     }
     std::vector<ConfigElement> contraintConfs = conf.getChildren();
-    for (std::vector<ConfigElement>::iterator i = contraintConfs.begin();
-         i != contraintConfs.end();
-         i++) {
+    for (std::vector<ConfigElement>::const_iterator i =
+             contraintConfs.cbegin();
+         i != contraintConfs.cend();
+         ++i) {
         unsigned char mask = 0;
         if (i->getName() != "constraint") {
             continue;
@@ -156,7 +157,7 @@ Weapon::~Weapon()
         if (*i == this) {
             i = weapons.erase(i);
         } else {
-            i++;
+            ++i;
         }
     }
 }
@@ -180,9 +181,9 @@ void Weapon::loadConf()
     const Config *config = Config::getInstance();
     std::vector<ConfigElement> weaponConfs =
         config->getElement("weapons").getChildren();
-    for (std::vector<ConfigElement>::iterator i = weaponConfs.begin();
-         i != weaponConfs.end();
-         i++) {
+    for (std::vector<ConfigElement>::const_iterator i = weaponConfs.cbegin();
+         i != weaponConfs.cend();
+         ++i) {
         if (i->getName() != "weapon") {
             continue;
         }

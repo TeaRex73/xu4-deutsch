@@ -33,7 +33,7 @@ protected:
     const int x, y, width, height;
     bool highlighted;
     int highlightX, highlightY, highlightW, highlightH;
-    void drawHighlighted();
+    void drawHighlighted() const;
     static Image *screen;
 };
 

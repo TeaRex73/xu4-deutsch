@@ -30,7 +30,7 @@ typedef enum {
 
 class MenuItem {
 public:
-    MenuItem(std::string text, short x, short y, int shortcutKey = -1);
+    MenuItem(const std::string &t, short xpos, short ypos, int sc = -1);
 
     MenuItem(const MenuItem &) = delete;
     MenuItem(MenuItem &&) = delete;
@@ -54,14 +54,14 @@ public:
     bool isVisible() const;
     const std::set<int> &getShortcutKeys() const;
     bool getClosesMenu() const;
-    void setId(int id);
+    void setId(int i);
     void setX(int xpos);
     void setY(int ypos);
-    void setText(std::string text);
+    void setText(const std::string &t);
     void setHighlighted(bool h = true);
     void setSelected(bool s = true);
     void setVisible(bool v = true);
-    void addShortcutKey(int shortcutKey);
+    void addShortcutKey(int sc);
     void setClosesMenu(bool closesMenu);
 
 protected:
@@ -84,7 +84,7 @@ protected:
 class BoolMenuItem:public MenuItem {
 public:
     BoolMenuItem(
-        std::string text, short x, short y, int shortcutKey, bool *val
+        const std::string &text, short x, short y, int shortcutKey, bool *val
     );
     BoolMenuItem(const BoolMenuItem &) = delete;
     BoolMenuItem(BoolMenuItem &&) = delete;
@@ -94,8 +94,8 @@ public:
     BoolMenuItem *setValueStrings(
         const std::string &onString, const std::string &offString
     );
-    virtual void activate(MenuEvent &event);
-    virtual std::string getText() const;
+    virtual void activate(MenuEvent &event) override;
+    virtual std::string getText() const override;
 
 protected:
     bool *val;
@@ -110,7 +110,7 @@ protected:
 class StringMenuItem:public MenuItem {
 public:
     StringMenuItem(
-        std::string text,
+        const std::string &text,
         short x,
         short y,
         int shortcutKey,
@@ -122,8 +122,8 @@ public:
     StringMenuItem &operator=(const StringMenuItem &) = delete;
     StringMenuItem &operator=(StringMenuItem &&) = delete;
 
-    virtual void activate(MenuEvent &event);
-    virtual std::string getText() const;
+    virtual void activate(MenuEvent &event) override;
+    virtual std::string getText() const override;
 
 protected:
     std::string *val;
@@ -138,7 +138,7 @@ protected:
 class IntMenuItem:public MenuItem {
 public:
     IntMenuItem(
-        std::string text,
+        const std::string &text,
         short x,
         short y,
         int shortcutKey,
@@ -153,8 +153,8 @@ public:
     IntMenuItem &operator=(const IntMenuItem &) = delete;
     IntMenuItem &operator=(IntMenuItem &&) = delete;
 
-    virtual void activate(MenuEvent &event);
-    virtual std::string getText() const;
+    virtual void activate(MenuEvent &event) override;
+    virtual std::string getText() const override;
 
 protected:
     int *val;
@@ -169,7 +169,7 @@ protected:
 class UnsignedShortMenuItem:public MenuItem {
 public:
     UnsignedShortMenuItem(
-        std::string text,
+        const std::string &text,
         short x,
         short y,
         int shortcutKey,
@@ -184,8 +184,8 @@ public:
     UnsignedShortMenuItem &operator=(const UnsignedShortMenuItem &) = delete;
     UnsignedShortMenuItem &operator=(UnsignedShortMenuItem &&) = delete;
 
-    virtual void activate(MenuEvent &event);
-    virtual std::string getText() const;
+    virtual void activate(MenuEvent &event) override;
+    virtual std::string getText() const override;
 
 protected:
     unsigned short *val;

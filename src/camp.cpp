@@ -215,9 +215,10 @@ bool InnController::maybeMeetIsaac()
             && (city->extraDialogues[0]->getName() == "Isaac")) {
             Coords coords(27, xu4_random(3) + 10, c->location->coords.z);
             // If Isaac is already around, just bring him back to the inn
-            for (ObjectDeque::iterator i = c->location->map->objects.begin();
-                 i != c->location->map->objects.end();
-                 i++) {
+            for (ObjectDeque::const_iterator i =
+                     c->location->map->objects.cbegin();
+                 i != c->location->map->objects.cend();
+                 ++i) {
                 Person *p = dynamic_cast<Person *>(*i);
                 if (p && (p->getName() == "Isaac")) {
                     p->setCoords(coords);

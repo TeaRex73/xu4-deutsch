@@ -58,10 +58,10 @@ public:
         int specificDurationInTicks = -1,
         bool wait = false
     );
-    void stop(int channel = 1);
+    static void stop(int channel = 1);
 
 private:
-    bool init_sys();
+    static bool init_sys();
 
     void del()
     {
@@ -75,8 +75,8 @@ private:
         int specificDurationInTicks,
         bool wait = false
     );
-    bool load_sys(Sound sound, const std::string &soundPathName);
-    void stop_sys(int channel);
+    bool load_sys(Sound sound, const std::string &pathname);
+    static void stop_sys(int channel);
     std::vector<std::string> soundFilenames;
     std::vector<OSSoundChunk *> soundChunk;
     SoundManager();

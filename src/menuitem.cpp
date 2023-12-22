@@ -15,7 +15,7 @@
 /**
  * MenuItem class
  */
-MenuItem::MenuItem(std::string t, short xpos, short ypos, int sc)
+MenuItem::MenuItem(const std::string &t, short xpos, short ypos, int sc)
     :id(-1),
      x(xpos),
      y(ypos),
@@ -27,8 +27,8 @@ MenuItem::MenuItem(std::string t, short xpos, short ypos, int sc)
      shortcutKeys(),
      closesMenu(false)
 {
-    // if the sc/scOffset is outside the range of the text std::string, assert
-    ASSERT(
+    // if the sc/scOffset is outside the range of the text std::string, U4ASSERT
+    U4ASSERT(
         sc == -1 || (sc >= 0 && sc <= static_cast<int>(text.length())),
         "sc value of %d out of range!",
         sc
@@ -103,7 +103,7 @@ void MenuItem::setY(int ypos)
     y = ypos;
 }
 
-void MenuItem::setText(std::string t)
+void MenuItem::setText(const std::string &t)
 {
     text = t;
 }
@@ -134,7 +134,7 @@ void MenuItem::setClosesMenu(bool closesMenu)
 }
 
 BoolMenuItem::BoolMenuItem(
-    std::string text, short x, short y, int shortcutKey, bool *val
+    const std::string &text, short x, short y, int shortcutKey, bool *val
 )
     :MenuItem(text, x, y, shortcutKey), val(val), on("On"), off("Off")
 {
@@ -168,7 +168,7 @@ void BoolMenuItem::activate(MenuEvent &event)
 }
 
 StringMenuItem::StringMenuItem(
-    std::string text,
+    const std::string &text,
     short x,
     short y,
     int shortcutKey,
@@ -189,31 +189,31 @@ std::string StringMenuItem::getText() const
 void StringMenuItem::activate(MenuEvent &event)
 {
     std::vector<std::string>::const_iterator current =
-        find(validSettings.begin(), validSettings.end(), *val);
-    if (current == validSettings.end()) {
+        find(validSettings.cbegin(), validSettings.cend(), *val);
+    if (current == validSettings.cend()) {
         errorFatal("Error: menu std::string '%s' not a valid choice",
                    val->c_str());
     }
     if ((event.getType() == MenuEvent::INCREMENT)
         || (event.getType() == MenuEvent::ACTIVATE)) {
         /* move to the next valid choice, wrapping if necessary */
-        current++;
-        if (current == validSettings.end()) {
-            current = validSettings.begin();
+        ++current;
+        if (current == validSettings.cend()) {
+            current = validSettings.cbegin();
         }
         *val = *current;
     } else if (event.getType() == MenuEvent::DECREMENT) {
         /* move back one, wrapping if necessary */
-        if (current == validSettings.begin()) {
-            current = validSettings.end();
+        if (current == validSettings.cbegin()) {
+            current = validSettings.cend();
         }
-        current--;
+        --current;
         *val = *current;
     }
 } // StringMenuItem::activate
 
 IntMenuItem::IntMenuItem(
-    std::string text,
+    const std::string &text,
     short x,
     short y,
     int shortcutKey,
@@ -309,7 +309,7 @@ void IntMenuItem::activate(MenuEvent &event)
 }
 
 UnsignedShortMenuItem::UnsignedShortMenuItem(
-    std::string text,
+    const std::string &text,
     short x,
     short y,
     int shortcutKey,
@@ -338,7 +338,7 @@ std::string UnsignedShortMenuItem::getText() const
         std::snprintf(
             outputBuffer,
             sizeof(outputBuffer),
-            "%2hd",
+            "%2hu",
             (*val)
         );
         break;
@@ -351,7 +351,7 @@ std::string UnsignedShortMenuItem::getText() const
         );
         break;
     case MENU_OUTPUT_SHRINE:
-        std::snprintf(outputBuffer, sizeof(outputBuffer), "%hd sec", *val);
+        std::snprintf(outputBuffer, sizeof(outputBuffer), "%hu sec", *val);
         break;
     case MENU_OUTPUT_SPELL:
         std::snprintf(
@@ -369,7 +369,7 @@ std::string UnsignedShortMenuItem::getText() const
             std::snprintf(outputBuffer, sizeof(outputBuffer), "Full");
         } else {
             std::snprintf(
-                outputBuffer, sizeof(outputBuffer), "%hd%%", *val * 10
+                outputBuffer, sizeof(outputBuffer), "%d%%", *val * 10
             );
         }
         break;

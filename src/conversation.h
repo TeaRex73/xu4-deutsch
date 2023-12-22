@@ -38,6 +38,8 @@ public:
     static const ResponsePart STARTMUSIC_SILENCE;
     static const ResponsePart STOPMUSIC;
     static const ResponsePart HAWKWIND;
+    static const ResponsePart DISKLOAD;
+    //cppcheck-suppress noExplicitConstructor // implicit intended
     ResponsePart(
         const std::string &value,
         const std::string &arg = "",
@@ -59,7 +61,7 @@ private:
  */
 class Response {
 public:
-    Response(const std::string &response);
+    explicit Response(const std::string &response);
 
     virtual ~Response()
     {
@@ -84,7 +86,7 @@ private:
  */
 class DynamicResponse:public Response {
 public:
-    DynamicResponse(
+    explicit DynamicResponse(
         Response *(*generator)(const DynamicResponse *),
         const std::string &param = ""
     );
@@ -93,7 +95,7 @@ public:
     DynamicResponse &operator=(const DynamicResponse &) = delete;
     DynamicResponse &operator=(DynamicResponse &&) = delete;
     virtual ~DynamicResponse();
-    const virtual std::vector<ResponsePart> &getParts();
+    const virtual std::vector<ResponsePart> &getParts() override;
 
     const std::string &getParam() const
     {
@@ -126,7 +128,7 @@ public:
         Question &operator=(const Question &) = delete;
         Question &operator=(Question &&) = delete;
         ~Question();
-        std::string getText();
+        std::string getText() const;
         Response *getResponse(bool yes);
 
     private:
@@ -155,7 +157,7 @@ public:
         /*
          * Accessor methods
          */
-        const std::string &getKeyword()
+        const std::string &getKeyword() const
         {
             return keyword;
         }
@@ -348,7 +350,7 @@ public:
     Conversation &operator=(Conversation &&) = delete;
     ~Conversation();
     /* Member functions */
-    InputType getInputRequired(int *bufferLen);
+    InputType getInputRequired(int *bufferLen) const;
     /* Static variables */
     static const unsigned int BUFFERLEN; /**< The default maxixum
                                             length of input */

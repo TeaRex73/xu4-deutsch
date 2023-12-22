@@ -27,8 +27,7 @@
  */
 bool isDungeon(Map *punknown)
 {
-    Dungeon *pd;
-    if ((pd = dynamic_cast<Dungeon *>(punknown)) != nullptr) {
+    if (dynamic_cast<Dungeon *>(punknown) != nullptr) {
         return true;
     } else {
         return false;
@@ -50,7 +49,7 @@ Dungeon::~Dungeon()
 /**
  * Returns the name of the dungeon
  */
-std::string Dungeon::getName()
+std::string Dungeon::getName() const
 {
     return name;
 }
@@ -59,7 +58,7 @@ std::string Dungeon::getName()
 /**
  * Returns the dungeon token associated with the given dungeon tile
  */
-DungeonToken Dungeon::tokenForTile(MapTile tile)
+DungeonToken Dungeon::tokenForTile(MapTile tile) const
 {
     typedef std::pair<std::string, int> sipair;
     const static sipair tileNames[] = {
@@ -117,7 +116,7 @@ DungeonToken Dungeon::tokenForTile(MapTile tile)
 /**
  * Returns the dungeon token for the current location
  */
-DungeonToken Dungeon::currentToken()
+DungeonToken Dungeon::currentToken() const
 {
     return tokenAt(c->location->coords);
 }
@@ -132,7 +131,7 @@ DungeonToken Dungeon::currentToken()
 /**
  * Returns the dungeon sub-token for the current location
  */
-unsigned char Dungeon::currentSubToken()
+unsigned char Dungeon::currentSubToken() const
 {
     return subTokenAt(c->location->coords);
 }
@@ -141,9 +140,9 @@ unsigned char Dungeon::currentSubToken()
 /**
  * Returns the dungeon token for the given coordinates
  */
-DungeonToken Dungeon::tokenAt(MapCoords coords)
+DungeonToken Dungeon::tokenAt(const MapCoords &coords) const
 {
-    return tokenForTile(*getTileFromData(coords));
+    return tokenForTile(getTileFromData(coords));
 }
 
 
@@ -154,7 +153,7 @@ DungeonToken Dungeon::tokenAt(MapCoords coords)
  * This function will always need type-casting to the token type
  * necessary
  */
-unsigned char Dungeon::subTokenAt(MapCoords coords)
+unsigned char Dungeon::subTokenAt(const MapCoords &coords) const
 {
     int index = coords.x + (coords.y * width) + (width * height * coords.z);
     return dataSubTokens[index];
@@ -252,7 +251,7 @@ void dungeonDrinkFountain()
         }
         break;
     default:
-        ASSERT(
+        U4ASSERT(
             0,
             "Invalid call to dungeonDrinkFountain: no fountain at current "
             "location"
@@ -358,7 +357,7 @@ bool dungeonHandleTrap(TrapType)
 /**
  * Returns true if a ladder-up is found at the given coordinates
  */
-bool Dungeon::ladderUpAt(MapCoords coords)
+bool Dungeon::ladderUpAt(const MapCoords &coords)
 {
     Annotation::List a = annotations->allAt(coords);
     if ((tokenAt(coords) == DUNGEON_LADDER_UP)
@@ -367,7 +366,7 @@ bool Dungeon::ladderUpAt(MapCoords coords)
     }
     if (a.size() > 0) {
         Annotation::List::iterator i;
-        for (i = a.begin(); i != a.end(); i++) {
+        for (i = a.begin(); i != a.end(); ++i) {
             if (i->getTile() == tileset->getByName("up_ladder")->getId()) {
                 return true;
             }
@@ -380,7 +379,7 @@ bool Dungeon::ladderUpAt(MapCoords coords)
 /**
  * Returns true if a ladder-down is found at the given coordinates
  */
-bool Dungeon::ladderDownAt(MapCoords coords)
+bool Dungeon::ladderDownAt(const MapCoords &coords)
 {
     Annotation::List a = annotations->allAt(coords);
     if ((tokenAt(coords) == DUNGEON_LADDER_DOWN)
@@ -389,7 +388,7 @@ bool Dungeon::ladderDownAt(MapCoords coords)
     }
     if (a.size() > 0) {
         Annotation::List::iterator i;
-        for (i = a.begin(); i != a.end(); i++) {
+        for (i = a.begin(); i != a.end(); ++i) {
             if (i->getTile() == tileset->getByName("down_ladder")->getId()) {
                 return true;
             }
@@ -398,8 +397,8 @@ bool Dungeon::ladderDownAt(MapCoords coords)
     return false;
 }
 
-bool Dungeon::validTeleportLocation(MapCoords coords)
+bool Dungeon::validTeleportLocation(const MapCoords &coords) const
 {
-    MapTile *tile = tileAt(coords, WITH_OBJECTS);
-    return tokenForTile(*tile) == DUNGEON_CORRIDOR;
+    MapTile tile = tileAt(coords, WITH_OBJECTS);
+    return tokenForTile(tile) == DUNGEON_CORRIDOR;
 }

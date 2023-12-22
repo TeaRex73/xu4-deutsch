@@ -18,7 +18,7 @@ long get_filesize(FILE *input_file);
 bool is_valid_lzw_file(FILE *input_file);
 long get_uncompressed_size(FILE *input_file);
 int get_next_codeword(
-    long &bits_read, unsigned char *source, int codeword_size
+    long &bits_read, const unsigned char *source, int codeword_size
 );
 void output_root(
     unsigned char root, unsigned char *destination, long &position

@@ -25,8 +25,7 @@
 
 bool isPartyMember(Object *punknown)
 {
-    PartyMember *pm;
-    if ((pm = dynamic_cast<PartyMember *>(punknown)) != nullptr) {
+    if (dynamic_cast<PartyMember *>(punknown) != nullptr) {
         return true;
     } else {
         return false;
@@ -44,7 +43,7 @@ PartyMember::PartyMember(Party *p, SaveGamePlayerRecord *pr)
     /* FIXME: we need to rename movement behaviors */
     setMovementBehavior(MOVEMENT_ATTACK_AVATAR);
     this->ranged = Weapon::get(pr->weapon)->getRange() ? 1 : 0;
-    setStatus(pr->status);
+    PartyMember::setStatus(pr->status);
 }
 
 PartyMember::~PartyMember()
@@ -98,7 +97,7 @@ std::string PartyMember::translate(std::vector<std::string> &parts)
             SexType s = getSex();
             if (s == SEX_MALE) {
                 var[0] = 'm';
-            } else {
+            } else if (s == SEX_FEMALE) {
                 var[0] = 'f';
             }
             return var;
@@ -171,7 +170,7 @@ int PartyMember::getMaxMp() const
         max_mp = 0;
         break;
     default:
-        ASSERT(0, "invalid player class: %d", player->klass);
+        U4ASSERT(0, "invalid player class: %d", player->klass);
     }
 
     /* mp always maxes out at 99 */
@@ -259,7 +258,7 @@ void PartyMember::addStatus(StatusType s)
         setTile(Tileset::findTileByName("corpse")->getId());
         break;
     default:
-        ASSERT(
+        U4ASSERT(
             0,
             "Invalid Status %d in PartyMember::addStatus",
             static_cast<int>(player->status)
@@ -285,7 +284,7 @@ void PartyMember::setStatus(StatusType s)
         setTile(Tileset::findTileByName("corpse")->getId());
         break;
     default:
-        ASSERT(
+        U4ASSERT(
             0,
             "Invalid Status %d in PartyMember::setStatus",
             static_cast<int>(player->status)
@@ -367,7 +366,7 @@ void PartyMember::applyEffect(TileEffect effect)
     case EFFECT_ELECTRICITY:
         break;
     default:
-        ASSERT(0, "invalid effect: %d", effect);
+        U4ASSERT(0, "invalid effect: %d", effect);
     }
     if (effect != EFFECT_NONE) {
         notifyOfChange();
@@ -457,7 +456,7 @@ void PartyMember::removeStatus(StatusType s)
         setTile(Tileset::findTileByName("corpse")->getId());
         break;
     default:
-        ASSERT(
+        U4ASSERT(
             0,
             "Invalid Status %d in PartyMember::removeStatus",
             static_cast<int>(player->status)
@@ -543,13 +542,13 @@ bool PartyMember::applyDamage(int damage, bool)
     player->hp = newHp;
     notifyOfChange();
     if (isCombatMap(c->location->map) && (getStatus() == STAT_DEAD)) {
-        Coords p = getCoords();
-        Map *map = getMap();
-        map->annotations->add(
-            p,
-            Tileset::findTileByName("corpse")->getId()
-        )->setTTL(party->size() * 2);
         if (party) {
+            Coords p = getCoords();
+            Map *map = getMap();
+            map->annotations->add(
+                p,
+                Tileset::findTileByName("corpse")->getId()
+            )->setTTL(party->size() * 2);
             party->setChanged();
             PartyEvent event(PartyEvent::PLAYER_KILLED, this);
             event.player = this;
@@ -595,7 +594,7 @@ bool PartyMember::dealDamage(Creature *m, int damage)
 /**
  * Calculate damage for an attack.
  */
-int PartyMember::getDamage()
+int PartyMember::getDamage() const
 {
     int maxDamage;
     maxDamage = Weapon::get(player->weapon)->getDamage();
@@ -628,12 +627,12 @@ const std::string &PartyMember::getMissTile() const
     return getWeapon()->getMissTile();
 }
 
-bool PartyMember::isDead()
+bool PartyMember::isDead() const
 {
     return getStatus() == STAT_DEAD;
 }
 
-bool PartyMember::isDisabled()
+bool PartyMember::isDisabled() const
 {
     return (getStatus() == STAT_GOOD || getStatus() == STAT_POISONED) ?
         false :
@@ -710,10 +709,10 @@ MapTile PartyMember::tileForClass(int klass)
         name = "shepherd";
         break;
     default:
-        ASSERT(0, "invalid class %d in tileForClass", klass);
+        U4ASSERT(0, "invalid class %d in tileForClass", klass);
     }
     const Tile *tile = Tileset::get("base")->getByName(name);
-    ASSERT(tile, "no tile found for class %d", klass);
+    U4ASSERT(tile, "no tile found for class %d", klass);
     return tile->getId();
 } // PartyMember::tileForClass
 
@@ -785,16 +784,12 @@ std::string Party::translate(std::vector<std::string> &parts)
             return xu4_to_string(saveGame->gems);
         } else if (parts[0] == "sextants") {
             return xu4_to_string(saveGame->sextants);
-        } else if (parts[0] == "food") {
-            return xu4_to_string((saveGame->food / 100));
-        } else if (parts[0] == "gold") {
-            return xu4_to_string(saveGame->gold);
         } else if (parts[0] == "party_members") {
             return xu4_to_string(saveGame->members);
         } else if (parts[0] == "moves") {
             return xu4_to_string(saveGame->moves);
         }
-    } else if (parts.size() >= 2) {
+    } else { // parts.size() >= 2
         if (parts[0].find_first_of("member") == 0) {
             // Make a new parts list, but remove the first item
             std::vector<std::string> new_parts = parts;
@@ -1076,7 +1071,7 @@ void Party::burnTorch(int turns)
 /**
  * Returns true if the party can enter the shrine
  */
-bool Party::canEnterShrine(Virtue virtue)
+bool Party::canEnterShrine(Virtue virtue) const
 {
     if (saveGame->runes & (1 << static_cast<int>(virtue))) {
         return true;
@@ -1089,7 +1084,7 @@ bool Party::canEnterShrine(Virtue virtue)
 /**
  * Returns true if the person can join the party
  */
-bool Party::canPersonJoin(std::string name, Virtue *v)
+bool Party::canPersonJoin(const std::string &name, Virtue *v) const
 {
     int i;
     if (name.empty()) {
@@ -1251,7 +1246,7 @@ bool Party::isFlying() const
 /**
  * Whether or not the party can make an action.
  */
-bool Party::isImmobilized()
+bool Party::isImmobilized() const
 {
     int i;
     bool immobile = true;
@@ -1268,7 +1263,7 @@ bool Party::isImmobilized()
 /**
  * Whether or not all the party members are dead.
  */
-bool Party::isDead()
+bool Party::isDead() const
 {
     int i;
     bool dead = true;
@@ -1286,7 +1281,7 @@ bool Party::isDead()
  * Returns true if the person with that name
  * is already in the party
  */
-bool Party::isPersonJoined(std::string name)
+bool Party::isPersonJoined(const std::string &name) const
 {
     int i;
     if (name.empty()) {
@@ -1305,7 +1300,7 @@ bool Party::isPersonJoined(std::string name)
  * Attempts to add the person to the party.
  * Returns JOIN_SUCCEEDED if successful.
  */
-CannotJoinError Party::join(std::string name)
+CannotJoinError Party::join(const std::string &name)
 {
     int i;
     SaveGamePlayerRecord tmp;
@@ -1343,7 +1338,7 @@ CannotJoinError Party::join(std::string name)
 bool Party::lightTorch(int duration, bool loseTorch)
 {
     if (loseTorch) {
-        if (c->saveGame->torches <= 0) {
+        if (c->saveGame->torches == 0) {
             return false;
         }
         c->saveGame->torches--;
@@ -1370,8 +1365,7 @@ void Party::quenchTorch()
  */
 void Party::reviveParty()
 {
-    int i;
-    for (i = 0; i < size(); i++) {
+    for (int i = 0; i < size(); i++) {
         members[i]->wakeUp();
         members[i]->setStatus(STAT_GOOD);
         saveGame->players[i].hp = saveGame->players[i].hpMax;
@@ -1400,10 +1394,10 @@ void Party::setTransport(MapTile tile)
     // transport value stored in savegame hardcoded to index
     // into base tilemap
     saveGame->transport = TileMap::get("base")->untranslate(tile);
-    ASSERT(
+    U4ASSERT(
         saveGame->transport != 0,
-        "could not generate valid savegame transport for tile with id %d\n",
-        tile.id
+        "could not generate valid savegame transport for tile with id %u\n",
+        tile.getId()
     );
     transport = tile;
     if (tile.getTileType()->isHorse()) {
@@ -1449,12 +1443,12 @@ void Party::adjustReagent(int reagent, int amt)
     }
 }
 
-int Party::getReagent(int reagent) const
+int Party::getReagent(int reagent)
 {
     return c->saveGame->reagents[reagent];
 }
 
-unsigned short *Party::getReagentPtr(int reagent) const
+unsigned short *Party::getReagentPtr(int reagent)
 {
     return &c->saveGame->reagents[reagent];
 }
@@ -1477,8 +1471,8 @@ int Party::getActivePlayer() const
 
 void Party::swapPlayers(int p1, int p2)
 {
-    ASSERT(p1 < saveGame->members, "p1 out of range: %d", p1);
-    ASSERT(p2 < saveGame->members, "p2 out of range: %d", p2);
+    U4ASSERT(p1 < saveGame->members, "p1 out of range: %d", p1);
+    U4ASSERT(p2 < saveGame->members, "p2 out of range: %d", p2);
     SaveGamePlayerRecord tmp_rec = saveGame->players[p1];
     saveGame->players[p1] = c->saveGame->players[p2];
     c->saveGame->players[p2] = tmp_rec;

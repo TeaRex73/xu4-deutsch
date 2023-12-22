@@ -8,7 +8,7 @@
 #include "direction.h"
 
 class Tile;
-typedef unsigned int TileId;
+typedef unsigned short TileId;
 typedef unsigned char MapId;
 
 typedef enum {
@@ -43,14 +43,15 @@ typedef enum {
 /**
  * A MapTile is a specific instance of a Tile.
  */
-class MapTile {
+class __attribute__((aligned (4))) MapTile {
 public:
     MapTile()
         :id(0), frame(0), freezeAnimation(false)
     {
     }
 
-    MapTile(const TileId &i, unsigned char f = 0)
+    // cppcheck-suppress noExplicitConstructor //implicit intended
+    MapTile(TileId i, unsigned char f = 0)
         :id(i), frame(f), freezeAnimation(false)
     {
     }
@@ -62,7 +63,7 @@ public:
 
     MapTile &operator=(const MapTile &t)
     {
-        if (&t != this) {
+        if (this != &t) {
             id = t.id;
             frame = t.frame;
             freezeAnimation = t.freezeAnimation;
@@ -80,9 +81,19 @@ public:
         return frame;
     }
 
+    void setFrame(unsigned char f)
+    {
+        frame = f;
+    }
+
     bool getFreezeAnimation() const
     {
         return freezeAnimation;
+    }
+
+    void setFreezeAnimation(bool f)
+    {
+        freezeAnimation = f;
     }
 
     bool operator==(const MapTile &m) const
@@ -113,6 +124,7 @@ public:
     Direction getDirection() const;
     bool setDirection(Direction d);
     const Tile *getTileType() const;
+ private:
     TileId id;
     unsigned char frame;
     bool freezeAnimation;

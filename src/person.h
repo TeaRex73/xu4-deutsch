@@ -40,14 +40,16 @@ typedef enum {
 
 class Person:public Creature {
 public:
-    Person(MapTile tile);
-    Person(const Person *p);
+    explicit Person(MapTile tile);
+    explicit Person(const Person *p);
     Person(const Person &p) = default;
+    Person(Person &&p) = default;
     Person &operator=(const Person &p) = default;
+    Person &operator=(Person &&p) = default;
     ~Person() = default;
     bool canConverse() const;
     bool isVendor() const;
-    virtual std::string getName() const;
+    virtual std::string getName() const override;
     void goToStartLocation();
     void setDialogue(Dialogue *d);
 
@@ -72,15 +74,15 @@ public:
     void runCommand(Conversation *cnv, const ResponsePart &command);
     std::string getResponse(Conversation *cnv, const char *inquiry);
     std::string talkerGetQuestionResponse(
-        Conversation *cnv, const char *inquiry
+        Conversation *cnv, const char *answer
     );
     std::string beggarGetQuantityResponse(
         Conversation *cnv, const char *response
-    );
-    std::string lordBritishGetQuestionResponse(
+    ) const;
+    static std::string lordBritishGetQuestionResponse(
         Conversation *cnv, const char *answer
     );
-    std::string getQuestion(Conversation *cnv);
+    static std::string getQuestion(Conversation *cnv);
 
 private:
     Dialogue *dialogue;

@@ -40,9 +40,9 @@ void print_trace(std::FILE *file);
 
 #if HAVE_VARIADIC_MACROS
 #ifdef NDEBUG
-#define ASSERT(exp, desc, ...) /* nothing */
+#define U4ASSERT(exp, desc, ...) /* nothing */
 #else
-#define ASSERT(exp, ...)                                    \
+#define U4ASSERT(exp, ...)                                    \
     do {                                                    \
         if (!(exp)) {                                       \
             std::fprintf(                                        \
@@ -59,7 +59,7 @@ void print_trace(std::FILE *file);
     while (0)
 #endif /* ifdef NDEBUG */
 #else
-void ASSERT(bool exp, const char *desc, ...);
+void U4ASSERT(bool exp, const char *desc, ...);
 #endif /* if HAVE_VARIADIC_MACROS */
 
 
@@ -73,17 +73,19 @@ class Debug {
 public:
     // disallow assignments, copy contruction
     Debug(const Debug &) = delete;
+    Debug(Debug &&) = delete;
     const Debug &operator=(const Debug &) = delete;
+    const Debug &operator=(Debug &&) = delete;
 
-    Debug(
-        const std::string &filename,
-        const std::string &name = "",
+    explicit Debug(
+        const std::string &fn,
+        const std::string &nm = "",
         bool append = false
     );
     static void initGlobal(const std::string &filename);
     void trace(
         const std::string &msg,
-        const std::string &file = "",
+        const std::string &fn = "",
         const std::string &func = "",
         const int line = -1,
         bool glbl = true

@@ -65,6 +65,7 @@ int main(int argc, char *argv[])
     buffer = (unsigned char *) malloc(sizeof(unsigned char) * infileSize);
     if (!buffer) {
         printf("Couldn't allocate buffer for %s\n", argv[1]);
+        fclose(file);
         return (EXIT_FAILURE);
     }
     if ((long)fread(buffer, 1, infileSize, file) != infileSize) {

@@ -26,10 +26,10 @@ public:
     }
 
     MapTile translate(unsigned int index);
-    unsigned int untranslate(MapTile &tile);
+    unsigned int untranslate(MapTile tile) const;
     static void loadAll();
     static void unloadAll();
-    static TileMap *get(std::string name);
+    static TileMap *get(const std::string &name);
 
 private:
     static void load(const ConfigElement &tilemapConf);

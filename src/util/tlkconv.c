@@ -187,11 +187,10 @@ void xmlToTlk(xmlDocPtr doc, FILE *tlk)
 xmlDocPtr tlkToXml(FILE *tlk)
 {
     xmlDocPtr doc;
-    xmlNodePtr root, node;
-    int i;
+    xmlNodePtr root;
     char tlk_buffer[TLK_BUF_SIZE];
     char buf[100];
-    char *response1, *response2, *question, *yes, *no;
+    int i;
     doc = xmlNewDoc((const xmlChar *)"1.0");
     // FIXME: this encoding is not found on my machine; is it universal?
     //doc->encoding = xmlStrdup((const xmlChar *)"ISO8859-1");
@@ -200,7 +199,8 @@ xmlDocPtr tlkToXml(FILE *tlk)
     xmlNodeSetSpacePreserve(root, 1);
     for (i = 0; ; i++) {
         char *ptr;
-        xmlNodePtr job, health, kw1, kw2, target;
+        char *response1, *response2, *question, *yes, *no;
+        xmlNodePtr node, job, health, kw1, kw2, target;
         if (fread(tlk_buffer, 1, sizeof(tlk_buffer), tlk)
             != sizeof(tlk_buffer)) {
             break;
@@ -313,7 +313,7 @@ xmlDocPtr tlkToXml(FILE *tlk)
     return doc;
 }
 
-int main(int argc, char *argv[1])
+int main(int argc, char **argv)
 {
     FILE *in, *out;
     xmlDocPtr doc;

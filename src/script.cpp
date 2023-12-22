@@ -346,7 +346,7 @@ void Script::unload()
  */
 void Script::run(const std::string &script)
 {
-    xmlNodePtr scriptNode;
+    xmlNodePtr scriptNodeToRun;
     std::string search_id;
     if (variables.find(idPropName) != variables.end()) {
         if (variables[idPropName]->isSet()) {
@@ -355,13 +355,13 @@ void Script::run(const std::string &script)
             search_id = "null";
         }
     }
-    scriptNode = find(this->scriptNode, script, search_id);
-    if (!scriptNode) {
+    scriptNodeToRun = find(this->scriptNode, script, search_id);
+    if (!scriptNodeToRun) {
         errorFatal(
             "Script '%s' not found in vendorScript.xml", script.c_str()
         );
     }
-    execute(scriptNode);
+    execute(scriptNodeToRun);
 }
 
 
@@ -611,32 +611,32 @@ void Script::unsetVar(const std::string &name)
     }
 }
 
-Script::State Script::getState()
+Script::State Script::getState() const
 {
     return state;
 }
 
-std::string Script::getTarget()
+std::string Script::getTarget() const
 {
     return target;
 }
 
-Script::InputType Script::getInputType()
+Script::InputType Script::getInputType() const
 {
     return inputType;
 }
 
-std::string Script::getChoices()
+std::string Script::getChoices() const
 {
     return choices;
 }
 
-std::string Script::getInputName()
+std::string Script::getInputName() const
 {
     return inputName;
 }
 
-int Script::getInputMaxLen()
+int Script::getInputMaxLen() const
 {
     return inputMaxLen;
 }
@@ -651,9 +651,9 @@ void Script::translate(std::string *text)
     bool nochars = true;
     xmlNodePtr node = this->translationContext.back();
     /* determine if the script is completely whitespace */
-    for (std::string::iterator current = text->begin();
-         current != text->end();
-         current++) {
+    for (std::string::const_iterator current = text->cbegin();
+         current != text->cend();
+         ++current) {
         if (std::isalnum(*current)) {
             nochars = false;
             break;
@@ -699,7 +699,9 @@ void Script::translate(std::string *text)
          * Separate the item itself from the pre- and post-data
          */
         post = item.substr(pos + 1);
-        item = item.substr(0, pos);
+        if (item.size() > pos) {
+            item.resize(pos);
+        }
         if (debug) {
             std::fprintf(debug, "\n{%s} == ", item.c_str());
         }
@@ -720,7 +722,7 @@ void Script::translate(std::string *text)
             pos = item.find(":");
             std::string itemScript = item.substr(pos + 1);
             xmlNodePtr itemShowScript = find(node, itemScript);
-            xmlNodePtr item;
+            xmlNodePtr itemNodePtr;
             prop.erase();
             /**
              * Save iterator
@@ -728,20 +730,22 @@ void Script::translate(std::string *text)
             int oldIterator = this->iterator;
             /* start iterator at 0 */
             this->iterator = 0;
-            for (item = node->children; item; item = item->next) {
-                if (xmlStrcmp(item->name, c2xc(nounName.c_str()))
+            for (itemNodePtr = node->children;
+                 itemNodePtr;
+                 itemNodePtr = itemNodePtr->next) {
+                if (xmlStrcmp(itemNodePtr->name, c2xc(nounName.c_str()))
                     == 0) {
-                    bool hidden = xmlGetPropAsBool(item, "hidden");
+                    bool hidden = xmlGetPropAsBool(itemNodePtr, "hidden");
                     if (!hidden) {
                         /* make sure the item's requisites are met */
-                        if (!xmlPropExists(item, "req")
-                            || compare(getPropAsStr(item, "req"))) {
+                        if (!xmlPropExists(itemNodePtr, "req")
+                            || compare(getPropAsStr(itemNodePtr, "req"))) {
                             /* put a newline after each */
                             if (this->iterator > 0) {
                                 prop += "\n";
                             }
                             /* set translation context to item */
-                            translationContext.push_back(item);
+                            translationContext.push_back(itemNodePtr);
                             execute(itemShowScript, nullptr, &prop);
                             translationContext.pop_back();
                             this->iterator++;
@@ -759,15 +763,17 @@ void Script::translate(std::string *text)
          * vendor's inventory (i.e. "bcde")
          */
         else if (item == "inventory_choices") {
-            xmlNodePtr item;
+            xmlNodePtr itemNodePtr;
             std::string ids;
-            for (item = node->children; item; item = item->next) {
-                if (xmlStrcmp(item->name, c2xc(nounName.c_str()))
+            for (itemNodePtr = node->children;
+                 itemNodePtr;
+                 itemNodePtr = itemNodePtr->next) {
+                if (xmlStrcmp(itemNodePtr->name, c2xc(nounName.c_str()))
                     == 0) {
-                    std::string id = getPropAsStr(item, idPropName.c_str());
+                    std::string id = getPropAsStr(itemNodePtr, idPropName);
                     /* make sure the item's requisites are met */
-                    if (!xmlPropExists(item, "req")
-                        || (compare(getPropAsStr(item, "req")))) {
+                    if (!xmlPropExists(itemNodePtr, "req")
+                        || (compare(getPropAsStr(itemNodePtr, "req")))) {
                         ids += id[0];
                     }
                 }
@@ -778,11 +784,9 @@ void Script::translate(std::string *text)
          * Ask our providers if they have a valid translation for us
          */
         else if (item.find_first_of(":") != std::string::npos) {
-            int pos = item.find_first_of(":");
-            std::string provider = item;
-            std::string to_find;
-            provider = item.substr(0, pos);
-            to_find = item.substr(pos + 1);
+            int posColon = item.find_first_of(":");
+            std::string provider = item.substr(0, posColon);
+            std::string to_find = item.substr(posColon + 1);
             if (providers.find(provider) != providers.end()) {
                 std::vector<std::string> parts = split(to_find, ":");
                 Provider *p = providers[provider];
@@ -828,21 +832,21 @@ void Script::translate(std::string *text)
                 }
                 /* make the string upper case */
                 else if (funcName == "toupper") {
-                    std::string::iterator current;
-                    for (current = content.begin();
-                         current != content.end();
-                         current++) {
-                        *current = xu4_toupper(*current);
+                    std::string::iterator currentChar;
+                    for (currentChar = content.begin();
+                         currentChar != content.end();
+                         ++currentChar) {
+                        *currentChar = xu4_toupper(*currentChar);
                     }
                     prop = content;
                 }
                 /* make the string lower case */
                 else if (funcName == "tolower") {
-                    std::string::iterator current;
-                    for (current = content.begin();
-                         current != content.end();
-                         current++) {
-                        *current = xu4_tolower(*current);
+                    std::string::iterator currentChar;
+                    for (currentChar = content.begin();
+                         currentChar != content.end();
+                         ++currentChar) {
+                        *currentChar = xu4_tolower(*currentChar);
                     }
                     prop = content;
                 }
@@ -949,8 +953,8 @@ std::string Script::getPropAsStr(
 )
 {
     std::string propvalue;
-    std::list<xmlNodePtr>::reverse_iterator i;
-    for (i = nodes.rbegin(); i != nodes.rend(); i++) {
+    std::list<xmlNodePtr>::const_reverse_iterator i;
+    for (i = nodes.crbegin(); i != nodes.crend(); ++i) {
         xmlNodePtr node = *i;
         if (xmlPropExists(node, prop.c_str())) {
             propvalue = xmlGetPropAsString(node, prop.c_str());
@@ -958,7 +962,7 @@ std::string Script::getPropAsStr(
         }
     }
     if (propvalue.empty() && recursive) {
-        for (i = nodes.rbegin(); i != nodes.rend(); i++) {
+        for (i = nodes.crbegin(); i != nodes.crend(); ++i) {
             xmlNodePtr node = *i;
             if (node->parent) {
                 propvalue = getPropAsStr(node->parent, prop, recursive);
@@ -1085,7 +1089,7 @@ Script::ReturnCode Script::end(xmlNodePtr, xmlNodePtr)
     /**
      * See if there's a global 'end' node declared for cleanup
      */
-    xmlNodePtr endScript = find(scriptNode, "end");
+    xmlNodePtr endScript = find(this->scriptNode, "end");
     if (endScript) {
         execute(endScript);
     }
@@ -1120,27 +1124,27 @@ Script::ReturnCode Script::waitForKeypress(
  */
 Script::ReturnCode Script::redirect(xmlNodePtr, xmlNodePtr current)
 {
-    std::string target;
+    std::string targetScript;
 
     if (xmlPropExists(current, "redirect")) {
-        target = getPropAsStr(current, "redirect");
+        targetScript = getPropAsStr(current, "redirect");
     } else {
-        target = getPropAsStr(current, "target");
+        targetScript = getPropAsStr(current, "target");
     }
     /* set a new search id */
     std::string search_id = getPropAsStr(current, idPropName);
-    xmlNodePtr newScript = find(this->scriptNode, target, search_id);
+    xmlNodePtr newScript = find(this->scriptNode, targetScript, search_id);
     if (!newScript) {
         errorFatal(
             "Error: redirect failed -- could not find target script '%s' "
             "with %s=\"%s\"",
-            target.c_str(),
+            targetScript.c_str(),
             idPropName.c_str(),
             search_id.c_str()
         );
     }
     if (debug) {
-        std::fprintf(debug, "\nRedirected to <%s", target.c_str());
+        std::fprintf(debug, "\nRedirected to <%s", targetScript.c_str());
         if (search_id.length()) {
             std::fprintf(
                 debug, " %s=\"%s\"", idPropName.c_str(), search_id.c_str()
@@ -1201,14 +1205,17 @@ Script::ReturnCode Script::wait(xmlNodePtr, xmlNodePtr current)
 Script::ReturnCode Script::forLoop(xmlNodePtr, xmlNodePtr current)
 {
     Script::ReturnCode retval = RET_OK;
-    int start = getPropAsInt(current, "start"),
-        end = getPropAsInt(current, "end"),
+    int startVal = getPropAsInt(current, "start"),
+        endVal = getPropAsInt(current, "end"),
         /* save the iterator in case this loop is nested */
-        oldIterator = this->iterator, i;
+        oldIterator = this->iterator;
     if (debug) {
-        std::fprintf(debug, "\n\n<For Start=%d End=%d>\n", start, end);
+        std::fprintf(debug, "\n\n<For Start=%d End=%d>\n", startVal, endVal);
     }
-    for (i = start, this->iterator = start; i <= end; i++, this->iterator++) {
+    int i; // declare outside loop to allow comma expression below
+    for (i = startVal, this->iterator = startVal;
+         i <= endVal;
+         i++, this->iterator++) {
         if (debug) {
             std::fprintf(debug, "\n%d: ", i);
         }
@@ -1575,32 +1582,32 @@ Script::ReturnCode Script::karma(xmlNodePtr, xmlNodePtr current)
         std::fprintf(debug, "\nKarma: adjusting - '%s'", action.c_str());
     }
     typedef std::map<std::string, KarmaAction> KarmaActionMap;
-    static KarmaActionMap action_map;
-    if (action_map.size() == 0) {
-        action_map["found_item"] = KA_FOUND_ITEM;
-        action_map["stole_chest"] = KA_STOLE_CHEST;
-        action_map["gave_to_beggar"] = KA_GAVE_TO_BEGGAR;
-        action_map["gave_all_to_beggar"] = KA_GAVE_ALL_TO_BEGGAR;
-        action_map["bragged"] = KA_BRAGGED;
-        action_map["humble"] = KA_HUMBLE;
-        action_map["hawkwind"] = KA_HAWKWIND;
-        action_map["meditation"] = KA_MEDITATION;
-        action_map["bad_mantra"] = KA_BAD_MANTRA;
-        action_map["attacked_good"] = KA_ATTACKED_GOOD;
-        action_map["fled_evil"] = KA_FLED_EVIL;
-        action_map["fled_good"] = KA_FLED_GOOD;
-        action_map["healthy_fled_evil"] = KA_HEALTHY_FLED_EVIL;
-        action_map["killed_evil"] = KA_KILLED_EVIL;
-        action_map["spared_good"] = KA_SPARED_GOOD;
-        action_map["gave_blood"] = KA_DONATED_BLOOD;
-        action_map["didnt_give_blood"] = KA_DIDNT_DONATE_BLOOD;
-        action_map["cheated_merchant"] = KA_CHEAT_REAGENTS;
-        action_map["honest_to_merchant"] = KA_DIDNT_CHEAT_REAGENTS;
-        action_map["used_skull"] = KA_USED_SKULL;
-        action_map["destroyed_skull"] = KA_DESTROYED_SKULL;
+    static KarmaActionMap karma_action_map;
+    if (karma_action_map.size() == 0) {
+        karma_action_map["found_item"] = KA_FOUND_ITEM;
+        karma_action_map["stole_chest"] = KA_STOLE_CHEST;
+        karma_action_map["gave_to_beggar"] = KA_GAVE_TO_BEGGAR;
+        karma_action_map["gave_all_to_beggar"] = KA_GAVE_ALL_TO_BEGGAR;
+        karma_action_map["bragged"] = KA_BRAGGED;
+        karma_action_map["humble"] = KA_HUMBLE;
+        karma_action_map["hawkwind"] = KA_HAWKWIND;
+        karma_action_map["meditation"] = KA_MEDITATION;
+        karma_action_map["bad_mantra"] = KA_BAD_MANTRA;
+        karma_action_map["attacked_good"] = KA_ATTACKED_GOOD;
+        karma_action_map["fled_evil"] = KA_FLED_EVIL;
+        karma_action_map["fled_good"] = KA_FLED_GOOD;
+        karma_action_map["healthy_fled_evil"] = KA_HEALTHY_FLED_EVIL;
+        karma_action_map["killed_evil"] = KA_KILLED_EVIL;
+        karma_action_map["spared_good"] = KA_SPARED_GOOD;
+        karma_action_map["gave_blood"] = KA_DONATED_BLOOD;
+        karma_action_map["didnt_give_blood"] = KA_DIDNT_DONATE_BLOOD;
+        karma_action_map["cheated_merchant"] = KA_CHEAT_REAGENTS;
+        karma_action_map["honest_to_merchant"] = KA_DIDNT_CHEAT_REAGENTS;
+        karma_action_map["used_skull"] = KA_USED_SKULL;
+        karma_action_map["destroyed_skull"] = KA_DESTROYED_SKULL;
     }
-    KarmaActionMap::iterator ka = action_map.find(action);
-    if (ka != action_map.end()) {
+    KarmaActionMap::iterator ka = karma_action_map.find(action);
+    if (ka != karma_action_map.end()) {
         c->party->adjustKarma(ka->second);
     } else if (debug) {
         std::fprintf(
@@ -1745,6 +1752,7 @@ bool Script::mathParse(
     if (op->empty()) {
         return false;
     }
+    // cppcheck-suppress knownConditionTrueFalse // snafu with output param
     if ((left.length() == 0) || (right.length() == 0)) {
         return false;
     }
@@ -1811,7 +1819,7 @@ int Script::mathValue(const std::string &str)
 /**
  * Performs simple math operations in the script
  */
-int Script::math(int lval, int rval, std::string &op)
+int Script::math(int lval, int rval, const std::string &op)
 {
     if (op == "+") {
         return lval + rval;
@@ -1852,7 +1860,7 @@ bool Script::compare(const std::string &statement)
     int lval, rval;
     std::string left, right, op;
     int and_pos, or_pos;
-    bool invert = false, _and = false;
+    bool invert = false;
     /**
      * Handle parsing of complex comparisons
      * For example:
@@ -1866,6 +1874,7 @@ bool Script::compare(const std::string &statement)
     and_pos = str.find_first_of("&&");
     or_pos = str.find_first_of("||");
     if ((and_pos > 0) || (or_pos > 0)) {
+        bool _and = false;
         bool retfirst, retsecond;
         int pos;
         if ((or_pos < 0) || ((and_pos > 0) && (and_pos < or_pos))) {
@@ -1877,7 +1886,9 @@ bool Script::compare(const std::string &statement)
             pos = or_pos;
         }
         retsecond = compare(str.substr(pos + 2));
-        str = str.substr(0, pos);
+        if (pos > 0 && str.size() > static_cast<unsigned int>(pos)) {
+            str.resize(pos);
+        }
         retfirst = compare(str);
         if (_and) {
             return retfirst && retsecond;
@@ -1917,7 +1928,7 @@ void Script::funcParse(
     *funcName = str;
     pos = funcName->find_first_of("(");
     if (pos < funcName->length()) {
-        *funcName = funcName->substr(0, pos);
+        funcName->resize(pos);
         *contents = str.substr(pos + 1);
         pos = contents->find_first_of(")");
         if (pos >= contents->length()) {
@@ -1925,7 +1936,7 @@ void Script::funcParse(
                 "Error: No closing ) in function %s()", funcName->c_str()
             );
         } else {
-            *contents = contents->substr(0, pos);
+            contents->resize(pos);
         }
     } else {
         funcName->erase();

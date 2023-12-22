@@ -64,13 +64,21 @@ typedef std::vector<MapTile> MapData;
  */
 class MapCoords:public Coords {
 public:
-    MapCoords(int initx = 0, int inity = 0, int initz = 0)
+    explicit MapCoords(int initx = 0, int inity = 0, int initz = 0)
         :Coords(initx, inity, initz),
          active_x(C2A(initx)),
          active_y(C2A(inity))
     {
     }
 
+    MapCoords(const MapCoords &a)
+        :Coords(a.x, a.y, a.z),
+         active_x(a.active_x),
+         active_y(a.active_y)
+    {
+    }
+
+    // cppcheck-suppress noExplicitConstructor // implicit intended
     MapCoords(const Coords &a)
         :Coords(a.x, a.y, a.z),
          active_x(C2A(a.x)),
@@ -78,11 +86,27 @@ public:
     {
     }
 
+    MapCoords &operator=(const MapCoords &a)
+    {
+        if (&a != this) {
+            x = a.x;
+            y = a.y;
+            z = a.z;
+            active_x = a.active_x;
+            active_y = a.active_y;
+        }
+        return *this;
+    }
+
     MapCoords &operator=(const Coords &a)
     {
-        x = a.x;
-        y = a.y;
-        z = a.z;
+        if (&a != static_cast<Coords *>(this)) {
+            x = a.x;
+            y = a.y;
+            z = a.z;
+            active_x = C2A(a.x);
+            active_y = C2A(a.y);
+        }
         return *this;
     }
 
@@ -174,39 +198,39 @@ public:
 
     Map();
     virtual ~Map();
-    virtual std::string getName();
-    class Object *objectAt(const Coords &coords);
-    const Portal *portalAt(const Coords &coords, int actionFlags);
-    MapTile *getTileFromData(const Coords &coords);
-    MapTile *tileAt(const Coords &coords, int withObjects);
-    const Tile *tileTypeAt(const Coords &coords, int withObjects);
-    bool isWorldMap();
-    bool isEnclosed(const Coords &party);
-    class Creature *addCreature(const class Creature *m, Coords coords);
-    class Object *addObject(
-        MapTile tile, MapTile prevTile, Coords coords
+    virtual std::string getName() const;
+    Object *objectAt(const Coords &coords) const;
+    const Portal *portalAt(const Coords &coords, int actionFlags) const;
+    MapTile getTileFromData(const Coords &coords) const;
+    MapTile tileAt(const Coords &coords, int withObjects) const;
+    const Tile *tileTypeAt(const Coords &coords, int withObjects) const;
+    bool isWorldMap() const;
+    bool isEnclosed(const Coords &party) const;
+    class Creature *addCreature(const class Creature *m, const Coords &coords);
+    Object *addObject(
+        MapTile tile, MapTile prevtile, const Coords &coords
     );
-    class Object *addObject(Object *obj, Coords coords);
-    void removeObject(const class Object *rem, bool deleteObject = true);
+    Object *addObject(Object *obj, const Coords &coords);
+    void removeObject(const Object *rem, bool deleteObject = true);
     ObjectDeque::iterator removeObject(
         ObjectDeque::iterator rem, bool deleteObject = true
     );
     void clearObjects();
-    class Creature *moveObjects(MapCoords avatar);
-    void resetObjectAnimations();
-    int getNumberOfCreatures(int level = -1);
+    class Creature *moveObjects(const MapCoords &avatar) const;
+    void resetObjectAnimations() const;
+    int getNumberOfCreatures(int level = -1) const;
     int getValidMoves(
-        MapCoords from, MapTile transport, bool wander = false
-    );
-    bool move(Object *obj, Direction d);
-    void alertGuards();
+        const MapCoords &from, MapTile transport, bool wanders = false
+    ) const;
+    static bool move(Object *obj, Direction d);
+    void alertGuards() const;
     const MapCoords &getLabel(const std::string &name) const;
     // u4dos compatibility
     bool fillMonsterTable();
     /* Translate from raw tile index */
-    MapTile tfrti(int c) const;
+    MapTile tfrti(int raw) const;
     /* Translate to raw tile index */
-    unsigned int ttrti(MapTile &tile) const;
+    unsigned int ttrti(MapTile tile) const;
 
 public:
     MapId id;
@@ -231,7 +255,7 @@ public:
     SaveGameMonsterRecord monsterTable[MONSTERTABLE_SIZE];
 
 private:
-    void findWalkability(Coords coords, int *path_data);
+    void findWalkability(const Coords &coords, int *path_data) const;
 };
 
 #endif // ifndef MAP_H

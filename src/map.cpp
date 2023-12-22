@@ -4,6 +4,8 @@
 
 #include "vc6.h" // Fixes things if you're using VC6, does nothing otherwise
 
+#include <algorithm>
+
 #include "u4.h"
 
 #include "map.h"
@@ -291,13 +293,13 @@ Map::Map()
 
 Map::~Map()
 {
-    for (PortalList::iterator i = portals.begin(); i != portals.end(); i++) {
+    for (PortalList::iterator i = portals.begin(); i != portals.end(); ++i) {
         delete *i;
     }
     delete annotations;
 }
 
-std::string Map::getName()
+std::string Map::getName() const
 {
     return baseSource.fname;
 }
@@ -307,12 +309,12 @@ std::string Map::getName()
  * Returns the object at the given (x,y,z) coords, if one exists.
  * Otherwise, returns nullptr.
  */
-Object *Map::objectAt(const Coords &coords)
+Object *Map::objectAt(const Coords &coords) const
 {
     /* FIXME: return a list instead of one object */
     ObjectDeque::const_iterator i;
     Object *objAt = nullptr;
-    for (i = objects.begin(); i != objects.end(); i++) {
+    for (i = objects.cbegin(); i != objects.cend(); ++i) {
         Object *obj = *i;
         if (__builtin_expect(obj->getCoords() == coords, false)) {
             /* get the most visible object */
@@ -337,29 +339,34 @@ Object *Map::objectAt(const Coords &coords)
  * If there is no portal that corresponds to the actions flagged
  * by 'actionFlags' at the given (x,y,z) coords, it returns nullptr.
  */
-const Portal *Map::portalAt(const Coords &coords, int actionFlags)
+const Portal *Map::portalAt(const Coords &coords, int actionFlags) const
 {
-    PortalList::const_iterator i;
-    for (i = portals.begin(); i != portals.end(); i++) {
-        if (((*i)->coords == coords) && ((*i)->trigger_action & actionFlags)) {
-            return *i;
+    PortalList::const_iterator i = std::find_if(
+        portals.cbegin(),
+        portals.cend(),
+        [&](const Portal *v) {
+            return (v->coords == coords) && (v->trigger_action & actionFlags);
         }
+    );
+    if (i != portals.cend()) {
+        return *i;
+    } else {
+        return nullptr;
     }
-    return nullptr;
 }
 
 
 /**
  * Returns the raw tile for the given (x,y,z) coords for the given map
  */
-MapTile *Map::getTileFromData(const Coords &coords)
+MapTile Map::getTileFromData(const Coords &coords) const
 {
     static MapTile blank(0);
     if (MAP_IS_OOB(this, coords)) {
-        return &blank;
+        return blank;
     }
     int index = coords.x + (coords.y * width) + (width * height * coords.z);
-    return &data[index];
+    return data[index];
 }
 
 
@@ -368,44 +375,45 @@ MapTile *Map::getTileFromData(const Coords &coords)
  * annotations like moongates and attack icons are ignored.  Any walkable tiles
  * are taken into account (treasure chests, ships, balloon, etc.)
  */
-MapTile *Map::tileAt(const Coords &coords, int withObjects)
+MapTile Map::tileAt(const Coords &coords, int withObjects) const
 {
     /* FIXME: this should return a list of tiles, with the most visible
        at the front */
-    MapTile *tile;
-    std::list<Annotation *> a = annotations->ptrsToAllAt(coords);
-    std::list<Annotation *>::iterator i;
+    MapTile tile;
+    std::list<const Annotation *> a = annotations->ptrsToAllAt(coords);
     Object *obj = objectAt(coords);
     tile = getTileFromData(coords);
     /* FIXME: this only returns the first valid annotation it can find */
-    if (a.size() > 0) {
-        for (i = a.begin(); i != a.end(); i++) {
-            if (!(*i)->isVisualOnly()) {
-                return &(*i)->getTile();
-            }
+    std::list<const Annotation *>::const_iterator i = std::find_if(
+        a.cbegin(),
+        a.cend(),
+        [&](const Annotation *v) {
+            return !(v->isVisualOnly());
         }
+    );
+    if (i != a.cend()) {
+        return (*i)->getTile();
     }
     if ((withObjects == WITH_OBJECTS) && obj) {
-        tile = &obj->getTile();
+        tile = obj->getTile();
     } else if ((withObjects == WITH_GROUND_OBJECTS)
                && obj
                && obj->getTile().getTileType()->isWalkable()) {
-        tile = &obj->getTile();
+        tile = obj->getTile();
     }
     return tile;
 } // Map::tileAt
 
-const Tile *Map::tileTypeAt(const Coords &coords, int withObjects)
+const Tile *Map::tileTypeAt(const Coords &coords, int withObjects) const
 {
-    MapTile *tile = tileAt(coords, withObjects);
-    return tile->getTileType();
+    return tileAt(coords, withObjects).getTileType();
 }
 
 
 /**
  * Returns true if the given map is the world map
  */
-bool Map::isWorldMap()
+bool Map::isWorldMap() const
 {
     return type == WORLD;
 }
@@ -415,7 +423,7 @@ bool Map::isWorldMap()
  * Returns true if the map is enclosed (to see if gem layouts should
  * cut themselves off)
  */
-bool Map::isEnclosed(const Coords &party)
+bool Map::isEnclosed(const Coords &party) const
 {
     unsigned int x, y;
     int *path_data;
@@ -434,19 +442,22 @@ bool Map::isEnclosed(const Coords &party)
         int index = x;
         if ((path_data[index] == 2)
             && (path_data[index + ((height - 1) * width)] == 2)) {
+            delete[] path_data;
             return false;
         }
     }
     for (y = 0; y < width; y++) {
         int index = (y * width);
         if ((path_data[index] == 2) && (path_data[index + width - 1] == 2)) {
+            delete[] path_data;
             return false;
         }
     }
+    delete[] path_data;
     return true;
 } // Map::isEnclosed
 
-void Map::findWalkability(Coords coords, int *path_data)
+void Map::findWalkability(const Coords &coords, int *path_data) const
 {
     const Tile *mt = tileTypeAt(coords, WITHOUT_OBJECTS);
     int index = coords.x + (coords.y * width);
@@ -489,7 +500,7 @@ void Map::findWalkability(Coords coords, int *path_data)
 /**
  * Adds a creature object to the given map
  */
-Creature *Map::addCreature(const Creature *creature, Coords coords)
+Creature *Map::addCreature(const Creature *creature, const Coords &coords)
 {
     Creature *m = new Creature(*creature);
     /* make a copy of the creature before placing it */
@@ -523,7 +534,7 @@ Creature *Map::addCreature(const Creature *creature, Coords coords)
 /**
  * Adds an object to the given map
  */
-Object *Map::addObject(Object *obj, Coords)
+Object *Map::addObject(Object *obj, const Coords &)
 {
     objects.push_front(obj);
     obj->setCoords(obj->getCoords());
@@ -531,7 +542,9 @@ Object *Map::addObject(Object *obj, Coords)
     return obj;
 }
 
-Object *Map::addObject(MapTile tile, MapTile prevtile, Coords coords)
+Object *Map::addObject(
+    MapTile tile, MapTile prevtile, const Coords &coords
+)
 {
     Object *obj = new Object;
 
@@ -556,18 +569,18 @@ Object *Map::addObject(MapTile tile, MapTile prevtile, Coords coords)
 // below.
 void Map::removeObject(const Object *rem, bool deleteObject)
 {
-    ObjectDeque::iterator i;
-    for (i = objects.begin(); i != objects.end(); i++) {
-        if (*i == rem) {
-            /* Party members persist through different maps,
-               so don't delete them! */
-            if (deleteObject && !isPartyMember(*i)) {
-                delete *i;
-            }
-            objects.erase(i);
-            return;
-        }
+    ObjectDeque::iterator i = std::find(
+        objects.begin(),
+        objects.end(),
+        rem
+    );
+    if (i == objects.end()) return;
+    /* Party members persist through different maps,
+       so don't delete them! */
+    if (deleteObject && !isPartyMember(*i)) {
+        delete *i;
     }
+    objects.erase(i);
 }
 
 ObjectDeque::iterator Map::removeObject(
@@ -588,11 +601,11 @@ ObjectDeque::iterator Map::removeObject(
  * Returns an attacking object if there is a creature attacking.
  * Also performs special creature actions and creature effects.
  */
-Creature *Map::moveObjects(MapCoords avatar)
+Creature *Map::moveObjects(const MapCoords &avatar) const
 {
-    ObjectDeque::iterator i;
+    ObjectDeque::const_iterator i;
     Creature *attacker = nullptr;
-    for (i = objects.begin(); i != objects.end(); i++) {
+    for (i = objects.cbegin(); i != objects.cend(); ++i) {
         Creature *m = dynamic_cast<Creature *>(*i);
         if (m) {
             /* check if the object is an attacking creature and not
@@ -635,10 +648,10 @@ Creature *Map::moveObjects(MapCoords avatar)
  * Resets object animations to a value that is acceptable for
  * savegame compatibility with u4dos.
  */
-void Map::resetObjectAnimations()
+void Map::resetObjectAnimations() const
 {
-    ObjectDeque::iterator i;
-    for (i = objects.begin(); i != objects.end(); i++) {
+    ObjectDeque::const_iterator i;
+    for (i = objects.cbegin(); i != objects.cend(); ++i) {
         Object *obj = *i;
         if (obj->getType() == Object::CREATURE) {
             obj->setPrevTile(
@@ -661,12 +674,12 @@ void Map::clearObjects()
  * Returns the number of creatures on the given map level,
    or all levels if level == -1
  */
-int Map::getNumberOfCreatures(int level)
+int Map::getNumberOfCreatures(int level) const
 {
     ObjectDeque::const_iterator i;
     int n = 0;
-    for (i = objects.begin(); i != objects.end(); i++) {
-        Object *obj = *i;
+    for (i = objects.cbegin(); i != objects.cend(); ++i) {
+        const Object *obj = *i;
         if (obj->getType() == Object::CREATURE) {
             if (level == -1 || obj->getCoords().z == level) {
                 n++;
@@ -680,27 +693,25 @@ int Map::getNumberOfCreatures(int level)
 /**
  * Returns a mask of valid moves for the given transport on the given map
  */
-int Map::getValidMoves(MapCoords from, MapTile transport, bool wanders)
+int Map::getValidMoves(
+    const MapCoords &from, MapTile transport, bool wanders
+) const
 {
     int retval;
     Direction d;
-    Object *obj;
+    const Object *obj;
     const Creature *m, *to_m;
-    int ontoAvatar, ontoCreature;
-    MapCoords coords = from;
     // get the creature object, if it exists (the one that's moving)
     m = creatureMgr->getByTile(transport);
-    bool isAvatar = (c->location->coords == coords);
+    bool isAvatar = (c->location->coords == from);
     if (m && m->canMoveOntoPlayer()) {
         isAvatar = false;
     }
     retval = 0;
-    for (d = DIR_WEST;
-         d <= DIR_SOUTH;
-         d = static_cast<Direction>(d + 1)) {
-        coords = from;
-        ontoAvatar = 0;
-        ontoCreature = 0;
+    for (d = DIR_WEST; d <= DIR_SOUTH; d = static_cast<Direction>(d + 1)) {
+        MapCoords coords = from;
+        bool ontoAvatar = false;
+        bool ontoCreature = false;
         // Move the coordinates in the current direction and test it
         coords.move(d, this);
         // you can always walk off the edge of the map
@@ -711,11 +722,11 @@ int Map::getValidMoves(MapCoords from, MapTile transport, bool wanders)
         obj = objectAt(coords);
         // see if it's trying to move onto the avatar
         if ((flags & SHOW_AVATAR) && (coords == c->location->coords)) {
-            ontoAvatar = 1;
+            ontoAvatar = true;
         }
         // see if it's trying to move onto a person or creature
         else if (obj && (obj->getType() != Object::UNKNOWN)) {
-            ontoCreature = 1;
+            ontoCreature = true;
         }
         // get the destination tile
         MapTile tile;
@@ -724,12 +735,12 @@ int Map::getValidMoves(MapCoords from, MapTile transport, bool wanders)
         } else if (ontoCreature) {
             tile = obj->getTile();
         } else {
-            tile = *tileAt(coords, WITH_OBJECTS);
+            tile = tileAt(coords, WITH_OBJECTS);
         }
-        MapTile prev_tile = *tileAt(from, WITHOUT_OBJECTS);
+        MapTile prev_tile = tileAt(from, WITHOUT_OBJECTS);
         // get the other creature object, if it exists (the one that's
         // being moved onto)
-        to_m = dynamic_cast<Creature *>(obj);
+        to_m = dynamic_cast<const Creature *>(obj);
         // move on if unable to move onto the avatar or another creature
         // some creatures/persons have the same
         // tile as the avatar, so we have to adjust
@@ -742,7 +753,7 @@ int Map::getValidMoves(MapCoords from, MapTile transport, bool wanders)
             if ((ontoAvatar && m->canMoveOntoPlayer())
                 || (ontoCreature && m->canMoveOntoCreatures())) {
                 // Ignore all objects, and just consider terrain
-                tile = *tileAt(coords, WITHOUT_OBJECTS);
+                tile = tileAt(coords, WITHOUT_OBJECTS);
             }
             if ((ontoAvatar && !m->canMoveOntoPlayer())
                 || (ontoCreature
@@ -807,11 +818,8 @@ int Map::getValidMoves(MapCoords from, MapTile transport, bool wanders)
             // u4apple2: they can't go through dungeon walls
             else if (m->isIncorporeal() && type != Map::DUNGEON) {
                 // can move anywhere but onto water, unless of course the
-                // creature can swim
-                if (!(tile.getTileType()->isSwimable()
-                      || tile.getTileType()->isSailable())) {
-                    retval = DIR_ADD_TO_MASK(d, retval);
-                }
+                // creature can swim (but that has been dealt with above)
+                retval = DIR_ADD_TO_MASK(d, retval);
             }
             // walking creatures
             else if (m->walks()) {
@@ -824,10 +832,10 @@ int Map::getValidMoves(MapCoords from, MapTile transport, bool wanders)
             }
             // Creatures that can move onto player
             else if (ontoAvatar && m->canMoveOntoPlayer()) {
-                // tile should be transport
-                if (tile.getTileType()->isShip() && m->swims()) {
+                // tile should be transport (FIXME this condition fails always)
+                //if (tile.getTileType()->isShip() && m->swims()) {
                     retval = DIR_ADD_TO_MASK(d, retval);
-                }
+                //}
             }
         }
     }
@@ -848,13 +856,12 @@ bool Map::move(Object *obj, Direction d)
 /**
  * Alerts the guards that the avatar is doing something bad
  */
-void Map::alertGuards()
+void Map::alertGuards() const
 {
-    ObjectDeque::iterator i;
-    const Creature *m;
+    ObjectDeque::const_iterator i;
     /* switch all the guards to attack mode */
-    for (i = objects.begin(); i != objects.end(); i++) {
-        m = creatureMgr->getByTile((*i)->getTile());
+    for (i = objects.cbegin(); i != objects.cend(); ++i) {
+        const Creature *m = creatureMgr->getByTile((*i)->getTile());
         if (m && ((m->getId() == GUARD_ID)
                   || (m->getId() == LORDBRITISH_ID))) {
             (*i)->setMovementBehavior(MOVEMENT_ATTACK_AVATAR);
@@ -866,7 +873,7 @@ const MapCoords &Map::getLabel(const std::string &name) const
 {
     std::map<std::string, MapCoords>::const_iterator i =
         labels.find(name);
-    if (i == labels.end()) {
+    if (i == labels.cend()) {
         return MapCoords::nowhere;
     }
     return i->second;
@@ -886,8 +893,7 @@ static bool isCloser(const Object *a, const Object *b)
 
 bool Map::fillMonsterTable()
 {
-    ObjectDeque::iterator current;
-    Object *obj;
+    ObjectDeque::const_iterator current;
     ObjectDeque monsters;
     ObjectDeque other_creatures;
     ObjectDeque inanimate_objects;
@@ -910,17 +916,17 @@ bool Map::fillMonsterTable()
             inanimate_objects.push_back(c->lastShip);
         }
     }
-    for (current = objects.begin(); current != objects.end(); current++) {
-        obj = *current;
+    for (current = objects.cbegin(); current != objects.cend(); ++current) {
+        Object *obj = *current;
         if (obj == c->lastShip && obj->getMap() == this) {
             continue;
         }
         /* moving objects first */
         if ((obj->getType() == Object::CREATURE)
             /* && (obj->getMovementBehavior() != MOVEMENT_FIXED) */ ) {
-            Creature *c = dynamic_cast<Creature *>(obj);
+            Creature *cr = dynamic_cast<Creature *>(obj);
             /* whirlpools and storms are separated from other moving objects */
-            if ((c->getId() == WHIRLPOOL_ID) || (c->getId() == STORM_ID)) {
+            if ((cr->getId() == WHIRLPOOL_ID) || (cr->getId() == STORM_ID)) {
                 nForcesOfNature++;
                 monsters.push_back(obj);
             } else {
@@ -1006,17 +1012,17 @@ bool Map::fillMonsterTable()
      * Fill in our monster table
      */
     for (i = 0; i < MONSTERTABLE_SIZE; i++) {
-        Coords c = monsters[i]->getCoords(),
-            prevc = monsters[i]->getPrevCoords();
+        Coords co = monsters[i]->getCoords(),
+            prevco = monsters[i]->getPrevCoords();
         monsterTable[i].tile =
             TileMap::get("base")->untranslate(monsters[i]->getTile());
-        monsterTable[i].x = c.x;
-        monsterTable[i].y = c.y;
+        monsterTable[i].x = co.x;
+        monsterTable[i].y = co.y;
         monsterTable[i].prevTile =
             TileMap::get("base")->untranslate(monsters[i]->getPrevTile());
-        monsterTable[i].prevx = prevc.x;
-        monsterTable[i].prevy = prevc.y;
-        monsterTable[i].z = (type == Map::DUNGEON) ? c.z : 0;
+        monsterTable[i].prevx = prevco.x;
+        monsterTable[i].prevy = prevco.y;
+        monsterTable[i].z = (type == Map::DUNGEON) ? co.z : 0;
         monsterTable[i].unused = 0;
     }
     return true;
@@ -1024,12 +1030,12 @@ bool Map::fillMonsterTable()
 
 MapTile Map::tfrti(int raw) const
 {
-    ASSERT(tilemap != nullptr, "tilemap hasn't been set");
+    U4ASSERT(tilemap != nullptr, "tilemap hasn't been set");
     return tilemap->translate(raw);
 }
 
-unsigned int Map::ttrti(MapTile &tile) const
+unsigned int Map::ttrti(MapTile tile) const
 {
-    ASSERT(tilemap != nullptr, "tilemap hasn't been set");
+    U4ASSERT(tilemap != nullptr, "tilemap hasn't been set");
     return tilemap->untranslate(tile);
 }

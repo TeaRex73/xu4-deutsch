@@ -49,7 +49,7 @@ public:
     }
 
 private:
-    Armor(const ConfigElement &conf);
+    explicit Armor(const ConfigElement &conf);
     ~Armor();
     static void loadConf();
     static bool confLoaded;
@@ -59,7 +59,6 @@ private:
     std::string neg;
     unsigned char canuse;
     int defense;
-    unsigned short mask;
     bool mystic;
 };
 

@@ -31,7 +31,7 @@ bool Controller::notifyKeyPressed(int key)
     return processed;
 }
 
-int Controller::getTimerInterval()
+int Controller::getTimerInterval() const
 {
     return timerInterval;
 }

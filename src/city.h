@@ -27,13 +27,13 @@ class City:public Map {
 public:
     City();
     virtual ~City();
-    virtual std::string getName();
-    Person *addPerson(Person *p);
+    virtual std::string getName() const override;
+    Person *addPerson(Person *person);
     void addPeople();
     void removeAllPeople();
     Person *personAt(const Coords &coords);
     std::string name;
-    std::string type;
+    std::string cityType;
     PersonList persons;
     std::string tlk_fname;
     PersonRoleList personroles;

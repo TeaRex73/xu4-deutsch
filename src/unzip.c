@@ -343,9 +343,6 @@ extern unzFile ZEXPORT unzOpen(const char *path)
                               the central dir
                               (same than number_entry on nospan) */
     int err = UNZ_OK;
-    if (unz_copyright[0] != ' ') {
-        return NULL;
-    }
     fin = fopen(path, "rb");
     if (fin == NULL) {
         return NULL;
@@ -617,9 +614,7 @@ local int unzlocal_GetCurrentFileInfoInternal(
             uSizeRead = commentBufferSize;
         }
         if (lSeek != 0) {
-            if (fseek(s->file, lSeek, SEEK_CUR) == 0) {
-                lSeek = 0;
-            } else {
+            if (fseek(s->file, lSeek, SEEK_CUR) != 0) {
                 err = UNZ_ERRNO;
             }
         }
@@ -628,9 +623,6 @@ local int unzlocal_GetCurrentFileInfoInternal(
                 err = UNZ_ERRNO;
             }
         }
-        lSeek += file_info.size_file_comment - uSizeRead;
-    } else {
-        lSeek += file_info.size_file_comment;
     }
     if ((err == UNZ_OK) && (pfile_info != NULL)) {
         *pfile_info = file_info;
@@ -899,7 +891,6 @@ local int unzlocal_CheckCurrentFileCoherencyHeader(
 */
 extern int ZEXPORT unzOpenCurrentFile(unzFile file)
 {
-    int err = UNZ_OK;
     int Store;
     uInt iSizeVar;
     unz_s *s;
@@ -940,7 +931,8 @@ extern int ZEXPORT unzOpenCurrentFile(unzFile file)
     pfile_in_zip_read_info->stream_initialised = 0;
     if ((s->cur_file_info.compression_method != 0)
         && (s->cur_file_info.compression_method != Z_DEFLATED)) {
-        err = UNZ_BADZIPFILE;
+        TRYFREE(pfile_in_zip_read_info);
+        return UNZ_BADZIPFILE;
     }
     Store = s->cur_file_info.compression_method == 0;
     pfile_in_zip_read_info->crc32_wait = s->cur_file_info.crc;
@@ -952,6 +944,7 @@ extern int ZEXPORT unzOpenCurrentFile(unzFile file)
         s->byte_before_the_zipfile;
     pfile_in_zip_read_info->stream.total_out = 0;
     if (!Store) {
+        int err;
         pfile_in_zip_read_info->stream.zalloc = (alloc_func)0;
         pfile_in_zip_read_info->stream.zfree = (free_func)0;
         pfile_in_zip_read_info->stream.opaque = (voidpf)0;

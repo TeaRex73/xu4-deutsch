@@ -106,7 +106,7 @@ Dialogue *U4LBDialogueLoader::load(void *)
             bye = new Response("Er sagt:\nLebe wohl, meine Freundin!");
             break;
         default:
-            ASSERT(0, "Invalid Sex %d", c->party->member(0)->getSex());
+            U4ASSERT(0, "Invalid Sex %d", c->party->member(0)->getSex());
         }
     }
     bye->add(ResponsePart::STOPMUSIC);
@@ -240,7 +240,10 @@ Response *lordBritishGetHelp(const DynamicResponse *)
                std::string("mein Freund.\n") :
                std::string("meine Freundin.\n"));
     }
-    return new Response(std::string("Er sagt:\n") + text);
+    Response *result = new Response("");
+    result->add(ResponsePart::DISKLOAD);
+    result->add(std::string("Er sagt:\n") + text);
+    return result;
 } // lordBritishGetHelp
 
 Response *lordBritishGetIntro(const DynamicResponse *)
@@ -310,3 +313,4 @@ Response *lordBritishGetIntro(const DynamicResponse *)
     }
     return intro;
 } // lordBritishGetIntro
+

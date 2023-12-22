@@ -41,9 +41,9 @@ class ReadPlayerController:public ReadChoiceController {
 public:
     ReadPlayerController();
     ~ReadPlayerController();
-    virtual bool keyPressed(int key);
-    int getPlayer();
-    int waitFor();
+    virtual bool keyPressed(int key) override;
+    int getPlayer() const;
+    virtual int waitFor() override;
 };
 
 
@@ -58,7 +58,7 @@ public:
     {
     }
 
-    bool keyPressed(int key);
+    virtual bool keyPressed(int key) override;
     static int get(
         char lastValidLetter,
         const std::string &prompt,
@@ -76,17 +76,17 @@ private:
  */
 class ZtatsController:public WaitableController<void *> {
 public:
-    bool keyPressed(int key);
+    virtual bool keyPressed(int key) override;
 };
 
 
 class TurnCompleter {
 public:
     virtual ~TurnCompleter()
-        {
-        }
+    {
+    }
 
-        virtual void finishTurn() = 0;
+    virtual void finishTurn() = 0;
 };
 
 
@@ -108,12 +108,12 @@ public:
     GameController();
     ~GameController();
     /* controller functions */
-    virtual bool keyPressed(int key);
-    virtual void timerFired();
+    virtual bool keyPressed(int key) override;
+    virtual void timerFired() override;
     /* main game functions */
     void init();
-    void initScreen();
-    void initScreenWithoutReloadingState();
+    static void initScreen();
+    static void initScreenWithoutReloadingState();
     void setMap(
         Map *map,
         bool saveLocation,
@@ -121,13 +121,13 @@ public:
         TurnCompleter *turnCompleter = nullptr
     );
     bool exitToParentMap(bool shouldQuenchTorch = true);
-    virtual void finishTurn();
-    virtual void update(Party *party, PartyEvent &event);
-    virtual void update(Location *location, MoveEvent &event);
-    void initMoons();
-    void updateMoons(bool showmoongates);
+    virtual void finishTurn() override;
+    virtual void update(Party *party, PartyEvent &event) override;
+    virtual void update(Location *location, MoveEvent &event) override;
+    static void initMoons();
+    static void updateMoons(bool showmoongates);
     static void flashTile(
-        const Coords &coords, MapTile tile, int timeFactor
+        const Coords &coords, MapTile tile, int frames
     );
     static void flashTile(
         const Coords &coords, const std::string &tilename, int timeFactor
@@ -140,12 +140,12 @@ public:
 private:
     void avatarMoved(MoveEvent &event);
     void avatarMovedInDungeon(MoveEvent &event);
-    void creatureCleanup(bool allCreatures = false);
-    void checkBridgeTrolls();
-    void checkRandomCreatures();
-    void checkSpecialCreatures(Direction dir);
+    static void creatureCleanup(bool allCreatures = false);
+    static void checkBridgeTrolls();
+    static void checkRandomCreatures();
+    static void checkSpecialCreatures(Direction dir);
     bool checkMoongates();
-    bool createBalloon(Map *map);
+    static bool createBalloon(Map *map);
 };
 
 extern GameController *game;

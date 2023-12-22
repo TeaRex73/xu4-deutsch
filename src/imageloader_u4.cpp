@@ -36,7 +36,7 @@ Image *U4RawImageLoader::load(U4FILE *file, int width, int height, int bpp)
     if ((width == -1) || (height == -1) || (bpp == -1)) {
         errorFatal("dimensions not set for u4raw image");
     }
-    ASSERT(
+    U4ASSERT(
         bpp == 1 || bpp == 4 || bpp == 8 || bpp == 24 || bpp == 32,
         "invalid bpp: %d",
         bpp
@@ -87,7 +87,7 @@ Image *U4RleImageLoader::load(U4FILE *file, int width, int height, int bpp)
     if ((width == -1) || (height == -1) || (bpp == -1)) {
         errorFatal("dimensions not set for u4rle image");
     }
-    ASSERT(
+    U4ASSERT(
         bpp == 1 || bpp == 4 || bpp == 8 || bpp == 24 || bpp == 32,
         "invalid bpp: %d",
         bpp
@@ -137,7 +137,7 @@ Image *U4LzwImageLoader::load(U4FILE *file, int width, int height, int bpp)
     if ((width == -1) || (height == -1) || (bpp == -1)) {
         errorFatal("dimensions not set for u4lzw image");
     }
-    ASSERT(
+    U4ASSERT(
         bpp == 1 || bpp == 4 || bpp == 8 || bpp == 24 || bpp == 32,
         "invalid bpp: %d",
         bpp
@@ -213,9 +213,13 @@ RGBA *U4PaletteLoader::loadEgaPalette()
         egaPalette = new RGBA[16];
         std::vector<ConfigElement> paletteConf =
             config->getElement("egaPalette").getChildren();
-        for (std::vector<ConfigElement>::iterator i = paletteConf.begin();
-             i != paletteConf.end();
-             i++) {
+        U4ASSERT(
+            paletteConf.size() == 16, "EGA palette does not have 16 entries"
+        );
+        for (std::vector<ConfigElement>::const_iterator i =
+                 paletteConf.cbegin();
+             i != paletteConf.cend();
+             ++i) {
             if (i->getName() != "color") {
                 continue;
             }

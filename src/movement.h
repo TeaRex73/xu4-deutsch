@@ -46,9 +46,14 @@ public:
 
 void moveAvatar(MoveEvent &event);
 void moveAvatarInDungeon(MoveEvent &event);
-bool moveObject(class Map *map, class Creature *obj, MapCoords avatar);
+bool moveObject(
+    const class Map *map, class Creature *obj, const MapCoords &avatar
+);
 bool moveCombatObject(
-    int action, class Map * map, class Creature * obj, MapCoords target
+    int action,
+    const class Map *map,
+    class Creature *obj,
+    const MapCoords &target
 );
 void movePartyMember(MoveEvent &event);
 bool slowedByTile(const Tile *tile);

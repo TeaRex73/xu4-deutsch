@@ -8,7 +8,9 @@
 
 #include "spell.h"
 
+#include <algorithm>
 #include <cstring>
+
 #include "annotation.h"
 #include "combat.h"
 #include "context.h"
@@ -340,7 +342,7 @@ Ingredients::Ingredients()
 
 bool Ingredients::addReagent(Reagent reagent)
 {
-    ASSERT(reagent < REAG_MAX, "invalid reagent: %d", reagent);
+    U4ASSERT(reagent < REAG_MAX, "invalid reagent: %d", reagent);
     if (c->party->getReagent(reagent) < 1) {
         return false;
     }
@@ -351,7 +353,7 @@ bool Ingredients::addReagent(Reagent reagent)
 
 bool Ingredients::removeReagent(Reagent reagent)
 {
-    ASSERT(reagent < REAG_MAX, "invalid reagent: %d", reagent);
+    U4ASSERT(reagent < REAG_MAX, "invalid reagent: %d", reagent);
     if (reagents[reagent] == 0) {
         return false;
     }
@@ -362,7 +364,7 @@ bool Ingredients::removeReagent(Reagent reagent)
 
 int Ingredients::getReagent(Reagent reagent) const
 {
-    ASSERT(reagent < REAG_MAX, "invalid reagent: %d", reagent);
+    U4ASSERT(reagent < REAG_MAX, "invalid reagent: %d", reagent);
     return reagents[reagent];
 }
 
@@ -389,7 +391,7 @@ bool Ingredients::checkMultiple(int batches) const
 
 void Ingredients::multiply(int batches)
 {
-    ASSERT(
+    U4ASSERT(
         checkMultiple(batches),
         "not enough reagents to multiply ingredients by %d\n",
         batches
@@ -404,25 +406,25 @@ void Ingredients::multiply(int batches)
 
 const char *spellGetName(unsigned int spell)
 {
-    ASSERT(spell < N_SPELLS, "invalid spell: %d", spell);
+    U4ASSERT(spell < N_SPELLS, "invalid spell: %u", spell);
     return spells[spell].name;
 }
 
 int spellGetRequiredMP(unsigned int spell)
 {
-    ASSERT(spell < N_SPELLS, "invalid spell: %d", spell);
+    U4ASSERT(spell < N_SPELLS, "invalid spell: %u", spell);
     return spells[spell].mp;
 }
 
 LocationContext spellGetContext(unsigned int spell)
 {
-    ASSERT(spell < N_SPELLS, "invalid spell: %d", spell);
+    U4ASSERT(spell < N_SPELLS, "invalid spell: %u", spell);
     return spells[spell].context;
 }
 
 TransportContext spellGetTransportContext(unsigned int spell)
 {
-    ASSERT(spell < N_SPELLS, "invalid spell: %d", spell);
+    U4ASSERT(spell < N_SPELLS, "invalid spell: %u", spell);
     return spells[spell].transportContext;
 }
 
@@ -463,7 +465,7 @@ std::string spellGetErrorMessage(unsigned int spell, SpellCastError error)
 bool spellMix(unsigned int spell, const Ingredients *ingredients)
 {
     int regmask, reg;
-    ASSERT(spell < N_SPELLS, "invalid spell: %d", spell);
+    U4ASSERT(spell < N_SPELLS, "invalid spell: %u", spell);
     regmask = 0;
     for (reg = 0; reg < REAG_MAX; reg++) {
         if (ingredients->getReagent(static_cast<Reagent>(reg)) > 0) {
@@ -479,7 +481,7 @@ bool spellMix(unsigned int spell, const Ingredients *ingredients)
 
 Spell::Param spellGetParamType(unsigned int spell)
 {
-    ASSERT(spell < N_SPELLS, "invalid spell: %d", spell);
+    U4ASSERT(spell < N_SPELLS, "invalid spell: %u", spell);
     return spells[spell].paramType;
 }
 
@@ -491,8 +493,8 @@ Spell::Param spellGetParamType(unsigned int spell)
  */
 SpellCastError spellCheckPrerequisites(unsigned int spell, int character)
 {
-    ASSERT(spell < N_SPELLS, "invalid spell: %d", spell);
-    ASSERT(
+    U4ASSERT(spell < N_SPELLS, "invalid spell: %u", spell);
+    U4ASSERT(
         character >= 0 && character < c->saveGame->members,
         "character out of range: %d",
         character
@@ -528,8 +530,8 @@ bool spellCast(
     int subject =
         (spells[spell].paramType == Spell::PARAM_PLAYER) ? param : -1;
     PartyMember *p = c->party->member(character);
-    ASSERT(spell < N_SPELLS, "invalid spell: %d", spell);
-    ASSERT(
+    U4ASSERT(spell < N_SPELLS, "invalid spell: %u", spell);
+    U4ASSERT(
         character >= 0 && character < c->saveGame->members,
         "character out of range: %d",
         character
@@ -599,13 +601,15 @@ void spellMagicAttack(
         Tile::canAttackOverTile,
         false
     );
-    for (std::vector<Coords>::iterator i = path.begin();
-         i != path.end();
-         i++) {
-        if (spellMagicAttackAt(*i, tile, attackDamage)) {
-            return;
-        }
-    }
+    static_cast<void>(
+        std::any_of(
+            path.cbegin(),
+            path.cend(),
+            [&](const Coords &v) {
+                return spellMagicAttackAt(v, tile, attackDamage);
+            }
+        )
+    );
 }
 
 bool spellMagicAttackAt(
@@ -634,7 +638,7 @@ bool spellMagicAttackAt(
 
 static bool spellAwaken(int player)
 {
-    ASSERT(player < 8, "player out of range: %d", player);
+    U4ASSERT(player < 8, "player out of range: %d", player);
     PartyMember *p = c->party->member(player);
     if ((player < c->party->size())
         && (p->getStatus() == STAT_SLEEPING)) {
@@ -700,7 +704,7 @@ static bool spellBlink(int dir)
 
 static bool spellCure(int player)
 {
-    ASSERT(player < 8, "player out of range: %d", player);
+    U4ASSERT(player < 8, "player out of range: %d", player);
     GameController::flashTile(
         c->party->member(player)->getCoords(), "wisp", 4
     );
@@ -709,7 +713,7 @@ static bool spellCure(int player)
 
 static bool spellDispel(int dir)
 {
-    MapTile *tile;
+    MapTile tile;
     MapCoords field;
     /*
      * get the location of the avatar (or current party member,
@@ -731,7 +735,7 @@ static bool spellDispel(int dir)
     Annotation::List a = c->location->map->annotations->allAt(field);
     if (a.size() > 0) {
         Annotation::List::iterator i;
-        for (i = a.begin(); i != a.end(); i++) {
+        for (i = a.begin(); i != a.end(); ++i) {
             if (i->getTile().getTileType()->canDispel()) {
                 /*
                  * get a replacement tile for the field
@@ -751,14 +755,14 @@ static bool spellDispel(int dir)
      * if the map tile itself is a field, overlay it with replacement tile
      */
     tile = c->location->map->tileAt(field, WITHOUT_OBJECTS);
-    if (!tile->getTileType()->canDispel()) {
+    if (!tile.getTileType()->canDispel()) {
         return false;
     }
     /*
      * get a replacement tile for the field
      */
     MapTile newTile(
-        c->location->getReplacementTile(field, tile->getTileType())
+        c->location->getReplacementTile(field, tile.getTileType())
     );
     c->location->map->annotations->add(field, newTile, false, true);
     return true;
@@ -771,8 +775,8 @@ static bool spellEField(int param)
     int dir;
     MapCoords coords;
     /* Unpack fieldType and direction */
-    fieldType = param >> 4;
-    dir = param & 0xF;
+    fieldType = param >> 4u;
+    dir = param & 0xFu;
     /* Make sure params valid */
     if (c->location->map->type == Map::DUNGEON) {
         switch (fieldType) {
@@ -845,7 +849,7 @@ static bool spellEField(int param)
             c->location->map->annotations->allAt(coords);
         if (a.size() > 0) {
             Annotation::List::iterator i;
-            for (i = a.begin(); i != a.end(); i++) {
+            for (i = a.begin(); i != a.end(); ++i) {
                 if (i->getTile().getTileType()->canDispel()) {
                     c->location->map->annotations->remove(*i);
                 }
@@ -876,7 +880,7 @@ static bool spellGate(int phase)
 
 static bool spellHeal(int player)
 {
-    ASSERT(player < 8, "player out of range: %d", player);
+    U4ASSERT(player < 8, "player out of range: %d", player);
     GameController::flashTile(
         c->party->member(player)->getCoords(), "wisp", 4
     );
@@ -935,7 +939,7 @@ static bool spellProtect(int)
 
 static bool spellRez(int player)
 {
-    ASSERT(player < 8, "player out of range: %d", player);
+    U4ASSERT(player < 8, "player out of range: %d", player);
     return c->party->member(player)->heal(HT_RESURRECT);
 }
 
@@ -949,9 +953,9 @@ static bool spellSleep(int)
 {
     CombatMap *cm = getCombatMap();
     CreatureVector creatures = cm->getCreatures();
-    CreatureVector::iterator i;
+    CreatureVector::const_iterator i;
     /* try to put each creature to sleep */
-    for (i = creatures.begin(); i != creatures.end(); i++) {
+    for (i = creatures.cbegin(); i != creatures.cend(); ++i) {
         Creature *m = *i;
         Coords coords = m->getCoords();
         GameController::flashTile(coords, "wisp", 4);
@@ -974,8 +978,8 @@ static bool spellTremor(int)
 {
     CombatController *ct = spellCombatController();
     CreatureVector creatures = ct->getMap()->getCreatures();
-    CreatureVector::iterator i;
-    for (i = creatures.begin(); i != creatures.end(); i++) {
+    CreatureVector::const_iterator i;
+    for (i = creatures.cbegin(); i != creatures.cend(); ++i) {
         Creature *m = *i;
         Coords coords = m->getCoords();
         // GameController::flashTile(coords, "rocks", 4);
@@ -1009,8 +1013,8 @@ static bool spellUndead(int)
 {
     CombatController *ct = spellCombatController();
     CreatureVector creatures = ct->getMap()->getCreatures();
-    CreatureVector::iterator i;
-    for (i = creatures.begin(); i != creatures.end(); i++) {
+    CreatureVector::const_iterator i;
+    for (i = creatures.cbegin(); i != creatures.cend(); ++i) {
         Creature *m = *i;
         if (m && m->isUndead()) {
             if (m->getHp() > 23) {

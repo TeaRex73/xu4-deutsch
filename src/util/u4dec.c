@@ -60,6 +60,7 @@ int main(int argc, char *argv[])
     if ((long)fread(indata, 1, inlen, infile) != inlen) {
         perror("fread failed");
     }
+    fclose(infile);
     if (strcmp(alg, "lzw") == 0) {
         outlen = lzwGetDecompressedSize(indata, inlen);
         outdata = (unsigned char *)malloc(outlen);
@@ -97,11 +98,10 @@ int main(int argc, char *argv[])
 
 int isPowerOfTwo(int n)
 {
-    int tmp;
     if (n <= 0) {
         return 0;
     } else {
-        tmp = n;
+        int tmp = n;
         while (tmp % 2 == 0) {
             tmp = tmp >> 1;
         }

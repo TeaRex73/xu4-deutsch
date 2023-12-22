@@ -28,7 +28,7 @@ Image *FMTOWNSImageLoader::load(U4FILE *file, int width, int height, int bpp)
     if ((width == -1) || (height == -1) || (bpp == -1)) {
         errorFatal("dimensions not set for fmtowns image");
     }
-    ASSERT((bpp == 16) | (bpp == 4), "invalid bpp: %d", bpp);
+    U4ASSERT((bpp == 16) || (bpp == 4), "invalid bpp: %d", bpp);
     long rawLen = file->length() - offset;
     file->seek(offset, SEEK_SET);
     unsigned char *raw = static_cast<unsigned char *>(std::malloc(rawLen));
@@ -79,7 +79,12 @@ Image *FMTOWNSImageLoader::load(U4FILE *file, int width, int height, int bpp)
                 int b = byte1 & high6;
                 b <<= 1;
                 image->putPixel(
-                    x, y, g, b, r, lastbit & byte1 ? IM_TRANSPARENT : IM_OPAQUE
+                    x,
+                    y,
+                    g,
+                    b,
+                    r,
+                    (lastbit & byte1) ? IM_TRANSPARENT : IM_OPAQUE
                 );
             }
         }

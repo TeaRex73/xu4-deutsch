@@ -267,5 +267,6 @@ int main(int argc, char *argv[])
         fprintf(stderr, "unknown algorithm %s\n", alg);
         exit(1);
     }
+    fclose(out);
     return 0;
 }

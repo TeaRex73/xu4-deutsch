@@ -160,7 +160,7 @@ bool IntroBinData::load()
     baseTileTable = new Tile *[INTRO_BASETILE_TABLE_SIZE];
     for (i = 0; i < INTRO_BASETILE_TABLE_SIZE; i++) {
         MapTile tile = TileMap::get("base")->translate(u4fgetc(title));
-        baseTileTable[i] = Tileset::get("base")->get(tile.id);
+        baseTileTable[i] = Tileset::get("base")->get(tile.getId());
     }
     /* --------------------------
        load beastie frame table 1
@@ -791,7 +791,7 @@ bool IntroController::init()
     return true;
 } // IntroController::init
 
-bool IntroController::hasInitiatedNewGame()
+bool IntroController::hasInitiatedNewGame() const
 {
     return this->justInitiatedNewGame;
 }
@@ -813,7 +813,7 @@ void IntroController::deleteIntro()
 
 unsigned char *IntroController::getSigData()
 {
-    ASSERT(binData->sigData != nullptr, "intro sig data not loaded");
+    U4ASSERT(binData->sigData != nullptr, "intro sig data not loaded");
     return binData->sigData;
 }
 
@@ -884,7 +884,7 @@ bool IntroController::keyPressed(int key)
         } // switch
         break;
     default:
-        ASSERT(0, "key handler called in wrong mode");
+        U4ASSERT(0, "key handler called in wrong mode");
         return true;
     } // switch
 
@@ -932,12 +932,13 @@ void IntroController::drawMap()
                     objectStateTable[dataNibble].tile = MapTile(
                         binData->baseTileTable[dataNibble]->getId() + 1
                     );
-                    objectStateTable[dataNibble].tile.frame = frame;
+                    objectStateTable[dataNibble].tile.setFrame(frame);
                 } else {
                     objectStateTable[dataNibble].tile =
                         MapTile(binData->baseTileTable[dataNibble]->getId());
-                    objectStateTable[dataNibble].tile.frame =
-                        (binData->scriptTable[scrPos + 1] >> 5);
+                    objectStateTable[dataNibble].tile.setFrame(
+                        binData->scriptTable[scrPos + 1] >> 5
+                    );
                 }
                 scrPos += 2;
                 break;
@@ -1053,11 +1054,11 @@ void IntroController::drawBeasties(bool musicon)
  * screen.  vertoffset is used lower the creatures down from the top
  * of the screen.
  */
-void IntroController::drawBeastie(int beast, int vertoffset, int frame)
+void IntroController::drawBeastie(int beast, int vertoffset, int frame) const
 {
     char buffer[128];
     int destx;
-    ASSERT(beast == 0 || beast == 1, "invalid beast: %d", beast);
+    U4ASSERT(beast == 0 || beast == 1, "invalid beast: %d", beast);
     std::sprintf(buffer, "beast%dframe%02d", beast, frame);
     destx = beast ? (320 - 48) : 0;
     backgroundArea.draw(buffer, destx, vertoffset);
@@ -1072,7 +1073,7 @@ void IntroController::drawBeastie(int beast, int vertoffset, int frame)
  * painted: the circle without the moongate, but with a small white
  * dot representing the anhk and history book.
  */
-void IntroController::animateTree(const std::string &frame)
+void IntroController::animateTree(const std::string &frame) const
 {
     backgroundArea.draw(frame, 47, 43);
 }
@@ -1081,7 +1082,7 @@ void IntroController::animateTree(const std::string &frame)
 /**
  * Draws the cards in the character creation sequence with the gypsy.
  */
-void IntroController::drawCard(int pos, int card)
+void IntroController::drawCard(int pos, int card) const
 {
     static const char *cardNames[] = {
         "honestycard",
@@ -1093,8 +1094,8 @@ void IntroController::drawCard(int pos, int card)
         "spiritualitycard",
         "humilitycard"
     };
-    ASSERT(pos == 0 || pos == 1, "invalid pos: %d", pos);
-    ASSERT(card < 8, "invalid card: %d", card);
+    U4ASSERT(pos == 0 || pos == 1, "invalid pos: %d", pos);
+    U4ASSERT(card < 8, "invalid card: %d", card);
     backgroundArea.draw(cardNames[card], pos ? 216 : 34, 16);
 }
 
@@ -1104,15 +1105,15 @@ void IntroController::drawCard(int pos, int card)
  */
 void IntroController::drawAbacusBeads(
     int row, int selectedVirtue, int rejectedVirtue
-)
+) const
 {
-    ASSERT(row >= 0 && row < 7, "invalid row: %d", row);
-    ASSERT(
+    U4ASSERT(row >= 0 && row < 7, "invalid row: %d", row);
+    U4ASSERT(
         selectedVirtue < 8 && selectedVirtue >= 0,
         "invalid virtue: %d",
         selectedVirtue
     );
-    ASSERT(
+    U4ASSERT(
         rejectedVirtue < 8 && rejectedVirtue >= 0,
         "invalid virtue: %d",
         rejectedVirtue
@@ -1215,7 +1216,7 @@ void IntroController::updateScreen()
         screenShowCursor();
         break;
     default:
-        ASSERT(0, "bad mode in updateScreen");
+        U4ASSERT(0, "bad mode in updateScreen");
     } // switch
     screenUpdateCursor();
     screenRedrawScreen();
@@ -1447,12 +1448,12 @@ void IntroController::startQuestions(SexType sex)
  * Get the text for the question giving a choice between virtue v1 and
  * virtue v2 (zero based virtue index, starting at honesty).
  */
-std::string IntroController::getQuestion(SexType sex, int v1, int v2)
+std::string IntroController::getQuestion(SexType sex, int v1, int v2) const
 {
     int i = 0;
     int d = 7;
 
-    ASSERT(
+    U4ASSERT(
         v1 < v2, "first virtue must be smaller (v1 = %d, v2 = %d)", v1, v2
     );
     while (v1 > 0) {
@@ -1461,7 +1462,7 @@ std::string IntroController::getQuestion(SexType sex, int v1, int v2)
         v1--;
         v2--;
     }
-    ASSERT((i + v2 - 1) < 28, "calculation failed");
+    U4ASSERT((i + v2 - 1) < 28, "calculation failed");
     return binData->introQuestions[sex == SEX_FEMALE][i + v2 - 1];
 }
 
@@ -1644,7 +1645,7 @@ void IntroController::update(Menu *menu, MenuEvent &event)
 } // IntroController::update
 
 
-void IntroController::updateConfMenu(MenuEvent &event)
+void IntroController::updateConfMenu(const MenuEvent &event)
 {
     if ((event.getType() == MenuEvent::ACTIVATE)
         || (event.getType() == MenuEvent::INCREMENT)
@@ -1693,7 +1694,7 @@ void IntroController::updateConfMenu(MenuEvent &event)
     backgroundArea.draw(BKGD_OPTIONS_BTM, 0, 120);
 } // IntroController::updateConfMenu
 
-void IntroController::updateVideoMenu(MenuEvent &event)
+void IntroController::updateVideoMenu(const MenuEvent &event)
 {
     if ((event.getType() == MenuEvent::ACTIVATE)
         || (event.getType() == MenuEvent::INCREMENT)
@@ -1726,7 +1727,7 @@ void IntroController::updateVideoMenu(MenuEvent &event)
     backgroundArea.draw(BKGD_OPTIONS_BTM, 0, 120);
 } // IntroController::updateVideoMenu
 
-void IntroController::updateGfxMenu(MenuEvent &event)
+void IntroController::updateGfxMenu(const MenuEvent &event)
 {
     if ((event.getType() == MenuEvent::ACTIVATE)
         || (event.getType() == MenuEvent::INCREMENT)
@@ -1744,7 +1745,7 @@ void IntroController::updateGfxMenu(MenuEvent &event)
     backgroundArea.draw(BKGD_OPTIONS_BTM, 0, 120);
 }
 
-void IntroController::updateSoundMenu(MenuEvent &event)
+void IntroController::updateSoundMenu(const MenuEvent &event) const
 {
     if ((event.getType() == MenuEvent::ACTIVATE)
         || (event.getType() == MenuEvent::INCREMENT)
@@ -1778,7 +1779,7 @@ void IntroController::updateSoundMenu(MenuEvent &event)
     backgroundArea.draw(BKGD_OPTIONS_BTM, 0, 120);
 } // IntroController::updateSoundMenu
 
-void IntroController::updateInputMenu(MenuEvent &event)
+void IntroController::updateInputMenu(const MenuEvent &event)
 {
     if ((event.getType() == MenuEvent::ACTIVATE)
         || (event.getType() == MenuEvent::INCREMENT)
@@ -1815,7 +1816,7 @@ void IntroController::updateInputMenu(MenuEvent &event)
     extendedMenuArea.textAt(0, 5, "Mouse Options:");
 } // IntroController::updateInputMenu
 
-void IntroController::updateSpeedMenu(MenuEvent &event)
+void IntroController::updateSpeedMenu(const MenuEvent &event) const
 {
     if ((event.getType() == MenuEvent::ACTIVATE)
         || (event.getType() == MenuEvent::INCREMENT)
@@ -1842,7 +1843,7 @@ void IntroController::updateSpeedMenu(MenuEvent &event)
     backgroundArea.draw(BKGD_OPTIONS_BTM, 0, 120);
 } // IntroController::updateSpeedMenu
 
-void IntroController::updateGameplayMenu(MenuEvent &event)
+void IntroController::updateGameplayMenu(const MenuEvent &event) const
 {
     if ((event.getType() == MenuEvent::ACTIVATE)
         || (event.getType() == MenuEvent::INCREMENT)
@@ -1866,7 +1867,7 @@ void IntroController::updateGameplayMenu(MenuEvent &event)
     backgroundArea.draw(BKGD_OPTIONS_BTM, 0, 120);
 }
 
-void IntroController::updateInterfaceMenu(MenuEvent &event)
+void IntroController::updateInterfaceMenu(const MenuEvent &event)
 {
     if ((event.getType() == MenuEvent::ACTIVATE)
         || (event.getType() == MenuEvent::INCREMENT)
@@ -1899,19 +1900,18 @@ void IntroController::updateInterfaceMenu(MenuEvent &event)
  */
 void IntroController::initQuestionTree()
 {
-    int i, tmp, r;
-    for (i = 0; i < 8; i++) {
+    for (int i = 0; i < 8; i++) {
         questionTree[i] = i;
     }
-    for (i = 0; i < 8; i++) {
-        r = xu4_random(8);
-        tmp = questionTree[r];
+    for (int i = 0; i < 8; i++) {
+        int r = xu4_random(8);
+        int tmp = questionTree[r];
         questionTree[r] = questionTree[i];
         questionTree[i] = tmp;
     }
     answerInd = 8;
     if (questionTree[0] > questionTree[1]) {
-        tmp = questionTree[0];
+        int tmp = questionTree[0];
         questionTree[0] = questionTree[1];
         questionTree[1] = tmp;
     }
@@ -1954,7 +1954,7 @@ bool IntroController::doQuestion(int answer)
  * Build the initial avatar player record from the answers to the
  * gypsy's questions.
  */
-void IntroController::initPlayers(SaveGame *saveGame)
+void IntroController::initPlayers(SaveGame *saveGame) const
 {
     int i, p;
     static const struct {
@@ -1986,7 +1986,7 @@ void IntroController::initPlayers(SaveGame *saveGame)
         { "Katrina", 11, 12, 10, SEX_FEMALE } /* CLASS_SHEPHERD */
     };
     saveGame->players[0].klass = static_cast<ClassType>(questionTree[14]);
-    ASSERT(
+    U4ASSERT(
         saveGame->players[0].klass < 8,
         "bad class: %d",
         saveGame->players[0].klass
@@ -2144,7 +2144,7 @@ void IntroController::addTitle(
 //
 void IntroController::getTitleSourceData()
 {
-    unsigned int r, g, b, a;    // color values
+    std::uint8_t r, g, b, a;    // color values
     unsigned char *srcData; // plot data
     // The BKGD_INTRO image is assumed to have not been
     // loaded yet.  The unscaled version will be loaded
@@ -2160,6 +2160,7 @@ void IntroController::getTitleSourceData()
             BKGD_INTRO,
             settings.game.c_str()
         );
+        return; // never executed, errorFatal is noreturn, make cppcheck happy
     }
     if ((info->width / info->prescale != 320)
         || (info->height / info->prescale != 200)) {
@@ -2227,11 +2228,9 @@ void IntroController::getTitleSourceData()
                  32,
                   0
             };
-            int x = 0;
-            int y = 0;
             while (srcData[titles[i].animStepMax] != 0) {
-                x = srcData[titles[i].animStepMax] - 0x4C;
-                y = 0xC0 - srcData[titles[i].animStepMax + 1];
+                int x = srcData[titles[i].animStepMax] - 0x4C;
+                int y = 0xC0 - srcData[titles[i].animStepMax + 1];
                 if (settings.videoType != "EGA") {
                     // yellow gradient
                     color = info->image->setColor(
@@ -2239,12 +2238,12 @@ void IntroController::getTitleSourceData()
                     );
                 }
                 AnimPlot plot = {
-                    static_cast<std::uint8_t>(x),
-                    static_cast<std::uint8_t>(y),
                     static_cast<std::uint8_t>(color.r),
                     static_cast<std::uint8_t>(color.g),
                     static_cast<std::uint8_t>(color.b),
-                    static_cast<std::uint8_t>(255)
+                    static_cast<std::uint8_t>(255),
+                    static_cast<std::uint8_t>(x),
+                    static_cast<std::uint8_t>(y)
                 };
                 titles[i].plotData.push_back(plot);
                 titles[i].animStepMax += 2;
@@ -2268,12 +2267,12 @@ void IntroController::getTitleSourceData()
                     );
                     if (r || g || b) {
                         AnimPlot plot = {
-                            static_cast<std::uint8_t>(x + 1),
-                            static_cast<std::uint8_t>(y + 1),
                             static_cast<std::uint8_t>(r),
                             static_cast<std::uint8_t>(g),
                             static_cast<std::uint8_t>(b),
-                            static_cast<std::uint8_t>(a)
+                            static_cast<std::uint8_t>(a),
+                            static_cast<std::uint8_t>(x + 1),
+                            static_cast<std::uint8_t>(y + 1)
                         };
                         titles[i].plotData.push_back(plot);
                     }
@@ -2602,7 +2601,7 @@ bool IntroController::updateTitle()
     if (title->animStep >= title->animStepMax) {
         // free memory that is no longer needed
         compactTitle();
-        title++;
+        ++title;
         if (title == titles.end()) {
             // reset the timer to the pre-titles granularity
             eventHandler->getTimer()->reset(eventTimerGranularity);

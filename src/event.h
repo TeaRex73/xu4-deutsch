@@ -73,14 +73,17 @@ public:
         int (*handleChoice)(int);
     } GetChoice;
 
-    KeyHandler(Callback func, void *data = nullptr, bool asyncronous = true);
+    // cppcheck-suppress noExplicitConstructor // implicit intended
+    KeyHandler(
+        Callback func, void *data = nullptr, bool asyncronous = true
+    );
     static int setKeyRepeat(int delay, int interval);
     static bool globalHandler(int key);
     static bool defaultHandler(int key, void *data);
     static bool ignoreKeys(int key, void *data);
     bool operator==(Callback cb) const;
-    bool handle(int key);
-    virtual bool isKeyIgnored(int key);
+    bool handle(int key) const;
+    virtual bool isKeyIgnored(int key) const;
 
 protected:
     Callback handler;
@@ -95,17 +98,17 @@ protected:
  */
 class KeyHandlerController:public Controller {
 public:
-    KeyHandlerController(KeyHandler *handler);
+    explicit KeyHandlerController(const KeyHandler *handler);
     KeyHandlerController(const KeyHandlerController &) = delete;
     KeyHandlerController(KeyHandlerController &&) = delete;
     KeyHandlerController &operator=(const KeyHandlerController &) = delete;
     KeyHandlerController &operator=(KeyHandlerController &&) = delete;
     ~KeyHandlerController();
-    virtual bool keyPressed(int key);
-    KeyHandler *getKeyHandler();
+    virtual bool keyPressed(int key) override;
+    const KeyHandler *getKeyHandler() const;
 
 private:
-    KeyHandler *handler;
+    const KeyHandler *handler;
 };
 
 
@@ -136,7 +139,7 @@ public:
     ReadStringController &operator=(const ReadStringController &) = delete;
     ReadStringController &operator=(ReadStringController &&) = delete;
 
-    virtual bool keyPressed(int key);
+    virtual bool keyPressed(int key) override;
     static std::string get(
         int maxlen, int screenX, int screenY, EventHandler *eh = nullptr
     );
@@ -170,8 +173,8 @@ public:
  */
 class ReadChoiceController:public WaitableController<int> {
 public:
-    ReadChoiceController(const std::string &choices);
-    virtual bool keyPressed(int key);
+    explicit ReadChoiceController(const std::string &choices);
+    virtual bool keyPressed(int key) override;
     static char get(const std::string &choices, EventHandler *eh = nullptr);
 
 protected:
@@ -185,7 +188,7 @@ protected:
 class ReadDirController:public WaitableController<Direction> {
 public:
     ReadDirController();
-    virtual bool keyPressed(int key);
+    virtual bool keyPressed(int key) override;
 };
 
 
@@ -195,10 +198,10 @@ public:
  */
 class WaitController:public Controller {
 public:
-    WaitController(unsigned int cycles);
-    virtual bool keyPressed(int key);
-    virtual void timerFired();
-    void wait();
+    explicit WaitController(unsigned int c);
+    virtual bool keyPressed(int key) override;
+    virtual void timerFired() override;
+    static void wait();
     void setCycles(int c);
 
 private:
@@ -215,7 +218,7 @@ public:
     typedef std::list<TimedEvent *> List;
     typedef void (*Callback)(void *);
 
-    TimedEvent(Callback callback, int interval, void *data = nullptr);
+    TimedEvent(Callback callback, int i, void *d = nullptr);
     Callback getCallback() const;
     void *getData();
     void tick();
@@ -235,7 +238,7 @@ class TimedEventMgr {
 public:
     typedef TimedEvent::List List;
 
-    TimedEventMgr(int baseInterval);
+    explicit TimedEventMgr(int i);
     TimedEventMgr(const TimedEventMgr &) = delete;
     TimedEventMgr(TimedEventMgr &&) = delete;
     TimedEventMgr &operator=(const TimedEventMgr &) = delete;
@@ -247,8 +250,8 @@ public:
         TimedEvent::Callback callback, int interval, void *data = nullptr
     );
     List::iterator remove(List::iterator i);
-    void remove(TimedEvent *event);
-    void remove(TimedEvent::Callback callback, void *data = nullptr);
+    void remove(const TimedEvent *event);
+    void remove(TimedEvent::Callback callback, const void *data = nullptr);
     void tick();
     void stop();
     void start();
@@ -284,7 +287,7 @@ public:
     static void wait_msecs(unsigned int msecs);
     static void simulateDiskLoad(int duration, bool reenableMusic = true);
     static void wait_cycles(unsigned int cycles);
-    static void setControllerDone(bool exit = true);
+    static void setControllerDone(bool done = true);
     static bool getControllerDone();
     static void end();
     static bool timerQueueEmpty();
@@ -295,10 +298,10 @@ public:
     Controller *popController();
     Controller *getController() const;
     void setController(Controller *c);
-    void pushKeyHandler(KeyHandler kh);
+    void pushKeyHandler(const KeyHandler &kh);
     void popKeyHandler();
-    KeyHandler *getKeyHandler() const;
-    void setKeyHandler(KeyHandler kh);
+    const KeyHandler *getKeyHandler() const;
+    void setKeyHandler(const KeyHandler &kh);
     void pushMouseAreaSet(MouseArea *mouseAreas);
     void popMouseAreaSet();
     MouseArea *getMouseAreaSet() const;

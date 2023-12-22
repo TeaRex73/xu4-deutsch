@@ -241,7 +241,7 @@ bool screenLoadImageCga(
         compressed_data = nullptr;
         break;
     default:
-        ASSERT(0, "invalid compression type %d", comp);
+        U4ASSERT(0, "invalid compression type %d", comp);
     }
     if (decompResult == -1) {
         if (decompressed_data) {
@@ -441,9 +441,6 @@ Image *screenScaleDown(Image *src, int scale)
         return nullptr;
     }
     dest->alphaOff();
-    if (!dest) {
-        dest = Image::duplicate(src);
-    }
     if (dest->isIndexed()) {
         dest->setPaletteFromImage(src);
     }

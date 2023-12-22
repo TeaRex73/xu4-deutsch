@@ -223,7 +223,7 @@ void StatsArea::update(Aura *aura)
 
 void StatsArea::highlightPlayer(int player)
 {
-    ASSERT(
+    U4ASSERT(
         player < c->party->size(), "player number out of range: %d", player
     );
     mainArea.highlight(
@@ -270,7 +270,7 @@ void StatsArea::showPartyView(bool avatarOnly)
     const char *format = "%d%c%-9.8s%03d%s";
     PartyMember *p = nullptr;
     int activePlayer = c->party->getActivePlayer();
-    ASSERT(
+    U4ASSERT(
         c->party->size() <= 8,
         "party members out of range: %d",
         c->party->size()
@@ -310,11 +310,11 @@ void StatsArea::showPartyView(bool avatarOnly)
 void StatsArea::showPlayerDetails()
 {
     int player = view - STATS_CHAR1;
-    ASSERT(player < 8, "character number out of range: %d", player);
+    U4ASSERT(player < 8, "character number out of range: %d", player);
     PartyMember *p = c->party->member(player);
-    char title[16];
-    std::sprintf(title, "SPL-%d", player + 1);
-    setTitle(title);
+    char titleText[16];
+    std::sprintf(titleText, "SPL-%d", player + 1);
+    setTitle(titleText);
     std::string nameStr = uppercase(p->getName());
     int nameStart = (STATS_AREA_WIDTH - nameStr.length()) / 2;
     mainArea.textAt(0, 1, "%c             %c", p->getSex(), p->getStatus());
@@ -502,11 +502,11 @@ void StatsArea::showItems()
 void StatsArea::showReagents(bool active)
 {
     setTitle("REAGENZIEN");
-    Menu::MenuItemList::iterator i;
+    Menu::MenuItemList::const_iterator i;
     int line = 0, r = REAG_ASH;
     std::string shortcut("A");
     reagentsMixMenu.show(&mainArea);
-    for (i = reagentsMixMenu.begin(); i != reagentsMixMenu.end(); i++, r++) {
+    for (i = reagentsMixMenu.begin(); i != reagentsMixMenu.end(); ++i, ++r) {
         if ((*i)->isVisible()) {
             // Insert the reagent menu item shortcut character
             shortcut[0] = 'A' + r;
@@ -553,11 +553,11 @@ void StatsArea::showMixtures()
 
 void StatsArea::resetReagentsMenu()
 {
-    Menu::MenuItemList::iterator current;
+    Menu::MenuItemList::const_iterator current;
     int i = 0, row = 0;
     for (current = reagentsMixMenu.begin();
          current != reagentsMixMenu.end();
-         current++) {
+         ++current) {
         if (c->saveGame->reagents[i++] > 0) {
             (*current)->setVisible(true);
             (*current)->setY(row++);

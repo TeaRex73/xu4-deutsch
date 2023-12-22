@@ -50,10 +50,10 @@ void TextView::reinit()
 /**
  * Draw a character from the charset onto the view.
  */
-void TextView::drawChar(int chr, int x, int y)
+void TextView::drawChar(int chr, int x, int y) const
 {
-    ASSERT(x < columns, "x value of %d out of range", x);
-    ASSERT(y < rows, "y value of %d out of range", y);
+    U4ASSERT(x < columns, "x value of %d out of range", x);
+    U4ASSERT(y < rows, "y value of %d out of range", y);
     charset->drawSubRect(
         SCALED(this->x + (x * CHAR_WIDTH)),
         SCALED(this->y + (y * CHAR_HEIGHT)),
@@ -71,7 +71,7 @@ void TextView::drawChar(int chr, int x, int y)
  * statistics area, where a line is masked out for each virtue in
  * which the player is not an avatar.
  */
-void TextView::drawCharMasked(int chr, int x, int y, unsigned char mask)
+void TextView::drawCharMasked(int chr, int x, int y, unsigned char mask) const
 {
     drawChar(chr, x, y);
     for (int i = 0; i < 8; i++) {
@@ -257,7 +257,7 @@ void TextView::setCursorPos(int x, int y, bool clearOld)
         x -= columns;
         y++;
     }
-    ASSERT(y < rows, "y value of %d out of range", y);
+    U4ASSERT(y < rows, "y value of %d out of range", y);
     if (clearOld && cursorEnabled) {
         drawChar(' ', cursorX, cursorY);
         update(
@@ -289,7 +289,7 @@ void TextView::disableCursor()
 
 void TextView::drawCursor()
 {
-    ASSERT(
+    U4ASSERT(
         cursorPhase >= 0 && cursorPhase < 4,
         "invalid cursor phase: %d",
         cursorPhase

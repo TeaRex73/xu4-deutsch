@@ -58,7 +58,7 @@ long generalizedDecompress(
     unsigned char *decompressedMem,
     long compressedSize
 );
-int getNextCodeword(long *bitsRead, unsigned char *compressedMem);
+int getNextCodeword(long *bitsRead, const unsigned char *compressedMem);
 void discardRoot(
     unsigned char root, unsigned char *destination, long *position
 );
@@ -68,7 +68,7 @@ void outputRoot(
 
 void getString(
     int codeword,
-    lzwDictionaryEntry *lzwDictionary,
+    lzwDictionaryEntry *dictionary,
     unsigned char *stack,
     int *elementsInStack
 );
@@ -152,22 +152,12 @@ long generalizedDecompress(
     const int maxDictEntries = 0xccc;
     const int lzwStackSize = 0x8000;
     const int lzwDictionarySize = 0x1000;
-    int old_code;
-    int new_code;
-    unsigned char character;
     long bitsRead = 0;
     long bytesWritten = 0;
-    /* newpos: position in the dictionary where new codeword was added */
-    /* must be equal to current codeword (if it isn't, the compressed data
-       must be corrupt.*/
-    /* unknownCodeword: is the current codeword in the dictionary? */
-    int newpos;
-    unsigned char unknownCodeword;
     /* initialize the dictionary and the stack */
     lzwDictionaryEntry *lzwDictionary = (lzwDictionaryEntry *) malloc(
         sizeof(lzwDictionaryEntry) * lzwDictionarySize
     );
-    int codewordsInDictionary = 0;
     unsigned char *lzwStack =
         (unsigned char *) malloc(sizeof(unsigned char) * lzwStackSize);
     int elementsInStack = 0;
@@ -177,6 +167,11 @@ long generalizedDecompress(
         lzwDictionary[i].occupied = 1;
     }
     if (bitsRead + 12 <= compressedSize * 8) {
+        int old_code;
+        unsigned char character;
+        /* unknownCodeword: is the current codeword in the dictionary? */
+        unsigned char unknownCodeword;
+        int codewordsInDictionary = 0;
         /* read OLD_CODE */
         old_code = getNextCodeword(&bitsRead, compressedMem);
         /* CHARACTER = OLD_CODE */
@@ -185,6 +180,12 @@ long generalizedDecompress(
         outFunc(character, decompressedMem, &bytesWritten);
         /* WHILE there are still input characters DO */
         while (bitsRead + 12 <= compressedSize * 8) {
+            int new_code;
+            /* newpos: position in the dictionary where new codeword
+               was added */
+            /* must be equal to current codeword (if it isn't, the compressed
+               data must be corrupt). */
+            int newpos;
             /* read NEW_CODE */
             new_code = getNextCodeword(&bitsRead, compressedMem);
             /* is the codeword in the dictionary? */
@@ -264,7 +265,7 @@ long generalizedDecompress(
 
 
 /* read the next 12-bit codeword from the compressed data */
-int getNextCodeword(long *bitsRead, unsigned char *compressedMem)
+int getNextCodeword(long *bitsRead, const unsigned char *compressedMem)
 {
     int codeword =
         (compressedMem[(*bitsRead)/8] << 8) + compressedMem[(*bitsRead)/8+1];
@@ -277,9 +278,11 @@ int getNextCodeword(long *bitsRead, unsigned char *compressedMem)
 
 /* increment position pointer, but do not write root to memory */
 void discardRoot(
-	unsigned char root, unsigned char *destination, long *position
+    unsigned char root, unsigned char *destination, long *position
 )
 {
+    (void) root;
+    (void) destination;
     (*position)++;
 }
 
@@ -305,9 +308,9 @@ void getString(
     int *elementsInStack
 )
 {
-    unsigned char root;
     int currentCodeword = codeword;
     while (currentCodeword > 0xff) {
+        unsigned char root;
         root = dictionary[currentCodeword].root;
         currentCodeword = dictionary[currentCodeword].codeword;
         stack[*elementsInStack] = root;
@@ -346,18 +349,17 @@ unsigned char hashPosFound(
 )
 {
     if (hashCode > 0xff) { /* hash codes must not be roots */
-        unsigned char c1, c2, c3;
-        if (dictionary[hashCode].occupied) {
-            /* hash table position is occupied */
-            c1 = 1;
+         if (dictionary[hashCode].occupied) {
+             unsigned char c2, c3;
+             /* hash table position is occupied */
             /* is our (root,codeword) pair already in the hash table? */
             c2 = dictionary[hashCode].root == root;
             c3 = dictionary[hashCode].codeword == codeword;
+            return c2 && c3;
         } else {
             /* hash table position is free */
-            c1 = 0;
+            return 1;
         }
-        return (!c1) || (c1 && c2 && c3);
     } else {
         return 0;
     }

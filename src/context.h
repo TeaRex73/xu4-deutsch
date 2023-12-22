@@ -61,7 +61,7 @@ public:
     /**
      * Provides scripts with information
      */
-    virtual std::string translate(std::vector<std::string> &parts)
+    virtual std::string translate(std::vector<std::string> &parts) override
     {
         if (parts.size() == 1 && parts[0] == "wind") {
             return getDirectionName(static_cast<Direction>(windDirection));

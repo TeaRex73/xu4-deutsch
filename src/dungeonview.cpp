@@ -24,7 +24,7 @@ DungeonView *DungeonView::instance(nullptr);
 
 DungeonView *DungeonView::getInstance()
 {
-    if (!instance) {
+    if (__builtin_expect(!instance, false)) {
         instance = new DungeonView(
             BORDER_WIDTH, BORDER_HEIGHT, VIEWPORT_W, VIEWPORT_H
         );
@@ -39,20 +39,17 @@ void DungeonView::cleanup()
 
 void DungeonView::display(Context *c, TileView *view)
 {
-    int x, y;
-
     /* 1st-person perspective */
     if (screen3dDungeonViewEnabled) {
         // Note: This shouldn't go above 4, unless we check
         //opaque tiles each step of the way.
         const int frthst_nw_vis = 4;
-        std::vector<MapTile> tiles;
         screenEraseMapArea();
         if (c->party->getTorchDuration() > 0) {
-            for (y = 3; y >= 0; y--) {
+            for (int y = 3; y >= 0; y--) {
                 DungeonGraphicType type;
                 // FIXME: Maybe this should be in a loop
-                tiles = getTiles(y, -1);
+                std::vector<MapTile> tiles = getTiles(y, -1);
                 type = tilesToGraphic(tiles);
                 drawWall(
                     -1,
@@ -108,14 +105,17 @@ void DungeonView::display(Context *c, TileView *view)
     }
     /* 3rd-person perspective */
     else {
-        std::vector<MapTile> tiles;
         static MapTile black =
             c->location->map->tileset->getByName("black")->getId();
         static MapTile avatar =
             c->location->map->tileset->getByName("avatar")->getId();
-        for (y = 0; y < VIEWPORT_H; y++) {
-            for (x = 0; x < VIEWPORT_W; x++) {
-                tiles = getTiles((VIEWPORT_H / 2) - y, x - (VIEWPORT_W / 2));
+        for (int y = 0; y < VIEWPORT_H; y++) {
+            for (int x = 0; x < VIEWPORT_W; x++) {
+                        std::vector<MapTile> tiles =
+                            getTiles(
+                                (VIEWPORT_H / 2) - y,
+                                x - (VIEWPORT_W / 2)
+                            );
                 /* Only show blackness if there is no light */
                 if (c->party->getTorchDuration() <= 0) {
                     view->drawTile(black, false, x, y);
@@ -307,7 +307,7 @@ std::vector<MapTile> DungeonView::getTiles(int fwd, int side)
     case DIR_ADVANCE:
     case DIR_RETREAT:
     default:
-        ASSERT(0, "Invalid dungeon orientation");
+        U4ASSERT(0, "Invalid dungeon orientation");
     }
     // Wrap the coordinates if necessary
     coords.wrap(c->location->map);
@@ -333,13 +333,13 @@ DungeonGraphicType DungeonView::tilesToGraphic(
      * (always displayed as a tile, unless a ladder)
      */
     if (tiles.size() > 1) {
-        if (tile.id == up_ladder.id) {
+        if (tile.getId() == up_ladder.getId()) {
             return DNGGRAPHIC_LADDERUP;
-        } else if (tile.id == down_ladder.id) {
+        } else if (tile.getId() == down_ladder.getId()) {
             return DNGGRAPHIC_LADDERDOWN;
-        } else if (tile.id == updown_ladder.id) {
+        } else if (tile.getId() == updown_ladder.getId()) {
             return DNGGRAPHIC_LADDERUPDOWN;
-        } else if (tile.id == corridor.id) {
+        } else if (tile.getId() == corridor.getId()) {
             return DNGGRAPHIC_NONE;
         } else {
             return DNGGRAPHIC_BASETILE;

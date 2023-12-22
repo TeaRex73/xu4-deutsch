@@ -1,4 +1,4 @@
-/*
+ /*
  * $Id$
  */
 
@@ -60,8 +60,7 @@ bool shrineCanEnter(const Portal *p)
  */
 bool isShrine(Map *punknown)
 {
-    Shrine *ps;
-    if ((ps = dynamic_cast<Shrine *>(punknown)) != nullptr) {
+    if (dynamic_cast<Shrine *>(punknown) != nullptr) {
         return true;
     } else {
         return false;
@@ -116,7 +115,7 @@ void Shrine::setVirtue(Virtue v)
     virtue = v;
 }
 
-void Shrine::setMantra(std::string m)
+void Shrine::setMantra(const std::string &m)
 {
     mantra = m;
 }
@@ -145,8 +144,8 @@ void Shrine::enter()
         );
     }
     screenMessage("\n]BER WELCHE TUGEND MEDITIERST DU?\n?");
-    std::string virtue;
-    virtue = ReadStringController::get(
+    std::string virtueInput;
+    virtueInput = ReadStringController::get(
         32, TEXT_AREA_X + c->col, TEXT_AREA_Y + c->line
     );
     int choice;
@@ -166,7 +165,10 @@ void Shrine::enter()
         eject();
         return;
     }
-    if (xu4_strncasecmp(virtue.c_str(), getVirtueName(getVirtue()), 6) != 0) {
+    if (
+        xu4_strncasecmp(virtueInput.c_str(), getVirtueName(getVirtue()), 6)
+        != 0
+    ) {
         screenMessage(
             "ES GELINGT DIR NICHT, DEINE GEDANKEN AUF DIESES THEMA ZU "
             "FOKUSSIEREN!\n"
@@ -251,12 +253,12 @@ void Shrine::askMantra()
     screenEnableCursor();
     screenMessage("\nMANTRA?");
     screenRedrawScreen();   // FIXME: needed?
-    std::string mantra;
-    mantra = ReadStringController::get(
+    std::string mantraInput;
+    mantraInput = ReadStringController::get(
         4, TEXT_AREA_X + c->col, TEXT_AREA_Y + c->line
     );
     screenMessage("\n");
-    if (xu4_strcasecmp(mantra.c_str(), getMantra().c_str()) != 0) {
+    if (xu4_strcasecmp(mantraInput.c_str(), getMantra().c_str()) != 0) {
         c->party->adjustKarma(KA_BAD_MANTRA);
         screenMessage(
             "\nES GELINGT DIR NICHT, DEINE GEDANKEN MIT DIESEM MANTRA ZU "
@@ -286,25 +288,25 @@ void Shrine::askMantra()
         ReadChoiceController::get("");
         showVision(elevated);
         ReadChoiceController::get("");
-                screenMessage("\n");
+        screenMessage("\n");
         gameSetViewMode(VIEW_NORMAL);
         eject();
     }
 } // Shrine::askMantra
 
-void Shrine::showVision(bool elevated)
+void Shrine::showVision(bool elevated) const
 {
-    static const char *visionImageNames[] = {
-        BKGD_SHRINE_HON,
-        BKGD_SHRINE_COM,
-        BKGD_SHRINE_VAL,
-        BKGD_SHRINE_JUS,
-        BKGD_SHRINE_SAC,
-        BKGD_SHRINE_HNR,
-        BKGD_SHRINE_SPI,
-        BKGD_SHRINE_HUM
-    };
     if (elevated) {
+        static const char *visionImageNames[] = {
+            BKGD_SHRINE_HON,
+            BKGD_SHRINE_COM,
+            BKGD_SHRINE_VAL,
+            BKGD_SHRINE_JUS,
+            BKGD_SHRINE_SAC,
+            BKGD_SHRINE_HNR,
+            BKGD_SHRINE_SPI,
+            BKGD_SHRINE_HUM
+        };
         screenMessage("\bDIR WIRD EINE VISION ZUTEIL!\n");
         gameSetViewMode(VIEW_RUNE);
         screenDrawImageInMapArea(visionImageNames[getVirtue()]);

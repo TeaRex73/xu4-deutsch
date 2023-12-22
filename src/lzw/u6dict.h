@@ -23,12 +23,12 @@ public:
         contains++;
     }
 
-    unsigned char get_root(int codeword)
+    unsigned char get_root(int codeword) const
     {
         return dict[codeword].root;
     }
 
-    int get_codeword(int codeword)
+    int get_codeword(int codeword) const
     {
         return dict[codeword].codeword;
     }

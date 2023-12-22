@@ -32,7 +32,7 @@ Path::Path(const std::string &p)
     struct stat path_stat;
     char src_char, dest_char;
     unsigned int pos;
-    bool _exists = false, isDir = false;
+    bool _exists = false, _isDir = false;
     /* first, we need to translate the path into something the
        filesystem will recognize */
     dest_char = delim;
@@ -49,11 +49,11 @@ Path::Path(const std::string &p)
     _exists = (stat(path.c_str(), &path_stat) == 0);
     /* if so, let's glean more information */
     if (_exists) {
-        isDir = (path_stat.st_mode & S_IFDIR);
+        _isDir = (path_stat.st_mode & S_IFDIR);
     }
     /* find the elements of the path that involve directory structure */
     std::string dir_path =
-        isDir ? path : path.substr(0, path.find_last_of(dest_char));
+        _isDir ? path : path.substr(0, path.find_last_of(dest_char));
     /* Add the trailing / or \ to the end, if it doesn't exist */
     if (dir_path[dir_path.size() - 1] != dest_char) {
         dir_path += dest_char;
@@ -64,13 +64,13 @@ Path::Path(const std::string &p)
         dir_path = dir_path.substr(pos + 1);
     }
     /* If it's for sure a file, get file information! */
-    if (_exists && !isDir) {
+    if (_exists && !_isDir) {
         file = dirs.size() ?
             path.substr(path.find_last_of(dest_char) + 1) :
             path;
         if ((pos = file.find_last_of(".")) < file.size()) {
             ext = file.substr(pos + 1);
-            file = file.substr(0, pos);
+            file.resize(pos);
         }
     }
 }
@@ -121,7 +121,7 @@ std::string Path::getDir() const
 {
     std::list<std::string>::const_iterator i;
     std::string dir;
-    for (i = dirs.begin(); i != dirs.end(); i++) {
+    for (i = dirs.cbegin(); i != dirs.cend(); ++i) {
         dir += *i + delim;
     }
     return dir;
@@ -174,10 +174,10 @@ std::FILE *FileSystem::openFile(const std::string &filepath, const char *mode)
  */
 void FileSystem::createDirectory(Path &path)
 {
-    std::list<std::string>::iterator i;
+    std::list<std::string>::const_iterator i;
     std::list<std::string> *dirs = path.getDirTree();
     std::string dir;
-    for (i = dirs->begin(); i != dirs->end(); i++) {
+    for (i = dirs->cbegin(); i != dirs->cend(); ++i) {
         dir += *i;
         /* create each directory leading up to our path */
         if (!Path::exists(dir)) {

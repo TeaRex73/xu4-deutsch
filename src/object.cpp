@@ -81,7 +81,7 @@ void Object::cleanup()
     all_objects.clear();
 }
 
-void Object::setCoords(Coords c)
+void Object::setCoords(const Coords &c)
 {
     prevCoords = coords;
     coords = c;
@@ -109,9 +109,12 @@ Map *Object::getMap()
 
 Direction Object::getLastDir() const
 {
-    Coords c = getCoords();
-    Coords p = getPrevCoords();
-    int x = c.x, y = c.y, px = p.x, py = p.y;
+    const int
+        x = coords.x,
+        y = coords.y,
+        px = prevCoords.x,
+        py = prevCoords.y;
+
     if (x == px) {
         if (y < py) return DIR_NORTH;
         if (y > py) return DIR_SOUTH;

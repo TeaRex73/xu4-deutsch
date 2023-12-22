@@ -588,13 +588,6 @@ void useStone(int item)
 {
     MapCoords coords;
     unsigned char stone = static_cast<unsigned char>(item);
-    static unsigned char truth =
-        STONE_WHITE | STONE_PURPLE | STONE_GREEN | STONE_BLUE;
-    static unsigned char love =
-        STONE_WHITE | STONE_YELLOW | STONE_GREEN | STONE_ORANGE;
-    static unsigned char courage =
-        STONE_WHITE | STONE_RED | STONE_PURPLE | STONE_ORANGE;
-    static unsigned char *attr = nullptr;
     c->location->getCurrentPosition(&coords);
     /**
      * Named a specific stone (after using "stone" or "stones")
@@ -604,6 +597,13 @@ void useStone(int item)
         if (needStoneNames) {
             /* named a stone while in a dungeon altar room */
             if (c->location->context & CTX_ALTAR_ROOM) {
+                const unsigned char truth =
+                    STONE_WHITE | STONE_PURPLE | STONE_GREEN | STONE_BLUE;
+                const unsigned char love =
+                    STONE_WHITE | STONE_YELLOW | STONE_GREEN | STONE_ORANGE;
+                const unsigned char courage =
+                    STONE_WHITE | STONE_RED | STONE_PURPLE | STONE_ORANGE;
+                static const unsigned char *attr = nullptr;
                 needStoneNames--;
                 switch (cm->getAltarRoom()) {
                 case VIRT_TRUTH:
@@ -633,7 +633,7 @@ void useStone(int item)
                         return;
                     }
                 } else {
-                    ASSERT(0, "Not in an altar room!");
+                    U4ASSERT(0, "Not in an altar room!");
                 }
                 /* see if we have all the stones, if not, get more names! */
                 if (attr && needStoneNames) {
@@ -681,13 +681,13 @@ void useStone(int item)
                 if (stone == (1 << c->location->coords.z)) {
                     if (c->location->coords.z < 7) {
                         /* replace the altar with a down-ladder */
-                        MapCoords coords;
+                        MapCoords ladderCoords;
                         screenMessage(
                             "\n\nDER ALTAR VERWANDELT SICH VOR DEINEN AUGEN!\n"
                         );
-                        c->location->getCurrentPosition(&coords);
+                        c->location->getCurrentPosition(&ladderCoords);
                         c->location->map->annotations->add(
-                                coords,
+                                ladderCoords,
                                 c->location->map->tileset->getByName(
                                     "down_ladder"
                                 )->getId()
@@ -783,7 +783,7 @@ bool isMysticInInventory(int mystic)
     } else if (mystic == ARMR_MYSTICROBES) {
         return c->saveGame->armor[ARMR_MYSTICROBES] > 0;
     } else {
-        ASSERT(0, "Invalid mystic item was tested in isMysticInInventory()");
+        U4ASSERT(0, "Invalid mystic item was tested in isMysticInInventory()");
     }
     return false;
 }
@@ -797,7 +797,7 @@ void putMysticInInventory(int mystic)
     } else if (mystic == ARMR_MYSTICROBES) {
         c->saveGame->armor[ARMR_MYSTICROBES] += 8;
     } else {
-        ASSERT(0, "Invalid mystic item was added in putMysticInInventory()");
+        U4ASSERT(0, "Invalid mystic item was added in putMysticInInventory()");
     }
     c->saveGame->lastreagent = c->saveGame->moves & 0xF0;
 }
@@ -858,14 +858,13 @@ void putReagentInInventory(int reag)
  */
 bool itemConditionsMet(unsigned char conditions)
 {
-    int i;
     if ((conditions & SC_NEWMOONS)
         && !((c->saveGame->trammelphase == 0)
              && (c->saveGame->feluccaphase == 0))) {
         return false;
     }
     if (conditions & SC_FULLAVATAR) {
-        for (i = 0; i < VIRT_MAX; i++) {
+        for (int i = 0; i < VIRT_MAX; i++) {
             if (c->saveGame->karma[i] != 0) {
                 return false;
             }
@@ -945,10 +944,10 @@ void itemUse(const std::string &shortname)
 bool isAbyssOpened(const Portal *)
 {
     /* make sure the bell, book and candle have all been used */
-    int items = c->saveGame->items;
-    int isopened = (items & ITEM_BELL_USED)
-        && (items & ITEM_BOOK_USED)
-        && (items & ITEM_CANDLE_USED);
+    int saveGameItems = c->saveGame->items;
+    int isopened = (saveGameItems & ITEM_BELL_USED)
+        && (saveGameItems & ITEM_BOOK_USED)
+        && (saveGameItems & ITEM_CANDLE_USED);
     if (!isopened) {
         soundPlay(SOUND_ERROR);
         screenMessage("Betreten\nKANN NICHT!\n");
@@ -971,7 +970,7 @@ void itemHandleStones(const std::string &color)
              ) == 0)
             && isStoneInInventory(1 << i)) {
             found = true;
-            itemUse(color.c_str());
+            itemUse(color);
         }
     }
     if (!found) {
