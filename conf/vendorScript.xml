@@ -120,7 +120,7 @@
         </tell_about>
 
         <tell_about choice="e">
-            DIESER STREITKOLBEN HAT EINEN GEH[RTETEN SCHAFT, UND SEIN KOPF WIEGT F]NF PFUND, {price}gs SIND EIN SPOTTPREIS.
+            DIESER STREITKOLBEN HAT EINEN GEH[RTETEN SCHAFT UND SEIN KOPF WIEGT F]NF PFUND, {price}gs SIND EIN SPOTTPREIS.
         </tell_about>
 
         <tell_about choice="f">

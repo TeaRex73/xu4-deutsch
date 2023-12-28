@@ -109,7 +109,7 @@ static void gameCreatureAttack(Creature *m);
 
 extern int quit;
 
-const std::string tmpstr = "/tmp/";
+const std::string tmpstr = "X";
 
 Context *c = nullptr;
 Debug gameDbg("debug/game.txt", "Game");
@@ -241,6 +241,7 @@ void GameController::initScreenWithoutReloadingState()
 
 void GameController::init()
 {
+    std::FILE *saveGameFile, *monstersFile, *dngMapFile;
     TRACE(gameDbg, "gameInit() running.");
     initScreen();
 #if 0
@@ -268,7 +269,7 @@ void GameController::init()
     c->lastShip = nullptr;
     /* load in the save game */
     // First the temporary just-inited save game...
-    std::FILE *saveGameFile = std::fopen(
+    saveGameFile = std::fopen(
         (tmpstr + PARTY_SAV_BASE_FILENAME).c_str(), "rb"
     );
     if (!saveGameFile) {
@@ -308,7 +309,7 @@ void GameController::init()
     );
     if (map->type != Map::WORLD) {
         setMap(map, 1, nullptr);
-        std::FILE *dngMapFile = std::fopen(
+        dngMapFile = std::fopen(
             (settings.getUserPath() + DNGMAP_SAV_BASE_FILENAME).c_str(), "rb"
         );
         if (dngMapFile) {
@@ -380,7 +381,7 @@ void GameController::init()
     ++pb;
 #endif
     /* load in monsters.sav */
-    std::FILE *monstersFile = std::fopen(
+    monstersFile = std::fopen(
         (tmpstr + MONSTERS_SAV_BASE_FILENAME).c_str(), "rb"
     );
     if (!monstersFile) {
@@ -395,14 +396,14 @@ void GameController::init()
     gameFixupObjects(c->location->map);
     /* we have previous creature information as well, load it! */
     if (c->location->prev) {
-        std::FILE *outMonstFile = std::fopen(
+        monstersFile = std::fopen(
             (settings.getUserPath() + OUTMONST_SAV_BASE_FILENAME).c_str(), "rb"
         );
-        if (outMonstFile) {
+        if (monstersFile) {
             saveGameMonstersRead(
-                c->location->prev->map->monsterTable, outMonstFile
+                c->location->prev->map->monsterTable, monstersFile
             );
-            std::fclose(outMonstFile);
+            std::fclose(monstersFile);
         }
         gameFixupObjects(c->location->prev->map);
     }
@@ -4232,7 +4233,7 @@ void showMixturesSuper(int page = 0)
         for (int j = 0; j < 8; j++) {
             screenTextColor(colors[j]);
             screenShowChar(
-                (comp & (1 << j)) ? CHARSET_BULLET : ' ', 10 + j, line
+                comp & (1 << j) ? CHARSET_BULLET : ' ', 10 + j, line
             );
         }
         screenTextColor(FG_WHITE);

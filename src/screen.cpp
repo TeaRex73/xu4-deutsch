@@ -247,6 +247,8 @@ void screenMessage(const char *fmt, ...)
         return;
     }
     char buffer[BufferSize];
+    unsigned int i;
+    int wordlen;
     std::va_list args;
     va_start(args, fmt);
     std::vsnprintf(buffer, BufferSize, fmt, args);
@@ -257,10 +259,9 @@ void screenMessage(const char *fmt, ...)
         screenScrollMessageArea();
         c->line--;
     }
-    for (unsigned int i = 0; i < std::strlen(buffer); i++) {
+    for (i = 0; i < std::strlen(buffer); i++) {
         // include whitespace and color-change codes
-        int wordlen =
-            std::strcspn(buffer + i, " \b\t\n\024\025\026\027\030\031");
+        wordlen = std::strcspn(buffer + i, " \b\t\n\024\025\026\027\030\031");
         /* backspace */
         if (buffer[i] == '\b') {
             c->col--;

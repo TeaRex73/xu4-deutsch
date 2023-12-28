@@ -43,7 +43,7 @@ extern bool useProfile;
 extern std::string profileName;
 extern int quit;
 IntroController *intro = nullptr;
-const std::string tmpstr = "/tmp/";
+const std::string tmpstr = "X";
 
 #define INTRO_MAP_HEIGHT 5
 #define INTRO_MAP_WIDTH 19
@@ -1054,7 +1054,7 @@ void IntroController::drawBeasties(bool musicon)
  * screen.  vertoffset is used lower the creatures down from the top
  * of the screen.
  */
-void IntroController::drawBeastie(int beast, int vertoffset, int frame) const
+void IntroController::drawBeastie(int beast, int vertoffset, int frame)
 {
     char buffer[128];
     int destx;
@@ -1073,7 +1073,7 @@ void IntroController::drawBeastie(int beast, int vertoffset, int frame) const
  * painted: the circle without the moongate, but with a small white
  * dot representing the anhk and history book.
  */
-void IntroController::animateTree(const std::string &frame) const
+void IntroController::animateTree(const std::string &frame)
 {
     backgroundArea.draw(frame, 47, 43);
 }
@@ -1082,7 +1082,7 @@ void IntroController::animateTree(const std::string &frame) const
 /**
  * Draws the cards in the character creation sequence with the gypsy.
  */
-void IntroController::drawCard(int pos, int card) const
+void IntroController::drawCard(int pos, int card)
 {
     static const char *cardNames[] = {
         "honestycard",
@@ -1105,7 +1105,7 @@ void IntroController::drawCard(int pos, int card) const
  */
 void IntroController::drawAbacusBeads(
     int row, int selectedVirtue, int rejectedVirtue
-) const
+)
 {
     U4ASSERT(row >= 0 && row < 7, "invalid row: %d", row);
     U4ASSERT(
@@ -1745,7 +1745,7 @@ void IntroController::updateGfxMenu(const MenuEvent &event)
     backgroundArea.draw(BKGD_OPTIONS_BTM, 0, 120);
 }
 
-void IntroController::updateSoundMenu(const MenuEvent &event) const
+void IntroController::updateSoundMenu(const MenuEvent &event)
 {
     if ((event.getType() == MenuEvent::ACTIVATE)
         || (event.getType() == MenuEvent::INCREMENT)
@@ -1816,7 +1816,7 @@ void IntroController::updateInputMenu(const MenuEvent &event)
     extendedMenuArea.textAt(0, 5, "Mouse Options:");
 } // IntroController::updateInputMenu
 
-void IntroController::updateSpeedMenu(const MenuEvent &event) const
+void IntroController::updateSpeedMenu(const MenuEvent &event)
 {
     if ((event.getType() == MenuEvent::ACTIVATE)
         || (event.getType() == MenuEvent::INCREMENT)
@@ -1843,7 +1843,7 @@ void IntroController::updateSpeedMenu(const MenuEvent &event) const
     backgroundArea.draw(BKGD_OPTIONS_BTM, 0, 120);
 } // IntroController::updateSpeedMenu
 
-void IntroController::updateGameplayMenu(const MenuEvent &event) const
+void IntroController::updateGameplayMenu(const MenuEvent &event)
 {
     if ((event.getType() == MenuEvent::ACTIVATE)
         || (event.getType() == MenuEvent::INCREMENT)
@@ -1954,7 +1954,7 @@ bool IntroController::doQuestion(int answer)
  * Build the initial avatar player record from the answers to the
  * gypsy's questions.
  */
-void IntroController::initPlayers(SaveGame *saveGame) const
+void IntroController::initPlayers(SaveGame *saveGame)
 {
     int i, p;
     static const struct {

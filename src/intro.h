@@ -96,10 +96,10 @@ public:
     void updateConfMenu(const MenuEvent &event);
     void updateVideoMenu(const MenuEvent &event);
     void updateGfxMenu(const MenuEvent &event);
-    void updateSoundMenu(const MenuEvent &event) const;
+    void updateSoundMenu(const MenuEvent &event);
     void updateInputMenu(const MenuEvent &event);
-    void updateSpeedMenu(const MenuEvent &event) const;
-    void updateGameplayMenu(const MenuEvent &event) const;
+    void updateSpeedMenu(const MenuEvent &event);
+    void updateGameplayMenu(const MenuEvent &event);
     void updateInterfaceMenu(const MenuEvent &event);
     void initTitles();
     bool updateTitle();
@@ -109,15 +109,13 @@ private:
     void drawMapStatic();
     void drawMapAnimated();
     void drawBeasties(bool musicon = true);
-    void drawBeastie(int beast, int vertoffset, int frame) const;
-    void animateTree(const std::string &frame) const;
-    void drawCard(int pos, int card) const;
-    void drawAbacusBeads(
-        int row, int selectedVirtue, int rejectedVirtue
-    ) const;
+    void drawBeastie(int beast, int vertoffset, int frame);
+    void animateTree(const std::string &frame);
+    void drawCard(int pos, int card);
+    void drawAbacusBeads(int row, int selectedVirtue, int rejectedVirtue);
     void initQuestionTree();
     bool doQuestion(int answer);
-    void initPlayers(SaveGame *saveGame) const;
+    void initPlayers(SaveGame *saveGame);
     std::string getQuestion(SexType sex, int v1, int v2) const;
     void initiateNewGame();
     void finishInitiateGame(const std::string &nameBuffer, SexType sex);

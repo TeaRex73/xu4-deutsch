@@ -20,7 +20,7 @@
 #include "debug.h"
 #include "event.h"
 #include "game.h" // Included for ReadPlayerController
-#include "io.h"
+#include "u4io.h"
 #include "location.h"
 #include "music.h"
 #include "names.h"

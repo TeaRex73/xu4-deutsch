@@ -67,7 +67,7 @@ public:
     MenuItem *add(int id, MenuItem *item);
     void addShortcutKey(int id, int shortcutKey) const;
     void setClosesMenu(int id) const;
-    MenuItemList::iterator getCurrent() const;
+    MenuItemList::iterator getCurrent();
     void setCurrent(MenuItemList::iterator i);
     void setCurrent(int id);
     void show(TextView *view);

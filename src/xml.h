@@ -7,6 +7,7 @@
 
 #include <string>
 #include <libxml/xmlmemory.h>
+#include <libxml/parser.h>
 
 xmlDocPtr xmlParse(const char *filename);
 bool xmlPropExists(xmlNodePtr node, const char *name);

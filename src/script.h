@@ -218,9 +218,9 @@ private:
     ReturnCode setId(xmlNodePtr script, xmlNodePtr current);
     ReturnCode ztats(xmlNodePtr script, xmlNodePtr current);
     void mathParseChildren(xmlNodePtr math, std::string *result);
-    static int mathValue(const std::string &str);
+    int mathValue(const std::string &str);
     static int math(int lval, int rval, const std::string &op);
-    static bool mathParse(
+    bool mathParse(
         const std::string &str, int *lval, int *rval, std::string *op
     );
     static void parseOperation(

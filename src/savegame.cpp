@@ -7,7 +7,7 @@
 #include "savegame.h"
 
 #include <cstring>
-#include "io.h"
+#include "u4io.h"
 #include "object.h"
 #include "types.h"
 

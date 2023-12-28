@@ -12,11 +12,11 @@
  */
 class Controller {
 public:
-    explicit Controller(int timerInterval = 1);
+    Controller(int timerInterval = 1);
     virtual ~Controller();
 
     /* methods for interacting with event manager */
-    virtual bool isCombatController() const
+    virtual bool  isCombatController() const
     {
         return false;
     }

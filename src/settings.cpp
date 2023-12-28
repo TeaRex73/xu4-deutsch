@@ -270,7 +270,8 @@ void Settings::init(const bool useProfile, const std::string &profileName)
                      nullptr, CSIDL_APPDATA, &pItemIDList
                  ) == S_OK) && (pItemIDList != nullptr)) {
                 LPSTR pBuffer = nullptr;
-                if ((pBuffer = (LPSTR)pMalloc->Alloc(MAX_PATH + 2))
+                if ((pBuffer =
+                     static_cast<LPSTR>(pMalloc->Alloc(MAX_PATH + 2)))
                     != nullptr) {
                     if (SHGetPathFromIDList(pItemIDList, pBuffer) == TRUE) {
                         userPath = pBuffer;

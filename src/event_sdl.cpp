@@ -497,12 +497,13 @@ void EventHandler::run()
     while (!ended && !controllerDone) {
         SDL_Event event;
         SDL_Event all_events[MAXEVENTS];
+        int i, numevents;
         // The following throws out all earlier keypresses if SPACE is pressed
-        int numevents = SDL_PeepEvents(
+        numevents = SDL_PeepEvents(
             all_events, MAXEVENTS, SDL_PEEKEVENT, SDL_KEYDOWNMASK
         );
         if (numevents > 1) {
-            for (int i = numevents - 1; i > 0; i--) {
+            for (i = numevents - 1; i > 0; i--) {
                 if (all_events[i].key.keysym.sym == SDLK_SPACE) {
                     SDL_PeepEvents(
                         all_events, i, SDL_GETEVENT, SDL_KEYDOWNMASK

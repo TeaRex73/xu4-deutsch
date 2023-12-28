@@ -107,7 +107,7 @@ public:
 
     void create_or_win()
     {
-        playMid(EXTRA); /**< Music for starting game or game won */
+        playMid(EXTRA); /**< Music when starting a new game of ending */
     }
 
     void intro()

@@ -17,9 +17,9 @@ static Image *scaleScale2x(Image *src, int scale, int N);
 
 Scaler scalerGet(const std::string &filter)
 {
-    if (1 /* filter == "point" */) {
+    if (0 /* filter == "point" */) {
         return &scalePoint;
-    } else if (filter == "2xBi") {
+    } else if (1 /* filter == "2xBi" */) {
         return &scale2xBilinear;
     } else if (filter == "2xSaI") {
         return &scale2xSaI;
@@ -139,17 +139,17 @@ static Image *scale2xBilinear(Image *src, int scale, int N)
                 dest->putPixel(
                     x * 2,
                     y * 2 + 1,
-                    (a.r + c.r) >> 1,
-                    (a.g + c.g) >> 1,
-                    (a.b + c.b) >> 1,
+                    (a.r + c.r) >> 2,
+                    (a.g + c.g) >> 2,
+                    (a.b + c.b) >> 2,
                     (a.a + c.a) >> 1
                 );
                 dest->putPixel(
                     x * 2 + 1,
                     y * 2 + 1,
-                    (a.r + b.r + c.r + d.r) >> 2,
-                    (a.g + b.g + c.g + d.g) >> 2,
-                    (a.b + b.b + c.b + d.b) >> 2,
+                    (a.r + b.r + c.r + d.r) >> 3,
+                    (a.g + b.g + c.g + d.g) >> 3,
+                    (a.b + b.b + c.b + d.b) >> 3,
                     (a.a + b.a + c.a + d.a) >> 2
                 );
             }

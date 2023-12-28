@@ -742,7 +742,7 @@ void Image::drawSubRectOn(
     if (__builtin_expect(d == nullptr, true)) {
         destSurface = SDL_GetVideoSurface();
     } else {
-        if (d) destSurface = d->surface; else return; // make cppcheck happy
+        destSurface = d->surface;
     }
     src.x = rx;
     src.y = ry;

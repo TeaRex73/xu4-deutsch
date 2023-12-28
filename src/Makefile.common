@@ -35,7 +35,7 @@ CXXSRCS=\
         event_$(UI).cpp \
         filesystem.cpp \
         game.cpp \
-        io.cpp \
+        u4io.cpp \
         image_$(UI).cpp \
         imageloader.cpp \
         imageloader_png.cpp \
@@ -103,8 +103,8 @@ $(MAIN): $(OBJS)
 coord$(EXEEXT): util/coord.o
 	$(CXX) $(CXXFLAGS) $(LDFLAGS) -o $@ $+
 
-dumpsavegame$(EXEEXT) : util/dumpsavegame.o savegame.o io.o names.o
-	$(CXX) $(CXXFLAGS) $(LDFLAGS) -o $@ $+
+dumpsavegame$(EXEEXT) : util/dumpsavegame.o savegame.o u4io.o names.o
+	$(CXX) $(CXXFLAGS) $(LDFLAGS) -o $@ $+ $(LIBS)
 
 tlkconv$(EXEEXT) : util/tlkconv.o
 	$(CXX) $(CXXFLAGS) $(LDFLAGS) -o $@ $+ $(shell xml2-config --libs)

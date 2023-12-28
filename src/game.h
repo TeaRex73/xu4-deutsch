@@ -113,7 +113,7 @@ public:
     /* main game functions */
     void init();
     static void initScreen();
-    static void initScreenWithoutReloadingState();
+    void initScreenWithoutReloadingState();
     void setMap(
         Map *map,
         bool saveLocation,
@@ -142,7 +142,7 @@ private:
     void avatarMovedInDungeon(MoveEvent &event);
     static void creatureCleanup(bool allCreatures = false);
     static void checkBridgeTrolls();
-    static void checkRandomCreatures();
+    void checkRandomCreatures();
     static void checkSpecialCreatures(Direction dir);
     bool checkMoongates();
     static bool createBalloon(Map *map);
