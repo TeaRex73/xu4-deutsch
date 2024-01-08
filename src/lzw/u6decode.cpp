@@ -166,7 +166,7 @@ void U6Decode::get_string(Stack &stack, int codeword)
 // unused. They might be used to prevent reading/writing outside the buffers.
 // ---------------------------------------------------------------------------
 int U6Decode::lzw_decompress(
-    unsigned char *source,
+    const unsigned char *source,
     long /* source_length */,
     unsigned char *destination,
     long /* destination_length */
@@ -308,7 +308,7 @@ int U6Decode::lzw_decompress(std::FILE *input_file, std::FILE *output_file)
 // called if the program is run with 1 command line parameter
 // display uncompressed file size
 // ----------------------------------------------------------
-int one_argument(char *file_name)
+int one_argument(const char *file_name)
 {
     std::FILE *compressed_file = std::fopen(file_name,"rb");
     if (compressed_file == nullptr) {
@@ -336,7 +336,9 @@ int one_argument(char *file_name)
 // called if the program is run with 2 command line parameters
 // decompress arg1 into arg2
 // -----------------------------------------------------------
-int two_arguments(char *source_file_name, char *destination_file_name)
+int two_arguments(
+    const char *source_file_name, const char *destination_file_name
+)
 {
     std::FILE *source;
     std::FILE *destination;

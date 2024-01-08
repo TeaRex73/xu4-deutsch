@@ -13,7 +13,6 @@
 #include "utils.h"
 
 
-
 class Debug;
 class Person;
 class Script;
@@ -39,7 +38,7 @@ public:
     static const ResponsePart STOPMUSIC;
     static const ResponsePart HAWKWIND;
     static const ResponsePart DISKLOAD;
-    //cppcheck-suppress noExplicitConstructor // implicit intended
+    // cppcheck-suppress noExplicitConstructor // implicit intended
     ResponsePart(
         const std::string &value,
         const std::string &arg = "",

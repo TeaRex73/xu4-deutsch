@@ -34,7 +34,9 @@ public:
     virtual ~TileView();
     virtual void reinit() override;
     void drawTile(MapTile mapTile, bool focus, int x, int y);
-    void drawTile(std::vector<MapTile> &tiles, bool focus, int x, int y);
+    void drawTile(
+        const std::vector<MapTile> &tiles, bool focus, int x, int y
+    );
     void drawFocus(int x, int y) const;
     void loadTile(MapTile mapTile);
     void setTileset(Tileset *tileset);

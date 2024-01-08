@@ -85,7 +85,7 @@ public:
     void placePartyMembers();
     bool setActivePlayer(int player);
     static bool attackHit(
-        Creature *attacker, Creature *defender, bool harder
+        const Creature *attacker, const Creature *defender, bool harder
     );
     virtual void awardLoot();
     void attack();
@@ -97,7 +97,7 @@ public:
         int distance
     );
     bool rangedAttack(const Coords &coords, Creature *attacker);
-    void rangedMiss(const Coords &coords, Creature *attacker);
+    void rangedMiss(const Coords &coords, const Creature *attacker);
     bool returnWeaponToOwner(
         const Coords &coords, int distance, int dir, const Weapon *weapon
     );
@@ -145,7 +145,7 @@ public:
     PartyMember *partyMemberAt(const Coords &coords);
     Creature *creatureAt(const Coords &coords);
     static MapId mapForTile(
-        const Tile *groundTile, const Tile *transport, Object *obj
+        const Tile *groundTile, const Tile *transport, const Object *obj
     );
 
     bool isDungeonRoom() const

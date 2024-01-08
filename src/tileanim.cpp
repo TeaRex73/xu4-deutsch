@@ -17,7 +17,6 @@
 #include "tile.h"
 
 
-
 TileAnimTransform *TileAnimTransform::create(const ConfigElement &conf)
 {
     TileAnimTransform *transform = nullptr;
@@ -166,7 +165,7 @@ bool TileAnimPixelTransform::drawsTile() const
 
 void TileAnimPixelTransform::draw(Image *dest, Tile *tile, MapTile )
 {
-    RGBA *color = colors[xu4_random(colors.size())];
+    const RGBA *color = colors[xu4_random(colors.size())];
     int scale = tile->getScale();
     dest->fillRect(
         x * scale,
@@ -307,7 +306,7 @@ void TileAnimPixelColorTransform::draw(
     diff.r -= start->r;
     diff.g -= start->g;
     diff.b -= start->b;
-    Image *tileImage = tile->getImage();
+    const Image *tileImage = tile->getImage();
     for (int j = y * scale; j < (y * scale) + (h * scale); j++) {
         for (int i = x * scale; i < (x * scale) + (w * scale); i++) {
             RGBA pixelAt;
@@ -567,8 +566,8 @@ void TileAnim::draw(
      */
     for (c = contexts.cbegin(); c != contexts.cend(); ++c) {
         if ((*c)->isInContext(tile, mapTile, dir)) {
-            TileAnimContext::TileAnimTransformList
-                ctx_transforms = (*c)->getTransforms();
+            const TileAnimContext::TileAnimTransformList
+                &ctx_transforms = (*c)->getTransforms();
             for (t = ctx_transforms.cbegin();
                  t != ctx_transforms.cend();
                  ++t) {

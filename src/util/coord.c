@@ -2,9 +2,9 @@
 #include <stdlib.h>
 #include <ctype.h>
 
-int main(int argc, char *argv[])
+int main(int argc, const char *argv[])
 {
-    char *x, *y;
+    const char *x, *y;
     int n;
     if (argc != 3) {
         fprintf(

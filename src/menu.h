@@ -13,7 +13,6 @@
 #include "types.h"
 
 
-
 class Menu;
 class TextView;
 
@@ -67,7 +66,7 @@ public:
     MenuItem *add(int id, MenuItem *item);
     void addShortcutKey(int id, int shortcutKey) const;
     void setClosesMenu(int id) const;
-    MenuItemList::iterator getCurrent();
+    MenuItemList::iterator getCurrent() const;
     void setCurrent(MenuItemList::iterator i);
     void setCurrent(int id);
     void show(TextView *view);

@@ -15,10 +15,12 @@ extern "C" {
 #define RLE_RUNSTART 02
 
 long rleDecompressFile(STDFILE *in, long inlen, unsigned char **out);
-long rleDecompressMemory(unsigned char *in, long inlen, unsigned char **out);
-long rleGetDecompressedSize(unsigned char *indata, long inlen);
+long rleDecompressMemory(
+    const unsigned char *in, long inlen, unsigned char **out
+);
+long rleGetDecompressedSize(const unsigned char *indata, long inlen);
 long rleDecompress(
-    unsigned char *indata,
+    const unsigned char *indata,
     long inlen,
     unsigned char *outdata,
     long outlen

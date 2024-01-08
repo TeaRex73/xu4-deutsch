@@ -17,7 +17,6 @@
 #include "utils.h"
 
 
-
 Response *hawkwindGetAdvice(const DynamicResponse *dynResp);
 Response *hawkwindGetIntro(const DynamicResponse *dynResp);
 

@@ -12,8 +12,6 @@
 #include <list>
 
 
-
-
 /**
  * Represents zip files that game resources can be loaded from.
  */
@@ -140,11 +138,13 @@ bool u4isUpgradeAvailable();
 bool u4isUpgradeInstalled();
 U4FILE *u4fopen(const std::string &fname);
 U4FILE *u4fopen_stdio(const std::string &fname);
-U4FILE *u4fopen_zip(const std::string &fname, U4ZipPackage *package);
+U4FILE *u4fopen_zip(const std::string &fname, const U4ZipPackage *package);
 void u4fclose(U4FILE *f);
 int u4fseek(U4FILE *f, long offset, int whence);
 long u4ftell(U4FILE *f);
-std::size_t u4fread(void *ptr, std::size_t size, std::size_t nmemb, U4FILE *f);
+std::size_t u4fread(
+    void *ptr, std::size_t size, std::size_t nmemb, U4FILE *f
+);
 int u4fgetc(U4FILE *f);
 int u4fgetshort(U4FILE *f);
 int u4fputc(int c, U4FILE *f);
@@ -153,7 +153,7 @@ std::vector<std::string> u4read_stringtable(
     U4FILE *f, long offset, int nstrings
 );
 std::string u4find_path(
-    const std::string &fname, std::list<std::string> specificSubPaths
+    const std::string &fname, const std::list<std::string> &specificSubPaths
 );
 std::string u4find_music(const std::string &fname);
 std::string u4find_sound(const std::string &fname);

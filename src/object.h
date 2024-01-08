@@ -90,7 +90,7 @@ public:
         tile = t;
     }
 
-    void setTile(Tile *t)
+    void setTile(const Tile *t)
     {
         tile = t->getId();
     }
@@ -136,7 +136,7 @@ public:
     Map *getMap();
     void remove(); /**< remove self from any maps that it's part of */
     bool setDirection(Direction d);
-    void animateMovement();
+    void animateMovement() const;
 
 protected:
     MapTile tile, prevTile;

@@ -15,7 +15,6 @@
 #include "sound_p.h"
 
 
-
 int soundInit(void)
 {
     return SoundManager::getInstance()->init();

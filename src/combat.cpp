@@ -75,6 +75,7 @@ CombatController::CombatController()
     :map(nullptr),
      party(),
      focus(0),
+     creatureTable(),
      creature(nullptr),
      camping(false),
      forceStandardEncounterSize(false),
@@ -92,6 +93,7 @@ CombatController::CombatController(CombatMap *m)
     :map(m),
      party(),
      focus(0),
+     creatureTable(),
      creature(nullptr),
      camping(false),
      forceStandardEncounterSize(false),
@@ -504,7 +506,8 @@ void CombatController::fillCreatureTable(const Creature *creature)
 int CombatController::initialNumberOfCreatures(const Creature *creature) const
 {
     int ncreatures;
-    Map *m = c->location->prev ? c->location->prev->map : c->location->map;
+    const Map *m =
+        c->location->prev ? c->location->prev->map : c->location->map;
 
     // CHANGE: base encounter size on level of avatar (potential
     // party size), not on current actual party size, to encourage
@@ -664,7 +667,7 @@ bool CombatController::setActivePlayer(int player)
 
 void CombatController::awardLoot()
 {
-    Coords coords = creature->getCoords();
+    const Coords &coords = creature->getCoords();
     const Tile *ground = c->location->map->tileTypeAt(
         coords, WITHOUT_OBJECTS
     );
@@ -686,7 +689,7 @@ void CombatController::awardLoot()
 }
 
 bool CombatController::attackHit(
-    Creature *attacker, Creature *defender, bool harder
+    const Creature *attacker, const Creature *defender, bool harder
 )
 {
     U4ASSERT(attacker != nullptr, "attacker must not be nullptr");
@@ -849,7 +852,9 @@ bool CombatController::rangedAttack(const Coords &coords, Creature *attacker)
 } // CombatController::rangedAttack
 
 
-void CombatController::rangedMiss(const Coords &coords, Creature *attacker)
+void CombatController::rangedMiss(
+    const Coords &coords, const Creature *attacker
+)
 {
     /* If the creature leaves a tile behind, do it here!
        (lava lizard, etc) */
@@ -1049,7 +1054,6 @@ bool CombatController::keyPressed(int key)
         break;
     case U4_FKEY:
     {
-        extern void gameDestroyAllCreatures();
         if (settings.debug) {
             gameDestroyAllCreatures();
         } else {
@@ -1263,7 +1267,7 @@ void CombatController::attack()
     int range = weapon->getRange();
     if (weapon->canChooseDistance()) {
         screenMessage("ENTFERNUNG-");
-        int choice = ReadChoiceController::get("123456789");
+        int choice = ReadChoiceController::getChar("123456789");
         if (((choice - '0') >= 1) && ((choice - '0') <= weapon->getRange())) {
             range = choice - '0';
             screenMessage("%d\n", range);
@@ -1433,11 +1437,11 @@ Creature *CombatMap::creatureAt(const Coords &coords)
  * Returns a valid combat map given the provided information
  */
 MapId CombatMap::mapForTile(
-    const Tile *groundTile, const Tile *transport, Object *obj
+    const Tile *groundTile, const Tile *transport, const Object *obj
 )
 {
     bool fromShip = false, toShip = false;
-    Object *objUnder = c->location->map->objectAt(c->location->coords);
+    const Object *objUnder = c->location->map->objectAt(c->location->coords);
     static std::map<const Tile *, MapId> tileMap;
     if (!tileMap.size()) {
         tileMap[Tileset::get("base")->getByName("horse")] = MAP_GRASS_CON;

@@ -15,7 +15,6 @@
 #include "types.h"
 
 
-
 #define eventHandler (EventHandler::getInstance())
 
 #define U4_UP '@'
@@ -75,7 +74,7 @@ public:
 
     // cppcheck-suppress noExplicitConstructor // implicit intended
     KeyHandler(
-        Callback func, void *data = nullptr, bool asyncronous = true
+        Callback func, void *d = nullptr, bool asyncronous = true
     );
     static int setKeyRepeat(int delay, int interval);
     static bool globalHandler(int key);
@@ -140,10 +139,10 @@ public:
     ReadStringController &operator=(ReadStringController &&) = delete;
 
     virtual bool keyPressed(int key) override;
-    static std::string get(
+    static std::string getString(
         int maxlen, int screenX, int screenY, EventHandler *eh = nullptr
     );
-    static std::string get(
+    static std::string getString(
         int maxlen, TextView *view, EventHandler *eh = nullptr
     );
 
@@ -161,10 +160,10 @@ protected:
 class ReadIntController:public ReadStringController {
 public:
     ReadIntController(int maxlen, int screenX, int screenY);
-    static int get(
+    static int getInt(
         int maxlen, int screenX, int screenY, EventHandler *eh = nullptr
     );
-    int getInt() const;
+    int stringToInt() const;
 };
 
 
@@ -175,7 +174,9 @@ class ReadChoiceController:public WaitableController<int> {
 public:
     explicit ReadChoiceController(const std::string &choices);
     virtual bool keyPressed(int key) override;
-    static char get(const std::string &choices, EventHandler *eh = nullptr);
+    static char getChar(
+        const std::string &choices, EventHandler *eh = nullptr
+    );
 
 protected:
     std::string choices;

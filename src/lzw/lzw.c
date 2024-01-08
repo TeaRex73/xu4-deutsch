@@ -54,7 +54,7 @@ typedef struct _lzwDictionaryEntry {
 
 long generalizedDecompress(
     WRITE_DECOMP outFunc,
-    unsigned char *compressedMem,
+    const unsigned char *compressedMem,
     unsigned char *decompressedMem,
     long compressedSize
 );
@@ -94,7 +94,10 @@ unsigned char hashPosFound(
  * No errors: (long) decompressed size
  * Error: (long) -1
  */
-long lzwGetDecompressedSize(unsigned char *compressedMem, long compressedSize)
+long lzwGetDecompressedSize(
+    const unsigned char *compressedMem,
+    long compressedSize
+)
 {
     return generalizedDecompress(
         &discardRoot, compressedMem, NULL, compressedSize
@@ -115,7 +118,7 @@ long lzwGetDecompressedSize(unsigned char *compressedMem, long compressedSize)
  * Error: (long) -1
  */
 long lzwDecompress(
-    unsigned char *compressedMem,
+    const unsigned char *compressedMem,
     unsigned char *decompressedMem,
     long compressedSize
 )
@@ -142,7 +145,7 @@ long lzwDecompress(
  */
 long generalizedDecompress(
     WRITE_DECOMP outFunc,
-    unsigned char *compressedMem,
+    const unsigned char *compressedMem,
     unsigned char *decompressedMem,
     long compressedSize
 )

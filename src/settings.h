@@ -12,7 +12,6 @@
 #include "types.h"
 
 
-
 #define MIN_SHAKE_INTERVAL 50
 #define MAX_BATTLE_SPEED 10
 #define MAX_KEY_DELAY 1000

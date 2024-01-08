@@ -27,7 +27,7 @@ MenuItem::MenuItem(const std::string &t, short xpos, short ypos, int sc)
      shortcutKeys(),
      closesMenu(false)
 {
-    // if the sc/scOffset is outside the range of the text std::string, U4ASSERT
+    // is the sc/scOffset outside the range of the text std::string ?
     U4ASSERT(
         sc == -1 || (sc >= 0 && sc <= static_cast<int>(text.length())),
         "sc value of %d out of range!",

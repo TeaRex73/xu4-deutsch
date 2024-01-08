@@ -281,8 +281,8 @@ static void handleMouseMotionEvent(const SDL_Event &event)
     if (!settings.mouseOptions.enabled) {
         return;
     }
-    MouseArea *area;
-    area = eventHandler->mouseAreaForPoint(event.button.x, event.button.y);
+    const MouseArea *area =
+        eventHandler->mouseAreaForPoint(event.button.x, event.button.y);
     if (area) {
         screenSetMouseCursor(area->cursor);
     } else {
@@ -319,7 +319,7 @@ static void handleMouseButtonDownEvent(
     if (button > 2) {
         button = 0;
     }
-    MouseArea *area =
+    const MouseArea *area =
         eventHandler->mouseAreaForPoint(event.button.x, event.button.y);
     if (!area || (area->command[button] == 0)) {
         return;
@@ -497,13 +497,12 @@ void EventHandler::run()
     while (!ended && !controllerDone) {
         SDL_Event event;
         SDL_Event all_events[MAXEVENTS];
-        int i, numevents;
         // The following throws out all earlier keypresses if SPACE is pressed
-        numevents = SDL_PeepEvents(
+        int numevents = SDL_PeepEvents(
             all_events, MAXEVENTS, SDL_PEEKEVENT, SDL_KEYDOWNMASK
         );
         if (numevents > 1) {
-            for (i = numevents - 1; i > 0; i--) {
+            for (int i = numevents - 1; i > 0; i--) {
                 if (all_events[i].key.keysym.sym == SDLK_SPACE) {
                     SDL_PeepEvents(
                         all_events, i, SDL_GETEVENT, SDL_KEYDOWNMASK
@@ -609,7 +608,7 @@ void EventHandler::popKeyHandler()
     if (controllers.empty()) {
         return;
     }
-    KeyHandlerController *khc =
+    const KeyHandlerController *khc =
         dynamic_cast<KeyHandlerController *>(controllers.back());
     if (khc == nullptr) {
         return;
@@ -629,7 +628,7 @@ const KeyHandler *EventHandler::getKeyHandler() const
     if (controllers.empty()) {
         return nullptr;
     }
-    KeyHandlerController *khc =
+    const KeyHandlerController *khc =
         dynamic_cast<KeyHandlerController *>(controllers.back());
     if (khc == nullptr) {
         return nullptr;

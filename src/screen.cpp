@@ -61,11 +61,12 @@ public:
     } viewport;
 };
 
-void screenLoadGraphicsFromConf(void);
-Layout *screenLoadLayoutFromConf(const ConfigElement &conf);
-void screenShowGemTile(
-    Layout *layout, Map *map, MapTile t, bool focus, int x, int y
+static void screenLoadGraphicsFromConf(void);
+static Layout *screenLoadLayoutFromConf(const ConfigElement &conf);
+static void screenShowGemTile(
+    const Layout *layout, Map *map, MapTile t, bool focus, int x, int y
 );
+static Layout *screenGetGemLayout(const Map *map);
 std::vector<Layout *> layouts;
 std::vector<TileAnimSet *> tileanimSets;
 std::vector<std::string> gemLayoutNames;
@@ -76,13 +77,13 @@ std::map<std::string, int> dungeonTileChars;
 TileAnimSet *tileanims = nullptr;
 ImageInfo *charsetInfo = nullptr;
 ImageInfo *gemTilesInfo = nullptr;
-void screenFindLineOfSight(
+static void screenFindLineOfSight(
     std::vector<MapTile> viewportTiles[VIEWPORT_W][VIEWPORT_H]
 );
-void screenFindLineOfSightDOS(
+static void screenFindLineOfSightDOS(
     std::vector<MapTile> viewportTiles[VIEWPORT_W][VIEWPORT_H]
 );
-void screenFindLineOfSightEnhanced(
+static void screenFindLineOfSightEnhanced(
     std::vector<MapTile> viewportTiles[VIEWPORT_W][VIEWPORT_H]
 );
 int screenNeedPrompt = 1;
@@ -104,7 +105,7 @@ void screenInit()
 {
     screenMoving = true;
     filterNames.clear();
-    filterNames.push_back("point");
+    filterNames.push_back("Point");
     filterNames.push_back("2xBi");
     filterNames.push_back("2xSaI");
     filterNames.push_back("Scale2x");
@@ -247,8 +248,6 @@ void screenMessage(const char *fmt, ...)
         return;
     }
     char buffer[BufferSize];
-    unsigned int i;
-    int wordlen;
     std::va_list args;
     va_start(args, fmt);
     std::vsnprintf(buffer, BufferSize, fmt, args);
@@ -259,9 +258,10 @@ void screenMessage(const char *fmt, ...)
         screenScrollMessageArea();
         c->line--;
     }
-    for (i = 0; i < std::strlen(buffer); i++) {
+    for (unsigned int i = 0; i < std::strlen(buffer); i++) {
         // include whitespace and color-change codes
-        wordlen = std::strcspn(buffer + i, " \b\t\n\024\025\026\027\030\031");
+        int wordlen =
+            std::strcspn(buffer + i, " \b\t\n\024\025\026\027\030\031");
         /* backspace */
         if (buffer[i] == '\b') {
             c->col--;
@@ -327,7 +327,7 @@ const std::vector<std::string> &screenGetLineOfSightStyles()
     return lineOfSightStyles;
 }
 
-void screenLoadGraphicsFromConf()
+static void screenLoadGraphicsFromConf()
 {
     const Config *config = Config::getInstance();
     std::vector<ConfigElement> graphicsConf =
@@ -368,7 +368,7 @@ void screenLoadGraphicsFromConf()
     }
 } // screenLoadGraphicsFromConf
 
-Layout *screenLoadLayoutFromConf(const ConfigElement &conf)
+static Layout *screenLoadLayoutFromConf(const ConfigElement &conf)
 {
     Layout *layout;
     static const char *typeEnumStrings[] = {
@@ -577,7 +577,7 @@ void screenDrawImage(const std::string &name, int x, int y)
         info->image->draw(x, y);
         return;
     }
-    SubImage *subimage = imageMgr->getSubImage(name);
+    const SubImage *subimage = imageMgr->getSubImage(name);
     if (subimage) {
         info = imageMgr->get(subimage->srcImageName);
         if (info) {
@@ -841,7 +841,7 @@ void screenSetCursorPos(int x, int y)
  * Finds which tiles in the viewport are visible from the avatars
  * location in the middle. (original DOS algorithm)
  */
-void screenFindLineOfSight(
+static void screenFindLineOfSight(
     std::vector<MapTile> viewportTiles[VIEWPORT_W][VIEWPORT_H]
 )
 {
@@ -884,7 +884,7 @@ void screenFindLineOfSight(
  * Finds which tiles in the viewport are visible from the avatars
  * location in the middle. (original DOS algorithm)
  */
-void screenFindLineOfSightDOS(
+static void screenFindLineOfSightDOS(
     std::vector<MapTile> viewportTiles[VIEWPORT_W][VIEWPORT_H]
 )
 {
@@ -1003,7 +1003,7 @@ void screenFindLineOfSightDOS(
  * viewport width and height are odd values and that the player
  * is always at the center of the screen.
  */
-void screenFindLineOfSightEnhanced(
+static void screenFindLineOfSightEnhanced(
     std::vector<MapTile> viewportTiles[VIEWPORT_W][VIEWPORT_H]
 )
 {
@@ -1525,7 +1525,7 @@ static bool screenPointInTriangle(
 /**
  * Determine if the given point is within a mouse area.
  */
-bool screenPointInMouseArea(int x, int y, MouseArea *area)
+bool screenPointInMouseArea(int x, int y, const MouseArea *area)
 {
     U4ASSERT(
         area->npoints == 2 || area->npoints == 3,
@@ -1662,8 +1662,8 @@ void screenShake(int iterations)
 /**
  * Draw a tile graphic on the screen.
  */
-void screenShowGemTile(
-    Layout *layout, Map *map, MapTile t, bool, int x, int y
+static void screenShowGemTile(
+    const Layout *layout, Map *map, MapTile t, bool, int x, int y
 )
 {
     // Make sure we account for tiles that look like other tiles
@@ -1672,7 +1672,6 @@ void screenShowGemTile(
     if (!looks_like.empty()) {
         t = map->tileset->getByName(looks_like)->getId();
     }
-    unsigned int tile = map->ttrti(t);
     if (map->type == Map::DUNGEON) {
         U4ASSERT(charsetInfo, "charset not initialized");
         std::map<std::string, int>::iterator charIndex =
@@ -1702,6 +1701,7 @@ void screenShowGemTile(
                 );
             }
         }
+        unsigned int tile = map->ttrti(t);
         if (tile < 128) {
             gemTilesInfo->image->drawSubRect(
                 (layout->viewport.x + (x * layout->tileshape.width))
@@ -1730,7 +1730,7 @@ void screenShowGemTile(
     }
 } // screenShowGemTile
 
-Layout *screenGetGemLayout(const Map *map)
+static Layout *screenGetGemLayout(const Map *map)
 {
     if (map->type == Map::DUNGEON) {
         std::vector<Layout *>::const_iterator i;

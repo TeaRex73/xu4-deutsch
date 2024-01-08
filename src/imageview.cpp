@@ -31,7 +31,7 @@ void ImageView::draw(const std::string &imageName, int x, int y) const
         info->image->draw(SCALED(this->x + x), SCALED(this->y + y));
         return;
     }
-    SubImage *subimage = imageMgr->getSubImage(imageName);
+    const SubImage *subimage = imageMgr->getSubImage(imageName);
     if (subimage) {
         info = imageMgr->get(subimage->srcImageName);
         if (info) {

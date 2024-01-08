@@ -121,7 +121,7 @@ void screenEnableCursor();
 void screenDisableCursor();
 void screenSetCursorPos(int x, int y);
 void screenSetMouseCursor(MouseCursor cursor);
-bool screenPointInMouseArea(int x, int y, MouseArea *area);
+bool screenPointInMouseArea(int x, int y, const MouseArea *area);
 Image *screenScale(Image *src, int scale, int n, int filter);
 Image *screenScaleDown(Image *src, int scale);
 extern std::atomic_int screenCurrentCycle;

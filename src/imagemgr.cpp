@@ -17,7 +17,6 @@
 #include "u4file.h"
 
 
-
 ImageInfo *ImageMgr::screenInfo = nullptr;
 
 Image *screenScale(Image *src, int scale, int n, int filter);
@@ -391,7 +390,7 @@ void ImageMgr::fixupIntro(Image *im, int prescale)
         132 * prescale,
         33 * prescale,
         135 * prescale,
-        0 * prescale,
+        0 /* * prescale */,
         56 * prescale,
         5 * prescale
     );
@@ -403,7 +402,7 @@ void ImageMgr::fixupIntro(Image *im, int prescale)
      * ---------------------------- */
     im->fillRect(
         135 * prescale,
-        0 * prescale,
+        0 /* * prescale */,
         56 * prescale,
         5 * prescale,
         0,
@@ -456,7 +455,7 @@ void ImageMgr::fixupIntro(Image *im, int prescale)
      * ----------------------------- */
     color = im->setColor(255, 255, 255); // white for EGA
 
-    int blue[16] = {
+    const int blue[16] = {
         255, 250, 226, 226, 210, 194, 161, 161,
         129,  97,  97,  64,  64,  32,  32,   0
     };
@@ -503,7 +502,7 @@ void ImageMgr::fixupIntro(Image *im, int prescale)
     }
 } // ImageMgr::fixupIntro
 
-void ImageMgr::fixupAbyssVision(Image *im, int)
+void ImageMgr::fixupAbyssVision(const Image *im, int)
 {
     static unsigned int *data = nullptr;
     /*
@@ -513,7 +512,7 @@ void ImageMgr::fixupAbyssVision(Image *im, int)
     if (data != nullptr) {
         for (int y = 0; y < im->height(); y++) {
             for (int x = 0; x < im->width(); x++) {
-                unsigned int index;
+                                unsigned int index;
                 im->getPixelIndex(x, y, index);
                 index ^= data[y * im->width() + x];
                 im->putPixelIndex(x, y, index);
@@ -616,7 +615,7 @@ void ImageMgr::fixupAbacus(Image *im, int prescale)
  * Swap blue and green for the dungeon walls when facing north or
  * south.
  */
-void ImageMgr::fixupDungNS(Image *im, int)
+void ImageMgr::fixupDungNS(const Image *im, int)
 {
     for (int y = 0; y < im->height(); y++) {
         for (int x = 0; x < im->width(); x++) {
@@ -636,7 +635,7 @@ void ImageMgr::fixupDungNS(Image *im, int)
  * The FMTowns images have a different screen dimension. This moves them up
  * to what xu4 is accustomed to.
  */
-void ImageMgr::fixupFMTowns(Image *im, int)
+void ImageMgr::fixupFMTowns(const Image *im, int)
 {
     for (int y = 20; y < im->height(); y++) {
         for (int x = 0; x < im->width(); x++) {
@@ -710,7 +709,7 @@ std::string ImageMgr::guessFileType(const std::string &filename)
     }
 }
 
-bool ImageMgr::imageExists(ImageInfo *info)
+bool ImageMgr::imageExists(const ImageInfo *info)
 {
     if (info->filename == "") { // If it's an abstract image like "screen"
         return true;
@@ -723,7 +722,7 @@ bool ImageMgr::imageExists(ImageInfo *info)
     return false;
 }
 
-U4FILE *ImageMgr::getImageFile(ImageInfo *info)
+U4FILE *ImageMgr::getImageFile(const ImageInfo *info)
 {
     std::string filename = info->filename;
     /*
@@ -959,6 +958,7 @@ const std::vector<std::string> &ImageMgr::getSetNames() const
 /**
  * Find the new base image set when settings have changed.
  */
+ // cppcheck-suppress constParameterPointer // Observer pattern -> no const
 void ImageMgr::update(Settings *newSettings)
 {
     std::string setname;

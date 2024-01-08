@@ -70,7 +70,7 @@ public:
     void textSelectedAt(int x, int y, const char *text);
     static std::string colorizeStatus(char statustype);
     static std::string colorizeString(
-        std::string input,
+        const std::string &input,
         ColorFG color,
         unsigned int colorstart,
         unsigned int colorlength = 0

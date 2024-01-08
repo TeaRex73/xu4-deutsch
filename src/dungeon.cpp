@@ -49,7 +49,7 @@ Dungeon::~Dungeon()
 /**
  * Returns the name of the dungeon
  */
-std::string Dungeon::getName() const
+std::string Dungeon::getName()
 {
     return name;
 }
@@ -103,7 +103,7 @@ DungeonToken Dungeon::tokenForTile(MapTile tile) const
         sipair("", 0)
     };
     int i;
-    Tile *t = tileset->get(tile.getId());
+    const Tile *t = tileset->get(tile.getId());
     for (i = 0; !tileNames[i].first.empty(); i++) {
         if (t->getName() == tileNames[i].first) {
             return DungeonToken(tileNames[i].second);
@@ -215,7 +215,7 @@ void dungeonDrinkFountain()
     if (player == -1) {
         return;
     }
-    Dungeon *dungeon = dynamic_cast<Dungeon *>(c->location->map);
+    const Dungeon *dungeon = dynamic_cast<Dungeon *>(c->location->map);
     FountainType type = static_cast<FountainType>(dungeon->currentSubToken());
     switch (type) {
     case FOUNTAIN_NORMAL:
@@ -273,10 +273,9 @@ void dungeonTouchOrb()
     int stats = 0;
     int damage = 100;
     /* Get current position and find a replacement tile for it */
-    Tile *orb_tile = c->location->map->tileset->getByName("magic_orb");
-    MapTile replacementTile(
-        c->location->getReplacementTile(c->location->coords, orb_tile)
-    );
+    const Tile *orb_tile = c->location->map->tileset->getByName("magic_orb");
+    MapTile replacementTile =
+        c->location->getReplacementTile(c->location->coords, orb_tile);
     switch (c->location->map->id) {
     case MAP_DECEIT:
         stats = STATSBONUS_INT;
@@ -332,7 +331,7 @@ void dungeonTouchOrb()
  */
 bool dungeonHandleTrap(TrapType)
 {
-    Dungeon *dungeon = dynamic_cast<Dungeon *>(c->location->map);
+    const Dungeon *dungeon = dynamic_cast<Dungeon *>(c->location->map);
     switch (static_cast<TrapType>(dungeon->currentSubToken())) {
     case TRAP_WINDS:
         screenMessage("\nWinde!\n");
@@ -365,11 +364,16 @@ bool Dungeon::ladderUpAt(const MapCoords &coords)
         return true;
     }
     if (a.size() > 0) {
-        Annotation::List::iterator i;
-        for (i = a.begin(); i != a.end(); ++i) {
-            if (i->getTile() == tileset->getByName("up_ladder")->getId()) {
-                return true;
+        TileId upLadderId = tileset->getByName("up_ladder")->getId();
+        Annotation::List::const_iterator i = std::find_if(
+            a.cbegin(),
+            a.cend(),
+            [&](const Annotation &v) {
+                return v.getTile() == upLadderId;
             }
+        );
+        if (i != a.cend()) {
+            return true;
         }
     }
     return false;
@@ -387,11 +391,16 @@ bool Dungeon::ladderDownAt(const MapCoords &coords)
         return true;
     }
     if (a.size() > 0) {
-        Annotation::List::iterator i;
-        for (i = a.begin(); i != a.end(); ++i) {
-            if (i->getTile() == tileset->getByName("down_ladder")->getId()) {
-                return true;
+        TileId downLadderId = tileset->getByName("down_ladder")->getId();
+        Annotation::List::const_iterator i = std::find_if(
+            a.cbegin(),
+            a.cend(),
+            [&](const Annotation &v) {
+                 return v.getTile() == downLadderId;
             }
+        );
+        if (i != a.cend()) {
+            return true;
         }
     }
     return false;

@@ -86,7 +86,7 @@ void Tile::loadProperties(const ConfigElement &conf)
         std::string dirs = conf.getString("directions");
         if (dirs.length() != static_cast<std::size_t>(frames)) {
             errorFatal(
-                "Error: %lld directions for tile but only %d frames",
+                "Error: %llu directions for tile but only %d frames",
                 static_cast<unsigned long long>(dirs.length()),
                 frames
             );
@@ -126,7 +126,7 @@ void Tile::loadImage()
 {
     if (!image) {
         scale = settings.scale;
-        SubImage *subimage = nullptr;
+        const SubImage *subimage = nullptr;
         ImageInfo *info = imageMgr->get(imageName);
         if (!info) {
             subimage = imageMgr->getSubImage(imageName);
@@ -167,7 +167,7 @@ void Tile::loadImage()
         /* draw the tile from the image we found
            to our tile image */
         if (subimage) {
-            Image *tiles = info->image;
+            const Image *tiles = info->image;
             tiles->drawSubRectOn(
                 image,
                 0,
@@ -235,7 +235,7 @@ bool MapTile::setDirection(Direction d)
 
 bool Tile::isDungeonFloor() const
 {
-    Tile *floor = tileset->getByName("brick_floor");
+    const Tile *floor = tileset->getByName("brick_floor");
     if (id == floor->id) {
         return true;
     }

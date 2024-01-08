@@ -12,7 +12,6 @@
 class ConfigElement;
 
 
-
 /**
  * A tilemap maps the raw bytes in a map file to MapTiles.
  */

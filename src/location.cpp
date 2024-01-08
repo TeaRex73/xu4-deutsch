@@ -65,8 +65,8 @@ std::vector<MapTile> Location::tilesAt(const MapCoords &coords, bool &focus)
     std::vector<MapTile> tiles;
     std::list<const Annotation *> a = map->annotations->ptrsToAllAt(coords);
     std::list<const Annotation *>::const_iterator i;
-    Object *obj = map->objectAt(coords);
-    Creature *m = dynamic_cast<Creature *>(obj);
+    const Object *obj = map->objectAt(coords);
+    const Creature *m = dynamic_cast<const Creature *>(obj);
     focus = false;
     bool avatar = this->coords == coords;
     /* Do not return objects for VIEW_GEM mode,

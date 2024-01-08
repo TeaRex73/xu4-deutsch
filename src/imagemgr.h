@@ -13,7 +13,6 @@
 #include "observer.h"
 
 
-
 class ConfigElement;
 class Debug;
 class ImageSet;
@@ -142,8 +141,8 @@ public:
     SubImage *getSubImage(const std::string &name);
     void freeIntroBackgrounds();
     const std::vector<std::string> &getSetNames() const;
-    U4FILE *getImageFile(ImageInfo *info);
-    bool imageExists(ImageInfo *info);
+    U4FILE *getImageFile(const ImageInfo *info);
+    bool imageExists(const ImageInfo *info);
 
 private:
     ImageMgr();
@@ -163,10 +162,10 @@ private:
     ImageInfo *getInfoFromSet(const std::string &name, ImageSet *imageset);
     static std::string guessFileType(const std::string &filename);
     static void fixupIntro(Image *im, int prescale);
-    static void fixupAbyssVision(Image *im, int prescale);
+    static void fixupAbyssVision(const Image *im, int prescale);
     static void fixupAbacus(Image *im, int prescale);
-    static void fixupDungNS(Image *im, int prescale);
-    static void fixupFMTowns(Image *im, int prescale);
+    static void fixupDungNS(const Image *im, int prescale);
+    static void fixupFMTowns(const Image *im, int prescale);
     void update(Settings *newSettings);
     static ImageMgr *instance;
     static ImageInfo *screenInfo;

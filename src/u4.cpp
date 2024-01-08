@@ -48,7 +48,6 @@ std::string profileName = "";
 Performance perf("debug/performance.txt");
 
 
-
 int main(int argc, char *argv[])
 {
     U4FILE *avatar;

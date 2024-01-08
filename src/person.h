@@ -12,7 +12,6 @@
 #include "types.h"
 
 
-
 class Conversation;
 class Dialogue;
 class Response;
@@ -67,7 +66,7 @@ public:
     std::list<std::string> getConversationText(
         Conversation *cnv, const char *inquiry
     );
-    std::string getPrompt(Conversation *cnv);
+    std::string getPrompt(Conversation *cnv) const;
     const char *getChoices(Conversation *cnv);
     std::string getIntro(Conversation *cnv);
     std::string processResponse(Conversation *cnv, Response *response);

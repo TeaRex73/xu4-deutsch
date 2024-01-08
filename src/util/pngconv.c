@@ -4,7 +4,11 @@
 
 #include "pngconv.h"
 
-void setBWPalette(png_color *palette)
+static void setBWPalette(png_color *palette);
+static void setEgaPalette(png_color *palette);
+static void setVgaPalette(png_color *palette);
+
+static void setBWPalette(png_color *palette)
 {
     palette[0].red = 0;
     palette[0].green = 0;
@@ -14,12 +18,12 @@ void setBWPalette(png_color *palette)
     palette[1].blue = 255;
 }
 
-#define setpalentry(i, r, g, b)                 \
-    palette[i].red = r;                         \
-    palette[i].green = g;                       \
-    palette[i].blue = b;
+#define setpalentry(i, r, g, b) do { \
+    palette[i].red = r;              \
+    palette[i].green = g;            \
+    palette[i].blue = b; } while(0)
 
-void setEgaPalette(png_color *palette)
+static void setEgaPalette(png_color *palette)
 {
     setpalentry( 0,   0,   0,   0);
     setpalentry( 1,   0, 149, 255);
@@ -41,7 +45,7 @@ void setEgaPalette(png_color *palette)
 
 #undef setpalentry
 
-void setVgaPalette(png_color *palette)
+static void setVgaPalette(png_color *palette)
 {
     FILE *pal;
     int i;
@@ -63,7 +67,7 @@ int writePngFromEga(
 )
 {
     FILE *fp;
-    unsigned char *p;
+    const unsigned char *p;
     png_structp png_ptr;
     png_infop info_ptr;
     int bit_depth, color_type, interlace_type, compression_type, filter_method;

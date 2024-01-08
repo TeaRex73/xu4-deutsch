@@ -33,10 +33,11 @@
 #include "utils.h"
 #include "script.h"
 
-int chars_needed(
+static int chars_needed(
     const char *s, int columnmax, int linesdesired, int *real_lines
 );
 
+static int chars_to_next_line(const char *s, int columnmax);
 
 /**
  * Returns true of the object that 'punknown' points
@@ -210,7 +211,7 @@ std::list<std::string> Person::getConversationText(
                     {
                         const std::string &choices = script->getChoices();
                         // Get choice
-                        char val = ReadChoiceController::get(choices);
+                        char val = ReadChoiceController::getChar(choices);
                         if (std::isspace(val) || (val == '\033')) {
                             script->unsetVar(script->getInputName());
                         } else {
@@ -222,11 +223,11 @@ std::list<std::string> Person::getConversationText(
                         break;
                     }
                     case Script::INPUT_KEYPRESS:
-                        ReadChoiceController::get(" \015\033");
+                        ReadChoiceController::getChar(" \015\033");
                         break;
                     case Script::INPUT_NUMBER:
                     {
-                        int val = ReadIntController::get(
+                        int val = ReadIntController::getInt(
                             script->getInputMaxLen(),
                             TEXT_AREA_X + c->col,
                             TEXT_AREA_Y + c->line
@@ -236,7 +237,7 @@ std::list<std::string> Person::getConversationText(
                     }
                     case Script::INPUT_STRING:
                     {
-                        std::string str = ReadStringController::get(
+                        std::string str = ReadStringController::getString(
                             script->getInputMaxLen(),
                             TEXT_AREA_X + c->col,
                             TEXT_AREA_Y + c->line
@@ -326,7 +327,7 @@ std::list<std::string> Person::getConversationText(
 /**
  * Get the prompt shown after each reply.
  */
-std::string Person::getPrompt(Conversation *cnv)
+std::string Person::getPrompt(Conversation *cnv) const
 {
     if (isVendor()) {
         return "";
@@ -565,7 +566,7 @@ std::string Person::getQuestion(Conversation *cnv)
  * Returns the number of characters needed to get to
  * the next line of text (based on column width).
  */
-int chars_to_next_line(const char *s, int columnmax)
+static int chars_to_next_line(const char *s, int columnmax)
 {
     int chars = -1;
     if (std::strlen(s) > 0) {
@@ -608,7 +609,7 @@ int linecount(const std::string &s, int columnmax)
  * Returns the number of characters needed to produce a
  * valid screen of text (given a column width and row height)
  */
-int chars_needed(
+static int chars_needed(
     const char *s, int columnmax, int linesdesired, int *real_lines
 )
 {

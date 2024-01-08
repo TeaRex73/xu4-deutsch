@@ -787,7 +787,7 @@
         <intro>
             <music type="shopping"/>
             <ztats screen="reagents"/>
-            EINE BLINDE FRAU DREHT SICH ZU DIR UM UND SAGT: WILKOMMEN BEI{name}.
+            EINE BLINDE FRAU DREHT SICH ZU DIR UM UND SAGT: WILLKOMMEN BEI{name}.
 
             ICH BIN {owner}. BRAUCHST DU REAGENZIEN?<input type="choice" options="jn" target="show_reagents"/>
         </intro>
@@ -912,7 +912,7 @@
     <script id="Healer" noun="service">
         <intro>
             <music type="shopping"/>
-            WILKOMMEN BEI{name}.
+            WILLKOMMEN BEI{name}.
 
             {healer} SAGT: FRIEDE UND FREUDE SEI MIT DIR, <if test="{party:member1:sex}=f">FREUNDIN.</if><if test="{party:member1:sex}=m">FREUND.</if> BEN\TIGST DU HILFE?<input type="choice" options="jn" target="show_services"/>
         </intro>
@@ -1081,7 +1081,7 @@
     <script id="Inn" noun="room">
         <intro>
             <music type="shopping"/>
-            DER GASTWIRT SAGT: <if test="{party:transport}=horse" redirect="nohorse"/>WILKOMMEN {name}.
+            DER GASTWIRT SAGT: <if test="{party:transport}=horse" redirect="nohorse"/>WILLKOMMEN {name}.
 
             ICH BIN {innkeeper}. BRAUCHST DU UNTERKUNFT?<input type="choice" options="jn" target="ask"/>
         </intro>
@@ -1211,7 +1211,7 @@
             <ztats screen="equipment"/>
             WAHRSCHAU, MIEN <if test="{party:member1:sex}=m">JONG!</if><if test="{party:member1:sex}=f">DEERN!</if> SICHER WILLST DU VOM ALTEN {ownerdat} KAUFEN!
 
-            {owner} SAGT: WILKOMMEN I{name}.
+            {owner} SAGT: WILLKOMMEN I{name}.
             WILLST DU MEINE BEUTE SEHEN?<input type="choice" options="jn" target="show_goods"/>
         </intro>
 
@@ -1309,7 +1309,7 @@
     <script id="Stable">
         <intro>
             <music type="shopping"/>
-            WILKOMMEN <if test="{party:member1:sex}=f">FREUNDIN!</if><if test="{party:member1:sex}=m">FREUND!</if> KANN ICH DICH AN PFERDEN INERESSIEREN?<input type="choice" options="jn" target="ask"/>
+            WILLKOMMEN <if test="{party:member1:sex}=f">FREUNDIN!</if><if test="{party:member1:sex}=m">FREUND!</if> KANN ICH DICH AN PFERDEN INERESSIEREN?<input type="choice" options="jn" target="ask"/>
         </intro>
 
         <end>

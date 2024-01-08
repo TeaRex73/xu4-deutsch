@@ -374,6 +374,8 @@ Script::ReturnCode Script::execute(
 {
     xmlNodePtr current;
     Script::ReturnCode retval = RET_OK;
+    // errorFatal won't return, but cppcheck doesn't get it
+    // cppcheck-suppress [nullPointerRedundantCheck, ctunullpointer]
     if (!script->children) {
         /* redirect the script to another node */
         if (xmlPropExists(script, "redirect")) {
@@ -906,7 +908,7 @@ xmlNodePtr Script::find(
     const std::string &script_to_find,
     const std::string &id,
     bool _default
-)
+) const
 {
     xmlNodePtr current;
     if (node) {
@@ -949,7 +951,9 @@ xmlNodePtr Script::find(
  * translates it using scriptTranslate.
  */
 std::string Script::getPropAsStr(
-    std::list<xmlNodePtr> &nodes, const std::string &prop, bool recursive
+    const std::list<xmlNodePtr> &nodes,
+    const std::string &prop,
+    bool recursive
 )
 {
     std::string propvalue;
@@ -988,7 +992,7 @@ std::string Script::getPropAsStr(
  * Gets a property as int from the script
  */
 int Script::getPropAsInt(
-    std::list<xmlNodePtr> &nodes, const std::string &prop, bool recursive
+    const std::list<xmlNodePtr> &nodes, const std::string &prop, bool recursive
 )
 {
     std::string propvalue = getPropAsStr(nodes, prop, recursive);

@@ -138,7 +138,7 @@ std::string TextView::colorizeStatus(char statustype)
 
 /* depending on the status type, apply colorization to the character */
 std::string TextView::colorizeString(
-    std::string input,
+    const std::string &input,
     ColorFG color,
     unsigned int colorstart,
     unsigned int colorlength
@@ -150,10 +150,9 @@ std::string TextView::colorizeString(
     }
     std::string output = "";
     std::size_t length = input.length();
-    std::size_t i;
     bool colorization = false;
     // loop through the entire std::string
-    for (i = 0; i < length; i++) {
+    for (std::size_t i = 0; i < length; i++) {
         if (i == colorstart) {
             output += color;
             colorization = true;

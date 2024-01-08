@@ -59,7 +59,11 @@ void ImageLoader::cleanup()
  * Fill in the image pixel data from an uncompressed std::string of bytes.
  */
 void ImageLoader::setFromRawData(
-    Image *image, int width, int height, int bpp, unsigned char *rawData
+    const Image *image,
+    int width,
+    int height,
+    int bpp,
+    const unsigned char *rawData
 )
 {
     int x, y;

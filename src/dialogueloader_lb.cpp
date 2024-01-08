@@ -15,7 +15,6 @@
 #include "u4file.h"
 
 
-
 Response *lordBritishGetHelp(const DynamicResponse *resp);
 Response *lordBritishGetIntro(const DynamicResponse *resp);
 DialogueLoader *U4LBDialogueLoader::instance = DialogueLoader::registerLoader(

@@ -61,7 +61,7 @@ Creature::Creature(MapTile tile)
      resists(0),
      spawn(0)
 {
-    Creature *m = creatureMgr->getByTile(tile);
+    const Creature *m = creatureMgr->getByTile(tile);
     if (m) {
         *this = *m;
     }
@@ -472,7 +472,7 @@ bool Creature::specialEffect()
              /* nothing */ ) {
             obj = *i;
             if ((this != obj) && (obj->getCoords() == coords)) {
-                Creature *m = dynamic_cast<Creature *>(obj);
+                const Creature *m = dynamic_cast<Creature *>(obj);
                 /* Make sure the object isn't a flying creature or object */
                 if (!m || ((m->swims() || m->sails()) && !m->flies())) {
                     /* Destroy the object it met with */
@@ -606,7 +606,7 @@ void Creature::act(CombatController *controller)
         bool valid = false;
         bool firstTry = true;
         while (!valid) {
-            Map *map = getMap();
+            const Map *map = getMap();
             new_c = Coords(
                 xu4_random(map->width),
                 xu4_random(map->height),
@@ -1032,7 +1032,7 @@ Creature *CreatureMgr::getByTile(MapTile tile)
     CreatureMap::const_iterator i = std::find_if(
         creatures.cbegin(),
         creatures.cend(),
-        [&](const std::pair<CreatureId, Creature *> &v) {
+        [&](const CreatureMap::value_type &v) {
             return v.second->getTile() == tile;
         }
     );
@@ -1067,16 +1067,21 @@ Creature *CreatureMgr::getById(CreatureId id)
  */
 Creature *CreatureMgr::getByName(const std::string &name)
 {
-    CreatureMap::const_iterator i;
-    for (i = creatures.cbegin(); i != creatures.cend(); ++i) {
-        if (xu4_strcasecmp(
-                deumlaut(i->second->getName()).c_str(),
+    CreatureMap::const_iterator i = std::find_if(
+        creatures.cbegin(),
+        creatures.cend(),
+        [&](const CreatureMap::value_type &v) {
+            return !xu4_strcasecmp(
+                deumlaut(v.second->getName()).c_str(),
                 deumlaut(name).c_str()
-            ) == 0) {
-            return i->second;
+            );
         }
+    );
+    if (i == creatures.cend()) {
+        return nullptr;
+    } else {
+        return i->second;
     }
-    return nullptr;
 }
 
 
@@ -1138,7 +1143,7 @@ Creature *CreatureMgr::randomAmbushing()
         numAmbushingCreatures = std::count_if(
             creatures.cbegin(),
             creatures.cend(),
-            [&](const std::pair<CreatureId, Creature *> &v) {
+            [&](const CreatureMap::value_type &v) {
                 return v.second->ambushes();
             }
         );

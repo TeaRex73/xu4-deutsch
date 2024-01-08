@@ -121,7 +121,7 @@ Controller *EventHandler::popController()
     if (controllers.empty()) {
         return nullptr;
     }
-    Controller *controller = controllers.back();
+    const Controller *controller = controllers.back();
     getTimer()->remove(&Controller::timerCallback, controller);
     controllers.pop_back();
     return getController();
@@ -366,7 +366,7 @@ bool ReadStringController::keyPressed(int key)
     return valid || KeyHandler::defaultHandler(key, nullptr);
 } // ReadStringController::keyPressed
 
-std::string ReadStringController::get(
+std::string ReadStringController::getString(
     int maxlen, int screenX, int screenY, EventHandler *eh
 )
 {
@@ -378,7 +378,7 @@ std::string ReadStringController::get(
     return deumlaut(ctrl.waitFor());
 }
 
-std::string ReadStringController::get(
+std::string ReadStringController::getString(
     int maxlen, TextView *view, EventHandler *eh
 )
 {
@@ -395,7 +395,7 @@ ReadIntController::ReadIntController(int maxlen, int screenX, int screenY)
 {
 }
 
-int ReadIntController::get(
+int ReadIntController::getInt(
     int maxlen, int screenX, int screenY, EventHandler *eh
 )
 {
@@ -405,10 +405,10 @@ int ReadIntController::get(
     ReadIntController ctrl(maxlen, screenX, screenY);
     eh->pushController(&ctrl);
     ctrl.waitFor();
-    return ctrl.getInt();
+    return ctrl.stringToInt();
 }
 
-int ReadIntController::getInt() const
+int ReadIntController::stringToInt() const
 {
     return static_cast<int>(std::strtol(value.c_str(), nullptr, 10));
 }
@@ -435,7 +435,9 @@ bool ReadChoiceController::keyPressed(int key)
     return false;
 }
 
-char ReadChoiceController::get(const std::string &choices, EventHandler *eh)
+char ReadChoiceController::getChar(
+    const std::string &choices, EventHandler *eh
+)
 {
     if (!eh) {
         eh = eventHandler;

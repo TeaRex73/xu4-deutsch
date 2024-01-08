@@ -1,6 +1,6 @@
 scale=1
 fullscreen=0
-filter=Point
+filter=2xBi
 video=EGA
 gemLayout=Standard
 lineOfSight=DOS
@@ -16,7 +16,7 @@ filterMoveMessages=0
 battlespeed=5
 enhancements=1
 gameCyclesPerSecond=4
-debug=1
+debug=0
 battleDiff=Normal
 validateXml=1
 spellEffectSpeed=10

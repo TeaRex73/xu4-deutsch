@@ -13,7 +13,11 @@
 
 #define TLK_BUF_SIZE 384
 
-xmlNodePtr addAsText(xmlDocPtr doc, xmlNodePtr node, const char *in)
+static xmlNodePtr addAsText(xmlDocPtr doc, xmlNodePtr node, const char *in);
+static void xmlToTlk(xmlDocPtr doc, FILE *tlk);
+static xmlDocPtr tlkToXml(FILE *tlk);
+
+static xmlNodePtr addAsText(xmlDocPtr doc, xmlNodePtr node, const char *in)
 {
     const char *begin, *end;
     char buffer[600];
@@ -37,7 +41,7 @@ xmlNodePtr addAsText(xmlDocPtr doc, xmlNodePtr node, const char *in)
     return node;
 }
 
-void xmlToTlk(xmlDocPtr doc, FILE *tlk)
+static void xmlToTlk(xmlDocPtr doc, FILE *tlk)
 {
     xmlNodePtr root, person, node;
     const char *val;
@@ -185,7 +189,7 @@ void xmlToTlk(xmlDocPtr doc, FILE *tlk)
     }
 }
 
-xmlDocPtr tlkToXml(FILE *tlk)
+static xmlDocPtr tlkToXml(FILE *tlk)
 {
     xmlDocPtr doc;
     xmlNodePtr root;

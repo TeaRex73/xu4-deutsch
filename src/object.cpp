@@ -44,17 +44,18 @@ Object::Object(const Object &o)
 
 Object &Object::operator=(const Object &o)
 {
-    tile = o.tile;
-    prevTile = o.prevTile;
-    coords = o.coords;
-    prevCoords = o.prevCoords;
-    movement_behavior = o.movement_behavior;
-    objType = o.objType;
-    maps = o.maps;
-    focused = o.focused;
-    visible = o.visible;
-    animated = o.animated;
-    all_objects.insert(this);
+    if (&o != this) {
+        tile = o.tile;
+        prevTile = o.prevTile;
+        coords = o.coords;
+        prevCoords = o.prevCoords;
+        movement_behavior = o.movement_behavior;
+        objType = o.objType;
+        maps = o.maps;
+        focused = o.focused;
+        visible = o.visible;
+        animated = o.animated;
+    }
     return *this;
 }
 
@@ -141,7 +142,7 @@ void Object::remove()
 #include "screen.h"
 #include "game.h"
 
-void Object::animateMovement()
+void Object::animateMovement() const
 {
     // TODO abstract movement - also make screen.h and game.h not required
     screenTileUpdate(&game->mapArea, prevCoords);

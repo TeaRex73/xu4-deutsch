@@ -85,7 +85,7 @@ void TileView::loadTile(MapTile mapTile)
 void TileView::drawTile(MapTile mapTile, bool focus, int x, int y)
 {
     Tile *tile = tileset->get(mapTile.getId());
-    Image *image = tile->getImage();
+    const Image *image = tile->getImage();
 
     U4ASSERT(x < columns, "x value of %d out of range", x);
     U4ASSERT(y < rows, "y value of %d out of range", y);
@@ -133,7 +133,9 @@ void TileView::drawTile(MapTile mapTile, bool focus, int x, int y)
     }
 } // TileView::drawTile
 
-void TileView::drawTile(std::vector<MapTile> &tiles, bool focus, int x, int y)
+void TileView::drawTile(
+    const std::vector<MapTile> &tiles, bool focus, int x, int y
+    )
 {
     U4ASSERT(x < columns, "x value of %d out of range", x);
     U4ASSERT(y < rows, "y value of %d out of range", y);
@@ -149,8 +151,8 @@ void TileView::drawTile(std::vector<MapTile> &tiles, bool focus, int x, int y)
         SCALED(tileHeight)
     );
     // int layer = 0;
-    for (std::vector<MapTile>::reverse_iterator t = tiles.rbegin();
-         t != tiles.rend();
+    for (std::vector<MapTile>::const_reverse_iterator t = tiles.crbegin();
+         t != tiles.crend();
          ++t) {
         MapTile frontTile = *t;
         Tile *frontTileType = tileset->get(frontTile.getId());
@@ -159,7 +161,7 @@ void TileView::drawTile(std::vector<MapTile> &tiles, bool focus, int x, int y)
             // It happens after graphics mode changes.
             return;
         }
-        Image *image = frontTileType->getImage();
+        const Image *image = frontTileType->getImage();
         // draw the tile to the screen
         if (frontTileType->getAnim()) {
             // First, create our animated version of the tile

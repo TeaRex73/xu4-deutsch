@@ -16,7 +16,6 @@
 #include "utils.h"
 
 
-
 bool Armor::confLoaded = false;
 std::vector<Armor *> Armor::armors;
 

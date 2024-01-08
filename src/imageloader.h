@@ -42,11 +42,11 @@ protected:
         ImageLoader *loader, const std::string &type
     );
     static void setFromRawData(
-        Image *image,
+        const Image *image,
         int width,
         int height,
         int bpp,
-        unsigned char *rawData
+        const unsigned char *rawData
     );
 
 private:

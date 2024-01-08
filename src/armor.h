@@ -11,7 +11,6 @@
 #include "savegame.h"
 
 
-
 class ConfigElement;
 
 class Armor {

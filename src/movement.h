@@ -50,7 +50,7 @@ bool moveObject(
     const class Map *map, class Creature *obj, const MapCoords &avatar
 );
 bool moveCombatObject(
-    int action,
+    int act,
     const class Map *map,
     class Creature *obj,
     const MapCoords &target

@@ -56,6 +56,9 @@ SDL_Cursor *screenInitCursor(const char *const xpm[]);
 extern bool verbose;
 void screenRefreshThreadInit();
 void screenRefreshThreadEnd();
+void screenInit_sys();
+void screenDelete_sys();
+static int screenRefreshThreadFunction(void *);
 
 static SDL_Surface *icon;
 
@@ -337,7 +340,7 @@ void screenWait(int numberOfAnimationFrames)
 std::atomic_bool continueScreenRefresh(false);
 SDL_Thread *screenRefreshThread = nullptr;
 
-int screenRefreshThreadFunction(void *)
+static int screenRefreshThreadFunction(void *)
 {
     while (continueScreenRefresh) {
         SDL_Delay(frameDuration);
@@ -383,6 +386,7 @@ void screenRefreshThreadEnd()
  */
 Image *screenScale(Image *src, int scale, int n, int filter)
 {
+    static Scaler scalerPoint = scalerGet("Point");
     Image *dest = nullptr;
     bool isTransparent;
     unsigned int transparentIndex = 0;
@@ -403,7 +407,7 @@ Image *screenScale(Image *src, int scale, int n, int filter)
         scale /= 3;
     }
     if (scale != 1) {
-        dest = (*scalerGet("point"))(src, scale, n);
+      dest = (*scalerPoint)(src, scale, n);
     }
     if (!dest) {
         dest = Image::duplicate(src);

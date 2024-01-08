@@ -21,7 +21,6 @@
 #include "u4file.h"
 
 
-
 #define MAP_IS_OOB(mapptr, c)                               \
     (((c).x) < 0                                            \
      || ((c).x) >= (static_cast<int>((mapptr)->width))      \
@@ -198,7 +197,7 @@ public:
 
     Map();
     virtual ~Map();
-    virtual std::string getName() const;
+    virtual std::string getName();
     Object *objectAt(const Coords &coords) const;
     const Portal *portalAt(const Coords &coords, int actionFlags) const;
     MapTile getTileFromData(const Coords &coords) const;
@@ -206,7 +205,9 @@ public:
     const Tile *tileTypeAt(const Coords &coords, int withObjects) const;
     bool isWorldMap() const;
     bool isEnclosed(const Coords &party) const;
-    class Creature *addCreature(const class Creature *m, const Coords &coords);
+    class Creature *addCreature(
+        const class Creature *creature, const Coords &coords
+    );
     Object *addObject(
         MapTile tile, MapTile prevtile, const Coords &coords
     );

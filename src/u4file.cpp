@@ -15,9 +15,6 @@
 #include "utils.h"
 
 
-
-
-
 /**
  * A specialization of U4FILE that uses C stdio internally.
  */
@@ -608,7 +605,7 @@ U4FILE *u4fopen_stdio(const std::string &fname)
 /**
  * Opens a file from a zipfile and wraps it in a U4FILE.
  */
-U4FILE *u4fopen_zip(const std::string &fname, U4ZipPackage *package)
+U4FILE *u4fopen_zip(const std::string &fname, const U4ZipPackage *package)
 {
     return U4FILE_zip::open(fname, package);
 }
@@ -691,7 +688,7 @@ std::vector<std::string> u4read_stringtable(
 }
 
 std::string u4find_path(
-    const std::string &fname, std::list<std::string> specificSubPaths
+    const std::string &fname, const std::list<std::string> &specificSubPaths
 )
 {
     std::FILE *f = nullptr;

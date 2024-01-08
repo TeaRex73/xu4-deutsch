@@ -299,7 +299,7 @@ Map::~Map()
     delete annotations;
 }
 
-std::string Map::getName() const
+std::string Map::getName()
 {
     return baseSource.fname;
 }
@@ -361,7 +361,7 @@ const Portal *Map::portalAt(const Coords &coords, int actionFlags) const
  */
 MapTile Map::getTileFromData(const Coords &coords) const
 {
-    static MapTile blank(0);
+    static MapTile blank = 0;
     if (MAP_IS_OOB(this, coords)) {
         return blank;
     }
@@ -379,10 +379,9 @@ MapTile Map::tileAt(const Coords &coords, int withObjects) const
 {
     /* FIXME: this should return a list of tiles, with the most visible
        at the front */
-    MapTile tile;
     std::list<const Annotation *> a = annotations->ptrsToAllAt(coords);
-    Object *obj = objectAt(coords);
-    tile = getTileFromData(coords);
+    const Object *obj = objectAt(coords);
+    MapTile tile = getTileFromData(coords);
     /* FIXME: this only returns the first valid annotation it can find */
     std::list<const Annotation *>::const_iterator i = std::find_if(
         a.cbegin(),
@@ -502,9 +501,9 @@ void Map::findWalkability(const Coords &coords, int *path_data) const
  */
 Creature *Map::addCreature(const Creature *creature, const Coords &coords)
 {
-    Creature *m = new Creature(*creature);
     /* make a copy of the creature before placing it */
-    // *m = *creature;
+    Creature *m = new Creature(*creature);
+
     m->setInitialHp();
     m->setStatus(STAT_GOOD);
     m->setMap(this);
@@ -593,7 +592,6 @@ ObjectDeque::iterator Map::removeObject(
     }
     return objects.erase(rem);
 }
-
 
 
 /**
@@ -882,9 +880,9 @@ const MapCoords &Map::getLabel(const std::string &name) const
 // helper function for Map::fillMonsterTable()
 static bool isCloser(const Object *a, const Object *b)
 {
-    MapCoords ma = a->getCoords();
-    MapCoords mb = b->getCoords();
-    Coords coords = c->location->coords;
+    const MapCoords &ma = a->getCoords();
+    const MapCoords &mb = b->getCoords();
+    const Coords &coords = c->location->coords;
     if ((ma.z != coords.z) || (mb.z != coords.z)) {
         return std::abs(ma.z - coords.z) < std::abs(mb.z - coords.z);
     }
@@ -924,9 +922,9 @@ bool Map::fillMonsterTable()
         /* moving objects first */
         if ((obj->getType() == Object::CREATURE)
             /* && (obj->getMovementBehavior() != MOVEMENT_FIXED) */ ) {
-            Creature *cr = dynamic_cast<Creature *>(obj);
+            const Creature *m = dynamic_cast<const Creature *>(obj);
             /* whirlpools and storms are separated from other moving objects */
-            if ((cr->getId() == WHIRLPOOL_ID) || (cr->getId() == STORM_ID)) {
+            if ((m->getId() == WHIRLPOOL_ID) || (m->getId() == STORM_ID)) {
                 nForcesOfNature++;
                 monsters.push_back(obj);
             } else {
@@ -940,7 +938,7 @@ bool Map::fillMonsterTable()
     }
     /* limit forces of nature */
     /* sort first so that, if any, those furthest away get thrown out */
-    std::sort(monsters.begin(), monsters.end(), isCloser);
+    std::sort(monsters.begin(), monsters.end(), &isCloser);
     while(nForcesOfNature > MONSTERTABLE_FORCESOFNATURE_SIZE) {
         monsters.pop_back();
         nForcesOfNature--;
@@ -950,7 +948,7 @@ bool Map::fillMonsterTable()
      * Add other monsters to our whirlpools and storms
      */
     /* sort first, see above */
-    std::sort(other_creatures.begin(), other_creatures.end(), isCloser);
+    std::sort(other_creatures.begin(), other_creatures.end(), &isCloser);
     while (other_creatures.size()) {
         monsters.push_back(other_creatures.front());
         other_creatures.pop_front();
@@ -989,7 +987,7 @@ bool Map::fillMonsterTable()
             );
         } else {
             std::sort(
-                inanimate_objects.begin(), inanimate_objects.end(), isCloser
+                inanimate_objects.begin(), inanimate_objects.end(), &isCloser
             );
         }
         while (inanimate_objects.size()) {
@@ -1012,8 +1010,8 @@ bool Map::fillMonsterTable()
      * Fill in our monster table
      */
     for (i = 0; i < MONSTERTABLE_SIZE; i++) {
-        Coords co = monsters[i]->getCoords(),
-            prevco = monsters[i]->getPrevCoords();
+        const Coords &co = monsters[i]->getCoords(),
+            &prevco = monsters[i]->getPrevCoords();
         monsterTable[i].tile =
             TileMap::get("base")->untranslate(monsters[i]->getTile());
         monsterTable[i].x = co.x;

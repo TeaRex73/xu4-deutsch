@@ -33,10 +33,10 @@
 
 SpellEffectCallback spellEffectCallback = nullptr;
 CombatController *spellCombatController();
-void spellMagicAttack(
+static void spellMagicAttack(
     const std::string &tilename, Direction dir, int minDamage, int maxDamage
 );
-bool spellMagicAttackAt(
+static bool spellMagicAttackAt(
     const Coords &coords, MapTile attackTile, int attackDamage
 );
 static bool spellAwaken(int player);
@@ -581,7 +581,7 @@ CombatController *spellCombatController()
 /**
  * Makes a special magic ranged attack in the given direction
  */
-void spellMagicAttack(
+static void spellMagicAttack(
     const std::string &tilename, Direction dir, int minDamage, int maxDamage
 )
 {
@@ -612,7 +612,7 @@ void spellMagicAttack(
     );
 }
 
-bool spellMagicAttackAt(
+static bool spellMagicAttackAt(
     const Coords &coords, MapTile attackTile, int attackDamage
 )
 {
@@ -650,9 +650,6 @@ static bool spellAwaken(int player)
 
 static bool spellBlink(int dir)
 {
-    int i, distance, diff, *var;
-    bool success;
-    Direction reverseDir = dirReverse(static_cast<Direction>(dir));
     MapCoords coords = c->location->coords;
     /* Blink doesn't work near the mouth of the abyss */
     /* Note: This means you can teleport to Hythloth from the top of the
@@ -662,28 +659,30 @@ static bool spellBlink(int dir)
         return false;
     }
     /* figure out what numbers we're working with */
-    var = (dir & (DIR_WEST | DIR_EAST)) ? &coords.x : &coords.y;
+    const int *var = (dir & (DIR_WEST | DIR_EAST)) ? &coords.x : &coords.y;
     /* find the distance we are going to move */
-    distance = (*var) % 0x10;
+    int distance = (*var) % 0x10;
     if ((dir == DIR_EAST) || (dir == DIR_SOUTH)) {
         distance = 0x10 - distance;
     }
     /* see if we move another 16 spaces over */
-    diff = 0x10 - distance;
+    int diff = 0x10 - distance;
     if ((diff > 0) && (xu4_random(diff * diff) > distance)) {
         distance += 0x10;
     }
     /* test our distance, and see if it works */
-    for (i = 0; i < distance; i++) {
+    for (int i = 0; i < distance; i++) {
         coords.move(static_cast<Direction>(dir), c->location->map);
     }
-    i = distance;
+    int i = distance;
+    Direction reverseDir = dirReverse(static_cast<Direction>(dir));
     /* begin walking backward until you find a valid spot */
     while ((i-- > 0)
            && !c->location->map->tileTypeAt(coords, WITH_OBJECTS)
            ->isWalkable()) {
         coords.move(reverseDir, c->location->map);
     }
+    bool success;
     if (c->location->map->tileTypeAt(coords, WITH_OBJECTS)->isWalkable()) {
         /* we didn't move! */
         if (c->location->coords == coords) {
@@ -713,7 +712,6 @@ static bool spellCure(int player)
 
 static bool spellDispel(int dir)
 {
-    MapTile tile;
     MapCoords field;
     /*
      * get the location of the avatar (or current party member,
@@ -734,50 +732,50 @@ static bool spellDispel(int dir)
      */
     Annotation::List a = c->location->map->annotations->allAt(field);
     if (a.size() > 0) {
-        Annotation::List::iterator i;
-        for (i = a.begin(); i != a.end(); ++i) {
-            if (i->getTile().getTileType()->canDispel()) {
-                /*
-                 * get a replacement tile for the field
-                 */
-                MapTile newTile(c->location->getReplacementTile(
-                                    field, i->getTile().getTileType()
-                                ));
-                c->location->map->annotations->remove(*i);
-                c->location->map->annotations->add(
-                    field, newTile, false, true
-                );
-                return true;
-            }
+        Annotation::List::const_iterator i = std::find_if(
+             a.cbegin(),
+             a.cend(),
+             [&](const Annotation &v) {
+                 return v.getTile().getTileType()->canDispel();
+             }
+        );
+        if (i != a.cend()) {
+            /*
+             * get a replacement tile for the field
+             */
+            MapTile newTile = c->location->getReplacementTile(
+                field, i->getTile().getTileType()
+            );
+            c->location->map->annotations->remove(*i);
+            c->location->map->annotations->add(
+                field, newTile, false, true
+            );
+            return true;
         }
     }
     /*
      * if the map tile itself is a field, overlay it with replacement tile
      */
-    tile = c->location->map->tileAt(field, WITHOUT_OBJECTS);
+    MapTile tile = c->location->map->tileAt(field, WITHOUT_OBJECTS);
     if (!tile.getTileType()->canDispel()) {
         return false;
     }
     /*
      * get a replacement tile for the field
      */
-    MapTile newTile(
-        c->location->getReplacementTile(field, tile.getTileType())
-    );
+    MapTile newTile =
+        c->location->getReplacementTile(field, tile.getTileType());
     c->location->map->annotations->add(field, newTile, false, true);
     return true;
 } // spellDispel
 
 static bool spellEField(int param)
 {
-    MapTile fieldTile(0);
-    int fieldType;
-    int dir;
-    MapCoords coords;
     /* Unpack fieldType and direction */
-    fieldType = param >> 4u;
-    dir = param & 0xFu;
+    int fieldType = param >> 4u;
+    int dir = param & 0xFu;
     /* Make sure params valid */
+    MapTile fieldTile = 0;
     if (c->location->map->type == Map::DUNGEON) {
         switch (fieldType) {
         case ENERGYFIELD_FIRE:
@@ -825,6 +823,7 @@ static bool spellEField(int param)
             return false;
         }
     }
+    MapCoords coords;
     c->location->getCurrentPosition(&coords);
     coords.move(static_cast<Direction>(dir), c->location->map);
     if (MAP_IS_OOB(c->location->map, coords)) {
@@ -1011,8 +1010,8 @@ static bool spellTremor(int)
 
 static bool spellUndead(int)
 {
-    CombatController *ct = spellCombatController();
-    CreatureVector creatures = ct->getMap()->getCreatures();
+    const CombatController *ct = spellCombatController();
+    const CreatureVector creatures = ct->getMap()->getCreatures();
     CreatureVector::const_iterator i;
     for (i = creatures.cbegin(); i != creatures.cend(); ++i) {
         Creature *m = *i;
@@ -1057,7 +1056,7 @@ static bool spellXit(int)
 static bool spellYup(int)
 {
     MapCoords coords = c->location->coords;
-    Dungeon *dungeon = dynamic_cast<Dungeon *>(c->location->map);
+    const Dungeon *dungeon = dynamic_cast<const Dungeon *>(c->location->map);
     /* can't cast in the Abyss CHANGE: or in Hythloth - too easy */
     if (c->location->map->id == MAP_ABYSS ||
         c->location->map->id == MAP_HYTHLOTH) {
@@ -1067,7 +1066,9 @@ static bool spellYup(int)
     else if (coords.z > 0) {
         for (int i = 0; i < 0x100; i++) {
             coords = MapCoords(
-                xu4_random(8), xu4_random(8), c->location->coords.z - 1
+                xu4_random(DNG_WIDTH),
+                xu4_random(DNG_HEIGHT),
+                c->location->coords.z - 1
             );
             if (dungeon->validTeleportLocation(coords)) {
                 c->location->coords = coords;
@@ -1090,7 +1091,7 @@ static bool spellYup(int)
 static bool spellZdown(int)
 {
     MapCoords coords = c->location->coords;
-    Dungeon *dungeon = dynamic_cast<Dungeon *>(c->location->map);
+    const Dungeon *dungeon = dynamic_cast<const Dungeon *>(c->location->map);
     /* can't cast in the Abyss CHANGE: or in Hythloth - too easy */
     if (c->location->map->id == MAP_ABYSS ||
         c->location->map->id == MAP_HYTHLOTH) {
@@ -1102,7 +1103,9 @@ static bool spellZdown(int)
     } else {
         for (int i = 0; i < 0x100; i++) {
             coords = MapCoords(
-                xu4_random(8), xu4_random(8), c->location->coords.z + 1
+                xu4_random(DNG_WIDTH),
+                xu4_random(DNG_HEIGHT),
+                c->location->coords.z + 1
             );
             if (dungeon->validTeleportLocation(coords)) {
                 c->location->coords = coords;

@@ -30,6 +30,7 @@
 #include "direction.h"
 #include "error.h"
 #include "event.h"
+#include "filesystem.h"
 #include "intro.h"
 #include "item.h"
 #include "imagemgr.h"
@@ -104,12 +105,15 @@ static void gameCreatureAttack(Creature *m);
 /* Functions END */
 /*---------------*/
 
-
-// extern Object *party[8];
-
 extern int quit;
 
-const std::string tmpstr = "X";
+#if defined(FS_WINDOWS)
+const std::string tmpstr ="X";
+#elif defined(FS_POSIX)
+const std::string tmpstr = "/tmp/";
+#else
+#error filesystem not defined
+#endif
 
 Context *c = nullptr;
 Debug gameDbg("debug/game.txt", "Game");
@@ -241,7 +245,6 @@ void GameController::initScreenWithoutReloadingState()
 
 void GameController::init()
 {
-    std::FILE *saveGameFile, *monstersFile, *dngMapFile;
     TRACE(gameDbg, "gameInit() running.");
     initScreen();
 #if 0
@@ -269,7 +272,7 @@ void GameController::init()
     c->lastShip = nullptr;
     /* load in the save game */
     // First the temporary just-inited save game...
-    saveGameFile = std::fopen(
+    std::FILE *saveGameFile = std::fopen(
         (tmpstr + PARTY_SAV_BASE_FILENAME).c_str(), "rb"
     );
     if (!saveGameFile) {
@@ -309,7 +312,7 @@ void GameController::init()
     );
     if (map->type != Map::WORLD) {
         setMap(map, 1, nullptr);
-        dngMapFile = std::fopen(
+        std::FILE *dngMapFile = std::fopen(
             (settings.getUserPath() + DNGMAP_SAV_BASE_FILENAME).c_str(), "rb"
         );
         if (dngMapFile) {
@@ -381,7 +384,7 @@ void GameController::init()
     ++pb;
 #endif
     /* load in monsters.sav */
-    monstersFile = std::fopen(
+    std::FILE *monstersFile = std::fopen(
         (tmpstr + MONSTERS_SAV_BASE_FILENAME).c_str(), "rb"
     );
     if (!monstersFile) {
@@ -396,14 +399,14 @@ void GameController::init()
     gameFixupObjects(c->location->map);
     /* we have previous creature information as well, load it! */
     if (c->location->prev) {
-        monstersFile = std::fopen(
+        std::FILE *outMonstFile = std::fopen(
             (settings.getUserPath() + OUTMONST_SAV_BASE_FILENAME).c_str(), "rb"
         );
-        if (monstersFile) {
+        if (outMonstFile) {
             saveGameMonstersRead(
-                c->location->prev->map->monsterTable, monstersFile
+                c->location->prev->map->monsterTable, outMonstFile
             );
-            std::fclose(monstersFile);
+            std::fclose(outMonstFile);
         }
         gameFixupObjects(c->location->prev->map);
     }
@@ -830,7 +833,7 @@ void GameController::finishTurn()
         }
     }
     if (c->location->context == CTX_DUNGEON) {
-        Dungeon *dungeon = dynamic_cast<Dungeon *>(c->location->map);
+        const Dungeon *dungeon = dynamic_cast<Dungeon *>(c->location->map);
         if (c->party->getTorchDuration() <= 0) {
             screenMessage("ES IST DUNKEL!\n");
         } else {
@@ -879,7 +882,7 @@ void GameController::flashTile(
     const Coords &coords, const std::string &tilename, int timeFactor
 )
 {
-    Tile *tile = c->location->map->tileset->getByName(tilename);
+    const Tile *tile = c->location->map->tileset->getByName(tilename);
     U4ASSERT(tile, "no tile named '%s' found in tileset", tilename.c_str());
     flashTile(coords, tile->getId(), timeFactor);
 }
@@ -1013,7 +1016,8 @@ bool GameController::keyPressed(int key)
          * action they want */
         /* Do they want to board something? */
         if (c->transportContext == TRANSPORT_FOOT) {
-            Object *obj = c->location->map->objectAt(c->location->coords);
+            const Object *obj =
+                c->location->map->objectAt(c->location->coords);
             if (obj &&
                 (obj->getTile().getTileType()->isShip()
                  || obj->getTile().getTileType()->isHorse()
@@ -1441,7 +1445,7 @@ bool GameController::keyPressed(int key)
                 gameSave();
                 EventHandler::simulateDiskLoad(2000);
                 screenMessage("\nGESPEICHERT!\n\nReise beenden?");
-                int choice = ReadChoiceController::get("jn\015 \033");
+                int choice = ReadChoiceController::getChar("jn\015 \033");
                 if (choice == 'j') {
                     quit = 1;
                     EventHandler::end();
@@ -1534,7 +1538,8 @@ bool GameController::keyPressed(int key)
                 if (c->transportContext == TRANSPORT_SHIP) {
                     c->lastShip = obj;
                 }
-                Tile *avatar = c->location->map->tileset->getByName("avatar");
+                const Tile *avatar =
+                    c->location->map->tileset->getByName("avatar");
                 U4ASSERT(avatar, "no avatar tile found in tileset");
                 c->party->setTransport(avatar->getId());
                 c->horseSpeed = 0;
@@ -1653,7 +1658,7 @@ bool GameController::keyPressed(int key)
             // Quit to the main menu
             endTurn = false;
             screenMessage("ZUR]CK INS MEN]?");
-            char choice = ReadChoiceController::get("jn \n\033");
+            char choice = ReadChoiceController::getChar("jn \n\033");
             // screenMessage("%c", choice);
             if (choice != 'j') {
                 screenMessage("\n");
@@ -1737,7 +1742,7 @@ std::string gameGetInput(int maxlen)
 {
     screenEnableCursor();
     screenShowCursor();
-    return ReadStringController::get(
+    return ReadStringController::getString(
         maxlen, TEXT_AREA_X + c->col, TEXT_AREA_Y + c->line
     );
 }
@@ -1957,10 +1962,8 @@ void attack()
  */
 static bool attackAt(const Coords &coords)
 {
-    Object *under;
-    const Tile *ground;
-    Creature *m;
-    m = dynamic_cast<Creature *>(c->location->map->objectAt(coords));
+    Creature *m =
+        dynamic_cast<Creature *>(c->location->map->objectAt(coords));
     /* nothing attackable: move on to next tile */
     if ((m == nullptr) || !m->isAttackable()) {
         return false;
@@ -1968,15 +1971,15 @@ static bool attackAt(const Coords &coords)
     /* attack successful */
     /// TODO: CHEST: Make a user option to not make chests change battlefield
     /// map (1 of 2)
-    ground = c->location->map->tileTypeAt(
+    const Tile *ground = c->location->map->tileTypeAt(
         c->location->coords, WITH_GROUND_OBJECTS
     );
     if (!ground->isChest()) {
         ground = c->location->map->tileTypeAt(
             c->location->coords, WITHOUT_OBJECTS
         );
-        if ((under = c->location->map->objectAt(c->location->coords))
-            && under->getTile().getTileType()->isShip()) {
+        const Object *under = c->location->map->objectAt(c->location->coords);
+        if (under && under->getTile().getTileType()->isShip()) {
             ground = under->getTile().getTileType();
         }
     }
@@ -2010,7 +2013,7 @@ void board()
         screenMessage("Losfahren\n%cKANN NICHT!%c\n", FG_GREY, FG_WHITE);
         return;
     }
-    Object *obj = c->location->map->objectAt(c->location->coords);
+    const Object *obj = c->location->map->objectAt(c->location->coords);
     if (!obj) {
         soundPlay(SOUND_ERROR);
         screenMessage("Losfahren\n%cWOMIT?%c\n", FG_GREY, FG_WHITE);
@@ -2068,7 +2071,7 @@ void castSpell(int player)
     case Spell::PARAM_PHASE:
     {
         screenMessage("ZU PHASE-");
-        int choice = ReadChoiceController::get("12345678 \033\n");
+        int choice = ReadChoiceController::getChar("12345678 \033\n");
         if ((choice < '1') || (choice > '8')) {
             screenMessage("KEINE!\n");
         } else {
@@ -2102,7 +2105,7 @@ void castSpell(int player)
     {
         screenMessage("ENERGIETYP?");
         EnergyFieldType fieldType = ENERGYFIELD_NONE;
-        char key = ReadChoiceController::get("fbgs \033\n\r");
+        char key = ReadChoiceController::getChar("fbgs \033\n\r");
         switch (key) {
         case 'f':
             fieldType = ENERGYFIELD_FIRE;
@@ -2203,12 +2206,12 @@ bool fireAt(const Coords &coords, bool originAvatar)
     bool validObject = false;
     bool hitsAvatar = false;
     bool objectHit = false;
-    Object *obj = nullptr;
-    MapTile tile(c->location->map->tileset->getByName("miss_flash")->getId());
+    const MapTile tile =
+        c->location->map->tileset->getByName("miss_flash")->getId();
     GameController::flashTile(coords, tile, 1);
-    obj = c->location->map->objectAt(coords);
-    Creature *m = dynamic_cast<Creature *>(obj);
-    if (obj && (obj->getType() == Object::CREATURE) && m->isAttackable()) {
+    const Object *obj = c->location->map->objectAt(coords);
+    const Creature *m = dynamic_cast<const Creature *>(obj);
+    if (m && m->isAttackable()) {
         validObject = true;
     }
     /* See if it's an object to be destroyed (the avatar cannot destroy
@@ -2245,7 +2248,7 @@ bool fireAt(const Coords &coords, bool originAvatar)
             soundPlay(SOUND_NPC_STRUCK, false);
             GameController::flashTile(coords, "hit_flash", 4);
             if (xu4_random(4) == 0) { /* reverse-engineered from u4dos */
-                if (!m || m->getId() != LORDBRITISH_ID) {
+                if (!m || m->getId() != LORDBRITISH_ID) { //LB is immortal
                     c->location->map->removeObject(obj);
                 }
             }
@@ -2277,7 +2280,7 @@ void getChest(int player)
         coords, WITH_GROUND_OBJECTS
     );
     /* get the object for the chest, if it is indeed an object */
-    Object *obj = c->location->map->objectAt(coords);
+    const Object *obj = c->location->map->objectAt(coords);
     if (obj && !obj->getTile().getTileType()->isChest()) {
         obj = nullptr;
     }
@@ -2690,9 +2693,9 @@ void GameController::avatarMoved(MoveEvent &event)
 /**
  * Handles feedback after moving the avatar in the 3-d dungeon view.
  */
-void GameController::avatarMovedInDungeon(MoveEvent &event)
+void GameController::avatarMovedInDungeon(const MoveEvent &event)
 {
-    Dungeon *dungeon = dynamic_cast<Dungeon *>(c->location->map);
+    const Dungeon *dungeon = dynamic_cast<Dungeon *>(c->location->map);
     Direction realDir = dirNormalize(
         static_cast<Direction>(c->saveGame->orientation),
         event.dir
@@ -2795,7 +2798,7 @@ static bool jimmyAt(const Coords &coords)
         return false;
     }
     if (c->saveGame->keys) {
-        Tile *door = c->location->map->tileset->getByName("door");
+        const Tile *door = c->location->map->tileset->getByName("door");
         U4ASSERT(door, "no door tile found in tileset");
         c->saveGame->keys--;
         c->location->map->annotations->add(coords, door->getId());
@@ -2854,7 +2857,7 @@ static bool openAt(const Coords &coords)
         screenMessage("%cKANN NICHT!%c\n", FG_GREY, FG_WHITE);
         return true;
     }
-    Tile *floor = c->location->map->tileset->getByName("brick_floor");
+    const Tile *floor = c->location->map->tileset->getByName("brick_floor");
     U4ASSERT(floor, "no floor tile found in tileset");
     c->location->map->annotations->add(
         coords, floor->getId(), false, true
@@ -2983,7 +2986,7 @@ static void mixReagents()
         } else {
             screenMessage("F]R SPRUCH-");
             c->stats->setView(STATS_MIXTURES);
-            int choice = ReadChoiceController::get(
+            int choice = ReadChoiceController::getChar(
                 "abcdefghijklmnopqrstuvwxyz \033\n\r"
             );
             if ((choice == ' ')
@@ -3031,7 +3034,7 @@ static bool mixReagentsForSpellU4(int spell)
     Ingredients ingredients;
     screenMessage("REAGENZ-");
     while (1) {
-        int choice = ReadChoiceController::get("abcdefgh\n\r \033");
+        int choice = ReadChoiceController::getChar("abcdefgh\n\r \033");
         // done selecting reagents? mix it up and prompt to mix
         // another spell
         if ((choice == '\n') || (choice == '\r') || (choice == ' ')) {
@@ -3077,8 +3080,9 @@ static bool mixReagentsForSpellU5(int spell)
     c->stats->getMainArea()->disableCursor();
     screenEnableCursor();
     screenMessage("WIE VIELE? ");
-    int howmany =
-        ReadIntController::get(2, TEXT_AREA_X + c->col, TEXT_AREA_Y + c->line);
+    int howmany = ReadIntController::getInt(
+                2, TEXT_AREA_X + c->col, TEXT_AREA_Y + c->line
+        );
     gameSpellMixHowMany(spell, howmany, &ingredients);
     return true;
 }
@@ -3131,20 +3135,20 @@ static void newOrder()
  */
 bool gamePeerCity(int city, void *)
 {
-    Map *peerMap;
-    peerMap = mapMgr->get(static_cast<MapId>(city + 1));
+    Map *peerMap = mapMgr->get(static_cast<MapId>(city + 1));
     if (peerMap != nullptr) {
-        game->setMap(peerMap, 1, nullptr);
-        c->location->viewMode = VIEW_GEM;
         EventHandler::simulateDiskLoad(2000, false);
         game->paused = true;
         game->pausedTimer = 0;
         musicMgr->gem();
         screenDisableCursor();
-        ReadChoiceController::get("\015 \033");
+        game->setMap(peerMap, 1, nullptr);
+        c->location->viewMode = VIEW_GEM;
+        ReadChoiceController::getChar("\015 \033");
+        c->location->viewMode = VIEW_NORMAL;
         game->exitToParentMap();
-        musicMgr->play();
         screenEnableCursor();
+        musicMgr->play();
         game->paused = false;
         return true;
     }
@@ -3174,11 +3178,11 @@ void peer(bool useGem)
     musicMgr->gem();
     screenDisableCursor();
     c->location->viewMode = VIEW_GEM;
-    ReadChoiceController::get("\015 \033");
-    musicMgr->play();
-    screenEnableCursor();
-    screenMessage("\n%c", CHARSET_PROMPT);
+    ReadChoiceController::getChar("\015 \033");
     c->location->viewMode = VIEW_NORMAL;
+    screenEnableCursor();
+    musicMgr->play();
+    screenMessage("\n%c", CHARSET_PROMPT);
     game->paused = false;
 }
 
@@ -3261,7 +3265,7 @@ static void talkRunConversation(
            next chunk*/
         int size = conv.reply.size();
         if (size > 0) {
-            ReadChoiceController::get("");
+            ReadChoiceController::getChar("");
             continue;
         }
         /* otherwise, clear current reply and proceed based on conversation
@@ -3298,7 +3302,7 @@ static void talkRunConversation(
                     || (conv.state == Conversation::CONFIRMATION)
                     || (linesused + linecount(prompt, TEXT_AREA_W)
                         > TEXT_AREA_H)) {
-                    ReadChoiceController::get("");
+                    ReadChoiceController::getChar("");
                 }
                 screenMessage("%s", prompt.c_str());
             }
@@ -3316,7 +3320,7 @@ static void talkRunConversation(
         case Conversation::INPUT_CHARACTER:
         {
             char message[2];
-            int choice = ReadChoiceController::get("");
+            int choice = ReadChoiceController::getChar("");
             message[0] = choice;
             message[1] = '\0';
             conv.reply = talker->getConversationText(&conv, message);
@@ -3650,10 +3654,10 @@ static void gameFixupObjects(Map *map)
                 MONSTERTABLE_CREATURES_SIZE;
 
             if (i < limitForCreatures) {
-                Creature *creature = creatureMgr->getByTile(tile);
+                const Creature *m = creatureMgr->getByTile(tile);
                 /* make sure we really have a creature */
-                if (creature) {
-                    obj = map->addCreature(creature, coords);
+                if (m) {
+                    obj = map->addCreature(m, coords);
                 } else {
                     std::fprintf(
                         stderr,
@@ -3724,17 +3728,16 @@ static void gameCreatureAttack(Creature *m)
 /**
  * Performs a ranged attack for the creature at x,y on the world map
  */
-bool creatureRangeAttack(const Coords &coords, Creature *m)
+bool creatureRangeAttack(const Coords &coords, const Creature *m)
 {
     // int attackdelay = MAX_BATTLE_SPEED - settings.battleSpeed;
     // Figure out what the ranged attack should look like
-    MapTile tile(
+    MapTile tile =
         c->location->map->tileset->getByName(
             (m && !m->getWorldrangedtile().empty()) ?
             m->getWorldrangedtile() :
             "hit_flash"
-        )->getId()
-    );
+        )->getId();
     GameController::flashTile(coords, tile, 1);
     // See if the attack hits the avatar
     Object *obj = c->location->map->objectAt(coords);
@@ -3922,8 +3925,8 @@ void GameController::creatureCleanup(bool allCreatures)
     ObjectDeque::iterator i;
     Map *map = c->location->map;
     for (i = map->objects.begin(); i != map->objects.end();) {
-        Object *obj = *i;
-        MapCoords o_coords = obj->getCoords();
+        const Object *obj = *i;
+        const MapCoords &o_coords = obj->getCoords();
         unsigned int globalX = o_coords.x >> 4u;
         unsigned int globalY = o_coords.y >> 4u;
         if ((obj->getType() == Object::CREATURE)
@@ -4039,7 +4042,7 @@ static void gameLordBritishCheckLevels()
         if (player->getRealLevel() < player->getMaxLevel()) {
             // add an extra space to separate messages
             if (!advanced) {
-                ReadChoiceController::get("");
+                ReadChoiceController::getChar("");
                 screenMessage("\n");
                 advanced = true;
             }
@@ -4171,7 +4174,7 @@ void gameDestroyAllCreatures(void)
         ObjectDeque::iterator current;
         Map *map = c->location->map;
         for (current = map->objects.begin(); current != map->objects.end();) {
-            Creature *m = dynamic_cast<Creature *>(*current);
+            const Creature *m = dynamic_cast<Creature *>(*current);
             if (m) {
                 /* the skull does not destroy Lord British */
                 if (m->getId() != LORDBRITISH_ID) {
@@ -4198,7 +4201,7 @@ bool GameController::createBalloon(Map *map)
     ObjectDeque::const_iterator i;
     /* see if the balloon has already been created (and not destroyed) */
     for (i = map->objects.cbegin(); i != map->objects.cend(); ++i) {
-        Object *obj = *i;
+        const Object *obj = *i;
         if (obj->getTile().getTileType()->isBalloon()) {
             return false;
         }
@@ -4211,7 +4214,7 @@ bool GameController::createBalloon(Map *map)
     return true;
 }
 
-
+#if 0
 // Colors assigned to reagents based on my best reading of them
 // from the book of wisdom.  Maybe we could use BOLD to distinguish
 // the two grey and the two red reagents.
@@ -4233,7 +4236,7 @@ void showMixturesSuper(int page = 0)
         for (int j = 0; j < 8; j++) {
             screenTextColor(colors[j]);
             screenShowChar(
-                comp & (1 << j) ? CHARSET_BULLET : ' ', 10 + j, line
+                (comp & (1 << j)) ? CHARSET_BULLET : ' ', 10 + j, line
             );
         }
         screenTextColor(FG_WHITE);
@@ -4242,7 +4245,6 @@ void showMixturesSuper(int page = 0)
     }
 }
 
-#if 0
 static void mixReagentsSuper()
 {
     screenMessage("Mische Reagenzien\n");
@@ -4285,7 +4287,9 @@ static void mixReagentsSuper()
         showMixturesSuper(page);
         screenMessage("F]R SPRUCH-");
         int spell =
-            ReadChoiceController::get("abcdefghijklmnopqrstuvwxyz \033\n\r");
+            ReadChoiceController::getChar(
+                "abcdefghijklmnopqrstuvwxyz \033\n\r"
+            );
         if ((spell < 'a') || (spell > 'z')) {
             screenMessage("\nFERTIG.\n");
             done = true;
@@ -4311,7 +4315,7 @@ static void mixReagentsSuper()
                 "DU KANNST %d MISCHEN.\n", (mixQty > ingQty) ? ingQty : mixQty
             );
             screenMessage("WIE VIELE? ");
-            int howmany = ReadIntController::get(
+            int howmany = ReadIntController::getInt(
                 2, TEXT_AREA_X + c->col, TEXT_AREA_Y + c->line
             );
             if (howmany == 0) {

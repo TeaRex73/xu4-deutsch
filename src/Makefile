@@ -15,15 +15,15 @@ UI=sdl
 UILIBS=-L/usr/local/lib -Wl,-rpath,/usr/local/lib -Wl,-rpath,/usr/lib -Wl,-rpath,/usr/lib/arm-linux-gnueabihf -Wl,-rpath,/lib/arm-linux-gnueabihf -Wl,-rpath,/opt/vc/lib -Wl,-rpath,/opt/vc/lib -L/usr/lib -Wl,-rpath,/usr/lib -L/mingw32/lib -Wl,-rpath,/mingw32/lib -lSDL -lpthread -L/opt/vc/lib -lSDL_mixer
 UIFLAGS=-I/usr/local/include/SDL -D_REENTRANT
 
-LIBS=-Wl,--as-needed -L/usr/lib -L/usr/lib/arm-linux-gnueabihf -L/lib/arm-linux-gnueabihf $(UILIBS) -lz -lpng -lxml2
+LIBS=-Wl,--as-needed -Wl,--gc-sections -L/usr/lib -L/usr/lib/arm-linux-gnueabihf -L/lib/arm-linux-gnueabihf $(UILIBS) -lz -lpng -lxml2
 # CCPREFIX=~/raspberry/tools/arm-bcm2708/arm-bcm2708hardfp-linux-gnueabi/bin/arm-bcm2708hardfp-linux-gnueabi-
 # CCPREFIX=~/raspberry/tools/arm-bcm2708/gcc-linaro-arm-linux-gnueabihf-raspbian/bin/arm-linux-gnueabihf-
 FEATURES=-UHAVE_BACKTRACE -DHAVE_VARIADIC_MACROS=1
 #DEBUGCXXFLAGS=-O2 -g -fno-lto -DNPERF -marm -mfpu=vfp -march=armv6zk -mtune=arm1176jzf-s -mfloat-abi=hard -UDEBUG -DNDEBUG -DRASB_PI -DNTSC_TV -fno-exceptions -fno-non-call-exceptions -fno-common
-DEBUGCXXFLAGS=-Oz -g -fno-lto -UPERF -march=i686 -mtune=generic -DNPERF -DNEBUG -UDEBUG -URASB_PI -fno-exceptions -fno-non-call-exceptions -fno-common
-COMMON_FLAGS=-mconsole $(FEATURES) -Wall -Wextra -Werror -I. -I/mingw32/include/libxml2 -I/mingw32/include/SDL $(UIFLAGS) -DICON_FILE=\"$(datadir)/pixmaps/u4.bmp\" $(DEBUGCXXFLAGS) -D_GNU_SOURCE=1 $(LIBS)
+DEBUGCXXFLAGS=-Os -g -fno-lto -UPERF -march=i686 -mtune=generic -DNPERF -DNEBUG -UDEBUG -URASB_PI -fno-PIC -fno-PIE -no-pie -fno-exceptions -fno-non-call-exceptions -fno-common
+COMMON_FLAGS=-mconsole $(FEATURES) -Wall -Wextra -Werror -Wmissing-declarations -I. -I/mingw32/include/libxml2 -I/mingw32/include/SDL $(UIFLAGS) -DICON_FILE=\"$(datadir)/pixmaps/u4.bmp\" $(DEBUGCXXFLAGS) -D_GNU_SOURCE=1 $(LIBS)
 CFLAGS=-std=gnu90 $(COMMON_FLAGS)
-CXXFLAGS=-std=gnu++11 $(COMMON_FLAGS) -Weffc++ -Wold-style-cast -Wno-overloaded-virtual
+CXXFLAGS=-std=gnu++11 $(COMMON_FLAGS) -Weffc++ -Wold-style-cast
 INSTALL=install
 
 ifeq ($(STATIC_GCC_LIBS),true)

@@ -88,7 +88,7 @@ void Menu::setClosesMenu(int id) const
 /**
  * Returns the menu item that is currently selected/highlighted
  */
-Menu::MenuItemList::iterator Menu::getCurrent()
+Menu::MenuItemList::iterator Menu::getCurrent() const
 {
     return selected;
 }

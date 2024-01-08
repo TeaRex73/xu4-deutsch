@@ -27,8 +27,8 @@ class City:public Map {
 public:
     City();
     virtual ~City();
-    virtual std::string getName() const override;
-    Person *addPerson(Person *person);
+    virtual std::string getName() override;
+    Person *addPerson(const Person *person);
     void addPeople();
     void removeAllPeople();
     Person *personAt(const Coords &coords);

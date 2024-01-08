@@ -25,7 +25,7 @@ void output_root(
 );
 void get_string(Stack &stack, int codeword);
 int lzw_decompress(
-    unsigned char *source,
+    const unsigned char *source,
     long source_length,
     unsigned char *destination,
     long destination_length

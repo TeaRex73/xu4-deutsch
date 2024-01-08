@@ -92,7 +92,7 @@ void TileMap::load(const ConfigElement &tilemapConf)
         std::string tile = i->getString("tile");
         TRACE_LOCAL(dbg, std::string("\tLoading '") + tile + "'");
         /* find the tile this references */
-        Tile *t = Tileset::get(tileset)->getByName(tile);
+        const Tile *t = Tileset::get(tileset)->getByName(tile);
         if (!t) {
             errorFatal(
                 "Error: tile '%s' from '%s' was not found in tileset %s",

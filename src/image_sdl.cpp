@@ -21,16 +21,6 @@
 #include "settings.h"
 #include "error.h"
 
-int myfprintf(std::FILE *stream, const char *format, ...)
-{
-    int result;
-    std::va_list args;
-    va_start(args, format);
-    result = std::vfprintf(stream, format, args);
-    va_end(args);
-    return result;
-}
-
 Image::Image()
     :w(0),
      h(0),
@@ -654,16 +644,16 @@ void Image::getPixel(
  */
 void Image::getPixelIndex(int x, int y, unsigned int &index) const
 {
-    Uint8 *p;
-    Uint16 *p2;
-    Uint32 *p4;
+    const Uint8 *p1, *p3;
+    const Uint16 *p2;
+    const Uint32 *p4;
     int bpp = surface->format->BytesPerPixel;
     switch (__builtin_expect(bpp, 1)) {
     case 1:
-        p = static_cast<Uint8 *>(surface->pixels)
+        p1 = static_cast<Uint8 *>(surface->pixels)
             + y * surface->pitch
             + x;
-        index = *p;
+        index = *p1;
         break;
     case 2:
         p2 = static_cast<Uint16 *>(surface->pixels)
@@ -672,13 +662,13 @@ void Image::getPixelIndex(int x, int y, unsigned int &index) const
         index = *p2;
         break;
     case 3:
-        p = static_cast<Uint8 *>(surface->pixels)
+        p3 = static_cast<Uint8 *>(surface->pixels)
             + y * surface->pitch
             + x * 3;
         if (SDL_BYTEORDER == SDL_BIG_ENDIAN) {
-            index = p[0] << 16 | p[1] << 8 | p[2];
+            index = p3[0] << 16 | p3[1] << 8 | p3[2];
         } else {
-            index = p[0] | p[1] << 8 | p[2] << 16;
+            index = p3[0] | p3[1] << 8 | p3[2] << 16;
         }
         break;
     case 4:
@@ -710,14 +700,6 @@ void Image::drawOn(Image *d, int x, int y, bool anyway) const
     r.w = w;
     r.h = h;
     if (__builtin_expect(screenMoving, true) || anyway) {
-#if 0
-        if (surface->flags & SDL_SRCALPHA) {
-            myfprintf(stderr, "surface\n");
-        }
-        if (destSurface->flags & SDL_SRCALPHA) {
-            myfprintf(stderr, "destSurface\n");
-        }
-#endif
         SDL_BlitSurface(surface, nullptr, destSurface, &r);
     }
 }
@@ -752,14 +734,6 @@ void Image::drawSubRectOn(
     dest.y = y;
     /* dest w & h unused */
     if (__builtin_expect(screenMoving, true) || anyway) {
-#if 0
-        if (surface->flags & SDL_SRCALPHA) {
-            myfprintf(stderr, "surface\n");
-        }
-        if (destSurface->flags & SDL_SRCALPHA) {
-            myfprintf(stderr, "destSurface\n");
-        }
-#endif
         SDL_BlitSurface(surface, &src, destSurface, &dest);
     }
 } // Image::drawSubRectOn
@@ -796,14 +770,6 @@ void Image::drawSubRectInvertedOn(
         dest.y = y + rh - i - 1;
         /* dest w & h unused */
         if (__builtin_expect(screenMoving, true) || anyway) {
-#if 0
-            if (surface->flags & SDL_SRCALPHA) {
-                myfprintf(stderr, "surface\n");
-            }
-            if (destSurface->flags & SDL_SRCALPHA) {
-                myfprintf(stderr, "destSurface\n");
-            }
-#endif
             SDL_BlitSurface(surface, &src, destSurface, &dest);
         }
     }

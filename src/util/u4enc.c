@@ -24,13 +24,18 @@ struct {
     int occupied;
 } lzwdict[DICT_SIZE];
 
+static void putc_12(int c, FILE *out);
+static void flush_12(FILE *out);
+static void initdict();
+static int getcode(unsigned char *str, int len);
+static void addcode(unsigned char *str, int len);
 
 /**
  * Outputs a 12 bit word.  If a half byte is left, it is saved until
  * the next time this is called.  flush_12 must be called to flush out
  * any saved data at the end of the stream.
  */
-void putc_12(int c, FILE *out)
+static void putc_12(int c, FILE *out)
 {
     if (save == -1) {
         putc(c >> 4, out);
@@ -46,7 +51,7 @@ void putc_12(int c, FILE *out)
 /**
  * Flushes the last half byte from putc_12.
  */
-void flush_12(FILE *out)
+static void flush_12(FILE *out)
 {
     if (save != -1) {
         putc(save << 4, out);
@@ -58,7 +63,7 @@ void flush_12(FILE *out)
 /**
  *  Initializes the LZW dictionary.
  */
-void initdict()
+static void initdict()
 {
     int i;
     dictsize = 0;
@@ -80,7 +85,7 @@ void initdict()
  * Gets the 12-bit LZW code for a given string.  -1 is returned if not
  * in the dictionary.
  */
-int getcode(unsigned char *str, int len)
+static int getcode(unsigned char *str, int len)
 {
     int prefixcode;
     int hashcode;
@@ -115,7 +120,7 @@ int getcode(unsigned char *str, int len)
 /**
  * Add a new word to the LZW dictionary.
  */
-void addcode(unsigned char *str, int len)
+static void addcode(unsigned char *str, int len)
 {
     int hashcode;
     if (!compressing) {
@@ -144,11 +149,12 @@ void addcode(unsigned char *str, int len)
 int main(int argc, char *argv[])
 {
     FILE *out;
-    char *alg, *infname, *outfname;
+    const char *alg, *infname, *outfname;
     int bits;
     int height = 0, width = 0;
     int datalen, c;
-    unsigned char *data, *p;
+    unsigned char *data;
+    const unsigned char *p;
     if (argc != 4) {
         fprintf(stderr, "usage: u4enc rle|lzw|raw infile outfile\n");
         exit(1);

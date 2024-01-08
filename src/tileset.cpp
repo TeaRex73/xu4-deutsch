@@ -67,8 +67,6 @@ void TileRule::load()
 }
 
 
-
-
 /**
  * Load properties for the current rule node
  */

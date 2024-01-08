@@ -28,8 +28,6 @@
 #include <cstdlib>
 
 
-
-
 /*
  * Derived from XINE_ASSERT in the xine project.  I've updated it to
  * be C99 compliant, to use stderr rather than stdout, and to compile
@@ -42,20 +40,20 @@ void print_trace(std::FILE *file);
 #ifdef NDEBUG
 #define U4ASSERT(exp, desc, ...) /* nothing */
 #else
-#define U4ASSERT(exp, ...)                                    \
-    do {                                                    \
-        if (!(exp)) {                                       \
-            std::fprintf(                                        \
-                stderr,                                     \
-                "%s:%s:%d: assert `%s' gescheitert. ",      \
-                __FILE__, XU4_FUNC, __LINE__, #exp          \
-            );                                              \
-            std::fprintf(stderr, __VA_ARGS__);                   \
-            std::fprintf(stderr, "\n\n");                        \
-            print_trace(stderr);                            \
-            exit(EXIT_FAILURE);                             \
-        }                                                   \
-    }                                                       \
+#define U4ASSERT(exp, ...)                             \
+    do {                                               \
+        if (!(exp)) {                                  \
+            std::fprintf(                              \
+                stderr,                                \
+                "%s:%s:%d: assert `%s' gescheitert. ", \
+                __FILE__, XU4_FUNC, __LINE__, #exp     \
+            );                                         \
+            std::fprintf(stderr, __VA_ARGS__);         \
+            std::fprintf(stderr, "\n\n");              \
+            print_trace(stderr);                       \
+            exit(EXIT_FAILURE);                        \
+        }                                              \
+    }                                                  \
     while (0)
 #endif /* ifdef NDEBUG */
 #else

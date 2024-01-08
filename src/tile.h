@@ -14,7 +14,6 @@
 #include "tileset.h"
 
 
-
 class ConfigElement;
 class Image;
 class Tileset;

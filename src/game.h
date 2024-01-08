@@ -113,7 +113,7 @@ public:
     /* main game functions */
     void init();
     static void initScreen();
-    void initScreenWithoutReloadingState();
+    static void initScreenWithoutReloadingState();
     void setMap(
         Map *map,
         bool saveLocation,
@@ -139,10 +139,10 @@ public:
 
 private:
     void avatarMoved(MoveEvent &event);
-    void avatarMovedInDungeon(MoveEvent &event);
+    void avatarMovedInDungeon(const MoveEvent &event);
     static void creatureCleanup(bool allCreatures = false);
     static void checkBridgeTrolls();
-    void checkRandomCreatures();
+    static void checkRandomCreatures();
     static void checkSpecialCreatures(Direction dir);
     bool checkMoongates();
     static bool createBalloon(Map *map);
@@ -173,7 +173,7 @@ void readyWeapon(int player = -1);
 /* checking functions */
 void gameCheckHullIntegrity();
 /* creature functions */
-bool creatureRangeAttack(const Coords &coords, Creature *m);
+bool creatureRangeAttack(const Coords &coords, const Creature *m);
 void gameCreatureCleanup();
 bool gameSpawnCreature(const class Creature *m);
 /* etc */
@@ -196,5 +196,6 @@ std::vector<Coords> gameGetDirectionalActionPath(
     bool (*blockedPredicate)(const Tile *tile),
     bool includeBlocked
 );
+void gameDestroyAllCreatures(void);
 
 #endif // ifndef GAME_H

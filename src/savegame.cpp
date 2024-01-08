@@ -12,7 +12,6 @@
 #include "types.h"
 
 
-
 bool SaveGame::write(std::FILE *f) const
 {
     int i;
@@ -306,7 +305,9 @@ void SaveGamePlayerRecord::init()
     status = STAT_GOOD;
 }
 
-bool saveGameMonstersWrite(SaveGameMonsterRecord *monsterTable, std::FILE *f)
+bool saveGameMonstersWrite(
+    const SaveGameMonsterRecord *monsterTable, std::FILE *f
+)
 {
     int i;
     if (monsterTable) {

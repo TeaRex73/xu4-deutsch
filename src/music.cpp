@@ -25,8 +25,6 @@
 #include "u4file.h"
 
 
-
-
 /*
  * Static variables
  */

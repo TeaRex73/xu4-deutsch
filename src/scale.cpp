@@ -9,17 +9,16 @@
 #include "scale.h"
 
 
-
-static Image *scalePoint(Image *src, int scale, int);
-static Image *scale2xBilinear(Image *src, int scale, int N);
-static Image *scale2xSaI(Image *src, int scale, int N);
-static Image *scaleScale2x(Image *src, int scale, int N);
+static Image *scalePoint(const Image *src, int scale, int);
+static Image *scale2xBilinear(const Image *src, int scale, int N);
+static Image *scale2xSaI(const Image *src, int scale, int N);
+static Image *scaleScale2x(const Image *src, int scale, int N);
 
 Scaler scalerGet(const std::string &filter)
 {
-    if (0 /* filter == "point" */) {
+    if (filter == "Point") {
         return &scalePoint;
-    } else if (1 /* filter == "2xBi" */) {
+    } else if (filter == "2xBi") {
         return &scale2xBilinear;
     } else if (filter == "2xSaI") {
         return &scale2xSaI;
@@ -43,7 +42,7 @@ int scaler3x(const std::string &filter)
 /**
  * A simple row and column duplicating scaler.
  */
-static Image *scalePoint(Image *src, int scale, int)
+static Image *scalePoint(const Image *src, int scale, int)
 {
     int x, y, i, j;
     Image *dest;
@@ -79,7 +78,7 @@ static Image *scalePoint(Image *src, int scale, int)
  * A scaler that interpolates each intervening pixel from it's two
  * neighbors.
  */
-static Image *scale2xBilinear(Image *src, int scale, int N)
+static Image *scale2xBilinear(const Image *src, int scale, int N)
 {
     int i, x, y, xoff, yoff;
     RGBA a, b, c, d;
@@ -230,7 +229,7 @@ static int _2xSaI_GetResult2(
  * A more sophisticated scaler that interpolates each new pixel the
  * surrounding pixels.
  */
-static Image *scale2xSaI(Image *src, int scale, int N)
+static Image *scale2xSaI(const Image *src, int scale, int N)
 {
     int ii, x, y, xoff0, xoff1, xoff2, yoff0, yoff1, yoff2;
     RGBA a, b, c, d, e, f, g, h, i, j, k, l, m, n, o, p;
@@ -434,7 +433,7 @@ static Image *scale2xSaI(Image *src, int scale, int N)
  * A more sophisticated scaler that doesn't interpolate, but avoids
  * the stair step effect by detecting angles.
  */
-static Image *scaleScale2x(Image *src, int scale, int N)
+static Image *scaleScale2x(const Image *src, int scale, int N)
 {
     int ii, x, y, xoff0, xoff1, yoff0, yoff1;
     RGBA a, b, c, d, e, f, g, h, i;

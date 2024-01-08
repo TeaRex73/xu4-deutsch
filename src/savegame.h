@@ -101,8 +101,6 @@ enum StatusType: unsigned char {
     STAT_DEAD = 'T'
 };
 
-
-
 enum Virtue: unsigned char {
     VIRT_HONESTY,
     VIRT_COMPASSION,
@@ -177,6 +175,7 @@ enum Rune: unsigned char {
 
 /**
  * The Ultima IV savegame player record data.
+ * NOT binary identical to on-disk file because of alignment, see below
  */
 struct SaveGamePlayerRecord {
     bool write(std::FILE *f) const;
@@ -199,7 +198,11 @@ struct SaveGamePlayerRecord {
 
 
 /**
- * How Ultima IV stores monster information
+ * How Ultima IV stores monster information in MONSTERS.SAV and OUTMONST.SAV
+ * The actual on-disk format has one 32-byte table for tile,
+ * followd by one 32-byte table for x, and so on.
+ * (struct of arrays, not array of structs,
+ * a heritage from the MOS6502 based original Apple II version)
  */
 struct SaveGameMonsterRecord {
     unsigned char tile;
@@ -214,7 +217,10 @@ struct SaveGameMonsterRecord {
 
 
 /**
- * Represents the on-disk contents of PARTY.SAV.
+ * Represents the on-disk contents of PARTY.SAV field-by-field,
+ * though struct is NOT binary identical to file because PARTY.SAV has
+ * unaligned 16-bit and 32-bit fields, which is not useful in-memory
+ * on modern CPUs.
  */
 struct SaveGame {
     bool write(std::FILE *f) const;
@@ -259,7 +265,9 @@ struct SaveGame {
     unsigned short location;
 };
 
-bool saveGameMonstersWrite(SaveGameMonsterRecord *monsterTable, std::FILE *f);
+bool saveGameMonstersWrite(
+    const SaveGameMonsterRecord *monsterTable, std::FILE *f
+);
 bool saveGameMonstersRead(SaveGameMonsterRecord *monsterTable, std::FILE *f);
 
 #endif // ifndef SAVEGAME_H

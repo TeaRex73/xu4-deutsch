@@ -359,7 +359,7 @@ public:
         return mattr & MATTR_FORCE_OF_NATURE;
     }
 
-    int getDamage() const;
+    virtual int getDamage() const;
 
     const std::string &getCamouflageTile() const
     {

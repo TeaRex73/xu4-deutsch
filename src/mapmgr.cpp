@@ -4,6 +4,7 @@
 
 #include "vc6.h" // Fixes things if you're using VC6, does nothing otherwise
 
+#include <algorithm>
 #include <vector>
 
 #include "u4.h"
@@ -14,6 +15,7 @@
 #include "debug.h"
 #include "dungeon.h"
 #include "error.h"
+#include "item.h"
 #include "map.h"
 #include "maploader.h"
 #include "mapmgr.h"
@@ -28,9 +30,6 @@
 #include "config.h"
 
 MapMgr *MapMgr::instance = nullptr;
-
-extern bool isAbyssOpened(const Portal *p);
-extern bool shrineCanEnter(const Portal *p);
 
 MapMgr *MapMgr::getInstance()
 {
@@ -77,14 +76,16 @@ void MapMgr::unloadMap(MapId id)
     delete mapList[id];
     const Config *config = Config::getInstance();
     std::vector<ConfigElement> maps = config->getElement("maps").getChildren();
-    for (std::vector<ConfigElement>::const_iterator i = maps.cbegin();
-         i != maps.cend();
-         ++i) {
-        if (id == static_cast<MapId>(i->getInt("id"))) {
-            Map *map = initMapFromConf(*i);
-            mapList[id] = map;
-            break;
+    std::vector<ConfigElement>::const_iterator i = std::find_if(
+        maps.cbegin(),
+        maps.cend(),
+        [&](const ConfigElement &v) {
+            return id == static_cast<MapId>(v.getInt("id"));
         }
+    );
+    if (i != maps.cend()) {
+        Map *map = initMapFromConf(*i);
+        mapList[id] = map;
     }
 }
 

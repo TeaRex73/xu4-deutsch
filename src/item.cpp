@@ -28,7 +28,6 @@
 #include "weapon.h"
 
 
-
 DestroyAllCreaturesCallback destroyAllCreaturesCallback;
 
 void itemSetDestroyAllCreaturesCallback(DestroyAllCreaturesCallback callback)
@@ -38,28 +37,28 @@ void itemSetDestroyAllCreaturesCallback(DestroyAllCreaturesCallback callback)
 
 int needStoneNames = 0;
 unsigned char stoneMask = 0;
-bool isRuneInInventory(int virt);
-void putRuneInInventory(int virt);
-bool isStoneInInventory(int virt);
-void putStoneInInventory(int virt);
-bool isItemInInventory(int item);
-bool isSkullInInventory(int);
-void putItemInInventory(int item);
-void useBBC(int item);
-void useHorn(int);
-void useWheel(int);
-void useSkull(int);
-void useStone(int item);
-void useKey(int);
-bool isMysticInInventory(int mystic);
-void putMysticInInventory(int mystic);
-bool isWeaponInInventory(int weapon);
-void putWeaponInInventory(int weapon);
-void useTelescope(int);
-bool isReagentInInventory(int);
-void putReagentInInventory(int reag);
-bool isAbyssOpened(const Portal *);
-void itemHandleStones(const std::string &color);
+static bool isRuneInInventory(int virt);
+static void putRuneInInventory(int virt);
+static bool isStoneInInventory(int virt);
+static void putStoneInInventory(int virt);
+static bool isItemInInventory(int item);
+static bool isSkullInInventory(int);
+static void putItemInInventory(int item);
+static void useBBC(int item);
+static void useHorn(int);
+static void useWheel(int);
+static void useSkull(int);
+static void useStone(int item);
+static void useKey(int);
+static bool isMysticInInventory(int mystic);
+static void putMysticInInventory(int mystic);
+static bool isWeaponInInventory(int weapon);
+static void putWeaponInInventory(int weapon);
+static void useTelescope(int);
+static bool isReagentInInventory(int);
+static void putReagentInInventory(int reag);
+static void itemHandleStones(const std::string &color);
+static bool itemConditionsMet(unsigned char conditions);
 
 static const ItemLocation items[] = {
     {
@@ -409,12 +408,12 @@ static const ItemLocation items[] = {
 
 #define N_ITEMS (sizeof(items) / sizeof(items[0]))
 
-bool isRuneInInventory(int virt)
+static bool isRuneInInventory(int virt)
 {
     return c->saveGame->runes & virt;
 }
 
-void putRuneInInventory(int virt)
+static void putRuneInInventory(int virt)
 {
     c->party->member(0)->awardXp(100);
     c->party->adjustKarma(KA_FOUND_ITEM);
@@ -434,7 +433,7 @@ bool isStoneInInventory(int virt)
     }
 }
 
-void putStoneInInventory(int virt)
+static void putStoneInInventory(int virt)
 {
     c->party->member(0)->awardXp(200);
     c->party->adjustKarma(KA_FOUND_ITEM);
@@ -442,17 +441,17 @@ void putStoneInInventory(int virt)
     c->saveGame->lastreagent = c->saveGame->moves & 0xF0;
 }
 
-bool isItemInInventory(int item)
+static bool isItemInInventory(int item)
 {
     return c->saveGame->items & item;
 }
 
-bool isSkullInInventory(int)
+static bool isSkullInInventory(int)
 {
     return c->saveGame->items & (ITEM_SKULL | ITEM_SKULL_DESTROYED);
 }
 
-void putItemInInventory(int item)
+static void putItemInInventory(int item)
 {
     c->party->member(0)->awardXp(400);
     c->party->adjustKarma(KA_FOUND_ITEM);
@@ -464,7 +463,7 @@ void putItemInInventory(int item)
 /**
  * Use bell, book, or candle on the entrance to the Abyss
  */
-void useBBC(int item)
+static void useBBC(int item)
 {
     Coords abyssEntrance(0xe9, 0xe9);
     /* on top of the Abyss entrance */
@@ -516,7 +515,7 @@ void useBBC(int item)
 /**
  * Uses the silver horn
  */
-void useHorn(int)
+static void useHorn(int)
 {
     screenMessage(
         "\n\nDAS HORN L[SST EINEN SCHAUERLICHEN KLANG ERSCHALLEN!\n"
@@ -529,7 +528,7 @@ void useHorn(int)
 /**
  * Uses the wheel (if on board a ship)
  */
-void useWheel(int)
+static void useWheel(int)
 {
     if ((c->transportContext == TRANSPORT_SHIP)
         && (c->saveGame->shiphull == 50)) {
@@ -546,7 +545,7 @@ void useWheel(int)
 /**
  * Uses or destroys the skull of Mondain
  */
-void useSkull(int)
+static void useSkull(int)
 {
     /* FIXME: check to see if the abyss must be opened first
        for the skull to be *able* to be destroyed */
@@ -584,7 +583,7 @@ void useSkull(int)
 /**
  * Handles using the virtue stones in dungeon altar rooms and on dungeon altars
  */
-void useStone(int item)
+static void useStone(int item)
 {
     MapCoords coords;
     unsigned char stone = static_cast<unsigned char>(item);
@@ -593,7 +592,7 @@ void useStone(int item)
      * Named a specific stone (after using "stone" or "stones")
      */
     if (item != -1) {
-        CombatMap *cm = getCombatMap();
+        const CombatMap *cm = getCombatMap();
         if (needStoneNames) {
             /* named a stone while in a dungeon altar room */
             if (c->location->context & CTX_ALTAR_ROOM) {
@@ -763,12 +762,12 @@ void useStone(int item)
     }
 } // useStone
 
-void useKey(int)
+static void useKey(int)
 {
     screenMessage("\nSIE PASSEN HIER NICHT!\n");
 }
 
-bool isMysticInInventory(int mystic)
+static bool isMysticInInventory(int mystic)
 {
     /* FIXME: you could feasibly get more mystic weapons and armor if you
        have 8 party members and equip them all with everything,
@@ -788,7 +787,7 @@ bool isMysticInInventory(int mystic)
     return false;
 }
 
-void putMysticInInventory(int mystic)
+static void putMysticInInventory(int mystic)
 {
     c->party->member(0)->awardXp(400);
     c->party->adjustKarma(KA_FOUND_ITEM);
@@ -802,7 +801,7 @@ void putMysticInInventory(int mystic)
     c->saveGame->lastreagent = c->saveGame->moves & 0xF0;
 }
 
-bool isWeaponInInventory(int weapon)
+static bool isWeaponInInventory(int weapon)
 {
     if (c->saveGame->weapons[weapon]) {
         return true;
@@ -816,12 +815,12 @@ bool isWeaponInInventory(int weapon)
     return false;
 }
 
-void putWeaponInInventory(int weapon)
+static void putWeaponInInventory(int weapon)
 {
     c->saveGame->weapons[weapon]++;
 }
 
-void useTelescope(int)
+static void useTelescope(int)
 {
     screenMessage(
         "\nDU SIEHST EIN DREHRAD AM TELESKOPE, MIT MARKIERUNGEN VON "
@@ -836,12 +835,12 @@ void useTelescope(int)
     screenMessage("\n");
 }
 
-bool isReagentInInventory(int)
+static bool isReagentInInventory(int)
 {
     return false;
 }
 
-void putReagentInInventory(int reag)
+static void putReagentInInventory(int reag)
 {
     c->party->adjustKarma(KA_FOUND_ITEM);
     c->saveGame->reagents[reag] += xu4_random(8) + 2;
@@ -856,7 +855,7 @@ void putReagentInInventory(int reag)
 /**
  * Returns true if the specified conditions are met to be able to get the item
  */
-bool itemConditionsMet(unsigned char conditions)
+static bool itemConditionsMet(unsigned char conditions)
 {
     if ((conditions & SC_NEWMOONS)
         && !((c->saveGame->trammelphase == 0)
@@ -917,7 +916,7 @@ void itemUse(const std::string &shortname)
             if (!items[i].isItemInInventory
                 || (*items[i].isItemInInventory)(items[i].data)) {
                 /* use the item, if we can! */
-                if (!item || !item->useItem) {
+                if (!item->useItem) {
                     soundPlay(SOUND_ERROR);
                     screenMessage("\n\nKEIN NUTZBARER GEGENSTAND!\n");
                 } else {
@@ -959,7 +958,7 @@ bool isAbyssOpened(const Portal *)
 /**
  * Handles naming of stones when used
  */
-void itemHandleStones(const std::string &color)
+static void itemHandleStones(const std::string &color)
 {
     bool found = false;
 

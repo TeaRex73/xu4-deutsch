@@ -31,7 +31,6 @@
 #include "utils.h"
 
 
-
 int cycles, completedCycles;
 std::vector<std::string> shrineAdvice;
 
@@ -41,7 +40,7 @@ std::vector<std::string> shrineAdvice;
  */
 bool shrineCanEnter(const Portal *p)
 {
-    Shrine *shrine = dynamic_cast<Shrine *>(mapMgr->get(p->destid));
+    const Shrine *shrine = dynamic_cast<Shrine *>(mapMgr->get(p->destid));
     if (!c->party->canEnterShrine(shrine->getVirtue())) {
         soundPlay(SOUND_ERROR);
         screenMessage(
@@ -145,12 +144,12 @@ void Shrine::enter()
     }
     screenMessage("\n]BER WELCHE TUGEND MEDITIERST DU?\n?");
     std::string virtueInput;
-    virtueInput = ReadStringController::get(
+    virtueInput = ReadStringController::getString(
         32, TEXT_AREA_X + c->col, TEXT_AREA_Y + c->line
     );
     int choice;
     screenMessage("\n\nWIE VIELE\nZYKLEN (0-3)?");
-    choice = ReadChoiceController::get("0123\015\033");
+    choice = ReadChoiceController::getChar("0123\015\033");
     if ((choice == '\033') || (choice == '\015')) {
         cycles = 0;
     } else {
@@ -254,7 +253,7 @@ void Shrine::askMantra()
     screenMessage("\nMANTRA?");
     screenRedrawScreen();   // FIXME: needed?
     std::string mantraInput;
-    mantraInput = ReadStringController::get(
+    mantraInput = ReadStringController::getString(
         4, TEXT_AREA_X + c->col, TEXT_AREA_Y + c->line
     );
     screenMessage("\n");
@@ -285,9 +284,9 @@ void Shrine::askMantra()
                 "\nDEINE GEDANKEN SIND REIN. DIR WIRD EINE VISION ZUTEIL!\n"
             );
         }
-        ReadChoiceController::get("");
+        ReadChoiceController::getChar("");
         showVision(elevated);
-        ReadChoiceController::get("");
+        ReadChoiceController::getChar("");
         screenMessage("\n");
         gameSetViewMode(VIEW_NORMAL);
         eject();

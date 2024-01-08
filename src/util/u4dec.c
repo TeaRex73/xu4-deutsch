@@ -16,12 +16,12 @@ int isPowerOfTwo(int n);
 /**
  * A simple command line interface to the U4 RLE and LZW decompressors.
  */
-int main(int argc, char *argv[])
+int main(int argc, const char *argv[])
 {
     FILE *infile;
     unsigned char *indata, *outdata;
     long inlen, outlen;
-    char *alg, *infname, *outfname;
+    const char *alg, *infname, *outfname;
     int width, height;
     int cond1, cond2;
     if (argc != 4 && argc != 6) {

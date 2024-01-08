@@ -442,7 +442,7 @@ extern int ZEXPORT unzGetGlobalInfo(
     unzFile file, unz_global_info *pglobal_info
 )
 {
-    unz_s *s;
+    const unz_s *s;
 
     if (file == NULL) {
         return UNZ_PARAMERROR;
@@ -1123,12 +1123,12 @@ extern z_off_t ZEXPORT unztell(unzFile file)
 */
 extern int ZEXPORT unzeof(unzFile file)
 {
-    unz_s *s;
-    file_in_zip_read_info_s *pfile_in_zip_read_info;
+    const unz_s *s;
+    const file_in_zip_read_info_s *pfile_in_zip_read_info;
     if (file == NULL) {
         return UNZ_PARAMERROR;
     }
-    s = (unz_s *)file;
+    s = (const unz_s *)file;
     pfile_in_zip_read_info = s->pfile_in_zip_read;
     if (pfile_in_zip_read_info == NULL) {
         return UNZ_PARAMERROR;

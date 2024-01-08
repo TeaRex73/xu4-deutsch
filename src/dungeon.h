@@ -104,7 +104,7 @@ public:
     Dungeon &operator=(const Dungeon &) = delete;
     Dungeon &operator=(Dungeon &&) = delete;
     virtual ~Dungeon();
-    virtual std::string getName() const override;
+    virtual std::string getName() override;
     DungeonToken tokenForTile(MapTile tile) const;
     DungeonToken currentToken() const;
     unsigned char currentSubToken() const;

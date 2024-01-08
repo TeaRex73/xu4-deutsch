@@ -22,7 +22,6 @@ class Party;
 class Weapon;
 
 
-
 typedef std::vector<class PartyMember *> PartyMemberVector;
 
 #define ALL_PLAYERS -1
@@ -157,7 +156,7 @@ public:
     virtual int getAttackBonus() const override;
     virtual int getDefense(bool needsMystic) const override;
     virtual bool dealDamage(Creature *m, int damage) override;
-    int getDamage() const;
+    virtual int getDamage() const override;
     virtual const std::string &getHitTile() const override;
     virtual const std::string &getMissTile() const override;
     bool isDead() const;

@@ -18,12 +18,13 @@
 #include "u4file.h"
 
 
-
-void xmlAccumError(void *l, const char *fmt, ...);
+static void xmlAccumError(void *l, const char *fmt, ...);
+static void *xmlXu4FileOpen(const char *filename);
+static void xmlRegisterIO();
 extern bool verbose;
 int ioRegistered = 0;
 
-void *xmlXu4FileOpen(const char *filename)
+static void *xmlXu4FileOpen(const char *filename)
 {
     void *result;
     std::string pathname(u4find_conf(filename));
@@ -41,7 +42,7 @@ void *xmlXu4FileOpen(const char *filename)
     return result;
 }
 
-void xmlRegisterIO()
+static void xmlRegisterIO()
 {
     xmlRegisterInputCallbacks(&xmlFileMatch,
                               &xmlXu4FileOpen,
@@ -82,7 +83,7 @@ xmlDocPtr xmlParse(const char *filename)
     return doc;
 } // xmlParse
 
-void xmlAccumError(void *l, const char *fmt, ...)
+static void xmlAccumError(void *l, const char *fmt, ...)
 {
     std::string *errorMessage = static_cast<std::string *>(l);
     char buffer[1000];

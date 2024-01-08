@@ -15,13 +15,13 @@
 class Shrine:public Map {
 public:
     Shrine()
-        :name(),
-         virtue(VIRT_MAX),
-         mantra()
+      :name(),
+       virtue(VIRT_MAX),
+       mantra()
     {
     }
 
-    virtual std::string getName();
+    virtual std::string getName() override;
     Virtue getVirtue() const;
     std::string getMantra() const;
     void setVirtue(Virtue v);

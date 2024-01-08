@@ -61,7 +61,7 @@ public:
     static void stop(int channel = 1);
 
 private:
-    bool init_sys();
+    static bool init_sys();
 
     void del()
     {

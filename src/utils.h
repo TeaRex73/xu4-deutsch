@@ -12,11 +12,11 @@
 #include <type_traits>
 #include <vector>
 
-// #include <unistd.h>
+#ifndef NPERF
+#include <unistd.h>
+#endif
 
 #include "filesystem.h"
-
-
 
 
 /* The AdjustValue functions used to be #define'd macros, but these are

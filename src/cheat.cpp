@@ -284,7 +284,7 @@ bool CheatMenuController::keyPressed(int key)
             MapTile choice;
             screenMessage("ERZEUGE TRASNPORT!\nWELCHEN? ");
             // Get the transport of choice
-            char transport = ReadChoiceController::get("spb \033\015");
+            char transport = ReadChoiceController::getChar("spb \033\015");
             switch (transport) {
             case 's':
                 choice = ship;

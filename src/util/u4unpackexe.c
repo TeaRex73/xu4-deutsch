@@ -32,7 +32,7 @@ void putWord(unsigned char *ofs, long word);
  * Removes the outer packing layer from AVATAR.EXE, so that it can be
  * decompressed with a Microsoft Exepack unpacker
  */
-int main(int argc, char *argv[])
+int main(int argc, const char *argv[])
 {
     FILE *file;
     unsigned char *buffer;

@@ -35,5 +35,6 @@ typedef void (*DestroyAllCreaturesCallback)();
 void itemSetDestroyAllCreaturesCallback(DestroyAllCreaturesCallback callback);
 const ItemLocation *itemAtLocation(const Map *map, const Coords &coords);
 void itemUse(const std::string &shortname);
+bool isAbyssOpened(const class Portal *);
 
 #endif // ifndef ITEM_H

@@ -77,7 +77,9 @@ long decompress_u4_file(std::FILE *in, long filesize, unsigned char **out)
     return errorCode;
 }
 
-long decompress_u4_memory(unsigned char *in, long inlen, unsigned char **out)
+long decompress_u4_memory(
+    const unsigned char *in, long inlen, unsigned char **out
+)
 {
     unsigned char *decompressed_mem;
     long compressed_filesize, decompressed_filesize;

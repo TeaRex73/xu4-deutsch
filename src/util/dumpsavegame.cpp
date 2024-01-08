@@ -7,11 +7,11 @@
 
 int verbose = 0;
 
-void showSaveGame(SaveGame *sg);
-void showSaveGamePlayerRecord(SaveGamePlayerRecord *rec);
+void showSaveGame(const SaveGame *sg);
+void showSaveGamePlayerRecord(const SaveGamePlayerRecord *rec);
 char *itemsString(unsigned short items);
 
-int main(int argc, char *argv[])
+int main(int argc, const char *argv[])
 {
     SaveGame sg;
     std::FILE *in;
@@ -29,12 +29,12 @@ int main(int argc, char *argv[])
     return 0;
 }
 
-void showSaveGame(SaveGame *sg)
+void showSaveGame(const SaveGame *sg)
 {
     int i;
     std::printf("???: %x\n", sg->unknown1);
     std::printf(
-        "moves: %-4d food: %-5g gold: %d\n",
+        "moves %-4u food: %-5g gold: %hu\n",
         sg->moves,
         static_cast<double>(sg->food) / 100.0,
         sg->gold
@@ -104,7 +104,7 @@ void showSaveGame(SaveGame *sg)
     }
 }
 
-void showSaveGamePlayerRecord(SaveGamePlayerRecord *rec)
+void showSaveGamePlayerRecord(const SaveGamePlayerRecord *rec)
 {
     static const char *const weapNames[] = {
         "Hands",

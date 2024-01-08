@@ -67,6 +67,7 @@ ConfigElement Config::getElement(const std::string &name) const
         errorFatal("no match for xpath %s\n", path.c_str());
     }
     xmlXPathFreeContext(context);
+    // cppcheck-suppress nullPointerRedundantCheck // errorFatal won't return
     if (result->nodesetval->nodeNr > 1) {
         errorWarning(
             "more than one match for xpath %s\n", path.c_str()

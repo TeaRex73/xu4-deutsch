@@ -356,7 +356,7 @@ void movePartyMember(MoveEvent &event)
 {
     CombatController *ct =
         dynamic_cast<CombatController *>(eventHandler->getController());
-    CombatMap *cm = getCombatMap();
+    const CombatMap *cm = getCombatMap();
     int member = ct->getFocus();
     MapCoords newCoords;
     PartyMemberVector *party = ct->getParty();

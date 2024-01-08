@@ -16,7 +16,6 @@
 #include "player.h"
 
 
-
 City::City()
     :Map(),
      name(),
@@ -63,7 +62,7 @@ City::~City()
 /**
  * Returns the name of the city
  */
-std::string City::getName() const
+std::string City::getName()
 {
     return name;
 }
@@ -72,7 +71,7 @@ std::string City::getName() const
 /**
  * Adds a person object to the map
  */
-Person *City::addPerson(Person *person)
+Person *City::addPerson(const Person *person)
 {
     // Make a copy of the person before adding them, so
     // things like angering the guards, etc. will be
@@ -92,11 +91,11 @@ Person *City::addPerson(Person *person)
  */
 void City::addPeople()
 {
-    PersonList::iterator current;
+    PersonList::const_iterator current;
     // Make sure the city has no people in it already
     removeAllPeople();
-    for (current = persons.begin(); current != persons.end(); ++current) {
-        Person *p = *current;
+    for (current = persons.cbegin(); current != persons.cend(); ++current) {
+        const Person *p = *current;
         if ((p->getTile() != 0)
             && !(c->party->canPersonJoin(p->getName(), nullptr)
                  && c->party->isPersonJoined(p->getName()))) {

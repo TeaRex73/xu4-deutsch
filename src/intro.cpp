@@ -23,6 +23,7 @@
 #include "debug.h"
 #include "error.h"
 #include "event.h"
+#include "filesystem.h"
 #include "imagemgr.h"
 #include "menu.h"
 #include "music.h"
@@ -37,13 +38,20 @@
 #include "u4file.h"
 #include "utils.h"
 
-
+static int getTicks();
 
 extern bool useProfile;
 extern std::string profileName;
 extern int quit;
 IntroController *intro = nullptr;
+
+#if defined(FS_WINDOWS)
 const std::string tmpstr = "X";
+#elif defined(FS_POSIX)
+const std::string tmpstr = "/tmp/";
+#else
+#error filesystem not defined
+#endif
 
 #define INTRO_MAP_HEIGHT 5
 #define INTRO_MAP_WIDTH 19
@@ -1054,7 +1062,7 @@ void IntroController::drawBeasties(bool musicon)
  * screen.  vertoffset is used lower the creatures down from the top
  * of the screen.
  */
-void IntroController::drawBeastie(int beast, int vertoffset, int frame)
+void IntroController::drawBeastie(int beast, int vertoffset, int frame) const
 {
     char buffer[128];
     int destx;
@@ -1073,7 +1081,7 @@ void IntroController::drawBeastie(int beast, int vertoffset, int frame)
  * painted: the circle without the moongate, but with a small white
  * dot representing the anhk and history book.
  */
-void IntroController::animateTree(const std::string &frame)
+void IntroController::animateTree(const std::string &frame) const
 {
     backgroundArea.draw(frame, 47, 43);
 }
@@ -1082,7 +1090,7 @@ void IntroController::animateTree(const std::string &frame)
 /**
  * Draws the cards in the character creation sequence with the gypsy.
  */
-void IntroController::drawCard(int pos, int card)
+void IntroController::drawCard(int pos, int card) const
 {
     static const char *cardNames[] = {
         "honestycard",
@@ -1105,7 +1113,7 @@ void IntroController::drawCard(int pos, int card)
  */
 void IntroController::drawAbacusBeads(
     int row, int selectedVirtue, int rejectedVirtue
-)
+) const
 {
     U4ASSERT(row >= 0 && row < 7, "invalid row: %d", row);
     U4ASSERT(
@@ -1246,7 +1254,7 @@ void IntroController::initiateNewGame()
     menuArea.enableCursor();
     drawBeasties(false);
     screenRedrawScreen();
-    std::string nameBuffer = ReadStringController::get(8, &menuArea);
+    std::string nameBuffer = ReadStringController::getString(8, &menuArea);
     if (nameBuffer.length() == 0) {
         // the user didn't enter a name
         menuArea.disableCursor();
@@ -1263,7 +1271,7 @@ void IntroController::initiateNewGame()
     menuArea.setCursorPos(34, 3, true);
     drawBeasties(false);
     SexType sex;
-    int sexChoice = ReadChoiceController::get("mw");
+    int sexChoice = ReadChoiceController::getChar("mw");
     if (sexChoice == 'm') {
         sex = SEX_MALE;
     } else {
@@ -1528,7 +1536,7 @@ void IntroController::about()
     menuArea.textAt(1, 8, "\011 1987, Lord British");
     menuArea.textAt(1, 10, "\011 2015, Finire Dragon");
     drawBeasties();
-    ReadChoiceController::get("");
+    ReadChoiceController::getChar("");
     screenShowCursor();
     updateScreen();
 }
@@ -1745,7 +1753,7 @@ void IntroController::updateGfxMenu(const MenuEvent &event)
     backgroundArea.draw(BKGD_OPTIONS_BTM, 0, 120);
 }
 
-void IntroController::updateSoundMenu(const MenuEvent &event)
+void IntroController::updateSoundMenu(const MenuEvent &event) const
 {
     if ((event.getType() == MenuEvent::ACTIVATE)
         || (event.getType() == MenuEvent::INCREMENT)
@@ -1816,7 +1824,7 @@ void IntroController::updateInputMenu(const MenuEvent &event)
     extendedMenuArea.textAt(0, 5, "Mouse Options:");
 } // IntroController::updateInputMenu
 
-void IntroController::updateSpeedMenu(const MenuEvent &event)
+void IntroController::updateSpeedMenu(const MenuEvent &event) const
 {
     if ((event.getType() == MenuEvent::ACTIVATE)
         || (event.getType() == MenuEvent::INCREMENT)
@@ -1843,7 +1851,7 @@ void IntroController::updateSpeedMenu(const MenuEvent &event)
     backgroundArea.draw(BKGD_OPTIONS_BTM, 0, 120);
 } // IntroController::updateSpeedMenu
 
-void IntroController::updateGameplayMenu(const MenuEvent &event)
+void IntroController::updateGameplayMenu(const MenuEvent &event) const
 {
     if ((event.getType() == MenuEvent::ACTIVATE)
         || (event.getType() == MenuEvent::INCREMENT)
@@ -1954,7 +1962,7 @@ bool IntroController::doQuestion(int answer)
  * Build the initial avatar player record from the answers to the
  * gypsy's questions.
  */
-void IntroController::initPlayers(SaveGame *saveGame)
+void IntroController::initPlayers(SaveGame *saveGame) const
 {
     int i, p;
     static const struct {
@@ -2145,7 +2153,7 @@ void IntroController::addTitle(
 void IntroController::getTitleSourceData()
 {
     std::uint8_t r, g, b, a;    // color values
-    unsigned char *srcData; // plot data
+    const unsigned char *srcData; // plot data
     // The BKGD_INTRO image is assumed to have not been
     // loaded yet.  The unscaled version will be loaded
     // here, and elements of the image will be stored
@@ -2210,7 +2218,7 @@ void IntroController::getTitleSourceData()
             srcData = intro->getSigData();
             // white for EGA
             RGBA color = info->image->setColor(255, 255, 255);
-            int blue[16] = {
+            const int blue[16] = {
                 255,
                 250,
                 226,
@@ -2350,13 +2358,13 @@ void IntroController::getTitleSourceData()
 } // IntroController::getTitleSourceData
 
 #ifdef SLACK_ON_SDL_AGNOSTICISM
-int getTicks()
+static int getTicks()
 {
     return SDL_GetTicks();
 }
 #else
 static int ticks = 0;
-int getTicks()
+static int getTicks()
 {
     ticks += 1000;
     return ticks;
@@ -2568,7 +2576,7 @@ bool IntroController::updateTitle()
         int newtime = getTicks();
         if (newtime > title->timeDuration + 250 / 4) {
             // grab the map from the screen
-            Image *screen = imageMgr->get("screen")->image;
+            const Image *screen = imageMgr->get("screen")->image;
             // draw the updated map display
             intro->drawMapStatic();
             screen->drawSubRectOn(

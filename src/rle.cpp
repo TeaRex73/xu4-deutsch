@@ -32,7 +32,9 @@ long rleDecompressFile(std::FILE *in, long inlen, unsigned char **out)
     return outlen;
 }
 
-long rleDecompressMemory(unsigned char *in, long inlen, unsigned char **out)
+long rleDecompressMemory(
+    const unsigned char *in, long inlen, unsigned char **out
+)
 {
     unsigned char *outdata;
     long outlen;
@@ -56,9 +58,9 @@ long rleDecompressMemory(unsigned char *in, long inlen, unsigned char **out)
 /**
  * Determine the uncompressed size of RLE compressed data.
  */
-long rleGetDecompressedSize(unsigned char *indata, long inlen)
+long rleGetDecompressedSize(const unsigned char *indata, long inlen)
 {
-    unsigned char *p;
+    const unsigned char *p;
     long len = 0;
     p = indata;
     while ((p - indata) < inlen) {
@@ -81,16 +83,15 @@ long rleGetDecompressedSize(unsigned char *indata, long inlen)
  * Decompress a block of RLE encoded memory.
  */
 long rleDecompress(
-    unsigned char *indata,
+    const unsigned char *indata,
     long inlen,
     unsigned char *outdata,
     long outlen
 )
 {
     int i;
-    unsigned char *p, *q;
-    p = indata;
-    q = outdata;
+    const unsigned char *p = indata;
+    unsigned char *q = outdata;
     while ((p - indata) < inlen) {
         unsigned char ch;
         ch = *p++;

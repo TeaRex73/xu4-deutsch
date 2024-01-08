@@ -14,8 +14,6 @@
 #include "xml.h"
 
 
-
-
 /**
  * An xml-scripting class. It loads and runs xml scripts that
  * take information and interact with the game environment itself.
@@ -178,15 +176,19 @@ private:
         const std::string &script_to_find,
         const std::string &id = "",
         bool _default = false
-    );
+    ) const;
     std::string getPropAsStr(
-        std::list<xmlNodePtr> &nodes, const std::string &prop, bool recursive
+        const std::list<xmlNodePtr> &nodes,
+        const std::string &prop,
+        bool recursive
     );
     std::string getPropAsStr(
         xmlNodePtr node, const std::string &prop, bool recursive = false
     );
     int getPropAsInt(
-        std::list<xmlNodePtr> &nodes, const std::string &prop, bool recursive
+        const std::list<xmlNodePtr> &nodes,
+        const std::string &prop,
+        bool recursive
     );
     int getPropAsInt(
         xmlNodePtr node, const std::string &prop, bool recursive = false
@@ -218,9 +220,9 @@ private:
     ReturnCode setId(xmlNodePtr script, xmlNodePtr current);
     ReturnCode ztats(xmlNodePtr script, xmlNodePtr current);
     void mathParseChildren(xmlNodePtr math, std::string *result);
-    int mathValue(const std::string &str);
+    static int mathValue(const std::string &str);
     static int math(int lval, int rval, const std::string &op);
-    bool mathParse(
+    static bool mathParse(
         const std::string &str, int *lval, int *rval, std::string *op
     );
     static void parseOperation(
@@ -229,7 +231,7 @@ private:
         std::string *right,
         std::string *op
     );
-    bool compare(const std::string &statement);
+    static bool compare(const std::string &statement);
     static void funcParse(
         const std::string &str, std::string *funcName, std::string *contents
     );

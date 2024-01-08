@@ -24,7 +24,6 @@
 #include "utils.h"
 
 
-
 static bool codexInit();
 static void codexDelete();
 static void codexEject(CodexEjectCode code);

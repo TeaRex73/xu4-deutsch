@@ -10,8 +10,6 @@
 #include "observable.h"
 
 
-
-
 /**
  * Aura class
  */

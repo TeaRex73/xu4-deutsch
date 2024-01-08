@@ -9,7 +9,6 @@
 #include <string>
 
 
-
 /**
  * The following code was taken from the Boost filesystem libraries
  * (http://www.boost.org)

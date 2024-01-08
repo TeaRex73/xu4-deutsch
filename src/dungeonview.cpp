@@ -349,7 +349,7 @@ DungeonGraphicType DungeonView::tilesToGraphic(
      * if not an annotation or object, then the tile is a dungeon
      * token
      */
-    Dungeon *dungeon = dynamic_cast<Dungeon *>(c->location->map);
+    const Dungeon *dungeon = dynamic_cast<Dungeon *>(c->location->map);
     DungeonToken token = dungeon->tokenForTile(tile);
     switch (token) {
     case DUNGEON_TRAP:
@@ -462,7 +462,7 @@ void DungeonView::drawWall(
         return;
     }
     int x = 0, y = 0;
-    SubImage *subimage =
+    const SubImage *subimage =
         imageMgr->getSubImage(dngGraphicInfo[index].subimage);
     if (subimage) {
         x = subimage->x;
