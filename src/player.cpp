@@ -543,7 +543,7 @@ bool PartyMember::applyDamage(int damage, bool)
     notifyOfChange();
     if (isCombatMap(c->location->map) && (getStatus() == STAT_DEAD)) {
         if (party) {
-            Coords p = getCoords();
+            const Coords &p = getCoords();
             Map *map = getMap();
             map->annotations->add(
                 p,

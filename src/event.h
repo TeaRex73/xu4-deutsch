@@ -49,10 +49,10 @@ class TextView;
  */
 class KeyHandler {
 public:
-    KeyHandler(const KeyHandler &) = delete;
     KeyHandler(KeyHandler &&) = default;
-    KeyHandler &operator=(const KeyHandler &) = delete;
+    KeyHandler(const KeyHandler &) = default;
     KeyHandler &operator=(KeyHandler &&) = default;
+    KeyHandler &operator=(const KeyHandler &) = default;
 
     virtual ~KeyHandler()
     {

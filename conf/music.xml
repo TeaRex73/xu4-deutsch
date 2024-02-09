@@ -1,12 +1,12 @@
 <?xml version="1.0"?>
 <music>
-    <track file="song1.wav"/>
-    <track file="song2.wav"/>
-    <track file="song3.wav"/>
-    <track file="song4.wav"/>
-    <track file="song5.wav"/>
-    <track file="song6.wav"/>
-    <track file="song7.wav"/>
-    <track file="song8.wav"/>
-    <track file="song9.wav"/>
+    <track file="song1.ogg"/>
+    <track file="song2.ogg"/>
+    <track file="song3.ogg"/>
+    <track file="song4.ogg"/>
+    <track file="song5.ogg"/>
+    <track file="song6.ogg"/>
+    <track file="song7.ogg"/>
+    <track file="song8.ogg"/>
+    <track file="song9.ogg"/>
 </music>

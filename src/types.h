@@ -43,7 +43,7 @@ typedef enum {
 /**
  * A MapTile is a specific instance of a Tile.
  */
-class __attribute__((aligned (4))) MapTile {
+class alignas(int) MapTile {
 public:
     MapTile()
         :id(0), frame(0), freezeAnimation(false)

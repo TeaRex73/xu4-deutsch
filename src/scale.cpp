@@ -50,7 +50,7 @@ static Image *scalePoint(const Image *src, int scale, int)
         src->width() * scale,
         src->height() * scale,
         src->isIndexed(),
-        Image::HARDWARE
+        Image::SOFTWARE
     );
     if (!dest) {
         return nullptr;
@@ -89,7 +89,7 @@ static Image *scale2xBilinear(const Image *src, int scale, int N)
         src->width() * scale,
         src->height() * scale,
         false,
-        Image::HARDWARE
+        Image::SOFTWARE
     );
     if (!dest) {
         return nullptr;
@@ -241,7 +241,7 @@ static Image *scale2xSaI(const Image *src, int scale, int N)
         src->width() * scale,
         src->height() * scale,
         false,
-        Image::HARDWARE
+        Image::SOFTWARE
     );
     if (!dest) {
         return nullptr;
@@ -446,7 +446,7 @@ static Image *scaleScale2x(const Image *src, int scale, int N)
         src->width() * scale,
         src->height() * scale,
         src->isIndexed(),
-        Image::HARDWARE
+        Image::SOFTWARE
     );
     if (!dest) {
         return nullptr;

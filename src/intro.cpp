@@ -110,10 +110,15 @@ IntroBinData::IntroBinData()
 IntroBinData::~IntroBinData()
 {
     delete[] sigData;
+    sigData = nullptr;
     delete[] scriptTable;
+    scriptTable = nullptr;
     delete[] baseTileTable;
+    baseTileTable = nullptr;
     delete[] beastie1FrameTable;
+    beastie1FrameTable = nullptr;
     delete[] beastie2FrameTable;
+    beastie2FrameTable = nullptr;
     introQuestions[0].clear();
     introQuestions[1].clear();
     introText[0].clear();
@@ -749,7 +754,9 @@ IntroController::IntroController()
 IntroController::AnimElement::~AnimElement()
 {
     delete srcImage;
+    srcImage = nullptr;
     delete destImage;
+    destImage = nullptr;
 }
 
 
@@ -1505,7 +1512,7 @@ void IntroController::journeyOnward()
             validSave = true;
         }
         delete saveGame;
-                std::fclose(saveGameFile);
+        std::fclose(saveGameFile);
     }
     if (!validSave) {
         errorMessage = "Starte zuerst ein neues Spiel!";
@@ -2193,7 +2200,7 @@ void IntroController::getTitleSourceData()
                 titles[i].rw * info->prescale,
                 titles[i].rh * info->prescale,
                 false,
-                Image::HARDWARE
+                Image::SOFTWARE
             );
             titles[i].srcImage->alphaOff();
             if (titles[i].srcImage->isIndexed()) {
@@ -2335,7 +2342,7 @@ void IntroController::getTitleSourceData()
             (titles[i].prescaled ? SCALED(titles[i].rh) : titles[i].rh)
             * info->prescale,
             indexed,
-            Image::HARDWARE
+            Image::SOFTWARE
         );
         titles[i].destImage->alphaOff();
         if (indexed) {
@@ -2363,9 +2370,10 @@ static int getTicks()
     return SDL_GetTicks();
 }
 #else
-static int ticks = 0;
+
 static int getTicks()
 {
+    static int ticks = 0;
     ticks += 1000;
     return ticks;
 }
@@ -2602,7 +2610,8 @@ bool IntroController::updateTitle()
         break;
     } // case MAP:
     } // switch
-      // draw the titles
+
+    // draw the titles
     drawTitle();
     // if the animation for this title has completed,
     // move on to the next title

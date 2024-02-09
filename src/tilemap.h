@@ -18,7 +18,7 @@ class ConfigElement;
 class TileMap {
 public:
     typedef std::map<std::string, TileMap *> TileIndexMapMap;
-
+    typedef std::map<unsigned int, MapTile> TileMapMap;
     TileMap()
         :tilemap()
     {
@@ -33,7 +33,7 @@ public:
 private:
     static void load(const ConfigElement &tilemapConf);
     static TileIndexMapMap tileMaps;
-    std::map<unsigned int, MapTile> tilemap;
+    TileMapMap tilemap;
 };
 
 #endif // ifndef TILEMAP_H

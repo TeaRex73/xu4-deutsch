@@ -1,6 +1,6 @@
 scale=1
 fullscreen=0
-filter=2xBi
+filter=Point
 video=EGA
 gemLayout=Standard
 lineOfSight=DOS

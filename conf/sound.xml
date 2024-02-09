@@ -1,34 +1,34 @@
 <?xml version="1.0"?>
 <!-- $Id$ -->
 <sound>
-    <track file="soundxx.wav"/>      <!-- C64 TITLE_FADE     -->
-    <track file="step.wav"/>         <!-- C64 WALK           -->
-    <track file="sound00.wav"/>      <!-- C64 WALK_SLOW      -->
-    <track file="sound00.wav"/>      <!-- C64 WALK_COMBAT    -->
-    <track file="sound01.wav"/>      <!-- C64 BLOCKED        -->
-    <track file="sound02.wav"/>      <!-- C64 ERROR          -->
-    <track file="sound04.wav"/>      <!-- C64 PC_ATTACK      -->
-    <track file="sound07.wav"/>      <!-- C64 PC_STRUCK      -->
-    <track file="sound03.wav"/>      <!-- C64 NPC_ATTACK     -->
-    <track file="sound06.wav"/>      <!-- C64 NPC_STRUCK     -->
-    <track file="sound07.wav"/>      <!--     ACID           -->
-    <track file="sound07.wav"/>      <!--     SLEEP          -->
-    <track file="sound07.wav"/>      <!-- C64 POISON_EFFECT  -->  <!-- same as PC_STRUCK -->
-    <track file="sound06.wav"/>      <!-- C64 POISON_DAMAGE  -->  <!-- same as NPC_STRUCK -->
-    <track file="sound08.wav"/>      <!-- C64 EVADE          -->
-    <track file="sound08.wav"/>      <!-- C64 FLEE           -->  <!-- same as EVADE -->
-    <track file="sound08.wav"/>      <!--     ITEM_STOLEN    -->
-    <track file="sound09.wav"/>      <!--     LBHEAL         -->
-    <track file="sound09.wav"/>      <!--     LEVELUP        -->
-    <track file="moongate.wav"/>     <!--     MOONGATE       -->
-    <track file="sound07.wav"/>      <!--     CANNON         -->
-    <track file="trem_fx.wav"/>      <!--     RUMBLE         -->
-    <track file="sound10.wav"/>      <!--PREMAGIC_MANA_JUMBLE-->
-    <track file="sound09.wav"/>      <!-- C64 MAGIC          -->
-    <track file="sound11.wav"/>      <!--     STORM          -->
-    <track file="sound12.wav"/>      <!--     WHIRLPOOL      -->
-    <track file="soundyy.wav"/>      <!--     INTROGATE_OPEN -->
-    <track file="soundzz.wav"/>      <!--     INTROGATE_CLOSE-->
+    <track file="soundxx.ogg"/>      <!-- C64 TITLE_FADE     -->
+    <track file="step.ogg"/>         <!-- C64 WALK           -->
+    <track file="sound00.ogg"/>      <!-- C64 WALK_SLOW      -->
+    <track file="sound00.ogg"/>      <!-- C64 WALK_COMBAT    -->
+    <track file="sound01.ogg"/>      <!-- C64 BLOCKED        -->
+    <track file="sound02.ogg"/>      <!-- C64 ERROR          -->
+    <track file="sound04.ogg"/>      <!-- C64 PC_ATTACK      -->
+    <track file="sound07.ogg"/>      <!-- C64 PC_STRUCK      -->
+    <track file="sound03.ogg"/>      <!-- C64 NPC_ATTACK     -->
+    <track file="sound06.ogg"/>      <!-- C64 NPC_STRUCK     -->
+    <track file="sound07.ogg"/>      <!--     ACID           -->
+    <track file="sound07.ogg"/>      <!--     SLEEP          -->
+    <track file="sound07.ogg"/>      <!-- C64 POISON_EFFECT  -->  <!-- same as PC_STRUCK -->
+    <track file="sound06.ogg"/>      <!-- C64 POISON_DAMAGE  -->  <!-- same as NPC_STRUCK -->
+    <track file="sound08.ogg"/>      <!-- C64 EVADE          -->
+    <track file="sound08.ogg"/>      <!-- C64 FLEE           -->  <!-- same as EVADE -->
+    <track file="sound08.ogg"/>      <!--     ITEM_STOLEN    -->
+    <track file="sound09.ogg"/>      <!--     LBHEAL         -->
+    <track file="sound09.ogg"/>      <!--     LEVELUP        -->
+    <track file="moongate.ogg"/>     <!--     MOONGATE       -->
+    <track file="sound07.ogg"/>      <!--     CANNON         -->
+    <track file="trem_fx.ogg"/>      <!--     RUMBLE         -->
+    <track file="sound10.ogg"/>      <!--PREMAGIC_MANA_JUMBLE-->
+    <track file="sound09.ogg"/>      <!-- C64 MAGIC          -->
+    <track file="sound11.ogg"/>      <!--     STORM          -->
+    <track file="sound12.ogg"/>      <!--     WHIRLPOOL      -->
+    <track file="soundyy.ogg"/>      <!--     INTROGATE_OPEN -->
+    <track file="soundzz.ogg"/>      <!--     INTROGATE_CLOSE-->
 </sound>
 
 
@@ -43,7 +43,7 @@ horse fast
 steal
 
 
-ccs2.wav
+ccs2.ogg
         6s              bad command
         15s             move
         34s             blocked
@@ -64,7 +64,7 @@ ccs2.wav
         532s    attack
         533s    hit
 
-ccs3.wav
+ccs3.ogg
         39s             monster attack
         40s     monster hit
         160s    monster range attack (nixie)

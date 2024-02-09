@@ -122,7 +122,7 @@ void screenInit_sys()
     char *pix;
     pix = static_cast<char *>(screen->pixels);
     pix += (screen->pitch * MY_TOPDIST * settings.scale
-            + screen->format->BytesPerPixel * MY_LEFTDIST * settings.scale);
+        + screen->format->BytesPerPixel * MY_LEFTDIST * settings.scale);
     screen->pixels = pix;
 #endif
     if (verbose) {
@@ -254,7 +254,7 @@ bool screenLoadImageCga(
         return false;
     }
     screenDeinterlaceCga(decompressed_data, width, height, tiles, 0);
-    img = Image::create(width, height, true, Image::HARDWARE);
+    img = Image::create(width, height, true, Image::SOFTWARE);
     if (!img) {
         if (decompressed_data) {
             std::free(decompressed_data);
@@ -439,7 +439,7 @@ Image *screenScaleDown(Image *src, int scale)
         src->width() / scale,
         src->height() / scale,
         src->isIndexed(),
-        Image::HARDWARE
+        Image::SOFTWARE
     );
     if (!dest) {
         return nullptr;

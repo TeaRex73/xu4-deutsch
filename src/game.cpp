@@ -1896,7 +1896,7 @@ void destroy()
         std::any_of(
             path.cbegin(),
             path.cend(),
-            [&](const Coords &v) {
+            [&](const Coords &v) -> bool {
                 return destroyAt(v);
             }
         )
@@ -1944,7 +1944,7 @@ void attack()
         std::any_of(
             path.cbegin(),
             path.cend(),
-            [&](const Coords &v) {
+            [&](const Coords &v) -> bool {
                 return attackAt(v);
             }
         )
@@ -2194,7 +2194,7 @@ void fire()
         std::any_of(
             path.cbegin(),
             path.cend(),
-            [&](const Coords &v) {
+            [&](const Coords &v) -> bool {
                 return fireAt(v, true);
             }
         )
@@ -2774,7 +2774,7 @@ void jimmy()
         std::any_of(
             path.cbegin(),
             path.cend(),
-            [&](const Coords &v) {
+            [&](const Coords &v) -> bool {
                 return jimmyAt(v);
             }
         )
@@ -2830,7 +2830,7 @@ void opendoor()
         std::any_of(
             path.cbegin(),
             path.cend(),
-            [&](const Coords &v) {
+            [&](const Coords &v) -> bool {
                 return openAt(v);
             }
         )
@@ -2949,7 +2949,7 @@ void talk()
         std::any_of(
             path.cbegin(),
             path.cend(),
-            [&](const Coords &v) {
+            [&](const Coords &v) -> bool {
                 return talkAt(v, dist++);
             }
         )

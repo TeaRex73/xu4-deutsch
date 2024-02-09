@@ -515,14 +515,14 @@ void EventHandler::run()
         switch (event.type) {
         case SDL_KEYDOWN:
             {
-#ifdef DEBUG
+#ifndef NPERF
                 static std::atomic<std::clock_t> clocksum(0);
                 static std::atomic_int keycount(0);
                 std::clock_t oldc, newc, diff;
                 oldc = std::clock();
 #endif
                 handleKeyDownEvent(event, getController(), updateScreen);
-#ifdef DEBUG
+#ifndef NPERF
                 newc = std::clock();
                 keycount++;
                 diff = newc - oldc;
@@ -593,7 +593,7 @@ bool EventHandler::timerQueueEmpty()
  */
 void EventHandler::pushKeyHandler(const KeyHandler &kh)
 {
-    const KeyHandler *new_kh = &kh; // new KeyHandler(std::move(kh));
+    const KeyHandler *new_kh = new KeyHandler(std::move(kh));
     KeyHandlerController *khc = new KeyHandlerController(new_kh);
     pushController(khc);
 }

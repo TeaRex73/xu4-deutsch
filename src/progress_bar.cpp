@@ -39,7 +39,7 @@ ProgressBar &ProgressBar::operator--()
 void ProgressBar::draw()
 {
     Image *bar = Image::create(
-        SCALED(width), SCALED(height), false, Image::HARDWARE
+        SCALED(width), SCALED(height), false, Image::SOFTWARE
     );
     bar->alphaOff();
     int pos = static_cast<int>(

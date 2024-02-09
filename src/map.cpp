@@ -293,7 +293,9 @@ Map::Map()
 
 Map::~Map()
 {
-    for (PortalList::iterator i = portals.begin(); i != portals.end(); ++i) {
+    for (PortalList::const_iterator i = portals.cbegin();
+         i != portals.cend();
+         ++i) {
         delete *i;
     }
     delete annotations;
@@ -344,7 +346,7 @@ const Portal *Map::portalAt(const Coords &coords, int actionFlags) const
     PortalList::const_iterator i = std::find_if(
         portals.cbegin(),
         portals.cend(),
-        [&](const Portal *v) {
+        [&](const Portal *v) -> bool {
             return (v->coords == coords) && (v->trigger_action & actionFlags);
         }
     );
@@ -386,7 +388,7 @@ MapTile Map::tileAt(const Coords &coords, int withObjects) const
     std::list<const Annotation *>::const_iterator i = std::find_if(
         a.cbegin(),
         a.cend(),
-        [&](const Annotation *v) {
+        [&](const Annotation *v) -> bool {
             return !(v->isVisualOnly());
         }
     );
@@ -568,12 +570,12 @@ Object *Map::addObject(
 // below.
 void Map::removeObject(const Object *rem, bool deleteObject)
 {
-    ObjectDeque::iterator i = std::find(
-        objects.begin(),
-        objects.end(),
+    ObjectDeque::const_iterator i = std::find(
+        objects.cbegin(),
+        objects.cend(),
         rem
     );
-    if (i == objects.end()) return;
+    if (i == objects.cend()) return;
     /* Party members persist through different maps,
        so don't delete them! */
     if (deleteObject && !isPartyMember(*i)) {
@@ -983,7 +985,7 @@ bool Map::fillMonsterTable()
             std::sort(
                 std::next(inanimate_objects.begin()),
                 inanimate_objects.end(),
-                isCloser
+                &isCloser
             );
         } else {
             std::sort(

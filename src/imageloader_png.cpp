@@ -114,7 +114,7 @@ Image *PngImageLoader::load(
         }
     }
     Image *image = Image::create(
-        width, height, bpp == 4 || bpp == 8, Image::HARDWARE
+        width, height, bpp == 4 || bpp == 8, Image::SOFTWARE
     );
     if (!image) {
         delete[] raw;

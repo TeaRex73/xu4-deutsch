@@ -1,0 +1,4 @@
+.
+./lzw
+./util
+./../../headers

@@ -362,7 +362,7 @@ bool Creature::specialAction()
                 std::any_of(
                     path.cbegin(),
                     path.cend(),
-                    [&](const Coords &v) {
+                    [&](const Coords &v) -> bool {
                         return creatureRangeAttack(v, this);
                     }
                 )
@@ -389,7 +389,7 @@ bool Creature::specialAction()
                 std::any_of(
                     path.cbegin(),
                     path.cend(),
-                    [&](const Coords &v) {
+                    [&](const Coords &v) -> bool {
                         return fireAt(v, false);
                     }
                 )
@@ -653,7 +653,7 @@ void Creature::act(CombatController *controller)
         bool hit = std::any_of(
             path.cbegin(),
             path.cend(),
-            [&](const Coords &v) {
+            [&](const Coords &v) -> bool {
                 return controller->rangedAttack(v, this);
             }
         );
@@ -1032,7 +1032,7 @@ Creature *CreatureMgr::getByTile(MapTile tile)
     CreatureMap::const_iterator i = std::find_if(
         creatures.cbegin(),
         creatures.cend(),
-        [&](const CreatureMap::value_type &v) {
+        [&](const CreatureMap::value_type &v) -> bool {
             return v.second->getTile() == tile;
         }
     );
@@ -1070,7 +1070,7 @@ Creature *CreatureMgr::getByName(const std::string &name)
     CreatureMap::const_iterator i = std::find_if(
         creatures.cbegin(),
         creatures.cend(),
-        [&](const CreatureMap::value_type &v) {
+        [&](const CreatureMap::value_type &v) -> bool {
             return !xu4_strcasecmp(
                 deumlaut(v.second->getName()).c_str(),
                 deumlaut(name).c_str()
@@ -1143,7 +1143,7 @@ Creature *CreatureMgr::randomAmbushing()
         numAmbushingCreatures = std::count_if(
             creatures.cbegin(),
             creatures.cend(),
-            [&](const CreatureMap::value_type &v) {
+            [&](const CreatureMap::value_type &v) -> bool {
                 return v.second->ambushes();
             }
         );

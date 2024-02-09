@@ -368,7 +368,7 @@ bool Dungeon::ladderUpAt(const MapCoords &coords)
         Annotation::List::const_iterator i = std::find_if(
             a.cbegin(),
             a.cend(),
-            [&](const Annotation &v) {
+            [&](const Annotation &v) -> bool {
                 return v.getTile() == upLadderId;
             }
         );
@@ -395,7 +395,7 @@ bool Dungeon::ladderDownAt(const MapCoords &coords)
         Annotation::List::const_iterator i = std::find_if(
             a.cbegin(),
             a.cend(),
-            [&](const Annotation &v) {
+            [&](const Annotation &v) -> bool {
                  return v.getTile() == downLadderId;
             }
         );

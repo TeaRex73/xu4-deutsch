@@ -135,17 +135,18 @@ void AnnotationMgr::clear()
  */
 void AnnotationMgr::passTurn()
 {
-    Annotation::List::iterator i;
-    for (i = annotations.begin(); i != annotations.end(); ++i) {
-        if (i->getTTL() == 0) {
-            i = annotations.erase(i);
-            if (i == annotations.end()) {
-                break;
-            }
-        } else if (i->getTTL() > 0) {
-            i->passTurn();
+    annotations.remove_if(
+        [&](const Annotation &v) -> bool {
+            return v.getTTL() == 0;
         }
-    }
+    );
+    std::for_each(
+        annotations.begin(),
+        annotations.end(),
+        [&](Annotation &v) -> void {
+            v.passTurn();
+        }
+    );
 }
 
 

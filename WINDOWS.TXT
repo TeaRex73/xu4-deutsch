@@ -1,0 +1,53 @@
+﻿*** ULTIMA IV: DIE QUESTE DES AVATARS ***
+
+©1985 von Lord British und Origin Systems, Inc.
+
+Diesem klassischen Werke zu Ehren jetzt erstmals komplett auf Deutsch!
+
+
+Basiert auf xu4 mit Grafik und Sound aus der Apple-II-Originalversion und
+(in geringem Maße) aus der Commodore-64-Version.
+
+Version U4DEU-2024-02-09
+für Microsoft Windows (Vista oder höher, 32 oder 64 Bit)
+
+
+Achtung: Diese Version ist noch, wie man sagt, UNVOLLSTÄN UND FÄHLERHAFT!
+Bitte NICHT weitergeben oder irgendwo hochladen!!
+
+Es handelt sich ausdrücklich um eine Vorab-Version, die nur zum Testen
+bestimmt ist!!
+
+Diese Version ist für Windows. Bitte einfach irgendwohin entpacken und
+dann den Link "!Ultima IV" aus dem Hauptordner starten.
+
+Zum "deinstallieren" einfach den kompletten Ordner löschen. Wenn nötig, kann
+noch der Ordner "%AppData%\xu4" entfernt werden, dort findet man den
+Spielstand und eine kleine Konfigurationsdatei, diese Dateien belegen
+aber insgesamt weniger als 4 Kilobytes.
+
+Diese Version beruht auf der Raspberry-Pi-Version und wurde einfach
+mit MinGW für Windows übersetzt. Ansonsten gilt die Beschreibung
+der Raspberry-Version in "!LIESDAS.TXT" auch hierfür.
+
+Alle Bugs dürfen sehr gerne an mich gemeldet werden!!
+
+Ich wierderhole hier nur die Dansagungen:
+
+VIELEN DANK an Richard Garriot, Origin System Inc. und an das xu4-Team, ohne
+die nichts davon möglich gewesen wäre! An Sean Gugler für u4remasteredA2 und
+an ergonomy_joe für u4-decompiled (beide auf GitHub zu finden), welche mir
+sehr halfen, die Original-Algorithmen detailliert zu verstehen.
+An meine liebe unvergessene Schwester Ebba Zahner(†) und meinen Schwager Jens
+Zahner, die mir 2013 den ersten Raspberry Pi zu Weihnachten geschenkt und mich
+damit zu diesem Projekt inspiriert haben. Und natürlich vor allen anderen an
+meine Frau Anja Ticmanis und meine Töchter Hannah Silvia und Marie Josephine,
+die meinen großen Zeiteinsatz für dieses Projekt immer ertragen und
+unterstützt haben! Ihnen widme ich dieses Projekt!
+
+
+In diesem Projekt stecken viele Stunden meiner Freizeit der letzten zehn
+Jahre, die aber hoffentlich gut investiert waren. Viel Spaß damit (den ich
+auch beim Erstellen hatte) wünscht Euch Euer
+
+Finire Dragon (Linards Ticmanis)

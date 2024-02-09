@@ -35,6 +35,14 @@ void Music::create_sys()
         this->functional = false;
         return;
     }
+    TRACE_LOCAL(*logger, "Initializing SDL_mixer");
+    if (!(Mix_Init(MIX_INIT_OGG) & MIX_INIT_OGG)) {
+        errorWarning(
+            "unable to init SDL_mixer: %s", Mix_GetError()
+        );
+        this->functional = false;
+        return;
+    }
     TRACE_LOCAL(*logger, "Opening audio");
     if (Mix_OpenAudio(
             audio_rate, audio_format, audio_channels, audio_buffers
@@ -57,6 +65,8 @@ void Music::destroy_sys()
     }
     TRACE_LOCAL(*logger, "Closing audio");
     Mix_CloseAudio();
+    TRACE_LOCAL(*logger, "Quitting SDL_mixer");
+    Mix_Quit();
     TRACE_LOCAL(*logger, "Quitting SDL audio subsystem");
     u4_SDL_QuitSubSystem(SDL_INIT_AUDIO);
 }

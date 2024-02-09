@@ -216,7 +216,7 @@ void TimedEventMgr::remove(const TimedEvent *event)
     List::iterator i = std::find_if(
         events.begin(),
         events.end(),
-        [&](const TimedEvent *v) {
+        [&](const TimedEvent *v) -> bool {
             return v == event;
         }
     );
@@ -230,7 +230,7 @@ void TimedEventMgr::remove(TimedEvent::Callback callback, const void *data)
     List::iterator i = std::find_if(
         events.begin(),
         events.end(),
-        [&](TimedEvent *v) {
+        [&](TimedEvent *v) -> bool {
             return v->getCallback() == callback && v->getData() == data;
         }
     );

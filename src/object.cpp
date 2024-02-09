@@ -95,7 +95,7 @@ bool Object::setDirection(Direction d)
 
 void Object::setMap(class Map *m)
 {
-    if (find(maps.begin(), maps.end(), m) == maps.end()) {
+    if (std::find(maps.cbegin(), maps.cend(), m) == maps.cend()) {
         maps.push_back(m);
     }
 }

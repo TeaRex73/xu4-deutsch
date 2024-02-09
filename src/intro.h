@@ -234,7 +234,7 @@ private:
         MAP
     };
 
-    struct __attribute__((aligned (4))) AnimPlot {
+    struct alignas(int) AnimPlot {
         std::uint8_t r, g, b, a;
         std::uint8_t x, y;
     };

@@ -605,7 +605,7 @@ static void spellMagicAttack(
         std::any_of(
             path.cbegin(),
             path.cend(),
-            [&](const Coords &v) {
+            [&](const Coords &v) -> bool {
                 return spellMagicAttackAt(v, tile, attackDamage);
             }
         )
@@ -735,7 +735,7 @@ static bool spellDispel(int dir)
         Annotation::List::const_iterator i = std::find_if(
              a.cbegin(),
              a.cend(),
-             [&](const Annotation &v) {
+             [&](const Annotation &v) -> bool {
                  return v.getTile().getTileType()->canDispel();
              }
         );

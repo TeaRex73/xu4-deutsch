@@ -46,7 +46,7 @@ Image *FMTOWNSImageLoader::load(U4FILE *file, int width, int height, int bpp)
         return nullptr;
     }
     Image *image = Image::create(
-        width, height, bpp <= 8, Image::HARDWARE
+        width, height, bpp <= 8, Image::SOFTWARE
     );
     if (!image) {
         if (raw) {

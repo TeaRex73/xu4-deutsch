@@ -161,7 +161,7 @@ void Tile::loadImage()
             (subimage->height * scale) / frames :
             (info->height * scale / info->prescale) / frames;
         image = Image::create(
-            w, h * frames, false, Image::HARDWARE
+            w, h * frames, false, Image::SOFTWARE
         );
         image->alphaOff();
         /* draw the tile from the image we found

@@ -151,11 +151,11 @@ MapTile TileMap::translate(unsigned int index)
 unsigned int TileMap::untranslate(MapTile tile) const
 {
     unsigned int index = 0;
-    std::map<unsigned int, MapTile>::const_iterator i =
+    TileMapMap::const_iterator i =
         std::find_if(
             tilemap.cbegin(),
             tilemap.cend(),
-            [&](const std::pair<unsigned int, MapTile> &v) {
+            [&](const TileMapMap::value_type &v) -> bool {
                 return v.second == tile;
             }
         );

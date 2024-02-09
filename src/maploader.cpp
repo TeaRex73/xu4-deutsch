@@ -178,7 +178,7 @@ bool MapLoader::isChunkCompressed(Map *map, int chunk)
     return std::any_of(
         map->compressed_chunks.cbegin(),
         map->compressed_chunks.cend(),
-        [&](const int &v) {
+        [&](const int &v) -> bool {
             return chunk == v;
         }
     );

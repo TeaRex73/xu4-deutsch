@@ -27,7 +27,7 @@ TileView::TileView(int x, int y, int columns, int rows)
      tileset(Tileset::get("base")),
      animated(
          Image::create(
-             SCALED(tileWidth), SCALED(tileHeight), false, Image::HARDWARE
+             SCALED(tileWidth), SCALED(tileHeight), false, Image::SOFTWARE
          )
      )
 {
@@ -47,7 +47,7 @@ TileView::TileView(
      tileset(Tileset::get(tileset)),
      animated(
          Image::create(
-             SCALED(tileWidth), SCALED(tileHeight), false, Image::HARDWARE
+             SCALED(tileWidth), SCALED(tileHeight), false, Image::SOFTWARE
          )
      )
 {
@@ -66,7 +66,7 @@ void TileView::reinit()
     // Scratchpad needs to be re-inited if we rescale...
     delete animated;
     animated = Image::create(
-        SCALED(tileWidth), SCALED(tileHeight), false, Image::HARDWARE
+        SCALED(tileWidth), SCALED(tileHeight), false, Image::SOFTWARE
     );
     animated->alphaOff();
 }

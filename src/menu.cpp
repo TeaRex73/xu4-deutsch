@@ -61,7 +61,7 @@ void Menu::addShortcutKey(int id, int shortcutKey) const
     MenuItemList::const_iterator i = std::find_if(
         items.cbegin(),
         items.cend(),
-        [&](const MenuItem *v) {
+        [&](const MenuItem *v) -> bool {
             return v->getId() == id;
         }
     );
@@ -75,7 +75,7 @@ void Menu::setClosesMenu(int id) const
     MenuItemList::const_iterator i = std::find_if(
         items.cbegin(),
         items.cend(),
-        [&](const MenuItem *v) {
+        [&](const MenuItem *v) -> bool {
             return v->getId() == id;
         }
     );
@@ -298,7 +298,7 @@ Menu::MenuItemList::iterator Menu::getById(int id)
     current = std::find_if(
         items.begin(),
         items.end(),
-        [&](const MenuItem *v) {
+        [&](const MenuItem *v) -> bool {
             return v->getId() == id;
         }
     );

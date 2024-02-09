@@ -1399,7 +1399,7 @@ PartyMember *CombatMap::partyMemberAt(const Coords &coords)
     PartyMemberVector::const_iterator i = std::find_if(
         party.cbegin(),
         party.cend(),
-        [&](const PartyMember *v) {
+        [&](const PartyMember *v) -> bool {
             return v->getCoords() == coords;
         }
     );
@@ -1421,7 +1421,7 @@ Creature *CombatMap::creatureAt(const Coords &coords)
     CreatureVector::const_iterator i = std::find_if(
         creatures.cbegin(),
         creatures.cend(),
-        [&](const Creature *v) {
+        [&](const Creature *v) -> bool {
             return v->getCoords() == coords;
         }
     );

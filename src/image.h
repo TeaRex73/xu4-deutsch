@@ -17,7 +17,7 @@ typedef SDL_Surface *BackendSurface;
 
 #define DARK_GRAY_HALO RGBA(14, 15, 16, 255)
 
-class __attribute__((aligned (4))) RGBA {
+class alignas(int) RGBA {
 public:
     RGBA(std::uint8_t r, std::uint8_t g, std::uint8_t b, std::uint8_t a)
         :r(r), g(g), b(b), a(a)
@@ -147,7 +147,7 @@ public:
         std::uint8_t b,
         std::uint8_t a = IM_OPAQUE,
         bool anyway = false
-    );
+    ) const;
     /* reading from image */
     void getPixel(
         int x,

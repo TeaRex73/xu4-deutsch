@@ -106,7 +106,7 @@ Image *Image::createScreenImage()
 Image *Image::duplicate(Image *image)
 {
     bool alphaState = image->isAlphaOn();
-    Image *im = create(image->width(), image->height(), false, HARDWARE);
+    Image *im = create(image->width(), image->height(), false, SOFTWARE);
     /* Turn alpha off before blitting to non-screen surfaces */
     if (alphaState) {
         image->alphaOff();
@@ -441,10 +441,10 @@ void Image::makeBackgroundColorTransparent(int haloSize, int shadowOpacity)
 {
     int bgColor = SDL_MapRGBA(
         surface->format,
-        static_cast<Uint8>(backgroundColor.r),
-        static_cast<Uint8>(backgroundColor.g),
-        static_cast<Uint8>(backgroundColor.b),
-        static_cast<Uint8>(backgroundColor.a)
+        Uint8(backgroundColor.r),
+        Uint8(backgroundColor.g),
+        Uint8(backgroundColor.b),
+        Uint8(backgroundColor.a)
     );
     performTransparencyHack(bgColor, 1, 0, haloSize, shadowOpacity);
 }
@@ -593,16 +593,12 @@ void Image::fillRect(
     std::uint8_t b,
     std::uint8_t a,
     bool anyway
-)
+) const
 {
     SDL_Rect dest;
     Uint32 pixel;
     pixel = SDL_MapRGBA(
-        surface->format,
-        static_cast<Uint8>(r),
-        static_cast<Uint8>(g),
-        static_cast<Uint8>(b),
-        static_cast<Uint8>(a)
+        surface->format, Uint8(r), Uint8(g), Uint8(b), Uint8(a)
     );
     dest.x = x;
     dest.y = y;

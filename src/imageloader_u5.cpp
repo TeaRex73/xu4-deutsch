@@ -50,7 +50,7 @@ Image *U5LzwImageLoader::load(U4FILE *file, int width, int height, int bpp)
         return nullptr;
     }
     Image *image = Image::create(
-        width,  height, bpp == 4 || bpp == 8, Image::HARDWARE
+        width,  height, bpp == 4 || bpp == 8, Image::SOFTWARE
     );
     if (!image) {
         if (raw) {

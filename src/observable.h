@@ -35,9 +35,11 @@ public:
 
     void addObserver(Observer<O, A> *o)
     {
-        typename std::vector<Observer<O, A> *>::iterator i;
-        i = std::find(observers.begin(), observers.end(), o);
-        if (i == observers.end()) { observers.push_back(o); }
+        typename std::vector<Observer<O, A> *>::const_iterator i =
+            std::find(observers.cbegin(), observers.cend(), o);
+        if (i == observers.cend()) {
+            observers.push_back(o);
+        }
     }
 
     int countObservers() const
@@ -47,9 +49,11 @@ public:
 
     void deleteObserver(Observer<O, A> *o)
     {
-        typename std::vector<Observer<O, A> *>::iterator i;
-        i = std::find(observers.begin(), observers.end(), o);
-        if (i != observers.end()) { observers.erase(i); }
+        typename std::vector<Observer<O, A> *>::const_iterator i =
+            std::find(observers.cbegin(), observers.cend(), o);
+        if (i != observers.cend()) {
+            observers.erase(i);
+        }
     }
 
     void deleteObservers()
@@ -71,13 +75,15 @@ public:
         // is called, so a copy is used to prevent
         // problems if the observer removes itself (or
         // otherwise changes the observer list)
-        typename std::vector<Observer<O, A> *> tmp = observers;
-        typename std::vector<Observer<O, A> *>::iterator i;
+        std::vector<Observer<O, A> *> tmp = observers;
         clearChanged();
-        for (i = tmp.begin(); i != tmp.end(); ++i) {
-            Observer<O, A> *observer = *i;
-            observer->update(static_cast<O>(this), arg);
-        }
+        std::for_each(
+            tmp.begin(),
+            tmp.end(),
+            [&](Observer<O, A> *v) -> void {
+                v->update(static_cast<O>(this), arg);
+            }
+        );
     }
 
 protected:

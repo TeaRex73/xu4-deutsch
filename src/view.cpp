@@ -92,7 +92,7 @@ void View::unhighlight()
 void View::drawHighlighted() const
 {
     Image *tmp = Image::create(
-        SCALED(highlightW), SCALED(highlightH), false, Image::HARDWARE
+        SCALED(highlightW), SCALED(highlightH), false, Image::SOFTWARE
     ); /* was SOFTWARE */
     if (!tmp) {
         return;

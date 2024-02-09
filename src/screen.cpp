@@ -1607,7 +1607,7 @@ void screenShake(int iterations)
         const int shakeOffset = 2;
         Image *screen = imageMgr->get("screen")->image;
         Image *bottom = Image::create(
-            SCALED(320), SCALED(shakeOffset + 1), false, Image::HARDWARE
+            SCALED(320), SCALED(shakeOffset + 1), false, Image::SOFTWARE
         );
         bottom->alphaOff();
         // disable all screen updates except our own

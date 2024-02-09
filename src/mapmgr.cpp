@@ -79,7 +79,7 @@ void MapMgr::unloadMap(MapId id)
     std::vector<ConfigElement>::const_iterator i = std::find_if(
         maps.cbegin(),
         maps.cend(),
-        [&](const ConfigElement &v) {
+        [&](const ConfigElement &v) -> bool {
             return id == static_cast<MapId>(v.getInt("id"));
         }
     );
