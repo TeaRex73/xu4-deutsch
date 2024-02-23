@@ -1,0 +1,155 @@
+#!/usr/bin/bc -ql
+/* This requires GNU bc, see "man 1 bc" on any Linux system */
+scale=100
+/* Absolute Value */
+define abs(x) {
+    if (x >= 0) return (x)
+    return (-x)
+}
+/* Round to nearest integer, rounding n+0.5 upwards */
+define round(x) {
+    auto rs, res
+    rs = scale
+    scale = 0
+    res = (x + 0.5) / 1
+    scale = rs
+    return (res)
+}
+/* Test if number is odd, i.e. lowest bit is set in binary format */
+define odd(n) {
+    auto rs, res
+    rs = scale
+    scale = 0
+    res = (n % 2)
+    scale = rs
+    return (res)
+}
+/* Shift Arithmetic Right */
+define sar(n) {
+    auto rs, res
+    rs = scale
+    scale = 0
+    res = (n / 2)
+    scale = rs
+    return (res)
+}
+/* Print two-digit hex value between 00 and FF */
+define void prhex(n) {
+    auto rb
+    rb = obase
+    obase = 16
+    if (n < 16) print "0"
+    print n
+    obase = rb
+}
+/* Clamp value to something between 0.0 and 1.0 */
+define clamp(x) {
+    if (x < 0) return (0)
+    if (x > 1) return (1)
+    return (x)
+}
+/* Undo gamma correction, gamma=2.2, according to simple gamma formula */
+define linearize_ntsc(x) {
+    if (x > 0) return (e(l(x)*2.2))
+    if (x < 0) return (-e(l(-x)*2.2))
+    return 0
+}
+/* Do gamma correction, according to sRGB formula */
+define gammaize_srgb(x) {
+    if (x < 0.0031308) return (12.92 * x)
+    return (1.055 * e(l(x)/2.4) - 0.055)
+}
+pi = a(1.0) * 4.0 /* pi is 4 times arc tangent of 1 */
+sr2op = sqrt(2.0) / pi /* Square root of 2 Over Pi, comes from fourier
+                          series expansion of Apple II pulse signal shape */
+/*
+   you have to change the following a0 loop for pot settings
+   other than 0 degrees, currently it's not a real loop at all
+*/
+for (a0 = -0; a0 <= 0; a0 += 1) {
+    /* convert degrees to radians */
+    a = (a0 / 180.0) * pi
+    /* loop over the lo-res color numbers */
+    for (c = 0; c < 16; c += 1) {
+        /* start with Y = U = V = 0 */
+        y = 0
+        u0 = 0
+        v0 = 0
+        /* add up Y, U and V for the "basic" colors contained in a
+           given color's 4-bit pattern (i.e. the dark colors) */
+        h = c
+        if (odd(h)) {
+            y += 0.25
+            v0 += sr2op
+        }
+        h = sar(h)
+        if (odd(h)) {
+            y += 0.25
+            u0 += sr2op
+        }
+        h = sar(h)
+        if (odd(h)) {
+            y += 0.25
+            v0 -= sr2op
+        }
+        h = sar(h)
+        if (odd(h)) {
+            y += 0.25
+            u0 -= sr2op
+        }
+        /* rotate U, V by angle A (in radians), a no-op unless
+           the a0 loop above has been changed */
+        u = u0 * c(a) - v0 * s(a)
+        v = v0 * c(a) + u0 * s(a)
+        /* calc R, G, B (in range 0-1)
+           see article "YUV-Farbmodell" in German Wikipedia */
+        b = y + (1.0 / 0.493) * u
+        r = y + (1.0 / 0.877) * v
+        g = (y - 0.299 * r - 0.114 * b) / 0.587
+        /* linearize the RGB value, i.e. remove gamma correction */
+        r = linearize_ntsc(r)
+        g = linearize_ntsc(g)
+        b = linearize_ntsc(b)
+        /* go from linearized SMPTE-C to CIE1931 XYZ
+           http://www.brucelindbloom.com/index.html?Eqn_RGB_XYZ_Matrix.html
+        */
+        xl =  0.3935891 * r + 0.3652497 * g + 0.1916313 * b
+        yl =  0.2124132 * r + 0.7010437 * g + 0.0865432 * b
+        zl =  0.0187423 * r + 0.1119313 * g + 0.9581563 * b
+        /* go from CIE1931 XYZ to linearized sRGB */
+        r =  3.2404542 * xl - 1.5371385 * yl - 0.4985314 * zl
+        g = -0.9692660 * xl + 1.8760108 * yl + 0.0415560 * zl
+        b =  0.0556434 * xl - 0.2040259 * yl + 1.0572252 * zl
+        /* do gamma correction */
+        r = gammaize_srgb(r)
+        g = gammaize_srgb(g)
+        b = gammaize_srgb(b)
+        /* restrict to 0-1 range */
+        r = clamp(r)
+        g = clamp(g)
+        b = clamp(b)
+        /* store final values */
+        rd[c] = r
+        gr[c] = g
+        bl[c] = b
+    }
+    print "angle (pot setting): ", a0, " degrees\n"
+    for (c = 0; c < 16; c += 1) {
+       /* output 16 results as six-digit hex RGB values,
+          two digits each for R, for G and for B */ 
+        r = rd[c] * 255.0
+        g = gr[c] * 255.0
+        b = bl[c] * 255.0
+        r = round(r)
+        g = round(g)
+        b = round(b)
+        print "COLOR="
+	if (c < 10) print " "
+	print c, " #"
+        prhex(r)
+        prhex(g)
+        prhex(b)
+        print "\n"
+    }
+}
+quit

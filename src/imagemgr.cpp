@@ -487,7 +487,7 @@ void ImageMgr::fixupIntro(Image *im, int prescale)
     if (settings.videoType != "EGA") {
         color = im->setColor(0, 0, 161); // dark blue
     } else {
-        color = im->setColor(0, 149, 255); // blue for EGA
+        color = im->setColor(54, 156, 255); // blue for EGA
     }
     for (int i = 84; i < 236; i++) { // 152 px wide
         im->fillRect(
@@ -622,8 +622,8 @@ void ImageMgr::fixupDungNS(const Image *im, int)
             unsigned int index;
             im->getPixelIndex(x, y, index);
             if (index == 1) {
-                im->putPixelIndex(x, y, 2);
-            } else if (index == 2) {
+                im->putPixelIndex(x, y, 5);
+            } else if (index == 5) {
                 im->putPixelIndex(x, y, 1);
             }
         }

@@ -26,20 +26,20 @@ static void setBWPalette(png_color *palette)
 static void setEgaPalette(png_color *palette)
 {
     setpalentry( 0,   0,   0,   0);
-    setpalentry( 1,   0, 149, 255);
-    setpalentry( 2,   0, 239,   0);
+    setpalentry( 1,  54, 156, 255);
+    setpalentry( 2,  58, 236,   0);
     setpalentry( 3, 255, 255, 255);
-    setpalentry( 4, 255,  16, 255);
-    setpalentry( 5, 255, 106,   0);
-    setpalentry( 6, 255, 106,   0);
+    setpalentry( 4, 254,  67, 255);
+    setpalentry( 5, 252, 110,   0);
+    setpalentry( 6, 252, 110,   0);
     setpalentry( 7, 255, 255, 255);
     setpalentry( 8,   0,   0,   0);
-    setpalentry( 9,   0, 149, 255);
-    setpalentry(10,   0, 239,   0);
-    setpalentry(11,   0, 149, 255);
-    setpalentry(12, 255, 106,   0);
-    setpalentry(13, 255,  16, 255);
-    setpalentry(14, 255, 106,   0);
+    setpalentry( 9,  54, 156, 255);
+    setpalentry(10,  58, 236,   0);
+    setpalentry(11,  54, 156, 255);
+    setpalentry(12, 252, 110,   0);
+    setpalentry(13, 254,  67, 255);
+    setpalentry(14, 252, 110,   0);
     setpalentry(15, 255, 255, 255);
 }
 

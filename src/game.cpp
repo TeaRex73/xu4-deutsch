@@ -251,7 +251,7 @@ void GameController::init()
     ProgressBar pb((320/2) - (200/2), (200/2), 200, 10, 0, 4);
     pb.setBorderColor(255, 255, 255);
     pb.setBorderWidth(1);
-    pb.setColor(0, 149, 255);
+    pb.setColor(54, 156, 255);
     screenTextAt(13, 11, "%s", "Lade Spiel...");
 #endif
     /* initialize the global game context */

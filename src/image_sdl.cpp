@@ -539,7 +539,7 @@ void Image::putPixelIndex(int x, int y, unsigned int index, bool anyway) const
     Uint8 *p;
     Uint16 *p2;
     Uint32 *p4;
-    if (!__builtin_expect(screenMoving, true) && !anyway) {
+    if (!__builtin_expect(screenMoving, true) && isScreen && !anyway) {
         return;
     }
     bpp = surface->format->BytesPerPixel;
@@ -604,7 +604,7 @@ void Image::fillRect(
     dest.y = y;
     dest.w = w;
     dest.h = h;
-    if (__builtin_expect(screenMoving, true) || anyway) {
+    if (__builtin_expect(screenMoving, true) || !isScreen || anyway) {
         SDL_FillRect(surface, &dest, pixel);
     }
 }
@@ -695,7 +695,7 @@ void Image::drawOn(Image *d, int x, int y, bool anyway) const
     r.y = y;
     r.w = w;
     r.h = h;
-    if (__builtin_expect(screenMoving, true) || anyway) {
+    if (__builtin_expect(screenMoving, true) || (d && !d->isScreen) || anyway) {
         SDL_BlitSurface(surface, nullptr, destSurface, &r);
     }
 }
@@ -729,7 +729,7 @@ void Image::drawSubRectOn(
     dest.x = x;
     dest.y = y;
     /* dest w & h unused */
-    if (__builtin_expect(screenMoving, true) || anyway) {
+    if (__builtin_expect(screenMoving, true) || (d && !d->isScreen) || anyway) {
         SDL_BlitSurface(surface, &src, destSurface, &dest);
     }
 } // Image::drawSubRectOn
@@ -765,7 +765,7 @@ void Image::drawSubRectInvertedOn(
         dest.x = x;
         dest.y = y + rh - i - 1;
         /* dest w & h unused */
-        if (__builtin_expect(screenMoving, true) || anyway) {
+        if (__builtin_expect(screenMoving, true) || (d && !d->isScreen) || anyway) {
             SDL_BlitSurface(surface, &src, destSurface, &dest);
         }
     }

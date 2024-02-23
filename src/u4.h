@@ -11,7 +11,7 @@ extern "C" {
 
 /* Microsoft VC port */
 // #if defined(_MSC_VER)
-#define VERSION __DATE__
+#define VERSION "2024-02-22"
 // #endif
 
 /* info for loading city data from *.ult and *.tlk */

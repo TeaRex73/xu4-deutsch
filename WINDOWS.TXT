@@ -2,15 +2,17 @@
 
 ©1985 von Lord British und Origin Systems, Inc.
 
-Diesem klassischen Werke zu Ehren jetzt erstmals komplett auf Deutsch!
+Diesem klassischen Werke zu Ehren jetzt erstmals komplett auf Deutsch - inlusive
+der Papierdokumente des Originals als PDFs!
 
+Deutsche Fassung 2013-2024 Finire Dragon UDIC
 
 Basiert auf xu4 mit Grafik und Sound aus der Apple-II-Originalversion und
 (in geringem Maße) aus der Commodore-64-Version.
 
-Version U4DEU-2024-02-09
-für Microsoft Windows (Vista oder höher, 32 oder 64 Bit)
-
+Version U4DEU-2024-02-23 "Visible Hills"
+für Microsoft Windows (Vista oder höher, 32 oder 64 Bit, Pentium IV
+oder höher)
 
 Achtung: Diese Version ist noch, wie man sagt, UNVOLLSTÄN UND FÄHLERHAFT!
 Bitte NICHT weitergeben oder irgendwo hochladen!!
@@ -19,7 +21,10 @@ Es handelt sich ausdrücklich um eine Vorab-Version, die nur zum Testen
 bestimmt ist!!
 
 Diese Version ist für Windows. Bitte einfach irgendwohin entpacken und
-dann den Link "!Ultima IV" aus dem Hauptordner starten.
+dann den Link "!Ultima IV" aus dem Hauptordner starten. Das Icon für
+den Link sieht nur dann richtig aus, wenn sich der Hauptordner
+"U4DEU-2024-02-22" auf dem eigenen Desktop befindet und nicht umbenannt
+wird, der Link funktioniert aber auch sonst.
 
 Zum "deinstallieren" einfach den kompletten Ordner löschen. Wenn nötig, kann
 noch der Ordner "%AppData%\xu4" entfernt werden, dort findet man den
@@ -28,11 +33,23 @@ aber insgesamt weniger als 4 Kilobytes.
 
 Diese Version beruht auf der Raspberry-Pi-Version und wurde einfach
 mit MinGW für Windows übersetzt. Ansonsten gilt die Beschreibung
-der Raspberry-Version in "!LIESDAS.TXT" auch hierfür.
+der Raspberry-Version in "!LIESDAS.TXT" auch hierfür. Die Dokumentation
+ist noch nicht auf Windows angepasst, sollte aber wohl kein Problem sein.
 
-Alle Bugs dürfen sehr gerne an mich gemeldet werden!!
+Behobene Bugs seit der vorigen Version:
+- Farben neu berechnet, sRGB-Farben basierend auf mathematischer Umwandlung
+des theoretischen Apple-2-Farbsignals, siehe Dateien "apple2-srgb.bc" und
+"fixpal-srgb.pl" im Ordner Daten.
+- Fehler behoben, durch den die Hügel westlich von Britain (und vermutlich
+auch andere Landschaftstypen unter bestimmten Umständen unsichtbar sein
+konnten.
+- Kleine Fehlerbehebungen
+- Compiler-Flags an MSYS2-Standard angeglichen
+Alle Bugs dürfen sehr gerne an mich gemeldet werden: ticmanis@gmx.de
+Auch sonstiges Feedback ist willkommen!
 
-Ich wierderhole hier nur die Dansagungen:
+
+Ich wiederhole hier nur die Danksagungen:
 
 VIELEN DANK an Richard Garriot, Origin System Inc. und an das xu4-Team, ohne
 die nichts davon möglich gewesen wäre! An Sean Gugler für u4remasteredA2 und

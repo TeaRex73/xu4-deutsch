@@ -2445,7 +2445,7 @@ bool IntroController::updateTitle()
         while (animStepTarget > title->animStep) {
             title->animStep++;
             // blue for the underline
-            color = title->destImage->setColor(0, 149, 255);
+            color = title->destImage->setColor(54, 156, 255);
             // blit bar to the canvas
             title->destImage->fillRect(
                 1, 1, title->animStep, 1, color.r, color.g, color.b
