@@ -832,10 +832,10 @@ int Map::getValidMoves(
             }
             // Creatures that can move onto player
             else if (ontoAvatar && m->canMoveOntoPlayer()) {
-                // tile should be transport (FIXME this condition fails always)
-                //if (tile.getTileType()->isShip() && m->swims()) {
+                // tile should be transport
+                if (m->flies() || tile.getTileType()->isShip()) {
                     retval = DIR_ADD_TO_MASK(d, retval);
-                //}
+                }
             }
         }
     }

@@ -1,0 +1,2 @@
+﻿Siehe die Datei "RASPBERR.TXT" für die Raspberry-Pi-Version oder die
+Datei "WINDOWS.TXT" für die MS-Windows-Version.

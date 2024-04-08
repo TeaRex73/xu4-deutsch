@@ -1539,9 +1539,9 @@ void IntroController::about()
     menuArea.textAt(1, 4, "unter den Bedingungen der GNU GPL");
     menuArea.textAt(1, 5, "die von der FSF ver|ffentlicht");
     menuArea.textAt(1, 6, "wurde. Siehe Datei COPYING.");
-    menuArea.textAt(1, 9, "\011 2006, xu4 Team");
-    menuArea.textAt(1, 8, "\011 1987, Lord British");
-    menuArea.textAt(1, 10, "\011 2015, Finire Dragon");
+    menuArea.textAt(1, 9, "\011 2002-2020, xu4 Team");
+    menuArea.textAt(1, 8, "\011 1985-1987, Lord British");
+    menuArea.textAt(1, 10, "\011 2013-2024, Finire Dragon");
     drawBeasties();
     ReadChoiceController::getChar("");
     screenShowCursor();
@@ -2224,7 +2224,7 @@ void IntroController::getTitleSourceData()
             // PLOT: "Lord British"
             srcData = intro->getSigData();
             // white for EGA
-            RGBA color = info->image->setColor(255, 255, 255);
+            RGBA color = info->image->setColor(241, 241, 241);
             const int blue[16] = {
                 255,
                 250,
@@ -2445,7 +2445,11 @@ bool IntroController::updateTitle()
         while (animStepTarget > title->animStep) {
             title->animStep++;
             // blue for the underline
-            color = title->destImage->setColor(54, 156, 255);
+#ifdef RASB_PI
+            color = title->destImage->setColor(56, 139, 255);
+#else
+            color = title->destImage->setColor(54, 146, 255);
+#endif
             // blit bar to the canvas
             title->destImage->fillRect(
                 1, 1, title->animStep, 1, color.r, color.g, color.b

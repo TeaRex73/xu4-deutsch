@@ -212,7 +212,11 @@ RGBA *U4PaletteLoader::loadEgaPalette()
         const Config *config = Config::getInstance();
         egaPalette = new RGBA[16];
         std::vector<ConfigElement> paletteConf =
+#ifdef RASB_PI
+            config->getElement("egaPalettePi").getChildren();
+#else
             config->getElement("egaPalette").getChildren();
+#endif
         U4ASSERT(
             paletteConf.size() == 16, "EGA palette does not have 16 entries"
         );

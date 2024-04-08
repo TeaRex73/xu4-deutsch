@@ -8,19 +8,19 @@
 <!-- See: http://upload.wikimedia.org/wikipedia/commons/d/df/EGA_Table.PNG -->
 <egaPalette>
     <color red="0" green="0" blue="0"/>          <!-- APPLE black -->
-    <color red="54" green="156" blue="255"/>     <!-- APPLE blue -->
-    <color red="58" green="236" blue="0"/>       <!-- APPLE green -->
-    <color red="255" green="255" blue="255"/>    <!-- APPLE white -->
-    <color red="254" green="67" blue="255"/>     <!-- APPLE purple -->
-    <color red="252" green="110" blue="0"/>      <!-- APPLE orange -->
-    <color red="252" green="110" blue="0"/>      <!-- APPLE orange -->
-    <color red="255" green="255" blue="255"/>    <!-- APPLE white -->
+    <color red="54" green="146" blue="255"/>     <!-- APPLE blue -->
+    <color red="60" green="204" blue="0"/>       <!-- APPLE green -->
+    <color red="241" green="241" blue="241"/>    <!-- APPLE white -->
+    <color red="214" green="67" blue="255"/>     <!-- APPLE purple -->
+    <color red="216" green="115" blue="0"/>      <!-- APPLE orange -->
+    <color red="216" green="115" blue="0"/>      <!-- APPLE orange -->
+    <color red="241" green="241" blue="241"/>    <!-- APPLE white -->
     <color red="0" green="0" blue="0"/>          <!-- APPLE black -->
-    <color red="54" green="156" blue="255"/>     <!-- APPLE blue -->
-    <color red="58" green="236" blue="0"/>       <!-- APPLE green -->
-    <color red="54" green="156" blue="255"/>     <!-- APPLE blue -->
-    <color red="252" green="110" blue="0"/>      <!-- APPLE orange -->
-    <color red="254" green="67" blue="255"/>     <!-- APPLE purple -->
-    <color red="252" green="110" blue="0"/>      <!-- APPLE orange -->
-    <color red="255" green="255" blue="255"/>    <!-- APPLE white -->
+    <color red="54" green="146" blue="255"/>     <!-- APPLE blue -->
+    <color red="60" green="204" blue="0"/>       <!-- APPLE green -->
+    <color red="54" green="146" blue="255"/>     <!-- APPLE blue -->
+    <color red="216" green="115" blue="0"/>      <!-- APPLE orange -->
+    <color red="214" green="67" blue="255"/>     <!-- APPLE purple -->
+    <color red="216" green="115" blue="0"/>      <!-- APPLE orange -->
+    <color red="241" green="241" blue="241"/>    <!-- APPLE white -->
 </egaPalette>

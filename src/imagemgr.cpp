@@ -110,7 +110,11 @@ void ImageMgr::init()
      */
     const Config *config = Config::getInstance();
     std::vector<ConfigElement> graphicsConf =
+#ifdef RASB_PI
+        config->getElement("graphicsPi").getChildren();
+#else
         config->getElement("graphics").getChildren();
+#endif
     for (std::vector<ConfigElement>::const_iterator conf =
              graphicsConf.cbegin();
          conf != graphicsConf.cend();
@@ -453,7 +457,7 @@ void ImageMgr::fixupIntro(Image *im, int prescale)
     /* -----------------------------
      * draw "Lord British" signature
      * ----------------------------- */
-    color = im->setColor(255, 255, 255); // white for EGA
+    color = im->setColor(241, 241, 241); // white for EGA
 
     const int blue[16] = {
         255, 250, 226, 226, 210, 194, 161, 161,
@@ -487,7 +491,11 @@ void ImageMgr::fixupIntro(Image *im, int prescale)
     if (settings.videoType != "EGA") {
         color = im->setColor(0, 0, 161); // dark blue
     } else {
-        color = im->setColor(54, 156, 255); // blue for EGA
+#ifdef RASB_PI
+        color = im->setColor(56, 139, 255); // blue for EGA
+#else
+        color = im->setColor(54, 146, 255); // blue for EGA
+#endif
     }
     for (int i = 84; i < 236; i++) { // 152 px wide
         im->fillRect(

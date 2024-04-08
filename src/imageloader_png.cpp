@@ -101,8 +101,8 @@ Image *PngImageLoader::load(
     } else if (color_type == PNG_COLOR_TYPE_RGB_ALPHA) {
         bpp = bit_depth * 4;
     } else {
-                bpp = 0; //prevent "clobbered by longjmp" warning
-                errorFatal("Unsupported PNG_COLOR_TYPE!");
+        bpp = 0; //prevent "clobbered by longjmp" warning
+        errorFatal("Unsupported PNG_COLOR_TYPE!");
     }
 
     png_byte **row_pointers = png_get_rows(png_ptr, info_ptr);

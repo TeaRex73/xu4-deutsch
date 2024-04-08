@@ -73,7 +73,7 @@ private:
     std::vector<U4ZipPackage *> packages;
 };
 
-// make sure putc isn't a macro
+// make sure putc isn't a macro (C++ standard doesn't allow that anyway)
 #ifdef putc
 #undef putc
 #endif

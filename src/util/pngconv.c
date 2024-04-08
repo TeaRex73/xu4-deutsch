@@ -25,22 +25,41 @@ static void setBWPalette(png_color *palette)
 
 static void setEgaPalette(png_color *palette)
 {
+#ifdef RASB_PI
     setpalentry( 0,   0,   0,   0);
-    setpalentry( 1,  54, 156, 255);
-    setpalentry( 2,  58, 236,   0);
+    setpalentry( 1,  56, 139, 255);
+    setpalentry( 2,  56, 189,   0);
     setpalentry( 3, 255, 255, 255);
-    setpalentry( 4, 254,  67, 255);
-    setpalentry( 5, 252, 110,   0);
-    setpalentry( 6, 252, 110,   0);
+    setpalentry( 4, 199,  66, 255);
+    setpalentry( 5, 199, 116,   0);
+    setpalentry( 6, 199, 116,   0);
     setpalentry( 7, 255, 255, 255);
     setpalentry( 8,   0,   0,   0);
-    setpalentry( 9,  54, 156, 255);
-    setpalentry(10,  58, 236,   0);
-    setpalentry(11,  54, 156, 255);
-    setpalentry(12, 252, 110,   0);
-    setpalentry(13, 254,  67, 255);
-    setpalentry(14, 252, 110,   0);
+    setpalentry( 9,  56, 139, 255);
+    setpalentry(10,  56, 189,   0);
+    setpalentry(11,  56, 139, 255);
+    setpalentry(12, 199, 116,   0);
+    setpalentry(13, 199,  66, 255);
+    setpalentry(14, 199, 116,   0);
     setpalentry(15, 255, 255, 255);
+#else
+    setpalentry( 0,   0,   0,   0);
+    setpalentry( 1,  54, 146, 255);
+    setpalentry( 2,  60, 204,   0);
+    setpalentry( 3, 241, 241, 241);
+    setpalentry( 4, 214,  67, 255);
+    setpalentry( 5, 216, 115,   0);
+    setpalentry( 6, 216, 115,   0);
+    setpalentry( 7, 241, 241, 241);
+    setpalentry( 8,   0,   0,   0);
+    setpalentry( 9,  54, 146, 255);
+    setpalentry(10,  60, 204,   0);
+    setpalentry(11,  54, 146, 255);
+    setpalentry(12, 216, 115,   0);
+    setpalentry(13, 214,  67, 255);
+    setpalentry(14, 216, 115,   0);
+    setpalentry(15, 241, 241, 241);
+#endif
 }
 
 #undef setpalentry

@@ -1,12 +1,12 @@
 <?xml version="1.0"?>
-<!DOCTYPE egaPalette SYSTEM "dtd/egaPalette.dtd" [
+<!DOCTYPE egaPalettePi SYSTEM "dtd/egaPalettePi.dtd" [
   <!ENTITY % color SYSTEM "dtd/color.dtd">
   %color;
 ]>
 
 <!-- $Id$ -->
 <!-- See: http://upload.wikimedia.org/wikipedia/commons/d/df/EGA_Table.PNG -->
-<egaPalette>
+<egaPalettePi>
     <color red="0" green="0" blue="0"/>          <!-- APPLE black -->
     <color red="56" green="139" blue="255"/>     <!-- APPLE blue -->
     <color red="56" green="189" blue="0"/>      <!-- APPLE green -->
@@ -23,4 +23,4 @@
     <color red="199" green="66" blue="255"/>     <!-- APPLE purple -->
     <color red="199" green="116" blue="0"/>     <!-- APPLE orange -->
     <color red="255" green="255" blue="255"/>    <!-- APPLE white -->
-</egaPalette>
+</egaPalettePi>

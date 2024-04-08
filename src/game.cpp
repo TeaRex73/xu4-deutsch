@@ -249,9 +249,13 @@ void GameController::init()
     initScreen();
 #if 0
     ProgressBar pb((320/2) - (200/2), (200/2), 200, 10, 0, 4);
-    pb.setBorderColor(255, 255, 255);
+    pb.setBorderColor(241, 241, 241);
     pb.setBorderWidth(1);
-    pb.setColor(54, 156, 255);
+#ifdef RASB_PI
+    pb.setColor(56, 139, 255);
+#else
+    pb.setColor(54, 146, 255);
+#endif
     screenTextAt(13, 11, "%s", "Lade Spiel...");
 #endif
     /* initialize the global game context */

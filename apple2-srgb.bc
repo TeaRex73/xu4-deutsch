@@ -1,155 +1,474 @@
-#!/usr/bin/bc -ql
-/* This requires GNU bc, see "man 1 bc" on any Linux system */
-scale=100
-/* Absolute Value */
-define abs(x) {
-    if (x >= 0) return (x)
-    return (-x)
-}
-/* Round to nearest integer, rounding n+0.5 upwards */
-define round(x) {
-    auto rs, res
-    rs = scale
-    scale = 0
-    res = (x + 0.5) / 1
-    scale = rs
-    return (res)
+#!/usr/bin/env -S BC_LINE_LENGTH=0 bc -ql ./bc/code/funcs.bc ./bc/code/output_formatting.bc
+
+/* This requires GNU bc, see "man 1 bc" on any Linux system
+   Also it needs the bc function library from here:
+   http://phodd.net/gnu-bc/phodd.net-gnu-bc-201302202200+html.zip
+   Please unpack so that the top level directory of that package
+   is in the same place as this script. If you got this as part
+   of the U4DEU-Win32-20XX-YY-ZZ.zip package, then everything
+   will be there already and you don't need any extra
+   downloads.
+*/
+
+/* Reset input base to 10 to be sure. If it's not 10, then,
+   as the Time Lord would say, all else fails... */
+ibase = A
+
+/* You can set the precision here. The math is using exact values only,
+   and thus should work at any precision.
+*/
+globalscale = 30
+scale = globalscale
+
+/* Helper functions not already in the funcs.bc library */
+/* Square */
+define sqr(x) {
+    return x * x
 }
 /* Test if number is odd, i.e. lowest bit is set in binary format */
 define odd(n) {
-    auto rs, res
-    rs = scale
-    scale = 0
-    res = (n % 2)
-    scale = rs
-    return (res)
+    return remainder(int(n), 2)
 }
 /* Shift Arithmetic Right */
 define sar(n) {
-    auto rs, res
-    rs = scale
-    scale = 0
-    res = (n / 2)
-    scale = rs
-    return (res)
+    return int(n / 2)
 }
-/* Print two-digit hex value between 00 and FF */
+/* Print four-digit hex value between 0000 and FFFF */
 define void prhex(n) {
-    auto rb
-    rb = obase
+    auto oob
+    oob = obase
     obase = 16
+    if (n < 4096) print "0"
+    if (n < 256) print "0"
     if (n < 16) print "0"
     print n
-    obase = rb
+    obase = oob
 }
+
 /* Clamp value to something between 0.0 and 1.0 */
 define clamp(x) {
-    if (x < 0) return (0)
-    if (x > 1) return (1)
-    return (x)
+    if (x < 0) return 0
+    if (x > 1) return 1
+    return x
 }
-/* Undo gamma correction, gamma=2.2, according to simple gamma formula */
+
+/* Degrees-based trigonometry */
+c_180_over_pi = 180 / pi()
+c_pi_over_180 = pi() / 180
+define darctan2(x, y) {
+    return c_180_over_pi * arctan2(x, y)
+}
+define dcos(x) {
+    return cos(c_pi_over_180 * x)
+}
+define dsin(x) {
+    return sin(c_pi_over_180 * x)
+}
+
+/* Undo gamma correction, according to SMPTE-170M gamma formula.
+   But derive the constants directly to get full precision.
+   beta is defined as the root of f(x) near 0.018, this provides
+   for a smooth joining of the linear and gamma parts of the
+   function, i.e. both parts will have the same value and the same
+   first derivative value at that point. */
+define f(x) {
+    return 11 / 2 * x - 10 * pow(x, 11 / 20) + 1
+}
+define f_prime(x) {
+    return 11 / 2 - (11 / (2 * pow(x, 9 / 20)))
+}
+/* newton method to find the root, searching near x */
+define newton_(x) {
+    auto d
+    if (f(x) / 9) {
+        scale = os_newton + 100
+        d = x - f(x) / f_prime(x)
+        scale = os_newton
+        return newton_(d)
+    }
+    return x
+}
+define newton(x) {
+    auto os_newton
+    os_newton = scale
+    return newton_(x) / 1
+}
+beta = newton(0.018)
+/* Use variables to hold precalculated constants,
+   to speed up function */
+alpha = 10 * pow(beta, 11 / 20)
+alpha_minus_1 = alpha - 1
+delta = 9 / 2 * beta
+two_over_nine = 2 / 9
+twenty_over_nine = 20 / 9
 define linearize_ntsc(x) {
-    if (x > 0) return (e(l(x)*2.2))
-    if (x < 0) return (-e(l(-x)*2.2))
-    return 0
+    if (x < delta) return x * two_over_nine
+    return pow((x + alpha_minus_1) / alpha, twenty_over_nine)
 }
-/* Do gamma correction, according to sRGB formula */
+
+/* Do gamma correction, according to sRGB gamma formula, which
+   has a precise definition. */
+delta_srgb = 0.04045 / 12.92
+pow_srgb = 5 / 12
 define gammaize_srgb(x) {
-    if (x < 0.0031308) return (12.92 * x)
-    return (1.055 * e(l(x)/2.4) - 0.055)
+    if (x < delta_srgb) return 12.92 * x
+    return 1.055 * pow(x, pow_srgb) - 0.055
 }
-pi = a(1.0) * 4.0 /* pi is 4 times arc tangent of 1 */
-sr2op = sqrt(2.0) / pi /* Square root of 2 Over Pi, comes from fourier
-                          series expansion of Apple II pulse signal shape */
-/*
-   you have to change the following a0 loop for pot settings
-   other than 0 degrees, currently it's not a real loop at all
+
+/* precalculate some constants needed later */
+pow_25_7 = pow(25, 7)
+
+ufac = sqrt(865318419 / 209556997)
+vfac = sqrt(288439473 / 221990474)
+
+/* Matrix for going from CIE1931 XYZ to linear sRGB. Thanks to
+   Wolfram Alpha for inverting the standard sRGB Matrix for me. */
+a[0] =  67119136
+a[1] = -31838320
+a[2] = -10327488
+a[3] = -20068284
+a[4] =  38850255
+a[5] =    859902
+a[6] =   1153856
+a[7] =  -4225640
+a[8] =  21892272
+for (i = 0; i <= 8; ++i) {
+  a[i] = a[i] * 125 / 2588973042
+}
+
+/* Matrix for going from SMPTE-170M to CIE1931 XYZ. Thanks to
+   Bruce Lindbloom and Wolfram Alpha */
+zz[0] = 51177/130049
+zz[1] = 4987652/13655145
+zz[2] = 5234753/27310290
+zz[3] = 82858/390147
+zz[4] = 1367582/1950735
+zz[5] = 168863/1950735
+zz[6] = 2437/130049
+zz[7] = 1528474/13655145
+zz[8] = 5234753/5462058
+
+/* Here come the colors used by the Apple IIGS for Apple //e
+   emulation modes. The Apple IIe Card for LC Mac models uses
+   the same values (but inconsistently converted from 4 bits per
+   channel to 16 bits per channel), by the way.
+   See "IIGS Technical Note #63" from Apple, and the 'clut'
+   resource "Apple IIe Colors" in the IIe card's "IIe Startup"
+   68K Mac executable version 2.2.1d.
 */
-for (a0 = -0; a0 <= 0; a0 += 1) {
-    /* convert degrees to radians */
-    a = (a0 / 180.0) * pi
+ibase = 16
+rc[0] = 0; gc[0] = 0; bc[0] = 0
+rc[1] = D; gc[1] = 0; bc[1] = 3
+rc[2] = 0; gc[2] = 0; bc[2] = 9
+rc[3] = D; gc[3] = 2; bc[3] = D
+rc[4] = 0; gc[4] = 7; bc[4] = 2
+rc[5] = 5; gc[5] = 5; bc[5] = 5
+rc[6] = 2; gc[6] = 2; bc[6] = F
+rc[7] = 6; gc[7] = A; bc[7] = F
+rc[8] = 8; gc[8] = 5; bc[8] = 0
+rc[9] = F; gc[9] = 6; bc[9] = 0
+rc[A] = A; gc[A] = A; bc[A] = A
+rc[B] = F; gc[B] = 9; bc[B] = 8
+rc[C] = 1; gc[C] = D; bc[C] = 0
+rc[D] = F; gc[D] = F; bc[D] = 0
+rc[E] = 4; gc[E] = F; bc[E] = 9
+rc[F] = F; gc[F] = F; bc[F] = F
+ibase = A
+
+/* Reference white point for both SMPTE-170M and sRGB is standard
+   illuminant D65, defined in both norms as: x=0.3127 y=0.3290
+*/
+/* Convert white point from xyY (with Y = 1) to XYZ */
+xw = 0.3127 / 0.3290
+yw = 1
+zw = (1 - 0.3127 - 0.3290) / 0.3290
+/* Functions for converting from XYZ to L*a*b* */
+define fxyz(v) {
+    if (v > 216 / 24389) {
+        return cbrt(v)
+    } else {
+        return (24389 / 27 * v + 16) / 116
+    }
+}
+define fx(x) {
+    return fxyz(x / xw)
+}
+define fy(y) {
+    return fxyz(y / yw)
+}
+define fz(z) {
+    return fxyz(z / zw)
+}
+
+/* Go from "analog" 0.0 to 1.0 value to "digital" 8 or 16 bit value */
+define limitprod(x, y) {
+    x = int(clamp(x) * y)
+    if (x == y) x -= 1
+    return x
+}
+
+/* Convert Apple IIGS Colors into CIE L*a*b* color space */
+for (c = 0; c <= 15; ++c) {
+    r = rc[c] / 15
+    g = gc[c] / 15
+    b = bc[c] / 15
+    r = linearize_ntsc(r)
+    g = linearize_ntsc(g)
+    b = linearize_ntsc(b)
+    xl =  zz[0] * r + zz[1] * g + zz[2] * b
+    yl =  zz[3] * r + zz[4] * g + zz[5] * b
+    zl =  zz[6] * r + zz[7] * g + zz[8] * b
+    fx = fx(xl)
+    fy = fy(yl)
+    fz = fz(zl)
+    l_star[c] = 116 * fy - 16
+    a_star[c] = 500 * (fx - fy)
+    b_star[c] = 200 * (fy - fz)
+    c_star[c] = sqrt(sqr(a_star[c]) + sqr(b_star[c]))
+    /* Calculate sRGB version of IIGS colors for direct comparison */
+    r = a[0] * xl + a[1] * yl + a[2] * zl
+    g = a[3] * xl + a[4] * yl + a[5] * zl
+    b = a[6] * xl + a[7] * yl + a[8] * zl
+    /* do gamma correction */
+    r = gammaize_srgb(r)
+    g = gammaize_srgb(g)
+    b = gammaize_srgb(b)
+    /* restrict to 0-1 range and store final values as 8 bits for
+    use in ANSI terminal escape sequence below. */
+    riigs[c] = limitprod(r, 256)
+    giigs[c] = limitprod(g, 256)
+    biigs[c] = limitprod(b, 256)
+}
+
+sr2op = sqrt(2) / pi() /* Square root of 2 Over Pi, comes from fourier
+                          series expansion of Apple II pulse signal shape. */
+
+/* Calculate Y, U, V for the Apple II colors from signal shape
+   (assuming it to be perfectly rectangular)
+*/
+for (c = 0; c <= 15; ++c) {
+    /* start with Y = U = V = 0 */
+    y = 0
+    u = 0
+    v = 0
+    /* add up Y, U and V for the "basic" colors contained in a
+       given color's 4-bit pattern (i.e. the dark colors) */
+    h = c
+    if (odd(h)) {
+        y += 0.25
+        v += sr2op
+    }
+    h = sar(h)
+    if (odd(h)) {
+        y += 0.25
+        u += sr2op
+    }
+    h = sar(h)
+    if (odd(h)) {
+        y += 0.25
+        v -= sr2op
+    }
+    h = sar(h)
+    if (odd(h)) {
+        y += 0.25
+        u -= sr2op
+    }
+    /* handle NTSC pedestal and the fact that the monitor expects
+       it but the Apple hardware does not provide it. */
+    y[c] = (y - 0.075) / 0.925
+    u[c] = u / 0.925
+    v[c] = v / 0.925
+}
+
+/* Starting values for the four NTSC monitor knobs. You can put better
+   values here to make it converge faster.
+*/
+brightness =  0
+picture    =  1
+color      =  1
+hue        =  0
+
+/* Helper values */
+minerr     = 9999
+maxtry     = 9
+
+/* Main search loop. Find the best possible match for Apple IIgs colors
+   that you can get from turning the four knobs of a standard
+   NTSC monitor fed with an Apple //e type signal.
+*/
+for (try = maxtry - 8; try <= (globalscale + 1) * 8; /* nothing */) {
+    old_hue = hue
+    old_color = color
+    old_brightness = brightness
+    old_picture = picture
+    if (try >= 0) { /* try == -1 means calculate baseline */
+        /* The algorithm proceeds as follows:
+           1. Alternate between increasing and decreasing a digit
+           2. Cycle between the four knobs
+           3. Go to successively less significant digits
+           Any change that doesn't imrpove the result is reversed
+           and the next try is started; if it does improve,
+           use new values as the next baseline, and go back
+           eight tries (one digit).
+        */
+        inc = pow(10, -int(try / 8))
+        if (odd(try)) inc = -inc
+        case = int(remainder(try, 8) / 2)
+        if (case == 0) brightness += inc
+        if (case == 1) picture += inc
+        if (case == 2) color += inc
+        if (case == 3) hue += inc
+    } else { /* no need to calculate baseline more than once */
+        try = 0
+        inc = 0
+    }
+    err = 0
     /* loop over the lo-res color numbers */
-    for (c = 0; c < 16; c += 1) {
-        /* start with Y = U = V = 0 */
-        y = 0
-        u0 = 0
-        v0 = 0
-        /* add up Y, U and V for the "basic" colors contained in a
-           given color's 4-bit pattern (i.e. the dark colors) */
-        h = c
-        if (odd(h)) {
-            y += 0.25
-            v0 += sr2op
-        }
-        h = sar(h)
-        if (odd(h)) {
-            y += 0.25
-            u0 += sr2op
-        }
-        h = sar(h)
-        if (odd(h)) {
-            y += 0.25
-            v0 -= sr2op
-        }
-        h = sar(h)
-        if (odd(h)) {
-            y += 0.25
-            u0 -= sr2op
-        }
-        /* rotate U, V by angle A (in radians), a no-op unless
-           the a0 loop above has been changed */
-        u = u0 * c(a) - v0 * s(a)
-        v = v0 * c(a) + u0 * s(a)
-        /* calc R, G, B (in range 0-1)
+    for (c = 0; c <= 15; ++c) {
+        /* rotate U, V by hue */
+        u0 = u[c]
+        v0 = v[c]
+        u = u0 * dcos(hue) - v0 * dsin(hue)
+        v = v0 * dcos(hue) + u0 * dsin(hue)
+        /* calc R, G, B (in range 0-1) while applying color,
            see article "YUV-Farbmodell" in German Wikipedia */
-        b = y + (1.0 / 0.493) * u
-        r = y + (1.0 / 0.877) * v
+        y = y[c]
+        b = y + (ufac * u * color)
+        r = y + (vfac * v * color)
         g = (y - 0.299 * r - 0.114 * b) / 0.587
+        /* Apply picture and brightness, then restrict RGB to 0-1 range */
+        r = clamp(r * picture + brightness)
+        g = clamp(g * picture + brightness)
+        b = clamp(b * picture + brightness)
         /* linearize the RGB value, i.e. remove gamma correction */
         r = linearize_ntsc(r)
         g = linearize_ntsc(g)
         b = linearize_ntsc(b)
-        /* go from linearized SMPTE-C to CIE1931 XYZ
-           http://www.brucelindbloom.com/index.html?Eqn_RGB_XYZ_Matrix.html
-        */
-        xl =  0.3935891 * r + 0.3652497 * g + 0.1916313 * b
-        yl =  0.2124132 * r + 0.7010437 * g + 0.0865432 * b
-        zl =  0.0187423 * r + 0.1119313 * g + 0.9581563 * b
-        /* go from CIE1931 XYZ to linearized sRGB */
-        r =  3.2404542 * xl - 1.5371385 * yl - 0.4985314 * zl
-        g = -0.9692660 * xl + 1.8760108 * yl + 0.0415560 * zl
-        b =  0.0556434 * xl - 0.2040259 * yl + 1.0572252 * zl
-        /* do gamma correction */
-        r = gammaize_srgb(r)
-        g = gammaize_srgb(g)
-        b = gammaize_srgb(b)
-        /* restrict to 0-1 range */
-        r = clamp(r)
-        g = clamp(g)
-        b = clamp(b)
-        /* store final values */
-        rd[c] = r
-        gr[c] = g
-        bl[c] = b
+        /* go from linearized SMPTE-C to CIE1931 XYZ */
+        xl =  zz[0] * r + zz[1] * g + zz[2] * b
+        yl =  zz[3] * r + zz[4] * g + zz[5] * b
+        zl =  zz[6] * r + zz[7] * g + zz[8] * b
+        /* Calculate L*a*b* values from CIE 1931 */
+        fx = fx(xl)
+        fy = fy(yl)
+        fz = fz(zl)
+        l2 = 116 * fy - 16
+        a2 = 500 * (fx - fy)
+        b2 = 200 * (fy - fz)
+        /* Apply the CIEDE2000 formula for color difference. Yes,
+           it's pretty complex. */
+        c2 = sqrt(sqr(a2) + sqr(b2))
+        l1 = l_star[c]
+        a1 = a_star[c]
+        b1 = b_star[c]
+        c1 = c_star[c]
+        l_bar_prime = (l1 + l2) / 2
+        c_bar = (c1 + c2) / 2
+        pow_cb_7 = pow(c_bar, 7)
+        g_plus_1 = 1 + (1 - sqrt(pow_cb_7 / (pow_cb_7 + pow_25_7))) / 2
+        a1_prime = a1 * g_plus_1
+        a2_prime = a2 * g_plus_1
+        c1_prime = sqrt(sqr(a1_prime) + sqr(b1))
+        c2_prime = sqrt(sqr(a2_prime) + sqr(b2))
+        c_bar_prime = (c1_prime + c2_prime) / 2
+        h1_prime = darctan2(b1, a1_prime)
+        if (h1_prime < 0) h1_prime += 360
+        h2_prime = darctan2(b2, a2_prime)
+        if (h2_prime < 0) h2_prime += 360
+        if (abs(h1_prime - h2_prime) > 180) {
+            h_bar_prime = (h1_prime + h2_prime + 360) / 2
+        } else {
+            h_bar_prime = (h1_prime + h2_prime) / 2
+        }
+        t = 1 - 0.17 * dcos(h_bar_prime - 30) + 0.24 * dcos(2 * h_bar_prime) + 0.32 * dcos(3 * h_bar_prime + 6) - 0.20 * dcos(4 * h_bar_prime - 63)
+        if (abs(h2_prime - h1_prime) <= 180) {
+            delta_hs_prime = h2_prime - h1_prime
+        } else if (h2_prime <= h1_prime) {
+            delta_hs_prime = h2_prime - h1_prime + 360
+        } else {
+            delta_hs_prime = h2_prime - h1_prime - 360
+        }
+        delta_l_prime = l2 - l1
+        delta_c_prime = c2_prime - c1_prime
+        delta_h_prime = 2 * sqrt(c1_prime * c2_prime) * dsin(delta_hs_prime / 2)
+        sqr_lbp_minus_50 = sqr(l_bar_prime - 50)
+        sl = 1 + 0.015 * sqr_lbp_minus_50 / sqrt(20 + sqr_lbp_minus_50)
+        sc = 1 + 0.045 * c_bar_prime
+        sh = 1 + 0.015 * c_bar_prime * t
+        delta_theta_times_2 = 60 * exp(-sqr((h_bar_prime - 275) / 25))
+        pow_cbp_7 = pow(c_bar_prime, 7)
+        rc = 2 * sqrt(pow_cbp_7 / (pow_cbp_7 + pow_25_7))
+        rt = -rc * dsin(delta_theta_times_2)
+        delta_l_prime /= sl
+        delta_c_prime /= sc
+        delta_h_prime /= sh
+        myerr = sqr(delta_l_prime) + sqr(delta_c_prime) + sqr(delta_h_prime) + rt * delta_c_prime * delta_h_prime
+        delta_e[c] = sqrt(myerr) /* This is the actual CIEDE2000 value */
+        err += myerr /* We use the squared value here */
+        if (err < minerr) { /* Save time, skipping if err already too high */
+            /* go from CIE1931 XYZ to linearized sRGB */
+            r = a[0] * xl + a[1] * yl + a[2] * zl
+            g = a[3] * xl + a[4] * yl + a[5] * zl
+            b = a[6] * xl + a[7] * yl + a[8] * zl
+            /* do gamma correction */
+            r = gammaize_srgb(r)
+            g = gammaize_srgb(g)
+            b = gammaize_srgb(b)
+            /* restrict to 0-1 range and  store final values */
+            rd[c] = limitprod(r, 65536)
+            gr[c] = limitprod(g, 65536)
+            bl[c] = limitprod(b, 65536)
+        } else break
     }
-    print "angle (pot setting): ", a0, " degrees\n"
-    for (c = 0; c < 16; c += 1) {
-       /* output 16 results as six-digit hex RGB values,
-          two digits each for R, for G and for B */ 
-        r = rd[c] * 255.0
-        g = gr[c] * 255.0
-        b = bl[c] * 255.0
-        r = round(r)
-        g = round(g)
-        b = round(b)
-        print "COLOR="
-	if (c < 10) print " "
-	print c, " #"
-        prhex(r)
-        prhex(g)
-        prhex(b)
-        print "\n"
-    }
+    if (err < minerr) {
+        minerr = err
+        if (try > maxtry) maxtry = try
+        try = 0
+        err = sqrt(err / 16) /* Calc root of mean squared error */
+        print "\nbrightness: "
+        .=printff(15, 10, brightness)+newline()
+        print "picture   : "
+        .=printff(15, 10, picture)+newline()
+        print "color     : "
+        .=printff(15, 10, color)+newline()
+        print "hue       : "
+        .=printff(15, 10, hue)+newline()
+        print "RMS ∆E    : "
+        .=printff(15, 10, err)+newline()
+        print "max tries : "
+        .=printff(4, 0, maxtry)+newline()
+        for (c = 0; c <= 15; ++c) {
+           /* output 16 0-1 results as twelve-digit hex RGB values,
+              four digits each for R, for G and for B.
+              Use some ANSI teminal escapes for nice coloring */
+            print "COLOR="
+            .=printff(2, 0, c)
+            print " #[31m"
+            prhex(rd[c])
+            print "[32m"
+            prhex(gr[c])
+            print "[34m"
+            prhex(bl[c])
+            print "[39m "
+            /* Directly display colors for calculated and for
+               IIGS color values using some ANSI escape magic.
+            */
+            print "[48:2::", int(rd[c] / 256)
+            print ":", int(gr[c] / 256)
+            print ":", int(bl[c] / 256), "m"
+            print "          "
+            print "[48:2::", riigs[c], ":", giigs[c], ":", biigs[c], "m"
+            print "          "
+            /* Display per-color Delta-E value */
+            print "[49m ∆E="
+            .=printff(13, 10, delta_e[c])+newline()
+        }
+    } else { /* No improvement, back to previous values */
+        brightness = old_brightness
+        picture = old_picture
+        color = old_color
+        hue = old_hue
+        try += 1
+   }
 }
 quit

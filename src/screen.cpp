@@ -331,7 +331,11 @@ static void screenLoadGraphicsFromConf()
 {
     const Config *config = Config::getInstance();
     std::vector<ConfigElement> graphicsConf =
+#ifdef RASB_PI
+        config->getElement("graphicsPi").getChildren();
+#else
         config->getElement("graphics").getChildren();
+#endif
     for (std::vector<ConfigElement>::const_iterator conf =
              graphicsConf.cbegin();
          conf != graphicsConf.cend();

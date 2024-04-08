@@ -2,7 +2,7 @@
 
 ©1985 von Lord British und Origin Systems, Inc.
 
-Diesem klassischen Werke zu Ehren jetzt erstmals komplett auf Deutsch!
+Diesem klassischen Werke zu Ehren jetzt erstmals komplett auf deutsch!
 
 
 Basiert auf xu4 mit Grafik und Sound aus der Apple-II-Originalversion und
@@ -19,9 +19,9 @@ bestimmt ist!!
 
 
 Benötigt wird ein Raspberry Pi 1, 2 oder 3 oder ein Pi Zero / Zero W(H).
-Bisher NICHT Lauffähig auf Pi 4, Pi 400, Pi 5, Pi Zero 2 oder irgendeinem
-anderen Raspberry-Pi-Modell. Kurz gesagt, es funktioniert nur auf Pi's,
-die vor 2020 erhältlich waren.
+Bisher NICHT lauffähig auf Pi 4, Pi 400, Pi 5, Pi Zero 2 oder irgendeinem
+anderen Raspberry-Pi-Modell. Kurz gesagt, es funktioniert nur auf
+Raspberries, die vor 2020 erhältlich waren.
 
 Zusätzlich braucht man ein Netzteil, eine deutsche USB-Tastatur und einen
 Fernseher oder Monitor, sowie die passenden Anschlusskabel. Ich empfehle
@@ -29,7 +29,7 @@ den Anschluss des Bildschirms über den analogen FBAS-Ausgang des Pi und die
 Umstellung des Bildschirms auf 4:3, sonst stimmt das Bildseitenverhältnis
 nicht. Es ist aber auch ein Anschluss über HDMI möglich.
 
-Die .7z-Version ist ein kleinerer Dowload, erfordert aber 7-zip zum
+Die .7z-Version ist ein kleinerer Download, erfordert aber 7-zip zum
 entpacken. Sonst bitte die .zip-Version verwenden, der Inhalt ist der
 gleiche. Niemand braucht beide Versionen herunterzuladen!
 
@@ -38,8 +38,8 @@ dann z.B. mit dem Raspberry-Pi-Imager oder Win32DiskImager auf eine SD-Karte
 mit mindestens 16 GB schreiben. Es genügt NICHT, die entpackte Datei mittels
 Windows-Explorer auf die SD-Karte zu kopieren!
 
-Die Dokumentation des Spiels kann man danach zum Beispiel
-auf einem PC im Ordner "Ultima IV Dokumenation" der Karte lesen.
+Die Dokumentation des Spiels kann man danach zum Beispiel auf einem PC im
+Ordner "Ultima IV Dokumentation" der Karte lesen.
 
 Ich empfehle folgende Reihenfolge:
 
@@ -61,15 +61,15 @@ Algorithmen vom Apple-II- und MS-DOS-Original behoben.
 
 Folgende Probleme sind derzeit bekannt:
 
-1. Fehlenes Coverbild (ich besitzte das Original, die Box ist aber zu sehr
-zerkrazt und zerdrückt, um einen guten Scan möglich zu machen.) Hilfe ist
+1. Fehleneds Coverbild (ich besitze das Original, die Box ist aber zu sehr
+zerkratzt und zerdrückt, um einen guten Scan möglich zu machen.) Hilfe ist
 hierbei sehr willkommen, falls Du ein besser erhaltenes Original besitzt!
 
 2. Fehlende Kompatibilität mit neueren Pi Modellen, die erst nach Beginn
 meiner Arbeit an diesem Projekt erhältlich wurden (da diese die verwendete
 DispmanX-API nicht mehr unterstützen). Hier wäre eine Portierung auf Kernel
 Mode Switching und eine Erneuerung des zugrundeliegenden Systems von
-Rapsbian Stretch auf etwas moderneres erforderlich. Hilfe ist willkommen!
+Raspbian Stretch auf etwas moderneres erforderlich. Hilfe ist willkommen!
 
 3. Basiert auf SDL1, Portierung auf SDL2 wäre in Zukunft wünschenswert.
 
@@ -77,13 +77,13 @@ Rapsbian Stretch auf etwas moderneres erforderlich. Hilfe ist willkommen!
 Auch aus diesem Grund bitte NICHT weitergeben. Kennst Du dich mit Copyright
 gut aus? Dann ist auch hierbei Hilfe sehr willkommen!
 
-5. Fehlende physische Version mit Papierdoku, SD-Karte und echter Box.
-Kommt hoffentlich irgendwann, wenn der Rest behoben ist.
+5. Fehlende physische Version mit Papierdokumentation, SD-Karte und echter
+Box. Kommt hoffentlich irgendwann, wenn der Rest behoben ist.
 
 6. Vermutlich diverse Bugs. Bitte diese per Mail melden an ticmanis@gmx.de
 
 
-VIELEN DANK an Richard Garriot, Origin System Inc. und an das xu4-Team, ohne
+VIELEN DANK an Richard Garriott, Origin System Inc. und an das xu4-Team, ohne
 die nichts davon möglich gewesen wäre! An Sean Gugler für u4remasteredA2 und
 an ergonomy_joe für u4-decompiled (beide auf GitHub zu finden), welche mir
 sehr halfen, die Original-Algorithmen detailliert zu verstehen.

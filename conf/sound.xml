@@ -43,7 +43,7 @@ horse fast
 steal
 
 
-ccs2.ogg
+ccs2.wav
         6s              bad command
         15s             move
         34s             blocked
@@ -64,7 +64,7 @@ ccs2.ogg
         532s    attack
         533s    hit
 
-ccs3.ogg
+ccs3.wav
         39s             monster attack
         40s     monster hit
         160s    monster range attack (nixie)

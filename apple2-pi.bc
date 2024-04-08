@@ -1,0 +1,121 @@
+#!/usr/bin/bc -ql
+/* This requires GNU bc, see "man 1 bc" on any Linux system */
+scale=100
+define int(x) {
+    auto os
+    os = scale
+    scale = 0
+    x /= 1
+    scale = os
+    return x
+}
+/* Test if number is odd, i.e. lowest bit is set in binary format */
+define odd(n) {
+    auto os
+    os = scale
+    scale = 0
+    n = n % 2
+    scale = os
+    return n
+}
+/* Shift Arithmetic Right */
+define sar(n) {
+    auto os
+    os = scale
+    scale = 0
+    n = n / 2
+    scale = os
+    return n
+}
+/* Print two-digit hex value between 00 and FF */
+define void prhex(n) {
+    auto oob
+    oob = obase
+    obase = 16
+    if (n < 16) print "0"
+    print n
+    obase = oob
+}
+/* Clamp value to something between 0.0 and 1.0 */
+define clamp(x) {
+    if (x < 0) return 0
+    if (x > 1) return 1
+    return x
+}
+
+/* Constants */
+scale += 5
+pi = a(1) * 4 /* pi is 4 times arc tangent of 1 */
+sr2op = sqrt(2) / pi /* Square root of 2 Over Pi, comes from fourier
+                        series expansion of Apple II pulse signal shape */
+ufac = sqrt(865318419 / 209556997)
+vfac = sqrt(288439473 / 221990474)
+/* The following factor desaturates the colors so that the 6 hi-res colors
+   are just not oversaturated any more */
+desat = (6 * sqrt(40296339852095054)) / (209556997 * pi)
+ufac = ufac / desat
+vfac = vfac / desat
+scale -= 5
+pi /= 1
+sr2op /= 1
+ufac /= 1
+vfac /= 1
+desat /= 1
+
+/* loop over the lo-res color numbers */
+for (c = 0; c < 16; ++c) {
+    /* start with Y = U = V = 0 */
+    y = 0
+    u = 0
+    v = 0
+    /* add up Y, U and V for the "basic" colors contained in a
+       given color's 4-bit pattern (i.e. the dark colors) */
+    h = c
+    if (odd(h)) {
+        y += 0.25
+        v += sr2op
+    }
+    h = sar(h)
+    if (odd(h)) {
+        y += 0.25
+        u += sr2op
+    }
+    h = sar(h)
+    if (odd(h)) {
+        y += 0.25
+        v -= sr2op
+    }
+    h = sar(h)
+    if (odd(h)) {
+        y += 0.25
+        u -= sr2op
+    }
+    /* calc R, G, B (in range 0-1)
+       see article "YUV-Farbmodell" in German Wikipedia */
+    b = y + (ufac * u)
+    r = y + (vfac * v)
+    g = (y - 0.299 * r - 0.114 * b) / 0.587
+    /* restrict to 0-1 range */
+    r = clamp(r)
+    g = clamp(g)
+    b = clamp(b)
+    /* store final values */
+    rd[c] = r
+    gr[c] = g
+    bl[c] = b
+}
+for (c = 0; c < 16; c += 1) {
+   /* output 16 results as six-digit hex RGB values,
+      two digits each for R, for G and for B */
+    r = int(rd[c] * 256); if (r == 256) r = 255
+    g = int(gr[c] * 256); if (g == 256) g = 255
+    b = int(bl[c] * 256); if (b == 256) b = 255
+    print "COLOR="
+    if (c < 10) print " "
+    print c, " #"
+    prhex(r)
+    prhex(g)
+    prhex(b)
+    print "\n"
+}
+quit

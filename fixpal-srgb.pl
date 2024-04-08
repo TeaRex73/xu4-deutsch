@@ -6,12 +6,12 @@ use IO::Compress::Deflate qw(deflate $DeflateError :constants) ;
 
 # Our beloved fixed palette
 my @palette=(
-      [0,0,0],
-      [54,156,255],
-      [58,236,0],
-      [255,255,255],
-      [254,67,255],
-      [252,110,0],
+      [  0,  0,  0],
+      [ 54,146,255],
+      [ 60,204,  0],
+      [241,241,241],
+      [214, 67,255],
+      [216,115,  0],
    );
 
 ################################################################################
@@ -68,6 +68,24 @@ sub PNGoutputChunk()
    $IHDR .= pack 'c',$interlacetype;
    &PNGoutputChunk($IHDR);
 
+   #Output color space info
+   my $sRGB = 'sRGB';
+   $sRGB .= pack 'c', 0;
+   &PNGoutputChunk($sRGB);
+   my $gAMA = 'gAMA';
+   $gAMA .= pack 'N', 45455;
+   &PNGoutputChunk($gAMA);
+   my $cHRM = 'cHRM';
+   $cHRM .= pack 'N', 31270;
+   $cHRM .= pack 'N', 32900;
+   $cHRM .= pack 'N', 64000;
+   $cHRM .= pack 'N', 33000;
+   $cHRM .= pack 'N', 30000;
+   $cHRM .= pack 'N', 60000;
+   $cHRM .= pack 'N', 15000;
+   $cHRM .= pack 'N',  6000;
+   &PNGoutputChunk($cHRM);
+   
    # Output PNG PLTE (palette)
    my $PLTE='PLTE';
    for(my $i=0;$i<scalar @palette;$i++){

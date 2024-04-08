@@ -20,8 +20,12 @@
   %tilemap;
   <!ENTITY % egaPalette SYSTEM "dtd/egaPalette.dtd">
   %egaPalette;
+  <!ENTITY % egaPalettePi SYSTEM "dtd/egaPalettePi.dtd">
+  %egaPalettePi;
   <!ENTITY % graphics SYSTEM "dtd/graphics.dtd">
   %graphics;
+  <!ENTITY % graphicsPi SYSTEM "dtd/graphicsPi.dtd">
+  %graphicsPi;
   <!ENTITY % maps SYSTEM "dtd/maps.dtd">
   %maps;
   <!ENTITY % weapons SYSTEM "dtd/weapons.dtd">
@@ -37,7 +41,9 @@
   <xi:include xmlns:xi="http://www.w3.org/2003/XInclude" href="tileRules.xml"/>
   <xi:include xmlns:xi="http://www.w3.org/2003/XInclude" href="tilesets.xml"/>
   <xi:include xmlns:xi="http://www.w3.org/2003/XInclude" href="egaPalette.xml"/>
+  <xi:include xmlns:xi="http://www.w3.org/2003/XInclude" href="egaPalettePi.xml"/>
   <xi:include xmlns:xi="http://www.w3.org/2003/XInclude" href="graphics.xml"/>
+  <xi:include xmlns:xi="http://www.w3.org/2003/XInclude" href="graphicsPi.xml"/>
   <xi:include xmlns:xi="http://www.w3.org/2003/XInclude" href="music.xml"/>
   <xi:include xmlns:xi="http://www.w3.org/2003/XInclude" href="sound.xml"/>
   <xi:include xmlns:xi="http://www.w3.org/2003/XInclude" href="weapons.xml"/>
