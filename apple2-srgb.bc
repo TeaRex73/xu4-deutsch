@@ -1,4 +1,4 @@
-#!/usr/bin/env -S BC_LINE_LENGTH=0 bc -ql ./bc/code/funcs.bc ./bc/code/output_formatting.bc
+#!/usr/bin/env -S BC_LINE_LENGTH=0 /usr/bin/bc -ql ./bc/code/funcs.bc ./bc/code/output_formatting.bc
 
 /* This requires GNU bc, see "man 1 bc" on any Linux system
    Also it needs the bc function library from here:
@@ -17,8 +17,10 @@ ibase = A
 /* You can set the precision here. The math is using exact values only,
    and thus should work at any precision.
 */
-globalscale = 30
+globalscale = 34
 scale = globalscale
+s1 = int(globalscale / 2) + 5
+s2 = int(globalscale / 2)
 
 /* Helper functions not already in the funcs.bc library */
 /* Square */
@@ -33,8 +35,17 @@ define odd(n) {
 define sar(n) {
     return int(n / 2)
 }
-/* Print four-digit hex value between 0000 and FFFF */
+/* Print two-digit hex value between 00 and FF */
 define void prhex(n) {
+    auto oob
+    oob = obase
+    obase = 16
+    if (n < 16) print "0"
+    print n
+    obase = oob
+}
+/* Print four-digit hex value between 00 and FFFF */
+define void prhex4(n) {
     auto oob
     oob = obase
     obase = 16
@@ -115,9 +126,28 @@ define gammaize_srgb(x) {
     return 1.055 * pow(x, pow_srgb) - 0.055
 }
 
+define xyz_to_x(x, y, z) {
+    auto sum
+    sum = x + y + z
+    if (sum == 0) return 0.3127
+    return x / sum
+}
+
+define xyz_to_y(x, y, z) {
+    auto sum
+    sum = x + y + z
+    if (sum == 0) return 0.3290
+    return y / sum
+}
+
 /* precalculate some constants needed later */
 pow_25_7 = pow(25, 7)
 
+/* These factors guarantee that the "outermost" RGB values in the 0.0 to 1.0
+   range will overshoot or undershoot the Y range of an NTSC signal by
+   exactly 1/3 (0.3333...), i.e. so-called 100% color bars in yellow, cyan,
+   red, and blue will always be within -1/3...4/3 at all points of their
+   sine waves */
 ufac = sqrt(865318419 / 209556997)
 vfac = sqrt(288439473 / 221990474)
 
@@ -218,6 +248,9 @@ for (c = 0; c <= 15; ++c) {
     xl =  zz[0] * r + zz[1] * g + zz[2] * b
     yl =  zz[3] * r + zz[4] * g + zz[5] * b
     zl =  zz[6] * r + zz[7] * g + zz[8] * b
+    xiigs[c] = xyz_to_x(xl, yl, zl)
+    yiigs[c] = xyz_to_y(xl, yl, zl)
+    y_cap_iigs[c] = yl
     fx = fx(xl)
     fy = fy(yl)
     fz = fz(zl)
@@ -240,8 +273,17 @@ for (c = 0; c <= 15; ++c) {
     biigs[c] = limitprod(b, 256)
 }
 
-sr2op = sqrt(2) / pi() /* Square root of 2 Over Pi, comes from fourier
-                          series expansion of Apple II pulse signal shape. */
+sr2op = sqrt(2) / pi() /* Square root of 2 Over Pi, which is the first
+                          (base freqeuency) periodic term of the fourier
+                          series expansion of Apple II pulse signal shape,
+                          i.e. 1/4 or 3/4 duty cycle rectangular wave.
+                          For the 4 colorful Hi-Res colors, which are
+                          1/2 duty cycle (square) rectangular waves,
+                          it's actually 2/pi but that is taken care of
+                          by setting BOTH u and v to +/- sr2op, which
+                          makes the TOTAL vector length 2/pi according
+                          to the Theorem of Pythagoras, just as it
+                          should be. */
 
 /* Calculate Y, U, V for the Apple II colors from signal shape
    (assuming it to be perfectly rectangular)
@@ -280,17 +322,18 @@ for (c = 0; c <= 15; ++c) {
     v[c] = v / 0.925
 }
 
-/* Starting values for the four NTSC monitor knobs. You can put better
-   values here to make it converge faster.
+/* Starting values for the four NTSC monitor knobs. You can put
+   the better values in the comments here to make it converge
+   faster.
 */
-brightness =  0
-picture    =  1
-color      =  1
-hue        =  0
+brightness =  0.045851297039046863657017
+picture    =  0.892080981320251448772421
+color      =  0.784866029442122319724180
+hue        = -0.645936288431288302486169
 
-/* Helper values */
-minerr     = 9999
-maxtry     = 9
+/* Helper values, pre-initialized to prevent nonsense result at start */
+minerr     = 15*15*16
+maxtry     = 7
 
 /* Main search loop. Find the best possible match for Apple IIgs colors
    that you can get from turning the four knobs of a standard
@@ -333,6 +376,8 @@ for (try = maxtry - 8; try <= (globalscale + 1) * 8; /* nothing */) {
         /* calc R, G, B (in range 0-1) while applying color,
            see article "YUV-Farbmodell" in German Wikipedia */
         y = y[c]
+	u[c] = u
+	v[c] = v
         b = y + (ufac * u * color)
         r = y + (vfac * v * color)
         g = (y - 0.299 * r - 0.114 * b) / 0.587
@@ -407,6 +452,9 @@ for (try = maxtry - 8; try <= (globalscale + 1) * 8; /* nothing */) {
         err += myerr /* We use the squared value here */
         if (err < minerr) { /* Save time, skipping if err already too high */
             /* go from CIE1931 XYZ to linearized sRGB */
+            xc[c] = xyz_to_x(xl, yl, zl)
+            yc[c] = xyz_to_y(xl, yl, zl)
+            ycap_c[c] = yl
             r = a[0] * xl + a[1] * yl + a[2] * zl
             g = a[3] * xl + a[4] * yl + a[5] * zl
             b = a[6] * xl + a[7] * yl + a[8] * zl
@@ -415,9 +463,9 @@ for (try = maxtry - 8; try <= (globalscale + 1) * 8; /* nothing */) {
             g = gammaize_srgb(g)
             b = gammaize_srgb(b)
             /* restrict to 0-1 range and  store final values */
-            rd[c] = limitprod(r, 65536)
-            gr[c] = limitprod(g, 65536)
-            bl[c] = limitprod(b, 65536)
+            rd[c] = limitprod(r, 256)
+            gr[c] = limitprod(g, 256)
+            bl[c] = limitprod(b, 256)
         } else break
     }
     if (err < minerr) {
@@ -425,25 +473,34 @@ for (try = maxtry - 8; try <= (globalscale + 1) * 8; /* nothing */) {
         if (try > maxtry) maxtry = try
         try = 0
         err = sqrt(err / 16) /* Calc root of mean squared error */
-        print "\nbrightness: "
-        .=printff(15, 10, brightness)+newline()
-        print "picture   : "
-        .=printff(15, 10, picture)+newline()
-        print "color     : "
-        .=printff(15, 10, color)+newline()
-        print "hue       : "
-        .=printff(15, 10, hue)+newline()
-        print "RMS ∆E    : "
-        .=printff(15, 10, err)+newline()
-        print "max tries : "
+        print "\nbrightness= "
+        .=printff(s1, s2, brightness)+newline()
+        print "picture   = "
+        .=printff(s1, s2, picture)+newline()
+        print "color     = "
+        .=printff(s1, s2, color)+newline()
+        print "hue       = "
+        .=printff(s1, s2, hue)+newline()
+        print "RMS ∆E    = "
+        .=printff(s1, s2, err)+newline()
+        print "max tries = "
         .=printff(4, 0, maxtry)+newline()
+        print "\n"
+        print " BASIC      CIE 1931 xyY Apple //e     sRGB    //e   IIgs    sRGB     CIE 1931 xyY Apple IIgs    CIEDE2000\n"
+        print "--------  --------------------------  ------- ------------  -------  --------------------------  ----------\n"
         for (c = 0; c <= 15; ++c) {
-           /* output 16 0-1 results as twelve-digit hex RGB values,
-              four digits each for R, for G and for B.
+           /* output 16 0-1 results as six-digit hex RGB values,
+              two digits each for R, for G and for B.
               Use some ANSI teminal escapes for nice coloring */
             print "COLOR="
             .=printff(2, 0, c)
-            print " #[31m"
+            print "  x="
+            .=printff(6, 4, xc[c])
+            print " y="
+            .=printff(6, 4, yc[c])
+            print " Y="
+            .=printff(6, 4, ycap_c[c])
+            print "  #[31m"
             prhex(rd[c])
             print "[32m"
             prhex(gr[c])
@@ -453,16 +510,68 @@ for (try = maxtry - 8; try <= (globalscale + 1) * 8; /* nothing */) {
             /* Directly display colors for calculated and for
                IIGS color values using some ANSI escape magic.
             */
-            print "[48:2::", int(rd[c] / 256)
-            print ":", int(gr[c] / 256)
-            print ":", int(bl[c] / 256), "m"
-            print "          "
-            print "[48:2::", riigs[c], ":", giigs[c], ":", biigs[c], "m"
-            print "          "
+            print "[48:2::", rd[c]
+            print ":", gr[c]
+            print ":", bl[c], "m"
+            print "      "
+            print "[48:2::", riigs[c]
+            print ":", giigs[c]
+            print ":", biigs[c], "m"
+            print "      "
+            print "[49m "
+            print " #[31m"
+            prhex(riigs[c])
+            print "[32m"
+            prhex(giigs[c])
+            print "[34m"
+            prhex(biigs[c])
+            print "[39m "
+            print " x="
+            .=printff(6, 4, xiigs[c])
+            print " y="
+            .=printff(6, 4, yiigs[c])
+            print " Y="
+            .=printff(6, 4, y_cap_iigs[c])
             /* Display per-color Delta-E value */
-            print "[49m ∆E="
-            .=printff(13, 10, delta_e[c])+newline()
-        }
+            print "  ∆E="
+            .=printff(7, 4, delta_e[c])+newline()
+	}
+	for (cbot = 0; cbot <= 15; ++cbot) {
+	    for (ctop = 0; ctop <= 15; ++ctop) {
+	        u = (u[cbot] + u[ctop]) / 2
+		v = (v[cbot] + v[ctop]) / 2
+		y = y[cbot]
+                b = y + (ufac * u * color)
+                r = y + (vfac * v * color)
+                g = (y - 0.299 * r - 0.114 * b) / 0.587
+                r = clamp(r * picture + brightness)
+                g = clamp(g * picture + brightness)
+                b = clamp(b * picture + brightness)
+                r = linearize_ntsc(r)
+                g = linearize_ntsc(g)
+                b = linearize_ntsc(b)
+                xl =  zz[0] * r + zz[1] * g + zz[2] * b
+                yl =  zz[3] * r + zz[4] * g + zz[5] * b
+                zl =  zz[6] * r + zz[7] * g + zz[8] * b
+                r = a[0] * xl + a[1] * yl + a[2] * zl
+                g = a[3] * xl + a[4] * yl + a[5] * zl
+                b = a[6] * xl + a[7] * yl + a[8] * zl
+                r = gammaize_srgb(r)
+                g = gammaize_srgb(g)
+                b = gammaize_srgb(b)
+                rd = limitprod(r, 65536)
+                gr = limitprod(g, 65536)
+                bl = limitprod(b, 65536)
+		print "[0x"
+		prhex4(rd)
+		print ", 0x"
+		prhex4(gr)
+		print ", 0x"
+		prhex4(bl)
+		print"],\n"
+	    }
+	    print "\n"
+	}
     } else { /* No improvement, back to previous values */
         brightness = old_brightness
         picture = old_picture

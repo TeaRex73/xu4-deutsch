@@ -70,7 +70,7 @@ sub PNGoutputChunk()
 
    #Output color space info
    my $sRGB = 'sRGB';
-   $sRGB .= pack 'c', 0;
+   $sRGB .= pack 'c', 3;
    &PNGoutputChunk($sRGB);
    my $gAMA = 'gAMA';
    $gAMA .= pack 'N', 45455;

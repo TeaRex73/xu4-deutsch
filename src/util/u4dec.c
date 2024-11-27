@@ -54,8 +54,8 @@ int main(int argc, const char *argv[])
     fseek(infile, 0L, SEEK_SET);
     indata = (unsigned char *)malloc(inlen);
     if (!indata) {
-        perror("malloc");
-        exit(1);
+        perror("out of memory");
+        exit(EXIT_FAILURE);
     }
     if ((long)fread(indata, 1, inlen, infile) != inlen) {
         perror("fread failed");
@@ -65,8 +65,8 @@ int main(int argc, const char *argv[])
         outlen = lzwGetDecompressedSize(indata, inlen);
         outdata = (unsigned char *)malloc(outlen);
         if (!outdata) {
-            perror("malloc");
-            exit(1);
+            perror("out of memory");
+            exit(EXIT_FAILURE);
         }
         lzwDecompress(indata, outdata, inlen);
     } else if (strcmp(alg, "rle") == 0) {
@@ -79,7 +79,7 @@ int main(int argc, const char *argv[])
         }
         outdata = (unsigned char *)malloc(outlen);
         if (!outdata) {
-            printf("Couldn't allocate outdata.\n");
+            perror("out of memory");
             return EXIT_FAILURE;
         }
         rleDecompress(indata, inlen, outdata, outlen);

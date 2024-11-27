@@ -39,6 +39,7 @@
 
 #include "lzw.h"
 #include "hash.h"
+#include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 
@@ -161,8 +162,16 @@ long generalizedDecompress(
     lzwDictionaryEntry *lzwDictionary = (lzwDictionaryEntry *) malloc(
         sizeof(lzwDictionaryEntry) * lzwDictionarySize
     );
+	if (!lzwDictionary) {
+		perror("out of memory");
+		exit(EXIT_FAILURE);
+	}
     unsigned char *lzwStack =
         (unsigned char *) malloc(sizeof(unsigned char) * lzwStackSize);
+	if (!lzwStack) {
+		perror("out of memory");
+		exit(EXIT_FAILURE);
+	}
     int elementsInStack = 0;
     /* clear the dictionary */
     memset(lzwDictionary, 0, sizeof(lzwDictionaryEntry) * lzwDictionarySize);

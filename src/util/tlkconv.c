@@ -13,9 +13,20 @@
 
 #define TLK_BUF_SIZE 384
 
+static char *my_strdup(const char *s);
 static xmlNodePtr addAsText(xmlDocPtr doc, xmlNodePtr node, const char *in);
 static void xmlToTlk(xmlDocPtr doc, FILE *tlk);
 static xmlDocPtr tlkToXml(FILE *tlk);
+
+static char *my_strdup(const char *s)
+{
+	char *ret = strdup(s);
+	if (!ret) {
+		perror("out of memory");
+		exit(EXIT_FAILURE);
+	}
+	return ret;
+}
 
 static xmlNodePtr addAsText(xmlDocPtr doc, xmlNodePtr node, const char *in)
 {
@@ -158,13 +169,13 @@ static void xmlToTlk(xmlDocPtr doc, FILE *tlk)
         }
         // Fill these with dummy info so it doesn't break anything.
         if (!str[QUESTION]) {
-            str[QUESTION] = strdup("\0");
+            str[QUESTION] = my_strdup("\0");
         }
         if (!str[YESRESP]) {
-            str[YESRESP] = strdup("\0");
+            str[YESRESP] = my_strdup("\0");
         }
         if (!str[NORESP]) {
-            str[NORESP] = strdup("\0");
+            str[NORESP] = my_strdup("\0");
         }
         ptr = &tlk_buffer[3];
         for (i = 0; i < MAX; i++) {
@@ -244,15 +255,15 @@ static xmlDocPtr tlkToXml(FILE *tlk)
             health, (const xmlChar *)"query", (const xmlChar *)"health"
         );
         ptr += strlen(ptr) + 1;
-        response1 = strdup(ptr);
+        response1 = my_strdup(ptr);
         ptr += strlen(ptr) + 1;
-        response2 = strdup(ptr);
+        response2 = my_strdup(ptr);
         ptr += strlen(ptr) + 1;
-        question = strdup(ptr);
+        question = my_strdup(ptr);
         ptr += strlen(ptr) + 1;
-        yes = strdup(ptr);
+        yes = my_strdup(ptr);
         ptr += strlen(ptr) + 1;
-        no = strdup(ptr);
+        no = my_strdup(ptr);
         ptr += strlen(ptr) + 1;
         kw1 = addAsText(
             doc,

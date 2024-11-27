@@ -4,9 +4,20 @@
 
 #include "pngconv.h"
 
+static void *my_malloc(size_t size);
 static void setBWPalette(png_color *palette);
 static void setEgaPalette(png_color *palette);
 static void setVgaPalette(png_color *palette);
+
+static void *my_malloc(size_t size)
+{
+	void *ret = malloc(size);
+	if (!ret) {
+		perror("out of memory");
+		exit(EXIT_FAILURE);
+	}
+	return ret;
+}
 
 static void setBWPalette(png_color *palette)
 {
@@ -94,10 +105,10 @@ int writePngFromEga(
     png_color *palette = NULL;
     png_byte **row_pointers;
     int i, j;
-    row_pointers = (png_byte **)malloc(height * sizeof(png_byte *));
+    row_pointers = (png_byte **)my_malloc(height * sizeof(png_byte *));
     for (i = 0; i < height; i++)
         row_pointers[i] =
-            (png_byte *) malloc(width * sizeof(png_byte) * bits / 8);
+            (png_byte *) my_malloc(width * sizeof(png_byte) * bits / 8);
     p = data;
     for (i = 0; i < height; i++) {
         for (j = 0; j < width * bits / 8; j++) {
@@ -136,7 +147,7 @@ int writePngFromEga(
         palette_size = 0;
     }
     if (palette_size != 0) {
-        palette = (png_color *)malloc(sizeof(png_color) * palette_size);
+        palette = (png_color *)my_malloc(sizeof(png_color) * palette_size);
         printf("palette size = %d\n", palette_size);
         if (palette_size == 2) {
             setBWPalette(palette);
@@ -187,6 +198,7 @@ int writePngFromEga(
     png_set_rows(png_ptr, info_ptr, row_pointers);
     png_write_png(png_ptr, info_ptr, PNG_TRANSFORM_IDENTITY, NULL);
     fclose(fp);
+	if (palette) free(palette);
     return 0;
 }
 
@@ -264,7 +276,7 @@ int readEgaFromPng(
         *bits = bit_depth * 4;
     }
     row_pointers = png_get_rows(png_ptr, info_ptr);
-    *data = (unsigned char *) malloc(pwidth * pheight * (*bits) / 8);
+    *data = (unsigned char *) my_malloc(pwidth * pheight * (*bits) / 8);
     p = *data;
     for (i = 0; i < pheight; i++) {
         for (j = 0; j < pwidth * (*bits) / 8; j++) {

@@ -406,6 +406,7 @@ extern unzFile ZEXPORT unzOpen(const char *path)
     us.central_pos = central_pos;
     us.pfile_in_zip_read = NULL;
     s = (unz_s *)ALLOC(sizeof(unz_s));
+	if (s == 0) return NULL;
     *s = us;
     unzGoToFirstFile((unzFile)s);
     return (unzFile)s;
