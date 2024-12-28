@@ -1534,7 +1534,7 @@ void IntroController::about()
     backgroundArea.draw(BKGD_OPTIONS_BTM, 0, 120);
     screenHideCursor();
     menuArea.textAt(8, 0, "Ultima IV Deutsch %s", VERSION);
-    menuArea.textAt(1, 2, "xu4g ist Freie Software; du darfst");
+    menuArea.textAt(1, 2, "xu4 ist Freie Software; du darfst");
     menuArea.textAt(1, 3, "es weitergeben und/oder ver{ndern,");
     menuArea.textAt(1, 4, "unter den Bedingungen der GNU GPL");
     menuArea.textAt(1, 5, "die von der FSF ver|ffentlicht");

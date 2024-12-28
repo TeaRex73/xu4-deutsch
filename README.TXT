@@ -7,7 +7,7 @@ German Language!
 
 Based on xu4 with graphics and sound from the original Apple II version.
 
-Version U4DEU-2024-03-29. Preliminary version, ONLY for testing, and as
+Version U4DEU-2024-12-27. Preliminary version, ONLY for testing, and as
 they say, incomplet and incorrekt. DO NOT DISTRIBUTE OR UPLOAD ANYWHERE!!!
 
 Needs pre-2020 Raspberry Pi (1,2,3 or old Zero), or MS Windows, depending on

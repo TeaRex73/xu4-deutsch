@@ -59,10 +59,10 @@ int main(int argc, char *argv[])
             "wie die ausfuehrbare Datei, oder in einem "
             "Unterverzeichnisse davon namens \"ultima4\"."
             "\n\nDies kannst Du erreichen, indem Du"
-            "\n - \"UltimaIV.zip\" von www.ultimaforever.com "
-            "herunterlaedtst\n - Den Inhalt von UltimaIV.zip "
-            "entpackst\n - Den Ordner \"ultima4\" an den Ort "
-            "der ausfuehrbaren Datei xu4 kopierst."
+            "\n - \"ultima4.zip\" von "
+            "https://ultima.thatfleminggent.com/ultima4.zip "
+            "herunterlaedtst\n - die Datei \"ultima4.zip\" an den Ort "
+            "der ausfuehrbaren Datei u4.exe kopierst."
             "\n\nBesuche die xu4-Webseite fuer weitere "
             "Informationen.\n\thttp://xu4.sourceforge.net/"
         );
@@ -150,10 +150,10 @@ int main(int argc, char *argv[])
         } else if ((std::strcmp(argv[i], "-h") == 0)
                    || (std::strcmp(argv[i], "-help") == 0)
                    || (std::strcmp(argv[i], "--help") == 0)) {
-            std::printf("xu4g: Ultima IV Neu Geschaffen und auf Deutsch\n");
+            std::printf("xu4: Ultima IV Neu Geschaffen und auf Deutsch\n");
             std::printf("v%s\n\n", VERSION);
 
-            std::printf("-v, --verbose            Fuehrt xu4g im"
+            std::printf("-v, --verbose            Fuehrt xu4 im"
                         " ausfuehrlichen Modus aus."
                         " Mehr Konsolenausgabe.\n");
             std::printf("-q, --quiet              Setzt alle Lautstaerkeregler"

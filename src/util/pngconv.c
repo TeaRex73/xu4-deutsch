@@ -11,12 +11,12 @@ static void setVgaPalette(png_color *palette);
 
 static void *my_malloc(size_t size)
 {
-	void *ret = malloc(size);
-	if (!ret) {
-		perror("out of memory");
-		exit(EXIT_FAILURE);
-	}
-	return ret;
+    void *ret = malloc(size);
+    if (!ret) {
+        perror("out of memory");
+        exit(EXIT_FAILURE);
+    }
+    return ret;
 }
 
 static void setBWPalette(png_color *palette)
@@ -198,7 +198,7 @@ int writePngFromEga(
     png_set_rows(png_ptr, info_ptr, row_pointers);
     png_write_png(png_ptr, info_ptr, PNG_TRANSFORM_IDENTITY, NULL);
     fclose(fp);
-	if (palette) free(palette);
+    if (palette) free(palette);
     return 0;
 }
 

@@ -312,4 +312,3 @@ Response *lordBritishGetIntro(const DynamicResponse *)
     }
     return intro;
 } // lordBritishGetIntro
-

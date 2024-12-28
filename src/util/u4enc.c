@@ -70,10 +70,10 @@ static void initdict()
     for (i = 0; i < 256; i++) {
         lzwdict[i].len = 1;
         lzwdict[i].data = (unsigned char *)strdup("");
-		if (!lzwdict[i].data) {
-			perror("out of memory");
-			exit(EXIT_FAILURE);
-		}
+        if (!lzwdict[i].data) {
+            perror("out of memory");
+            exit(EXIT_FAILURE);
+        }
         lzwdict[i].data[0] = i;
         lzwdict[i].occupied = 1;
     }

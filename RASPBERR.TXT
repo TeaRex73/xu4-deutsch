@@ -8,7 +8,7 @@ Diesem klassischen Werke zu Ehren jetzt erstmals komplett auf deutsch!
 Basiert auf xu4 mit Grafik und Sound aus der Apple-II-Originalversion und
 (in geringem Maße) aus der Commodore-64-Version.
 
-Version U4DEU-2023-12-22 für Raspberry Pi
+Version U4DEU-2024-12-27 für Raspberry Pi
 
 
 Achtung: Diese Version ist noch, wie man sagt, UNVOLLSTÄN UND FÄHLERHAFT!
@@ -33,7 +33,7 @@ Die .7z-Version ist ein kleinerer Download, erfordert aber 7-zip zum
 entpacken. Sonst bitte die .zip-Version verwenden, der Inhalt ist der
 gleiche. Niemand braucht beide Versionen herunterzuladen!
 
-Die Datei U4DEU-2023-12-22.7z bzw. U4DEU-2023-12-22.zip bitte entpacken und
+Die Datei U4DEU-2024-12-27.7z bzw. U4DEU-2024-12-27.zip bitte entpacken und
 dann z.B. mit dem Raspberry-Pi-Imager oder Win32DiskImager auf eine SD-Karte
 mit mindestens 16 GB schreiben. Es genügt NICHT, die entpackte Datei mittels
 Windows-Explorer auf die SD-Karte zu kopieren!
@@ -73,9 +73,11 @@ Raspbian Stretch auf etwas moderneres erforderlich. Hilfe ist willkommen!
 
 3. Basiert auf SDL1, Portierung auf SDL2 wäre in Zukunft wünschenswert.
 
-4. Komplett ungeklärter Copyright-Status, Lizenzchaos bei den Quellcodes.
-Auch aus diesem Grund bitte NICHT weitergeben. Kennst Du dich mit Copyright
-gut aus? Dann ist auch hierbei Hilfe sehr willkommen!
+4. Copyright-Status der Dokumentation unsauber. Der Rest sollte nun
+Ok sein, da nur noch Differenzen zum Originalspiel enthalten sind, nicht
+das Original selbst, welches beim ersten Start von einem dieses legal
+hostenden Server heruntergeladen wird. Auch aus diesem Grund bitte noch
+NICHT weitergeben.
 
 5. Fehlende physische Version mit Papierdokumentation, SD-Karte und echter
 Box. Kommt hoffentlich irgendwann, wenn der Rest behoben ist.

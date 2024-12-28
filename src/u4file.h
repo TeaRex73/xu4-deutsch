@@ -139,6 +139,8 @@ bool u4isUpgradeInstalled();
 U4FILE *u4fopen(const std::string &fname);
 U4FILE *u4fopen_stdio(const std::string &fname);
 U4FILE *u4fopen_zip(const std::string &fname, const U4ZipPackage *package);
+U4FILE *u4fopen_xor(const std::string &fname);
+U4FILE *u4fopen_xor(const std::string &fname, const U4ZipPackage *package);
 void u4fclose(U4FILE *f);
 int u4fseek(U4FILE *f, long offset, int whence);
 long u4ftell(U4FILE *f);

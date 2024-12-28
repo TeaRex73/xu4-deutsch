@@ -1,0 +1,14 @@
+mingw-w64-i686-SDL
+mingw-w64-i686-SDL_mixer
+mingw-w64-i686-gcc-libs
+mingw-w64-i686-libiconv
+mingw-w64-i686-libmad
+mingw-w64-i686-libmikmod
+mingw-w64-i686-libogg
+mingw-w64-i686-libpng
+mingw-w64-i686-libvorbis
+mingw-w64-i686-libwinpthread-git
+mingw-w64-i686-libxml2
+mingw-w64-i686-openal
+mingw-w64-i686-xz
+mingw-w64-i686-zlib

@@ -20,12 +20,12 @@ static xmlDocPtr tlkToXml(FILE *tlk);
 
 static char *my_strdup(const char *s)
 {
-	char *ret = strdup(s);
-	if (!ret) {
-		perror("out of memory");
-		exit(EXIT_FAILURE);
-	}
-	return ret;
+    char *ret = strdup(s);
+    if (!ret) {
+        perror("out of memory");
+        exit(EXIT_FAILURE);
+    }
+    return ret;
 }
 
 static xmlNodePtr addAsText(xmlDocPtr doc, xmlNodePtr node, const char *in)

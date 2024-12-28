@@ -11,8 +11,8 @@ Basiert auf xu4 mit Grafik und Sound aus der Apple-II-Originalversion und
 (in geringem Maße) aus der Commodore-64-Version. Sound und Musik sind dabei
 von einem echten Apple II mit Mockinboard-Soundkarte aufgenommen worden.
 
-Version U4DEU-2024-04-08 "Endlich Frühling!" für Microsoft Windows
-(Vista oder höher, 32 oder 64 Bit, Pentium IV oder höher)
+Version U4DEU-2024-12-27 "Legal Wonderland!" für Microsoft Windows
+(Windows 7 oder höher, 32 oder 64 Bit, Pentium IV oder höher)
 
 Achtung: Diese Version ist noch, wie man sagt, UNVOLLSTÄN UND FÄHLERHAFT!
 Bitte NICHT weitergeben oder irgendwo hochladen!!
@@ -26,6 +26,11 @@ den Link sieht nur dann richtig aus, wenn sich der Hauptordner auf dem
 Desktop des aktuellen Benutzers befindet, der Link funktioniert aber
 auch sonst.
 
+Beim ersten Doppelklick auf den Link "Ultima IV" im Hauptordner wird nun die
+vom Spiel benötigte englischsprachige Originalversion von Ultima IV
+für MS-DOS einmalig aus dem Internet heruntergeladen. Ein zweiter Klick auf
+den gleichen Link startet dann das Spiel.
+
 Zum "Deinstallieren" einfach den kompletten Ordner löschen. Wenn nötig, kann
 noch der Ordner "%AppData%\xu4" entfernt werden, dort findet man den
 Spielstand und eine kleine Konfigurationsdatei, diese Dateien belegen
@@ -38,15 +43,15 @@ Windows. Ansonsten gilt die Beschreibung der Raspberry-Version in
 angepasst, sollte aber wohl kein Problem sein.
 
 Behobene Bugs seit der vorigen Version:
-- Farben nochmals neu berechnet, sRGB-Farben basierend auf verbesserter
-mathematischer Umwandlung des theoretischen Apple-2-Farbsignals, siehe Datei
-"apple2-srgb.bc" im Ordner Daten. Die Idee des Algorithmus ist, "speise einen
-emulierten NTSC-Monitor mit dem emulierten Apple //e Videosignal, dann drehe
-die emulierten Regler für Helligkeit, Kontrast, Sättigung und Farbton, bis die
-Farben so nahe wie möglich an den (von Apple dokumentierten) RGB-Farben des
-Apple IIGS liegen." Die Farbdifferenz wird dabei nach der Formel
-"CIEDE2000" berechnet.
+- Enthält jetzt keine Dateien aus der MS-DOS-Version mehr.
+  Statdessen wird diese beim ersten Start von einem Server im Internet 
+  heruntergeladen, der diese legal hosten darf, und die
+  ausführbare Datei u4.exe enthält nur die Änderungen in der deutschen
+  Version als XOR-Daten, so dass nur noch Open Source enthalten ist.
+  Somit sollten die urheberrechtlichen Probleme (mit Ausnahme der
+  Dokumentation) endlich der Vergangenheit angehören.
 - Kleine Fehlerbehebungen
+
 Alle Bugs dürfen sehr gerne an mich gemeldet werden: ticmanis@gmx.de
 Auch sonstiges Feedback ist willkommen!
 
