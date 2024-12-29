@@ -1,5 +1,5 @@
 @echo off
-cd /D "%~dp0"
+cd /d "%~dp0"
 if not exist "%APPDATA%\xu4\nul" mkdir "%APPDATA%\xu4"
 copy /y .\xu4.cfg "%PPDATA%\xu4"
 if not exist .\ultima4.zip goto download
@@ -8,7 +8,7 @@ del /f "%TEMP%\u4zipsiz.txt"
 call :size .\ultima4.zip >"%TEMP%\u4zipsiz.txt"
 set /p FILESIZE=<"%TEMP%\u4zipsiz.txt"
 del /f "%TEMP%\u4zipsiz.txt"
-if not x%FILESIZE%==x529099 goto download
+if not "%FILESIZE%"=="529099" goto download
 goto nodownload
 :download
 msg Console /w /time:9999 "Die originale englischsprachige MS-DOS-Version von Ultima IV wird jetzt heruntergeladen..."
@@ -20,7 +20,7 @@ del /f "%TEMP%\u4zipsiz.txt"
 call :size .\ultima4.zip >"%TEMP%\u4zipsiz.txt"
 set /p FILESIZE=<"%TEMP%\u4zipsiz.txt"
 del /f "%TEMP%\u4zipsiz.txt"
-if not x%FILESIZE%==x529099 goto error
+if not "%FILESIZE%"=="529099" goto error
 msg Console /w /time:9999 "Herunterladen war erfolgreich! Klicke erneut auf Ultima IV, um zu spielen."
 goto :eof
 :nodownload
@@ -29,6 +29,11 @@ start /b /min .\u4.exe -f
 goto :eof
 :error
 msg Console /w /time:9999 "Herunterladen war nicht erfolgreich! Finde im Internet die Datei ultima4.zip, die 529.099 Bytes gross ist, und kopiere sie in den versteckten Unterordner Daten!"
+goto :eof
 :size
+if exist "%1" goto cont
+echo 0
+goto :eof
+:cont
 echo %~z1
 goto :eof
