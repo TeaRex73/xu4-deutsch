@@ -1,0 +1,91 @@
+name: MSYS2
+on: [push, pull_request]
+
+jobs:
+  msys2-mingw32:
+    runs-on: windows-latest
+    defaults:
+      run:
+        shell: msys2 {0}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: msys2/setup-msys2@v2
+        with:
+          msystem: MINGW32
+          update: true
+          install: >-
+            git
+            make
+            mingw-w64-i686-gcc
+            mingw-w64-i686-SDL
+            mingw-w64-i686-SDL_mixer
+            mingw-w64-i686-gcc-libs
+            mingw-w64-i686-libiconv
+            mingw-w64-i686-libmad
+            mingw-w64-i686-libmikmod
+            mingw-w64-i686-libogg
+            mingw-w64-i686-libpng
+            mingw-w64-i686-libvorbis
+            mingw-w64-i686-libwinpthread-git
+            mingw-w64-i686-libxml2
+            mingw-w64-i686-openal
+            mingw-w64-i686-xz
+            mingw-w64-i686-zlib
+      - name: Retrieve Git Hash
+        id: git-hash
+        run: echo "hash=$(git rev-parse --short HEAD)" >> $GITHUB_OUTPUT
+      - name: Build
+        run: |
+          GIT_HASH=${{ steps.git-hash.outputs.hash }}
+          cd src
+          touch .depends
+          make .depends
+          make -j 6
+          cd ..
+          mkdir artifact
+          mkdir artifact/U4DEU-Win32-$GIT_HASH
+          mkdir artifact/U4DEU-Win32-$GIT_HASH/Daten
+          install -s src/*.exe artifact/U4DEU-Win32-$GIT_HASH/Daten/
+          for i in \
+            SDL.dll \
+            libSDL_mixer-1-2-0.dll \
+            libgcc_s_dw2-1.dll \
+            libiconv-2.dll \
+            liblzma-5.dll \
+            libmad-0.dll \
+            libmikmod-3.dll \
+            libogg-0.dll \
+            libopenal-1.dll \
+            libpng16-16.dll \
+            libstdc++-6.dll \
+            libvorbis-0.dll \
+            libvorbisfile-3.dll \
+            libwinpthread-1.dll \
+            libxml2-2.dll \
+            zlib1.dll \
+            ; do
+            cp -av /mingw32/bin/"$i" artifact/U4DEU-Win32-$GIT_HASH/Daten/
+          done
+          mkdir artifact/U4DEU-Win32-$GIT_HASH/'Ultima IV Dokumentation'
+          cp -av 'Ultima IV Dokumentation'/*.pdf artifact/U4DEU-Win32-$GIT_HASH/'Ultima IV Dokumentation'/
+          cp -av README.TXT LIESMICH.TXT WINDOWS.TXT RASPBERR.TXT artifact/U4DEU-Win32-$GIT_HASH/
+          cp -av apple2* AUTHORS COPYING OLD-README border.bmp credits.html fixpal* u4.bat u4.desktop xu4.cfg xu4.spec artifact/U4DEU-Win32-$GIT_HASH/Daten/
+          cp -av conf/* artifact/U4DEU-Win32-$GIT_HASH/Daten/
+          mkdir artifact/U4DEU-Win32-$GIT_HASH/Daten/graphics
+          cp -av graphics/ega artifact/U4DEU-Win32-$GIT_HASH/Daten/graphics/
+          mkdir artifact/U4DEU-Win32-$GIT_HASH/Daten/music
+          cp -av music/*.ogg artifact/U4DEU-Win32-$GIT_HASH/Daten/music/
+          mkdir artifact/U4DEU-Win32-$GIT_HASH/Daten/sound
+          cp -av sound/*.ogg artifact/U4DEU-Win32-$GIT_HASH/Daten/sound/
+          cp -a talk artifact/U4DEU-Win32-$GIT_HASH/Daten/
+          cd src
+          make clean
+          rm .depends
+          cd ..
+          cp -a src artifact/U4DEU-Win32-$GIT_HASH/Daten/
+          cp src/xu4.ico artifact/U4DEU-Win32-$GIT_HASH/Daten/
+          powershell -ExecutionPolicy Bypass -Command '$ws = New-Object -ComObject WScript.Shell; $s = $ws.CreateShortcut('\''artifact\U4DEU-Win32-'$GIT_HASH'\Ultima IV.lnk'\''); $s.TargetPath = '\''%COMSPEC%'\''; $s.Arguments = '\''/c ".\Daten\u4.bat"'\''; $s.WindowStyle = 7; $s.IconLocation = '\''%USERPROFILE%\Desktop\U4DEU-Win32-'$GIT_HASH'\Daten\xu4.ico'\''; $s.Save()'
+      - uses: actions/upload-artifact@v4
+        with:
+          name: U4DEU-Win32-${{ steps.git-hash.outputs.hash }}
+          path: artifact/
