@@ -96,7 +96,7 @@ OBJS += $(CSRCS:.c=.o) $(CXXSRCS:.cpp=.o)
 
 all:: $(MAIN) mkutils
 
-mkutils::  coord$(EXEEXT) dumpsavegame$(EXEEXT) tlkconv$(EXEEXT) u4dec$(EXEEXT) u4enc$(EXEEXT) u4unpackexe$(EXEEXT) xor$(EXEEXT)
+mkutils::  coord$(EXEEXT) dumpsavegame$(EXEEXT) tlkconv$(EXEEXT) u4dec$(EXEEXT) u4enc$(EXEEXT) u4unpackexe$(EXEEXT) xor$(EXEEXT) xorbin$(EXEEXT)
 
 $(MAIN): $(OBJS)
 	$(CXX) $(CXXFLAGS) $(LDFLAGS) -o $@ $(OBJS) $(LIBS)
@@ -122,11 +122,14 @@ u4unpackexe$(EXEEXT): util/u4unpackexe.o
 xor$(EXEEXT): util/xor.o
 	$(CC) $(CCFLAGS) $(LDFLAGS) -o $@ $+
 
+xorbin$(EXEEXT): util/xorbin.o
+	$(CC) $(CCFLAGS) $(LDFLAGS) -o $@ $+
+
 clean:: cleanutil
 	rm -rf *~ */*~ $(OBJS) $(MAIN)
 
 cleanutil::
-	rm -rf util/coord.o coord$(EXEEXT) util/dumpsavegame.o dumpsavegame$(EXEEXT) util/u4dec.o u4dec$(EXEEXT) util/u4enc.o u4enc$(EXEEXT) util/pngconv.o util/tlkconv.o tlkconv$(EXEEXT) util/u4unpackexe.o u4unpackexe$(EXEEXT) util/xor.o xor$(EXEEXT)
+	rm -rf util/coord.o coord$(EXEEXT) util/dumpsavegame.o dumpsavegame$(EXEEXT) util/u4dec.o u4dec$(EXEEXT) util/u4enc.o u4enc$(EXEEXT) util/pngconv.o util/tlkconv.o tlkconv$(EXEEXT) util/u4unpackexe.o u4unpackexe$(EXEEXT) util/xor.o xor$(EXEEXT) util/xorbin.o xorbin$(EXEEXT)
 
 TAGS: $(CSRCS) $(CXXSRCS)
 	etags *.h $(CSRCS) $(CXXSRCS)

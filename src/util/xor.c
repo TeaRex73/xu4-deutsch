@@ -3,11 +3,6 @@
 #include <stdlib.h>
 #include <string.h>
 
-#ifdef _WIN32
-# include <io.h>
-# include <fcntl.h>
-#endif
-
 /* XOR file in first arg with file given in second arg (used repeatedly
    if too short) */
 /* based on code from stackoverflow, by Sato Katsura */
@@ -21,7 +16,7 @@ int main(int argc, const char *argv[])
     unsigned char *key, *buf;
     char *name, *keyname;
     if (argc != 3) {
-        fprintf (stderr, "Usage: %s <file> <key>\a\n", argv[0]);
+        fprintf(stderr, "Usage: %s <file> <key>\a\n", argv[0]);
         exit(EXIT_FAILURE);
     }
     if ((f = fopen(argv[1], "rb")) == NULL) {
@@ -40,7 +35,7 @@ int main(int argc, const char *argv[])
         perror("ftell");
         exit(EXIT_FAILURE);
     }
-    ks = (size_t) pos;
+    ks = (size_t)pos;
     if (!ks) {
         fputs("key size zero is not allowed\n", stderr);
         exit(EXIT_FAILURE);
@@ -49,11 +44,11 @@ int main(int argc, const char *argv[])
         perror("fseek");
         exit(EXIT_FAILURE);
     }
-    if ((key = (unsigned char *) malloc(ks)) == NULL) {
+    if ((key = (unsigned char *)malloc(ks)) == NULL) {
         perror("malloc");
         exit(EXIT_FAILURE);
     }
-    if ((buf = (unsigned char *) malloc(ks)) == NULL) {
+    if ((buf = (unsigned char *)malloc(ks)) == NULL) {
         perror("malloc");
         exit(EXIT_FAILURE);
     }

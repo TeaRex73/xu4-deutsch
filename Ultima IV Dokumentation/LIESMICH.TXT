@@ -1,0 +1,18 @@
+﻿Die Dateien in diesem Ordner mit der Endung ".xor" sind mittels der
+One-Time-Pad-Methode geschützt, da sie urheberrechtlich geschützte Grafiken
+und Texte enthalten. Daher sind sie so nicht brauchbar oder lesbar. Mittels
+der in der originalen Ultima-4-Spieldatei "ultima4.zip" enthaltenen Daten
+werden sie beim ersten Start des Spiels wieder in eine lesbare Form
+verwandelt - somit kann nur derjenige sie lesen, der die original-Spieldatei
+in seinem Besitz hat. Die Spieldatei kann legal von einigen Webseiten
+heruntergeladen werden, was das Spiel beim ersten Start auch tun wird - sie
+darf aber nicht auf GitHub zum Download bereitgestellt werden.
+
+Die resultierenden Dateien haben nach Wiederherstellung folgenden Inhalt:
+1.) Box.pdf: Die Verpackung von Ultima IV
+2.) Referenz.pdf: Die Spieler-Referenzkarte von Ultima IV
+3.) Geschichte.pdf: Die Geschichte Britannias (beschreibt die Spielwelt)
+4.) Weisheit.pdf: Das Buch der Mystischen Weisheit (beschreibt die Magie)
+5.) Karte.pdf: Die beigelegte Stoff-Landkarte von Ultima IV
+
+Alle Dateien wurden aus dem englischen Original ins Deutsche übersetzt.

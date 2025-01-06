@@ -41,6 +41,7 @@ install-prog::
 	$(INSTALL) -D -s u4enc $(libdir)/u4g/u4enc
 	$(INSTALL) -D -s u4unpackexe $(libdir)/u4g/u4unpackexe
 	$(INSTALL) -D -s xor $(libdir)/u4g/xor
+	$(INSTALL) -D -s xorbin $(libdir)/u4g/xorbin
 
 install-conf::
 	$(INSTALL) ../conf/*.xml $(libdir)/u4g
