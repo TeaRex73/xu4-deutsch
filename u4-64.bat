@@ -4,6 +4,8 @@ setlocal enableextensions
 if errorlevel 1 goto noextensions
 setlocal
 setlocal disabledelayedexpansion
+reg Query "HKLM\Hardware\Description\System\CentralProcessor\0" | find /i "x86" >nul 2>nul && set OSBIT=32 || set OSBIT=64
+if %OSBIT% EQU 32 goto bit32
 cd /d "%~dp0"
 if not exist "%APPDATA%\xu4" mkdir "%APPDATA%\xu4" >nul 2>nul
 copy /y .\xu4.cfg "%APPDATA%\xu4" >nul 2>nul
@@ -62,6 +64,10 @@ exit /b 0
 :error2
 cd /d "%~dp0"
 cscript /nologo MessageBox.js "Die Dokumentation konnte nicht lesbar gemacht werden! Bitte kontaktiere die Entwickler und melde den Fehler!"
+exit /b 1
+:bit32
+cd /d "%~dp0"
+cscript /nologo MessageBox.js "Diese Version von Ultima IV Deutsch ist nur fr 64-Bit Windows. Bitte lade die Version fr 32-Bit Windows herunter!"
 exit /b 1
 :getfile
 attrib -s -h -r .\ultima4.zip >nul 2>nul
