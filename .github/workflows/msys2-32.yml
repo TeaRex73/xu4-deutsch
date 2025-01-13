@@ -70,7 +70,7 @@ jobs:
           cp -av 'Ultima IV Dokumentation'/*.pdf.xor artifact/U4DEU-Win32-$GIT_HASH/'Ultima IV Dokumentation'/
           cp -av 'Ultima IV Dokumentation'/LIESMICH.TXT artifact/U4DEU-Win32-$GIT_HASH/'Ultima IV Dokumentation'/
           cp -av README.TXT LIESMICH.TXT WINDOWS.TXT RASPBERR.TXT artifact/U4DEU-Win32-$GIT_HASH/
-          cp -av apple2* AUTHORS COPYING OLD-README border.bmp credits.html fixpal* u4.bat mirrors.bat MessageBox.vbs u4.desktop xu4.cfg xu4.spec artifact/U4DEU-Win32-$GIT_HASH/Daten/
+          cp -av apple2* AUTHORS COPYING OLD-README border.bmp credits.html fixpal* u4.bat mirrors.bat MessageBox.js u4.desktop xu4.cfg xu4.spec artifact/U4DEU-Win32-$GIT_HASH/Daten/
           cp -av conf/* artifact/U4DEU-Win32-$GIT_HASH/Daten/
           mkdir artifact/U4DEU-Win32-$GIT_HASH/Daten/graphics
           cp -av graphics/ega artifact/U4DEU-Win32-$GIT_HASH/Daten/graphics/
