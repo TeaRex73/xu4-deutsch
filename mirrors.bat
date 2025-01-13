@@ -1,11 +1,11 @@
 set MIRROR1=http://ftp-stud.hs-esslingen.de/pub/Mirrors/gentoo/
-set MIRROR2=https://mirror.dogado.de/gentoo
-set MIRROR3=https://ftp.fau.de/gentoo
+set MIRROR2=https://mirror.dogado.de/gentoo/
+set MIRROR3=https://ftp.fau.de/gentoo/
 set MIRROR4=https://ftp.halifax.rwth-aachen.de/gentoo/
-set MIRROR5=ftp://ftp.fau.de/gentoo
+set MIRROR5=ftp://ftp.fau.de/gentoo/
 set MIRROR6=https://mirror.netzwerge.de/gentoo/
 set MIRROR7=http://ftp.halifax.rwth-aachen.de/gentoo/
-set MIRROR8=http://ftp.fau.de/gentoo
+set MIRROR8=http://ftp.fau.de/gentoo/
 set MIRROR9=http://mirror.netcologne.de/gentoo/
 set MIRROR10=http://ftp.uni-stuttgart.de/gentoo-distfiles/
 set MIRROR11=ftp://ftp-stud.hs-esslingen.de/pub/Mirrors/gentoo/
