@@ -87,7 +87,7 @@ jobs:
           cd ..
           cp -a src artifact/U4DEU-Win64-$GIT_HASH/Daten/
           cp src/xu4.ico artifact/U4DEU-Win64-$GIT_HASH/Daten/
-          powershell -ExecutionPolicy Bypass -Command '$ws = New-Object -ComObject WScript.Shell; $s = $ws.CreateShortcut('\''artifact\U4DEU-Win64-'$GIT_HASH'\Ultima IV.lnk'\''); $s.TargetPath = '\''%COMSPEC%'\''; $s.Arguments = '\''/c ".\Daten\u4.bat"'\''; $s.WindowStyle = 7; $s.IconLocation = '\''%USERPROFILE%\Desktop\U4DEU-Win64-'$GIT_HASH'\Daten\xu4.ico'\''; $s.Save()'
+          powershell -ExecutionPolicy Bypass -Command '$ws = New-Object -ComObject WScript.Shell; $s = $ws.CreateShortcut('\''artifact\U4DEU-Win64-'$GIT_HASH'\Ultima IV.lnk'\''); $s.TargetPath = '\''%COMSPEC%'\''; $s.Arguments = '\''/c u4.bat'\''; $s.WindowStyle = 7; $s.WorkingDirectory = '\''%USERPROFILE%\Desktop\U4DEU-Win64-'$GIT_HASH'\Daten'\''; $s.IconLocation = '\''%USERPROFILE%\Desktop\U4DEU-Win64-'$GIT_HASH'\Daten\xu4.ico'\''; $s.Save()'
       - uses: actions/upload-artifact@v4
         with:
           name: U4DEU-Win64-${{ steps.git-hash.outputs.hash }}
