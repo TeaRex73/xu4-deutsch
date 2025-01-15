@@ -69,7 +69,7 @@ exit /b 0
 :nodecode
 cd /d "%~dp0"
 set SDL_VIDEODRIVER=windib
-start /b /min .\u4.exe -f
+start /b .\u4.exe -f
 exit /b 0
 :error2
 cd /d "%~dp0"
@@ -101,6 +101,7 @@ exit /b
 echo Ultima IV Deutsch erfordert mindestens Windows 7!
 goto end
 :win9x
+if exist Daten\MessageBox.js cd Daten
 cscript //NoLogo MessageBox.js "Ultima IV Deutsch erfordert mindestens Windows 7!"
 goto end
 :noextensions
