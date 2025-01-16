@@ -4,9 +4,13 @@ goto nowinnt
 :winnt
 verify other 2>nul
 setlocal enableextensions
-if errorlevel 1 goto noextensions
+if errorlevel 1 goto oldwindows
 setlocal
 setlocal disabledelayedexpansion
+for /f "tokens=3-7 delims=[.] " %%I in ('ver') do @(if %%I==XP (set OS_VER_ORG=%%K.%%L) else (if %%J geq 10 (set OS_VER_ORG=%%J.%%K.%%L) else (set OS_VER_ORG=%%J.%%K)))
+set OS_VER=%OS_VER_ORG%
+if %OS_VER_ORG:~0,1% GTR 3 set OS_VER=0%OS_VER_ORG%
+if %OS_VER% LSS 06.1 goto oldwindows
 reg Query "HKLM\Hardware\Description\System\CentralProcessor\0" | find /i "x86" >nul 2>nul && set OSBIT=32 || set OSBIT=64
 if %OSBIT% EQU 32 goto bit32
 cd /d "%~dp0"
@@ -96,18 +100,15 @@ exit /b
 echo %~z1
 exit /b
 :nowinnt
-if exist c:\windows\command\cscript.exe goto win9x
+if exist c:\windows\command\cscript.exe goto oldwindows
 echo.
 echo *****************************************************
 echo * Ultima IV Deutsch erfordert mindestens Windows 7! *
 echo *****************************************************
 echo.
 goto end
-:win9x
+:oldwindows
 if exist Daten\MessageBox.js cd Daten
-cscript //NoLogo MessageBox.js 16 "Ultima IV Deutsch erfordert mindestens Windows 7!"
-goto end
-:noextensions
 cscript //NoLogo MessageBox.js 16 "Ultima IV Deutsch erfordert mindestens Windows 7!"
 goto end
 :end

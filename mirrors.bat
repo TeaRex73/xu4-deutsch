@@ -1,3 +1,4 @@
+@echo off
 set MIRROR1=http://ftp-stud.hs-esslingen.de/pub/Mirrors/gentoo/
 set MIRROR2=https://mirror.dogado.de/gentoo/
 set MIRROR3=https://ftp.fau.de/gentoo/

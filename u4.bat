@@ -4,9 +4,13 @@ goto nowinnt
 :winnt
 verify other 2>nul
 setlocal enableextensions
-if errorlevel 1 goto noextensions
+if errorlevel 1 goto oldwindows
 setlocal
 setlocal disabledelayedexpansion
+for /f "tokens=3-7 delims=[.] " %%I in ('ver') do @(if %%I==XP (set OS_VER_ORG=%%K.%%L) else (if %%J geq 10 (set OS_VER_ORG=%%J.%%K.%%L) else (set OS_VER_ORG=%%J.%%K)))
+set OS_VER=%OS_VER_ORG%
+if %OS_VER_ORG:~0,1% GTR 3 set OS_VER=0%OS_VER_ORG%
+if %OS_VER% LSS 06.1 goto oldwindows
 cd /d "%~dp0"
 if not exist "%APPDATA%\xu4" mkdir "%APPDATA%\xu4" >nul 2>nul
 copy /y .\xu4.cfg "%APPDATA%\xu4" >nul 2>nul
@@ -90,18 +94,15 @@ exit /b
 echo %~z1
 exit /b
 :nowinnt
-if exist c:\windows\command\cscript.exe goto win9x
+if exist c:\windows\command\cscript.exe goto oldwindows
 echo.
 echo *****************************************************
 echo * Ultima IV Deutsch erfordert mindestens Windows 7! *
 echo *****************************************************
 echo.
 goto end
-:win9x
+:oldwindows
 if exist Daten\MessageBox.js cd Daten
-cscript //NoLogo MessageBox.js 16 "Ultima IV Deutsch erfordert mindestens Windows 7!"
-goto end
-:noextensions
 cscript //NoLogo MessageBox.js 16 "Ultima IV Deutsch erfordert mindestens Windows 7!"
 goto end
 :end
