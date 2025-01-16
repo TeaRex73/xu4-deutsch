@@ -1,8 +1,6 @@
 @echo off
 if x%OS%x==xWindows_NTx goto winnt
-ver | find "Windows" >nul
-if errorlevel 1 goto dos
-goto win9x
+goto nowinnt
 :winnt
 verify other 2>nul
 setlocal enableextensions
@@ -22,7 +20,7 @@ if not "%FILESIZE%"=="529099" goto download
 goto nodownload
 :download
 cd /d "%~dp0"
-cscript //NoLogo //E:jscript MessageBox.js "Die originale MS-DOS-Version von Ultima IV wird jetzt heruntergeladen..."
+cscript //NoLogo //E:jscript MessageBox.js 64 "Die originale MS-DOS-Version von Ultima IV wird jetzt heruntergeladen..."
 set TRY=1
 :nexttry
 call mirrors.bat
@@ -33,14 +31,14 @@ call :getfile !%MIRROR%!
 if errorlevel 1 goto error
 setlocal disabledelayedexpansion
 cd /d "%~dp0"
-cscript //NoLogo //E:jscript MessageBox.js "Herunterladen war erfolgreich! Klicke erneut auf Ultima IV, um die Dokumentation lesbar zu machen!"
+cscript //NoLogo //E:jscript MessageBox.js 64 "Herunterladen war erfolgreich! Klicke erneut auf Ultima IV, um die Dokumentation lesbar zu machen!"
 exit /b 0
 :error
 setlocal disabledelayedexpansion
 set /a TRY=%TRY% + 1
 if %TRY% LEQ 10 goto :nexttry
 cd /d "%~dp0"
-cscript //NoLogo //E:jscript MessageBox.js "Herunterladen war nicht erfolgreich! Lade Ultima IV von https://ultima.thatfleminggent.com/ultima4.zip selbst herunter und kopiere die zip-Datei, ohne sie zu entpacken, in den Unterordner Daten!"
+cscript //NoLogo //E:jscript MessageBox.js 48 "Herunterladen war nicht erfolgreich! Lade Ultima IV von https://ultima.thatfleminggent.com/ultima4.zip selbst herunter und kopiere die zip-Datei, ohne sie zu entpacken, in den Unterordner Daten!"
 exit /b 1
 :nodownload
 cd "..\Ultima IV Dokumentation"
@@ -52,7 +50,7 @@ if not exist Weisheit.pdf goto decode
 goto nodecode
 :decode
 cd /d "%~dp0"
-cscript //NoLogo //E:jscript MessageBox.js "Die Dokumentation wird nun lesbar gemacht..."
+cscript //NoLogo //E:jscript MessageBox.js 64 "Die Dokumentation wird nun lesbar gemacht..."
 cd "..\Ultima IV Dokumentation"
 for %%I in (*.xor) do ..\Daten\xorbin.exe %%I ..\Daten\ultima4.zip > %%~dpnI
 if not exist Box.pdf goto error2
@@ -62,7 +60,7 @@ if not exist Referenz.pdf goto error2
 if not exist Weisheit.pdf goto error2
 del /f /q *.xor >nul 2>nul
 cd /d "%~dp0"
-cscript //NoLogo //E:jscript MessageBox.js "Lesbarmachen war erfolgreich, bitte lies die PDF-Dateien im Ordner Ultima IV Dokumentation! Klicke nochmal auf Ultima IV, um zu spielen!"
+cscript //NoLogo //E:jscript MessageBox.js 64 "Lesbarmachen war erfolgreich, bitte lies die PDF-Dateien im Ordner Ultima IV Dokumentation! Klicke nochmal auf Ultima IV, um zu spielen!"
 exit /b 0
 :nodecode
 cd /d "%~dp0"
@@ -71,7 +69,7 @@ start /b .\u4.exe -f
 exit /b 0
 :error2
 cd /d "%~dp0"
-cscript //NoLogo //E:jscript MessageBox.js "Die Dokumentation konnte nicht lesbar gemacht werden! Bitte kontaktiere die Entwickler und melde den Fehler!"
+cscript //NoLogo //E:jscript MessageBox.js 16 "Die Dokumentation konnte nicht lesbar gemacht werden! Bitte kontaktiere die Entwickler und melde den Fehler!"
 exit /b 1
 :getfile
 attrib -s -h -r .\ultima4.zip >nul 2>nul
@@ -91,13 +89,19 @@ exit /b
 :cont
 echo %~z1
 exit /b
-:dos
-echo Ultima IV Deutsch erfordert mindestens Windows 7!
+:nowinnt
+if exist c:\windows\command\cscript.exe goto win9x
+echo.
+echo *****************************************************
+echo * Ultima IV Deutsch erfordert mindestens Windows 7! *
+echo *****************************************************
+echo.
 goto end
 :win9x
 if exist Daten\MessageBox.js cd Daten
-cscript //NoLogo MessageBox.js "Ultima IV Deutsch erfordert mindestens Windows 7!"
+cscript //NoLogo MessageBox.js 16 "Ultima IV Deutsch erfordert mindestens Windows 7!"
 goto end
 :noextensions
-cscript //NoLogo MessageBox.js "Ultima IV Deutsch erfordert mindestens Windows 7!"
+cscript //NoLogo MessageBox.js 16 "Ultima IV Deutsch erfordert mindestens Windows 7!"
+goto end
 :end
