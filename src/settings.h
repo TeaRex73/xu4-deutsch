@@ -28,7 +28,7 @@
 #ifdef RASB_PI
 # define DEFAULT_SCALE 1
 #else
-# define DEFAULT_SCALE 1
+# define DEFAULT_SCALE 2
 #endif
 #define DEFAULT_FULLSCREEN 0
 #define DEFAULT_FILTER "Point"
