@@ -9,8 +9,8 @@ setlocal
 setlocal disabledelayedexpansion
 for /f "tokens=3-7 delims=[.] " %%I in ('ver') do @(if %%I==XP (set OS_VER_ORG=%%K.%%L) else (if %%J geq 10 (set OS_VER_ORG=%%J.%%K.%%L) else (set OS_VER_ORG=%%J.%%K)))
 set OS_VER=%OS_VER_ORG%
-if %OS_VER_ORG:~0,1% GTR 3 set OS_VER=0%OS_VER_ORG%
-if %OS_VER% LSS 06.1 goto oldwindows
+if %OS_VER_ORG:~0,1% gtr 3 set OS_VER=0%OS_VER_ORG%
+if %OS_VER% lss 06.1 goto oldwindows
 cd /d "%~dp0"
 if not exist "%APPDATA%\xu4" mkdir "%APPDATA%\xu4" >nul 2>nul
 copy /y .\xu4.cfg "%APPDATA%\xu4" >nul 2>nul
@@ -40,7 +40,7 @@ exit /b 0
 :error
 setlocal disabledelayedexpansion
 set /a TRY=%TRY% + 1
-if %TRY% LEQ 10 goto :nexttry
+if %TRY% leq 10 goto :nexttry
 cd /d "%~dp0"
 cscript //NoLogo //E:jscript MessageBox.js 48 "Herunterladen war nicht erfolgreich! Lade Ultima IV von https://ultima.thatfleminggent.com/ultima4.zip selbst herunter und kopiere die zip-Datei, ohne sie zu entpacken, in den Unterordner Daten!"
 exit /b 1
