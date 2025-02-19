@@ -1,11 +1,11 @@
 # ULTIMA IV: DIE QUESTE DES AVATARS auf Deutsch
 
-### Das englischsprachige Original ist © 1985 von Lord British und Origin Systems, Inc.
+**Das englischsprachige Original ist © 1985 von Lord British und Origin Systems, Inc.**
 
 Diesem klassischen Werke zu Ehren jetzt erstmals komplett auf deutsch - inklusive der Papierdokumente und Stoffkarte des Originals als PDFs!
 
-### Modernes Remake © 2002-2020 Das XU4 Team, veröffentlicht als Freie Software unter GPL2
-### Deutsche Fassung © 2013-2024 Finire Dragon UDIC, ebenfalls unter GPL2
+**Modernes Remake © 2002-2020 Das XU4 Team, veröffentlicht als Freie Software unter GPL2**
+**Deutsche Fassung © 2013-2024 Finire Dragon UDIC, ebenfalls unter GPL2**
 
 Die Lizenz befindet sich in der Datei COPYING.
 
@@ -68,6 +68,16 @@ Behobene Bugs seit der vorigen Version:
 
 Alle Bugs dürfen sehr gerne an mich gemeldet werden, einfach ein Issue hier eröffnen.
 Auch sonstiges Feedback ist willkommen!
+
+## To Do
+- Workflows hinzufügen, die für ein Tag oder Release den Tag statt des Git-Hashs in den Dateinamen verwenden
+- Karma-Punkte an die Apple II Version angleichen, wo noch Abweichungen sind
+- Beta-Tester gewinnen und Tests durchführen lassen (das bedeutet Dich!)
+- Raspberry-Pi-Version (bisher händisch außerhalb von Github gepflegt) automatisiert hier bauen lassen
+- Raspberry-Pi-Version von der veralteten DispmanX-API auf KMS oder eine andere moderne API umziehen, so dass sie auch auf Pi's nach dem Pi 3 und auf neuen Pi-OS-Versionen noch läuft
+- Von SDL 1.2.15 auf SDL 2 oder SDL 3 portieren
+
+Wenn Du Dich hier angesprochen fühlst, ist jede Mitarbeit willkommen!
 
 ## Danksagungen
 
