@@ -100,7 +100,7 @@ jobs:
           cp -a ~/settings.h src/
           cp -a src artifact2x/U4DEU-Win64-2xZoom-$GIT_HASH/Daten/
           powershell -ExecutionPolicy Bypass -Command '$ws = New-Object -ComObject WScript.Shell; $s = $ws.CreateShortcut('\''artifact2x\U4DEU-Win64-2xZoom-'$GIT_HASH'\Ultima IV.lnk'\''); $s.TargetPath = '\''%COMSPEC%'\''; $s.Arguments = '\''/c Daten\u4.bat'\''; $s.WindowStyle = 1; $s.IconLocation = '\''%USERPROFILE%\Desktop\U4DEU-Win64-2xZoom-'$GIT_HASH'\Daten\xu4.ico'\''; $s.Save()'
-          powershell -ExecutionPolicy Bypass -Command '$ws = New-Object -ComObject WScript.Shell; $s = $ws.CreateShortcut('\''artifact2x\U4DEU-Win64-1xZoom-'$GIT_HASH'\Ultima IV.lnk'\''); $s.TargetPath = '\''%COMSPEC%'\''; $s.Arguments = '\''/c Daten\u4.bat'\''; $s.WindowStyle = 1; $s.IconLocation = '\''%USERPROFILE%\Desktop\U4DEU-Win64-1xZoom-'$GIT_HASH'\Daten\xu4.ico'\''; $s.Save()'
+          powershell -ExecutionPolicy Bypass -Command '$ws = New-Object -ComObject WScript.Shell; $s = $ws.CreateShortcut('\''artifac1x\U4DEU-Win64-1xZoom-'$GIT_HASH'\Ultima IV.lnk'\''); $s.TargetPath = '\''%COMSPEC%'\''; $s.Arguments = '\''/c Daten\u4.bat'\''; $s.WindowStyle = 1; $s.IconLocation = '\''%USERPROFILE%\Desktop\U4DEU-Win64-1xZoom-'$GIT_HASH'\Daten\xu4.ico'\''; $s.Save()'
       - uses: actions/upload-artifact@v4
         with:
           name: U4DEU-Win64-2xZoom-${{ steps.git-hash.outputs.hash }}
