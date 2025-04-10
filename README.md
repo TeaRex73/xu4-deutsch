@@ -2,8 +2,8 @@
 
 Diesem klassischen Werke zu Ehren jetzt erstmals komplett auf deutsch - inklusive der Papierdokumente und Stoffkarte des Originals als PDFs!
 
-**Original © 1985-1987 Lord British und Origin Systems, Inc. Alle Rechte vorbehalten**  
-**Modernes Remake © 2002-2020 Das XU4 Team, veröffentlicht als Freie Software unter GPLv2**  
+**Original © 1985-1987 Lord British und Origin Systems, Inc. Alle Rechte vorbehalten**
+**Modernes Remake © 2002-2020 Das XU4 Team, veröffentlicht als Freie Software unter GPLv2**
 **Deutsche Fassung © 2013-2024 Finire Dragon UDIC, ebenfalls unter GPLv2**
 
 Die Lizenz befindet sich in der Datei COPYING.
@@ -70,6 +70,7 @@ Auch sonstiges Feedback ist willkommen!
 
 ## To Do
 - Workflows hinzufügen, die für ein Tag oder Release den Tag statt des Git-Hashs in den Dateinamen verwenden
+- Code aufräumen, diversen "toten" Code entfernen (z.B. nicht mehr funktionierende Unterstützung für andere Grafikvarianten als Apple II)
 - Karma-Punktevergabe an die Apple II Version angleichen, wo noch Abweichungen sind
 - Abweichungen zu xu4 und zu den Originalversionen (Apple II und MS-DOS) vollständig dokumentieren
 - Abweichungen zu den Originalversionen abschaltbar machen, soweit technisch machbar
