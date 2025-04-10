@@ -65,7 +65,7 @@ jobs:
             libxml2-2.dll \
             zlib1.dll \
             ; do
-            cp -av /mingw64/bin/"$i" artifact2x/U4DEU-Win32-2xZoom-$GIT_HASH/Daten/
+            cp -av /mingw32/bin/"$i" artifact2x/U4DEU-Win32-2xZoom-$GIT_HASH/Daten/
           done
           mkdir artifact2x/U4DEU-Win32-2xZoom-$GIT_HASH/'Ultima IV Dokumentation'
           cp -av 'Ultima IV Dokumentation'/*.pdf.xor artifact2x/U4DEU-Win32-2xZoom-$GIT_HASH/'Ultima IV Dokumentation'/
