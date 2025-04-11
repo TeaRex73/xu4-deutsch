@@ -1,4 +1,4 @@
-name: MSYS2
+name: MSYS2-MINGW64
 on: [push, pull_request]
 
 jobs:

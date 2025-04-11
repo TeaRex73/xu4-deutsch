@@ -1,0 +1,114 @@
+name: MSYS2-MINGW64-RELEASE
+on:
+  push:
+    tags:
+     - '**'
+
+jobs:
+  msys2-mingw64:
+    runs-on: windows-latest
+    defaults:
+      run:
+        shell: msys2 {0}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: msys2/setup-msys2@v2
+        with:
+          msystem: MINGW64
+          update: true
+          install: >-
+            git
+            make
+            mingw-w64-x86_64-gcc
+            mingw-w64-x86_64-SDL
+            mingw-w64-x86_64-SDL_mixer
+            mingw-w64-x86_64-gcc-libs
+            mingw-w64-x86_64-libiconv
+            mingw-w64-x86_64-libmad
+            mingw-w64-x86_64-libmikmod
+            mingw-w64-x86_64-libogg
+            mingw-w64-x86_64-libpng
+            mingw-w64-x86_64-libvorbis
+            mingw-w64-x86_64-libwinpthread-git
+            mingw-w64-x86_64-libxml2
+            mingw-w64-x86_64-openal
+            mingw-w64-x86_64-xz
+            mingw-w64-x86_64-zlib
+      - name: Retrieve Git Tag
+        id: git-tag
+        run: echo "tag=${GITHUB_REF#refs/*/}" >> $GITHUB_OUTPUT
+      - name: Build
+        run: |
+          GIT_TAG=${{ steps.git-tag.outputs.tag }}
+          cd src
+          touch .depends
+          make -f Makefile64 .depends
+          make -f Makefile64 -j 6
+          cd ..
+          mkdir artifact2x
+          mkdir artifact2x/U4DEU-Win64-2xZoom-$GIT_TAG
+          mkdir artifact2x/U4DEU-Win64-2xZoom-$GIT_TAG/Daten
+          install -s src/*.exe artifact2x/U4DEU-Win64-2xZoom-$GIT_TAG/Daten/
+          for i in \
+            SDL.dll \
+            libSDL_mixer-1-2-0.dll \
+            libgcc_s_seh-1.dll \
+            libiconv-2.dll \
+            liblzma-5.dll \
+            libmad-0.dll \
+            libmikmod-3.dll \
+            libogg-0.dll \
+            libopenal-1.dll \
+            libpng16-16.dll \
+            libstdc++-6.dll \
+            libvorbis-0.dll \
+            libvorbisfile-3.dll \
+            libwinpthread-1.dll \
+            libxml2-2.dll \
+            zlib1.dll \
+            ; do
+            cp -av /mingw64/bin/"$i" artifact2x/U4DEU-Win64-2xZoom-$GIT_TAG/Daten/
+          done
+          mkdir artifact2x/U4DEU-Win64-2xZoom-$GIT_TAG/'Ultima IV Dokumentation'
+          cp -av 'Ultima IV Dokumentation'/*.pdf.xor artifact2x/U4DEU-Win64-2xZoom-$GIT_TAG/'Ultima IV Dokumentation'/
+          cp -av 'Ultima IV Dokumentation'/LIESMICH.TXT artifact2x/U4DEU-Win64-2xZoom-$GIT_TAG/'Ultima IV Dokumentation'/
+          cp -av README.md README.TXT LIESMICH.TXT WINDOWS.TXT RASPBERR.TXT artifact2x/U4DEU-Win64-2xZoom-$GIT_TAG/
+          cp -av u4-64.bat artifact2x/U4DEU-Win64-2xZoom-$GIT_TAG/Daten/u4.bat
+          cp -av apple2* AUTHORS COPYING OLD-README border.bmp credits.html fixpal* mirrors.bat MessageBox.js u4.desktop xu4.cfg xu4.spec artifact2x/U4DEU-Win64-2xZoom-$GIT_TAG/Daten/
+          cp -av conf/* artifact2x/U4DEU-Win64-2xZoom-$GIT_TAG/Daten/
+          rm -rf artifact2x/U4DEU-Win64-2xZoom-$GIT_TAG/Daten/iOS
+          mkdir artifact2x/U4DEU-Win64-2xZoom-$GIT_TAG/Daten/graphics
+          cp -av graphics/ega artifact2x/U4DEU-Win64-2xZoom-$GIT_TAG/Daten/graphics/
+          mkdir artifact2x/U4DEU-Win64-2xZoom-$GIT_TAG/Daten/music
+          cp -av music/*.ogg artifact2x/U4DEU-Win64-2xZoom-$GIT_TAG/Daten/music/
+          mkdir artifact2x/U4DEU-Win64-2xZoom-$GIT_TAG/Daten/sound
+          cp -av sound/*.ogg artifact2x/U4DEU-Win64-2xZoom-$GIT_TAG/Daten/sound/
+          cp -a talk artifact2x/U4DEU-Win64-2xZoom-$GIT_TAG/Daten/
+          cp -a src/xu4.ico artifact2x/U4DEU-Win64-2xZoom-$GIT_TAG/Daten/
+          cd src
+          sed 's/^# define DEFAULT_SCALE 2$/# define DEFAULT_SCALE 1/' < settings.h > ~/settings2.h
+          cp -a settings.h ~/settings.h
+          cp -af ~/settings2.h settings.h
+          make -f Makefile64 -j 6
+          cd ..
+          mkdir artifact1x
+          cp -a artifact2x/U4DEU-Win64-2xZoom-$GIT_TAG artifact1x/U4DEU-Win64-1xZoom-$GIT_TAG
+          rm -f artifact1x/U4DEU-Win64-1xZoom-$GIT_TAG/Daten/*.exe
+          install -s src/*.exe artifact1x/U4DEU-Win64-1xZoom-$GIT_TAG/Daten/
+          cd src
+          make -f Makefile64 clean
+          rm .depends
+          cd ..
+          cp -a src artifact1x/U4DEU-Win64-1xZoom-$GIT_TAG/Daten/
+          cp -a ~/settings.h src/
+          cp -a src artifact2x/U4DEU-Win64-2xZoom-$GIT_TAG/Daten/
+          powershell -ExecutionPolicy Bypass -Command '$ws = New-Object -ComObject WScript.Shell; $s = $ws.CreateShortcut('\''artifact2x\U4DEU-Win64-2xZoom-'$GIT_TAG'\Ultima IV.lnk'\''); $s.TargetPath = '\''%COMSPEC%'\''; $s.Arguments = '\''/c Daten\u4.bat'\''; $s.WindowStyle = 1; $s.IconLocation = '\''%USERPROFILE%\Desktop\U4DEU-Win64-2xZoom-'$GIT_TAG'\Daten\xu4.ico'\''; $s.Save()'
+          powershell -ExecutionPolicy Bypass -Command '$ws = New-Object -ComObject WScript.Shell; $s = $ws.CreateShortcut('\''artifact1x\U4DEU-Win64-1xZoom-'$GIT_TAG'\Ultima IV.lnk'\''); $s.TargetPath = '\''%COMSPEC%'\''; $s.Arguments = '\''/c Daten\u4.bat'\''; $s.WindowStyle = 1; $s.IconLocation = '\''%USERPROFILE%\Desktop\U4DEU-Win64-1xZoom-'$GIT_TAG'\Daten\xu4.ico'\''; $s.Save()'
+      - uses: actions/upload-artifact@v4
+        with:
+          name: U4DEU-Win64-2xZoom-${{ steps.git-tag.outputs.tag }}
+          path: artifact2x/
+      - uses: actions/upload-artifact@v4
+        with:
+          name: U4DEU-Win64-1xZoom-${{ steps.git-tag.outputs.tag }}
+          path: artifact1x/
