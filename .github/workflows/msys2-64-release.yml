@@ -22,6 +22,7 @@ jobs:
             mingw-w64-x86_64-gcc
             mingw-w64-x86_64-SDL
             mingw-w64-x86_64-SDL_mixer
+            mingw-w64-x86_64-flac
             mingw-w64-x86_64-gcc-libs
             mingw-w64-x86_64-libiconv
             mingw-w64-x86_64-libmad
@@ -52,6 +53,7 @@ jobs:
           for i in \
             SDL.dll \
             libSDL_mixer-1-2-0.dll \
+            libFLAC.dll \
             libgcc_s_seh-1.dll \
             libiconv-2.dll \
             liblzma-5.dll \
