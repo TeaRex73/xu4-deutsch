@@ -122,12 +122,20 @@ Dialogue *U4TlkDialogueLoader::load(void *source)
     Response *health = new Response(
         uppercase(dlg->getPronoun() + " sagt:\n" + strings[4])
     );
-    Response *kw1 = new Response(
-        uppercase(dlg->getPronoun() + " sagt:\n" + strings[5])
-    );
-    Response *kw2 = new Response(
-        uppercase(dlg->getPronoun() + " sagt:\n" + strings[6])
-    );
+    /* Ignore empty answers which have keyword "A   ", response "A"
+       Otherwise those interfere with keyword "ADE" (bye). */
+    Response *kw1 = NULL;
+    if (strings[5] != "A") {
+        kw1 = new Response(
+            uppercase(dlg->getPronoun() + " sagt:\n" + strings[5])
+        );
+    }
+    Response *kw2 = NULL;
+    if (strings[6] != "A") {
+        kw2 = new Response(
+            uppercase(dlg->getPronoun() + " sagt:\n" + strings[6])
+        );
+    }
     switch (qtrigger) {
     case JOB:
         job->add(ResponsePart::ASK);
@@ -136,10 +144,10 @@ Dialogue *U4TlkDialogueLoader::load(void *source)
         health->add(ResponsePart::ASK);
         break;
     case KEYWORD1:
-        kw1->add(ResponsePart::ASK);
+        if (kw1) kw1->add(ResponsePart::ASK);
         break;
     case KEYWORD2:
-        kw2->add(ResponsePart::ASK);
+        if (kw2) kw2->add(ResponsePart::ASK);
         break;
     case NONE:
     default:
@@ -149,8 +157,8 @@ Dialogue *U4TlkDialogueLoader::load(void *source)
     dlg->addKeyword("was", job);
     dlg->addKeyword("gesundheit", health);
     dlg->addKeyword("wie", health);
-    dlg->addKeyword(strings[10], kw1);
-    dlg->addKeyword(strings[11], kw2);
+    if (kw1) dlg->addKeyword(strings[10], kw1);
+    if (kw2) dlg->addKeyword(strings[11], kw2);
     // NOTE: We let the talker's custom keywords override the standard
     // keywords like HEAL and LOOK.  This behavior differs from u4dos,
     // but fixes a couple conversation files which have keywords that
