@@ -1211,7 +1211,7 @@
             <ztats screen="equipment"/>
             WAHRSCHAU, MIEN <if test="{party:member1:sex}=m">JONG!</if><if test="{party:member1:sex}=f">DEERN!</if> SICHER WILLST DU VOM ALTEN {ownerdat} KAUFEN!
 
-            {owner} SAGT: WILLKOMMEN I{name}.
+            {owner} SAGT: WILLKOMMEN {name}.
             WILLST DU MEINE BEUTE SEHEN?<input type="choice" options="jn" target="show_goods"/>
         </intro>
 
@@ -1286,14 +1286,14 @@
             {owner} SAGT: MEHR SEHEN?<input type="choice" options="jn" target="show_goods"/>
         </see_more>
 
-        <vendor id="VESPER" name="M GILDENLADEN" owner="LONG JOHN LEARY" ownerdat="LONG JOHN LEARY">
+        <vendor id="VESPER" name="IM GILDENLADEN" owner="LONG JOHN LEARY" ownerdat="LONG JOHN LEARY">
             <item choice="a" name="FACKELN" price="50" quant="5" type="torch"/>
             <item choice="b" name="JUWELEN" price="60" quant="5" type="gem"/>
             <item choice="c" name="DIETRICHE" price="60" quant="6" type="key"/>
             <item choice="d" hidden="true" name="SEXTANT" price="900" quant="1" type="sextant"/>
         </vendor>
 
-        <vendor id="BUKANIER-NEST" name="N DER PIRATENGILDE" owner="DER EIN[UGIGE WILLEY" ownerdat="EIN[UGIGEN WILLEY">
+        <vendor id="BUKANIER-NEST" name="ZUR PIRATENGILDE" owner="DER EIN[UGIGE WILLEY" ownerdat="EIN[UGIGEN WILLEY">
             <item choice="a" name="FACKELN" price="50" quant="5" type="torch"/>
             <item choice="b" name="JUWELEN" price="60" quant="5" type="gem"/>
             <item choice="c" name="DIETRICHE" price="60" quant="6" type="key"/>

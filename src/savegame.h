@@ -92,7 +92,7 @@ enum ClassType: unsigned char {
 
 /**
  * The list of status values for the savegame character records.  The
- * values match the letter thats appear in the ztats area.
+ * values match the letters that appear in the ztats area.
  */
 enum StatusType: unsigned char {
     STAT_GOOD = 'G',

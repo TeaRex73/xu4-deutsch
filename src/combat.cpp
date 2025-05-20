@@ -1270,7 +1270,7 @@ void CombatController::attack()
         int choice = ReadChoiceController::getChar("123456789");
         if (((choice - '0') >= 1) && ((choice - '0') <= weapon->getRange())) {
             range = choice - '0';
-            screenMessage("%d\n", range);
+            // screenMessage("%d\n", range);
         } else {
             return;
         }

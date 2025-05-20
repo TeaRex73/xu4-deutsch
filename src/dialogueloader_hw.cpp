@@ -112,7 +112,7 @@ Response *hawkwindGetAdvice(const DynamicResponse *dynResp)
     if (virtue != -1) {
         text = "\n";
         if (virtueLevel == 0) {
-            text += hawkwindText[HW_ALREADYAVATAR] + "\n";
+            text += hawkwindText[HW_ALREADYAVATAR] /* + "\n" */;
         } else if (virtueLevel < 80) {
             text += hawkwindText[(virtueLevel / 20) * 8 + virtue];
         } else if (virtueLevel < 99) {
