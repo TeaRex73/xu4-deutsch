@@ -871,7 +871,7 @@ Creature *Creature::nearestOpponent(int *dist, bool ranged)
             }
             /* skip target 50% of time if same distance */
             if ((d < leastDist)
-                || ((d == leastDist) && (xu4_random(2) == 0))) {
+               /* || ((d == leastDist) && (xu4_random(2) == 0)) */ ) {
                 opponent = dynamic_cast<Creature *>(*i);
                 leastDist = d;
             }
