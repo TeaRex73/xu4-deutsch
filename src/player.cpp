@@ -1010,7 +1010,8 @@ void Party::applyEffect(TileEffect effect)
     case EFFECT_FIRE:
         if (c->transportContext == TRANSPORT_SHIP) {
             gameDamageShip(-1, 10);
-        } else if (c->transportContext != TRANSPORT_BALLOON) {
+        } // u4apple2: party damage happens in addition to ship damage
+        if (c->transportContext != TRANSPORT_BALLOON) {
             gameDamageParty(0, 24);
         }
         break;
@@ -1205,7 +1206,9 @@ void Party::endTurn()
  */
 int Party::getChest()
 {
-    int gold = xu4_random(80) + xu4_random(8) + 10;
+    /* int gold = xu4_random(80) + xu4_random(8) + 10; */
+    /* above is from u4dos, following is from u4apple2 */
+    int gold = xu4_random(100);
     adjustGold(gold);
     return gold;
 }
