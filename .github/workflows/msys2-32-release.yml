@@ -28,7 +28,7 @@ jobs:
             mingw-w64-i686-libogg
             mingw-w64-i686-libpng
             mingw-w64-i686-libvorbis
-            mingw-w64-i686-libwinpthread-git
+            mingw-w64-i686-libwinpthread
             mingw-w64-i686-libxml2
             mingw-w64-i686-openal
             mingw-w64-i686-xz

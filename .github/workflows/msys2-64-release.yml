@@ -30,7 +30,7 @@ jobs:
             mingw-w64-x86_64-libogg
             mingw-w64-x86_64-libpng
             mingw-w64-x86_64-libvorbis
-            mingw-w64-x86_64-libwinpthread-git
+            mingw-w64-x86_64-libwinpthread
             mingw-w64-x86_64-libxml2
             mingw-w64-x86_64-openal
             mingw-w64-x86_64-xz
