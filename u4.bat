@@ -41,6 +41,22 @@ exit /b 0
 setlocal disabledelayedexpansion
 set /a TRY=%TRY% + 1
 if %TRY% leq 10 goto :nexttry
+set TRY=1
+:nexttry2
+call mirrors.bat
+set /a m=%RANDOM% %% %MAXMIRROR% + 1
+set MIRROR=MIRROR%m%
+setlocal enabledelayedexpansion
+call :getfile2 !%MIRROR%!
+if errorlevel 1 goto error2
+setlocal disabledelayedexpansion
+cd /d "%~dp0"
+cscript //NoLogo //E:jscript MessageBox.js 64 "Herunterladen war erfolgreich! Klicke erneut auf Ultima IV, um die Dokumentation lesbar zu machen!"
+exit /b 0
+:error2
+setlocal disabledelayedexpansion
+set /a TRY=%TRY% + 1
+if %TRY% leq 10 goto :nexttry2
 cd /d "%~dp0"
 cscript //NoLogo //E:jscript MessageBox.js 48 "Herunterladen war nicht erfolgreich! Lade Ultima IV von https://ultima.thatfleminggent.com/ultima4.zip selbst herunter und kopiere die zip-Datei, ohne sie zu entpacken, in den Unterordner Daten!"
 exit /b 1
@@ -76,6 +92,17 @@ cd /d "%~dp0"
 cscript //NoLogo //E:jscript MessageBox.js 16 "Die Dokumentation konnte nicht lesbar gemacht werden! Bitte kontaktiere die Entwickler und melde den Fehler!"
 exit /b 1
 :getfile
+attrib -s -h -r .\ultima4.zip >nul 2>nul
+del /f .\ultima4.zip >nul 2>nul
+powershell -c "Invoke-WebRequest -Uri '%1distfiles/59/ultima4.zip' -OutFile 'ultima4.zip'"
+attrib -s -h -r "%TEMP%\u4zipsiz.txt" >nul 2>nul
+del /f "%TEMP%\u4zipsiz.txt" >nul 2>nul
+call :size .\ultima4.zip >"%TEMP%\u4zipsiz.txt"
+set /p FILESIZE=<"%TEMP%\u4zipsiz.txt"
+del /f "%TEMP%\u4zipsiz.txt" >nul 2>nul
+if "%FILESIZE%"=="529099" exit /b 0
+exit /b 1
+:getfile2
 attrib -s -h -r .\ultima4.zip >nul 2>nul
 del /f .\ultima4.zip >nul 2>nul
 powershell -c "& {(New-Object System.Net.WebClient).DownloadFile('%1distfiles/59/ultima4.zip','ultima4.zip')}"
