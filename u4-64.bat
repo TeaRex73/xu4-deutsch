@@ -27,6 +27,10 @@ goto nodownload
 :download
 cd /d "%~dp0"
 cscript //NoLogo //E:jscript MessageBox.js 64 "Die originale MS-DOS-Version von Ultima IV wird jetzt heruntergeladen..."
+powershell -c "if ($PSVersionTable.PSVersion.Major -ge 3) { exit 1; }"
+if errorlevel 1 goto useinvoke
+goto usewebclient
+:useinvoke
 set TRY=1
 :nexttry
 call mirrors.bat
@@ -42,7 +46,9 @@ exit /b 0
 :error
 setlocal disabledelayedexpansion
 set /a TRY=%TRY% + 1
-if %TRY% leq 10 goto :nexttry
+if %TRY% leq 10 goto nexttry
+goto notfound
+:usewebclient
 set TRY=1
 :nexttry2
 call mirrors.bat
@@ -58,7 +64,8 @@ exit /b 0
 :error2
 setlocal disabledelayedexpansion
 set /a TRY=%TRY% + 1
-if %TRY% leq 10 goto :nexttry2
+if %TRY% leq 10 goto nexttry2
+:notfound
 cd /d "%~dp0"
 cscript //NoLogo //E:jscript MessageBox.js 48 "Herunterladen war nicht erfolgreich! Lade Ultima IV von https://ultima.thatfleminggent.com/ultima4.zip selbst herunter und kopiere die zip-Datei, ohne sie zu entpacken, in den Unterordner Daten!"
 exit /b 1
