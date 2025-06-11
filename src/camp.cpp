@@ -171,7 +171,7 @@ void InnController::begin()
     /* Is there a special encounter during your stay? */
     // mwinterrowd suggested code, based on u4dos
     if (c->party->member(0)->isDead()
-        || (!settings.innAlwaysCombat && (xu4_random(4) != 0))) {
+        || (!settings.innAlwaysCombat && (xu4_random(8) != 0))) {
         bool metIsaac = maybeMeetIsaac();
         /* Wake everyone up! */
         for (int i = 0; i < c->party->size(); i++) {
