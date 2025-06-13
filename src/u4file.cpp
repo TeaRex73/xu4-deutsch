@@ -143,8 +143,8 @@ void U4PATH::initDefaultPaths()
     // root directories
     /*Try to cover all root possibilities. These can be added to
       by separate modules*/
-    rootResourcePaths.push_back("");
     rootResourcePaths.push_back(".");
+    rootResourcePaths.push_back("");
     rootResourcePaths.push_back("./ultima4");
     rootResourcePaths.push_back("/usr/lib/u4");
     rootResourcePaths.push_back("/usr/local/lib/u4");
@@ -152,29 +152,29 @@ void U4PATH::initDefaultPaths()
     // various subdirectories
     /* the possible paths where u4 for DOS can be installed */
     u4ForDOSPaths.push_back("");
-    u4ForDOSPaths.push_back("u4");
-    u4ForDOSPaths.push_back("ultima4");
+    u4ForDOSPaths.push_back("./u4");
+    u4ForDOSPaths.push_back("./ultima4");
     /* the possible paths where the u4 zipfiles can be installed */
     u4ZipPaths.push_back("");
-    u4ZipPaths.push_back("u4");
+    u4ZipPaths.push_back("./u4");
     /* the possible paths where the u4 music files can be installed */
-    musicPaths.push_back("");
-    musicPaths.push_back("mid");
-    musicPaths.push_back("../mid");
-    musicPaths.push_back("music");
+    musicPaths.push_back("./music");
     musicPaths.push_back("../music");
+    musicPaths.push_back("./mid");
+    musicPaths.push_back("../mid");
+    musicPaths.push_back("");
     /* the possible paths where the u4 sound files can be installed */
-    soundPaths.push_back("");
     soundPaths.push_back("./sound");
     soundPaths.push_back("../sound");
+    soundPaths.push_back("");
     /* the possible paths where the u4 config files can be installed */
-    configPaths.push_back("");
-    configPaths.push_back("conf");
+    configPaths.push_back("./conf");
     configPaths.push_back("../conf");
+    configPaths.push_back("");
     /* the possible paths where the u4 graphics files can be installed */
-    graphicsPaths.push_back("");
     graphicsPaths.push_back("./graphics");
     graphicsPaths.push_back("../graphics");
+    graphicsPaths.push_back("");
 } // U4PATH::initDefaultPaths
 
 
