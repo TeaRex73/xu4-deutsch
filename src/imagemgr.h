@@ -166,7 +166,7 @@ private:
     static void fixupAbacus(Image *im, int prescale);
     static void fixupDungNS(const Image *im, int prescale);
     static void fixupFMTowns(const Image *im, int prescale);
-    void update(Settings *newSettings);
+    void update(Settings *newSettings) override;
     static ImageMgr *instance;
     static ImageInfo *screenInfo;
     std::map<std::string, ImageSet *> imageSets;
