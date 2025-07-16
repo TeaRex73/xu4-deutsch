@@ -21,7 +21,7 @@ LIBS=-Wl,--as-needed -Wl,--gc-sections -Wl,--no-seh -Wl,--large-address-aware -L
 FEATURES=-UHAVE_BACKTRACE -DHAVE_VARIADIC_MACROS=1
 #DEBUGCXXFLAGS=-O2 -g -fno-lto -DNPERF -marm -mfpu=vfp -march=armv6zk -mtune=arm1176jzf-s -mfloat-abi=hard -UDEBUG -DNDEBUG -DRASB_PI -DNTSC_TV -fno-exceptions -fno-non-call-exceptions -fno-common
 DEBUGCXXFLAGS=-Oz -march=pentium4 -mtune=generic -Wp,-D_FORTIFY_SOURCE=2 -fstack-protector-strong -D__USE_MINGW_ANSI_STDIO=1 -UPERF -DNPERF -UNDEBUG -DDEBUG -URASB_PI
-COMMON_FLAGS=-mconsole $(FEATURES) -Wall -Wextra -Werror -Wmissing-declarations -Wlogical-op -I. -I/mingw32/include/libxml2 -I/mingw32/include/SDL $(UIFLAGS) -DICON_FILE=\"$(datadir)/pixmaps/u4.bmp\" $(DEBUGCXXFLAGS) -D_GNU_SOURCE=1 $(LIBS)
+COMMON_FLAGS=-mconsole $(FEATURES) -Wall -Wextra -Werror -Wmissing-declarations -Wlogical-op -Wno-deprecated-declarations -I. -I/mingw32/include/libxml2 -I/mingw32/include/SDL $(UIFLAGS) -DICON_FILE=\"$(datadir)/pixmaps/u4.bmp\" $(DEBUGCXXFLAGS) -D_GNU_SOURCE=1 $(LIBS)
 CFLAGS=-std=gnu90 -fanalyzer $(COMMON_FLAGS)
 CXXFLAGS=-std=gnu++11 $(COMMON_FLAGS) -Weffc++ -Wold-style-cast -Wsign-promo -Wsuggest-override
 INSTALL=install
