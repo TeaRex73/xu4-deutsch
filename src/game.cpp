@@ -474,7 +474,7 @@ static bool gameSave()
     fsync(fileno(saveGameFile));
     std::fclose(saveGameFile);
     sync();
-    std:: FILE *monstersFile = std::fopen(
+    std::FILE *monstersFile = std::fopen(
         (settings.getUserPath() + MONSTERS_SAV_BASE_FILENAME).c_str(), "wb"
     );
     if (!monstersFile) {
@@ -587,7 +587,7 @@ static bool gameSave()
         /**
          * Write outmonst.sav
          */
-        std:: FILE *outMonstFile = std::fopen(
+        std::FILE *outMonstFile = std::fopen(
             (settings.getUserPath() + OUTMONST_SAV_BASE_FILENAME).c_str(), "wb"
         );
         if (!outMonstFile) {
