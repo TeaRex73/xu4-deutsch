@@ -62,7 +62,7 @@ jobs:
             libvorbis-0.dll \
             libvorbisfile-3.dll \
             libwinpthread-1.dll \
-            libxml2-2.dll \
+            libxml2-16.dll \
             zlib1.dll \
             ; do
             cp -av /mingw32/bin/"$i" artifact2x/U4DEU-Win32-2xZoom-$GIT_HASH/Daten/
