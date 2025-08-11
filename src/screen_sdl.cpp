@@ -25,8 +25,8 @@
 #include <cstdio>
 #include <cstdlib>
 #include <functional>
-#include <vector>
 #include <map>
+#include <vector>
 #include <SDL.h>
 
 #include "config.h"

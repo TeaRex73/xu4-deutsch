@@ -47,7 +47,7 @@ const Config *Config::getInstance()
 {
     if (!instance) {
         xmlRegisterInputCallbacks(
-            &xmlFileMatch, &fileOpen, xmlFileRead, xmlFileClose
+            &xmlFileMatch, &fileOpen, &xmlFileRead, &xmlFileClose
         );
         instance = new Config;
     }

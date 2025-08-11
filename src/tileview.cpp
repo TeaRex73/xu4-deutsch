@@ -218,9 +218,16 @@ void TileView::drawFocus(int x, int y) const
             SCALED(y * tileHeight + this->y),
             SCALED(2),
             SCALED(tileHeight),
+#ifdef RASB_PI
             0xff,
             0xff,
             0xff
+#else
+            0xf1,
+            0xf1,
+            0xf1
+#endif
+
         );
         /* top edge */
         screen->fillRect(
@@ -228,9 +235,15 @@ void TileView::drawFocus(int x, int y) const
             SCALED(y * tileHeight + this->y),
             SCALED(tileWidth),
             SCALED(2),
+#ifdef RASB_PI
             0xff,
             0xff,
             0xff
+#else
+            0xf1,
+            0xf1,
+            0xf1
+#endif
         );
         /* right edge */
         screen->fillRect(
@@ -238,9 +251,15 @@ void TileView::drawFocus(int x, int y) const
             SCALED(y * tileHeight + this->y),
             SCALED(2),
             SCALED(tileHeight),
+#ifdef RASB_PI
             0xff,
             0xff,
             0xff
+#else
+            0xf1,
+            0xf1,
+            0xf1
+#endif
         );
         /* bottom edge */
         screen->fillRect(
@@ -248,9 +267,15 @@ void TileView::drawFocus(int x, int y) const
             SCALED((y + 1) * tileHeight + this->y - 2),
             SCALED(tileWidth),
             SCALED(2),
+#ifdef RASB_PI
             0xff,
             0xff,
             0xff
+#else
+            0xf1,
+            0xf1,
+            0xf1
+#endif
         );
     }
 }

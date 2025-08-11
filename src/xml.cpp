@@ -46,8 +46,8 @@ static void xmlRegisterIO()
 {
     xmlRegisterInputCallbacks(&xmlFileMatch,
                               &xmlXu4FileOpen,
-                              xmlFileRead,
-                              xmlFileClose);
+                              &xmlFileRead,
+                              &xmlFileClose);
 }
 
 
