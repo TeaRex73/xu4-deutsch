@@ -529,11 +529,19 @@ void EventHandler::run()
                 clocksum += diff;
                 std::fprintf(
                     stderr,
-                    "diff = %ld, sum = %ld, avg = %f\n",
-                    static_cast<long int>(diff),
-                    static_cast<long int>(static_cast<std::clock_t>(clocksum)),
-                    (static_cast<double>(static_cast<std::clock_t>(clocksum))
-                     / static_cast<double>(static_cast<int>(keycount)))
+                    "diff = %Lf, sum = %Lf, avg = %Lf\n",
+                    static_cast<long double>(diff),
+                    static_cast<long double>(
+                         static_cast<std::clock_t>(clocksum)
+                    ),
+                    (
+                        static_cast<long double>(
+                             static_cast<std::clock_t>(clocksum)
+                        )
+                        / static_cast<long double>(
+                              static_cast<int>(keycount)
+                        )
+                    )
                 );
 #endif
                 break;

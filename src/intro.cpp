@@ -203,8 +203,8 @@ IntroController::IntroController()
     :Controller(1),
      mode(INTRO_TITLES),
      backgroundArea(),
-     menuArea(1 * CHAR_WIDTH, 13 * CHAR_HEIGHT, 38, 11),
-     extendedMenuArea(2 * CHAR_WIDTH, 10 * CHAR_HEIGHT, 36, 13),
+     menuArea(1 * CHAR_WIDTH, 13 * CHAR_HEIGHT + 4, 38, 11),
+     extendedMenuArea(2 * CHAR_WIDTH, 10 * CHAR_HEIGHT + 4, 36, 13),
      questionArea(
          INTRO_TEXT_X * CHAR_WIDTH,
          INTRO_TEXT_Y * CHAR_HEIGHT,
@@ -213,7 +213,7 @@ IntroController::IntroController()
      ),
      mapArea(
          BORDER_WIDTH,
-         (TILE_HEIGHT * 6) + BORDER_HEIGHT,
+         (TILE_HEIGHT * 6) + BORDER_HEIGHT + 4,
          INTRO_MAP_WIDTH,
          INTRO_MAP_HEIGHT,
          "base"
@@ -1071,12 +1071,17 @@ void IntroController::drawBeasties(bool musicon)
  */
 void IntroController::drawBeastie(int beast, int vertoffset, int frame) const
 {
-    char buffer[128];
+    char buffer[16];
     int destx;
+    Image *screen = imageMgr->get("screen")->image;
     U4ASSERT(beast == 0 || beast == 1, "invalid beast: %d", beast);
-    std::sprintf(buffer, "beast%dframe%02d", beast, frame);
+    std::snprintf(buffer, 16, "beast%dframe%02d", beast, frame);
     destx = beast ? (320 - 48) : 0;
-    backgroundArea.draw(buffer, destx, vertoffset);
+    backgroundArea.draw(buffer, destx, vertoffset + 4);
+    screen->fillRect(
+        0, 0, 320 * settings.scale, 4 * settings.scale, 0, 0, 0
+    );
+
 }
 
 
@@ -1150,7 +1155,7 @@ void IntroController::updateScreen()
     screenHideCursor();
     switch (mode) {
     case INTRO_MAP:
-        backgroundArea.draw(BKGD_INTRO);
+      backgroundArea.draw(BKGD_INTRO, 0, 4);
         drawMap();
         drawBeasties();
         // display the profile name if a local profile is being used
@@ -1162,8 +1167,8 @@ void IntroController::updateScreen()
         break;
     case INTRO_MENU:
         // draw the extended background for all option screens
-        backgroundArea.draw(BKGD_INTRO);
-        backgroundArea.draw(BKGD_OPTIONS_BTM, 0, 120);
+        backgroundArea.draw(BKGD_INTRO, 0, 4);
+        // backgroundArea.draw(BKGD_OPTIONS_BTM, 0, 120);
         // if there is an error message to display, show it
         if (!errorMessage.empty()) {
             menuArea.textAt(4, 5, "%s", errorMessage.c_str());
@@ -1173,8 +1178,8 @@ void IntroController::updateScreen()
             EventHandler::wait_msecs(5000);
             // clear the screen again
             errorMessage.erase();
-            backgroundArea.draw(BKGD_INTRO);
-            backgroundArea.draw(BKGD_OPTIONS_BTM, 0, 120);
+            backgroundArea.draw(BKGD_INTRO, 0, 4);
+            // backgroundArea.draw(BKGD_OPTIONS_BTM, 0, 120);
         }
         menuArea.textAt(1, 1, "EINE ANDERE WELT, EINE KOMMENDE ZEIT");
         menuArea.textAt(14, 3, "OPTIONEN:");
@@ -1249,8 +1254,8 @@ void IntroController::initiateNewGame()
     // disable the screen cursor because a text cursor will now be used
     screenDisableCursor();
     // draw the extended background for all option screens
-    backgroundArea.draw(BKGD_INTRO);
-    backgroundArea.draw(BKGD_OPTIONS_BTM, 0, 120);
+    backgroundArea.draw(BKGD_INTRO, 0, 4);
+    // backgroundArea.draw(BKGD_OPTIONS_BTM, 0, 120);
     // display name prompt and read name from keyboard
     menuArea.textAt(3, 3, "Unter welchem Namen wirst du in");
     menuArea.textAt(3, 4, "dieser Welt und Zeit bekannt sein?");
@@ -1270,8 +1275,8 @@ void IntroController::initiateNewGame()
         return;
     }
     // draw the extended background for all option screens
-    backgroundArea.draw(BKGD_INTRO);
-    backgroundArea.draw(BKGD_OPTIONS_BTM, 0, 120);
+    backgroundArea.draw(BKGD_INTRO, 0, 4);
+    // backgroundArea.draw(BKGD_OPTIONS_BTM, 0, 120);
     // display sex prompt and read sex from keyboard
     menuArea.textAt(3, 3, "Bist du m{nnlich oder weiblich?");
     // the cursor is already enabled, just change its position
@@ -1530,8 +1535,8 @@ void IntroController::journeyOnward()
 void IntroController::about()
 {
     // draw the extended background for all option screens
-    backgroundArea.draw(BKGD_INTRO);
-    backgroundArea.draw(BKGD_OPTIONS_BTM, 0, 120);
+    backgroundArea.draw(BKGD_INTRO, 0, 4);
+    // backgroundArea.draw(BKGD_OPTIONS_BTM, 0, 120);
     screenHideCursor();
     menuArea.textAt(8, 0, "Ultima IV Deutsch %s", VERSION);
     menuArea.textAt(1, 2, "xu4 ist Freie Software; du darfst");
@@ -1705,8 +1710,9 @@ void IntroController::updateConfMenu(const MenuEvent &event)
         } // switch
     }
     // draw the extended background for all option screens
-    backgroundArea.draw(BKGD_OPTIONS_TOP, 0, 0);
-    backgroundArea.draw(BKGD_OPTIONS_BTM, 0, 120);
+    backgroundArea.draw(BKGD_INTRO, 0, 4);
+    // backgroundArea.draw(BKGD_OPTIONS_TOP, 0, 0);
+    // backgroundArea.draw(BKGD_OPTIONS_BTM, 0, 120);
 } // IntroController::updateConfMenu
 
 void IntroController::updateVideoMenu(const MenuEvent &event)
@@ -1738,8 +1744,9 @@ void IntroController::updateVideoMenu(const MenuEvent &event)
         }
     }
     // draw the extended background for all option screens
-    backgroundArea.draw(BKGD_OPTIONS_TOP, 0, 0);
-    backgroundArea.draw(BKGD_OPTIONS_BTM, 0, 120);
+    backgroundArea.draw(BKGD_INTRO, 0, 4);
+    // backgroundArea.draw(BKGD_OPTIONS_TOP, 0, 0);
+    // backgroundArea.draw(BKGD_OPTIONS_BTM, 0, 120);
 } // IntroController::updateVideoMenu
 
 void IntroController::updateGfxMenu(const MenuEvent &event)
@@ -1756,8 +1763,9 @@ void IntroController::updateGfxMenu(const MenuEvent &event)
         }
     }
     // draw the extended background for all option screens
-    backgroundArea.draw(BKGD_OPTIONS_TOP, 0, 0);
-    backgroundArea.draw(BKGD_OPTIONS_BTM, 0, 120);
+    backgroundArea.draw(BKGD_INTRO, 0, 4);
+    // backgroundArea.draw(BKGD_OPTIONS_TOP, 0, 0);
+    // backgroundArea.draw(BKGD_OPTIONS_BTM, 0, 120);
 }
 
 void IntroController::updateSoundMenu(const MenuEvent &event) const
@@ -1790,8 +1798,9 @@ void IntroController::updateSoundMenu(const MenuEvent &event) const
         }
     }
     // draw the extended background for all option screens
-    backgroundArea.draw(BKGD_OPTIONS_TOP, 0, 0);
-    backgroundArea.draw(BKGD_OPTIONS_BTM, 0, 120);
+    backgroundArea.draw(BKGD_INTRO, 0, 4);
+    // backgroundArea.draw(BKGD_OPTIONS_TOP, 0, 0);
+    // backgroundArea.draw(BKGD_OPTIONS_BTM, 0, 120);
 } // IntroController::updateSoundMenu
 
 void IntroController::updateInputMenu(const MenuEvent &event)
@@ -1825,8 +1834,9 @@ void IntroController::updateInputMenu(const MenuEvent &event)
         } // switch
     }
     // draw the extended background for all option screens
-    backgroundArea.draw(BKGD_OPTIONS_TOP, 0, 0);
-    backgroundArea.draw(BKGD_OPTIONS_BTM, 0, 120);
+    backgroundArea.draw(BKGD_INTRO, 0, 4);
+    // backgroundArea.draw(BKGD_OPTIONS_TOP, 0, 0);
+    // backgroundArea.draw(BKGD_OPTIONS_BTM, 0, 120);
     // after drawing the menu, extra menu text can be added here
     extendedMenuArea.textAt(0, 5, "Mouse Options:");
 } // IntroController::updateInputMenu
@@ -1854,8 +1864,9 @@ void IntroController::updateSpeedMenu(const MenuEvent &event) const
         }
     }
     // draw the extended background for all option screens
-    backgroundArea.draw(BKGD_OPTIONS_TOP, 0, 0);
-    backgroundArea.draw(BKGD_OPTIONS_BTM, 0, 120);
+    backgroundArea.draw(BKGD_INTRO, 0, 4);
+    // backgroundArea.draw(BKGD_OPTIONS_TOP, 0, 0);
+    // backgroundArea.draw(BKGD_OPTIONS_BTM, 0, 120);
 } // IntroController::updateSpeedMenu
 
 void IntroController::updateGameplayMenu(const MenuEvent &event) const
@@ -1878,8 +1889,9 @@ void IntroController::updateGameplayMenu(const MenuEvent &event) const
         }
     }
     // draw the extended background for all option screens
-    backgroundArea.draw(BKGD_OPTIONS_TOP, 0, 0);
-    backgroundArea.draw(BKGD_OPTIONS_BTM, 0, 120);
+    backgroundArea.draw(BKGD_INTRO, 0, 4);
+    // backgroundArea.draw(BKGD_OPTIONS_TOP, 0, 0);
+    // backgroundArea.draw(BKGD_OPTIONS_BTM, 0, 120);
 }
 
 void IntroController::updateInterfaceMenu(const MenuEvent &event)
@@ -1902,8 +1914,9 @@ void IntroController::updateInterfaceMenu(const MenuEvent &event)
         }
     }
     // draw the extended background for all option screens
-    backgroundArea.draw(BKGD_OPTIONS_TOP, 0, 0);
-    backgroundArea.draw(BKGD_OPTIONS_BTM, 0, 120);
+    backgroundArea.draw(BKGD_INTRO, 0, 4);
+    // backgroundArea.draw(BKGD_OPTIONS_TOP, 0, 0);
+    // backgroundArea.draw(BKGD_OPTIONS_BTM, 0, 120);
     // after drawing the menu, extra menu text can be added here
     extendedMenuArea.textAt(2, 3, "  (Open, Jimmy, etc.)");
 } // IntroController::updateInterfaceMenu
@@ -2596,7 +2609,7 @@ bool IntroController::updateTitle()
                 SCALED(8),
                 SCALED(8),
                 SCALED(8),
-                SCALED(13 * 8),
+                SCALED(13 * 8 + 4),
                 SCALED(38 * 8),
                 SCALED(10 * 8)
             );
@@ -2671,7 +2684,7 @@ void IntroController::drawTitle()
     scaled->setTransparentIndex(transparentIndex);
     scaled->drawSubRect(
         SCALED(title->rx), // dest x, y
-        SCALED(title->ry),
+        SCALED(title->ry + 4),
         SCALED(1), // src x, y, w, h
         SCALED(1),
         SCALED(title->rw),

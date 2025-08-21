@@ -695,7 +695,11 @@ void Image::drawOn(Image *d, int x, int y, bool anyway) const
     r.y = y;
     r.w = w;
     r.h = h;
-    if (__builtin_expect(screenMoving, true) || (d && !d->isScreen) || anyway) {
+    if (
+        __builtin_expect(screenMoving, true) ||
+        (d && !d->isScreen) ||
+        anyway
+    ) {
         SDL_BlitSurface(surface, nullptr, destSurface, &r);
     }
 }
@@ -729,7 +733,11 @@ void Image::drawSubRectOn(
     dest.x = x;
     dest.y = y;
     /* dest w & h unused */
-    if (__builtin_expect(screenMoving, true) || (d && !d->isScreen) || anyway) {
+    if (
+        __builtin_expect(screenMoving, true) ||
+        (d && !d->isScreen) ||
+        anyway
+    ) {
         SDL_BlitSurface(surface, &src, destSurface, &dest);
     }
 } // Image::drawSubRectOn
@@ -765,7 +773,11 @@ void Image::drawSubRectInvertedOn(
         dest.x = x;
         dest.y = y + rh - i - 1;
         /* dest w & h unused */
-        if (__builtin_expect(screenMoving, true) || (d && !d->isScreen) || anyway) {
+        if (
+            __builtin_expect(screenMoving, true) ||
+            (d && !d->isScreen) ||
+            anyway
+        ) {
             SDL_BlitSurface(surface, &src, destSurface, &dest);
         }
     }

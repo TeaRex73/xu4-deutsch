@@ -325,7 +325,7 @@ void screenRedrawTextArea(int x, int y, int width, int height)
     SDL_UpdateRect(
         SDL_GetVideoSurface(),
         x * CHAR_WIDTH * settings.scale,
-        y * CHAR_HEIGHT * settings.scale,
+        y * CHAR_HEIGHT * settings.scale + 4 * settings.scale,
         width * CHAR_WIDTH * settings.scale,
         height * CHAR_HEIGHT * settings.scale
     );

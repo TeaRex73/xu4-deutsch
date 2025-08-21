@@ -620,7 +620,7 @@ void screenDrawImageInMapArea(const std::string &name)
     } else {
         info->image->drawSubRect(
             BORDER_WIDTH * settings.scale,
-            BORDER_HEIGHT * settings.scale,
+            (BORDER_HEIGHT + 4) * settings.scale,
             BORDER_WIDTH * settings.scale,
             BORDER_HEIGHT * settings.scale,
             VIEWPORT_W * TILE_WIDTH * settings.scale,
@@ -684,7 +684,7 @@ void screenShowChar(int chr, int x, int y)
     }
     charsetInfo->image->drawSubRect(
         x * charsetInfo->image->width(),
-        y * (CHAR_HEIGHT * settings.scale),
+        y * (CHAR_HEIGHT * settings.scale) + 4 * settings.scale,
         0,
         chr * (CHAR_HEIGHT * settings.scale),
         charsetInfo->image->width(),
@@ -704,16 +704,17 @@ void screenScrollMessageArea()
     screen->drawSubRectOn(
         screen,
         TEXT_AREA_X * charsetInfo->image->width(),
-        TEXT_AREA_Y * CHAR_HEIGHT * settings.scale,
+        TEXT_AREA_Y * CHAR_HEIGHT * settings.scale + 4 * settings.scale,
         TEXT_AREA_X * charsetInfo->image->width(),
-        (TEXT_AREA_Y + 1) * CHAR_HEIGHT * settings.scale,
+        (TEXT_AREA_Y + 1) * CHAR_HEIGHT * settings.scale + 4 * settings.scale,
         TEXT_AREA_W * charsetInfo->image->width(),
         (TEXT_AREA_H - 1) * CHAR_HEIGHT * settings.scale
     );
     screen->fillRect(
         TEXT_AREA_X * charsetInfo->image->width(),
         TEXT_AREA_Y * CHAR_HEIGHT * settings.scale
-        + (TEXT_AREA_H - 1) * CHAR_HEIGHT * settings.scale,
+        + (TEXT_AREA_H - 1) * CHAR_HEIGHT * settings.scale
+        + 4 * settings.scale,
         TEXT_AREA_W * charsetInfo->image->width(),
         CHAR_HEIGHT * settings.scale,
         0,
@@ -1571,7 +1572,7 @@ void screenEraseMapArea()
     Image *screen = imageMgr->get("screen")->image;
     screen->fillRect(
         BORDER_WIDTH * settings.scale,
-        BORDER_WIDTH * settings.scale,
+        BORDER_HEIGHT * settings.scale + 4 * settings.scale,
         VIEWPORT_W * TILE_WIDTH * settings.scale,
         VIEWPORT_H * TILE_HEIGHT * settings.scale,
         0,
@@ -1585,7 +1586,7 @@ void screenEraseTextArea(int x, int y, int width, int height)
     Image *screen = imageMgr->get("screen")->image;
     screen->fillRect(
         x * CHAR_WIDTH * settings.scale,
-        y * CHAR_HEIGHT * settings.scale,
+        y * CHAR_HEIGHT * settings.scale + 4 * settings.scale,
         width * CHAR_WIDTH * settings.scale,
         height * CHAR_HEIGHT * settings.scale,
         0,
@@ -1685,7 +1686,7 @@ static void screenShowGemTile(
                 (layout->viewport.x + (x * layout->tileshape.width))
                 * settings.scale,
                 (layout->viewport.y + (y * layout->tileshape.height))
-                * settings.scale,
+                * settings.scale + 4 * settings.scale,
                 0,
                 charIndex->second * layout->tileshape.height * settings.scale,
                 layout->tileshape.width * settings.scale,
@@ -1711,7 +1712,7 @@ static void screenShowGemTile(
                 (layout->viewport.x + (x * layout->tileshape.width))
                 * settings.scale,
                 (layout->viewport.y + (y * layout->tileshape.height))
-                * settings.scale,
+                * settings.scale + 4 * settings.scale,
                 0,
                 tile * layout->tileshape.height * settings.scale,
                 layout->tileshape.width * settings.scale,
@@ -1723,7 +1724,7 @@ static void screenShowGemTile(
                 (layout->viewport.x + (x * layout->tileshape.width))
                 * settings.scale,
                 (layout->viewport.y + (y * layout->tileshape.height))
-                * settings.scale,
+                * settings.scale + 4 * settings.scale,
                 layout->tileshape.width * settings.scale,
                 layout->tileshape.height * settings.scale,
                 0,
@@ -1758,7 +1759,7 @@ void screenGemUpdate()
     Image *screen = imageMgr->get("screen")->image;
     screen->fillRect(
         BORDER_WIDTH * settings.scale,
-        BORDER_HEIGHT * settings.scale,
+        BORDER_HEIGHT * settings.scale + 4 * settings.scale,
         VIEWPORT_W * TILE_WIDTH * settings.scale,
         VIEWPORT_H * TILE_HEIGHT * settings.scale,
         0,

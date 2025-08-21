@@ -215,7 +215,7 @@ int AlphaActionController::get(
 }
 
 GameController::GameController()
-    :mapArea(BORDER_WIDTH, BORDER_HEIGHT, VIEWPORT_W, VIEWPORT_H),
+    :mapArea(BORDER_WIDTH, BORDER_HEIGHT + 4, VIEWPORT_W, VIEWPORT_H),
      paused(false),
      pausedTimer(0)
 {
@@ -236,7 +236,7 @@ void GameController::initScreen()
 void GameController::initScreenWithoutReloadingState()
 {
     musicMgr->play();
-    imageMgr->get(BKGD_BORDERS)->image->draw(0, 0);
+    imageMgr->get(BKGD_BORDERS)->image->draw(0, 4 * settings.scale);
     c->stats->update(); /* draw the party stats */
     screenPrompt();
     eventHandler->pushMouseAreaSet(mouseAreas);

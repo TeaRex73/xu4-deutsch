@@ -29,19 +29,19 @@ extern bool verbose;
 StatsArea::StatsArea()
     :title(
         STATS_AREA_X * CHAR_WIDTH,
-        0 * CHAR_HEIGHT,
+        0 * CHAR_HEIGHT + 4,
         STATS_AREA_WIDTH,
         1
     ),
      mainArea(
          STATS_AREA_X * CHAR_WIDTH,
-         STATS_AREA_Y * CHAR_HEIGHT,
+         STATS_AREA_Y * CHAR_HEIGHT + 4,
          STATS_AREA_WIDTH,
          STATS_AREA_HEIGHT
      ),
      summary(
          STATS_AREA_X * CHAR_WIDTH,
-         (STATS_AREA_Y + STATS_AREA_HEIGHT + 1) * CHAR_HEIGHT,
+         (STATS_AREA_Y + STATS_AREA_HEIGHT + 1) * CHAR_HEIGHT + 4,
          STATS_AREA_WIDTH,
          1
      ),

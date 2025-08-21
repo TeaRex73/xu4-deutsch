@@ -26,7 +26,10 @@ DungeonView *DungeonView::getInstance()
 {
     if (__builtin_expect(!instance, false)) {
         instance = new DungeonView(
-            BORDER_WIDTH, BORDER_HEIGHT, VIEWPORT_W, VIEWPORT_H
+            BORDER_WIDTH,
+            BORDER_HEIGHT + 4 * settings.scale,
+            VIEWPORT_W,
+            VIEWPORT_H
         );
     }
     return instance;
@@ -471,7 +474,7 @@ void DungeonView::drawWall(
     screenDrawImage(
         dngGraphicInfo[index].subimage,
         (BORDER_WIDTH + x) * settings.scale,
-        (BORDER_HEIGHT + y) * settings.scale
+        (BORDER_HEIGHT + y + 4) * settings.scale
     );
     if (dngGraphicInfo[index].subimage2 != nullptr) {
         // FIXME: subimage2 is a horrible hack, needs to be cleaned up
@@ -479,13 +482,13 @@ void DungeonView::drawWall(
             screenDrawImage(
                 dngGraphicInfo[index].subimage2,
                 (8 + dngGraphicInfo[index].ega_x2) * settings.scale,
-                (8 + dngGraphicInfo[index].ega_y2) * settings.scale
+                (8 + dngGraphicInfo[index].ega_y2 + 4) * settings.scale
             );
         } else {
             screenDrawImage(
                 dngGraphicInfo[index].subimage2,
                 (8 + dngGraphicInfo[index].vga_x2) * settings.scale,
-                (8 + dngGraphicInfo[index].vga_y2) * settings.scale
+                (8 + dngGraphicInfo[index].vga_y2 + 4) * settings.scale
             );
         }
     }

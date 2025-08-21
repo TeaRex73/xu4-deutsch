@@ -306,6 +306,12 @@ static void codexHandleVirtues(const std::string &virtue)
         screenDrawImageInMapArea(codexImageNames[current]);
         screenRedrawMapArea();
         current++;
+        if (current == VIRT_MAX) {
+            screenMessage(
+                "\nDu bist wohlversiert in den Tugenden des Avatars.\n"
+            );
+            EventHandler::sleep(5000);
+        }
         tries = 1;
         EventHandler::sleep(2000);
         screenMessage("\n\nDie Stimme fragt:\n");
@@ -323,12 +329,6 @@ static void codexHandleVirtues(const std::string &virtue)
                          )
                      ).c_str()
                  ) == 0)) {
-        if (current == VIRT_MAX) {
-            screenMessage(
-                "\nDu bist wohlversiert in den Tugenden des Avatars.\n"
-            );
-            EventHandler::sleep(5000);
-        }
         screenDrawImageInMapArea(codexImageNames[current]);
         screenRedrawMapArea();
         current++;
@@ -387,7 +387,7 @@ static bool codexHandleInfinityAnyKey(int, void *)
         break;
     default:
         screenMessage(
-            "\naller unabweisbaren Wahrheit, aller unendlichen Liebe, und "
+            "\naller unabweisbaren Wahrheit, aller endlosen Liebe, und "
             "allen unbeugsamen Mutes?\n\n"
         );
         codexInfinityIndex = 1;
