@@ -26,7 +26,7 @@ struct {
 
 static void putc_12(int c, FILE *out);
 static void flush_12(FILE *out);
-static void initdict();
+static void initdict(void);
 static int getcode(unsigned char *str, int len);
 static void addcode(unsigned char *str, int len);
 
@@ -63,7 +63,7 @@ static void flush_12(FILE *out)
 /**
  *  Initializes the LZW dictionary.
  */
-static void initdict()
+static void initdict(void)
 {
     int i;
     dictsize = 0;

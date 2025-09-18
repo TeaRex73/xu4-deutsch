@@ -110,7 +110,7 @@ dumpsavegame$(EXEEXT) : util/dumpsavegame.o savegame.o u4io.o names.o
 tlkconv$(EXEEXT) : util/tlkconv.o
 	$(CC) $(CCFLAGS) $(LDFLAGS) -o $@ $+ $(shell xml2-config --libs)
 
-u4dec$(EXEEXT) : util/u4dec.o lzw/lzw.o lzw/u4decode.o lzw/hash.o rle.o util/pngconv.o
+u4dec$(EXEEXT) : util/u4dec.o lzw/lzw.o lzw/hash.o rle.o util/pngconv.o
 	$(CXX) $(CXXFLAGS) $(LDFLAGS) -o $@ $+ -lpng -lz
 
 u4enc$(EXEEXT) : util/u4enc.o lzw/hash.o util/pngconv.o

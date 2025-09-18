@@ -87,4 +87,4 @@ all.static_gcc_libs:
 	$(MAKE) STATIC_GCC_LIBS=true
 	rm -f libstdc++.a
 
-include .depends
+-include .depends
