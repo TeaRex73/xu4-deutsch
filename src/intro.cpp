@@ -865,6 +865,7 @@ bool IntroController::keyPressed(int key)
             mode = INTRO_MAP;
             updateScreen();
             break;
+#if 0
         case 'k':
             errorMessage.erase();
             // Make a copy of our settings so we can change them
@@ -874,6 +875,7 @@ bool IntroController::keyPressed(int key)
             screenEnableCursor();
             updateScreen();
             break;
+#endif
         case '}':
             errorMessage.erase();
             about();
@@ -890,7 +892,7 @@ bool IntroController::keyPressed(int key)
         case '6':
         case '7':
         case '8':
-    case '9':
+        case '9':
             musicMgr->introSwitch(key - '0');
             break;
         default:
@@ -1214,14 +1216,9 @@ void IntroController::updateScreen()
             "%s",
             menuArea.colorizeString("Konfigurieren", FG_YELLOW, 0, 1).c_str()
         );
-#endif
         menuArea.textAt(
             10,
-#if 0
-            9,
-#else
             8,
-#endif
             "%s",
             menuArea.colorizeString(
                 "Ende und abschalten",
@@ -1229,6 +1226,13 @@ void IntroController::updateScreen()
                 0,
                 1
             ).c_str()
+        );
+#endif
+        menuArea.textAt(
+            10,
+            8,
+            "%s",
+            menuArea.colorizeString("]ber dieses Spiel", FG_YELLOW, 0, 1).c_str()
         );
         drawBeasties();
         // draw the cursor last
@@ -1538,15 +1542,15 @@ void IntroController::about()
     backgroundArea.draw(BKGD_INTRO, 0, 4);
     // backgroundArea.draw(BKGD_OPTIONS_BTM, 0, 120);
     screenHideCursor();
-    menuArea.textAt(8, 0, "Ultima IV Deutsch %s", VERSION);
+    menuArea.textAt(1, 0, "Ultima IV Deutsch         %s", VERSION);
     menuArea.textAt(1, 2, "xu4 ist Freie Software; du darfst");
     menuArea.textAt(1, 3, "es weitergeben und/oder ver{ndern,");
     menuArea.textAt(1, 4, "unter den Bedingungen der GNU GPL");
     menuArea.textAt(1, 5, "die von der FSF ver|ffentlicht");
     menuArea.textAt(1, 6, "wurde. Siehe Datei COPYING.");
-    menuArea.textAt(1, 9, "\011 2002-2020, xu4 Team");
-    menuArea.textAt(1, 8, "\011 1985-1987, Lord British");
-    menuArea.textAt(1, 10, "\011 2013-2024, Finire Dragon");
+    menuArea.textAt(1, 7, "\011 1985-1987, Lord British");
+    menuArea.textAt(1, 8, "\011 2002-2020, xu4 Team");
+    menuArea.textAt(1, 9, "\011 2013-2025, Finire Dragon");
     drawBeasties();
     ReadChoiceController::getChar("");
     screenShowCursor();
@@ -2237,7 +2241,11 @@ void IntroController::getTitleSourceData()
             // PLOT: "Lord British"
             srcData = intro->getSigData();
             // white for EGA
+#ifdef RASB_PI
+            RGBA color = info->image->setColor(255, 255, 255);
+#else
             RGBA color = info->image->setColor(241, 241, 241);
+#endif
             const int blue[16] = {
                 255,
                 250,
