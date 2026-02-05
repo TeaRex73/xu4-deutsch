@@ -16,7 +16,7 @@
 #include "types.h"
 
 class Map;
-struct Portal;
+class Portal;
 class Creature;
 class Location;
 class MoveEvent;

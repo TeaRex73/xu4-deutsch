@@ -87,8 +87,7 @@ void screenInit_sys()
               MY_WIDTH * settings.scale,
               MY_HEIGHT * settings.scale,
               8,
-              /* SDL_DOUBLEBUF
-		 | */ SDL_HWSURFACE
+              SDL_HWSURFACE
               | SDL_ANYFORMAT
               | (settings.fullscreen ? SDL_FULLSCREEN : 0)
           ))) {

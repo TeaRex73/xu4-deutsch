@@ -11,7 +11,7 @@ jobs:
       run:
         shell: msys2 {0}
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
       - uses: msys2/setup-msys2@v2
         with:
           msystem: MINGW32
@@ -43,8 +43,8 @@ jobs:
           pacman --noconfirm -U ./mingw-w64-i686-SDL_mixer-1.2.12-9-any.pkg.tar.zst
           cd src
           touch .depends
-          make .depends
-          make -j 6
+          make -f Makefile32 .depends
+          make -f Makefile32 -j 6
           cd ..
           mkdir artifact2x
           mkdir artifact2x/U4DEU-Win32-2xZoom-$GIT_TAG
@@ -90,14 +90,14 @@ jobs:
           sed 's/^# define DEFAULT_SCALE 2$/# define DEFAULT_SCALE 1/' < settings.h > ~/settings2.h
           cp -a settings.h ~/settings.h
           cp -af ~/settings2.h settings.h
-          make -j 6
+          make -f Makefile32 -j 6
           cd ..
           mkdir artifact1x
           cp -a artifact2x/U4DEU-Win32-2xZoom-$GIT_TAG artifact1x/U4DEU-Win32-1xZoom-$GIT_TAG
           rm -f artifact1x/U4DEU-Win32-1xZoom-$GIT_TAG/Daten/*.exe
           install -s src/*.exe artifact1x/U4DEU-Win32-1xZoom-$GIT_TAG/Daten/
           cd src
-          make clean
+          make -f Makefile32 clean
           rm .depends
           cd ..
           cp -a src artifact1x/U4DEU-Win32-1xZoom-$GIT_TAG/Daten/
@@ -105,11 +105,11 @@ jobs:
           cp -a src artifact2x/U4DEU-Win32-2xZoom-$GIT_TAG/Daten/
           powershell -ExecutionPolicy Bypass -Command '$ws = New-Object -ComObject WScript.Shell; $s = $ws.CreateShortcut('\''artifact2x\U4DEU-Win32-2xZoom-'$GIT_TAG'\Ultima IV.lnk'\''); $s.TargetPath = '\''%COMSPEC%'\''; $s.Arguments = '\''/c Daten\u4.bat'\''; $s.WindowStyle = 1; $s.IconLocation = '\''%USERPROFILE%\Desktop\U4DEU-Win32-2xZoom-'$GIT_TAG'\Daten\xu4.ico'\''; $s.Save()'
           powershell -ExecutionPolicy Bypass -Command '$ws = New-Object -ComObject WScript.Shell; $s = $ws.CreateShortcut('\''artifact1x\U4DEU-Win32-1xZoom-'$GIT_TAG'\Ultima IV.lnk'\''); $s.TargetPath = '\''%COMSPEC%'\''; $s.Arguments = '\''/c Daten\u4.bat'\''; $s.WindowStyle = 1; $s.IconLocation = '\''%USERPROFILE%\Desktop\U4DEU-Win32-1xZoom-'$GIT_TAG'\Daten\xu4.ico'\''; $s.Save()'
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v6
         with:
           name: U4DEU-Win32-2xZoom-${{ steps.git-tag.outputs.tag }}
           path: artifact2x/
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v6
         with:
           name: U4DEU-Win32-1xZoom-${{ steps.git-tag.outputs.tag }}
           path: artifact1x/

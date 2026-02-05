@@ -14,7 +14,7 @@
 class ConfigElement;
 class Image;
 class Tile;
-struct RGBA;
+class RGBA;
 
 
 /**
@@ -23,7 +23,7 @@ struct RGBA;
 class TileAnimTransform {
 public:
     TileAnimTransform()
-        :random(0), replaces(false)
+        :random(0)
     {
     }
 
@@ -42,9 +42,6 @@ public:
 
     virtual bool drawsTile() const = 0;
     int random;
-
-private:
-    bool replaces;
 };
 
 

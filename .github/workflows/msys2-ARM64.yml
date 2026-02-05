@@ -1,0 +1,111 @@
+name: MSYS2-CLANGARM64
+on: [push, pull_request]
+
+jobs:
+  msys2-clangarm64:
+    runs-on: windows-11-arm
+    defaults:
+      run:
+        shell: msys2 {0}
+    steps:
+      - uses: actions/checkout@v6
+      - uses: msys2/setup-msys2@v2
+        with:
+          msystem: CLANGARM64
+          update: true
+          install: >-
+            git
+            make
+            mingw-w64-clang-aarch64-toolchain
+            mingw-w64-clang-aarch64-SDL
+            mingw-w64-clang-aarch64-SDL_mixer
+            mingw-w64-clang-aarch64-flac
+            mingw-w64-clang-aarch64-libiconv
+            mingw-w64-clang-aarch64-libmad
+            mingw-w64-clang-aarch64-libmikmod
+            mingw-w64-clang-aarch64-libogg
+            mingw-w64-clang-aarch64-libpng
+            mingw-w64-clang-aarch64-libvorbis
+            mingw-w64-clang-aarch64-libwinpthread
+            mingw-w64-clang-aarch64-libxml2
+            mingw-w64-clang-aarch64-openal
+            mingw-w64-clang-aarch64-xz
+            mingw-w64-clang-aarch64-zlib
+      - name: Retrieve Git Hash
+        id: git-hash
+        run: echo "hash=$(git rev-parse --short HEAD)" >> $GITHUB_OUTPUT
+      - name: Build
+        run: |
+          GIT_HASH=${{ steps.git-hash.outputs.hash }}
+          cd src
+          touch .depends
+          make -f MakefileARM64 .depends
+          make -f MakefileARM64 -j 6
+          cd ..
+          mkdir artifact2x
+          mkdir artifact2x/U4DEU-WinARM64-2xZoom-$GIT_HASH
+          mkdir artifact2x/U4DEU-WinARM64-2xZoom-$GIT_HASH/Daten
+          install -s src/*.exe artifact2x/U4DEU-WinARM64-2xZoom-$GIT_HASH/Daten/
+          for i in \
+            SDL.dll \
+            libSDL_mixer-1-2-0.dll \
+            libFLAC.dll \
+            libiconv-2.dll \
+            liblzma-5.dll \
+            libmad-0.dll \
+            libmikmod-3.dll \
+            libogg-0.dll \
+            libopenal-1.dll \
+            libpng16-16.dll \
+            libc++.dll \
+            libvorbis-0.dll \
+            libvorbisfile-3.dll \
+            libwinpthread-1.dll \
+            libxml2-16.dll \
+            zlib1.dll \
+            ; do
+            cp -av /clangarm64/bin/"$i" artifact2x/U4DEU-WinARM64-2xZoom-$GIT_HASH/Daten/
+          done
+          mkdir artifact2x/U4DEU-WinARM64-2xZoom-$GIT_HASH/'Ultima IV Dokumentation'
+          cp -av 'Ultima IV Dokumentation'/*.pdf.xor artifact2x/U4DEU-WinARM64-2xZoom-$GIT_HASH/'Ultima IV Dokumentation'/
+          cp -av 'Ultima IV Dokumentation'/LIESMICH.TXT artifact2x/U4DEU-WinARM64-2xZoom-$GIT_HASH/'Ultima IV Dokumentation'/
+          cp -av README.md README.TXT LIESMICH.TXT WINDOWS.TXT RASPBERR.TXT artifact2x/U4DEU-WinARM64-2xZoom-$GIT_HASH/
+          cp -av u4-64.bat artifact2x/U4DEU-WinARM64-2xZoom-$GIT_HASH/Daten/u4.bat
+          cp -av apple2* AUTHORS COPYING OLD-README border.bmp credits.html fixpal* mirrors.bat MessageBox.js u4.desktop xu4.cfg xu4.spec artifact2x/U4DEU-WinARM64-2xZoom-$GIT_HASH/Daten/
+          cp -av conf/* artifact2x/U4DEU-WinARM64-2xZoom-$GIT_HASH/Daten/
+          rm -rf artifact2x/U4DEU-WinARM64-2xZoom-$GIT_HASH/Daten/iOS
+          mkdir artifact2x/U4DEU-WinARM64-2xZoom-$GIT_HASH/Daten/graphics
+          cp -av graphics/ega artifact2x/U4DEU-WinARM64-2xZoom-$GIT_HASH/Daten/graphics/
+          mkdir artifact2x/U4DEU-WinARM64-2xZoom-$GIT_HASH/Daten/music
+          cp -av music/*.ogg artifact2x/U4DEU-WinARM64-2xZoom-$GIT_HASH/Daten/music/
+          mkdir artifact2x/U4DEU-WinARM64-2xZoom-$GIT_HASH/Daten/sound
+          cp -av sound/*.ogg artifact2x/U4DEU-WinARM64-2xZoom-$GIT_HASH/Daten/sound/
+          cp -a talk artifact2x/U4DEU-WinARM64-2xZoom-$GIT_HASH/Daten/
+          cp -a src/xu4.ico artifact2x/U4DEU-WinARM64-2xZoom-$GIT_HASH/Daten/
+          cd src
+          sed 's/^# define DEFAULT_SCALE 2$/# define DEFAULT_SCALE 1/' < settings.h > ~/settings2.h
+          cp -a settings.h ~/settings.h
+          cp -af ~/settings2.h settings.h
+          make -f MakefileARM64 -j 6
+          cd ..
+          mkdir artifact1x
+          cp -a artifact2x/U4DEU-WinARM64-2xZoom-$GIT_HASH artifact1x/U4DEU-WinARM64-1xZoom-$GIT_HASH
+          rm -f artifact1x/U4DEU-WinARM64-1xZoom-$GIT_HASH/Daten/*.exe
+          install -s src/*.exe artifact1x/U4DEU-WinARM64-1xZoom-$GIT_HASH/Daten/
+          cd src
+          make -f MakefileARM64 clean
+          rm .depends
+          cd ..
+          cp -a src artifact1x/U4DEU-WinARM64-1xZoom-$GIT_HASH/Daten/
+          cp -a ~/settings.h src/
+          cp -a src artifact2x/U4DEU-WinARM64-2xZoom-$GIT_HASH/Daten/
+          powershell -ExecutionPolicy Bypass -Command '$ws = New-Object -ComObject WScript.Shell; $s = $ws.CreateShortcut('\''artifact2x\U4DEU-WinARM64-2xZoom-'$GIT_HASH'\Ultima IV.lnk'\''); $s.TargetPath = '\''%COMSPEC%'\''; $s.Arguments = '\''/c Daten\u4.bat'\''; $s.WindowStyle = 1; $s.IconLocation = '\''%USERPROFILE%\Desktop\U4DEU-WinARM64-2xZoom-'$GIT_HASH'\Daten\xu4.ico'\''; $s.Save()'
+          powershell -ExecutionPolicy Bypass -Command '$ws = New-Object -ComObject WScript.Shell; $s = $ws.CreateShortcut('\''artifact1x\U4DEU-WinARM64-1xZoom-'$GIT_HASH'\Ultima IV.lnk'\''); $s.TargetPath = '\''%COMSPEC%'\''; $s.Arguments = '\''/c Daten\u4.bat'\''; $s.WindowStyle = 1; $s.IconLocation = '\''%USERPROFILE%\Desktop\U4DEU-WinARM64-1xZoom-'$GIT_HASH'\Daten\xu4.ico'\''; $s.Save()'
+      - uses: actions/upload-artifact@v6
+        with:
+          name: U4DEU-WinARM64-2xZoom-${{ steps.git-hash.outputs.hash }}
+          path: artifact2x/
+      - uses: actions/upload-artifact@v6
+        with:
+          name: U4DEU-WinARM64-1xZoom-${{ steps.git-hash.outputs.hash }}
+          path: artifact1x/

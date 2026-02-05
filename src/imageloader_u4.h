@@ -7,7 +7,7 @@
 
 #include "imageloader.h"
 
-struct RGBA;
+class RGBA;
 
 
 /**

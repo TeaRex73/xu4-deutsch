@@ -15,7 +15,7 @@ class ConfigElement;
 class Debug;
 class Dungeon;
 struct PersonRole;
-struct Portal;
+class Portal;
 class Shrine;
 
 

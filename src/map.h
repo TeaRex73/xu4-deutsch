@@ -36,7 +36,7 @@ class Person;
 class Creature;
 class TileMap;
 class Tileset;
-struct Portal;
+class Portal;
 
 typedef std::vector<Portal *> PortalList;
 typedef std::list<int> CompressedChunkList;

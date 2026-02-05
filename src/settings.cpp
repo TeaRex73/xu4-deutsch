@@ -91,7 +91,7 @@ bool SettingsEnhancementOptions::operator!=(
 }
 
 
-bool MouseOptions::operator==(const struct MouseOptions &s) const
+bool MouseOptions::operator==(const class MouseOptions &s) const
 {
     if (enabled != s.enabled) {
         return false;
@@ -99,7 +99,7 @@ bool MouseOptions::operator==(const struct MouseOptions &s) const
     return true;
 }
 
-bool MouseOptions::operator!=(const struct MouseOptions &s) const
+bool MouseOptions::operator!=(const class MouseOptions &s) const
 {
     return !operator==(s);
 }
@@ -155,9 +155,11 @@ bool SettingsData::operator==(const SettingsData &s) const
     if (musicVol != s.musicVol) {
         return false;
     }
+#if 0
     if (scale != s.scale) {
         return false;
     }
+#endif
     if (screenShakes != s.screenShakes) {
         return false;
     }

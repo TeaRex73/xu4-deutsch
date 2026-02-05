@@ -168,7 +168,9 @@ public:
                                 s
 #endif
                            )
+#ifndef NPERF
         :log(), filename(), s(), e(), times()
+#endif
     {
 #ifndef NPERF
         init(s);
@@ -273,11 +275,13 @@ public:
 #endif // ifndef NPERF
     } // report
 
+#ifndef NPERF
 private:
     std::FILE *log;
     std::string filename;
     std::clock_t s, e;
     TimeMap times;
+#endif
 };
 
 #endif // ifndef UTILS_H

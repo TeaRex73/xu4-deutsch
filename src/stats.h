@@ -51,6 +51,7 @@ class StatsArea
      public Observer<Menu *, MenuEvent &>,
      public Observable<StatsArea *, std::string> {
 public:
+    using Observer<Aura *>::update; // suppress warnings in clang
     StatsArea();
     void setView(StatsView view);
     void clear();

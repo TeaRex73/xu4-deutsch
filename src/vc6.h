@@ -27,9 +27,19 @@
 
 #if defined(__WIN32__) || defined(WIN32) || defined (_WIN32) \
   || defined(__CYGWIN__)
+
 /* also nop sync and fsync - on a PC, they're not as necessary */
-#define fsync(x)
-#define sync()
+
+static inline int fsync(int fd)
+{
+  (void) fd;
+  return 0;
+}
+
+static inline void sync(void)
+{
+}
+
 #endif
 
 #endif

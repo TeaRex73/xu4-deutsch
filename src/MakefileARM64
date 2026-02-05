@@ -2,8 +2,8 @@
 # $Id$
 #
 
-CC=gcc
-CXX=g++
+CC=clang
+CXX=clang++
 CPP=cpp
 
 prefix=/usr/local
@@ -12,14 +12,14 @@ libdir=$(prefix)/lib
 datadir=$(prefix)/share
 
 UI=sdl
-UILIBS=-L/usr/local/lib -L/usr/lib -L/mingw64/lib -lSDL -lpthread -lSDL_mixer
+UILIBS=-L/usr/local/lib -L/usr/lib -L/clangarm64/lib -lSDL -lpthread -lSDL_mixer
 UIFLAGS=-I/usr/local/include/SDL -D_REENTRANT
 
 LIBS=-Wl,--as-needed -Wl,--gc-sections -L/usr/lib $(UILIBS) -lz -lpng -lxml2
 FEATURES=-UHAVE_BACKTRACE -DHAVE_VARIADIC_MACROS=1
-DEBUGCXXFLAGS=-Oz -g -march=nocona -msahf -mtune=generic -Wp,-D_FORTIFY_SOURCE=2 -fstack-protector-strong -D__USE_MINGW_ANSI_STDIO=1 -DNPERF -UPERF -UNDEBUG -DDEBUG -URASB_PI
-COMMON_FLAGS=$(FEATURES) -Wall -Wextra -Werror -Wmissing-declarations -Wlogical-op -Wno-deprecated-declarations -I. -I/mingw64/include/libxml2 -I/mingw64/include/SDL $(UIFLAGS) -DICON_FILE=\"$(datadir)/pixmaps/u4.bmp\" $(DEBUGCXXFLAGS) -D_GNU_SOURCE=1
-CFLAGS=-std=gnu90 -fanalyzer $(COMMON_FLAGS)
+DEBUGCXXFLAGS=-Oz -g -Wp,-D_FORTIFY_SOURCE=2 -fstack-protector-strong -D__USE_MINGW_ANSI_STDIO=1 -DNPERF -UPERF -UNDEBUG -DDEBUG -URASB_PI
+COMMON_FLAGS=$(FEATURES) -Wall -Wextra -Werror -Wmissing-declarations -Wno-deprecated-declarations -I. -I/clangarm64/include/libxml2 -I/clangarm64/include/SDL $(UIFLAGS) -DICON_FILE=\"$(datadir)/pixmaps/u4.bmp\" $(DEBUGCXXFLAGS) -D_GNU_SOURCE=1
+CFLAGS=-std=gnu90 $(COMMON_FLAGS)
 CXXFLAGS=-std=gnu++11 $(COMMON_FLAGS) -Weffc++ -Wold-style-cast -Wsign-promo -Wsuggest-override
 LDFLAGS=-mconsole $(LIBS)
 INSTALL=install
