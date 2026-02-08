@@ -11,7 +11,7 @@ for /f "tokens=3-7 delims=[.] " %%I in ('ver') do @(if %%I==XP (set OS_VER_ORG=%
 set OS_VER=%OS_VER_ORG%
 if %OS_VER_ORG:~0,1% gtr 3 set OS_VER=0%OS_VER_ORG%
 if %OS_VER% lss 06.1 goto oldwindows
-if "%PROCESSOR_ARCHITECTURE%"=="x86" goto bit32
+if not "%PROCESSOR_ARCHITECTURE%"=="ARM64" goto notarm
 cd /d "%~dp0"
 if not exist "%APPDATA%\xu4" mkdir "%APPDATA%\xu4" >nul 2>nul
 copy /y .\xu4.cfg "%APPDATA%\xu4" >nul 2>nul
@@ -99,9 +99,9 @@ exit /b 0
 cd /d "%~dp0"
 cscript //NoLogo //E:jscript MessageBox.js 16 "Die Dokumentation konnte nicht lesbar gemacht werden! Bitte kontaktiere die Entwickler und melde den Fehler!"
 exit /b 1
-:bit32
+:notarm
 cd /d "%~dp0"
-cscript //NoLogo //E:jscript MessageBox.js 16 "Diese Version von Ultima IV Deutsch ist nur fr 64-Bit Windows. Bitte lade die Version fr 32-Bit Windows herunter!"
+cscript //NoLogo //E:jscript MessageBox.js 16 "Diese Version von Ultima IV Deutsch ist nur fr Windows auf 64-Bit ARM-Prozessoren verwendbar. Bitte lade entweder die Version fr 32-Bit Windows oder die fr 64-Bit Windows auf Intel- und AMD-Prozessoren herunter!"
 exit /b 1
 :getfile
 attrib -s -h -r .\ultima4.zip >nul 2>nul

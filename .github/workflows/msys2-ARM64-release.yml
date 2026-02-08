@@ -19,7 +19,8 @@ jobs:
           install: >-
             git
             make
-            mingw-w64-clang-aarch64-toolchain
+            mingw-w64-clang-aarch64-clang
+            mingw-w64-clang-aarch64-libc++
             mingw-w64-clang-aarch64-SDL
             mingw-w64-clang-aarch64-SDL_mixer
             mingw-w64-clang-aarch64-flac
@@ -31,7 +32,6 @@ jobs:
             mingw-w64-clang-aarch64-libvorbis
             mingw-w64-clang-aarch64-libwinpthread
             mingw-w64-clang-aarch64-libxml2
-            mingw-w64-clang-aarch64-openal
             mingw-w64-clang-aarch64-xz
             mingw-w64-clang-aarch64-zlib
       - name: Retrieve Git Tag
@@ -58,7 +58,6 @@ jobs:
             libmad-0.dll \
             libmikmod-3.dll \
             libogg-0.dll \
-            libopenal-1.dll \
             libpng16-16.dll \
             libc++.dll \
             libvorbis-0.dll \
@@ -73,7 +72,7 @@ jobs:
           cp -av 'Ultima IV Dokumentation'/*.pdf.xor artifact2x/U4DEU-WinARM64-2xZoom-$GIT_TAG/'Ultima IV Dokumentation'/
           cp -av 'Ultima IV Dokumentation'/LIESMICH.TXT artifact2x/U4DEU-WinARM64-2xZoom-$GIT_TAG/'Ultima IV Dokumentation'/
           cp -av README.md README.TXT LIESMICH.TXT WINDOWS.TXT RASPBERR.TXT artifact2x/U4DEU-WinARM64-2xZoom-$GIT_TAG/
-          cp -av u4-64.bat artifact2x/U4DEU-WinARM64-2xZoom-$GIT_TAG/Daten/u4.bat
+          cp -av u4-ARM64.bat artifact2x/U4DEU-WinARM64-2xZoom-$GIT_TAG/Daten/u4.bat
           cp -av apple2* AUTHORS COPYING OLD-README border.bmp credits.html fixpal* mirrors.bat MessageBox.js u4.desktop xu4.cfg xu4.spec artifact2x/U4DEU-WinARM64-2xZoom-$GIT_TAG/Daten/
           cp -av conf/* artifact2x/U4DEU-WinARM64-2xZoom-$GIT_TAG/Daten/
           rm -rf artifact2x/U4DEU-WinARM64-2xZoom-$GIT_TAG/Daten/iOS
