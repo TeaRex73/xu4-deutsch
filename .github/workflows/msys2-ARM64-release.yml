@@ -26,13 +26,11 @@ jobs:
             mingw-w64-clang-aarch64-flac
             mingw-w64-clang-aarch64-libiconv
             mingw-w64-clang-aarch64-libmad
-            mingw-w64-clang-aarch64-libmikmod
             mingw-w64-clang-aarch64-libogg
             mingw-w64-clang-aarch64-libpng
             mingw-w64-clang-aarch64-libvorbis
             mingw-w64-clang-aarch64-libwinpthread
             mingw-w64-clang-aarch64-libxml2
-            mingw-w64-clang-aarch64-xz
             mingw-w64-clang-aarch64-zlib
       - name: Retrieve Git Tag
         id: git-tag
@@ -54,9 +52,7 @@ jobs:
             libSDL_mixer-1-2-0.dll \
             libFLAC.dll \
             libiconv-2.dll \
-            liblzma-5.dll \
             libmad-0.dll \
-            libmikmod-3.dll \
             libogg-0.dll \
             libpng16-16.dll \
             libc++.dll \

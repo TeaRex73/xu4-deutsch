@@ -23,14 +23,11 @@ jobs:
             mingw-w64-x86_64-gcc-libs
             mingw-w64-x86_64-libiconv
             mingw-w64-x86_64-libmad
-            mingw-w64-x86_64-libmikmod
             mingw-w64-x86_64-libogg
             mingw-w64-x86_64-libpng
             mingw-w64-x86_64-libvorbis
             mingw-w64-x86_64-libwinpthread
             mingw-w64-x86_64-libxml2
-            mingw-w64-x86_64-openal
-            mingw-w64-x86_64-xz
             mingw-w64-x86_64-zlib
       - name: Retrieve Git Hash
         id: git-hash
@@ -53,11 +50,8 @@ jobs:
             libFLAC.dll \
             libgcc_s_seh-1.dll \
             libiconv-2.dll \
-            liblzma-5.dll \
             libmad-0.dll \
-            libmikmod-3.dll \
             libogg-0.dll \
-            libopenal-1.dll \
             libpng16-16.dll \
             libstdc++-6.dll \
             libvorbis-0.dll \
