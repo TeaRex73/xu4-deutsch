@@ -59,9 +59,9 @@ Image *Image::create(int w, int h, bool indexed, Image::Type type)
     amask = 0xff000000;
 #endif
     if (type == Image::HARDWARE) {
-        flags = SDL_HWSURFACE /* | SDL_SRCALPHA */;
+        flags = SDL_HWSURFACE | SDL_SRCALPHA;
     } else {
-        flags = SDL_SWSURFACE /* | SDL_SRCALPHA */;
+        flags = SDL_SWSURFACE | SDL_SRCALPHA;
     }
     if (indexed) {
         im->surface = SDL_CreateRGBSurface(
@@ -127,6 +127,7 @@ Image::~Image()
 {
     if (!isScreen) {
         SDL_FreeSurface(surface);
+        surface = nullptr;
     }
 }
 
@@ -409,14 +410,14 @@ bool Image::isAlphaOn() const
     return surface->flags & SDL_SRCALPHA;
 }
 
-void Image::alphaOn()
+void Image::alphaOn() const
 {
-    surface->flags |= SDL_SRCALPHA;
+    SDL_SetAlpha(surface, SDL_SRCALPHA, IM_OPAQUE);
 }
 
-void Image::alphaOff()
+void Image::alphaOff() const
 {
-    surface->flags &= ~SDL_SRCALPHA;
+    SDL_SetAlpha(surface, 0, IM_OPAQUE);
 }
 
 void Image::putPixel(
@@ -521,7 +522,7 @@ void Image::performTransparencyHack(
 void Image::setTransparentIndex(unsigned int index)
 {
     if (indexed) {
-        SDL_SetColorKey(surface, SDL_SRCCOLORKEY | SDL_RLEACCEL, index);
+        SDL_SetColorKey(surface, SDL_SRCCOLORKEY, index);
     } else {
         // errorWarning("Setting transparent index for non indexed");
     }
@@ -542,6 +543,7 @@ void Image::putPixelIndex(int x, int y, unsigned int index, bool anyway) const
     if (!__builtin_expect(screenMoving, true) && isScreen && !anyway) {
         return;
     }
+    if (SDL_MUSTLOCK(surface)) SDL_LockSurface(surface);
     bpp = surface->format->BytesPerPixel;
     switch (__builtin_expect(bpp, 1)) {
     case 1:
@@ -577,6 +579,7 @@ void Image::putPixelIndex(int x, int y, unsigned int index, bool anyway) const
         *p4 = index;
         break;
     }
+    if (SDL_MUSTLOCK(surface)) SDL_UnlockSurface(surface);
 } // Image::putPixelIndex
 
 
@@ -643,6 +646,7 @@ void Image::getPixelIndex(int x, int y, unsigned int &index) const
     const Uint8 *p1, *p3;
     const Uint16 *p2;
     const Uint32 *p4;
+    if (SDL_MUSTLOCK(surface)) SDL_LockSurface(surface);
     int bpp = surface->format->BytesPerPixel;
     switch (__builtin_expect(bpp, 1)) {
     case 1:
@@ -676,6 +680,7 @@ void Image::getPixelIndex(int x, int y, unsigned int &index) const
     default:
         index = 0;
     }
+    if (SDL_MUSTLOCK(surface)) SDL_UnlockSurface(surface);
 }
 
 
@@ -693,8 +698,7 @@ void Image::drawOn(Image *d, int x, int y, bool anyway) const
     }
     r.x = x;
     r.y = y;
-    r.w = w;
-    r.h = h;
+    /* dest w & h unused */
     if (
         __builtin_expect(screenMoving, true) ||
         (d && !d->isScreen) ||
@@ -702,7 +706,7 @@ void Image::drawOn(Image *d, int x, int y, bool anyway) const
     ) {
         SDL_BlitSurface(surface, nullptr, destSurface, &r);
     }
-}
+} // Image::drawOn
 
 
 /**
@@ -788,7 +792,7 @@ void Image::drawSubRectInvertedOn(
  * Dumps the image to a file.  The file is always saved in .bmp
  * format.  This is mainly used for debugging.
  */
-void Image::save(const std::string &filename)
+void Image::save(const std::string &filename) const
 {
     SDL_SaveBMP(surface, filename.c_str());
 }

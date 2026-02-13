@@ -114,6 +114,7 @@ void screenInit_sys()
         );
     }
     SDL_FreeSurface(window);
+    window = nullptr;
     SDL_UnlockSurface(screen);
 #ifdef FIXUP
     screen->w = 320 * settings.scale;
@@ -152,13 +153,17 @@ void screenInit_sys()
 void screenDelete_sys()
 {
     screenRefreshThreadEnd();
-    SDL_FreeCursor(cursors[1]);
-    SDL_FreeCursor(cursors[2]);
-    SDL_FreeCursor(cursors[3]);
-    SDL_FreeCursor(cursors[4]);
+    for (int i = 1; i <= 4; i++) {
+        if (cursors[i]) {
+            SDL_FreeCursor(cursors[i]);
+            cursors[i] = nullptr;
+        }
+    }
     u4_SDL_QuitSubSystem(SDL_INIT_VIDEO);
-    SDL_FreeSurface(icon);
-    icon = nullptr;
+    if (icon) {
+        SDL_FreeSurface(icon);
+        icon = nullptr;
+    }
 }
 
 

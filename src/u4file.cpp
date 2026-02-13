@@ -513,6 +513,7 @@ U4FILE *U4FILE_xor::open(const std::string &fname, const U4ZipPackage *package)
 void U4FILE_xor::close()
 {
     file->close();
+    delete file;
     file = nullptr;
     xordata = nullptr;
     pos = 0;

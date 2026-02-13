@@ -375,12 +375,6 @@ static void handleKeyDownEvent(
     } else {
         key = event.key.keysym.sym;
     }
-    if (event.key.keysym.mod & KMOD_ALT) {
-        key = U4_ALT + event.key.keysym.sym;
-        if (event.key.keysym.mod & KMOD_META) {
-            key += U4_META;
-        }
-    }
     if (event.key.keysym.sym == SDLK_UP) {
         key = U4_UP;
     } else if (event.key.keysym.sym == SDLK_DOWN) {
@@ -397,6 +391,24 @@ static void handleKeyDownEvent(
         && (event.key.keysym.sym <= SDLK_F15)) {
         key = U4_FKEY + (event.key.keysym.sym - SDLK_F1);
     }
+    if ((key >= 64) && (key <= 127)) {
+      if (event.key.keysym.mod & KMOD_CTRL) {
+        key &= 0x1f;
+      }
+    }
+    if (event.key.keysym.mod & KMOD_ALT) {
+      if (event.key.keysym.sym != SDLK_LALT
+          && event.key.keysym.sym != SDLK_RALT) {
+        key = event.key.keysym.sym + U4_ALT;
+      }
+    }
+    if (event.key.keysym.mod & KMOD_META) {
+      if (event.key.keysym.sym != SDLK_LMETA
+          && event.key.keysym.sym != SDLK_RMETA) {
+        key = event.key.keysym.sym + U4_META;
+      }
+    }
+
     if (verbose) {
         std::printf(
             "key event: unicode = %d, sym = %d, mod = %d; translated = %d\n",

@@ -21,7 +21,8 @@ jobs:
             make
             mingw-w64-clang-aarch64-clang
             mingw-w64-clang-aarch64-libc++
-            mingw-w64-clang-aarch64-SDL
+            mingw-w64-clang-aarch64-SDL2
+            mingw-w64-clang-aarch64-sdl12-compat
             mingw-w64-clang-aarch64-SDL_mixer
             mingw-w64-clang-aarch64-flac
             mingw-w64-clang-aarch64-libiconv
@@ -49,6 +50,7 @@ jobs:
           install -s src/*.exe artifact2x/U4DEU-WinARM64-2xZoom-$GIT_TAG/Daten/
           for i in \
             SDL.dll \
+            SDL2.dll \
             libSDL_mixer-1-2-0.dll \
             libFLAC.dll \
             libiconv-2.dll \

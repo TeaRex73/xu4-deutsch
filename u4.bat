@@ -91,7 +91,9 @@ cscript //NoLogo //E:jscript MessageBox.js 64 "Lesbarmachen war erfolgreich, bit
 exit /b 0
 :nodecode
 cd /d "%~dp0"
-set SDL_VIDEODRIVER=windib
+set SDL12COMPAT_USE_KEYBOARD_LAYOUT=1
+set SDL12COMPAT_SCALE_METHOD=linear
+set SDL_VIDEO_FULLSCREEN_DISPLAY=0
 start /b .\u4.exe -f
 exit /b 0
 :error2

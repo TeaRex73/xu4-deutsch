@@ -6,7 +6,7 @@ int main(int argc, const char *argv[])
 {
     const char *x, *y;
     int n;
-    if (argc != 3) {
+    if (argc != 3 || !argv[1] || !argv[2]) {
         fprintf(
             stderr,
             "coord: a simple program to convert between numeric and sextant "

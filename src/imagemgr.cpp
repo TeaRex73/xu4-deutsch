@@ -457,8 +457,11 @@ void ImageMgr::fixupIntro(Image *im, int prescale)
     /* -----------------------------
      * draw "Lord British" signature
      * ----------------------------- */
+#ifdef RASB_PI
+    color = im->setColor(255, 255, 255); // white for EGA
+#else
     color = im->setColor(241, 241, 241); // white for EGA
-
+#endif
     const int blue[16] = {
         255, 250, 226, 226, 210, 194, 161, 161,
         129,  97,  97,  64,  64,  32,  32,   0

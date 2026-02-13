@@ -17,7 +17,8 @@ jobs:
             git
             make
             mingw-w64-i686-gcc
-            mingw-w64-i686-SDL
+            mingw-w64-i686-SDL2
+            mingw-w64-i686-sdl12-compat
             mingw-w64-i686-gcc-libs
             mingw-w64-i686-libiconv
             mingw-w64-i686-libmad
@@ -46,6 +47,7 @@ jobs:
           install -s src/*.exe artifact2x/U4DEU-Win32-2xZoom-$GIT_HASH/Daten/
           for i in \
             SDL.dll \
+            SDL2.dll \
             libSDL_mixer-1-2-0.dll \
             libgcc_s_dw2-1.dll \
             libiconv-2.dll \

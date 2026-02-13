@@ -106,8 +106,8 @@ public:
     );
     /* alpha handling */
     bool isAlphaOn() const;
-    void alphaOn();
-    void alphaOff();
+    void alphaOn() const;
+    void alphaOff() const;
     /* Will clear the image to the background color,
        and set the internal backgroundColor variable */
     void initializeToBackgroundColor(
@@ -233,12 +233,12 @@ public:
         return indexed;
     }
 
-    BackendSurface getSurface()
+    BackendSurface getSurface() const
     {
         return surface;
     }
 
-    void save(const std::string &filename);
+    void save(const std::string &filename) const;
     void drawHighlighted() const;
 
 private:

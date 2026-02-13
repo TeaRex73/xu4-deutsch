@@ -701,6 +701,7 @@ void screenScrollMessageArea()
         "charset not initialized!"
     );
     Image *screen = imageMgr->get("screen")->image;
+    screenLock();
     screen->drawSubRectOn(
         screen,
         TEXT_AREA_X * charsetInfo->image->width(),
@@ -721,6 +722,7 @@ void screenScrollMessageArea()
         0,
         0
     );
+    screenUnlock();
     screenRedrawScreen();
 }
 
