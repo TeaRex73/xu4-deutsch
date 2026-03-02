@@ -505,14 +505,20 @@ void CombatController::fillCreatureTable(const Creature *creature)
  */
 int CombatController::initialNumberOfCreatures(const Creature *creature) const
 {
-    int ncreatures;
+    int ncreatures, maxsize;
     const Map *m =
         c->location->prev ? c->location->prev->map : c->location->map;
 
     // CHANGE: base encounter size on level of avatar (potential
     // party size), not on current actual party size, to encourage
-    // party buildup
-    int maxsize = 2 * c->party->member(0)->getRealLevel();
+    // party buildup. At least after first era is over.
+    if (c->saveGame->moves >= 30000) {
+        maxsize = 2 * c->party->member(0)->getMaxLevel();
+    } else if (c->saveGame->moves >= 10000) {
+        maxsize = 2 * c->party->member(0)->getRealLevel();
+    } else {
+        maxsize = 2 * c->party->size();
+    }
 
     /* if in an unusual combat situation, generally we stick to normal
        encounter sizes (such as encounters from sleeping in an inn, etc.) */
