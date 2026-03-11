@@ -512,9 +512,9 @@ int CombatController::initialNumberOfCreatures(const Creature *creature) const
     // CHANGE: base encounter size on level of avatar (potential
     // party size), not on current actual party size, to encourage
     // party buildup. At least after first era is over.
-    if (c->saveGame->moves >= 30000) {
+    if (settings.enhancements && (c->saveGame->moves >= 30000)) {
         maxsize = 2 * c->party->member(0)->getMaxLevel();
-    } else if (c->saveGame->moves >= 10000) {
+    } else if (settings.enhancements && (c->saveGame->moves >= 10000)) {
         maxsize = 2 * c->party->member(0)->getRealLevel();
     } else {
         maxsize = 2 * c->party->size();
@@ -719,7 +719,10 @@ bool CombatController::attackAt(
 {
     const Weapon *weapon = attacker->getWeapon();
     bool wrongRange = weapon->rangeAbsolute() && (distance != range);
-    bool harder = weapon->rangedOnly() && (distance == 1);
+    // CHANGE: Make weapons that aren't for close range in the real world
+    // actually less useful at close range.
+    bool harder =
+        settings.enhancements && weapon->rangedOnly() && (distance == 1);
     MapTile hittile = map->tileset->getByName(weapon->getHitTile())->getId();
     MapTile misstile = map->tileset->getByName(weapon->getMissTile())->getId();
     // Check to see if something hit

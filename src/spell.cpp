@@ -687,7 +687,9 @@ static bool spellBlink(int dir)
         /* we didn't move! */
         if (c->location->coords == coords) {
             success = false;
-        } else if ((coords.x >= 192) && (coords.y >= 192)) {
+        } else if (
+            settings.enhancements && (coords.x >= 192) && (coords.y >= 192)
+        ) {
             /* CHANGE: No teleporting onto isle of abyss and surroundings */
             success = false;
         } else {
@@ -1040,7 +1042,7 @@ static bool spellXit(int)
 {
     if (!c->location->map->isWorldMap()) {
         /* CHANGE: can't cast in Hythloth - too easy */
-        if (c->location->map->id == MAP_HYTHLOTH) {
+        if (settings.enhancements && c->location->map->id == MAP_HYTHLOTH) {
             return false;
         }
         /*Otherwise it always works */
@@ -1059,7 +1061,7 @@ static bool spellYup(int)
     const Dungeon *dungeon = dynamic_cast<const Dungeon *>(c->location->map);
     /* can't cast in the Abyss CHANGE: or in Hythloth - too easy */
     if (c->location->map->id == MAP_ABYSS ||
-        c->location->map->id == MAP_HYTHLOTH) {
+        (settings.enhancements && c->location->map->id == MAP_HYTHLOTH)) {
         return false;
     }
     /* staying in the dungeon */
@@ -1094,7 +1096,7 @@ static bool spellZdown(int)
     const Dungeon *dungeon = dynamic_cast<const Dungeon *>(c->location->map);
     /* can't cast in the Abyss CHANGE: or in Hythloth - too easy */
     if (c->location->map->id == MAP_ABYSS ||
-        c->location->map->id == MAP_HYTHLOTH) {
+        (settings.enhancements && c->location->map->id == MAP_HYTHLOTH)) {
         return false;
     }
     /* can't go lower than level 8 */

@@ -3681,7 +3681,7 @@ static void gameFixupObjects(Map *map)
             obj->setPrevTile(oldTile);
             /* CHANGE: If first object in inanimate objects
                section is a ship, it becomes the lastShip */
-            if (i == MONSTERTABLE_CREATURES_SIZE) {
+            if (settings.enhancements && (i == MONSTERTABLE_CREATURES_SIZE)) {
                 if (tile.getTileType()->isShip()) {
                     c->lastShip = obj;
                 }

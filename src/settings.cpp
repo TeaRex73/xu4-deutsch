@@ -252,7 +252,15 @@ void Settings::init(const bool useProfile, const std::string &profileName)
         userPath += profileName.c_str();
         userPath += "/";
     } else {
-#if defined(__unix__)
+#if defined(__APPLE__) && defined(__MACH__)
+        char *home = std::getenv("HOME");
+        if (home && home[0]) {
+            userPath += home;
+            userPath += "/Library/Application Support/com.ticmanis.u4/";
+        } else {
+            userPath = "./";
+        }
+#elif defined(__unix__)
         char *home = std::getenv("HOME");
         if (home && home[0]) {
             userPath += home;

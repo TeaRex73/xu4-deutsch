@@ -1,0 +1,87 @@
+#
+# $Id$
+#
+
+CC=clang
+CXX=clang++
+CPP=cpp
+
+prefix=/opt/local
+bindir=$(prefix)/bin
+libdir=$(prefix)/lib
+datadir=$(prefix)/share
+
+UI=sdl
+UILIBS=$(shell /opt/local/bin/sdl-config --libs) -lpthread -lSDL_mixer
+UIFLAGS=$(shell /opt/local/bin/sdl-config --cflags)
+
+LIBS=$(shell /usr/bin/xml2-config --libs --dynamic) -L/opt/local/lib $(UILIBS) $(shell /opt/local/bin/libpng16-config --ldflags) $(shell /opt/local/bin/pkg-config zlib --libs) -Wl,-rpath,@executable_path/../Frameworks
+LIBFLAGS=$(shell /usr/bin/xml2-config --cflags) $(shell /opt/local/bin/libpng16-config --cflags) $(shell /opt/local/bin/pkg-config zlib --cflags)
+
+FEATURES=-UHAVE_BACKTRACE -DHAVE_VARIADIC_MACROS=1
+DEBUGCXXFLAGS=-arch arm64 -arch x86_64 -mmacos-version-min=10.13 -Oz -g -Wp,-D_FORTIFY_SOURCE=2 -fstack-protector-strong -DNPERF -UPERF -UNDEBUG -DDEBUG -URASB_PI
+COMMON_FLAGS=$(FEATURES) -Wall -Wextra -Werror -Wmissing-declarations -Wno-deprecated-declarations -Wno-nullability-completeness -I. -I/opt/local/include $(LIBFLAGS) $(UIFLAGS) -DICON_FILE=\"$(datadir)/pixmaps/u4.bmp\" $(DEBUGCXXFLAGS) -D_GNU_SOURCE=1
+CFLAGS=-std=gnu90 $(COMMON_FLAGS)
+CXXFLAGS=-std=gnu++11 $(COMMON_FLAGS) -Weffc++ -Wold-style-cast -Wsign-promo -Wsuggest-override
+LDFLAGS=-arch arm64 -arch x86_64 -mmacos-version-min=10.13 -mconsole $(LIBS)
+INSTALL=install
+
+ifeq ($(STATIC_GCC_LIBS),true)
+    LDFLAGS+=-L. -static-libgcc -static-libstdc++
+endif
+
+include Makefile.common
+
+install-prog::
+	$(INSTALL) -D -s $(MAIN) $(bindir)/$(MAIN)
+	$(INSTALL) -D -s coord $(libdir)/u4g/coord
+	$(INSTALL) -D -s dumpsavegame $(libdir)/u4g/dumpsavegame
+	$(INSTALL) -D -s tlkconv $(libdir)/u4g/tlkconv
+	$(INSTALL) -D -s u4dec $(libdir)/u4g/u4dec
+	$(INSTALL) -D -s u4enc $(libdir)/u4g/u4enc
+	$(INSTALL) -D -s u4unpackexe $(libdir)/u4g/u4unpackexe
+	$(INSTALL) -D -s xor $(libdir)/u4g/xor
+	$(INSTALL) -D -s xorbin $(libdir)/u4g/xorbin
+
+install-conf::
+	$(INSTALL) ../conf/*.xml $(libdir)/u4g
+	mkdir -p $(libdir)/u4g/dtd
+	$(INSTALL) ../conf/dtd/*.dtd $(libdir)/u4g/dtd
+
+install:: install-prog install-conf
+	$(INSTALL) -D ../icons/u4.bmp $(datadir)/pixmaps/u4.bmp
+	$(INSTALL) -D ../icons/u4.png $(datadir)/pixmaps/u4.png
+	mkdir -p $(libdir)/u4g/music
+	$(INSTALL) ../music/*.ogg $(libdir)/u4g/music
+	mkdir -p $(libdir)/u4g/sound
+	$(INSTALL) ../sound/*.ogg $(libdir)/u4g/sound
+	mkdir -p $(libdir)/u4g/graphics
+	mkdir -p $(libdir)/u4g/graphics/ega
+	mkdir -p $(libdir)/u4g/graphics/hires
+	mkdir -p $(libdir)/u4g/graphics/png
+	mkdir -p $(libdir)/u4g/graphics/vga
+	mkdir -p $(libdir)/u4g/graphics/vga2
+	mkdir -p $(libdir)/u4g/graphics/new
+	$(INSTALL) ../graphics/ega/*.png $(libdir)/u4g/graphics/ega
+	$(INSTALL) ../graphics/hires/*.png $(libdir)/u4g/graphics/hires
+	$(INSTALL) ../graphics/hires/*.vga $(libdir)/u4g/graphics/hires
+	$(INSTALL) ../graphics/png/*.png $(libdir)/u4g/graphics/png
+	$(INSTALL) ../graphics/vga/*.png $(libdir)/u4g/graphics/vga
+	$(INSTALL) ../graphics/vga2/*.png $(libdir)/u4g/graphics/vga2
+	$(INSTALL) ../graphics/new/* $(libdir)/u4g/graphics/new
+	$(INSTALL) -D ../u4.desktop $(datadir)/applications/u4.desktop
+
+
+# use GCC's automatic dependency generation
+.depends::
+	rm -f .depends
+	$(CC) $(CFLAGS) -MM $(CSRCS) >> .depends
+	$(CXX) $(CXXFLAGS) -MM $(CXXSRCS) >> .depends
+
+# a target to build without dependencies on libstdc++, libgcc_s
+all.static_gcc_libs:
+	ln -s `$(CXX) -print-file-name=libstdc++.a` .
+	$(MAKE) STATIC_GCC_LIBS=true
+	rm -f libstdc++.a
+
+-include .depends

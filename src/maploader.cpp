@@ -24,6 +24,7 @@
 #include "object.h"
 #include "person.h"
 #include "portal.h"
+#include "settings.h"
 #include "tilemap.h"
 #include "tileset.h"
 #include "u4file.h"
@@ -259,9 +260,13 @@ bool CityMapLoader::load(Map *map)
         people[i]->getStart().z = 0;
     }
     // CHANGE: Move Shamino one square westward if player is a ranger
-    // so that he can talk to the Ankh without killing anybody
+    // (and thus Shamino cannot join the party), so that we can talk
+    // to the Ankh without killing anybody.
+    // In unenhanced game the move happens unconditionally to match
+    // the map from later releases of Ultima IV.
     if ((city->id == MAP_SKARABRAE)
-        && (c->party->member(0)->getClass() == CLASS_RANGER)) {
+        && (!settings.enhancements ||
+            (c->party->member(0)->getClass() == CLASS_RANGER))) {
         for (i = 0; i < CITY_MAX_PERSONS; i++) {
             if (conv_idx[i] == 1) {
                 (people[i]->getStart().x)--;

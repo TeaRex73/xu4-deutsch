@@ -17,6 +17,7 @@
 #include "location.h"
 #include "mapmgr.h"
 #include "names.h"
+#include "settings.h"
 #include "tilemap.h"
 #include "tileset.h"
 #include "types.h"
@@ -597,8 +598,11 @@ bool PartyMember::dealDamage(Creature *m, int damage)
 int PartyMember::getDamage() const
 {
     int maxDamage;
-    maxDamage = Weapon::get(player->weapon)->getDamage();
-    if (!Weapon::get(player->weapon)->rangedOnly()) {
+    const Weapon *playersWeapon = Weapon::get(player->weapon);
+    maxDamage = playersWeapon->getDamage();
+    // CHANGE: Give strength bonus only for melee weapons
+    // to make them less useless
+    if (!(settings.enhancements && playersWeapon->rangedOnly())) {
         maxDamage += player->str;
     }
     if (maxDamage > 255) {

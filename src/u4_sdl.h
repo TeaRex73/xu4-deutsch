@@ -5,7 +5,7 @@
 #ifndef U4_SDL_H
 #define U4_SDL_H
 
-#include "SDL.h"
+#include <SDL.h>
 
 #ifdef __cplusplus
 extern "C" {

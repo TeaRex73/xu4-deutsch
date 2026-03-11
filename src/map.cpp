@@ -909,7 +909,9 @@ bool Map::fillMonsterTable()
      * First, categorize all the objects we have
      */
     /* CHANGE: lastShip, if it exists, is always the first
-       object in the inanimate objects section of the table */
+       object in the inanimate objects section of the table.
+       No need to check settings.enhancements here, it is
+       checked when loading the save game back in. */
     if (c->lastShip != nullptr) {
         if (c->lastShip->getMap() == this) {
             nObjects++;

@@ -124,7 +124,7 @@ Source: graphics\hires\mytile_guard.png; DestDir: {app}\graphics\hires; Flags: i
 Source: graphics\hires\mytitle.vga; DestDir: {app}\graphics\hires; Flags: ignoreversion
 Source: graphics\hires\sachonor.vga; DestDir: {app}\graphics\hires; Flags: ignoreversion
 Source: graphics\hires\spirhum.vga; DestDir: {app}\graphics\hires; Flags: ignoreversion
-Source: graphics\hires\valjus.vga; DestDir: {app}\graphics\hires; Flags: ignoreversion   
+Source: graphics\hires\valjus.vga; DestDir: {app}\graphics\hires; Flags: ignoreversion
 Source: graphics\new\hires_transparency_fix.png; DestDir: {app}\graphics\new; Flags: ignoreversion
 Source: graphics\new\tile_bush.png; DestDir: {app}\graphics\new; Flags: ignoreversion
 Source: graphics\new\tile_electric_field.png; DestDir: {app}\graphics\new; Flags: ignoreversion
@@ -144,7 +144,7 @@ Source: graphics\new\tile_shallows.png; DestDir: {app}\graphics\new; Flags: igno
 Source: graphics\new\tile_sleep_field.png; DestDir: {app}\graphics\new; Flags: ignoreversion
 Source: graphics\new\tile_water.png; DestDir: {app}\graphics\new; Flags: ignoreversion
 Source: graphics\new\tile_whirlpool3.png; DestDir: {app}\graphics\new; Flags: ignoreversion
-Source: graphics\new\tile_wisp.png; DestDir: {app}\graphics\new; Flags: ignoreversion                      
+Source: graphics\new\tile_wisp.png; DestDir: {app}\graphics\new; Flags: ignoreversion
 Source: graphics\png\abacus.png; DestDir: {app}\graphics\png; Flags: ignoreversion
 Source: graphics\png\actions.png; DestDir: {app}\graphics\png; Flags: ignoreversion
 Source: graphics\png\beasties.png; DestDir: {app}\graphics\png; Flags: ignoreversion
@@ -319,7 +319,7 @@ Source: graphics\png\tree.png; DestDir: {app}\graphics\png; Flags: ignoreversion
 Source: graphics\png\truth.png; DestDir: {app}\graphics\png; Flags: ignoreversion
 Source: graphics\png\valjus.png; DestDir: {app}\graphics\png; Flags: ignoreversion
 Source: graphics\png\valor.png; DestDir: {app}\graphics\png; Flags: ignoreversion
-Source: graphics\png\wagon.png; DestDir: {app}\graphics\png; Flags: ignoreversion     
+Source: graphics\png\wagon.png; DestDir: {app}\graphics\png; Flags: ignoreversion
 Source: graphics\vga\dungeonback0.png; DestDir: {app}\graphics\vga; Flags: ignoreversion
 Source: graphics\vga\dungeonback0_door.png; DestDir: {app}\graphics\vga; Flags: ignoreversion
 Source: graphics\vga\dungeonback1.png; DestDir: {app}\graphics\vga; Flags: ignoreversion
@@ -355,7 +355,7 @@ Source: graphics\vga\ladderupdown2.png; DestDir: {app}\graphics\vga; Flags: igno
 Source: graphics\vga\ladderupdown2_side.png; DestDir: {app}\graphics\vga; Flags: ignoreversion
 Source: graphics\vga\ladderupdown3.png; DestDir: {app}\graphics\vga; Flags: ignoreversion
 Source: graphics\vga\ladderupdown3_side.png; DestDir: {app}\graphics\vga; Flags: ignoreversion
-Source: graphics\vga\tile_guard.png; DestDir: {app}\graphics\vga; Flags: ignoreversion  
+Source: graphics\vga\tile_guard.png; DestDir: {app}\graphics\vga; Flags: ignoreversion
 Source: graphics\vga2\charset.png; DestDir: {app}\graphics\vga2; Flags: ignoreversion
 Source: graphics\vga2\honcom.png; DestDir: {app}\graphics\vga2; Flags: ignoreversion
 Source: graphics\vga2\key7.png; DestDir: {app}\graphics\vga2; Flags: ignoreversion
@@ -371,11 +371,11 @@ Source: graphics\vga2\rune_8.png; DestDir: {app}\graphics\vga2; Flags: ignorever
 Source: graphics\vga2\sachonor.png; DestDir: {app}\graphics\vga2; Flags: ignoreversion
 Source: graphics\vga2\spirhum.png; DestDir: {app}\graphics\vga2; Flags: ignoreversion
 Source: graphics\vga2\start.png; DestDir: {app}\graphics\vga2; Flags: ignoreversion
-Source: graphics\vga2\valjus.png; DestDir: {app}\graphics\vga2; Flags: ignoreversion  
+Source: graphics\vga2\valjus.png; DestDir: {app}\graphics\vga2; Flags: ignoreversion
 Source: mid\castle.it; DestDir: {app}\mid\; Flags: ignoreversion
 Source: mid\combat4.it; DestDir: {app}\mid\; Flags: ignoreversion
 Source: mid\dungeon.it; DestDir: {app}\mid\; Flags: ignoreversion
-Source: mid\Fanfare_Of_Lord_British.mid; DestDir: {app}\mid\; Flags: ignoreversion 
+Source: mid\Fanfare_Of_Lord_British.mid; DestDir: {app}\mid\; Flags: ignoreversion
 Source: mid\merch.it; DestDir: {app}\mid\; Flags: ignoreversion
 Source: mid\rulebrit.it; DestDir: {app}\mid\; Flags: ignoreversion
 Source: mid\shrine.it; DestDir: {app}\mid\; Flags: ignoreversion

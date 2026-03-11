@@ -509,8 +509,19 @@ void EventHandler::run()
     while (!ended && !controllerDone) {
         SDL_Event event;
         SDL_Event all_events[MAXEVENTS];
-        // The following throws out all earlier keypresses if SPACE is pressed
+        // The following throws out all earlier keypresses if more than
+        // four are in the pipeline
+        SDL_PumpEvents();
         int numevents = SDL_PeepEvents(
+            all_events, MAXEVENTS, SDL_PEEKEVENT, SDL_KEYDOWNMASK
+        );
+        if (numevents > 4) {
+            SDL_PeepEvents(
+                all_events, numevents - 4, SDL_GETEVENT, SDL_KEYDOWNMASK
+            );
+        }
+        // The following throws out all earlier keypresses if SPACE is pressed
+        numevents = SDL_PeepEvents(
             all_events, MAXEVENTS, SDL_PEEKEVENT, SDL_KEYDOWNMASK
         );
         if (numevents > 1) {
