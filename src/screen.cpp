@@ -1679,7 +1679,7 @@ static void screenShowGemTile(
     if (!looks_like.empty()) {
         t = map->tileset->getByName(looks_like)->getId();
     }
-    if (map->type == Map::DUNGEON) {
+    if (map->isDungeonMap()) {
         U4ASSERT(charsetInfo, "charset not initialized");
         std::map<std::string, int>::iterator charIndex =
             dungeonTileChars.find(t.getTileType()->getName());
@@ -1739,7 +1739,7 @@ static void screenShowGemTile(
 
 static Layout *screenGetGemLayout(const Map *map)
 {
-    if (map->type == Map::DUNGEON) {
+    if (map->isDungeonMap()) {
         std::vector<Layout *>::const_iterator i;
         for (i = layouts.cbegin(); i != layouts.cend(); ++i) {
             Layout *layout = *i;
@@ -1771,7 +1771,7 @@ void screenGemUpdate()
     Layout *layout = screenGetGemLayout(c->location->map);
     // TODO, move the code responsible for determining 'peer' visibility
     // to a non SDL specific part of the code.
-    if (c->location->map->type == Map::DUNGEON) {
+    if (c->location->map->isDungeonMap()) {
         // DO THE SPECIAL DUNGEON MAP TRAVERSAL
         std::vector<std::vector<int> > drawnTiles(
             layout->viewport.width,

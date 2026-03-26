@@ -19,7 +19,7 @@
     <topic query="job">Ich bringe einen Toast auf die Ehre!</topic>
     <topic query="health">Müde.</topic>
     <topic query="EHRE">Was bleibt, wenn die Ehre verloren geht?</topic>
-    <topic query="NICH">Genau, nimm mir die Ehre und mein Leben ist vorbei!<question type="0">Stebst du nach einem ehrenhaften Leben?<yes>Ehre schenkt Größe.</yes><no>Keine Ehre, keine Bedeutung!</no></question></topic>
+    <topic query="NICH">Genau, nimm mir die Ehre und mein Leben ist vorbei!<question type="0">Strebst du nach einem ehrenhaften Leben?<yes>Ehre schenkt Größe.</yes><no>Keine Ehre, keine Bedeutung!</no></question></topic>
   </person>
   <person id="3" name="Skitle" pronoun="Es" turnAwayProb="0">
     <description>Ein knochiges Skelett.</description>

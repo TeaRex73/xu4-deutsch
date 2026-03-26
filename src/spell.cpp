@@ -778,7 +778,7 @@ static bool spellEField(int param)
     int dir = param & 0xFu;
     /* Make sure params valid */
     MapTile fieldTile = 0;
-    if (c->location->map->type == Map::DUNGEON) {
+    if (c->location->map->isDungeonMap()) {
         switch (fieldType) {
         case ENERGYFIELD_FIRE:
             fieldTile =

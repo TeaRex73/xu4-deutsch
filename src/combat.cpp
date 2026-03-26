@@ -464,10 +464,10 @@ void CombatController::fillCreatureTable(const Creature *creature)
 {
     if (creature != nullptr) {
         const Creature *baseCreature = creature;
-        int numCreatures = initialNumberOfCreatures(creature);
         if (baseCreature->getId() == PIRATE_ID) {
             baseCreature = creatureMgr->getById(ROGUE_ID);
         }
+        int numCreatures = initialNumberOfCreatures(baseCreature);
         for (int i = 0; i < numCreatures; i++) {
             const Creature *current = baseCreature;
             /* find a free spot in the creature table */

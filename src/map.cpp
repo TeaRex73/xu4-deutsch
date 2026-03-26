@@ -412,11 +412,31 @@ const Tile *Map::tileTypeAt(const Coords &coords, int withObjects) const
 
 
 /**
- * Returns true if the given map is the world map
+ * Returns true if the given map is a specific type
  */
 bool Map::isWorldMap() const
 {
     return type == WORLD;
+}
+
+bool Map::isCityMap() const
+{
+    return type == CITY;
+}
+
+bool Map::isDungeonMap() const
+{
+    return type == DUNGEON;
+}
+
+bool Map::isShrineMap() const
+{
+    return type == SHRINE;
+}
+
+bool Map::isCombatMap() const
+{
+    return type == COMBAT;
 }
 
 
@@ -928,7 +948,7 @@ bool Map::fillMonsterTable()
             /* && (obj->getMovementBehavior() != MOVEMENT_FIXED) */ ) {
             const Creature *m = dynamic_cast<const Creature *>(obj);
             /* whirlpools and storms are separated from other moving objects */
-            if ((m->getId() == WHIRLPOOL_ID) || (m->getId() == STORM_ID)) {
+            if (m->isForceOfNature()) {
                 nForcesOfNature++;
                 monsters.push_back(obj);
             } else {

@@ -135,8 +135,8 @@ bool usePortalAt(
             default:
                 break;
             }
-            if ((destination->type == Map::CITY)
-                || (destination->type == Map::DUNGEON)) {
+            if (destination->isCityMap()
+                || destination->isDungeonMap()) {
                 std::string name;
                 name = destination->getName();
                 for (unsigned int i = 0; i < (16 - name.length()) / 2; i++) {
@@ -186,7 +186,7 @@ bool usePortalAt(
         c->location->prev->map =
             mapMgr->get(portal->retroActiveDest->mapid);
     }
-    if (destination->type == Map::SHRINE) {
+    if (destination->isShrineMap()) {
         Shrine *shrine = dynamic_cast<Shrine *>(destination);
         shrine->enter();
     }

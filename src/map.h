@@ -204,6 +204,10 @@ public:
     MapTile tileAt(const Coords &coords, int withObjects) const;
     const Tile *tileTypeAt(const Coords &coords, int withObjects) const;
     bool isWorldMap() const;
+    bool isCityMap() const;
+    bool isDungeonMap() const;
+    bool isShrineMap() const;
+    bool isCombatMap() const;
     bool isEnclosed(const Coords &party) const;
     class Creature *addCreature(
         const class Creature *creature, const Coords &coords

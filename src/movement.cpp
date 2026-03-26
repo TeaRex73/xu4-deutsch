@@ -201,10 +201,17 @@ bool moveObject(const Map *map, Creature *obj, const MapCoords &avatar)
         break;
     case MOVEMENT_WANDER:
         /* Except in Dungeons, wandering creatures actually wander
-           just 50% of the time in U4DOS.
-           The other 50%, they move towards the player if on the world map,
-           whereas wandering town creatures stay put in that case */
-        if (map->type == Map::DUNGEON || xu4_random(2) == 0) {
+           just 50% of the time in town / 75% of the time outdoors in U4DOS.
+           Otherwise, they move towards the player if on the world map,
+           whereas wandering town creatures stay put in that case.
+           The exceptions are storms and whirlpools which wander
+           100% of the time. */
+        if (
+            map->isDungeonMap()
+            || obj->isForceOfNature()
+            || (map->isCityMap() && xu4_random(2))
+            || (map->isWorldMap() && xu4_random(4))
+        ) {
             dir = dirRandomDir(
                 map->getValidMoves(new_coords, obj->getTile(), true),
                 obj->getLastDir()

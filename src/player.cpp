@@ -1210,9 +1210,14 @@ void Party::endTurn()
  */
 int Party::getChest()
 {
-    /* int gold = xu4_random(80) + xu4_random(8) + 10; */
-    /* above is from u4dos, following is from u4apple2 */
-    int gold = xu4_random(100);
+    int gold;
+
+    if (settings.enhancements) {
+      gold = xu4_random(80) + xu4_random(8) + 10;
+    } else {
+    /* formula above is from u4dos, below is from u4apple2 */
+      gold = xu4_random(100);
+    }
     adjustGold(gold);
     return gold;
 }

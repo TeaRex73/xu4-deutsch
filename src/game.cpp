@@ -311,10 +311,10 @@ void GameController::init()
     TRACE_LOCAL(gameDbg, "Initializing start location.");
     /* if our map is not the world map, then load our map */
     U4ASSERT(
-        map-> type == Map::WORLD || map->type == Map::DUNGEON,
+        map->isWorldMap() || map->isDungeonMap(),
         "Initial Map must be World or Dungeon map!"
     );
-    if (map->type != Map::WORLD) {
+    if (map->isDungeonMap()) {
         setMap(map, 1, nullptr);
         std::FILE *dngMapFile = std::fopen(
             (settings.getUserPath() + DNGMAP_SAV_BASE_FILENAME).c_str(), "rb"
@@ -354,7 +354,7 @@ void GameController::init()
     } else {
         /* Enable opacity iff not flying (can fly only on the world map) */
         c->opacity = !c->saveGame->balloonstate;
-    } // if(map->type != Map::WORLD)
+    } // if(map->isDungeonMap())
     /* initialize the moons */
     initMoons();
     /**
@@ -678,7 +678,7 @@ void GameController::setMap(
      * want to keep */
     if (!saveLocation) {
         // don't quench torch if going through altar room into other dungeon
-        bool shouldQuenchTorch = (map->type != Map::DUNGEON);
+        bool shouldQuenchTorch = !map->isDungeonMap();
         exitToParentMap(shouldQuenchTorch);
     }
     switch (map->type) {
@@ -2328,13 +2328,13 @@ void getChest(int player)
 
 /**
  * Called by getChest() to handle possible traps on chests
- * Returns true if trap was either not there or avoided
- * Returns false if trap was set off (destroying gold along with chest)
+ * Returns true if trap was either not there or avoided or left the gold intact
+ * Returns false if trap was set off, destroying gold along with chest
  **/
 static bool getChestTrapHandler(int player)
 {
     TileEffect trapType = EFFECT_FIRE;
-    int passTest = !xu4_random(2); /* xu4-enhanced */
+    int passTest = xu4_random(2); /* xu4-enhanced */
     /* Chest is trapped! 50/50 chance */
     if (passTest) {
         /* Figure out which trap the chest has */
@@ -2382,7 +2382,8 @@ static bool getChestTrapHandler(int player)
             screenMessage("VERMIEDEN!\n\n");
             return true;
         }
-        return trapType != EFFECT_LAVA; //xu4-enhanced: Bomb traps destroy
+        //xu4-enhanced: Bomb traps destroy gold
+        return !(settings.enhancements && trapType == EFFECT_LAVA);
     }
     screenMessage("\n");
     return true;
@@ -3646,14 +3647,14 @@ static void gameFixupObjects(Map *map)
     for (i = 0; i < MONSTERTABLE_SIZE; i++) {
         SaveGameMonsterRecord *monster = &map->monsterTable[i];
         if (monster->prevTile != 0) {
-            z = (map->type == Map::DUNGEON) ? monster->z : 0;
+            z = map->isDungeonMap() ? monster->z : 0;
             Coords coords(monster->x, monster->y, z);
             // tile values stored in monsters.sav hardcoded to index
             // into base tilemap
             MapTile tile = TileMap::get("base")->translate(monster->tile),
                 oldTile = TileMap::get("base")->translate(monster->prevTile);
             int limitForCreatures =
-                map->type == Map::DUNGEON ?
+                map->isDungeonMap() ?
                 MONSTERTABLE_SIZE :
                 MONSTERTABLE_CREATURES_SIZE;
 
