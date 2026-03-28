@@ -1014,7 +1014,6 @@ bool GameController::keyPressed(int key)
 
     /* Translate context-sensitive action key into a useful command */
     if ((key == U4_ENTER)
-        && settings.enhancements
         && settings.enhancementsOptions.smartEnterKey) {
         /* Attempt to guess based on the character's surroundings etc, what
          * action they want */
@@ -1505,7 +1504,7 @@ bool GameController::keyPressed(int key)
             screenMessage("Verwenden...\n");
             EventHandler::simulateDiskLoad(2000);
             screenMessage("WELCHES DING:\n?");
-            if (settings.enhancements) {
+            if (1 /* was settings.enhancements */) {
                 /* a little xu4 enhancement: show items in inventory when
                    prompted for an item to use */
                 c->stats->setView(STATS_ITEMS);
@@ -1514,7 +1513,7 @@ bool GameController::keyPressed(int key)
             if (c->location->viewMode == VIEW_CODEX) {
                 break;
             }
-            if (settings.enhancements) {
+            if (1 /* was settings.enhancements */) {
                 c->stats->setView(STATS_PARTY_OVERVIEW);
             }
             c->lastCommandTime = std::time(nullptr);
@@ -1717,8 +1716,7 @@ bool GameController::keyPressed(int key)
         case '7':
         case '8':
         case '9':
-            if (settings.enhancements
-                && settings.enhancementsOptions.activePlayer) {
+            if (settings.enhancementsOptions.activePlayer) {
                 gameSetActivePlayer(key - '1');
             } else {
                 soundPlay(SOUND_ERROR);
@@ -3017,8 +3015,7 @@ static void mixReagents()
             // hiding reagents that you don't have
             c->stats->resetReagentsMenu();
             c->stats->setView(MIX_REAGENTS);
-            if (settings.enhancements
-                && settings.enhancementsOptions.u5spellMixing) {
+            if (settings.enhancementsOptions.u5spellMixing) {
                 done = mixReagentsForSpellU5(spell);
             } else {
                 done = mixReagentsForSpellU4(spell);
@@ -3592,9 +3589,7 @@ void GameController::checkSpecialCreatures(Direction dir)
         for (int i = 0; i < 8; i++) {
             c->location->map->addCreature(
                 creatureMgr->getById(DAEMON_ID),
-                MapCoords(
-                    231, c->location->coords.y + 1, c->location->coords.z
-                )
+                MapCoords(231, c->location->coords.y + 1)
             );
         }
     }
@@ -3682,7 +3677,8 @@ static void gameFixupObjects(Map *map)
             obj->setPrevTile(oldTile);
             /* CHANGE: If first object in inanimate objects
                section is a ship, it becomes the lastShip */
-            if (settings.enhancements && (i == MONSTERTABLE_CREATURES_SIZE)) {
+            if ((1 /* was settings.enhancements */)
+                 && (i == MONSTERTABLE_CREATURES_SIZE)) {
                 if (tile.getTileType()->isShip()) {
                     c->lastShip = obj;
                 }
@@ -3984,13 +3980,7 @@ void GameController::checkRandomCreatures()
     bool canSpawnHere =
         c->location->map->isWorldMap() || inDungeon;
     if (!canSpawnHere) return; // can spawn only outdoors or in a dungeon
-    int spawnDivisor = inDungeon ?
-#if  0
-        (32 - (c->location->coords.z << 2)) :
-#else
-        1 :
-#endif
-        16;
+    int spawnDivisor = inDungeon ? 1 : 16;
     int numberOfCreatures =
         c->location->map->getNumberOfCreatures(
             inDungeon ? c->location->coords.z : -1
@@ -4071,21 +4061,22 @@ bool gameSpawnCreature(const Creature *m)
     if (c->location->context & CTX_DUNGEON) {
         /* FIXME: for some reason dungeon monsters aren't spawning
            correctly */
-        bool found = false;
         MapCoords new_coords;
         new_coords = MapCoords(
             xu4_random(c->location->map->width),
             xu4_random(c->location->map->height),
             coords.z
         );
+        /* u4apple2: Dungeon monsters don't spawn if either x or y is
+           the same as player's (poor man's "don't spawn in view") */
+        if ((coords.x == new_coords.x) || (coords.y == new_coords.y)) {
+            return false;
+        }
         const Tile *tile =
             c->location->map->tileTypeAt(new_coords, WITH_OBJECTS);
         // U4DOS: Dungeon monsters spawn only on unoccupied floor tiles
-        if (tile->isDungeonFloor()) {
-            found = true;
-        }
-        if (!found) {
-            return false;
+        if (!tile->isDungeonFloor()) {
+            return false;;
         }
         coords = new_coords;
     } else { // not dungeon
@@ -4109,7 +4100,8 @@ bool gameSpawnCreature(const Creature *m)
             ) {
                 return false;
             }
-            /* make sure we can spawn the creature there */
+            /* make sure we can spawn the creature there if cheat-summoned.
+               otherwise a failure to spawn just skips it for this turn */
             if (m) {
                 MapCoords new_coords = coords;
                 new_coords.move(dx, dy, c->location->map);

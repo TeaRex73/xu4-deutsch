@@ -133,8 +133,7 @@ void Shrine::enter()
         shrineAdvice = u4read_stringtable(shrinetext, 0, 24);
         u4fclose(shrinetext);
     }
-    if (settings.enhancements
-        && settings.enhancementsOptions.u5shrines) {
+    if (settings.enhancementsOptions.u5shrines) {
         enhancedSequence();
     } else {
         screenMessage(

@@ -22,6 +22,10 @@ enum Direction {
 #define MASK_DIR_SOUTH (1 << DIR_SOUTH)
 #define MASK_DIR_ADVANCE (1 << DIR_ADVANCE)
 #define MASK_DIR_RETREAT (1 << DIR_RETREAT)
+#define MASK_DIR_NORTHWEST (MASK_DIR_NORTH | MASK_DIR_WEST)
+#define MASK_DIR_NORTHEAST (MASK_DIR_NORTH | MASK_DIR_EAST)
+#define MASK_DIR_SOUTHEAST (MASK_DIR_SOUTH | MASK_DIR_EAST)
+#define MASK_DIR_SOUTHWEST (MASK_DIR_SOUTH | MASK_DIR_WEST)
 #define MASK_DIR_ALL (MASK_DIR_WEST             \
                       | MASK_DIR_NORTH          \
                       | MASK_DIR_EAST           \

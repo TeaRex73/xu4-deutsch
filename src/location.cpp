@@ -72,8 +72,7 @@ std::vector<MapTile> Location::tilesAt(const MapCoords &coords, bool &focus)
     /* Do not return objects for VIEW_GEM mode,
        show only the avatar and tiles */
     if ((viewMode == VIEW_GEM)
-        && (!settings.enhancements
-            || !settings.enhancementsOptions.peerShowsObjects)) {
+        && (!settings.enhancementsOptions.peerShowsObjects)) {
         // When viewing a gem, always show the avatar regardless
         // of whether or not it is shown in our normal view
         if (avatar) {

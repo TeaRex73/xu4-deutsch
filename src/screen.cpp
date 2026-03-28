@@ -647,8 +647,7 @@ void screenTextColor(int color)
             );
         }
     }
-    if (!settings.enhancements
-        || !settings.enhancementsOptions.textColorization) {
+    if (!settings.enhancementsOptions.textColorization) {
         return;
     }
     switch (color) {

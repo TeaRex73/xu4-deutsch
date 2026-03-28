@@ -9,6 +9,7 @@
 #include <cstdlib>
 #include "debug.h"
 #include "event.h"
+#include "settings.h"
 #include "utils.h"
 
 
@@ -91,7 +92,8 @@ Direction dirRandomDir(int valid_directions_mask, Direction preferred)
 {
     int i, n;
     Direction d[4];
-    Direction disliked = dirReverse(preferred);
+    Direction disliked =
+        settings.enhancements ? dirReverse(preferred) : DIR_NONE;
     n = 0;
     for (i = DIR_WEST; i <= DIR_SOUTH; i++) {
         if (

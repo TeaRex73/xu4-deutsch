@@ -846,7 +846,9 @@ int Map::getValidMoves(
                 if (tile.getTileType()->canWalkOn(d)
                     && prev_tile.getTileType()->canWalkOff(d)
                     && tile.getTileType()->isCreatureWalkable()
-                    && (!wanders || tile.getTileType()->willWanderOn())) {
+                    && (!settings.enhancements
+                        || !wanders
+                        || tile.getTileType()->willWanderOn())) {
                     retval = DIR_ADD_TO_MASK(d, retval);
                 }
             }

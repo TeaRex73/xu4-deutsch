@@ -863,8 +863,7 @@ ImageInfo *ImageMgr::get(const std::string &name, bool returnUnscaled)
         Image *unscaled_original = unscaled;
         unscaled = Image::duplicate(unscaled);
         delete unscaled_original;
-        if (Settings::getInstance().enhancements
-            && Settings::getInstance().enhancementsOptions
+        if (Settings::getInstance().enhancementsOptions
             .u4TileTransparencyHack) {
             int transparency_shadow_size =
                 Settings::getInstance().enhancementsOptions

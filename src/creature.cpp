@@ -778,8 +778,7 @@ bool Creature::divide()
     int dirmask = map->getValidMoves(getCoords(), getTile());
     Direction d = dirRandomDir(dirmask);
     /* this is a game enhancement, make sure it's turned on! */
-    if (!settings.enhancements
-        || !settings.enhancementsOptions.slimeDivides) {
+    if (!settings.enhancementsOptions.slimeDivides) {
         return false;
     }
     /* make sure there's a place to put the divided creature! */
@@ -802,8 +801,7 @@ bool Creature::spawnOnDeath()
 {
     Map *map = getMap();
     /* this is a game enhancement, make sure it's turned on! */
-    if (!settings.enhancements
-        || !settings.enhancementsOptions.gazerSpawnsInsects) {
+    if (!settings.enhancementsOptions.gazerSpawnsInsects) {
         return false;
     }
     /* make sure there's a place to put the divided creature! */

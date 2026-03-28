@@ -93,8 +93,7 @@ void TextView::drawCharMasked(int chr, int x, int y, unsigned char mask) const
 /* highlight the selected row using a background color */
 void TextView::textSelectedAt(int x, int y, const char *text)
 {
-    if (!settings.enhancements
-        || !settings.enhancementsOptions.textColorization) {
+    if (!settings.enhancementsOptions.textColorization) {
         this->textAt(x, y, "%s", text);
         return;
     }
@@ -111,8 +110,7 @@ void TextView::textSelectedAt(int x, int y, const char *text)
 std::string TextView::colorizeStatus(char statustype)
 {
     std::string output;
-    if (!settings.enhancements
-        || !settings.enhancementsOptions.textColorization) {
+    if (!settings.enhancementsOptions.textColorization) {
         output = statustype;
         return output;
     }
@@ -144,8 +142,7 @@ std::string TextView::colorizeString(
     unsigned int colorlength
 )
 {
-    if (!settings.enhancements
-        || !settings.enhancementsOptions.textColorization) {
+    if (!settings.enhancementsOptions.textColorization) {
         return input;
     }
     std::string output = "";

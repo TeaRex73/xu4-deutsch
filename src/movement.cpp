@@ -195,33 +195,61 @@ bool moveObject(const Map *map, Creature *obj, const MapCoords &avatar)
     int slowed = 0;
     /* determine a direction depending on the object movement behavior */
     dir = DIR_NONE;
+    /* Dungeon: All monsters, except reapers and mimics, wander 100%
+       of time if they can move in three or four directions or in two
+       opposite directions. They wander 75% of time if they can move
+       in two adjacent directions, and 50% of time if they can move
+       in only one direction.
+       Storms and Whirlpools outdoors: Wander 100% of time.
+       Other non-evil monsters outdoors: Wander 75% of time,
+       pursue Avatar 25% of time.
+       Evil monsters outdoors: pursue Avatar 100% of time.
+       NPCs in Cities: behaviour explicitly encoded in NPC data,
+       those that wander do so 50% of time and stay put 50% of time.
+       The following code should, if not buggy, capture all this. */
     switch (obj->getMovementBehavior()) {
     case MOVEMENT_FIXED:
         /* stationary, e.g. reaper, keep DIR_NONE */
         break;
     case MOVEMENT_WANDER:
-        /* Except in Dungeons, wandering creatures actually wander
-           just 50% of the time in town / 75% of the time outdoors in U4DOS.
-           Otherwise, they move towards the player if on the world map,
-           whereas wandering town creatures stay put in that case.
-           The exceptions are storms and whirlpools which wander
-           100% of the time. */
         if (
             map->isDungeonMap()
             || obj->isForceOfNature()
-            || (map->isCityMap() && xu4_random(2))
-            || (map->isWorldMap() && xu4_random(4))
+            || (map->isCityMap() && xu4_random(2)) // 50% chance
+            || (map->isWorldMap() && xu4_random(4)) // 75% chance
         ) {
-            dir = dirRandomDir(
-                map->getValidMoves(new_coords, obj->getTile(), true),
-                obj->getLastDir()
-            );
+            int dirmask =
+                map->getValidMoves(new_coords, obj->getTile(), true);
+            if (map->isDungeonMap()) {
+                switch (dirmask) {
+                case MASK_DIR_WEST:
+                case MASK_DIR_NORTH:
+                case MASK_DIR_EAST:
+                case MASK_DIR_SOUTH:
+                    if (!xu4_random(2)) dirmask = 0;
+                    break;
+                case MASK_DIR_NORTHWEST:
+                case MASK_DIR_NORTHEAST:
+                case MASK_DIR_SOUTHEAST:
+                case MASK_DIR_SOUTHWEST:
+                    if (!xu4_random(4)) dirmask = 0;
+                    break;
+                default:
+                    /* in theory, if exactly three directions are possible in
+                       u4apple2, the middle one is slightly less likely
+                       (25% vs 37.5% for the other two), but let's not
+                       split hairs. */
+                    break;
+                }
+            }
+            dir = dirRandomDir(dirmask, obj->getLastDir());
             break;
         }
         if (!map->isWorldMap()) {
-            break; // stay put
+            break; // stay put if wandering didn't happen
         }
-        // not wandering in this move AND on world map -> fall through
+        /* not wandering in this move AND on world map
+           -> fall through to pursuing the Avatar */
         /* FALLTHROUGH */
     case MOVEMENT_FOLLOW_AVATAR:
     case MOVEMENT_ATTACK_AVATAR:
@@ -279,8 +307,9 @@ bool moveObject(const Map *map, Creature *obj, const MapCoords &avatar)
      */
     if (!(new_coords == obj->getCoords()) && !MAP_IS_OOB(map, new_coords)) {
         obj->setCoords(new_coords);
+        return true;
     }
-    return true;
+    return false;
 } // moveObject
 
 

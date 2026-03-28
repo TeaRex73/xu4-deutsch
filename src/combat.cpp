@@ -1235,8 +1235,7 @@ bool CombatController::keyPressed(int key)
     case '7':
     case '8':
     case '9':
-        if (settings.enhancements
-            && settings.enhancementsOptions.activePlayer) {
+        if (settings.enhancementsOptions.activePlayer) {
             gameSetActivePlayer(key - '1');
         } else {
             soundPlay(SOUND_ERROR);
