@@ -40,6 +40,5 @@ private:
 };
 
 bool shrineCanEnter(const Portal *p);
-bool isShrine(Map *punknown);
 
 #endif // ifndef SHRINE_H

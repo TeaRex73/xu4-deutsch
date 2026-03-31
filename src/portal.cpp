@@ -18,6 +18,7 @@
 #include "mapmgr.h"
 #include "names.h"
 #include "screen.h"
+#include "settings.h"
 #include "shrine.h"
 #include "tile.h"
 
@@ -127,7 +128,11 @@ bool usePortalAt(
                 break;
             }
             case Map::SHRINE:
-                screenMessage("Schrein betreten\n\n");
+                screenMessage(
+                    "%s betreten\n\n",
+                    settings.enhancements ?
+                        "Schrein" : destination->getName().c_str()
+                );
                 break;
             case Map::DUNGEON:
                 screenMessage("H|hle betreten\n\n");
@@ -139,6 +144,7 @@ bool usePortalAt(
                 || destination->isDungeonMap()) {
                 std::string name;
                 name = destination->getName();
+                U4ASSERT(name.length() <= 16, "Name too long!");
                 for (unsigned int i = 0; i < (16 - name.length()) / 2; i++) {
                     screenMessage(" ");
                 }

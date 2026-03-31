@@ -53,27 +53,13 @@ bool shrineCanEnter(const Portal *p)
     return true;
 }
 
-
-/**
- * Returns true if 'map' points to a Shrine map
- */
-bool isShrine(Map *punknown)
-{
-    if (dynamic_cast<Shrine *>(punknown) != nullptr) {
-        return true;
-    } else {
-        return false;
-    }
-}
-
-
 /**
  * Shrine class implementation
  */
 std::string Shrine::getName()
 {
     if (name.empty()) {
-        name = "SCHREIN DE";
+        name = "Schrein de";
         switch (virtue) {
         case 0:
         case 2:
@@ -81,11 +67,11 @@ std::string Shrine::getName()
         case 5:
         case 6:
         case 7:
-            name += "R ";
+            name += "r ";
             break;
         case 1:
         case 4:
-            name += "S ";
+            name += "s ";
             break;
         default:
             name += "??? ";
@@ -164,7 +150,7 @@ void Shrine::enter()
         return;
     }
     if (
-        xu4_strncasecmp(virtueInput.c_str(), getVirtueName(getVirtue()), 6)
+        xu4_strncasecmp(virtueInput.c_str(), getVirtueName(getVirtue()), 4)
         != 0
     ) {
         screenMessage(

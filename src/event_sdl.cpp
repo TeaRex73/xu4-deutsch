@@ -339,6 +339,18 @@ static void handleKeyDownEvent(
 {
     int processed;
     int key;
+    static int oldkeysym = 0;
+
+    if (oldkeysym == event.key.keysym.sym) {
+        /* check if key is really still pressed to prevent "stuck" keys */
+        int numkeys;
+        SDL_PumpEvents();
+        Uint8 *keystate = SDL_GetKeyState(&numkeys);
+        if (event.key.keysym.sym < numkeys &&
+            keystate[event.key.keysym.sym] == 0) return;
+    }
+    oldkeysym = event.key.keysym.sym;
+
     if (event.key.keysym.unicode <= 0xff) {
         key = event.key.keysym.unicode;
         if (key > 0x7f) {
