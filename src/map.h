@@ -21,6 +21,7 @@
 #include "u4file.h"
 
 
+
 #define MAP_IS_OOB(mapptr, c)                               \
     (((c).x) < 0                                            \
      || ((c).x) >= (static_cast<int>((mapptr)->width))      \
@@ -31,7 +32,7 @@
 
 class AnnotationMgr;
 class Map;
-class Object;
+class Location;
 class Person;
 class Creature;
 class TileMap;
@@ -231,7 +232,7 @@ public:
     void alertGuards() const;
     const MapCoords &getLabel(const std::string &name) const;
     // u4dos compatibility
-    bool fillMonsterTable();
+    bool fillMonsterTable(const Location *loc);
     /* Translate from raw tile index */
     MapTile tfrti(int raw) const;
     /* Translate to raw tile index */

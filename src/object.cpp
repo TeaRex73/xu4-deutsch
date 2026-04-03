@@ -7,6 +7,7 @@
 #include <algorithm>
 #include "object.h"
 #include "context.h"
+#include "direction.h"
 #include "map.h"
 #include "player.h"
 
@@ -100,7 +101,7 @@ void Object::setMap(class Map *m)
     }
 }
 
-Map *Object::getMap()
+Map *Object::getMap() const
 {
     if (maps.empty()) {
         return nullptr;
@@ -110,21 +111,20 @@ Map *Object::getMap()
 
 Direction Object::getLastDir() const
 {
-    const int
-        x = coords.x,
-        y = coords.y,
-        px = prevCoords.x,
-        py = prevCoords.y;
-
-    if (x == px) {
-        if (y < py) return DIR_NORTH;
-        if (y > py) return DIR_SOUTH;
+    const MapCoords prev = prevCoords;
+    const int dirmask = prev.getRelativeDirection(coords, getMap());
+    switch (dirmask) {
+    case MASK_DIR_NORTH:
+        return DIR_NORTH;
+    case MASK_DIR_SOUTH:
+        return DIR_SOUTH;
+    case MASK_DIR_EAST:
+        return DIR_EAST;
+    case MASK_DIR_WEST:
+        return DIR_WEST;
+    default: // no movement or not in cardinal direction
+        return DIR_NONE;
     }
-    if (y == py) {
-        if (x < px) return DIR_WEST;
-        if (x > px) return DIR_EAST;
-    }
-    return DIR_NONE;
 }
 
 void Object::remove()

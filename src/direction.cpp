@@ -92,8 +92,7 @@ Direction dirRandomDir(int valid_directions_mask, Direction preferred)
 {
     int i, n;
     Direction d[4];
-    Direction disliked =
-        settings.enhancements ? dirReverse(preferred) : DIR_NONE;
+    Direction disliked = dirReverse(preferred);
     n = 0;
     for (i = DIR_WEST; i <= DIR_SOUTH; i++) {
         if (
@@ -104,10 +103,8 @@ Direction dirRandomDir(int valid_directions_mask, Direction preferred)
             n++;
         }
     }
-    // If nothing found + in 1/8 of other cases, allow disliked direction
-    if (
-        (n == 0 || xu4_random(8) == 0)
-        && DIR_IN_MASK(disliked, valid_directions_mask)) {
+    // In 1/4 of cases, allow disliked direction (taken from u4apple2)
+    if (xu4_random(4) == 0 && DIR_IN_MASK(disliked, valid_directions_mask)) {
         d[n] = disliked;
         n++;
     }

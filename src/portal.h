@@ -11,7 +11,6 @@
 
 class Map;
 class Location;
-struct _Portal;
 
 typedef enum {
     ACTION_NONE = 0x0,

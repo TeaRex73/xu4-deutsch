@@ -5,6 +5,7 @@
 #include "vc6.h" // Fixes things if you're using VC6, does nothing otherwise
 
 #include <algorithm>
+#include <climits>
 #include <cstdlib>
 #include <cstring>
 
@@ -844,7 +845,7 @@ bool Creature::hideOrShow()
 Creature *Creature::nearestOpponent(int *dist, bool ranged)
 {
     Creature *opponent = nullptr;
-    int d, leastDist = 0xFFFF;
+    int d, leastDist = INT_MAX;
     ObjectDeque::const_iterator i;
     bool jinx = (*c->aura == Aura::JINX);
     Map *map = getMap();

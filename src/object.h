@@ -133,7 +133,7 @@ public:
     }
 
     void setMap(class Map *m);
-    Map *getMap();
+    Map *getMap() const;
     void remove(); /**< remove self from any maps that it's part of */
     bool setDirection(Direction d);
     void animateMovement() const;

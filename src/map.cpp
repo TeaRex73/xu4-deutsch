@@ -13,17 +13,12 @@
 #include "annotation.h"
 #include "context.h"
 #include "debug.h"
-#include "direction.h"
-#include "location.h"
 #include "movement.h"
-#include "object.h"
 #include "person.h"
 #include "player.h"
 #include "portal.h"
-#include "savegame.h"
 #include "tileset.h"
 #include "tilemap.h"
-#include "types.h"
 #include "utils.h"
 #include "settings.h"
 
@@ -136,10 +131,10 @@ int MapCoords::getRelativeDirection(const MapCoords &c, const Map *map) const
             me.x -= map->width;
         }
         if (std::abs(me.y - c.y)
-            > std::abs(static_cast<int>(me.y + map->width - c.y))) {
+            > std::abs(static_cast<int>(me.y + map->height - c.y))) {
             me.y += map->height;
         } else if (std::abs(me.y - c.y)
-                   > std::abs(static_cast<int>(me.y - map->width - c.y))) {
+                   > std::abs(static_cast<int>(me.y - map->height - c.y))) {
             me.y -= map->height;
         }
         dx = me.x - c.x;
@@ -208,7 +203,6 @@ Direction MapCoords::pathAway(
     return pathTo(c, valid_directions, false, map, last);
 }
 
-
 /**
  * Finds the movement distance (not using diagonals) from point a to point b
  * on a map, taking into account map boundaries and such.  If the two coords
@@ -216,49 +210,48 @@ Direction MapCoords::pathAway(
  */
 int MapCoords::movementDistance(const MapCoords &c, const Map *map) const
 {
-    int dirmask = DIR_NONE;
-    int dist = 0;
-    MapCoords me = *this;
+    int dx, dy;
     if (z != c.z) return -1;
-    /* get the direction(s) to the coordinates */
-    dirmask = getRelativeDirection(c, map);
-    while ((me.x != c.x) || (me.y != c.y)) {
-        if (me.x != c.x) {
-            if (dirmask & MASK_DIR_WEST) {
-                me.move(DIR_WEST, map);
-            } else {
-                me.move(DIR_EAST, map);
-            }
-            dist++;
-        }
-        if (me.y != c.y) {
-            if (dirmask & MASK_DIR_NORTH) {
-                me.move(DIR_NORTH, map);
-            } else {
-                me.move(DIR_SOUTH, map);
-            }
-            dist++;
-        }
+    if (!map || map->border_behavior == Map::BORDER_WRAP) {
+        dx = std::min(
+            std::abs(x - c.x),
+            static_cast<int>(map->width) - std::abs(x - c.x)
+        );
+        dy = std::min(
+            std::abs(y - c.y),
+            static_cast<int>(map->height) - std::abs(y - c.y)
+        );
+    } else {
+        dx = std::abs(x - c.x);
+        dy = std::abs(y - c.y);
     }
-    return dist;
-} // MapCoords::movementDistance
+    return dx + dy;
+}
 
 
 /**
  * Finds the distance (using diagonals) from point a to point b on a map
  * If the two coordinates are not on the same z-plane, then this function
- * adds 256 per level. This function also takes into account map boundaries.
+ * returns 256 per level. This function also takes into account map boundaries.
  */
 int MapCoords::distance(const MapCoords &c, const Map *map) const
 {
-    int dist = movementDistance(c, map);
-    if (dist < 0) return dist;
-    /* calculate how many fewer movements there would have been */
-    dist -=
-        (std::abs(x - c.x) < std::abs(y - c.y)) ?
-        (std::abs(x - c.x)) :
-        (std::abs(y - c.y));
-    return dist;
+    int dx, dy;
+    if (z != c.z) return 256 * std::abs(z - c.z);
+    if (!map || map->border_behavior == Map::BORDER_WRAP) {
+        dx = std::min(
+            std::abs(x - c.x),
+            static_cast<int>(map->width) - std::abs(x - c.x)
+        );
+        dy = std::min(
+            std::abs(y - c.y),
+            static_cast<int>(map->height) - std::abs(y - c.y)
+        );
+    } else {
+        dx = std::abs(x - c.x);
+        dy = std::abs(y - c.y);
+    }
+    return std::max(dx, dy);
 }
 
 
@@ -901,20 +894,18 @@ const MapCoords &Map::getLabel(const std::string &name) const
     return i->second;
 }
 
-// helper function for Map::fillMonsterTable()
-static bool isCloser(const Object *a, const Object *b)
+bool Map::fillMonsterTable(const Location *loc)
 {
-    const MapCoords &ma = a->getCoords();
-    const MapCoords &mb = b->getCoords();
-    const Coords &coords = c->location->coords;
-    if ((ma.z != coords.z) || (mb.z != coords.z)) {
-        return std::abs(ma.z - coords.z) < std::abs(mb.z - coords.z);
-    }
-    return ma.distance(coords) < mb.distance(coords);
-}
+    // helper function for Map::fillMonsterTable()
+    // using lambda because we need to access loc
+    auto isCloser = [&](const Object *a, const Object *b) -> bool
+    {
+        const MapCoords &ma = a->getCoords();
+        const MapCoords &mb = b->getCoords();
+        const Coords &coords = loc->coords;
+        return ma.distance(coords) < mb.distance(coords);
+    };
 
-bool Map::fillMonsterTable()
-{
     ObjectDeque::const_iterator current;
     ObjectDeque monsters;
     ObjectDeque other_creatures;
@@ -932,8 +923,14 @@ bool Map::fillMonsterTable()
      */
     /* CHANGE: lastShip, if it exists, is always the first
        object in the inanimate objects section of the table.
-       No need to check settings.enhancements here, it is
-       checked when loading the save game back in. */
+       This way we can preserve the lastShip info as part of
+       the game state across a save and reload without
+       modifying the save game format, which doesn't include
+       lastShip as such.
+       IMHO there is no need to check settings.enhancements here,
+       as this is really a bugfix to prevent part of the game
+       state from being lost after a save and reload, not an
+       enhancement in the proper sense. */
     if (c->lastShip != nullptr) {
         if (c->lastShip->getMap() == this) {
             nObjects++;
@@ -964,7 +961,7 @@ bool Map::fillMonsterTable()
     }
     /* limit forces of nature */
     /* sort first so that, if any, those furthest away get thrown out */
-    std::sort(monsters.begin(), monsters.end(), &isCloser);
+    std::sort(monsters.begin(), monsters.end(), isCloser);
     while(nForcesOfNature > MONSTERTABLE_FORCESOFNATURE_SIZE) {
         monsters.pop_back();
         nForcesOfNature--;
@@ -974,7 +971,7 @@ bool Map::fillMonsterTable()
      * Add other monsters to our whirlpools and storms
      */
     /* sort first, see above */
-    std::sort(other_creatures.begin(), other_creatures.end(), &isCloser);
+    std::sort(other_creatures.begin(), other_creatures.end(), isCloser);
     while (other_creatures.size()) {
         monsters.push_back(other_creatures.front());
         other_creatures.pop_front();
@@ -1009,11 +1006,11 @@ bool Map::fillMonsterTable()
             std::sort(
                 std::next(inanimate_objects.begin()),
                 inanimate_objects.end(),
-                &isCloser
+                isCloser
             );
         } else {
             std::sort(
-                inanimate_objects.begin(), inanimate_objects.end(), &isCloser
+                inanimate_objects.begin(), inanimate_objects.end(), isCloser
             );
         }
         while (inanimate_objects.size()) {

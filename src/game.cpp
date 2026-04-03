@@ -484,7 +484,7 @@ static bool gameSave()
     /* fix creature animations so they are compatible with u4dos */
     c->location->map->resetObjectAnimations();
     /* fill the monster table so we can save it */
-    c->location->map->fillMonsterTable();
+    c->location->map->fillMonsterTable(c->location);
     if (!saveGameMonstersWrite(c->location->map->monsterTable, monstersFile)) {
         screenMessage("Error writing to " MONSTERS_SAV_BASE_FILENAME "\n");
         std::fflush(monstersFile);
@@ -597,7 +597,7 @@ static bool gameSave()
         /* fix creature animations so they are compatible with u4dos */
         c->location->prev->map->resetObjectAnimations();
         /* fill the monster table so we can save it */
-        c->location->prev->map->fillMonsterTable();
+        c->location->prev->map->fillMonsterTable(c->location->prev);
         if (!saveGameMonstersWrite(
                 c->location->prev->map->monsterTable, outMonstFile
             )) {
@@ -3676,9 +3676,12 @@ static void gameFixupObjects(Map *map)
             obj->setTile(tile);
             obj->setPrevTile(oldTile);
             /* CHANGE: If first object in inanimate objects
-               section is a ship, it becomes the lastShip */
-            if ((1 /* was settings.enhancements */)
-                 && (i == MONSTERTABLE_CREATURES_SIZE)) {
+               section is a ship, it becomes the lastShip.
+               I consider that a bugfix rather than an
+               enhancement since lastShip is really part
+               of the game state and shouldn't be lost by
+               saving and reloading the game. */
+            if (i == MONSTERTABLE_CREATURES_SIZE) {
                 if (tile.getTileType()->isShip()) {
                     c->lastShip = obj;
                 }
