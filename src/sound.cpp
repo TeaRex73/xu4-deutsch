@@ -3,11 +3,14 @@
  */
 
 #include "vc6.h" // Fixes things if you're using VC6, does nothing otherwise
+
+#include <string>
+#include <vector>
+
 #include "sound.h"
 
 #include "config.h"
 #include "debug.h"
-#include "error.h"
 #include "music.h"
 #include "settings.h"
 #include "u4file.h"

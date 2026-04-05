@@ -10,7 +10,7 @@
 namespace U6Decode
 {
 class Stack;
-class Dict;
+
 
 unsigned char read1(std::FILE *f);
 long read4(std::FILE *f);

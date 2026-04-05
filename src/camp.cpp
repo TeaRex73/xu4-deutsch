@@ -4,15 +4,17 @@
 
 #include "vc6.h" // Fixes things if you're using VC6, does nothing otherwise
 
-#include "u4.h"
+#include <deque>
+#include <string>
+#include <vector>
 
 #include "camp.h"
 
-#include "annotation.h"
 #include "city.h"
 #include "combat.h"
 #include "context.h"
 #include "conversation.h"
+#include "coords.h"
 #include "event.h"
 #include "game.h"
 #include "location.h"
@@ -20,14 +22,15 @@
 #include "mapmgr.h"
 #include "creature.h"
 #include "music.h"
-#include "names.h"
 #include "object.h"
 #include "person.h"
 #include "player.h"
+#include "savegame.h"
 #include "screen.h"
 #include "settings.h"
-#include "stats.h"
+#include "tile.h"
 #include "tileset.h"
+#include "types.h"
 #include "utils.h"
 
 void campTimer(void *data);

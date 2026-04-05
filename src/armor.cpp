@@ -5,14 +5,12 @@
 #include "vc6.h" // Fixes things if you're using VC6, does nothing otherwise
 
 #include <vector>
-#include <cstring>
 
 #include "armor.h"
 
 #include "config.h"
 #include "error.h"
 #include "names.h"
-#include "tile.h"
 #include "utils.h"
 
 

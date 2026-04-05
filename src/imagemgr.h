@@ -9,14 +9,15 @@
 #include <string>
 #include <vector>
 
-#include "image.h"
 #include "observer.h"
-
 
 class ConfigElement;
 class Debug;
+class Image;
 class ImageSet;
 class Settings;
+class SubImage;
+class U4FILE;
 
 
 /*

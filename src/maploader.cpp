@@ -4,34 +4,40 @@
 
 #include "vc6.h" // Fixes things if you're using VC6, does nothing otherwise
 
-#include <ctime>
+#include <algorithm>
+#include <cstdio>
+#include <list>
+#include <map>
 #include <string>
-#include "u4.h"
+#include <vector>
 
 #include "maploader.h"
 
 #include "city.h"
 #include "combat.h"
-#include "conversation.h"
+#include "context.h"
+#include "coords.h"
 #include "dialogueloader.h"
 #include "debug.h"
 #include "dungeon.h"
 #include "error.h"
-#include "filesystem.h"
 #include "map.h"
-#include "maploader.h"
 #include "mapmgr.h"
+#include "music.h"
 #include "object.h"
 #include "person.h"
-#include "portal.h"
+#include "player.h"
+#include "savegame.h"
 #include "settings.h"
+#include "tile.h"
 #include "tilemap.h"
 #include "tileset.h"
+#include "types.h"
+#include "u4.h"
 #include "u4file.h"
-#include "utils.h"
 
-#include "image.h"
-#include "imagemgr.h"
+class Dialogue;
+
 
 std::map<Map::Type, MapLoader *> *MapLoader::loaderMap = nullptr;
 

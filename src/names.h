@@ -5,9 +5,13 @@
 #ifndef NAMES_H
 #define NAMES_H
 
-#include "savegame.h"
 #include "direction.h"
 
+enum ClassType : unsigned char;
+enum Item : unsigned short;
+enum Reagent : unsigned char;
+enum SexType : unsigned char;
+enum Virtue : unsigned char;
 
 /*
  * These routines convert the various enumerations for classes, reagents,

@@ -5,6 +5,8 @@
 #ifndef DEBUG_H
 #define DEBUG_H
 
+#include <string>
+#include <cstdio>
 
 /**
  * Define XU4_FUNC as the function name.  Most compilers define
@@ -23,11 +25,6 @@
 #define TRACE_LOCAL(dbg, msg)                               \
     (dbg).trace(msg, __FILE__, XU4_FUNC, __LINE__, false);
 
-#include <string>
-#include <cstdio>
-#include <cstdlib>
-
-
 /*
  * Derived from XINE_ASSERT in the xine project.  I've updated it to
  * be C99 compliant, to use stderr rather than stdout, and to compile
@@ -40,6 +37,7 @@ void print_trace(std::FILE *file);
 #ifdef NDEBUG
 #define U4ASSERT(exp, desc, ...) /* nothing */
 #else
+#include <cstdlib>
 #define U4ASSERT(exp, ...)                             \
     do {                                               \
         if (!(exp)) {                                  \
@@ -51,7 +49,7 @@ void print_trace(std::FILE *file);
             std::fprintf(stderr, __VA_ARGS__);         \
             std::fprintf(stderr, "\n\n");              \
             print_trace(stderr);                       \
-            exit(EXIT_FAILURE);                        \
+            std::exit(EXIT_FAILURE);                   \
         }                                              \
     }                                                  \
     while (0)

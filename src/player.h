@@ -5,7 +5,6 @@
 #ifndef PLAYER_H
 #define PLAYER_H
 
-#include <list>
 #include <string>
 #include <vector>
 
@@ -14,10 +13,10 @@
 #include "observable.h"
 #include "savegame.h"
 #include "script.h"
-#include "tile.h"
 #include "types.h"
 
 class Armor;
+class Object;
 class Party;
 class Weapon;
 

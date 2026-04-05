@@ -5,35 +5,39 @@
 #include "vc6.h" // Fixes things if you're using VC6, does nothing otherwise
 
 #include <algorithm>
+#include <map>
 #include <vector>
 
-#include "u4.h"
+#include "mapmgr.h"
 
-#include "annotation.h"
 #include "city.h"
 #include "combat.h"
+#include "config.h"
+#include "context.h"
+#include "coords.h"
 #include "debug.h"
 #include "dungeon.h"
 #include "error.h"
 #include "item.h"
 #include "map.h"
 #include "maploader.h"
-#include "mapmgr.h"
 #include "moongate.h"
+#include "music.h"
 #include "person.h"
 #include "portal.h"
 #include "shrine.h"
 #include "tilemap.h"
 #include "tileset.h"
 #include "types.h"
-#include "u4file.h"
-#include "config.h"
+
+enum Virtue: unsigned char;
+
 
 MapMgr *MapMgr::instance = nullptr;
 
 MapMgr *MapMgr::getInstance()
 {
-    if (instance == nullptr) {
+    if (__builtin_expect(instance == nullptr, false)) {
         instance = new MapMgr();
     }
     return instance;
@@ -184,8 +188,8 @@ Map *MapMgr::initMapFromConf(const ConfigElement &mapConf)
     map->border_behavior = static_cast<Map::BorderBehavior>(
         mapConf.getEnum("borderbehavior", borderBehaviorEnumStrings)
     );
-    if (isCombatMap(map)) {
-        CombatMap *cm = dynamic_cast<CombatMap *>(map);
+    if (map->isCombatMap()) {
+        CombatMap *cm = getCombatMap(map);
         cm->setContextual(mapConf.getBool("contextual"));
     }
     TRACE_LOCAL(

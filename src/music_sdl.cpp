@@ -1,22 +1,16 @@
 #include "vc6.h" // Fixes things if you're using VC6, does nothing otherwise
 
+#include <string>
+
 #include <SDL.h>
 #include <SDL_mixer.h>
 
 #include "music.h"
-#include "sound.h"
 
-#include "u4_sdl.h"
-#include "error.h"
-#include "config.h"
-#include "context.h"
 #include "debug.h"
 #include "error.h"
-#include "event.h"
-#include "location.h"
 #include "settings.h"
-#include "u4.h"
-#include "u4file.h"
+#include "u4_sdl.h"
 
 void Music::create_sys()
 {

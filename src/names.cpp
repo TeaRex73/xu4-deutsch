@@ -6,6 +6,8 @@
 
 #include "names.h"
 
+#include "savegame.h"
+
 const char *getClassNameEnglish(ClassType klass)
 {
     switch (klass) {

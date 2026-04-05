@@ -10,19 +10,17 @@
 #include "sound_p.h"
 
 #include <atomic>
+#include <string>
+#include <vector>
 
 #include <SDL.h>
 #include <SDL_mixer.h>
 
 #include "sound.h"
 
-#include "config.h"
-#include "debug.h"
 #include "error.h"
 #include "music.h"
 #include "settings.h"
-#include "u4file.h"
-#include "event.h"
 
 bool SoundManager::load_sys(Sound sound, const std::string &pathname)
 {

@@ -5,10 +5,12 @@
 #ifndef VIEW_H
 #define VIEW_H
 
-#define SCALED(n) ((n) * settings.scale)
+#include "settings.h"
 
 class Image;
 
+
+#define SCALED(n) ((n) * settings.scale)
 
 /**
  * Generic base class for reflecting the state of a game object onto

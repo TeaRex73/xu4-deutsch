@@ -4,10 +4,14 @@
 
 #include "vc6.h" // Fixes things if you're using VC6, does nothing otherwise
 
+#include <algorithm>
+#include <cstdio>
+
+#include "menuitem.h"
+
 #include "debug.h"
 #include "error.h"
 #include "menu.h"
-#include "menuitem.h"
 #include "settings.h"
 #include "utils.h"
 

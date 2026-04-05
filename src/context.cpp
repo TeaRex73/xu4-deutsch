@@ -22,6 +22,12 @@
 
 #include "context.h"
 
+#include "aura.h"
+#include "location.h"
+#include "player.h"
+#include "savegame.h"
+#include "stats.h"
+
 Context::Context()
     :party(nullptr),
      saveGame(nullptr),

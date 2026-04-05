@@ -5,14 +5,15 @@
 #ifndef TILEVIEW_H
 #define TILEVIEW_H
 
+#include <string>
 #include <vector>
 
-#include "view.h"
 #include "u4.h"
+#include "view.h"
 
-class Tile;
-class Tileset;
+class Image;
 class MapTile;
+class Tileset;
 
 
 /**

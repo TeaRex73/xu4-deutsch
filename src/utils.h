@@ -5,7 +5,6 @@
 #ifndef UTILS_H
 #define UTILS_H
 
-#include <cstdio>
 #include <ctime>
 #include <map>
 #include <string>
@@ -13,10 +12,10 @@
 #include <vector>
 
 #ifndef NPERF
-#include <unistd.h>
+#   include <cstdio>
+#   include <unistd.h>
+#   include "filesystem.h"
 #endif
-
-#include "filesystem.h"
 
 
 /* The AdjustValue functions used to be #define'd macros, but these are

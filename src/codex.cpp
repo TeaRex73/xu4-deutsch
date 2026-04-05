@@ -15,6 +15,7 @@
 #include "game.h"
 #include "item.h"
 #include "imagemgr.h"
+#include "location.h"
 #include "names.h"
 #include "savegame.h"
 #include "screen.h"

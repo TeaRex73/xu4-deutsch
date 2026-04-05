@@ -4,15 +4,17 @@
 
 #include "vc6.h" // Fixes things if you're using VC6, does nothing otherwise
 
+#include <cstdio>
 #include <cstdlib>
 #include <cstdarg>
 
-#include <libxml/xmlmemory.h>
+#include <libxml/globals.h>
 #include <libxml/parser.h>
 #include <libxml/valid.h>
 #include <libxml/xmlIO.h>
 
 #include "xml.h"
+
 #include "error.h"
 #include "settings.h"
 #include "u4file.h"

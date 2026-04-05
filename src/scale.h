@@ -7,9 +7,9 @@
 
 #include <string>
 
-#include "settings.h"
-
 class Image;
+
+
 typedef Image *(*Scaler)(const Image *src, int scale, int n);
 Scaler scalerGet(const std::string &filter);
 int scaler3x(const std::string &filter);

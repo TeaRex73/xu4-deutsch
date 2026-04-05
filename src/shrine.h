@@ -5,9 +5,12 @@
 #ifndef SHRINE_H
 #define SHRINE_H
 
+#include <string>
+
 #include "map.h"
-#include "portal.h"
 #include "savegame.h"
+
+class Portal;
 
 #define SHRINE_MEDITATION_INTERVAL 100
 #define MEDITATION_MANTRAS_PER_CYCLE 16

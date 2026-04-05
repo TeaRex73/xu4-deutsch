@@ -4,16 +4,17 @@
 
 #include "vc6.h" // Fixes things if you're using VC6, does nothing otherwise
 
-#include <vector>
+#include <cstdio>
+#include <cstdlib>
 
-#include "config.h"
+#include "imageloader_fmtowns.h"
+
 #include "debug.h"
 #include "error.h"
 #include "image.h"
 #include "imageloader.h"
-#include "imageloader_fmtowns.h"
 #include "imageloader_u4.h"
-#include "lzw/u4decode.h"
+#include "u4file.h"
 
 ImageLoader *FMTOWNSImageLoader::instance_tif = ImageLoader::registerLoader(
     new FMTOWNSImageLoader(510), "image/fmtowns-tif"

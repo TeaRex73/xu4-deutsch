@@ -5,6 +5,7 @@
 #include "vc6.h" // Fixes things if you're using VC6, does nothing otherwise
 
 #include <SDL.h>
+
 #include "u4_sdl.h"
 
 static inline int u4_SDL_Init()

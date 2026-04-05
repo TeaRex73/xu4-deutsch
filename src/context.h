@@ -6,19 +6,17 @@
 #define CONTEXT_H
 
 #include <ctime>
+#include <string>
 #include <vector>
 
-#include "location.h"
-#include "aura.h"
+#include "direction.h"
 #include "names.h"
-#include "person.h"
 #include "script.h"
-#include "types.h"
-#include "savegame.h"
-#include "object.h"
-#include "player.h"
-#include "script.h"
-#include "stats.h"
+
+class Aura;
+class Party;
+class StatsArea;
+struct SaveGame;
 
 typedef enum {
     TRANSPORT_FOOT = 0x1,

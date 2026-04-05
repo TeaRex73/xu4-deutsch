@@ -5,33 +5,32 @@
 #include "vc6.h" // Fixes things if you're using VC6, does nothing otherwise
 
 #include <cctype>
-#include <string>
+#include <cstdlib>
 #include <cstring>
+#include <string>
 #include <vector>
-#include <cstdio>
-
-#include "u4.h"
 
 #include "person.h"
 
-#include "city.h"
 #include "context.h"
 #include "conversation.h"
 #include "debug.h"
 #include "event.h"
 #include "game.h" // Included for ReadPlayerController
-#include "u4io.h"
 #include "location.h"
 #include "music.h"
 #include "names.h"
+#include "object.h"
 #include "player.h"
-#include "savegame.h"
-#include "settings.h"
-#include "stats.h"
-#include "types.h"
-#include "u4file.h"
-#include "utils.h"
 #include "script.h"
+#include "settings.h"
+#include "tile.h"
+#include "types.h"
+#include "u4.h"
+#include "utils.h"
+
+enum Virtue: unsigned char;
+
 
 static int chars_needed(
     const char *s, int columnmax, int linesdesired, int *real_lines

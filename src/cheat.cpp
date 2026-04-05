@@ -8,19 +8,32 @@
 #include <cstring>
 
 #include "cheat.h"
+
+#include "context.h"
+#include "creature.h"
+#include "direction.h"
+#include "event.h"
+#include "game.h"
 #include "location.h"
 #include "map.h"
-#include "context.h"
-#include "game.h"
 #include "mapmgr.h"
 #include "moongate.h"
-#include "portal.h"
+#include "movement.h"
+#include "music.h"
+#include "names.h"
 #include "player.h"
+#include "portal.h"
+#include "savegame.h"
 #include "screen.h"
+#include "sound.h"
 #include "stats.h"
+#include "tile.h"
 #include "tileset.h"
+#include "types.h"
 #include "utils.h"
 #include "weapon.h"
+
+class Coords;
 
 CheatMenuController::CheatMenuController(GameController *game)
     :game(game)

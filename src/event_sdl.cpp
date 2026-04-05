@@ -8,15 +8,16 @@
 #include <atomic>
 #include <cstdlib>
 #include <ctime>
-#include "u4.h"
 
 #include "event.h"
 
 #include "context.h"
 #include "debug.h"
 #include "error.h"
+#include "location.h"
 #include "screen.h"
 #include "settings.h"
+#include "u4.h"
 #include "u4_sdl.h"
 #include "utils.h"
 

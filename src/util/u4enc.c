@@ -5,10 +5,9 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include <ctype.h>
 
-#include "rle.h"
 #include "lzw/hash.h"
+#include "rle.h"
 #include "util/pngconv.h"
 
 #define MAX_DICT_CAPACITY 0xCCC

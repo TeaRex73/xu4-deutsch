@@ -7,14 +7,14 @@
 
 #include <list>
 #include <string>
-#include "event.h"
+
+#include "controller.h"
 #include "menuitem.h"
 #include "observable.h"
-#include "types.h"
-
 
 class Menu;
 class TextView;
+
 
 class MenuEvent {
 public:

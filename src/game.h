@@ -5,24 +5,27 @@
 #ifndef GAME_H
 #define GAME_H
 
+#include <string>
 #include <vector>
 
 #include "controller.h"
+#include "coords.h"
+#include "direction.h"
 #include "event.h"
-#include "map.h"
 #include "observer.h"
 #include "sound.h"
 #include "tileview.h"
-#include "types.h"
 
-class Map;
-class Portal;
 class Creature;
 class Location;
+class Map;
+class MapTile;
 class MoveEvent;
 class Party;
 class PartyEvent;
-class PartyMember;
+class Portal;
+class Tile;
+
 
 typedef enum {
     VIEW_NORMAL,

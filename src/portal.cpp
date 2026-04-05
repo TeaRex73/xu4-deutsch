@@ -4,23 +4,23 @@
 
 #include "vc6.h" // Fixes things if you're using VC6, does nothing otherwise
 
+#include <cstdio>
 #include <cstring>
 
 #include "portal.h"
 
-#include "annotation.h"
 #include "city.h"
 #include "context.h"
+#include "debug.h"
 #include "dungeon.h"
 #include "event.h"
 #include "game.h"
 #include "location.h"
 #include "mapmgr.h"
-#include "names.h"
+#include "music.h"
 #include "screen.h"
 #include "settings.h"
 #include "shrine.h"
-#include "tile.h"
 
 Portal::~Portal()
 {

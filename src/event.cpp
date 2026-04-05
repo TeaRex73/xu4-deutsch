@@ -6,20 +6,19 @@
 
 #include <algorithm>
 #include <cctype>
+#include <cstdlib>
 #include <list>
 
 #include "event.h"
 
 #include "context.h"
-#include "debug.h"
-#include "location.h"
 #include "music.h"
-#include "savegame.h"
 #include "screen.h"
 #include "settings.h"
 #include "sound.h"
 #include "textview.h"
 #include "utils.h"
+
 
 std::atomic_int eventTimerGranularity(250);
 extern int quit;

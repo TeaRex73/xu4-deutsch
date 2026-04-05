@@ -13,6 +13,7 @@
 
 class ConfigElement;
 class Image;
+class MapTile;
 class Tile;
 class RGBA;
 

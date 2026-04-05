@@ -27,15 +27,10 @@
 #include <vector>
 #include <string>
 
-#include "direction.h"
-#include "types.h"
-#include "u4file.h"
-
 class Image;
-class Map;
-class Tile;
 class TileView;
 class Coords;
+
 
 #if __GNUC__
 #define PRINTF_LIKE(x, y) __attribute__((format(printf, (x), (y))))

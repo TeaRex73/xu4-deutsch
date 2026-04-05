@@ -8,20 +8,18 @@
 #include <cstdlib>
 #include <cstdio>
 #include <cstring>
+
 #include <unistd.h>
-
-#include "settings.h"
-
-#include "debug.h"
-#include "error.h"
-#include "event.h"
-#include "filesystem.h"
-#include "utils.h"
-
 #if defined(_WIN32) || defined(__CYGWIN__)
 #include <windows.h>
 #include <shlobj.h>
 #endif
+
+#include "settings.h"
+
+#include "error.h"
+#include "event.h"
+#include "filesystem.h"
 
 
 /*

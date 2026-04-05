@@ -17,16 +17,16 @@ int main(int argc, const char *argv[])
     std::FILE *in;
     if (argc != 2) {
         std::fprintf(stderr, "usage: %s party.sav\n", argv[0]);
-        exit(1);
+        return EXIT_FAILURE;
     }
     in = std::fopen(argv[1], "rb");
     if (!in) {
         std::perror(argv[1]);
-        std::exit(1);
+        return EXIT_FAILURE;
     }
     sg.read(in);
     showSaveGame(&sg);
-    return 0;
+    return EXIT_SUCCESS;
 }
 
 void showSaveGame(const SaveGame *sg)

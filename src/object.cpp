@@ -9,7 +9,6 @@
 #include "context.h"
 #include "direction.h"
 #include "map.h"
-#include "player.h"
 
 std::set<Object *> Object::all_objects;
 

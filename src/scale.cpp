@@ -4,9 +4,10 @@
 
 #include "vc6.h" // Fixes things if you're using VC6, does nothing otherwise
 
+#include "scale.h"
+
 #include "debug.h"
 #include "image.h"
-#include "scale.h"
 
 
 static Image *scalePoint(const Image *src, int scale, int);

@@ -10,9 +10,9 @@
 #include <string>
 #include <vector>
 
+#include "direction.h"
 #include "controller.h"
 #include "screen.h"
-#include "types.h"
 
 
 #define eventHandler (EventHandler::getInstance())

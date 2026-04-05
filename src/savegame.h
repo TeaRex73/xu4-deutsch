@@ -6,8 +6,7 @@
 #define SAVEGAME_H
 
 #include <cstdio>
-#include <deque>
-#include <string>
+
 
 #define PARTY_SAV_BASE_FILENAME "party.sav"
 #define MONSTERS_SAV_BASE_FILENAME "monsters.sav"
@@ -19,9 +18,6 @@
 #define MONSTERTABLE_CREATURES_SIZE 8
 #define MONSTERTABLE_OBJECTS_SIZE                       \
     (MONSTERTABLE_SIZE - MONSTERTABLE_CREATURES_SIZE)
-
-class Object;
-
 
 /**
  * The list of all weapons.  These values are used in both the

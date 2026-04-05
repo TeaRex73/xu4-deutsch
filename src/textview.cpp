@@ -5,15 +5,16 @@
 #include "vc6.h" // Fixes things if you're using VC6, does nothing otherwise
 
 #include <cstdarg>
+#include <cstdio>
 #include <cstring>
+
+#include "textview.h"
 
 #include "debug.h"
 #include "event.h"
 #include "image.h"
 #include "imagemgr.h"
 #include "settings.h"
-#include "textview.h"
-#include "utils.h"
 
 Image *TextView::charset = nullptr;
 

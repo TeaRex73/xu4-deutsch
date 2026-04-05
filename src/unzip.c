@@ -15,21 +15,12 @@ extern "C" {
 #include <stdlib.h>
 #include <string.h>
 #include <stdbool.h>
-#include "zlib.h"
+
+#include <zlib.h>
+
 #include "unzip.h"
 
-#ifdef STDC
-#include <stddef.h>
-#include <string.h>
-#include <stdlib.h>
-#endif
-#if 0
-#ifdef NO_ERRNO_H
-extern int errno;
-#else
-#include <errno.h>
-#endif
-#endif
+    
 #ifndef local
 #define local static
 #endif

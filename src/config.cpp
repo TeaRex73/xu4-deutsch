@@ -7,24 +7,17 @@
 #include <cstdio>
 #include <cstdarg>
 #include <cstdlib>
-#include <cctype>
-#include <cstring>
 
-#include <libxml/xmlmemory.h>
+#include <libxml/globals.h>
 #include <libxml/parser.h>
 #include <libxml/valid.h>
-#include <libxml/xmlIO.h>
 #include <libxml/xinclude.h>
+#include <libxml/xmlIO.h>
+#include <libxml/xmlstring.h>
 #include <libxml/xpath.h>
 
-#if 0
-// we rely on xinclude support
-#ifndef LIBXML_XINCLUDE_ENABLED
-#error "xinclude not available: libxml2 not compiled with xinclude support"
-#endif
-#endif
-
 #include "config.h"
+
 #include "error.h"
 #include "settings.h"
 #include "u4file.h"

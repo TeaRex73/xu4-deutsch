@@ -4,10 +4,15 @@
 
 #include "vc6.h" // Fixes things if you're using VC6, does nothing otherwise
 
+#include <algorithm>
+#include <list>
 #include <string>
+#include <utility>
+
 #include "dungeon.h"
 
 #include "annotation.h"
+#include "combat.h"
 #include "context.h"
 #include "debug.h"
 #include "event.h"
@@ -16,23 +21,14 @@
 #include "location.h"
 #include "mapmgr.h"
 #include "player.h"
+#include "savegame.h"
 #include "screen.h"
-#include "stats.h"
+#include "sound.h"
+#include "textcolor.h"
+#include "tile.h"
 #include "tileset.h"
+#include "types.h"
 #include "utils.h"
-
-
-/**
- * Returns true if 'map' points to a dungeon map
- */
-bool isDungeon(Map *punknown)
-{
-    if (dynamic_cast<Dungeon *>(punknown) != nullptr) {
-        return true;
-    } else {
-        return false;
-    }
-}
 
 
 Dungeon::~Dungeon()

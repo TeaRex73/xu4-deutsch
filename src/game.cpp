@@ -6,59 +6,74 @@
 
 #include <algorithm>
 #include <atomic>
-#include <cctype>
+#include <climits>
+#include <cstdio>
+#include <cstdlib>
 #include <cstring>
 #include <ctime>
+#include <deque>
+#include <list>
 #include <map>
+
 #include <unistd.h>
-#include "u4.h"
 
 #include "game.h"
 
 #include "annotation.h"
 #include "armor.h"
+#include "aura.h"
 #include "camp.h"
 #include "cheat.h"
 #include "city.h"
-#include "conversation.h"
-#include "debug.h"
-#include "dungeon.h"
 #include "combat.h"
+#include "conversation.h"
 #include "context.h"
+#include "creature.h"
 #include "death.h"
 #include "debug.h"
 #include "direction.h"
+#include "dungeon.h"
+#include "dungeonview.h"
 #include "error.h"
 #include "event.h"
 #include "filesystem.h"
+#include "image.h"
+#include "imagemgr.h"
 #include "intro.h"
 #include "item.h"
-#include "imagemgr.h"
 #include "location.h"
+#include "map.h"
 #include "mapmgr.h"
 #include "menu.h"
-#include "creature.h"
 #include "moongate.h"
 #include "movement.h"
 #include "music.h"
 #include "names.h"
+#include "object.h"
 #include "person.h"
 #include "player.h"
 #include "portal.h"
+#if 0
 #include "progress_bar.h"
+#endif
 #include "savegame.h"
 #include "screen.h"
+#include "script.h"
 #include "settings.h"
 #include "shrine.h"
 #include "sound.h"
 #include "spell.h"
 #include "stats.h"
+#include "textcolor.h"
+#include "textview.h"
+#include "tile.h"
 #include "tilemap.h"
 #include "tileset.h"
+#include "types.h"
 #include "utils.h"
-#include "script.h"
+#include "u4.h"
 #include "weapon.h"
-#include "dungeonview.h"
+
 
 GameController *game = nullptr;
 

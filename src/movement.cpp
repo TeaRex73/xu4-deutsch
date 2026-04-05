@@ -9,19 +9,22 @@
 #include "annotation.h"
 #include "combat.h"
 #include "context.h"
+#include "controller.h"
+#include "coords.h"
+#include "creature.h"
 #include "debug.h"
 #include "dungeon.h"
 #include "event.h"
 #include "location.h"
-#include "creature.h"
 #include "object.h"
 #include "player.h"
 #include "savegame.h"
 #include "tile.h"
+#include "types.h"
 #include "utils.h"
 
-std::atomic_bool collisionOverride(false);
 
+std::atomic_bool collisionOverride(false);
 
 /**
  * Attempt to move the avatar in the given direction.  User event

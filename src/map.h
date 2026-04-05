@@ -5,8 +5,6 @@
 #ifndef MAP_H
 #define MAP_H
 
-#include <algorithm>
-#include <functional>
 #include <list>
 #include <map>
 #include <string>
@@ -18,8 +16,15 @@
 #include "object.h"
 #include "savegame.h"
 #include "types.h"
-#include "u4file.h"
 
+class AnnotationMgr;
+class Location;
+class Map;
+class MapCoords;
+class Tile;
+class TileMap;
+class Tileset;
+class Portal;
 
 
 #define MAP_IS_OOB(mapptr, c)                               \
@@ -29,15 +34,6 @@
      || ((c).y) >= (static_cast<int>((mapptr)->height))     \
      || ((c).z) < 0                                         \
      || ((c).z) >= (static_cast<int>((mapptr)->levels)))
-
-class AnnotationMgr;
-class Map;
-class Location;
-class Person;
-class Creature;
-class TileMap;
-class Tileset;
-class Portal;
 
 typedef std::vector<Portal *> PortalList;
 typedef std::list<int> CompressedChunkList;
@@ -145,10 +141,8 @@ public:
         const class Map *map = nullptr,
         Direction last = DIR_NONE
     ) const;
-    int movementDistance(
-        const MapCoords &c, const class Map *map = nullptr
-    ) const;
-    int distance(const MapCoords &c, const class Map *map = nullptr) const;
+    int movementDistance(const MapCoords &c, const class Map *map) const;
+    int distance(const MapCoords &c, const class Map *map) const;
     static MapCoords nowhere;
     unsigned int active_x, active_y;
 };

@@ -5,6 +5,7 @@
 #ifndef FILESYSTEM_H
 #define FILESYSTEM_H
 
+#include <cstdio>
 #include <list>
 #include <string>
 

@@ -12,20 +12,25 @@
 
 #include "annotation.h"
 #include "context.h"
+#include "controller.h"
 #include "combat.h"
 #include "creature.h"
-#include "dungeon.h"
 #include "event.h"
 #include "game.h"
 #include "map.h"
 #include "object.h"
-#include "savegame.h"
+#include "player.h"
 #include "settings.h"
+#include "tile.h"
 #include "tileset.h"
 
-Location *locationPush(Location *stack, Location *loc);
-Location *locationPop(Location **stack);
 
+/* FIXME: locationPush is never used, and locationPop only
+   in locationFree. Are they good for anything? */
+#if 0
+static Location *locationPush(Location *stack, Location *loc);
+#endif
+static Location *locationPop(Location **stack);
 
 /**
  * Add a new location to the stack, or
@@ -236,7 +241,7 @@ TileId Location::getReplacementTile(
              && searchQueue.size() > 0
              && searchQueue.size() < 64);
     /* couldn't find a tile, give it the classic default */
-    if (isDungeon(map)) {
+    if (map->isDungeonMap()) {
         return map->tileset->getByName("brick_floor")->getId();
     } else {
         return map->tileset->getByName("grass")->getId();
@@ -290,20 +295,21 @@ void locationFree(Location **stack)
 }
 
 
+#if 0
 /**
  * Push a location onto the stack
  */
-Location *locationPush(Location *stack, Location *loc)
+static Location *locationPush(Location *stack, Location *loc)
 {
     loc->prev = stack;
     return loc;
 }
-
+#endif
 
 /**
  * Pop a location off the stack
  */
-Location *locationPop(Location **stack)
+static Location *locationPop(Location **stack)
 {
     Location *loc = *stack;
     *stack = (*stack)->prev;

@@ -4,25 +4,31 @@
 
 #include "vc6.h" // Fixes things if you're using VC6, does nothing otherwise
 
-#include <cstring>
+#include <cstdlib>
 
 #include "player.h"
 
 #include "annotation.h"
 #include "armor.h"
-#include "combat.h"
 #include "context.h"
 #include "debug.h"
 #include "game.h"
 #include "location.h"
+#include "map.h"
 #include "mapmgr.h"
 #include "names.h"
+#include "object.h"
 #include "settings.h"
+#include "sound.h"
+#include "tile.h"
 #include "tilemap.h"
 #include "tileset.h"
 #include "types.h"
 #include "utils.h"
 #include "weapon.h"
+
+class Coords;
+
 
 bool isPartyMember(Object *punknown)
 {
@@ -542,7 +548,9 @@ bool PartyMember::applyDamage(int damage, bool)
     }
     player->hp = newHp;
     notifyOfChange();
-    if (isCombatMap(c->location->map) && (getStatus() == STAT_DEAD)) {
+    if (c->location->map
+        && c->location->map->isCombatMap()
+        && (getStatus() == STAT_DEAD)) {
         if (party) {
             const Coords &p = getCoords();
             Map *map = getMap();

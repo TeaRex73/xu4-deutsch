@@ -8,10 +8,10 @@
 #include <string>
 #include <vector>
 
-#include "savegame.h"
-
-
 class ConfigElement;
+enum ArmorType: unsigned short;
+enum ClassType: unsigned char;
+
 
 class Armor {
 public:

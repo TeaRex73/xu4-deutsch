@@ -1,8 +1,11 @@
+#include <setjmp.h>
 #include <stdio.h>
 #include <stdlib.h>
+
 #include <png.h>
 
 #include "pngconv.h"
+
 
 static void *my_malloc(size_t size);
 static void setBWPalette(png_color *palette);

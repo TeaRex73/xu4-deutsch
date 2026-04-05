@@ -10,12 +10,7 @@
 #include <string>
 #include <vector>
 
-#include "utils.h"
-
-
 class Debug;
-class Person;
-class Script;
 
 
 /**

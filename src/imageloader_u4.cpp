@@ -4,16 +4,20 @@
 
 #include "vc6.h" // Fixes things if you're using VC6, does nothing otherwise
 
+#include <cstdlib>
+#include <string>
 #include <vector>
+
+#include "imageloader_u4.h"
 
 #include "config.h"
 #include "debug.h"
 #include "error.h"
 #include "image.h"
 #include "imageloader.h"
-#include "imageloader_u4.h"
-#include "rle.h"
 #include "lzw/u4decode.h"
+#include "rle.h"
+#include "u4file.h"
 
 ImageLoader *U4RawImageLoader::instance =
     ImageLoader::registerLoader(new U4RawImageLoader, "image/x-u4raw");

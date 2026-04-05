@@ -4,17 +4,18 @@
 
 #include "vc6.h" // Fixes things if you're using VC6, does nothing otherwise
 
+#include "tileview.h"
+
 #include "debug.h"
+#include "direction.h"
 #include "image.h"
-#include "imagemgr.h"
 #include "settings.h"
 #include "screen.h"
 #include "tile.h"
 #include "tileanim.h"
 #include "tileset.h"
-#include "tileview.h"
+#include "types.h"
 #include "u4.h"
-#include "error.h"
 
 TileView::TileView(int x, int y, int columns, int rows)
     :View(x, y, columns * TILE_WIDTH, rows * TILE_HEIGHT),

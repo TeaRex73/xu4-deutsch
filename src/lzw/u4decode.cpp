@@ -19,12 +19,14 @@
  */
 #include "../vc6.h" // Fixes things if you're using VC6, does nothing otherwise
 
-#include "lzw.h"
 #include <cstdlib>
 #include <cstdio>
 #include <cstring>
 
 #include "u4decode.h"
+
+#include "lzw.h"
+
 
 /*
  * Loads a file, decompresses it (from memory to memory), and writes the

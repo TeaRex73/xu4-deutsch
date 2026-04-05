@@ -11,8 +11,10 @@
 #include <cstring>
 
 #include "armor.h"
+#include "aura.h"
 #include "context.h"
 #include "debug.h"
+#include "event.h"
 #include "menu.h"
 #include "names.h"
 #include "player.h"

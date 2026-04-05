@@ -6,7 +6,6 @@
 
 #include <string>
 #include <cstdlib>
-#include <cstring>
 
 #include "weapon.h"
 

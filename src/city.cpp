@@ -4,17 +4,18 @@
 
 #include "vc6.h" // Fixes things if you're using VC6, does nothing otherwise
 
+#include <deque>
 #include <string>
-#include <typeinfo>
+#include <vector>
+
 #include "city.h"
 
 #include "context.h"
 #include "conversation.h"
-#include "creature.h"
 #include "object.h"
 #include "person.h"
 #include "player.h"
-
+#include "types.h"
 
 City::City()
     :Map(),

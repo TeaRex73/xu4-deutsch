@@ -5,11 +5,13 @@
 #ifndef SPELL_H
 #define SPELL_H
 
+#include <string>
+
 #include "context.h"
 #include "location.h"
-#include "map.h"
 #include "savegame.h"
 #include "sound.h"
+
 
 enum SpellCastError {
     CASTERR_NOERROR, /* success */

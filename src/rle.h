@@ -7,8 +7,10 @@
 
 #ifdef __cplusplus
 extern "C" {
-#define STDFILE FILE
+#include <cstdio>
+#define STDFILE std::FILE
 #else
+#include <stdio.h>
 #define STDFILE FILE
 #endif
 

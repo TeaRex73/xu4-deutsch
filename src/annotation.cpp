@@ -5,15 +5,9 @@
 #include "vc6.h" // Fixes things if you're using VC6, does nothing otherwise
 
 #include <algorithm>
+#include <cstdio>
 
 #include "annotation.h"
-
-#include "context.h"
-#include "debug.h"
-#include "error.h"
-#include "event.h"
-#include "map.h"
-#include "settings.h"
 
 
 /**

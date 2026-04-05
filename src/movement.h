@@ -10,8 +10,6 @@
 #include "direction.h"
 #include "map.h"
 
-class Object;
-class Map;
 class Tile;
 
 enum SlowedType {

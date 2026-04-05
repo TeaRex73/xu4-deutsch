@@ -5,13 +5,13 @@
 #ifndef WEAPON_H
 #define WEAPON_H
 
-#include <memory>
 #include <string>
 #include <vector>
-#include "savegame.h"
-
 
 class ConfigElement;
+enum ClassType : unsigned char;
+enum WeaponType : unsigned short;
+
 
 class Weapon {
 public:

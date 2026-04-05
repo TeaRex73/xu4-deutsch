@@ -7,10 +7,14 @@
 
 #include <vector>
 
+#include "direction.h"
 #include "map.h"
 #include "movement.h"
 #include "observable.h"
 #include "types.h"
+
+class Tile;
+
 
 typedef enum {
     CTX_WORLDMAP = 0x0001,

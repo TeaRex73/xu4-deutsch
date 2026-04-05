@@ -10,8 +10,6 @@
 #include "coords.h"
 #include "types.h"
 
-class Annotation;
-
 
 /**
  * Annotation are updates to a map.

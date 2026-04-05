@@ -5,10 +5,12 @@
 #ifndef MAPMGR_H
 #define MAPMGR_H
 
+#include <string>
 #include <vector>
 #include <utility>
 
 #include "map.h"
+#include "types.h"
 
 class City;
 class ConfigElement;

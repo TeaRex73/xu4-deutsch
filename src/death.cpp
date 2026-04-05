@@ -6,13 +6,11 @@
 
 #include <atomic>
 #include <ctime>
-#include "u4.h"
 
 #include "death.h"
 
+#include "aura.h"
 #include "map.h"
-#include "annotation.h"
-#include "city.h"
 #include "context.h"
 #include "event.h"
 #include "game.h"

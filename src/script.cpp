@@ -6,31 +6,37 @@
 
 #include <cctype>
 #include <cstdio>
+#include <cstdlib>
 #include <cstring>
 #include <map>
 #include <string>
+
+#include <libxml/globals.h>
+#include <libxml/xmlstring.h>
+
 #include "script.h"
 
-#include "armor.h"
 #include "camp.h"
+#include "combat.h"
 #include "context.h"
 #include "conversation.h"
-#include "debug.h"
 #include "error.h"
 #include "event.h"
 #include "filesystem.h"
 #include "game.h"
+#include "location.h"
+#include "map.h"
 #include "music.h"
 #include "player.h"
 #include "savegame.h"
 #include "screen.h"
-#include "settings.h"
 #include "spell.h"
+#include "sound.h"
 #include "stats.h"
+#include "tile.h"
 #include "tileset.h"
-#include "u4file.h"
+#include "types.h"
 #include "utils.h"
-#include "weapon.h"
 #include "xml.h"
 
 

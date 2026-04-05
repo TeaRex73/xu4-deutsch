@@ -6,10 +6,7 @@
 
 #include "savegame.h"
 
-#include <cstring>
 #include "u4io.h"
-#include "object.h"
-#include "types.h"
 
 
 bool SaveGame::write(std::FILE *f) const

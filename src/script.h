@@ -5,13 +5,13 @@
 #ifndef SCRIPT_H
 #define SCRIPT_H
 
+#include <cstdio>
 #include <list>
 #include <map>
 #include <string>
 #include <vector>
 
-#include "types.h"
-#include "xml.h"
+#include <libxml/parser.h>
 
 
 /**

@@ -5,12 +5,11 @@
 #ifndef OBJECT_H
 #define OBJECT_H
 
-#include <cstdlib>
 #include <deque>
 #include <set>
+
 #include "coords.h"
 #include "direction.h"
-#include "debug.h"
 #include "tile.h"
 #include "types.h"
 

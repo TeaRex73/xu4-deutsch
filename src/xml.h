@@ -6,7 +6,7 @@
 #define XML_H
 
 #include <string>
-#include <libxml/xmlmemory.h>
+#include <libxml/xmlstring.h>
 #include <libxml/parser.h>
 
 xmlDocPtr xmlParse(const char *filename);

@@ -10,9 +10,8 @@
 
 #include "config.h"
 #include "debug.h"
+#include "direction.h"
 #include "error.h"
-#include "screen.h"
-#include "settings.h"
 #include "tile.h"
 #include "tilemap.h"
 

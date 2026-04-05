@@ -7,16 +7,18 @@
 #include <string>
 #include <vector>
 
+#include "dialogueloader_lb.h"
+
 #include "context.h"
 #include "conversation.h"
-#include "dialogueloader_lb.h"
+#include "debug.h"
 #include "player.h"
 #include "savegame.h"
 #include "u4file.h"
 
 
-Response *lordBritishGetHelp(const DynamicResponse *resp);
-Response *lordBritishGetIntro(const DynamicResponse *resp);
+static Response *lordBritishGetHelp(const DynamicResponse *resp);
+static Response *lordBritishGetIntro(const DynamicResponse *resp);
 DialogueLoader *U4LBDialogueLoader::instance = DialogueLoader::registerLoader(
     new U4LBDialogueLoader, "application/x-u4lbtlk"
 );
@@ -73,22 +75,6 @@ Dialogue *U4LBDialogueLoader::load(void *)
             dlg->addKeyword("was", new Response(lbText[i] + "\n"));
         }
     }
-    /* since the original game files are a bit sketchy on
-       the 'abyss' keyword,
-       let's handle it here just to be safe :).
-       Or not, since it's fixed in the German files.
-    dlg->addKeyword(
-        "abgrund",
-        new Response(
-            "\n\nEr sagt:\nDer Gro~e Stygische Abgrund ist die dunkelste "
-            "Nische des B|sen, die in Britannia }brig ist.\n\nMan sagt, "
-            "da~ in den tiefsten H|hlungen des Abgrundes die Kammer des "
-            "Kodexes liegt!\n\nMan sagt auch, da~ nur eine Person h|chster "
-            "Tugend diese Kammer betreten darf, so jemand wie ein "
-            "Avatar!!!\n"
-        )
-    );
-    */
     Response *heal = new Response("Er sagt:\nMir geht es gut, danke.");
     heal->add(ResponsePart::HEALCONFIRM);
     dlg->addKeyword("gesundheit", heal);
@@ -127,7 +113,7 @@ Dialogue *U4LBDialogueLoader::load(void *)
  * one quest item is complete, Lord British provides some direction to
  * the next one.
  */
-Response *lordBritishGetHelp(const DynamicResponse *)
+static Response *lordBritishGetHelp(const DynamicResponse *)
 {
     int v;
     bool fullAvatar, partialAvatar;
@@ -245,7 +231,7 @@ Response *lordBritishGetHelp(const DynamicResponse *)
     return result;
 } // lordBritishGetHelp
 
-Response *lordBritishGetIntro(const DynamicResponse *)
+static Response *lordBritishGetIntro(const DynamicResponse *)
 {
     Response *intro = new Response("");
     intro->add(ResponsePart::STARTMUSIC_LB);

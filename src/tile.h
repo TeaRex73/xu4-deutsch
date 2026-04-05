@@ -7,17 +7,15 @@
 
 #include <string>
 #include <vector>
-#include <cstdio>
 
 #include "direction.h"
-#include "types.h"
 #include "tileset.h"
-
+#include "types.h"
 
 class ConfigElement;
 class Image;
-class Tileset;
 class TileAnim;
+
 
 /* attr masks */
 #define MASK_SHIP 0x0001

@@ -5,22 +5,24 @@
 #include "vc6.h" // Fixes things if you're using VC6, does nothing otherwise
 
 #include <algorithm>
-
-#include "u4.h"
+#include <cstdlib>
+#include <deque>
+#include <iterator>
 
 #include "map.h"
 
 #include "annotation.h"
 #include "context.h"
+#include "creature.h"
 #include "debug.h"
+#include "location.h"
 #include "movement.h"
-#include "person.h"
 #include "player.h"
 #include "portal.h"
-#include "tileset.h"
-#include "tilemap.h"
-#include "utils.h"
 #include "settings.h"
+#include "tile.h"
+#include "tilemap.h"
+#include "tileset.h"
 
 /**
  * MapCoords Class Implementation
@@ -212,7 +214,7 @@ int MapCoords::movementDistance(const MapCoords &c, const Map *map) const
 {
     int dx, dy;
     if (z != c.z) return -1;
-    if (!map || map->border_behavior == Map::BORDER_WRAP) {
+    if (map && map->border_behavior == Map::BORDER_WRAP) {
         dx = std::min(
             std::abs(x - c.x),
             static_cast<int>(map->width) - std::abs(x - c.x)
@@ -238,7 +240,7 @@ int MapCoords::distance(const MapCoords &c, const Map *map) const
 {
     int dx, dy;
     if (z != c.z) return 256 * std::abs(z - c.z);
-    if (!map || map->border_behavior == Map::BORDER_WRAP) {
+    if (map && map->border_behavior == Map::BORDER_WRAP) {
         dx = std::min(
             std::abs(x - c.x),
             static_cast<int>(map->width) - std::abs(x - c.x)
@@ -903,7 +905,7 @@ bool Map::fillMonsterTable(const Location *loc)
         const MapCoords &ma = a->getCoords();
         const MapCoords &mb = b->getCoords();
         const Coords &coords = loc->coords;
-        return ma.distance(coords) < mb.distance(coords);
+        return ma.distance(coords, loc->map) < mb.distance(coords, loc->map);
     };
 
     ObjectDeque::const_iterator current;

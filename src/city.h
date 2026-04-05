@@ -9,7 +9,7 @@
 #include <string>
 #include <vector>
 
-
+class Coords;
 class Person;
 class Dialogue;
 

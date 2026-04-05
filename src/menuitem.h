@@ -9,7 +9,6 @@
 #include <set>
 #include <vector>
 
-
 class MenuEvent;
 
 

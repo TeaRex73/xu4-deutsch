@@ -2,21 +2,15 @@
  * $Id$
  */
 
-#define SLACK_ON_SDL_AGNOSTICISM
-#ifdef SLACK_ON_SDL_AGNOSTICISM
-#include <SDL.h>
-#endif
-
 #include "vc6.h" // Fixes things if you're using VC6, does nothing otherwise
 
 #include <algorithm>
 #include <cstdint>
 #include <cstdio>
-#include <cstdlib>
 #include <cstring>
-#include <unistd.h>
 
-#include "u4.h"
+#include <SDL.h>
+#include <unistd.h>
 
 #include "intro.h"
 
@@ -26,17 +20,22 @@
 #include "filesystem.h"
 #include "imagemgr.h"
 #include "menu.h"
+#include "menuitem.h"
 #include "music.h"
-#include "sound.h"
 #include "player.h"
 #include "savegame.h"
 #include "screen.h"
 #include "settings.h"
-#include "shrine.h"
-#include "tileset.h"
+#include "sound.h"
+#include "textcolor.h"
+#include "tile.h"
 #include "tilemap.h"
+#include "tileset.h"
+#include "u4.h"
 #include "u4file.h"
 #include "utils.h"
+#include "view.h"
+
 
 static int getTicks();
 
@@ -1821,13 +1820,11 @@ void IntroController::updateInputMenu(const MenuEvent &event)
             KeyHandler::setKeyRepeat(
                 settingsChanged.keydelay, settingsChanged.keyinterval
             );
-#ifdef SLACK_ON_SDL_AGNOSTICISM
             if (settings.mouseOptions.enabled) {
                 SDL_ShowCursor(SDL_ENABLE);
             } else {
                 SDL_ShowCursor(SDL_DISABLE);
             }
-#endif
             break;
         case CANCEL:
             // discard settings
@@ -2385,21 +2382,10 @@ void IntroController::getTitleSourceData()
     info->image = scaled;
 } // IntroController::getTitleSourceData
 
-#ifdef SLACK_ON_SDL_AGNOSTICISM
 static int getTicks()
 {
     return SDL_GetTicks();
 }
-#else
-
-static int getTicks()
-{
-    static int ticks = 0;
-    ticks += 1000;
-    return ticks;
-}
-#endif
-
 
 //
 // Update the title element, drawing the appropriate frame of animation

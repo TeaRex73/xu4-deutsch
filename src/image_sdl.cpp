@@ -4,22 +4,21 @@
 
 #include "vc6.h" // Fixes things if you're using VC6, does nothing otherwise
 
+#include <algorithm>
 #include <cstdint>
 #include <cstdlib>
-#include <memory>
 #include <list>
+#include <string>
 #include <utility>
-
-#include <cstdarg>
 
 #include <SDL.h>
 
 #include "debug.h"
-#include "image.h"
-#include "imagemgr.h"
-#include "screen.h"
-#include "settings.h"
 #include "error.h"
+#include "image.h"
+#include "screen.h"
+#include "textcolor.h"
+
 
 Image::Image()
     :w(0),

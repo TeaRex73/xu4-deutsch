@@ -2,6 +2,25 @@
  * $Id$
  */
 
+#include "vc6.h" // Fixes things if you're using VC6, does nothing otherwise
+
+#include <atomic>
+#include <cstdio>
+#include <cstdlib>
+#include <string>
+
+#include <SDL.h>
+
+#include "cursors.h"
+#include "error.h"
+#include "image.h"
+#include "settings.h"
+#include "scale.h"
+#include "screen.h"
+#include "u4.h"
+#include "u4_sdl.h"
+
+
 #ifdef RASB_PI
 #  define MY_WIDTH 416
 #  ifdef PAL_TV
@@ -18,44 +37,12 @@
 #  undef FIXUP
 #endif
 
-#include "vc6.h" // Fixes things if you're using VC6, does nothing otherwise
-
-#include <algorithm>
-#include <atomic>
-#include <cstdio>
-#include <cstdlib>
-#include <functional>
-#include <map>
-#include <vector>
-#include <SDL.h>
-
-#include "config.h"
-#include "context.h"
-#include "cursors.h"
-#include "debug.h"
-#include "dungeonview.h"
-#include "error.h"
-#include "event.h"
-#include "image.h"
-#include "imagemgr.h"
-#include "intro.h"
-#include "savegame.h"
-#include "settings.h"
-#include "scale.h"
-#include "screen.h"
-#include "tileanim.h"
-#include "tileset.h"
-#include "u4.h"
-#include "u4_sdl.h"
-#include "u4file.h"
-#include "utils.h"
-
-SDL_Cursor *cursors[5];
-Scaler filterScaler;
-SDL_Cursor *screenInitCursor(const char *const xpm[]);
+static SDL_Cursor *cursors[5];
+static Scaler filterScaler;
+static SDL_Cursor *screenInitCursor(const char *const xpm[]);
 extern bool verbose;
-void screenRefreshThreadInit();
-void screenRefreshThreadEnd();
+static void screenRefreshThreadInit();
+static void screenRefreshThreadEnd();
 void screenInit_sys();
 void screenDelete_sys();
 static int screenRefreshThreadFunction(void *);

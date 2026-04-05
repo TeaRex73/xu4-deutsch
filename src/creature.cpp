@@ -7,14 +7,17 @@
 #include <algorithm>
 #include <climits>
 #include <cstdlib>
-#include <cstring>
+#include <deque>
 
 #include "creature.h"
+
+#include "aura.h"
 #include "combat.h"
 #include "config.h"
 #include "context.h"
+#include "coords.h"
 #include "debug.h"
-#include "error.h"
+#include "direction.h"
 #include "game.h" /* required by specialAction and specialEffect functions */
 #include "location.h"
 #include "map.h"
@@ -22,9 +25,12 @@
 #include "savegame.h"
 #include "screen.h" /* FIXME: remove dependence on this */
 #include "settings.h"
+#include "sound.h"
 #include "textcolor.h" /* required to change color of screen message text */
+#include "tile.h"
 #include "tileset.h"
 #include "utils.h"
+
 
 CreatureMgr *CreatureMgr::instance = nullptr;
 
@@ -864,9 +870,9 @@ Creature *Creature::nearestOpponent(int *dist, bool ranged)
             /* if ranged, get the distance using diagonals,
                otherwise get movement distance */
             if (ranged) {
-                d = objCoords.distance(getCoords());
+                d = objCoords.distance(getCoords(), map);
             } else {
-                d = objCoords.movementDistance(getCoords());
+                d = objCoords.movementDistance(getCoords(), map);
             }
             if (d < leastDist) {
                 opponent = dynamic_cast<Creature *>(*i);

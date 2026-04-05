@@ -5,11 +5,13 @@
 #include "vc6.h" // Fixes things if you're using VC6, does nothing otherwise
 
 #include <algorithm>
+#include <set>
 
 #include "menu.h"
 
 #include "error.h"
 #include "event.h"
+#include "textcolor.h"
 #include "textview.h"
 
 Menu::Menu()

@@ -4,16 +4,19 @@
 
 #include "vc6.h" // Fixes things if you're using VC6, does nothing otherwise
 
-#include "u4.h"
+#include <algorithm>
+#include <list>
+#include <vector>
 
 #include "spell.h"
 
-#include <algorithm>
-#include <cstring>
-
 #include "annotation.h"
+#include "aura.h"
 #include "combat.h"
 #include "context.h"
+#include "controller.h"
+#include "coords.h"
+#include "creature.h"
 #include "debug.h"
 #include "direction.h"
 #include "dungeon.h"
@@ -22,17 +25,20 @@
 #include "location.h"
 #include "map.h"
 #include "mapmgr.h"
-#include "creature.h"
 #include "moongate.h"
+#include "music.h"
 #include "player.h"
 #include "screen.h"
 #include "settings.h"
 #include "tile.h"
 #include "tileset.h"
+#include "types.h"
+#include "u4.h"
 #include "utils.h"
 
+
 SpellEffectCallback spellEffectCallback = nullptr;
-CombatController *spellCombatController();
+static CombatController *spellCombatController();
 static void spellMagicAttack(
     const std::string &tilename, Direction dir, int minDamage, int maxDamage
 );

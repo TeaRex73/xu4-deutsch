@@ -6,10 +6,8 @@
 
 #include "direction.h"
 
-#include <cstdlib>
 #include "debug.h"
 #include "event.h"
-#include "settings.h"
 #include "utils.h"
 
 

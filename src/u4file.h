@@ -5,11 +5,13 @@
 #ifndef U4FILE_H
 #define U4FILE_H
 
-#include "vc6.h" // Fixes things if you're using VC6, does nothing otherwise
+#include <cstddef>
+#include <list>
 #include <map>
 #include <string>
 #include <vector>
-#include <list>
+
+class U4PATH;
 
 
 /**

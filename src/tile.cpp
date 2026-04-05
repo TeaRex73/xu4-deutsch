@@ -4,20 +4,18 @@
 
 #include "vc6.h" // Fixes things if you're using VC6, does nothing otherwise
 
+#include <cstddef>
+
 #include "tile.h"
 
 #include "config.h"
 #include "context.h"
-#include "creature.h"
 #include "error.h"
 #include "image.h"
 #include "imagemgr.h"
-#include "location.h"
 #include "settings.h"
 #include "tileanim.h"
-#include "tilemap.h"
 #include "tileset.h"
-#include "utils.h"
 
 TileId Tile::nextId = 0;
 

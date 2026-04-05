@@ -6,11 +6,13 @@
 #define PORTAL_H
 
 #include <string>
+
 #include "context.h"
 #include "map.h"
+#include "types.h"
 
-class Map;
 class Location;
+class Portal;
 
 typedef enum {
     ACTION_NONE = 0x0,

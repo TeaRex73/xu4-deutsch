@@ -5,16 +5,16 @@
 #include "vc6.h" // Fixes things if you're using VC6, does nothing otherwise
 
 #include <vector>
-#include <typeinfo>
+
+#include "tileanim.h"
 
 #include "config.h"
 #include "direction.h"
 #include "image.h"
 #include "screen.h"
-#include "tileanim.h"
-#include "u4.h"
-#include "utils.h"
 #include "tile.h"
+#include "types.h"
+#include "utils.h"
 
 
 TileAnimTransform *TileAnimTransform::create(const ConfigElement &conf)

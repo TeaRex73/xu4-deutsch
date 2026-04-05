@@ -1,8 +1,9 @@
 #include <vector>
 
-using std::vector;
+namespace U6Decode
+{
 
-class U6Decode::Stack {
+class Stack {
 public:
     Stack()
         :stack()
@@ -49,5 +50,7 @@ public:
 
 private:
     static const unsigned int stack_size = 10000;
-    vector<unsigned char> stack;
+    std::vector<unsigned char> stack;
 };
+
+}

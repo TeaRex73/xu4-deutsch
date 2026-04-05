@@ -5,11 +5,14 @@
 #ifndef DUNGEON_H
 #define DUNGEON_H
 
+#include <string>
 #include <vector>
 
-#include "combat.h"
 #include "map.h"
-#include "types.h"
+
+class CombatMap;
+class MapTile;
+
 
 #define DNGROOM_NTRIGGERS 4
 
@@ -152,6 +155,5 @@ void dungeonSearch();
 void dungeonDrinkFountain();
 void dungeonTouchOrb();
 bool dungeonHandleTrap(TrapType trap);
-bool isDungeon(Map *punknown);
 
 #endif // ifndef DUNGEON_H

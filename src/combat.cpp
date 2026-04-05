@@ -6,12 +6,15 @@
 
 #include <algorithm>
 #include <ctime>
+#include <deque>
 #include <map>
-#include "u4.h"
+#include <string>
+#include <vector>
 
 #include "combat.h"
 
 #include "annotation.h"
+#include "aura.h"
 #include "context.h"
 #include "creature.h"
 #include "death.h"
@@ -23,30 +26,21 @@
 #include "location.h"
 #include "mapmgr.h"
 #include "movement.h"
+#include "music.h"
 #include "names.h"
 #include "object.h"
 #include "player.h"
 #include "portal.h"
 #include "screen.h"
 #include "settings.h"
-#include "spell.h"
+#include "sound.h"
 #include "stats.h"
+#include "textcolor.h"
+#include "tile.h"
 #include "tileset.h"
+#include "u4.h"
 #include "utils.h"
 #include "weapon.h"
-
-
-/**
- * Returns true if 'map' points to a Combat Map
- */
-bool isCombatMap(Map *punknown)
-{
-    if (dynamic_cast<CombatMap *>(punknown) != nullptr) {
-        return true;
-    } else {
-        return false;
-    }
-}
 
 
 /**
@@ -60,7 +54,7 @@ bool isCombatMap(Map *punknown)
 CombatMap *getCombatMap(Map *punknown)
 {
     Map *m = punknown ? punknown : c->location->map;
-    if (!isCombatMap(m)) {
+    if (!m || !m->isCombatMap()) {
         return nullptr;
     } else {
         return dynamic_cast<CombatMap *>(m);

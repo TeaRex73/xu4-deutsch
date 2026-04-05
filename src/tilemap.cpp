@@ -8,13 +8,12 @@
 #include <vector>
 
 #include "tilemap.h"
-#include "tile.h"
 
 #include "config.h"
 #include "debug.h"
 #include "error.h"
+#include "tile.h"
 #include "tileset.h"
-#include "utils.h"
 
 Debug dbg("debug/tilemap.txt", "TileMap");
 

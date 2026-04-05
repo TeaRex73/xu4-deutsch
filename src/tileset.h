@@ -7,15 +7,14 @@
 
 #include <string>
 #include <map>
-#include <map>
-#include "types.h"
 
+#include "types.h"
 
 class ConfigElement;
 class Tile;
 
-typedef std::map<std::string, class TileRule *> TileRuleMap;
 
+typedef std::map<std::string, class TileRule *> TileRuleMap;
 
 /**
  * TileRule class

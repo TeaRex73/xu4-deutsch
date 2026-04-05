@@ -7,27 +7,31 @@
 #include <string>
 #include <vector>
 
-#include "u4.h"
-
 #include "shrine.h"
 
 #include "annotation.h"
 #include "context.h"
+#include "coords.h"
+#include "creature.h"
+#include "direction.h"
 #include "event.h"
 #include "game.h"
 #include "imagemgr.h"
 #include "location.h"
 #include "mapmgr.h"
-#include "creature.h"
 #include "music.h"
 #include "names.h"
+#include "object.h"
 #include "player.h"
 #include "portal.h"
 #include "screen.h"
 #include "settings.h"
 #include "sound.h"
+#include "tile.h"
 #include "tileset.h"
 #include "types.h"
+#include "u4.h"
+#include "u4file.h"
 #include "utils.h"
 
 

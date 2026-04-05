@@ -8,31 +8,41 @@
 #include <cstdarg>
 #include <cfloat>
 #include <cstring>
-#include "u4.h"
+#include <list>
+#include <map>
+#include <utility>
 
 #include "screen.h"
 
 #include "config.h"
 #include "context.h"
+#include "coords.h"
 #include "debug.h"
+#include "direction.h"
 #include "dungeonview.h"
 #include "error.h"
 #include "event.h"
 #include "game.h"
 #include "intro.h"
+#include "image.h"
 #include "imagemgr.h"
 #include "location.h"
+#include "map.h"
 #include "names.h"
-#include "object.h"
-#include "player.h"
 #include "savegame.h"
 #include "settings.h"
 #include "textcolor.h"
+#include "textview.h"
+#include "tile.h"
 #include "tileanim.h"
 #include "tileset.h"
 #include "tileview.h"
-#include "annotation.h"
+#include "types.h"
+#include "u4.h"
+#include "u4file.h"
 #include "utils.h"
+#include "view.h"
+
 
 enum LayoutType {
     LAYOUT_STANDARD,
@@ -67,16 +77,16 @@ static void screenShowGemTile(
     const Layout *layout, Map *map, MapTile t, bool focus, int x, int y
 );
 static Layout *screenGetGemLayout(const Map *map);
-std::vector<Layout *> layouts;
-std::vector<TileAnimSet *> tileanimSets;
-std::vector<std::string> gemLayoutNames;
-std::vector<std::string> filterNames;
-std::vector<std::string> lineOfSightStyles;
-Layout *gemlayout = nullptr;
-std::map<std::string, int> dungeonTileChars;
+static std::vector<Layout *> layouts;
+static std::vector<TileAnimSet *> tileanimSets;
+static std::vector<std::string> gemLayoutNames;
+static std::vector<std::string> filterNames;
+static std::vector<std::string> lineOfSightStyles;
+static Layout *gemlayout = nullptr;
+static std::map<std::string, int> dungeonTileChars;
 TileAnimSet *tileanims = nullptr;
-ImageInfo *charsetInfo = nullptr;
-ImageInfo *gemTilesInfo = nullptr;
+static ImageInfo *charsetInfo = nullptr;
+static ImageInfo *gemTilesInfo = nullptr;
 static void screenFindLineOfSight(
     std::vector<MapTile> viewportTiles[VIEWPORT_W][VIEWPORT_H]
 );
@@ -86,13 +96,13 @@ static void screenFindLineOfSightDOS(
 static void screenFindLineOfSightEnhanced(
     std::vector<MapTile> viewportTiles[VIEWPORT_W][VIEWPORT_H]
 );
-int screenNeedPrompt = 1;
+static int screenNeedPrompt = 1;
 std::atomic_int screenCurrentCycle(0);
-int screenCursorX = 0;
-int screenCursorY = 0;
-int screenCursorStatus = 0;
-int screenCursorEnabled = 1;
-int screenLos[VIEWPORT_W][VIEWPORT_H];
+static int screenCursorX = 0;
+static int screenCursorY = 0;
+static int screenCursorStatus = 0;
+static int screenCursorEnabled = 1;
+static int screenLos[VIEWPORT_W][VIEWPORT_H];
 static const int BufferSize = 1024;
 extern bool verbose;
 std::atomic_bool screenMoving;

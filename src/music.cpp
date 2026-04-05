@@ -3,25 +3,19 @@
  */
 
 #include "vc6.h" // Fixes things if you're using VC6, does nothing otherwise
-/* FIXME: should this file have all SDL-related stuff extracted and
-   put in music_sdl.c? */
-// Yes! :)
 
-#include <memory>
 #include <string>
 #include <vector>
 
 #include "music.h"
-#include "sound.h"
 
 #include "config.h"
 #include "context.h"
 #include "debug.h"
-#include "error.h"
 #include "event.h"
 #include "location.h"
+#include "map.h"
 #include "settings.h"
-#include "u4.h"
 #include "u4file.h"
 
 

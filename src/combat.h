@@ -5,26 +5,26 @@
 #ifndef COMBAT_H
 #define COMBAT_H
 
-#include <map>
-
 #include "direction.h"
 #include "map.h"
 #include "controller.h"
+#include "coords.h"
 #include "creature.h"
 #include "game.h"
-#include "object.h"
 #include "observer.h"
 #include "player.h"
 #include "savegame.h"
 #include "types.h"
 
+class CombatMap;
+class MoveEvent;
+class Object;
+class Tile;
+class Weapon;
+
+
 #define AREA_CREATURES 16
 #define AREA_PLAYERS 8
-
-class CombatMap;
-class Creature;
-class MoveEvent;
-class Weapon;
 
 typedef enum {
     CA_ATTACK,
@@ -193,7 +193,6 @@ protected:
 };
 
 
-bool isCombatMap(Map *punknown);
 CombatMap *getCombatMap(Map *punknown = nullptr);
 
 #endif // ifndef COMBAT_H

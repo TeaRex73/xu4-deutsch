@@ -8,15 +8,15 @@
 
 #include <algorithm>
 #include <cstdio>
-#include <cstdlib>
+#include <string>
 #include <vector>
 
-#include "debug.h"
 #include "filesystem.h"
 #include "settings.h"
 #include "utils.h"
 
 #if HAVE_BACKTRACE
+#include <cstdlib>
 #include <execinfo.h>
 
 /**
@@ -56,6 +56,7 @@ void print_trace(std::FILE *file)
 
 #if !HAVE_VARIADIC_MACROS
 #include <cstdarg>
+#include <cstdlib>
 
 /**
  * Stub for systems without variadic macros.  Unfortunately, this

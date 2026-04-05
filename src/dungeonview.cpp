@@ -8,6 +8,7 @@
 #include "dungeonview.h"
 #include "image.h"
 #include "imagemgr.h"
+#include "player.h"
 #include "settings.h"
 #include "screen.h"
 #include "tileanim.h"

@@ -5,14 +5,7 @@
 #ifndef U4_H
 #define U4_H
 
-#ifdef __cplusplus
-extern "C" {
-#endif
-
-/* Microsoft VC port */
-// #if defined(_MSC_VER)
-#define VERSION "2026-02-11"
-// #endif
+#define VERSION "2026-04-04"
 
 /* info for loading city data from *.ult and *.tlk */
 #define CITY_HEIGHT 32
@@ -81,8 +74,5 @@ extern "C" {
 #define WIND_AREA_H 1
 #define WIND_SECONDS_PER_PHASE 1
 
-#ifdef __cplusplus
-}
-#endif
 
 #endif // ifndef U4_H

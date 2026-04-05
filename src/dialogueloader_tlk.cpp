@@ -4,11 +4,13 @@
 
 #include "vc6.h" // Fixes things if you're using VC6, does nothing otherwise
 
-#include <string>
 #include <cstring>
+#include <string>
+#include <vector>
+
+#include "dialogueloader_tlk.h"
 
 #include "conversation.h"
-#include "dialogueloader_tlk.h"
 #include "u4file.h"
 #include "utils.h"
 
@@ -124,13 +126,13 @@ Dialogue *U4TlkDialogueLoader::load(void *source)
     );
     /* Ignore empty answers which have keyword "A   ", response "A"
        Otherwise those interfere with keyword "ADE" (bye). */
-    Response *kw1 = NULL;
+    Response *kw1 = nullptr;
     if (strings[5] != "A") {
         kw1 = new Response(
             uppercase(dlg->getPronoun() + " sagt:\n" + strings[5])
         );
     }
-    Response *kw2 = NULL;
+    Response *kw2 = nullptr;
     if (strings[6] != "A") {
         kw2 = new Response(
             uppercase(dlg->getPronoun() + " sagt:\n" + strings[6])

@@ -9,7 +9,7 @@
 #endif
 
 #include "utils.h"
-#include <cctype>
+#include <cstdio>
 #include <cstdlib>
 #include <cstring>
 #include <ctime>

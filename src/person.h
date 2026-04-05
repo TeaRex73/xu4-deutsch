@@ -9,13 +9,15 @@
 #include <string>
 
 #include "creature.h"
-#include "types.h"
-
+#include "map.h"
 
 class Conversation;
 class Dialogue;
+class MapTile;
+class Object;
 class Response;
 class ResponsePart;
+
 
 typedef enum {
     NPC_EMPTY,

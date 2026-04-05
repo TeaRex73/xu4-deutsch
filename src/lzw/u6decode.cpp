@@ -33,12 +33,14 @@
 #include <cstdlib>
 
 #include "u6decode.h"
+
 #include "u6stack.h"
 #include "u6dict.h"
 
 using namespace U6Decode;
 
-Dict dict;
+
+U6Decode::Dict dict;
 
 unsigned char U6Decode::read1(std::FILE *f)
 {

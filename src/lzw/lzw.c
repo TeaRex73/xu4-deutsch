@@ -37,11 +37,14 @@
 #include "../vc6.h" /* Fixes things if you're using VC6,
                        does nothing otherwise */
 
-#include "lzw.h"
-#include "hash.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+
+#include "lzw.h"
+
+#include "hash.h"
+
 
 typedef void (*WRITE_DECOMP)(
     unsigned char root, unsigned char *destination, long *position

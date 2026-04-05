@@ -4,16 +4,17 @@
 
 #include "vc6.h" // Fixes things if you're using VC6, does nothing otherwise
 
-#include <vector>
+#include <string>
 
-#include "config.h"
+#include "imageloader_u5.h"
+
 #include "debug.h"
 #include "error.h"
 #include "image.h"
 #include "imageloader.h"
 #include "imageloader_u4.h"
-#include "imageloader_u5.h"
 #include "lzw/u6decode.h"
+#include "u4file.h"
 
 ImageLoader *U5LzwImageLoader::instance =
     ImageLoader::registerLoader(new U5LzwImageLoader, "image/x-u5lzw");

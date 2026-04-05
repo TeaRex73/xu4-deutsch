@@ -4,15 +4,16 @@
 
 #include "vc6.h" // Fixes things if you're using VC6, does nothing otherwise
 
-#include <cstdio>
-#include <cstdlib>
+#include <csetjmp>
+
 #include <png.h>
 
-#include "debug.h"
+#include "imageloader_png.h"
+
 #include "error.h"
 #include "image.h"
 #include "imageloader.h"
-#include "imageloader_png.h"
+#include "u4file.h"
 
 ImageLoader *PngImageLoader::instance = ImageLoader::registerLoader(
     new PngImageLoader, "image/png"

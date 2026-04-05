@@ -5,6 +5,7 @@
 #ifndef IO_H
 #define IO_H
 
+#include <cstdio>
 
 /*
  * These are endian-independent routines for reading and writing

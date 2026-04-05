@@ -7,9 +7,11 @@
 
 #include <string>
 #include <vector>
+
 #include <SDL_mixer.h>
 
-#include "debug.h"
+class Debug;
+class Music;
 
 #define musicMgr (Music::getInstance())
 

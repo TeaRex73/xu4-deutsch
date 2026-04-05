@@ -5,11 +5,9 @@
 #ifndef CONFIG_H
 #define CONFIG_H
 
-#include "vc6.h" // Fixes things if you're using VC6, does nothing otherwise
-#include <cstdlib>
 #include <string>
 #include <vector>
-#include <libxml/xmlmemory.h>
+
 #include <libxml/parser.h>
 
 class ConfigElement;

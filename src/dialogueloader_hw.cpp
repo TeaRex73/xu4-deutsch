@@ -5,12 +5,14 @@
 #include "vc6.h" // Fixes things if you're using VC6, does nothing otherwise
 
 #include <string>
-#include <cstring>
 #include <vector>
+
+#include "dialogueloader_hw.h"
 
 #include "context.h"
 #include "conversation.h"
-#include "dialogueloader_hw.h"
+#include "debug.h"
+#include "names.h"
 #include "player.h"
 #include "savegame.h"
 #include "u4file.h"

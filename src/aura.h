@@ -5,8 +5,6 @@
 #ifndef AURA_H
 #define AURA_H
 
-#include <string>
-
 #include "observable.h"
 
 

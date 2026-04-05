@@ -5,6 +5,14 @@
 #ifndef TEXTVIEW_H
 #define TEXTVIEW_H
 
+#include <string>
+
+#include "textcolor.h"
+#include "view.h"
+
+class Image;
+
+
 #if __GNUC__
 #define PRINTF_LIKE(x, y) __attribute__((format(printf, (x), (y))))
 #else
@@ -13,10 +21,6 @@
 
 #define CHAR_WIDTH 8
 #define CHAR_HEIGHT 8
-
-#include "view.h"
-#include "image.h"
-
 
 /**
  * A view of a text area.  Keeps track of the cursor position.

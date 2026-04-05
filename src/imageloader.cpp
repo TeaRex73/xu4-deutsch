@@ -4,9 +4,10 @@
 
 #include "vc6.h" // Fixes things if you're using VC6, does nothing otherwise
 
+#include "imageloader.h"
+
 #include "debug.h"
 #include "image.h"
-#include "imageloader.h"
 
 std::map<std::string, ImageLoader *> *ImageLoader::loaderMap = nullptr;
 

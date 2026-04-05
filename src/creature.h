@@ -6,9 +6,9 @@
 #define CREATURE_H
 
 #include <map>
+#include <string>
 #include <vector>
 
-#include "direction.h"
 #include "object.h"
 #include "movement.h"
 #include "savegame.h"
@@ -16,11 +16,12 @@
 
 class CombatController;
 class ConfigElement;
+class Creature;
 class Tile;
 
 typedef unsigned short CreatureId;
-typedef std::map<CreatureId, class Creature *> CreatureMap;
-typedef std::vector<class Creature *> CreatureVector;
+typedef std::map<CreatureId, Creature *> CreatureMap;
+typedef std::vector<Creature *> CreatureVector;
 
 #define MAX_CREATURES 128
 /* Creatures on world map */

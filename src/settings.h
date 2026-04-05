@@ -5,11 +5,12 @@
 #ifndef SETTINGS_H
 #define SETTINGS_H
 
+#include <functional>
 #include <map>
 #include <string>
 #include <vector>
+
 #include "observable.h"
-#include "types.h"
 
 
 #define MIN_SHAKE_INTERVAL 50
@@ -28,7 +29,7 @@
 #ifdef RASB_PI
 # define DEFAULT_SCALE 1
 #else
-# define DEFAULT_SCALE 2
+# define DEFAULT_SCALE 1
 #endif
 #define DEFAULT_FULLSCREEN 0
 #define DEFAULT_FILTER "Point"
@@ -231,7 +232,7 @@ public:
 
     static Settings &getInstance()
     {
-        if (__builtin_expect((instance == nullptr), false)) {
+        if (__builtin_expect(instance == nullptr, false)) {
             instance = new Settings();
         }
         return *instance;

@@ -8,8 +8,10 @@
 #include <stdlib.h>
 #include <string.h>
 
-#include <libxml/xmlmemory.h>
+#include <libxml/globals.h>
 #include <libxml/parser.h>
+#include <libxml/xmlstring.h>
+#include <strings.h>
 
 #define TLK_BUF_SIZE 384
 

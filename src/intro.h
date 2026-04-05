@@ -6,23 +6,22 @@
 #define INTRO_H
 
 #include <cstdint>
-#include <cstdio>
-#include <cstdlib>
-#include <cstring>
 #include <string>
 #include <vector>
 
 #include "controller.h"
 #include "menu.h"
 #include "observer.h"
-#include "savegame.h"
+#include "image.h"
 #include "imageview.h"
 #include "textview.h"
 #include "tileview.h"
+#include "types.h"
 
 class IntroObjectState;
 class Tile;
-
+enum SexType: unsigned char;
+struct SaveGame;
 
 /**
  * Binary data loaded from the U4DOS title.exe file.

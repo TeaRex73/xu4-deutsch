@@ -4,10 +4,10 @@
 
 #include "vc6.h" // Fixes things if you're using VC6, does nothing otherwise
 
-#include <cstring>
 #include "conversation.h"
+
 #include "debug.h"
-#include "person.h"
+#include "music.h"
 #include "script.h"
 #include "utils.h"
 

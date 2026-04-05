@@ -1,19 +1,16 @@
 /*
  * $Id$
  */
-/** \mainpage xu4 Main Page
- *
- * \section intro_sec Introduction
- *
- * intro stuff goes here...
- */
 
 #include "vc6.h" // Fixes things if you're using VC6, does nothing otherwise
 
-// #include <SDL.h>
-#include "u4.h"
+#include <cstdio>
 #include <cstdlib>
 #include <cstring>
+#include <string>
+
+#include "u4.h"
+
 #include "armor.h"
 #include "config.h"
 #include "creature.h"
@@ -26,13 +23,10 @@
 #include "imageloader.h"
 #include "imageloader_u4.h"
 #include "intro.h"
-#include "map.h"
 #include "maploader.h"
 #include "mapmgr.h"
 #include "music.h"
 #include "object.h"
-#include "person.h"
-#include "progress_bar.h"
 #include "screen.h"
 #include "settings.h"
 #include "sound.h"

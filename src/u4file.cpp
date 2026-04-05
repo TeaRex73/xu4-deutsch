@@ -5,14 +5,13 @@
 #include "vc6.h" // Fixes things if you're using VC6, does nothing otherwise
 
 #include <cctype>
-#include <cstdlib>
+#include <cstdint>
 #include <cstdio>
 #include <cstring>
 
 #include "u4file.h"
 #include "unzip.h"
 #include "debug.h"
-#include "utils.h"
 #include "xordata.h"
 
 /**
