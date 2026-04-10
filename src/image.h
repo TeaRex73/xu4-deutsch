@@ -5,10 +5,9 @@
 #ifndef IMAGE_H
 #define IMAGE_H
 
-#include <string>
 #include <cstdint>
-#include "types.h"
-#include "u4file.h"
+#include <string>
+
 #include "textcolor.h"
 
 struct SDL_Surface;
