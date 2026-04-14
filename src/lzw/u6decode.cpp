@@ -27,10 +27,11 @@
  * ultima 6.
  */
 
-#include "../vc6.h" // Fixes things if you're using VC6, does nothing otherwise
+#include "vc6.h" // Fixes things if you're using VC6, does nothing otherwise
 
 #include <cstdio>
 #include <cstdlib>
+#include <cwchar>
 
 #include "u6decode.h"
 

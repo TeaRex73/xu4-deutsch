@@ -6,16 +6,15 @@
 #define STATS_H
 
 #include <string>
+
+#include "menu.h"
 #include "observable.h"
 #include "observer.h"
-#include "menu.h"
 #include "textview.h"
+#include "u4.h"
 
-struct SaveGame;
 class Aura;
 class Ingredients;
-class Menu;
-class MenuEvent;
 class Party;
 class PartyEvent;
 

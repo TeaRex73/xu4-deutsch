@@ -186,12 +186,12 @@ static void xmlToTlk(xmlDocPtr doc, FILE *tlk)
                 fprintf(stderr, "person missing tag %d\n", i);
                 exit(1);
             }
-            strcpy(ptr, str[i]);
-            ptr += strlen(str[i]) + 1;
-            if (ptr > (tlk_buffer + sizeof(tlk_buffer))) {
+            if (ptr + strlen(str[i]) + 1 > tlk_buffer + sizeof(tlk_buffer)) {
                 fprintf(stderr, "tlk file overflow\n");
                 exit(1);
             }
+            snprintf(ptr, tlk_buffer + sizeof(tlk_buffer) - ptr, "%s", str[i]);
+            ptr += strlen(str[i]) + 1;
             if (*str[i] == '\0') {
                 free(str[i]);
             } else {
@@ -225,13 +225,13 @@ static xmlDocPtr tlkToXml(FILE *tlk)
         }
         node = xmlNewChild(root, NULL, (const xmlChar *)"person", NULL);
         ptr = tlk_buffer + 3;
-        sprintf(buf, "%d", i);
+        snprintf(buf, sizeof(buf), "%d", i);
         xmlSetProp(node, (const xmlChar *)"id", (const xmlChar *)buf);
         xmlSetProp(node, (const xmlChar *)"name", (const xmlChar *)ptr);
         ptr += strlen(ptr) + 1;
         xmlSetProp(node, (const xmlChar *)"pronoun", (const xmlChar *)ptr);
         ptr += strlen(ptr) + 1;
-        sprintf(buf, "%d", (unsigned char) tlk_buffer[2]);
+        snprintf(buf, sizeof(buf), "%d", (unsigned char) tlk_buffer[2]);
         xmlSetProp(
             node, (const xmlChar *)"turnAwayProb", (const xmlChar *)buf
         );
@@ -309,7 +309,7 @@ static xmlDocPtr tlkToXml(FILE *tlk)
                 question
             );
             // Get the question type
-            sprintf(buf, "%d", tlk_buffer[1]);
+            snprintf(buf, sizeof(buf), "%d", tlk_buffer[1]);
             xmlSetProp(q, (const xmlChar *)"type", (const xmlChar *)buf);
             addAsText(
                 doc,

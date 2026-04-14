@@ -106,16 +106,22 @@ bool usePortalAt(
     if (portal->message.empty()) {
         switch (action) {
         case ACTION_DESCEND:
-            std::sprintf(
-                msg, "Abw{rts\nauf Ebene %d\n", portal->start.z + 1
+            std::snprintf(
+                msg,
+                sizeof(msg),
+                "Abw{rts\nauf Ebene %d\n",
+                portal->start.z + 1
             );
             break;
         case ACTION_KLIMB:
             if (portal->exitPortal) {
-                std::sprintf(msg, "Aufw{rts\nVERLASSE...\n");
+                std::snprintf(msg, sizeof(msg), "Aufw{rts\nVERLASSE...\n");
             } else {
-                std::sprintf(
-                    msg, "Aufw{rts\nauf Ebene %d\n", portal->start.z + 1
+                std::snprintf(
+                    msg,
+                    sizeof(msg),
+                    "Aufw{rts\nauf Ebene %d\n",
+                    portal->start.z + 1
                 );
             }
             break;

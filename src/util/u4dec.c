@@ -28,7 +28,7 @@ int main(int argc, const char *argv[])
         fprintf(
             stderr, "usage: u4dec rle|lzw|raw infile outfile [width height]\n"
         );
-        exit(1);
+        exit(EXIT_FAILURE);
     }
     alg = argv[1];
     infname = argv[2];
@@ -44,11 +44,11 @@ int main(int argc, const char *argv[])
     infile = fopen(infname, "rb");
     if (!infile) {
         perror(infname);
-        exit(1);
+        exit(EXIT_FAILURE);
     }
     if (fseek(infile, 0L, SEEK_END)) {
         perror(infname);
-        exit(1);
+        exit(EXIT_FAILURE);
     }
     inlen = ftell(infile);
     fseek(infile, 0L, SEEK_SET);
@@ -75,12 +75,12 @@ int main(int argc, const char *argv[])
         cond2 = isPowerOfTwo((outlen*8) / (width*height));
         if (!cond1 || !cond2) {
             printf("Invalid width or height.\n");
-            return EXIT_FAILURE;
+            exit(EXIT_FAILURE);
         }
         outdata = (unsigned char *)malloc(outlen);
         if (!outdata) {
             perror("out of memory");
-            return EXIT_FAILURE;
+            exit(EXIT_FAILURE);
         }
         rleDecompress(indata, inlen, outdata, outlen);
     } else if (strcmp(alg, "raw") == 0) {
@@ -88,12 +88,12 @@ int main(int argc, const char *argv[])
         outdata = indata;
     } else {
         fprintf(stderr, "unknown algorithm %s\n", alg);
-        exit(1);
+        exit(EXIT_FAILURE);
     }
     writePngFromEga(
         outdata, height, width, outlen * 8 / (height * width), outfname
     );
-    return 0;
+    return EXIT_SUCCESS;
 }
 
 int isPowerOfTwo(int n)

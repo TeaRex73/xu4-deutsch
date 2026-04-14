@@ -35,6 +35,7 @@
 #include "utils.h"
 #include "weapon.h"
 
+
 bool verbose = false;
 int quit = 0;
 bool useProfile = false;

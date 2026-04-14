@@ -1,3 +1,9 @@
+/*
+ * $Id$
+ */
+
+#include "vc6.h" // Fixes things if you're using VC6, does nothing otherwise
+
 #include "xordata.h"
 
 const XorDataMap xorDataMap = {

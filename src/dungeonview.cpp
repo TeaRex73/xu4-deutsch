@@ -4,17 +4,28 @@
 
 #include "vc6.h" // Fixes things if you're using VC6, does nothing otherwise
 
-#include "debug.h"
+#include <algorithm>
+#include <string>
+
 #include "dungeonview.h"
+
+#include "context.h"
+#include "debug.h"
+#include "dungeon.h"
 #include "image.h"
 #include "imagemgr.h"
+#include "location.h"
+#include "map.h"
 #include "player.h"
-#include "settings.h"
+#include "savegame.h"
 #include "screen.h"
+#include "settings.h"
+#include "tile.h"
 #include "tileanim.h"
 #include "tileset.h"
 #include "u4.h"
-#include "error.h"
+#include "view.h"
+
 
 DungeonView::DungeonView(int x, int y, int columns, int rows)
     :TileView(x, y, rows, columns), screen3dDungeonViewEnabled(true)

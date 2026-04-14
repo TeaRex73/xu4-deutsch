@@ -7,7 +7,9 @@
 #include <cctype>
 #include <cstdint>
 #include <cstdio>
-#include <cstring>
+#include <cwchar>
+
+#include <limits.h>
 
 #include "u4file.h"
 #include "unzip.h"
@@ -850,24 +852,32 @@ std::vector<std::string> u4read_stringtable(
     return strs;
 }
 
+#ifndef PATH_MAX
+#   define PATH_MAX 4096 //FIXME: There is no real maximum on some OS
+#endif
+
 std::string u4find_path(
     const std::string &fname, const std::list<std::string> &specificSubPaths
 )
 {
     std::FILE *f = nullptr;
     // Try absolute first
-    char path[2048]; // Sometimes paths get big.
+    char path[PATH_MAX];
 
     f = std::fopen(fname.c_str(), "rb");
-    if (f)
-        std::strcpy(path, fname.c_str());
+    if (f) std::snprintf(path, PATH_MAX, "%s", fname.c_str());
 
     // Try 'file://' protocol if specified
     if (f == nullptr) {
         const std::string file_url_prefix("file://");
 
         if(fname.compare(0, file_url_prefix.length(), file_url_prefix) == 0) {
-            std::strcpy(path, fname.substr(file_url_prefix.length()).c_str());
+            std::snprintf(
+                path,
+                PATH_MAX,
+                "%s",
+                fname.substr(file_url_prefix.length()).c_str()
+            );
             if (verbose) {
                 std::printf("trying to open %s\n", path);
             }

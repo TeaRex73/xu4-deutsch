@@ -6,6 +6,7 @@
 
 #include <atomic>
 #include <ctime>
+#include <string>
 
 #include "death.h"
 

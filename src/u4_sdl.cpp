@@ -8,6 +8,7 @@
 
 #include "u4_sdl.h"
 
+
 static inline int u4_SDL_Init()
 {
     return SDL_Init(SDL_INIT_VIDEO | SDL_INIT_TIMER | SDL_INIT_AUDIO);

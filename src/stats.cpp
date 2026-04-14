@@ -4,11 +4,11 @@
 
 #include "vc6.h" // Fixes things if you're using VC6, does nothing otherwise
 
-#include "u4.h"
+#include <cstdio>
+#include <cstring>
+#include <list>
 
 #include "stats.h"
-
-#include <cstring>
 
 #include "armor.h"
 #include "aura.h"
@@ -16,13 +16,16 @@
 #include "debug.h"
 #include "event.h"
 #include "menu.h"
+#include "menuitem.h"
 #include "names.h"
 #include "player.h"
 #include "savegame.h"
 #include "spell.h"
-#include "tile.h"
-#include "weapon.h"
+#include "textcolor.h"
+#include "u4.h"
 #include "utils.h"
+#include "weapon.h"
+
 
 extern bool verbose;
 /**
@@ -315,7 +318,7 @@ void StatsArea::showPlayerDetails()
     U4ASSERT(player < 8, "character number out of range: %d", player);
     PartyMember *p = c->party->member(player);
     char titleText[16];
-    std::sprintf(titleText, "SPL-%d", player + 1);
+    std::snprintf(titleText, 16, "SPL-%d", player + 1);
     setTitle(titleText);
     std::string nameStr = uppercase(p->getName());
     int nameStart = (STATS_AREA_WIDTH - nameStr.length()) / 2;
@@ -454,19 +457,19 @@ void StatsArea::showItems()
     if (c->saveGame->items & (ITEM_CANDLE | ITEM_BOOK | ITEM_BELL)) {
         buffer[0] = '\0';
         if (c->saveGame->items & ITEM_BELL) {
-            std::strcat(buffer, getItemName(ITEM_BELL));
-            std::strcat(buffer, " ");
+            U4_STRCAT(buffer, getItemName(ITEM_BELL));
+            U4_STRCAT(buffer, " ");
         }
         if (c->saveGame->items & ITEM_BOOK) {
-            std::strcat(buffer, getItemName(ITEM_BOOK));
-            std::strcat(buffer, " ");
+            U4_STRCAT(buffer, getItemName(ITEM_BOOK));
+            U4_STRCAT(buffer, " ");
         }
         if (c->saveGame->items & ITEM_CANDLE) {
-            std::strcat(buffer, getItemName(ITEM_CANDLE));
+            U4_STRCAT(buffer, getItemName(ITEM_CANDLE));
             // all three together are too long in German
             if (std::strcmp(buffer, "GLOCKE BUCH KERZE") == 0) {
                 buffer[0] = '\0';
-                std::strcat(buffer, "GLOCK BUCH KERZ");
+                U4_STRCAT(buffer, "GLOCK BUCH KERZ");
                 buffer[15] = '\0';
             }
         }

@@ -34,8 +34,7 @@
  * An article on LZW data (de)compression can be found here:
  * http://dogma.net/markn/articles/lzw/lzw.htm
  */
-#include "../vc6.h" /* Fixes things if you're using VC6,
-                       does nothing otherwise */
+#include "vc6.h" /* Fixes things if you're using VC6, does nothing otherwise */
 
 #include <stdio.h>
 #include <stdlib.h>

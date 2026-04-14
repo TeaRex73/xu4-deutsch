@@ -7,7 +7,6 @@
 #include <algorithm>
 #include <cstdint>
 #include <cstdio>
-#include <cstring>
 
 #include <SDL.h>
 #include <unistd.h>
@@ -1231,7 +1230,12 @@ void IntroController::updateScreen()
             10,
             8,
             "%s",
-            menuArea.colorizeString("]ber dieses Spiel", FG_YELLOW, 0, 1).c_str()
+            menuArea.colorizeString(
+                "]ber dieses Spiel",
+                FG_YELLOW,
+                0,
+                1
+            ).c_str()
         );
         drawBeasties();
         // draw the cursor last
@@ -1317,7 +1321,7 @@ void IntroController::finishInitiateGame(
         return;
     }
     avatar.init();
-    std::strcpy(avatar.name, nameBuffer.c_str());
+    std::snprintf(avatar.name, sizeof(avatar.name), "%s", nameBuffer.c_str());
     avatar.sex = sex;
     saveGame.init(&avatar);
     screenHideCursor();
@@ -2083,8 +2087,11 @@ void IntroController::initPlayers(SaveGame *saveGame) const
             saveGame->players[p].intel = initValuesForNpcClass[i].intel;
             saveGame->players[p].weapon = initValuesForClass[i].weapon;
             saveGame->players[p].armor = initValuesForClass[i].armor;
-            std::strcpy(
-                saveGame->players[p].name, initValuesForNpcClass[i].name
+            std::snprintf(
+                saveGame->players[p].name,
+                sizeof(saveGame->players[p].name),
+                "%s",
+                initValuesForNpcClass[i].name
             );
             saveGame->players[p].sex = initValuesForNpcClass[i].sex;
             saveGame->players[p].hp = saveGame->players[p].hpMax =

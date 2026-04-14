@@ -1,9 +1,11 @@
 #include <cstdio>
 #include <cstdlib>
-#include <cstring>
+#include <cwchar>
 
 #include "savegame.h"
 #include "names.h"
+#include "utils.h"
+
 
 int verbose = 0;
 
@@ -73,7 +75,7 @@ void showSaveGame(const SaveGame *sg)
     std::printf("]\n");
     std::printf("items: %s\n", itemsString(sg->items));
     std::printf("x: %-8d y: %d\n", sg->x, sg->y);
-    std::printf("stones: %-3x runes %x\n", sg->stones, sg->runes);
+    std::printf("stones: %-3x runes: %x\n", sg->stones, sg->runes);
     std::printf("party members: %d\n", sg->members);
     std::printf("transport: %x\n", sg->transport);
     std::printf("balloon state/torch duration: %x\n", sg->balloonstate);
@@ -168,79 +170,82 @@ char *itemsString(unsigned short items)
     int first = 1;
     buffer[0] = '\0';
     if (items & ITEM_SKULL) {
-        std::strcat(
-            buffer, getItemName(ITEM_SKULL)
-        );
+        U4_STRCAT(buffer, getItemName(ITEM_SKULL));
         first = 0;
     }
     if (items & ITEM_SKULL_DESTROYED) {
-        std::strcat(std::strcat(buffer, first ? "" : ", "), "skull destroyed");
+        U4_STRCAT(buffer, first ? "" : ", ");
+        U4_STRCAT(buffer, "skull destroyed");
         first = 0;
     }
     if (items & ITEM_CANDLE) {
-        std::strcat(
-            std::strcat(buffer, first ? "" : ", "), getItemName(ITEM_CANDLE)
-        );
+        U4_STRCAT(buffer, first ? "" : ", ");
+        U4_STRCAT(buffer, getItemName(ITEM_CANDLE));
         first = 0;
     }
     if (items & ITEM_BOOK) {
-        std::strcat(
-            std::strcat(buffer, first ? "" : ", "), getItemName(ITEM_BOOK)
-        );
+        U4_STRCAT(buffer, first ? "" : ", ");
+        U4_STRCAT(buffer, getItemName(ITEM_BOOK));
         first = 0;
     }
     if (items & ITEM_BELL) {
-        std::strcat(
-            std::strcat(buffer, first ? "" : ", "), getItemName(ITEM_BELL)
-        );
+        U4_STRCAT(buffer, first ? "" : ", ");
+        U4_STRCAT(buffer, getItemName(ITEM_BELL));
         first = 0;
     }
     if (items & ITEM_KEY_C) {
-        std::strcat(std::strcat(buffer, first ? "" : ", "), "key c");
+        U4_STRCAT(buffer, first ? "" : ", ");
+        U4_STRCAT(buffer, "key c");
         first = 0;
     }
     if (items & ITEM_KEY_L) {
-        std::strcat(std::strcat(buffer, first ? "" : ", "), "key l");
+        U4_STRCAT(buffer, first ? "" : ", ");
+        U4_STRCAT(buffer, "key l");
         first = 0;
     }
     if (items & ITEM_KEY_T) {
-        std::strcat(std::strcat(buffer, first ? "" : ", "), "key t");
+        U4_STRCAT(buffer, first ? "" : ", ");
+        U4_STRCAT(buffer, "key t");
         first = 0;
     }
     if (items & ITEM_HORN) {
-        std::strcat(
-            std::strcat(buffer, first ? "" : ", "), getItemName(ITEM_HORN)
-        );
+        U4_STRCAT(buffer, first ? "" : ", ");
+        U4_STRCAT(buffer, getItemName(ITEM_HORN));
         first = 0;
     }
     if (items & ITEM_WHEEL) {
-        std::strcat(
-            std::strcat(buffer, first ? "" : ", "), getItemName(ITEM_WHEEL)
-        );
+        U4_STRCAT(buffer, first ? "" : ", ");
+        U4_STRCAT(buffer, getItemName(ITEM_WHEEL));
         first = 0;
     }
     if (items & ITEM_CANDLE_USED) {
-        std::strcat(std::strcat(buffer, first ? "" : ", "), "candle used");
+        U4_STRCAT(buffer, first ? "" : ", ");
+        U4_STRCAT(buffer, "candle used");
         first = 0;
     }
     if (items & ITEM_BOOK_USED) {
-        std::strcat(std::strcat(buffer, first ? "" : ", "), "book used");
-        first = 0;
+        U4_STRCAT(buffer, first ? "" : ", ");
+        U4_STRCAT(buffer, "book used");
+         first = 0;
     }
     if (items & ITEM_BELL_USED) {
-        std::strcat(std::strcat(buffer, first ? "" : ", "), "bell used");
+        U4_STRCAT(buffer, first ? "" : ", ");
+        U4_STRCAT(buffer, "bell used");
         first = 0;
     }
     if (items & 0x2000) {
-        std::strcat(std::strcat(buffer, first ? "" : ", "), "(bit 14)");
+        U4_STRCAT(buffer, first ? "" : ", ");
+        U4_STRCAT(buffer, "(bit 14)");
         first = 0;
     }
     if (items & 0x4000) {
-        std::strcat(std::strcat(buffer, first ? "" : ", "), "(bit 15)");
+        U4_STRCAT(buffer, first ? "" : ", ");
+        U4_STRCAT(buffer, "(bit 15)");
         first = 0;
     }
     if (items & 0x8000) {
-        std::strcat(std::strcat(buffer, first ? "" : ", "), "(bit 16)");
+        U4_STRCAT(buffer, first ? "" : ", ");
+        U4_STRCAT(buffer, "(bit 16)");
         /* first = 0; */
     }
     return buffer;

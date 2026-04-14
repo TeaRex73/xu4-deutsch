@@ -4,8 +4,8 @@
 
 #include "vc6.h" // Fixes things if you're using VC6, does nothing otherwise
 
+#include <ctime>
 #include <string>
-#include <cstring>
 #include <vector>
 
 #include "codex.h"
@@ -13,14 +13,15 @@
 #include "context.h"
 #include "event.h"
 #include "game.h"
-#include "item.h"
 #include "imagemgr.h"
 #include "location.h"
+#include "map.h"
+#include "music.h"
 #include "names.h"
 #include "savegame.h"
 #include "screen.h"
+#include "sound.h"
 #include "stats.h"
-#include "u4.h"
 #include "u4file.h"
 #include "utils.h"
 

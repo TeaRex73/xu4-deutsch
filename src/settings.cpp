@@ -8,6 +8,7 @@
 #include <cstdlib>
 #include <cstdio>
 #include <cstring>
+#include <cwchar>
 
 #include <unistd.h>
 #if defined(_WIN32) || defined(__CYGWIN__)

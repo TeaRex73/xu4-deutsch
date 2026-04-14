@@ -5,7 +5,11 @@
 #ifndef IMAGEVIEW_H
 #define IMAGEVIEW_H
 
+#include <string>
+
 #include "view.h"
+
+
 /**
  * A view for displaying bitmap images.
  */

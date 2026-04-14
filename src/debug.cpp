@@ -193,7 +193,7 @@ void Debug::trace(
         if (line > 0) {
             l_line = line;
             char ln[16];
-            std::sprintf(ln, "%d", line);
+            std::snprintf(ln, 16, "%d", line);
             message += "line ";
             message += ln;
         } else {

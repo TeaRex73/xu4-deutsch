@@ -213,7 +213,7 @@ std::string deumlaut(const std::string &val)
 std::string xu4_to_string(int val)
 {
     char buffer[16];
-    std::sprintf(buffer, "%d", val);
+    std::snprintf(buffer, 16, "%d", val);
     return std::string(buffer);
 }
 

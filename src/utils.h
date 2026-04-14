@@ -5,6 +5,7 @@
 #ifndef UTILS_H
 #define UTILS_H
 
+#include <cstring>
 #include <ctime>
 #include <map>
 #include <string>
@@ -17,6 +18,10 @@
 #   include "filesystem.h"
 #endif
 
+
+// safer std::strcat replacement
+#define U4_STRCAT(dst, src) \
+    std::strncat((dst), (src), sizeof(dst) - std::strlen(dst) - 1)
 
 /* The AdjustValue functions used to be #define'd macros, but these are
  * evil for several reasons, *especially* when they contain multiple

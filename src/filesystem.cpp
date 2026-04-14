@@ -5,9 +5,11 @@
 #include "vc6.h" // Fixes things if you're using VC6, does nothing otherwise
 
 #include <cstdio>
+
 #include <sys/stat.h>
 
 #include "filesystem.h"
+
 
 #ifdef FS_WINDOWS
 #include <windows.h>

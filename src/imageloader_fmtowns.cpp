@@ -6,6 +6,7 @@
 
 #include <cstdio>
 #include <cstdlib>
+#include <string>
 
 #include "imageloader_fmtowns.h"
 
@@ -16,10 +17,10 @@
 #include "imageloader_u4.h"
 #include "u4file.h"
 
+
 ImageLoader *FMTOWNSImageLoader::instance_tif = ImageLoader::registerLoader(
     new FMTOWNSImageLoader(510), "image/fmtowns-tif"
 );
-
 
 /**
  * Loads in an FM TOWNS files, which we assume is 16 bits.

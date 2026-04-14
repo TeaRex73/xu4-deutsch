@@ -6,6 +6,7 @@
 #define FILESYSTEM_H
 
 #include <cstdio>
+#include <cwchar>
 #include <list>
 #include <string>
 

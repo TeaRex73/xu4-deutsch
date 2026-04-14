@@ -4,22 +4,31 @@
 
 #include "vc6.h" // Fixes things if you're using VC6, does nothing otherwise
 
-#include <SDL.h>
 #include <atomic>
+#include <cstdio>
 #include <cstdlib>
-#include <ctime>
+#include <list>
+#include <string>
+#include <utility>
+#include <vector>
+
+#include <SDL.h>
 
 #include "event.h"
 
 #include "context.h"
+#include "controller.h"
 #include "debug.h"
 #include "error.h"
 #include "location.h"
+#include "map.h"
 #include "screen.h"
 #include "settings.h"
-#include "u4.h"
+#include "tile.h"
+#include "types.h"
 #include "u4_sdl.h"
 #include "utils.h"
+
 
 extern bool verbose;
 extern int quit;

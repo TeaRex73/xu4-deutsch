@@ -6,6 +6,7 @@
 #define SCRIPT_H
 
 #include <cstdio>
+#include <cwchar>
 #include <list>
 #include <map>
 #include <string>

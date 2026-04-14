@@ -7,7 +7,6 @@
 #include <cctype>
 #include <cstdio>
 #include <cstdlib>
-#include <cstring>
 #include <map>
 #include <string>
 
@@ -224,7 +223,7 @@ bool Script::load(
      */
     if (xmlPropExists(root, "debug")) {
         char dbg_filename[256] = "debug/";
-                std::strcat(dbg_filename, /* std::tmpnam(NULL) */ "debug.txt");
+        U4_STRCAT(dbg_filename, "debug.txt");
         // Our script is going to hog all the debug info
         if (xmlGetPropAsBool(root, "debug")) {
             debug = FileSystem::openFile(dbg_filename, "wt");

@@ -13,9 +13,9 @@
 #define MAX_DICT_CAPACITY 0xCCC
 #define DICT_SIZE 0x1000
 
-int compressing = 1;
-int save = -1;
-int dictsize = 0;
+static int compressing = 1;
+static int save = -1;
+static int dictsize = 0;
 
 struct {
     int len;
@@ -140,6 +140,10 @@ static void addcode(unsigned char *str, int len)
     }
     lzwdict[hashcode].len = len;
     lzwdict[hashcode].data = (unsigned char *) malloc(len);
+    if (!lzwdict[hashcode].data) {
+        perror("out of memory");
+        exit(EXIT_FAILURE);
+    }
     memcpy(lzwdict[hashcode].data, str, len);
     lzwdict[hashcode].occupied = 1;
     dictsize++;
@@ -160,7 +164,7 @@ int main(int argc, char *argv[])
     const unsigned char *p;
     if (argc != 4) {
         fprintf(stderr, "usage: u4enc rle|lzw|raw infile outfile\n");
-        exit(1);
+        exit(EXIT_FAILURE);
     }
     alg = argv[1];
     infname = argv[2];
@@ -168,7 +172,7 @@ int main(int argc, char *argv[])
     out = fopen(outfname, "wb");
     if (!out) {
         perror(outfname);
-        exit(1);
+        exit(EXIT_FAILURE);
     }
     readEgaFromPng(&data, &height, &width, &bits, infname);
     datalen = width * height * bits / 8;
@@ -192,7 +196,7 @@ int main(int argc, char *argv[])
                 putc_12(code, out);
                 if (idx >= 4095) {
                     fprintf(stderr, "overflow in lzwenc\n");
-                    exit(1);
+                    exit(EXIT_FAILURE);
                 }
                 addcode(str, idx);
                 if (dictsize > MAX_DICT_CAPACITY) {
@@ -274,8 +278,8 @@ int main(int argc, char *argv[])
         fwrite(data, datalen, 1, out);
     } else {
         fprintf(stderr, "unknown algorithm %s\n", alg);
-        exit(1);
+        exit(EXIT_FAILURE);
     }
     fclose(out);
-    return 0;
+    return EXIT_SUCCESS;
 }

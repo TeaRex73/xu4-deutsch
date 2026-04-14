@@ -1,7 +1,15 @@
+/*
+ * $Id$
+ */
+
+#ifndef XORDATA_H
+#define XORDATA_H
+
 #include <cstdint>
 #include <map>
 #include <string>
 #include <vector>
+
 
 typedef std::vector<std::uint8_t> ByteVector;
 
@@ -13,3 +21,5 @@ typedef struct {
 typedef std::map<std::string, InternalFile> XorDataMap;
 
 extern const XorDataMap xorDataMap;
+
+#endif /* XORDATA_H */
