@@ -36,7 +36,7 @@ sub PNGoutputChunk()
 
    # Read width and height from STDIN
    $line = <STDIN>;
-   my ($width,$height) = ($line =~ /(\d+)\s+(\d+)/); 
+   my ($width,$height) = ($line =~ /(\d+)\s+(\d+)/);
    print STDERR "DEBUG: width=$width, height=$height\n";
 
    # Read MAX PNM value and ignore
@@ -121,14 +121,14 @@ sub PNGoutputChunk()
          }
       }
       if(($pixel%$width)%2==0){
-	  $mem=$nearest;
+          $mem=$nearest;
       }else{
-	  $raw .= sprintf "%c",$mem*16+$nearest;
+          $raw .= sprintf "%c",$mem*16+$nearest;
       }
       if(($pixel%$width)==($width-1)){
-	  if($width%2){
-	      $raw .= sprintf "%c",$mem*16;
-	  }
+          if($width%2){
+              $raw .= sprintf "%c",$mem*16;
+          }
       }
 #     print STDERR "Pixel: $pixel, r=$r, g=$g, b=$b. Chose palette entry $nearest\n";
    }

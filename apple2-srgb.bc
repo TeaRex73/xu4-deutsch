@@ -376,8 +376,8 @@ for (try = maxtry - 8; try <= (globalscale + 1) * 8; /* nothing */) {
         /* calc R, G, B (in range 0-1) while applying color,
            see article "YUV-Farbmodell" in German Wikipedia */
         y = y[c]
-	u[c] = u
-	v[c] = v
+        u[c] = u
+        v[c] = v
         b = y + (ufac * u * color)
         r = y + (vfac * v * color)
         g = (y - 0.299 * r - 0.114 * b) / 0.587
@@ -535,12 +535,12 @@ for (try = maxtry - 8; try <= (globalscale + 1) * 8; /* nothing */) {
             /* Display per-color Delta-E value */
             print "  ∆E="
             .=printff(7, 4, delta_e[c])+newline()
-	}
-	for (cbot = 0; cbot <= 15; ++cbot) {
-	    for (ctop = 0; ctop <= 15; ++ctop) {
-	        u = (u[cbot] + u[ctop]) / 2
-		v = (v[cbot] + v[ctop]) / 2
-		y = y[cbot]
+        }
+        for (cbot = 0; cbot <= 15; ++cbot) {
+            for (ctop = 0; ctop <= 15; ++ctop) {
+                u = (u[cbot] + u[ctop]) / 2
+                v = (v[cbot] + v[ctop]) / 2
+                y = y[cbot]
                 b = y + (ufac * u * color)
                 r = y + (vfac * v * color)
                 g = (y - 0.299 * r - 0.114 * b) / 0.587
@@ -562,16 +562,16 @@ for (try = maxtry - 8; try <= (globalscale + 1) * 8; /* nothing */) {
                 rd = limitprod(r, 65536)
                 gr = limitprod(g, 65536)
                 bl = limitprod(b, 65536)
-		print "[0x"
-		prhex4(rd)
-		print ", 0x"
-		prhex4(gr)
-		print ", 0x"
-		prhex4(bl)
-		print"],\n"
-	    }
-	    print "\n"
-	}
+                print "[0x"
+                prhex4(rd)
+                print ", 0x"
+                prhex4(gr)
+                print ", 0x"
+                prhex4(bl)
+                print"],\n"
+            }
+            print "\n"
+        }
     } else { /* No improvement, back to previous values */
         brightness = old_brightness
         picture = old_picture
