@@ -70,11 +70,12 @@ Weapon::Weapon(const ConfigElement &conf)
         { "losewhenranged", WEAP_LOSEWHENRANGED },
         { "choosedistance", WEAP_CHOOSEDISTANCE },
         { "alwayshits", WEAP_ALWAYSHITS },
-        { "mystic", WEAP_MYSTIC },
+        { "magic", WEAP_MAGIC },
         { "attackthroughobjects", WEAP_ATTACKTHROUGHOBJECTS },
         { "returns", WEAP_RETURNS },
         { "dontshowtravel", WEAP_DONTSHOWTRAVEL },
-        { "rangedonly", WEAP_RANGEDONLY }
+        { "rangedonly", WEAP_RANGEDONLY },
+        { "mystic", WEAP_MYSTIC },
     };
     /* Get the range of the weapon, whether it is absolute or
        normal range */

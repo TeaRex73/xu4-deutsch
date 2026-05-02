@@ -1,3 +1,5 @@
+<!-- $Id$ -->
+
 <!ELEMENT config ( armors, creatures, maps, tileRules, tilesets, egaPalette, egaPalettePi, graphics, graphicsPi, music, sound, weapons ) >
 <!ATTLIST config name      CDATA   #REQUIRED>
 

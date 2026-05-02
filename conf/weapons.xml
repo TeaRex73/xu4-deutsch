@@ -40,28 +40,28 @@
         <constraint canuse="true" class="tinker"/>
         <constraint canuse="true" class="paladin"/>
     </weapon>
-    <weapon name="MAG. AXT" abbr="+AX" neg="KEINE MAGISCHE AXT" range="10" returns="true" damage="96">
+    <weapon name="MAG. AXT" abbr="+AX" neg="KEINE MAGISCHE AXT" range="10" returns="true" damage="96" magic="true">
         <constraint canuse="false" class="all"/>
         <constraint canuse="true" class="tinker"/>
         <constraint canuse="true" class="paladin"/>
     </weapon>
-    <weapon name="MAG. SCHWERT" abbr="+SW" neg="KEIN MAGISCHES SCHWERT" range="1" damage="128">
+    <weapon name="MAG. SCHWERT" abbr="+SW" neg="KEIN MAGISCHES SCHWERT" range="1" damage="128" magic="true">
         <constraint canuse="false" class="all"/>
         <constraint canuse="true" class="fighter"/>
         <constraint canuse="true" class="tinker"/>
         <constraint canuse="true" class="paladin"/>
         <constraint canuse="true" class="ranger"/>
     </weapon>
-    <weapon name="MAG. BOGEN" abbr="+BO" neg="KEINEN MAGISCHEN BOGEN" range="10" rangedonly="true" damage="80">
+    <weapon name="MAG. BOGEN" abbr="+BO" neg="KEINEN MAGISCHEN BOGEN" range="10" rangedonly="true" damage="80" magic="true">
         <constraint canuse="false" class="mage"/>
         <constraint canuse="false" class="fighter"/>
         <constraint canuse="false" class="shepherd"/>
     </weapon>
-    <weapon name="MAG. STAB" abbr="+ST" neg="KEINEN MAGISCHEN STAB" range="10" damage="160" hittile="magic_flash" misstile="magic_flash">
+    <weapon name="MAG. STAB" abbr="+ST" neg="KEINEN MAGISCHEN STAB" range="10" damage="160" hittile="magic_flash" misstile="magic_flash" magic="true">
         <constraint canuse="false" class="all"/>
         <constraint canuse="true" class="mage"/>
         <constraint canuse="true" class="bard"/>
         <constraint canuse="true" class="druid"/>
     </weapon>
-    <weapon name="MYST. SCHWERT" abbr="^SW" neg="KEIN MYSTISCHES SCHWERT" range="1" damage="255" mystic="true"/>
+    <weapon name="MYST. SCHWERT" abbr="^SW" neg="KEIN MYSTISCHES SCHWERT" range="1" damage="255" magic="true" mystic="true"/>
 </weapons>

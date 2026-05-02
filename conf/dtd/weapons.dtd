@@ -17,6 +17,7 @@
                  leavetile              NMTOKEN #IMPLIED
                  lose                   %bool;  #IMPLIED
                  losewhenranged         %bool;  #IMPLIED
-                 mystic                 %bool;  #IMPLIED
+                 magic                  %bool;  #IMPLIED
                  misstile               NMTOKEN #IMPLIED
+                 mystic                 %bool;  #IMPLIED
                  returns                %bool;  #IMPLIED>

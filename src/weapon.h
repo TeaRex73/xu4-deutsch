@@ -20,12 +20,13 @@ public:
         WEAP_LOSEWHENRANGED = 0x0002,
         WEAP_CHOOSEDISTANCE = 0x0004,
         WEAP_ALWAYSHITS = 0x0008,
-        WEAP_MYSTIC = 0x0010,
+        WEAP_MAGIC = 0x0010,
         WEAP_ATTACKTHROUGHOBJECTS = 0x0040,
         WEAP_ABSOLUTERANGE = 0x0080,
         WEAP_RETURNS = 0x0100,
         WEAP_DONTSHOWTRAVEL = 0x0200,
-        WEAP_RANGEDONLY = 0x0400
+        WEAP_RANGEDONLY = 0x0400,
+        WEAP_MYSTIC = 0x0800
     };
 
     static void cleanup();
@@ -108,14 +109,19 @@ public:
         return flags & WEAP_ALWAYSHITS;
     }
 
-    bool isMystic() const
+    bool isMagic() const
     {
-        return flags & WEAP_MYSTIC;
+        return flags & WEAP_MAGIC;
     }
 
     bool rangedOnly() const
     {
         return flags & WEAP_RANGEDONLY;
+    }
+
+    bool isMystic() const
+    {
+        return flags & WEAP_MYSTIC;
     }
 
     bool canAttackThroughObjects() const

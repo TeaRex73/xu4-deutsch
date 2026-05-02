@@ -696,7 +696,9 @@ bool CombatController::attackHit(
     U4ASSERT(defender != nullptr, "defender must not be nullptr");
     int attackValue = attacker->getAttackBonus();
     int defenseValue =
-        defender->getDefense(c->location->prev->map->id == MAP_ABYSS);
+        defender->getDefense(
+            settings.enhancements && c->location->prev->map->id == MAP_ABYSS
+        );
     bool naturalHit = (attackValue > defenseValue);
     if (!naturalHit) return false;
     if (!harder) return true;
@@ -732,8 +734,9 @@ bool CombatController::attackAt(
         return false;
     }
     /* Did the weapon miss? */
-     /* non-magical weapon in the Abyss */
-    if (((c->location->prev->map->id == MAP_ABYSS) && !weapon->isMystic())
+     /* non-magical (enhanced game: non-mystic) weapon in the Abyss */
+    bool criterion = settings.enhancements ? weapon->isMystic() : weapon->isMagic();
+    if (((c->location->prev->map->id == MAP_ABYSS) && !criterion)
                 /* player naturally missed */
         || !attackHit(attacker, m, harder)) {
         screenMessage("VERFEHLT\n");
