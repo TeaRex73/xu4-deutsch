@@ -456,6 +456,9 @@ static bool isSkullInInventory(int)
 
 static void putItemInInventory(int item)
 {
+    /* in u4apple2, findig an item on the world map
+       (such as the bell) does not award xp, but I
+       consider that a bug, so it's not reproduced here */
     c->party->member(0)->awardXp(400);
     c->party->adjustKarma(KA_FOUND_ITEM);
     c->saveGame->items |= item;

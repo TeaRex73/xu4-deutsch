@@ -1017,6 +1017,12 @@ void Party::applyEffect(TileEffect effect)
 {
     int i;
 
+    /* In the unenhanced game, poison fields are no worse
+       than swamps */
+    if ((!settings.enhancements) && (effect == EFFECT_POISONFIELD)) {
+        effect = EFFECT_POISON;
+    }
+
     switch (effect) {
     case EFFECT_LAVA:
     case EFFECT_FIRE:
@@ -1036,7 +1042,7 @@ void Party::applyEffect(TileEffect effect)
                 break;
             case EFFECT_SLEEP:
             case EFFECT_POISONFIELD:
-                if (xu4_random(2) == 0) {
+                if (xu4_random(settings.enhancements ? 2 : 4) == 0) {
                     members[i]->applyEffect(effect);
                 }
                 break;
