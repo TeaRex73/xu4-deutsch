@@ -6,8 +6,8 @@
 #define MAPMGR_H
 
 #include <string>
-#include <vector>
 #include <utility>
+#include <vector>
 
 #include "map.h"
 #include "types.h"

@@ -5,8 +5,8 @@
 #ifndef TILESET_H
 #define TILESET_H
 
-#include <string>
 #include <map>
+#include <string>
 
 #include "types.h"
 

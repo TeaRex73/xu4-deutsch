@@ -9,13 +9,14 @@
 #include "debug.h"
 #include "direction.h"
 #include "image.h"
-#include "settings.h"
 #include "screen.h"
+#include "settings.h"
 #include "tile.h"
 #include "tileanim.h"
 #include "tileset.h"
 #include "types.h"
 #include "u4.h"
+
 
 TileView::TileView(int x, int y, int columns, int rows)
     :View(x, y, columns * TILE_WIDTH, rows * TILE_HEIGHT),

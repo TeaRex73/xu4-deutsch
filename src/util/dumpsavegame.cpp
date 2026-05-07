@@ -2,16 +2,14 @@
 #include <cstdlib>
 #include <cwchar>
 
-#include "savegame.h"
 #include "names.h"
+#include "savegame.h"
 #include "utils.h"
 
 
-int verbose = 0;
-
-void showSaveGame(const SaveGame *sg);
-void showSaveGamePlayerRecord(const SaveGamePlayerRecord *rec);
-char *itemsString(unsigned short items);
+static void showSaveGame(const SaveGame *sg);
+static void showSaveGamePlayerRecord(const SaveGamePlayerRecord *rec);
+static char *itemsString(unsigned short items);
 
 int main(int argc, const char *argv[])
 {
@@ -31,7 +29,7 @@ int main(int argc, const char *argv[])
     return EXIT_SUCCESS;
 }
 
-void showSaveGame(const SaveGame *sg)
+static void showSaveGame(const SaveGame *sg)
 {
     int i;
     std::printf("???: %x\n", sg->unknown1);
@@ -106,7 +104,7 @@ void showSaveGame(const SaveGame *sg)
     }
 }
 
-void showSaveGamePlayerRecord(const SaveGamePlayerRecord *rec)
+static void showSaveGamePlayerRecord(const SaveGamePlayerRecord *rec)
 {
     static const char *const weapNames[] = {
         "Hands",
@@ -164,7 +162,7 @@ void showSaveGamePlayerRecord(const SaveGamePlayerRecord *rec)
     );
 }
 
-char *itemsString(unsigned short items)
+static char *itemsString(unsigned short items)
 {
     static char buffer[256];
     int first = 1;

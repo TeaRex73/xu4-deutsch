@@ -9,8 +9,8 @@
 #include <string>
 #include <vector>
 
-#include "object.h"
 #include "movement.h"
+#include "object.h"
 #include "savegame.h"
 #include "types.h"
 

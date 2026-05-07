@@ -14,9 +14,9 @@
 #include "cursors.h"
 #include "error.h"
 #include "image.h"
-#include "settings.h"
 #include "scale.h"
 #include "screen.h"
+#include "settings.h"
 #include "u4.h"
 #include "u4_sdl.h"
 

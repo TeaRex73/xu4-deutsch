@@ -12,9 +12,9 @@
 #include "location.h"
 
 #include "annotation.h"
+#include "combat.h"
 #include "context.h"
 #include "controller.h"
-#include "combat.h"
 #include "creature.h"
 #include "event.h"
 #include "game.h"

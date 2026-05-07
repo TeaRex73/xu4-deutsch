@@ -5,10 +5,15 @@
 #include "vc6.h" // Fixes things if you're using VC6, does nothing otherwise
 
 #include <algorithm>
+
 #include "object.h"
+
 #include "context.h"
 #include "direction.h"
+#include "game.h"
 #include "map.h"
+#include "screen.h"
+
 
 std::set<Object *> Object::all_objects;
 
@@ -137,9 +142,6 @@ void Object::remove()
         }
     }
 }
-
-#include "screen.h"
-#include "game.h"
 
 void Object::animateMovement() const
 {

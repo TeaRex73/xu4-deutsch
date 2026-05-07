@@ -11,11 +11,11 @@
 #include "death.h"
 
 #include "aura.h"
-#include "map.h"
 #include "context.h"
 #include "event.h"
 #include "game.h"
 #include "location.h"
+#include "map.h"
 #include "mapmgr.h"
 #include "music.h"
 #include "player.h"

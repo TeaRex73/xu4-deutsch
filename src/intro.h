@@ -10,10 +10,10 @@
 #include <vector>
 
 #include "controller.h"
-#include "menu.h"
-#include "observer.h"
 #include "image.h"
 #include "imageview.h"
+#include "menu.h"
+#include "observer.h"
 #include "textview.h"
 #include "tileview.h"
 #include "types.h"

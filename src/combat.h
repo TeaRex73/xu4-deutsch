@@ -5,12 +5,12 @@
 #ifndef COMBAT_H
 #define COMBAT_H
 
-#include "direction.h"
-#include "map.h"
 #include "controller.h"
 #include "coords.h"
 #include "creature.h"
+#include "direction.h"
 #include "game.h"
+#include "map.h"
 #include "observer.h"
 #include "player.h"
 #include "savegame.h"

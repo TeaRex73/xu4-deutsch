@@ -5,8 +5,8 @@
 #ifndef DEBUG_H
 #define DEBUG_H
 
-#include <string>
 #include <cstdio>
+#include <string>
 
 /**
  * Define XU4_FUNC as the function name.  Most compilers define

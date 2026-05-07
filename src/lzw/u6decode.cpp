@@ -35,8 +35,9 @@
 
 #include "u6decode.h"
 
-#include "u6stack.h"
 #include "u6dict.h"
+#include "u6stack.h"
+
 
 using namespace U6Decode;
 

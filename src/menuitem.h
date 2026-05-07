@@ -5,8 +5,8 @@
 #ifndef MENUITEM_H
 #define MENUITEM_H
 
-#include <string>
 #include <set>
+#include <string>
 #include <vector>
 
 class MenuEvent;

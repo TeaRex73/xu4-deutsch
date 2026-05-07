@@ -10,8 +10,8 @@
 #include <string>
 #include <vector>
 
-#include "direction.h"
 #include "controller.h"
+#include "direction.h"
 #include "screen.h"
 
 

@@ -4,9 +4,9 @@
 
 #include "vc6.h" // Fixes things if you're using VC6, does nothing otherwise
 
+#include <cstdarg>
 #include <cstdio>
 #include <cstdlib>
-#include <cstdarg>
 
 #include <libxml/globals.h>
 #include <libxml/parser.h>

@@ -5,8 +5,8 @@
 #ifndef TILEANIM_H
 #define TILEANIM_H
 
-#include <string>
 #include <map>
+#include <string>
 #include <vector>
 
 #include "direction.h"

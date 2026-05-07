@@ -6,8 +6,10 @@
 #define XML_H
 
 #include <string>
-#include <libxml/xmlstring.h>
+
 #include <libxml/parser.h>
+#include <libxml/xmlstring.h>
+
 
 xmlDocPtr xmlParse(const char *filename);
 bool xmlPropExists(xmlNodePtr node, const char *name);

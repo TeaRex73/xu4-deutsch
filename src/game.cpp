@@ -26,8 +26,8 @@
 #include "cheat.h"
 #include "city.h"
 #include "combat.h"
-#include "conversation.h"
 #include "context.h"
+#include "conversation.h"
 #include "creature.h"
 #include "death.h"
 #include "debug.h"
@@ -70,8 +70,8 @@
 #include "tilemap.h"
 #include "tileset.h"
 #include "types.h"
-#include "utils.h"
 #include "u4.h"
+#include "utils.h"
 #include "weapon.h"
 
 
@@ -787,7 +787,10 @@ void GameController::finishTurn()
 {
     extern std::atomic_bool deathSequenceRunning;
     if (deathSequenceRunning) {
-        /* none of this makes sense if party is already dead */
+        /* none of this makes sense if party is already dead,
+           and we have to re-check it after every function call that
+           could possibly kill the party, otherwise e.g. storm
+           sounds can be played after death */
         return;
     }
     c->lastCommandTime = std::time(nullptr);
@@ -797,7 +800,8 @@ void GameController::finishTurn()
         c->party->endTurn();
         /* count down the aura, if there is one */
         c->aura->passTurn();
-        gameCheckHullIntegrity();
+        gameCheckHullIntegrity(); // could kill party
+        if (deathSequenceRunning) return;
         /* update party stats */
         c->stats->setView(STATS_PARTY_OVERVIEW);
         screenUpdate(&this->mapArea, true, false);
@@ -810,9 +814,12 @@ void GameController::finishTurn()
                 c->location->map->tileTypeAt(
                     c->location->coords, WITH_GROUND_OBJECTS
                 )->getEffect()
-            );
+            ); // could kill party
+            if (deathSequenceRunning) return;
             // Move creatures and see if something is attacking the avatar
             attacker = c->location->map->moveObjects(c->location->coords);
+            // the above could kill party
+            if (deathSequenceRunning) return;
             // Something's attacking!  Start combat!
             if (attacker) {
                 gameCreatureAttack(attacker);
@@ -821,7 +828,8 @@ void GameController::finishTurn()
             // cleanup old creatures and spawn new ones
             creatureCleanup();
             checkRandomCreatures();
-            checkBridgeTrolls();
+            checkBridgeTrolls(); //could kill party
+            if (deathSequenceRunning) return;
         }
         /* update map annotations */
         c->location->map->annotations->passTurn();
@@ -1346,7 +1354,7 @@ bool GameController::keyPressed(int key)
             // on the number of party members. Instead of just redoing the
             // dialog, it's a bit severe, but easier to unload the whole level.
             bool cleanMap =
-                (c->party->size() == 1 && c->location->map->id == 100);
+                (c->party->size() < 3 && c->location->map->id == 100);
             if (!usePortalAt(
                     c->location, c->location->coords, ACTION_DESCEND
                 )) {
@@ -3523,7 +3531,7 @@ void gameCheckHullIntegrity()
         killAll = true;
     }
     /* On foot in the water without ship, no land around */
-    if (!collisionOverride
+    else if (!collisionOverride
         && (c->transportContext == TRANSPORT_FOOT)
         && c->location->map->tileTypeAt(
             c->location->coords, WITHOUT_OBJECTS

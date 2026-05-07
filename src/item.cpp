@@ -23,6 +23,7 @@
 #include "player.h"
 #include "savegame.h"
 #include "screen.h"
+#include "settings.h"
 #include "sound.h"
 #include "tile.h"
 #include "tileset.h"
@@ -526,7 +527,7 @@ static void useHorn(int)
     screenMessage(
         "\n\nDAS HORN L[SST EINEN SCHAUERLICHEN KLANG ERSCHALLEN!\n"
     );
-    soundPlay(SOUND_STORM, false);
+    if (settings.enhancements) soundPlay(SOUND_STORM, false);
     c->aura->set(Aura::HORN, 10);
 }
 

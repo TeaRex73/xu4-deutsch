@@ -24,8 +24,8 @@
 #define SCREEN_H
 
 #include <atomic>
-#include <vector>
 #include <string>
+#include <vector>
 
 class Image;
 class TileView;

@@ -7,9 +7,11 @@
 #include <map>
 #include <utility>
 
-#include "error.h"
-#include "coords.h"
 #include "moongate.h"
+
+#include "coords.h"
+#include "error.h"
+
 
 /* map moon phase to map coordinates */
 typedef std::map<int, Coords> MoongateList;

@@ -5,16 +5,17 @@
 #include "vc6.h" // Fixes things if you're using VC6, does nothing otherwise
 
 #include <cctype>
+#include <climits>
 #include <cstdint>
 #include <cstdio>
 #include <cwchar>
 
-#include <limits.h>
-
 #include "u4file.h"
-#include "unzip.h"
+
 #include "debug.h"
+#include "unzip.h"
 #include "xordata.h"
+
 
 /**
  * A specialization of U4FILE that uses C stdio internally.

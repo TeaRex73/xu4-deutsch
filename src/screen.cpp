@@ -4,9 +4,9 @@
 
 #include "vc6.h" // Fixes things if you're using VC6, does nothing otherwise
 
-#include <cstdio>
-#include <cstdarg>
 #include <cfloat>
+#include <cstdarg>
+#include <cstdio>
 #include <cstring>
 #include <list>
 #include <map>
@@ -23,9 +23,9 @@
 #include "error.h"
 #include "event.h"
 #include "game.h"
-#include "intro.h"
 #include "image.h"
 #include "imagemgr.h"
+#include "intro.h"
 #include "location.h"
 #include "map.h"
 #include "names.h"
