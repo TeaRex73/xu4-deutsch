@@ -70,7 +70,10 @@ jobs:
           cp -av README.md README.TXT LIESMICH.TXT WINDOWS.TXT RASPBERR.TXT artifact2x/U4DEU-Win64-2xZoom-$GIT_HASH/
           cp -av u4-64.bat artifact2x/U4DEU-Win64-2xZoom-$GIT_HASH/Daten/u4.bat
           cp -av apple2* AUTHORS COPYING OLD-README border.bmp credits.html fixpal* mirrors.bat MessageBox.js u4.desktop xu4.cfg xu4.spec artifact2x/U4DEU-Win64-2xZoom-$GIT_HASH/Daten/
-          cp -av conf/* artifact2x/U4DEU-Win64-2xZoom-$GIT_HASH/Daten/
+          mkdir artifact2x/U4DEU-Win64-2xZoom-$GIT_HASH/Daten/conf
+          cp -av conf/*.xml artifact2x/U4DEU-Win64-2xZoom-$GIT_HASH/Daten/conf
+          mkdir artifact2x/U4DEU-Win64-2xZoom-$GIT_HASH/Daten/conf/dtd
+          cp -av conf/dtd/*.dtd artifact2x/U4DEU-Win64-2xZoom-$GIT_HASH/Daten/conf/dtd
           rm -rf artifact2x/U4DEU-Win64-2xZoom-$GIT_HASH/Daten/iOS
           mkdir artifact2x/U4DEU-Win64-2xZoom-$GIT_HASH/Daten/graphics
           cp -av graphics/ega artifact2x/U4DEU-Win64-2xZoom-$GIT_HASH/Daten/graphics/
