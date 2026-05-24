@@ -206,7 +206,7 @@ static Response *lordBritishGetHelp(const DynamicResponse *)
         text = std::string(
             "Bevor du den Abgrund betrittst, ben|tigst "
             "du den Dreiteiligen Schl}ssel, und das Wort "
-            "des ]berganges.\n\n Dann darfst du die Kammer "
+            "des ]berganges.\n\nDann darfst du die Kammer "
             "des Kodexes der Ultimativen Weisheit "
             "betreten!\n"
         );

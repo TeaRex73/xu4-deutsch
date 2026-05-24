@@ -656,11 +656,16 @@ static bool spellAwaken(int player)
 
 static bool spellBlink(int dir)
 {
+    /* TODO: Blink should only teleport within the active 32x32 area.
+       It should go as far as it can without leaving this active area.
+       No randomness should be involved. See u4remasteredA2, label
+       "spell_blink:" in file "src/patchedgame/program/ULT4.s" */
     MapCoords coords = c->location->coords;
     /* Blink doesn't work near the mouth of the abyss */
     /* Note: This means you can teleport to Hythloth from the top of the
        map, and that you can teleport to the abyss from the left edge of
-       the map. At least in the original. This is now fixed. */
+       the map. At least in the original. This is now fixed for enhanced
+       games. */
     if ((coords.x >= 192) && (coords.y >= 192)) {
         return false;
     }
@@ -672,6 +677,7 @@ static bool spellBlink(int dir)
         distance = 0x10 - distance;
     }
     /* see if we move another 16 spaces over */
+    /* TODO: this algorithm has nothing to do with u4apple2. */
     int diff = 0x10 - distance;
     if ((diff > 0) && (xu4_random(diff * diff) > distance)) {
         distance += 0x10;
@@ -700,7 +706,7 @@ static bool spellBlink(int dir)
             success = false;
         } else {
             EventHandler::simulateDiskLoad(2000);
-            c->location->coords = coords;
+            c->location->coords = MapCoords(static_cast<Coords>(coords));
             success = true;
         }
     } else {

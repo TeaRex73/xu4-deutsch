@@ -20,7 +20,7 @@ extern "C" {
 
 #include "unzip.h"
 
-    
+
 #ifndef local
 #define local static
 #endif
