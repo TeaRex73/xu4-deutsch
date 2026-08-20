@@ -208,7 +208,7 @@ void StatsArea::update(Aura *aura)
         summary.drawCharMasked(0, STATS_AREA_WIDTH / 2, 0, mask);
         break;
     case Aura::HORN:
-        summary.drawChar(CHARSET_REDDOT, STATS_AREA_WIDTH / 2, 0);
+        summary.drawChar(CHARSET_RED_DOT, STATS_AREA_WIDTH / 2, 0);
         break;
     case Aura::JINX:
         summary.drawChar('J', STATS_AREA_WIDTH / 2, 0);
@@ -239,7 +239,7 @@ void StatsArea::highlightPlayer(int player)
 void StatsArea::clear()
 {
     for (int i = 0; i < STATS_AREA_WIDTH; i++) {
-        title.drawChar(CHARSET_HORIZBAR, i, 0);
+        title.drawChar(CHARSET_HORIZONTAL_BAR, i, 0);
     }
     mainArea.clear();
     summary.clear();

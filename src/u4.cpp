@@ -36,18 +36,21 @@
 #include "weapon.h"
 
 
+/* globals */
+// ReSharper disable CppUseInternalLinkage
 bool verbose = false;
 int quit = 0;
 bool useProfile = false;
-std::string profileName = "";
-Performance perf("debug/performance.txt");
+std::string profileName;
+// ReSharper restore CppUseInternalLinkage
 
 
-int main(int argc, char *argv[])
+int main(const int argc, char **argv)
 {
-    U4FILE *avatar;
     Debug::initGlobal("debug/global.txt");
-    if (!(avatar = u4fopen("AVATAR.EXE"))) {
+    static Performance perf("debug/performance.txt");
+    U4FILE *avatar = u4fopen("AVATAR.EXE");
+    if (!avatar) {
         errorFatal(
             "xu4 erfordert die MS-DOS-Version von Ultima IV. "
             "Diese muss sich im gleichen Verzeichnisse befinden "
@@ -56,7 +59,7 @@ int main(int argc, char *argv[])
             "\n\nDies kannst Du erreichen, indem Du"
             "\n - \"ultima4.zip\" von "
             "https://ultima.thatfleminggent.com/ultima4.zip "
-            "herunterlaedtst\n - die Datei \"ultima4.zip\" an den Ort "
+            "herunterlaedst\n - die Datei \"ultima4.zip\" an den Ort "
             "der ausfuehrbaren Datei u4.exe kopierst."
             "\n\nBesuche die xu4-Webseite fuer weitere "
             "Informationen.\n\thttp://xu4.sourceforge.net/"
@@ -70,10 +73,10 @@ int main(int argc, char *argv[])
      * they need to be identified before the settings are initialized.
      */
     for (i = 1; i < static_cast<unsigned int>(argc); i++) {
-        if (((std::strcmp(argv[i], "-p") == 0)
-             || (std::strcmp(argv[i], "-profile") == 0)
-             || (std::strcmp(argv[i], "--profile") == 0))
-            && (static_cast<unsigned int>(argc) > i + 1)) {
+        if ((std::strcmp(argv[i], "-p") == 0
+             || std::strcmp(argv[i], "-profile") == 0
+             || std::strcmp(argv[i], "--profile") == 0)
+            && static_cast<unsigned int>(argc) > i + 1) {
             // when grabbing the profile name:
             // 1. trim leading whitespace
             // 2. truncate the string at 20 characters
@@ -98,8 +101,8 @@ int main(int argc, char *argv[])
     settings.init(useProfile, profileName);
     /* update the settings based upon command-line arguments */
     for (i = 1; i < static_cast<unsigned int>(argc); i++) {
-        if ((std::strcmp(argv[i], "-filter") == 0)
-            || (std::strcmp(argv[i], "--filter") == 0)) {
+        if (std::strcmp(argv[i], "-filter") == 0
+            || std::strcmp(argv[i], "--filter") == 0) {
             if (static_cast<unsigned int>(argc) > i + 1) {
                 settings.filter = argv[i + 1];
                 i++;
@@ -114,9 +117,9 @@ int main(int argc, char *argv[])
             settings.scale = std::strtoul(argv[i + 1], nullptr, 0);
             i++;
 #endif
-        } else if ((std::strcmp(argv[i], "-p") == 0)
-                   || (std::strcmp(argv[i], "-profile") == 0)
-                   || (std::strcmp(argv[i], "--profile") == 0)) {
+        } else if (std::strcmp(argv[i], "-p") == 0
+                   || std::strcmp(argv[i], "-profile") == 0
+                   || std::strcmp(argv[i], "--profile") == 0) {
             if (static_cast<unsigned int>(argc) > i + 1) {
                 // do nothing
                 i++;
@@ -125,26 +128,26 @@ int main(int argc, char *argv[])
                 " See --help for more detail.\n",
                 argv[i]
             );
-        } else if ((std::strcmp(argv[i], "-i") == 0)
-                   || (std::strcmp(argv[i], "-skipintro") == 0)
-                   || (std::strcmp(argv[i], "--skipintro") == 0)) {
+        } else if (std::strcmp(argv[i], "-i") == 0
+                   || std::strcmp(argv[i], "-skipintro") == 0
+                   || std::strcmp(argv[i], "--skipintro") == 0) {
             skipIntro = 1;
-        } else if ((std::strcmp(argv[i], "-v") == 0)
-                   || (std::strcmp(argv[i], "-verbose") == 0)
-                   || (std::strcmp(argv[i], "--verbose") == 0)) {
+        } else if (std::strcmp(argv[i], "-v") == 0
+                   || std::strcmp(argv[i], "-verbose") == 0
+                   || std::strcmp(argv[i], "--verbose") == 0) {
             verbose = true;
-        } else if ((std::strcmp(argv[i], "-f") == 0)
-                   || (std::strcmp(argv[i], "-fullscreen") == 0)
-                   || (std::strcmp(argv[i], "--fullscreen") == 0)) {
-            settings.fullscreen = 1;
-        } else if ((std::strcmp(argv[i], "-q") == 0)
-                   || (std::strcmp(argv[i], "-quiet") == 0)
-                   || (std::strcmp(argv[i], "--quiet") == 0)) {
+        } else if (std::strcmp(argv[i], "-f") == 0
+                   || std::strcmp(argv[i], "-fullscreen") == 0
+                   || std::strcmp(argv[i], "--fullscreen") == 0) {
+            settings.fullscreen = true;
+        } else if (std::strcmp(argv[i], "-q") == 0
+                   || std::strcmp(argv[i], "-quiet") == 0
+                   || std::strcmp(argv[i], "--quiet") == 0) {
             settings.musicVol = 0;
             settings.soundVol = 0;
-        } else if ((std::strcmp(argv[i], "-h") == 0)
-                   || (std::strcmp(argv[i], "-help") == 0)
-                   || (std::strcmp(argv[i], "--help") == 0)) {
+        } else if (std::strcmp(argv[i], "-h") == 0
+                   || std::strcmp(argv[i], "-help") == 0
+                   || std::strcmp(argv[i], "--help") == 0) {
             std::printf("xu4: Ultima IV Neu Geschaffen und auf Deutsch\n");
             std::printf("v%s\n\n", VERSION);
 
@@ -239,6 +242,7 @@ int main(int argc, char *argv[])
         delete eventHandler;
         U4PaletteLoader::cleanup();
         delete &settings;
+        // ReSharper disable once CppRedundantDereferencingAndTakingAddress
         delete &u4Path;
         return quit > 1 ? EXIT_FAILURE : EXIT_SUCCESS;
     }
@@ -276,6 +280,7 @@ int main(int argc, char *argv[])
     delete eventHandler;
     U4PaletteLoader::cleanup();
     delete &settings;
+    // ReSharper disable once CppRedundantDereferencingAndTakingAddress
     delete &u4Path;
     return quit > 1 ? EXIT_FAILURE : EXIT_SUCCESS;
 } // main

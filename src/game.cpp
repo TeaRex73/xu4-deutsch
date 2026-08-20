@@ -246,7 +246,7 @@ int AlphaActionController::get(
 }
 
 GameController::GameController()
-    :mapArea(BORDER_WIDTH, BORDER_HEIGHT + 4, VIEWPORT_W, VIEWPORT_H),
+    :mapArea(BORDER_WIDTH, BORDER_HEIGHT + 4, VIEWPORT_WIDTH, VIEWPORT_HEIGHT),
      paused(false),
      pausedTimer(0)
 {
@@ -1006,7 +1006,7 @@ void gameSpellEffect(unsigned int spell, int player, Sound sound)
     case Spell::SFX_INVERT:
         gameUpdateScreen();
         game->mapArea.highlight(
-            0, 0, VIEWPORT_W * TILE_WIDTH, VIEWPORT_H * TILE_HEIGHT
+            0, 0, VIEWPORT_WIDTH * TILE_WIDTH, VIEWPORT_HEIGHT * TILE_HEIGHT
         );
         EventHandler::sleep(time);
         game->mapArea.unhighlight();
@@ -4124,8 +4124,8 @@ bool gameSpawnCreature(const Creature *m)
            // Make sure it's not in view of the player if not cheat-summoned
             if (
                 !m
-                && std::abs(dx) <= (VIEWPORT_W / 2)
-                && std::abs(dy) <= (VIEWPORT_H / 2)
+                && std::abs(dx) <= (VIEWPORT_WIDTH / 2)
+                && std::abs(dy) <= (VIEWPORT_HEIGHT / 2)
             ) {
                 return false;
             }

@@ -88,13 +88,13 @@ TileAnimSet *tileanims = nullptr;
 static ImageInfo *charsetInfo = nullptr;
 static ImageInfo *gemTilesInfo = nullptr;
 static void screenFindLineOfSight(
-    std::vector<MapTile> viewportTiles[VIEWPORT_W][VIEWPORT_H]
+    std::vector<MapTile> viewportTiles[VIEWPORT_WIDTH][VIEWPORT_HEIGHT]
 );
 static void screenFindLineOfSightDOS(
-    std::vector<MapTile> viewportTiles[VIEWPORT_W][VIEWPORT_H]
+    std::vector<MapTile> viewportTiles[VIEWPORT_WIDTH][VIEWPORT_HEIGHT]
 );
 static void screenFindLineOfSightEnhanced(
-    std::vector<MapTile> viewportTiles[VIEWPORT_W][VIEWPORT_H]
+    std::vector<MapTile> viewportTiles[VIEWPORT_WIDTH][VIEWPORT_HEIGHT]
 );
 static int screenNeedPrompt = 1;
 std::atomic_int screenCurrentCycle(0);
@@ -102,7 +102,7 @@ static int screenCursorX = 0;
 static int screenCursorY = 0;
 static int screenCursorStatus = 0;
 static int screenCursorEnabled = 1;
-static int screenLos[VIEWPORT_W][VIEWPORT_H];
+static int screenLos[VIEWPORT_WIDTH][VIEWPORT_HEIGHT];
 static const int BufferSize = 1024;
 extern bool verbose;
 std::atomic_bool screenMoving;
@@ -156,7 +156,7 @@ void screenInit()
     dungeonTileChars["brick_floor"] = CHARSET_FLOOR;
     dungeonTileChars["up_ladder"] = CHARSET_LADDER_UP;
     dungeonTileChars["down_ladder"] = CHARSET_LADDER_DOWN;
-    dungeonTileChars["up_down_ladder"] = CHARSET_LADDER_UPDOWN;
+    dungeonTileChars["up_down_ladder"] = CHARSET_LADDER_UP_DOWN;
     dungeonTileChars["chest"] = '$';
     dungeonTileChars["magic_orb"] = CHARSET_ORB;
     dungeonTileChars["wind_trap"] = 'F';
@@ -167,10 +167,10 @@ void screenInit()
     dungeonTileChars["fountain_acid"] = 'Q';
     dungeonTileChars["fountain_cure"] = 'Q';
     dungeonTileChars["fountain_poison"] = 'Q';
-    dungeonTileChars["secret_door"] = CHARSET_SDOOR;
+    dungeonTileChars["secret_door"] = CHARSET_SECRET_DOOR;
     dungeonTileChars["brick_wall"] = CHARSET_WALL;
     dungeonTileChars["dungeon_door"] = CHARSET_ROOM;
-    dungeonTileChars["avatar"] = CHARSET_REDDOT;
+    dungeonTileChars["avatar"] = CHARSET_RED_DOT;
     dungeonTileChars["dungeon_room_0"] = CHARSET_ROOM;
     dungeonTileChars["dungeon_room_1"] = CHARSET_ROOM;
     dungeonTileChars["dungeon_room_2"] = CHARSET_ROOM;
@@ -487,8 +487,8 @@ bool screenTileUpdate(TileView *view, const Coords &coords, bool redraw)
     int y = coords.y;
     int width = c->location->map->width;
     int height = c->location->map->height;
-    if ((width > VIEWPORT_W)
-        || (height > VIEWPORT_H)) {
+    if ((width > VIEWPORT_WIDTH)
+        || (height > VIEWPORT_HEIGHT)) {
         // Center the coordinates to the viewport if you're on centered-view
         // map.
         // Then wrap so that cannon fire works across edge of main map.
@@ -501,7 +501,7 @@ bool screenTileUpdate(TileView *view, const Coords &coords, bool redraw)
                 x -= width;
             }
         }
-        x += VIEWPORT_W / 2;
+        x += VIEWPORT_WIDTH / 2;
 
         y -= c->location->coords.y;
         if (c->location->map->border_behavior == Map::BORDER_WRAP) {
@@ -512,13 +512,13 @@ bool screenTileUpdate(TileView *view, const Coords &coords, bool redraw)
                 y -= height;
             }
         }
-        y += VIEWPORT_H / 2;
+        y += VIEWPORT_HEIGHT / 2;
     }
     // Draw if it is on screen
     if ((x >= 0)
         && (y >= 0)
-        && (x < VIEWPORT_W)
-        && (y < VIEWPORT_H)
+        && (x < VIEWPORT_WIDTH)
+        && (y < VIEWPORT_HEIGHT)
         && screenLos[x][y]) {
         view->drawTile(tiles, focus, x, y);
         if (redraw) {
@@ -552,18 +552,18 @@ void screenUpdate(TileView *view, bool showmap, bool blackout)
             c->location->map->tileset->getByName("avatar")->getId();
 #endif
         int x, y;
-        std::vector<MapTile> viewportTiles[VIEWPORT_W][VIEWPORT_H];
-        bool viewportFocus[VIEWPORT_W][VIEWPORT_H];
-        for (y = 0; y < VIEWPORT_H; y++) {
-            for (x = 0; x < VIEWPORT_W; x++) {
+        std::vector<MapTile> viewportTiles[VIEWPORT_WIDTH][VIEWPORT_HEIGHT];
+        bool viewportFocus[VIEWPORT_WIDTH][VIEWPORT_HEIGHT];
+        for (y = 0; y < VIEWPORT_HEIGHT; y++) {
+            for (x = 0; x < VIEWPORT_WIDTH; x++) {
                 viewportTiles[x][y] = screenViewportTile(
-                    VIEWPORT_W, VIEWPORT_H, x, y, viewportFocus[x][y]
+                    VIEWPORT_WIDTH, VIEWPORT_HEIGHT, x, y, viewportFocus[x][y]
                 );
             }
         }
         screenFindLineOfSight(viewportTiles);
-        for (y = 0; y < VIEWPORT_H; y++) {
-            for (x = 0; x < VIEWPORT_W; x++) {
+        for (y = 0; y < VIEWPORT_HEIGHT; y++) {
+            for (x = 0; x < VIEWPORT_WIDTH; x++) {
                 if (screenLos[x][y]) {
                     view->drawTile(
                         viewportTiles[x][y], viewportFocus[x][y], x, y
@@ -635,8 +635,8 @@ void screenDrawImageInMapArea(const std::string &name)
             (BORDER_HEIGHT + 4) * settings.scale,
             BORDER_WIDTH * settings.scale,
             BORDER_HEIGHT * settings.scale,
-            VIEWPORT_W * TILE_WIDTH * settings.scale,
-            VIEWPORT_H * TILE_HEIGHT * settings.scale
+            VIEWPORT_WIDTH * TILE_WIDTH * settings.scale,
+            VIEWPORT_HEIGHT * TILE_HEIGHT * settings.scale
         );
     }
 }
@@ -863,7 +863,7 @@ void screenSetCursorPos(int x, int y)
  * location in the middle. (original DOS algorithm)
  */
 static void screenFindLineOfSight(
-    std::vector<MapTile> viewportTiles[VIEWPORT_W][VIEWPORT_H]
+    std::vector<MapTile> viewportTiles[VIEWPORT_WIDTH][VIEWPORT_HEIGHT]
 )
 {
     int x, y;
@@ -874,8 +874,8 @@ static void screenFindLineOfSight(
      * if the map has the no line of sight flag, all is visible
      */
     if (c->location->map->flags & NO_LINE_OF_SIGHT) {
-        for (y = 0; y < VIEWPORT_H; y++) {
-            for (x = 0; x < VIEWPORT_W; x++) {
+        for (y = 0; y < VIEWPORT_HEIGHT; y++) {
+            for (x = 0; x < VIEWPORT_WIDTH; x++) {
                 screenLos[x][y] = 1;
             }
         }
@@ -884,8 +884,8 @@ static void screenFindLineOfSight(
     /*
      * otherwise calculate it from the map data
      */
-    for (y = 0; y < VIEWPORT_H; y++) {
-        for (x = 0; x < VIEWPORT_W; x++) {
+    for (y = 0; y < VIEWPORT_HEIGHT; y++) {
+        for (x = 0; x < VIEWPORT_WIDTH; x++) {
             screenLos[x][y] = 0;
         }
     }
@@ -906,41 +906,41 @@ static void screenFindLineOfSight(
  * location in the middle. (original DOS algorithm)
  */
 static void screenFindLineOfSightDOS(
-    std::vector<MapTile> viewportTiles[VIEWPORT_W][VIEWPORT_H]
+    std::vector<MapTile> viewportTiles[VIEWPORT_WIDTH][VIEWPORT_HEIGHT]
 )
 {
     int x, y;
-    screenLos[VIEWPORT_W / 2][VIEWPORT_H / 2] = 1;
-    for (x = VIEWPORT_W / 2 - 1; x >= 0; x--) {
-        if (screenLos[x + 1][VIEWPORT_H / 2]
-            && !viewportTiles[x + 1][VIEWPORT_H / 2].front().getTileType()
+    screenLos[VIEWPORT_WIDTH / 2][VIEWPORT_HEIGHT / 2] = 1;
+    for (x = VIEWPORT_WIDTH / 2 - 1; x >= 0; x--) {
+        if (screenLos[x + 1][VIEWPORT_HEIGHT / 2]
+            && !viewportTiles[x + 1][VIEWPORT_HEIGHT / 2].front().getTileType()
             ->isOpaque()) {
-            screenLos[x][VIEWPORT_H / 2] = 1;
+            screenLos[x][VIEWPORT_HEIGHT / 2] = 1;
         }
     }
-    for (x = VIEWPORT_W / 2 + 1; x < VIEWPORT_W; x++) {
-        if (screenLos[x - 1][VIEWPORT_H / 2]
-            && !viewportTiles[x - 1][VIEWPORT_H / 2].front().getTileType()
+    for (x = VIEWPORT_WIDTH / 2 + 1; x < VIEWPORT_WIDTH; x++) {
+        if (screenLos[x - 1][VIEWPORT_HEIGHT / 2]
+            && !viewportTiles[x - 1][VIEWPORT_HEIGHT / 2].front().getTileType()
             ->isOpaque()) {
-            screenLos[x][VIEWPORT_H / 2] = 1;
+            screenLos[x][VIEWPORT_HEIGHT / 2] = 1;
         }
     }
-    for (y = VIEWPORT_H / 2 - 1; y >= 0; y--) {
-        if (screenLos[VIEWPORT_W / 2][y + 1]
-            && !viewportTiles[VIEWPORT_W / 2][y + 1].front().getTileType()
+    for (y = VIEWPORT_HEIGHT / 2 - 1; y >= 0; y--) {
+        if (screenLos[VIEWPORT_WIDTH / 2][y + 1]
+            && !viewportTiles[VIEWPORT_WIDTH / 2][y + 1].front().getTileType()
             ->isOpaque()) {
-            screenLos[VIEWPORT_W / 2][y] = 1;
+            screenLos[VIEWPORT_WIDTH / 2][y] = 1;
         }
     }
-    for (y = VIEWPORT_H / 2 + 1; y < VIEWPORT_H; y++) {
-        if (screenLos[VIEWPORT_W / 2][y - 1]
-            && !viewportTiles[VIEWPORT_W / 2][y - 1].front().getTileType()
+    for (y = VIEWPORT_HEIGHT / 2 + 1; y < VIEWPORT_HEIGHT; y++) {
+        if (screenLos[VIEWPORT_WIDTH / 2][y - 1]
+            && !viewportTiles[VIEWPORT_WIDTH / 2][y - 1].front().getTileType()
             ->isOpaque()) {
-            screenLos[VIEWPORT_W / 2][y] = 1;
+            screenLos[VIEWPORT_WIDTH / 2][y] = 1;
         }
     }
-    for (y = VIEWPORT_H / 2 - 1; y >= 0; y--) {
-        for (x = VIEWPORT_W / 2 - 1; x >= 0; x--) {
+    for (y = VIEWPORT_HEIGHT / 2 - 1; y >= 0; y--) {
+        for (x = VIEWPORT_WIDTH / 2 - 1; x >= 0; x--) {
             if (screenLos[x][y + 1]
                 && !viewportTiles[x][y + 1].front().getTileType()
                 ->isOpaque()) {
@@ -955,7 +955,7 @@ static void screenFindLineOfSightDOS(
                 screenLos[x][y] = 1;
             }
         }
-        for (x = VIEWPORT_W / 2 + 1; x < VIEWPORT_W; x++) {
+        for (x = VIEWPORT_WIDTH / 2 + 1; x < VIEWPORT_WIDTH; x++) {
             if (screenLos[x][y + 1]
                 && !viewportTiles[x][y + 1].front().getTileType()
                 ->isOpaque()) {
@@ -971,8 +971,8 @@ static void screenFindLineOfSightDOS(
             }
         }
     }
-    for (y = VIEWPORT_H / 2 + 1; y < VIEWPORT_H; y++) {
-        for (x = VIEWPORT_W / 2 - 1; x >= 0; x--) {
+    for (y = VIEWPORT_HEIGHT / 2 + 1; y < VIEWPORT_HEIGHT; y++) {
+        for (x = VIEWPORT_WIDTH / 2 - 1; x >= 0; x--) {
             if (screenLos[x][y - 1]
                 && !viewportTiles[x][y - 1].front().getTileType()
                 ->isOpaque()) {
@@ -987,7 +987,7 @@ static void screenFindLineOfSightDOS(
                 screenLos[x][y] = 1;
             }
         }
-        for (x = VIEWPORT_W / 2 + 1; x < VIEWPORT_W; x++) {
+        for (x = VIEWPORT_WIDTH / 2 + 1; x < VIEWPORT_WIDTH; x++) {
             if (screenLos[x][y - 1]
                 && !viewportTiles[x][y - 1].front().getTileType()
                 ->isOpaque()) {
@@ -1025,7 +1025,7 @@ static void screenFindLineOfSightDOS(
  * is always at the center of the screen.
  */
 static void screenFindLineOfSightEnhanced(
-    std::vector<MapTile> viewportTiles[VIEWPORT_W][VIEWPORT_H]
+    std::vector<MapTile> viewportTiles[VIEWPORT_WIDTH][VIEWPORT_HEIGHT]
 )
 {
     int x, y;
@@ -1321,8 +1321,8 @@ static void screenFindLineOfSightEnhanced(
             errorFatal("BUG: wrong octant");
         } // switch
         // determine the origin point for the current LOS octant
-        const int xOrigin = VIEWPORT_W / 2;
-        const int yOrigin = VIEWPORT_H / 2;
+        const int xOrigin = VIEWPORT_WIDTH / 2;
+        const int yOrigin = VIEWPORT_HEIGHT / 2;
         // make sure the segment doesn't reach out of bounds
         int maxWidth = xOrigin;
         int maxHeight = yOrigin;
@@ -1464,8 +1464,8 @@ static void screenFindLineOfSightEnhanced(
     }
     // go through all tiles on the viewable area and set the appropriate
     // visibility
-    for (y = 0; y < VIEWPORT_H; y++) {
-        for (x = 0; x < VIEWPORT_W; x++) {
+    for (y = 0; y < VIEWPORT_HEIGHT; y++) {
+        for (x = 0; x < VIEWPORT_WIDTH; x++) {
             // if the shadow flags equal __VCH, hide it, otherwise
             // it's fully visible
             //
@@ -1591,8 +1591,8 @@ void screenEraseMapArea()
     screen->fillRect(
         BORDER_WIDTH * settings.scale,
         BORDER_HEIGHT * settings.scale + 4 * settings.scale,
-        VIEWPORT_W * TILE_WIDTH * settings.scale,
-        VIEWPORT_H * TILE_HEIGHT * settings.scale,
+        VIEWPORT_WIDTH * TILE_WIDTH * settings.scale,
+        VIEWPORT_HEIGHT * TILE_HEIGHT * settings.scale,
         0,
         0,
         0
@@ -1778,8 +1778,8 @@ void screenGemUpdate()
     screen->fillRect(
         BORDER_WIDTH * settings.scale,
         BORDER_HEIGHT * settings.scale + 4 * settings.scale,
-        VIEWPORT_W * TILE_WIDTH * settings.scale,
-        VIEWPORT_H * TILE_HEIGHT * settings.scale,
+        VIEWPORT_WIDTH * TILE_WIDTH * settings.scale,
+        VIEWPORT_HEIGHT * TILE_HEIGHT * settings.scale,
         0,
         0,
         0

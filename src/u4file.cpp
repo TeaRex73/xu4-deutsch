@@ -129,7 +129,7 @@ U4PATH::~U4PATH()
 
 U4PATH *U4PATH::getInstance()
 {
-    if (!instance) {
+    if (__builtin_expect(!instance, false)) {
         instance = new U4PATH();
         instance->initDefaultPaths();
     }

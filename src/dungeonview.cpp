@@ -44,8 +44,8 @@ DungeonView *DungeonView::getInstance()
         instance = new DungeonView(
             BORDER_WIDTH,
             BORDER_HEIGHT + 4 * settings.scale,
-            VIEWPORT_W,
-            VIEWPORT_H
+            VIEWPORT_WIDTH,
+            VIEWPORT_HEIGHT
         );
     }
     return instance;
@@ -129,17 +129,17 @@ void DungeonView::display(const Context *ctx, TileView *view) const
             ctx->location->map->tileset->getByName("black")->getId();
         static MapTile avatar =
             ctx->location->map->tileset->getByName("avatar")->getId();
-        for (int y = 0; y < VIEWPORT_H; y++) {
-            for (int x = 0; x < VIEWPORT_W; x++) {
+        for (int y = 0; y < VIEWPORT_HEIGHT; y++) {
+            for (int x = 0; x < VIEWPORT_WIDTH; x++) {
                         std::vector<MapTile> tiles =
                             getTiles(
-                                VIEWPORT_H / 2 - y,
-                                x - VIEWPORT_W / 2
+                                VIEWPORT_HEIGHT / 2 - y,
+                                x - VIEWPORT_WIDTH / 2
                             );
                 /* Only show blackness if there is no light */
                 if (ctx->party->getTorchDuration() <= 0) {
                     view->drawTile(black, false, x, y);
-                } else if (x == VIEWPORT_W / 2 && y == VIEWPORT_H / 2) {
+                } else if (x == VIEWPORT_WIDTH / 2 && y == VIEWPORT_HEIGHT / 2) {
                     view->drawTile(avatar, false, x, y);
                 } else {
                     view->drawTile(tiles, false, x, y);
@@ -203,11 +203,11 @@ void DungeonView::drawInDungeon(
     }
     if (tiledWall) {
         const int i_x = static_cast<int>(
-            SCALED((VIEWPORT_W * tileWidth / 2.0) + this->x)
+            SCALED((VIEWPORT_WIDTH * tileWidth / 2.0) + this->x)
             - (scaled->width() >> 1)
         );
         const int i_y = static_cast<int>(
-            SCALED((VIEWPORT_H * tileHeight / 2.0) + this->y)
+            SCALED((VIEWPORT_HEIGHT * tileHeight / 2.0) + this->y)
             - (scaled->height() >> 1)
         );
         const int f_x = i_x + scaled->width();
@@ -226,11 +226,11 @@ void DungeonView::drawInDungeon(
             0, (d_scale[distance] - offset_adj) * offset_multiplier
         );
         const int x = static_cast<int>(
-            SCALED((VIEWPORT_W * tileWidth / 2.0) + this->x)
+            SCALED((VIEWPORT_WIDTH * tileWidth / 2.0) + this->x)
             - (scaled->width() >> 1)
         );
         const int y = static_cast<int>(
-            SCALED((VIEWPORT_H * tileHeight / 2.0) + this->y + y_offset)
+            SCALED((VIEWPORT_HEIGHT * tileHeight / 2.0) + this->y + y_offset)
             - (scaled->height() >> 3)
         );
         scaled->drawSubRectOn(
@@ -239,8 +239,8 @@ void DungeonView::drawInDungeon(
             y,
             0,
             0,
-            SCALED(tileWidth * VIEWPORT_W + this->x) - x,
-            SCALED(tileHeight * VIEWPORT_H + this->y) - y
+            SCALED(tileWidth * VIEWPORT_WIDTH + this->x) - x,
+            SCALED(tileHeight * VIEWPORT_HEIGHT + this->y) - y
         );
     }
     delete scaled;
