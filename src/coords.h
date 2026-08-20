@@ -12,26 +12,28 @@ class Coords {
 public:
     int x, y, z;
 
-    explicit Coords(int initx = 0, int inity = 0, int initz = 0)
-        :x(initx), y(inity), z(initz)
+    explicit Coords(
+        const int initX = 0, const int initY = 0, const int initZ = 0
+    )
+        :x(initX), y(initY), z(initZ)
     {
     }
 
     bool operator==(const Coords &a) const
     {
-        return __builtin_expect((x == a.x), false)
-            && __builtin_expect((y == a.y), false)
-            && __builtin_expect((z == a.z), false);
+        return __builtin_expect(x == a.x, false)
+            && __builtin_expect(y == a.y, false)
+            && __builtin_expect(z == a.z, false);
     }
 
     bool operator<(const Coords &a) const
     {
-        if (__builtin_expect(!(x == a.x), true))
+        if (__builtin_expect(x != a.x, true))
         {
             return x < a.x;
         }
 
-        if (__builtin_expect(!(y == a.y), true))
+        if (__builtin_expect(y != a.y, true))
         {
             return y < a.y;
         }

@@ -13,6 +13,11 @@
 class Controller {
 public:
     explicit Controller(int timerInterval = 1);
+
+    Controller(const Controller &) = delete;
+    Controller(Controller &&) = delete;
+    Controller &operator=(const Controller &) = delete;
+    Controller &operator=(Controller &&) = delete;
     virtual ~Controller();
 
     /* methods for interacting with event manager */
@@ -55,6 +60,7 @@ public:
     WaitableController(WaitableController &&) = delete;
     WaitableController &operator=(const WaitableController &) = delete;
     WaitableController &operator=(WaitableController &&) = delete;
+    ~WaitableController() override = default;
 
     virtual T getValue()
     {

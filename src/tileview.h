@@ -21,7 +21,7 @@ class Tileset;
  * @todo
  * <ul>
  *      <li>use for gem view</li>
- *      <li>intialize from a Layout?</li>
+ *      <li>initialize from a Layout?</li>
  * </ul>
  */
 class TileView:public View {
@@ -32,22 +32,23 @@ public:
     TileView(TileView &&) = delete;
     TileView &operator=(const TileView &) = delete;
     TileView &operator=(TileView &&) = delete;
-    virtual ~TileView();
-    virtual void reinit() override;
-    void drawTile(MapTile mapTile, bool focus, int x, int y);
+    ~TileView() override;
+
+    void reinit() override;
+    void drawTile(MapTile mapTile, bool focus, int x, int y) const;
     void drawTile(
         const std::vector<MapTile> &tiles, bool focus, int x, int y
-    );
+    ) const;
     void drawFocus(int x, int y) const;
-    void loadTile(MapTile mapTile);
-    void setTileset(Tileset *tileset);
+    void loadTile(MapTile mapTile) const;
+    void setTileset(Tileset *ts);
 
 protected:
     int columns, rows;
-    static const int tileWidth = TILE_WIDTH;
-    static const int tileHeight = TILE_HEIGHT;
+    static constexpr int tileWidth = TILE_WIDTH;
+    static constexpr int tileHeight = TILE_HEIGHT;
     Tileset *tileset;
     Image *animated; /**< a scratchpad image for drawing animations */
 };
 
-#endif /* TILEVIEW_H */
+#endif // TILEVIEW_H

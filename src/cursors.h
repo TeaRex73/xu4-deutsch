@@ -2,9 +2,11 @@
  * $Id$
  */
 
+#ifndef CURSORS_H
+#define CURSORS_H
 
 /* XPM */
-static const char *const n_xpm[] = {
+static constexpr const char *n_xpm[] = {
     "32 32 3 1",
     "     c None",
     ".    c #FFFFFF",
@@ -46,7 +48,7 @@ static const char *const n_xpm[] = {
 
 
 /* XPM */
-static const char *const e_xpm[] = {
+static constexpr const char *e_xpm[] = {
     "32 32 3 1",
     "     c None",
     ".    c #FFFFFF",
@@ -88,7 +90,7 @@ static const char *const e_xpm[] = {
 
 
 /* XPM */
-static const char *const s_xpm[] = {
+static constexpr const char *s_xpm[] = {
     "32 32 3 1",
     "     c None",
     ".    c #FFFFFF",
@@ -130,7 +132,7 @@ static const char *const s_xpm[] = {
 
 
 /* XPM */
-static const char *const w_xpm[] = {
+static constexpr const char *w_xpm[] = {
     "32 32 3 1",
     "     c None",
     ".    c #FFFFFF",
@@ -169,3 +171,4 @@ static const char *const w_xpm[] = {
     "                                ",
     "0,6"
 };
+#endif // CURSORS_H

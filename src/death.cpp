@@ -36,21 +36,21 @@ static unsigned int timerMsg;
 std::atomic_bool deathSequenceRunning(false);
 
 static void deathTimer(void *data);
-static void deathRevive(void);
+static void deathRevive();
 
-const struct {
+constexpr struct {
     int timeout; /* pause in seconds */
     const char *text; /* text of message */
 } deathMsgs[] = {
-    { 5, "\n\nAber warte..." },
-    { 5, "\nWo bin ich?..." },
-    { 5, "\nBin ich tot?..." },
-    { 5, "\nJenseits?..." },
-    { 5, "\nDU H\\RST:\n    %s" },
-    { 5, "\nIch f}hle Bewegung..." },
+    { .timeout = 5, .text = "\n\nAber warte..." },
+    { .timeout = 5, .text = "\nWo bin ich?..." },
+    { .timeout = 5, .text = "\nBin ich tot?..." },
+    { .timeout = 5, .text = "\nJenseits?..." },
+    { .timeout = 5, .text = "\nDU H\\RST:\n    %s" },
+    { .timeout = 5, .text = "\nIch f}hle Bewegung..." },
     {
-        5,
-        "\n\n\nLORD BRITISH SAGT:\n"
+        .timeout = 5,
+        .text = "\n\n\nLORD BRITISH SAGT:\n"
         "ICH HABE DEINEN GEIST UND EINIGE BESITZT]MER "
         "AUS DER LEERE GEZOGEN. SEI IN ZUKUNFT VORSICHTIGER!\n\n\020"
     }
@@ -58,7 +58,7 @@ const struct {
 
 #define N_MSGS (sizeof(deathMsgs) / sizeof(deathMsgs[0]))
 
-void deathStart(int delay)
+void deathStart(const int delay)
 {
     if (deathSequenceRunning.exchange(true)) {
         return;
@@ -74,7 +74,7 @@ void deathStart(int delay)
     screenMessage("\n\nDUNKELHEIT...");
     WaitController waitCtrl(delay * settings.gameCyclesPerSecond);
     eventHandler->pushController(&waitCtrl);
-    waitCtrl.wait();
+    WaitController::wait();
     eventHandler->pushKeyHandler(&KeyHandler::ignoreKeys);
     screenDisableCursor();
     eventHandler->getTimer()->add(
@@ -85,8 +85,8 @@ void deathStart(int delay)
 static void deathTimer(void *)
 {
     timerCount++;
-    if ((timerMsg < N_MSGS)
-        && (timerCount > deathMsgs[timerMsg].timeout)) {
+    if (timerMsg < N_MSGS
+        && timerCount > deathMsgs[timerMsg].timeout) {
         screenMessage(
             deathMsgs[timerMsg].text,
             uppercase(c->party->member(0)->getName()).c_str()
@@ -112,7 +112,7 @@ static void deathRevive()
     c->location->coords = c->location->map->portals[0]->coords;
     /* Now, move the avatar into the castle and put him
        in front of Lord British */
-    game->setMap(mapMgr->get(100), 1, nullptr);
+    game->setMap(mapMgr->get(100), true, nullptr);
     c->location->coords.x = REVIVE_CASTLE_X;
     c->location->coords.y = REVIVE_CASTLE_Y;
     c->location->coords.z = 0;

@@ -10,12 +10,11 @@
 
 #include "image.h"
 #include "imagemgr.h"
-#include "settings.h"
 
 
 Image *View::screen = nullptr;
 
-View::View(int x, int y, int width, int height)
+View::View(const int x, const int y, const int width, const int height)
     :x(x),
      y(y),
      width(width),
@@ -78,14 +77,17 @@ void View::update(int, int, int, int)
 /**
  * Highlight a piece of the screen by drawing it in inverted colors.
  */
-void View::highlight(int x, int y, int width, int height)
+void View::highlight(
+    const int h_x, const int h_y, const int h_width, const int h_height
+
+)
 {
     highlighted = true;
-    highlightX = x;
-    highlightY = y;
-    highlightW = width;
-    highlightH = height;
-    update(x, y, width, height);
+    highlightX = h_x;
+    highlightY = h_y;
+    highlightW = h_width;
+    highlightH = h_height;
+    update(h_x, h_y, h_width, h_height);
 }
 
 void View::unhighlight()
@@ -97,7 +99,7 @@ void View::unhighlight()
 
 void View::drawHighlighted() const
 {
-    Image *tmp = Image::create(
+    const Image *tmp = Image::create(
         SCALED(highlightW), SCALED(highlightH), false, Image::SOFTWARE
     ); /* was SOFTWARE */
     if (!tmp) {

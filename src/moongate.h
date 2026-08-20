@@ -13,4 +13,4 @@ bool moongateFindActiveGateAt(
 );
 bool moongateIsEntryToShrineOfSpirituality(int trammel, int felucca);
 
-#endif
+#endif // MOONGATE_H

@@ -13,34 +13,34 @@
 #define OUTMONST_SAV_BASE_FILENAME "outmonst.sav"
 #define DNGMAP_SAV_BASE_FILENAME "dngmap.sav"
 
-#define MONSTERTABLE_SIZE 32
-#define MONSTERTABLE_FORCESOFNATURE_SIZE 4
-#define MONSTERTABLE_CREATURES_SIZE 8
-#define MONSTERTABLE_OBJECTS_SIZE                       \
-    (MONSTERTABLE_SIZE - MONSTERTABLE_CREATURES_SIZE)
+#define MONSTER_TABLE_SIZE 32
+#define MONSTER_TABLE_FORCES_OF_NATURE_SIZE 4
+#define MONSTER_TABLE_CREATURES_SIZE 8
+#define MONSTER_TABLE_OBJECTS_SIZE \
+    (MONSTER_TABLE_SIZE - MONSTER_TABLE_CREATURES_SIZE)
 
 /**
  * The list of all weapons.  These values are used in both the
  * inventory fields and character records of the savegame.
  */
 enum WeaponType: unsigned short {
-    WEAP_HANDS,
-    WEAP_STAFF,
-    WEAP_DAGGER,
-    WEAP_SLING,
-    WEAP_MACE,
-    WEAP_AXE,
-    WEAP_SWORD,
-    WEAP_BOW,
-    WEAP_CROSSBOW,
-    WEAP_OIL,
-    WEAP_HALBERD,
-    WEAP_MAGICAXE,
-    WEAP_MAGICSWORD,
-    WEAP_MAGICBOW,
-    WEAP_MAGICWAND,
-    WEAP_MYSTICSWORD,
-    WEAP_MAX
+    WEAPON_HANDS,
+    WEAPON_STAFF,
+    WEAPON_DAGGER,
+    WEAPON_SLING,
+    WEAPON_MACE,
+    WEAPON_AXE,
+    WEAPON_SWORD,
+    WEAPON_BOW,
+    WEAPON_CROSSBOW,
+    WEAPON_OIL,
+    WEAPON_HALBERD,
+    WEAPON_MAGIC_AXE,
+    WEAPON_MAGIC_SWORD,
+    WEAPON_MAGIC_BOW,
+    WEAPON_MAGIC_WAND,
+    WEAPON_MYSTIC_SWORD,
+    WEAPON_MAX
 };
 
 
@@ -49,15 +49,15 @@ enum WeaponType: unsigned short {
  * inventory fields and character records of the savegame.
  */
 enum ArmorType: unsigned short {
-    ARMR_NONE,
-    ARMR_CLOTH,
-    ARMR_LEATHER,
-    ARMR_CHAIN,
-    ARMR_PLATE,
-    ARMR_MAGICCHAIN,
-    ARMR_MAGICPLATE,
-    ARMR_MYSTICROBES,
-    ARMR_MAX
+    ARMOR_NONE,
+    ARMOR_CLOTH,
+    ARMOR_LEATHER,
+    ARMOR_CHAIN,
+    ARMOR_PLATE,
+    ARMOR_MAGIC_CHAIN,
+    ARMOR_MAGIC_PLATE,
+    ARMOR_MYSTIC_ROBES,
+    ARMOR_MAX
 };
 
 
@@ -88,7 +88,7 @@ enum ClassType: unsigned char {
 
 /**
  * The list of status values for the savegame character records.  The
- * values match the letters that appear in the ztats area.
+ * values match the letters that appear in the Ztats area.
  */
 enum StatusType: unsigned char {
     STAT_GOOD = 'G',
@@ -98,34 +98,34 @@ enum StatusType: unsigned char {
 };
 
 enum Virtue: unsigned char {
-    VIRT_HONESTY,
-    VIRT_COMPASSION,
-    VIRT_VALOR,
-    VIRT_JUSTICE,
-    VIRT_SACRIFICE,
-    VIRT_HONOR,
-    VIRT_SPIRITUALITY,
-    VIRT_HUMILITY,
-    VIRT_MAX
+    VIRTUE_HONESTY,
+    VIRTUE_COMPASSION,
+    VIRTUE_VALOR,
+    VIRTUE_JUSTICE,
+    VIRTUE_SACRIFICE,
+    VIRTUE_HONOR,
+    VIRTUE_SPIRITUALITY,
+    VIRTUE_HUMILITY,
+    VIRTUE_MAX
 };
 
 enum BaseVirtue: unsigned char {
-    VIRT_NONE = 0x00,
-    VIRT_TRUTH = 0x01,
-    VIRT_LOVE = 0x02,
-    VIRT_COURAGE = 0x04
+    VIRTUE_NONE = 0x00,
+    VIRTUE_TRUTH = 0x01,
+    VIRTUE_LOVE = 0x02,
+    VIRTUE_COURAGE = 0x04
 };
 
 enum Reagent: unsigned char {
-    REAG_ASH,
-    REAG_GINSENG,
-    REAG_GARLIC,
-    REAG_SILK,
-    REAG_MOSS,
-    REAG_PEARL,
-    REAG_NIGHTSHADE,
-    REAG_MANDRAKE,
-    REAG_MAX
+    REAGENT_ASH,
+    REAGENT_GINSENG,
+    REAGENT_GARLIC,
+    REAGENT_SILK,
+    REAGENT_MOSS,
+    REAGENT_PEARL,
+    REAGENT_NIGHTSHADE,
+    REAGENT_MANDRAKE,
+    REAGENT_MAX
 };
 
 #define SPELL_MAX 26
@@ -179,7 +179,7 @@ struct SaveGamePlayerRecord {
     void init();
 
     unsigned short hp;
-    unsigned short hpMax;
+    unsigned short hp_max;
     unsigned short xp;
     unsigned short str, dex, intel;
     unsigned short mp;
@@ -196,7 +196,7 @@ struct SaveGamePlayerRecord {
 /**
  * How Ultima IV stores monster information in MONSTERS.SAV and OUTMONST.SAV
  * The actual on-disk format has one 32-byte table for tile,
- * followd by one 32-byte table for x, and so on.
+ * followed by one 32-byte table for x, and so on.
  * (struct of arrays, not array of structs,
  * a heritage from the MOS6502 based original Apple II version)
  */
@@ -204,9 +204,9 @@ struct SaveGameMonsterRecord {
     unsigned char tile;
     unsigned char x;
     unsigned char y;
-    unsigned char prevTile;
-    unsigned char prevx;
-    unsigned char prevy;
+    unsigned char previous_tile;
+    unsigned char previous_x;
+    unsigned char previous_y;
     unsigned char z;
     unsigned char unused;
 };
@@ -228,14 +228,14 @@ struct SaveGame {
     SaveGamePlayerRecord players[8];
     unsigned int food;
     unsigned short gold;
-    unsigned short karma[VIRT_MAX];
+    unsigned short karma[VIRTUE_MAX];
     unsigned short torches;
     unsigned short gems;
     unsigned short keys;
     unsigned short sextants;
-    unsigned short armor[ARMR_MAX];
-    unsigned short weapons[WEAP_MAX];
-    unsigned short reagents[REAG_MAX];
+    unsigned short armor[ARMOR_MAX];
+    unsigned short weapons[WEAPON_MAX];
+    unsigned short reagents[REAGENT_MAX];
     unsigned short mixtures[SPELL_MAX];
     unsigned short items;
     unsigned char x, y;
@@ -244,20 +244,20 @@ struct SaveGame {
     unsigned short members;
     unsigned short transport;
     union {
-        unsigned short balloonstate;
-        unsigned short torchduration;
+        unsigned short balloon_state;
+        unsigned short torch_duration;
     };
-    unsigned short trammelphase;
-    unsigned short feluccaphase;
-    unsigned short shiphull;
-    unsigned short lbintro;
-    unsigned short lastcamp;
-    unsigned short lastreagent;
-    unsigned short lastmeditation;
-    unsigned short lastvirtue;
-    unsigned char dngx, dngy;
+    unsigned short trammel_phase;
+    unsigned short felucca_phase;
+    unsigned short ship_hull;
+    unsigned short lord_british_intro;
+    unsigned short last_camp;
+    unsigned short last_reagent;
+    unsigned short last_meditation;
+    unsigned short last_virtue;
+    unsigned char dungeon_x, dungeon_y;
     unsigned short orientation;
-    unsigned short dnglevel;
+    unsigned short dungeon_level;
     unsigned short location;
 };
 
@@ -266,4 +266,4 @@ bool saveGameMonstersWrite(
 );
 bool saveGameMonstersRead(SaveGameMonsterRecord *monsterTable, std::FILE *f);
 
-#endif // ifndef SAVEGAME_H
+#endif // SAVEGAME_H

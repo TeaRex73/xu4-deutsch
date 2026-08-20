@@ -21,6 +21,7 @@
 #include "screen.h"
 #include "settings.h"
 #include "shrine.h"
+#include "types.h"
 
 Portal::~Portal()
 {
@@ -32,27 +33,26 @@ Portal::~Portal()
  * Creates a dungeon ladder portal based on the action given
  */
 void createDngLadder(
-    Location *location, PortalTriggerAction action, Portal *p
+    const Location *location, const PortalTriggerAction action, Portal *p
 )
 {
     if (!p) {
         return;
-    } else {
-        p->destid = location->map->id;
-        if ((action == ACTION_KLIMB) && (location->coords.z == 0)) {
-            p->exitPortal = true;
-            p->destid = 1;
-        } else {
-            p->exitPortal = false;
-        }
-        p->message = "";
-        p->portalConditionsMet = nullptr;
-        p->portalTransportRequisites = TRANSPORT_FOOT_OR_HORSE;
-        p->retroActiveDest = nullptr;
-        p->saveLocation = false;
-        p->start = location->coords;
-        p->start.z += (action == ACTION_KLIMB) ? -1 : 1;
     }
+    p->destId = location->map->id;
+    if (action == ACTION_KLIMB && location->coords.z == 0) {
+        p->exitPortal = true;
+        p->destId = static_cast<MapId>(1);
+    } else {
+        p->exitPortal = false;
+    }
+    p->message = "";
+    p->portalConditionsMet = nullptr;
+    p->portalTransportRequisites = TRANSPORT_FOOT_OR_HORSE;
+    p->retroActiveDest = nullptr;
+    p->saveLocation = false;
+    p->start = location->coords;
+    p->start.z += action == ACTION_KLIMB ? -1 : 1;
 }
 
 
@@ -62,10 +62,11 @@ void createDngLadder(
  * a portal based on the ladder and uses it.
  */
 bool usePortalAt(
-    Location *location, const MapCoords &coords, PortalTriggerAction action
+    Location *location,
+    const MapCoords &coords,
+    const PortalTriggerAction action
 )
 {
-    Map *destination;
     char msg[32] = {};
     const Portal *portal = location->map->portalAt(coords, action);
     Portal dngLadder = {};
@@ -74,11 +75,10 @@ bool usePortalAt(
         /* if it's a dungeon, then ladders are predictable.
            Create one! */
         if (location->context == CTX_DUNGEON) {
-            Dungeon *dungeon = dynamic_cast<Dungeon *>(location->map);
-            if ((action & ACTION_KLIMB) && dungeon->ladderUpAt(coords)) {
-                createDngLadder(location, action, &dngLadder);
-            } else if ((action & ACTION_DESCEND)
-                       && dungeon->ladderDownAt(coords)) {
+            const auto *dungeon = dynamic_cast<Dungeon *>(location->map);
+            if ((action & ACTION_KLIMB && dungeon->ladderUpAt(coords))
+                || (action & ACTION_DESCEND
+                    && dungeon->ladderDownAt(coords))) {
                 createDngLadder(location, action, &dngLadder);
             } else {
                 return false;
@@ -96,13 +96,13 @@ bool usePortalAt(
         return false;
     }
     /* must klimb or descend on foot! */
-    else if (c->transportContext & ~TRANSPORT_FOOT
-             && ((action == ACTION_KLIMB)
-                 || (action == ACTION_DESCEND))) {
+    if (c->transportContext & ~TRANSPORT_FOOT
+        && (action == ACTION_KLIMB
+            || action == ACTION_DESCEND)) {
         screenMessage("NUR ZU FUSS!\n");
         return true;
     }
-    destination = mapMgr->get(portal->destid);
+    Map *destination = mapMgr->get(portal->destId);
     if (portal->message.empty()) {
         switch (action) {
         case ACTION_DESCEND:
@@ -129,7 +129,7 @@ bool usePortalAt(
             switch (destination->type) {
             case Map::CITY:
             {
-                City *city = dynamic_cast<City *>(destination);
+                const City *city = dynamic_cast<City *>(destination);
                 screenMessage("%s betreten\n\n", city->cityType.c_str());
                 break;
             }
@@ -169,7 +169,7 @@ bool usePortalAt(
     }
     /* ok, we know the portal is going to work -- now display the
        custom message, if any */
-    else if (!portal->message.empty() || std::strlen(msg)) {
+    if (!portal->message.empty() || std::strlen(msg)) {
         screenMessage(
             "%s", portal->message.empty() ? msg : portal->message.c_str()
         );
@@ -180,7 +180,8 @@ bool usePortalAt(
         game->exitToParentMap();
         musicMgr->play();
         return true;
-    } else if (portal->destid == location->map->id) {
+    }
+    if (portal->destId == location->map->id) {
         /* Same map => no delay */
         location->coords = portal->start;
     } else {
@@ -199,7 +200,7 @@ bool usePortalAt(
             mapMgr->get(portal->retroActiveDest->mapid);
     }
     if (destination->isShrineMap()) {
-        Shrine *shrine = dynamic_cast<Shrine *>(destination);
+        auto *shrine = dynamic_cast<Shrine *>(destination);
         shrine->enter();
     }
     return true;

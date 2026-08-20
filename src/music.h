@@ -19,7 +19,7 @@ class Music;
 #define CAMP_FADE_IN_TIME 0
 #define INN_FADE_OUT_TIME 1000
 #define INN_FADE_IN_TIME 5000
-#define NLOOPS 1
+#define N_LOOPS 1
 
 class Music {
 public:
@@ -29,7 +29,7 @@ public:
         SHOPPING,
         DUNGEON,
         CASTLES,
-        RULEBRIT,
+        RULE_BRITANNIA,
         OUTSIDE,
         COMBAT,
         SHRINES,
@@ -56,7 +56,7 @@ public:
     /** Returns true if the mixer is playing any audio. */
     static bool isPlaying()
     {
-        return getInstance()->isPlaying_sys();
+        return isPlaying_sys();
     }
 
     static void callback(void *);
@@ -89,7 +89,7 @@ public:
 
     void lordBritish()
     {
-        playMid(RULEBRIT);    /**< Music when talk to L British */
+        playMid(RULE_BRITANNIA);    /**< Music when talk to L British */
     }
 
     void hawkwind()
@@ -125,7 +125,7 @@ public:
     static int decreaseMusicVolume();
     static int increaseMusicVolume();
 
-    static void setMusicVolume(int volume)
+    static void setMusicVolume(const int volume)
     {
         setMusicVolume_sys(volume);
     }
@@ -133,7 +133,7 @@ public:
     static int decreaseSoundVolume();
     static int increaseSoundVolume();
 
-    static void setSoundVolume(int volume)
+    static void setSoundVolume(const int volume)
     {
         setSoundVolume_sys(volume);
     }
@@ -146,12 +146,12 @@ public:
     Debug *logger;
 
 private:
-    void create_sys();
+    void create_sys() const;
     void destroy_sys();
     static void setMusicVolume_sys(int volume);
     static void setSoundVolume_sys(int volume);
     static void fadeOut_sys(int msecs);
-    void fadeIn_sys(int msecs, bool loadFromMap);
+    void fadeIn_sys(int msecs, bool loadFromMap) const;
     static bool isPlaying_sys();
     static Music *instance;
     static bool fading;
@@ -162,4 +162,4 @@ private:
     bool load(Type music);
 };
 
-#endif // ifndef MUSIC_H
+#endif // MUSIC_H

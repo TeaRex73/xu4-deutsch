@@ -4,8 +4,13 @@
 
 #include "vc6.h" // Fixes things if you're using VC6, does nothing otherwise
 
-#include "debug.h"
+#include <map>
+#include <string>
+
 #include "dialogueloader.h"
+
+#include "debug.h"
+
 
 std::map<std::string, DialogueLoader *> *DialogueLoader::loaderMap = nullptr;
 
@@ -34,11 +39,8 @@ DialogueLoader *DialogueLoader::registerLoader(
 
 void DialogueLoader::cleanup()
 {
-    for (std::map<std::string, DialogueLoader *>::iterator i =
-             loaderMap->begin();
-         i != loaderMap->end();
-         ++i) {
-        delete i->second;
+    for (const auto &i: *loaderMap) {
+        delete i.second;
     }
     delete loaderMap;
 }

@@ -11,6 +11,7 @@
 #include <vector>
 
 class Debug;
+class Script;
 
 
 /**
@@ -25,21 +26,22 @@ public:
     static const ResponsePart ATTACK;
     static const ResponsePart BRAGGED;
     static const ResponsePart HUMBLE;
-    static const ResponsePart ADVANCELEVELS;
-    static const ResponsePart HEALCONFIRM;
-    static const ResponsePart STARTMUSIC_LB;
-    static const ResponsePart STARTMUSIC_HW;
-    static const ResponsePart STARTMUSIC_SILENCE;
-    static const ResponsePart STOPMUSIC;
+    static const ResponsePart ADVANCE_LEVELS;
+    static const ResponsePart HEAL_CONFIRM;
+    static const ResponsePart START_MUSIC_LB;
+    static const ResponsePart START_MUSIC_HW;
+    static const ResponsePart START_MUSIC_SILENCE;
+    static const ResponsePart STOP_MUSIC;
     static const ResponsePart HAWKWIND;
-    static const ResponsePart DISKLOAD;
+    static const ResponsePart DISK_LOAD;
     // cppcheck-suppress noExplicitConstructor // implicit intended
+    // NOLINTNEXTLINE(google-explicit-constructor, hicpp-explicit-conversions)
     ResponsePart(
-        const std::string &value,
-        const std::string &arg = "",
+        std::string value,
+        std::string arg = "",
         bool command = false
     );
-    operator std::string() const;
+    explicit operator std::string() const;
     bool operator==(const ResponsePart &rhs) const;
     bool isCommand() const;
 
@@ -57,14 +59,16 @@ class Response {
 public:
     explicit Response(const std::string &response);
 
-    virtual ~Response()
-    {
-    }
+    Response(const Response &) = delete;
+    Response(Response &&) = delete;
+    Response &operator=(const Response &) = delete;
+    Response &operator=(Response &&) = delete;
+    virtual ~Response() = default;
 
     void add(const ResponsePart &part);
     const virtual std::vector<ResponsePart> &getParts();
-    operator std::string() const;
-    Response *addref();
+    explicit operator std::string() const;
+    Response *add_ref();
     void release();
 
 private:
@@ -82,14 +86,16 @@ class DynamicResponse:public Response {
 public:
     explicit DynamicResponse(
         Response *(*generator)(const DynamicResponse *),
-        const std::string &param = ""
+        std::string param = ""
     );
+
     DynamicResponse(const DynamicResponse &) = delete;
     DynamicResponse(DynamicResponse &&) = delete;
     DynamicResponse &operator=(const DynamicResponse &) = delete;
     DynamicResponse &operator=(DynamicResponse &&) = delete;
-    virtual ~DynamicResponse();
-    const virtual std::vector<ResponsePart> &getParts() override;
+    ~DynamicResponse() override;
+
+    const std::vector<ResponsePart> &getParts() override;
 
     const std::string &getParam() const
     {
@@ -116,18 +122,18 @@ public:
      */
     class Question {
     public:
-        Question(const std::string &txt, Response *yes, Response *no);
+        Question(std::string txt, Response *yes, Response *no);
         Question(const Question &) = delete;
         Question(Question &&) = delete;
         Question &operator=(const Question &) = delete;
         Question &operator=(Question &&) = delete;
         ~Question();
         std::string getText() const;
-        Response *getResponse(bool yes);
+        Response *getResponse(bool yes) const;
 
     private:
         std::string text;
-        Response *yesresp, *noresp;
+        Response *yes_resp, *no_resp;
     };
 
 
@@ -138,8 +144,8 @@ public:
      */
     class Keyword {
     public:
-        Keyword(const std::string &kw, Response *resp);
-        Keyword(const std::string &kw, const std::string &resp);
+        Keyword(std::string kw, Response *resp);
+        Keyword(std::string kw, const std::string &resp);
         Keyword(const Keyword &) = delete;
         Keyword(Keyword &&) = delete;
         Keyword &operator=(const Keyword &) = delete;
@@ -156,7 +162,7 @@ public:
             return keyword;
         }
 
-        Response *getResponse()
+        Response *getResponse() const
         {
             return response;
         }
@@ -202,22 +208,22 @@ public:
         return prompt;
     }
 
-    Response *getIntro(bool = false)
+    Response *getIntro(bool = false) const
     {
         return intro;
     }
 
-    Response *getLongIntro(bool = false)
+    Response *getLongIntro(bool = false) const
     {
         return longIntro;
     }
 
-    Response *getDefaultAnswer()
+    Response *getDefaultAnswer() const
     {
         return defaultAnswer;
     }
 
-    Dialogue::Question *getQuestion()
+    Question *getQuestion() const
     {
         return question;
     }
@@ -236,9 +242,9 @@ public:
         pronoun = pn;
     }
 
-    void setPrompt(const std::string &prompt)
+    void setPrompt(const std::string &myPrompt)
     {
-        this->prompt = prompt;
+        prompt = myPrompt;
     }
 
     void setIntro(Response *i)
@@ -256,7 +262,7 @@ public:
         defaultAnswer = a;
     }
 
-    void setTurnAwayProb(int prob)
+    void setTurnAwayProb(const int prob)
     {
         turnAwayProb = prob;
         attackProb = prob - 0x40;
@@ -276,7 +282,7 @@ public:
     /*
      * Operators
      */
-    Keyword *operator[](const std::string &kw);
+    Keyword *operator[](const std::string &kw) const;
 
 private:
     std::string name;
@@ -306,9 +312,9 @@ public:
                    before anything is said */
         TALK, /**< The "default" state of the conversation */
         ASK, /**< The talker is asking the player a question */
-        ASKYESNO, /**< The talker is asking the player
+        ASK_YES_NO, /**< The talker is asking the player
                      a yes/no question */
-        VENDORQUESTION, /**< A vendor is asking the player
+        VENDOR_QUESTION, /**< A vendor is asking the player
                            a question */
         BUY_ITEM, /**< Asked which item to buy */
         SELL_ITEM, /**< Asked which item to sell */
@@ -316,14 +322,14 @@ public:
         SELL_QUANTITY, /**< Asked how many items to sell */
         BUY_PRICE, /**< Asked how much money to give someone */
         CONFIRMATION, /**< Asked by a vendor to confirm something */
-        CONTINUEQUESTION, /**< Asked whether or not to continue */
+        CONTINUE_QUESTION, /**< Asked whether or not to continue */
         TOPIC, /**< Asked a topic to speak about */
         PLAYER, /**< Input for which player is required */
-        FULLHEAL, /**< Heal the entire party before
+        FULL_HEAL, /**< Heal the entire party before
                      continuing conversation */
-        ADVANCELEVELS, /**< Check and advance the party's
+        ADVANCE_LEVELS, /**< Check and advance the party's
                           levels before continuing */
-        GIVEBEGGAR, /**< Asked how much to give a beggar */
+        GIVE_BEGGAR, /**< Asked how much to give a beggar */
         ATTACK, /**< The conversation ends with the talker
                    attacking you */
         DONE /**< The conversation is over */
@@ -346,15 +352,14 @@ public:
     /* Member functions */
     InputType getInputRequired(int *bufferLen) const;
     /* Static variables */
-    static const unsigned int BUFFERLEN; /**< The default maxixum
+    static const int BUFFER_LEN; /**< The default maximum
                                             length of input */
 
-public:
     State state; /**< The state of the conversation */
     std::string playerInput; /**< A std::string holding the text
                                 the player inputs */
     std::list<std::string> reply; /**< What the talker says */
-    class Script *script; /**< A script that this person
+    Script *script; /**< A script that this person
                              follows during the
                              conversation (may be nullptr) */
     Dialogue::Question *question; /**< The current question
@@ -367,4 +372,4 @@ private:
     Debug *logger;
 };
 
-#endif // ifndef CONVERSATION_H
+#endif // CONVERSATION_H

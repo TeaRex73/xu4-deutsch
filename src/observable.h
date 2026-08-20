@@ -31,12 +31,15 @@ public:
     {
     }
 
+    Observable(const Observable &o) = default;
+    Observable &operator=(const Observable &o) = default;
+    Observable(Observable &&o) noexcept = default;
+    Observable &operator=(Observable &&o) noexcept= default;
     virtual ~Observable() = default;
 
     void addObserver(Observer<O, A> *o)
     {
-        typename std::vector<Observer<O, A> *>::const_iterator i =
-            std::find(observers.cbegin(), observers.cend(), o);
+        const auto i = std::find(observers.cbegin(), observers.cend(), o);
         if (i == observers.cend()) {
             observers.push_back(o);
         }
@@ -49,8 +52,7 @@ public:
 
     void deleteObserver(Observer<O, A> *o)
     {
-        typename std::vector<Observer<O, A> *>::const_iterator i =
-            std::find(observers.cbegin(), observers.cend(), o);
+        const auto i = std::find(observers.cbegin(), observers.cend(), o);
         if (i != observers.cend()) {
             observers.erase(i);
         }

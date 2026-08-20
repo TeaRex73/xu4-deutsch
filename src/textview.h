@@ -28,8 +28,14 @@ class Image;
 class TextView:public View {
 public:
     TextView(int x, int y, int columns, int rows);
-    virtual ~TextView();
-    virtual void reinit() override;
+
+    TextView(const TextView &) = delete;
+    TextView &operator=(const TextView &) = delete;
+    TextView(TextView &&) = delete;
+    TextView &operator=(TextView &&) = delete;
+    ~TextView() override;
+
+    void reinit() override;
 
     int getCursorX() const
     {
@@ -56,7 +62,7 @@ public:
     void textAt(int x, int y, const char *fmt, ...) PRINTF_LIKE(4, 5);
     void scroll();
 
-    void setCursorFollowsText(bool follows)
+    void setCursorFollowsText(const bool follows)
     {
         cursorFollowsText = follows;
     }
@@ -76,8 +82,8 @@ public:
     static std::string colorizeString(
         const std::string &input,
         ColorFG color,
-        unsigned int colorstart,
-        unsigned int colorlength = 0
+        unsigned int colorStart,
+        unsigned int colorLength = 0
     );
 
 protected:

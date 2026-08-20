@@ -14,12 +14,12 @@ class CombatMap;
 class MapTile;
 
 
-#define DNGROOM_NTRIGGERS 4
+#define DUNGEON_ROOM_NUMBER_OF_TRIGGERS 4
 
 enum StatsBonusType {
-    STATSBONUS_INT = 0x1,
-    STATSBONUS_DEX = 0x2,
-    STATSBONUS_STR = 0x4
+    STATS_BONUS_INT = 0x1,
+    STATS_BONUS_DEX = 0x2,
+    STATS_BONUS_STR = 0x4
 };
 
 struct Trigger {
@@ -43,12 +43,11 @@ public:
          party_south_start_y(),
          party_west_start_x(),
          party_west_start_y(),
-         map_data(),
          buffer()
     {
     }
 
-    Trigger triggers[DNGROOM_NTRIGGERS];
+    Trigger triggers[DUNGEON_ROOM_NUMBER_OF_TRIGGERS];
     unsigned char creature_tiles[16];
     unsigned char creature_start_x[16];
     unsigned char creature_start_y[16];
@@ -91,14 +90,10 @@ enum DungeonToken {
 class Dungeon:public Map {
 public:
     Dungeon()
-        :name(),
-         n_rooms(0),
-         dataSubTokens(),
-         rooms(nullptr),
-         roomMaps(nullptr),
-         currentRoom(0),
-         tempData(),
-         tempDataSubTokens()
+        : n_rooms(0),
+          rooms(nullptr),
+          roomMaps(nullptr),
+          currentRoom(0)
     {
     }
 
@@ -106,18 +101,18 @@ public:
     Dungeon(Dungeon &&) = delete;
     Dungeon &operator=(const Dungeon &) = delete;
     Dungeon &operator=(Dungeon &&) = delete;
-    virtual ~Dungeon();
-    virtual std::string getName() override;
+    ~Dungeon() override;
+    std::string getName() override;
     DungeonToken tokenForTile(MapTile tile) const;
     DungeonToken currentToken() const;
     unsigned char currentSubToken() const;
     DungeonToken tokenAt(const MapCoords &coords) const;
     unsigned char subTokenAt(const MapCoords &coords) const;
-    bool ladderUpAt(const MapCoords &coords);
-    bool ladderDownAt(const MapCoords &coords);
+    bool ladderUpAt(const MapCoords &coords) const;
+    bool ladderDownAt(const MapCoords &coords) const;
     bool validTeleportLocation(const MapCoords &coords) const;
     std::string name;
-    unsigned int n_rooms;
+    int n_rooms;
     std::vector<unsigned char> dataSubTokens;
     DngRoom *rooms;
     CombatMap **roomMaps;
@@ -156,4 +151,4 @@ void dungeonDrinkFountain();
 void dungeonTouchOrb();
 bool dungeonHandleTrap(TrapType trap);
 
-#endif // ifndef DUNGEON_H
+#endif // DUNGEON_H

@@ -8,9 +8,9 @@
 #include <cstdio>
 #include <cstdlib>
 #include <cstring>
-#include <cwchar>
+#include <string>
+#include <vector>
 
-#include <unistd.h>
 #if defined(_WIN32) || defined(__CYGWIN__)
 #include <windows.h>
 #include <shlobj.h>
@@ -90,7 +90,7 @@ bool SettingsEnhancementOptions::operator!=(
 }
 
 
-bool MouseOptions::operator==(const class MouseOptions &s) const
+bool MouseOptions::operator==(const MouseOptions &s) const
 {
     if (enabled != s.enabled) {
         return false;
@@ -98,7 +98,7 @@ bool MouseOptions::operator==(const class MouseOptions &s) const
     return true;
 }
 
-bool MouseOptions::operator!=(const class MouseOptions &s) const
+bool MouseOptions::operator!=(const MouseOptions &s) const
 {
     return !operator==(s);
 }
@@ -142,10 +142,10 @@ bool SettingsData::operator==(const SettingsData &s) const
     if (innTime != s.innTime) {
         return false;
     }
-    if (keydelay != s.keydelay) {
+    if (keyDelay != s.keyDelay) {
         return false;
     }
-    if (keyinterval != s.keyinterval) {
+    if (keyInterval != s.keyInterval) {
         return false;
     }
     if (mouseOptions != s.mouseOptions) {
@@ -233,10 +233,10 @@ bool SettingsData::operator!=(const SettingsData &s) const
 
 
 /**
- * Default contructor.  Settings is a singleton so this is private.
+ * Default constructor.  Settings is a singleton so this is private.
  */
 Settings::Settings()
-    :userPath(), filename(), battleDiffs({"Normal", "Hard", "Expert"})
+    :battleDiffs({"Normal", "Hard", "Expert"})
 {
 }
 
@@ -248,11 +248,11 @@ void Settings::init(const bool useProfile, const std::string &profileName)
 {
     if (useProfile) {
         userPath = "./profiles/";
-        userPath += profileName.c_str();
-        userPath += "/";
+        userPath += profileName;
+        userPath += '/';
     } else {
 #if defined(__APPLE__) && defined(__MACH__)
-        char *home = std::getenv("HOME");
+        const char *home = std::getenv("HOME");
         if (home && home[0]) {
             userPath += home;
             userPath += "/Library/Application Support/com.ticmanis.u4/";
@@ -316,7 +316,7 @@ Settings &Settings::getInstance()
 void Settings::setData(const SettingsData &data)
 {
     // bitwise copy is safe
-    *(static_cast<SettingsData *>(this)) = data;
+    *static_cast<SettingsData *>(this) = data;
 }
 
 
@@ -326,9 +326,8 @@ void Settings::setData(const SettingsData &data)
 bool Settings::read()
 {
     char buffer[256];
-    std::FILE *settingsFile;
 
-    settingsFile = std::fopen(filename.c_str(), "rt");
+    std::FILE *settingsFile = std::fopen(filename.c_str(), "rt");
     if (!settingsFile) {
         return false;
     }
@@ -336,14 +335,14 @@ bool Settings::read()
         while (std::isspace(buffer[std::strlen(buffer) - 1])) {
             buffer[std::strlen(buffer) - 1] = '\0';
         }
-        if (std::strstr(buffer, "scale=") == buffer) {
-            /* do nothing */
-            /* scale =
+        /* if (std::strstr(buffer, "scale=") == buffer) {
+            scale =
                 (unsigned int) std::strtoul(
                     buffer + std::strlen("scale="), nullptr, 0
-               ); */
+               );
         }
-        else if (std::strstr(buffer, "fullscreen=") == buffer) {
+        else */
+        if (std::strstr(buffer, "fullscreen=") == buffer) {
             fullscreen = static_cast<int>(
                 std::strtoul(buffer + std::strlen("fullscreen="), nullptr, 0)
             );
@@ -382,11 +381,11 @@ bool Settings::read()
                 )
             );
         } else if (std::strstr(buffer, "keydelay=") == buffer) {
-            keydelay = static_cast<int>(
+            keyDelay = static_cast<int>(
                 std::strtoul(buffer + std::strlen("keydelay="), nullptr, 0)
             );
         } else if (std::strstr(buffer, "keyinterval=") == buffer) {
-            keyinterval = static_cast<int>(
+            keyInterval = static_cast<int>(
                 std::strtoul(buffer + std::strlen("keyinterval="), nullptr, 0)
             );
         } else if (std::strstr(buffer, "filterMoveMessages=") == buffer) {
@@ -563,18 +562,7 @@ bool Settings::read()
                     )
                 );
         }
-        /**
-         * FIXME: this is just to avoid an error for those who
-         * have not written a new xu4.cfg file since these items
-         * were removed.  Remove them after a reasonable
-         * amount of time
-         *
-         * remove:  attackspeed, minorEnhancements,
-         * majorEnhancements, vol
-         */
-        else if (std::strstr(buffer, "attackspeed=") == buffer) {
-            /* do nothing */
-        } else if (std::strstr(buffer, "minorEnhancements=") == buffer) {
+        else if (std::strstr(buffer, "minorEnhancements=") == buffer) {
             enhancements = static_cast<int>(
                 std::strtoul(
                     buffer + std::strlen("minorEnhancements="),
@@ -582,14 +570,11 @@ bool Settings::read()
                     0
                 )
             );
-        } else if (std::strstr(buffer, "majorEnhancements=") == buffer) {
-            /* do nothing */
         } else if (std::strstr(buffer, "vol=") == buffer) {
             musicVol = soundVol = static_cast<int>(
                 std::strtoul(buffer + std::strlen("vol="), nullptr, 0)
             );
         }
-        /***/
         else {
             errorWarning(
                 "invalid line in settings file %s", buffer
@@ -598,7 +583,7 @@ bool Settings::read()
     }
     std::fclose(settingsFile);
     // set global timer granularity
-    eventTimerGranularity = (1000 / gameCyclesPerSecond);
+    eventTimerGranularity = 1000 / gameCyclesPerSecond;
     return true;
 } // Settings::read
 
@@ -609,15 +594,14 @@ bool Settings::read()
  */
 bool Settings::write()
 {
-    std::FILE *settingsFile;
-    settingsFile = std::fopen(filename.c_str(), "wt");
+    std::FILE *settingsFile = std::fopen(filename.c_str(), "wt");
     if (!settingsFile) {
         errorWarning("can't write settings file");
         return false;
     }
     std::fprintf(
         settingsFile,
-        "scale=%d\n"
+        // "scale=%d\n"
         "fullscreen=%d\n"
         "filter=%s\n"
         "video=%s\n"
@@ -663,7 +647,7 @@ bool Settings::write()
         "renderTileTransparency=%d\n"
         "transparentTilePixelShadowOpacity=%d\n"
         "transparentTileShadowSize=%d\n",
-        scale,
+//      scale,
         fullscreen,
         filter.c_str(),
         videoType.c_str(),
@@ -675,8 +659,8 @@ bool Settings::write()
         soundVol,
         volumeFades,
         shortcutCommands,
-        keydelay,
-        keyinterval,
+        keyDelay,
+        keyInterval,
         filterMoveMessages,
         battleSpeed,
         enhancements,
@@ -711,9 +695,9 @@ bool Settings::write()
         enhancementsOptions.u4TileTransparencyHackShadowBreadth
     );
     std::fflush(settingsFile);
-    fsync(fileno(settingsFile));
+    fsync(fileno(settingsFile)); // NOLINT(misc-include-cleaner)
     std::fclose(settingsFile);
-    sync();
+    sync(); // NOLINT(misc-include-cleaner)
     setChanged();
     notifyObservers(nullptr);
     return true;

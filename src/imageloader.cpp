@@ -4,6 +4,9 @@
 
 #include "vc6.h" // Fixes things if you're using VC6, does nothing otherwise
 
+#include <map>
+#include <string>
+
 #include "imageloader.h"
 
 #include "debug.h"
@@ -47,11 +50,8 @@ ImageLoader *ImageLoader::registerLoader(
 
 void ImageLoader::cleanup()
 {
-    for (std::map<std::string, ImageLoader *>::iterator i =
-             loaderMap->begin();
-         i != loaderMap->end();
-         ++i) {
-        delete i->second;
+    for (const auto &i: *loaderMap) {
+        delete i.second;
     }
     delete loaderMap;
 }
@@ -61,9 +61,9 @@ void ImageLoader::cleanup()
  */
 void ImageLoader::setFromRawData(
     const Image *image,
-    int width,
-    int height,
-    int bpp,
+    const int width,
+    const int height,
+    const int bpp,
     const unsigned char *rawData
 )
 {

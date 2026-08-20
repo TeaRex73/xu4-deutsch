@@ -25,23 +25,29 @@ typedef std::list<PersonRole *> PersonRoleList;
 
 class City:public Map {
 public:
-    City();
-    virtual ~City();
-    virtual std::string getName() override;
+    City() = default;
+
+    City(const City &) = delete;
+    City &operator=(const City &) = delete;
+    City(const City &&) = delete;
+    City &operator=(const City &&) = delete;
+    ~City() override;
+    
+    std::string getName() override;
     Person *addPerson(const Person *person);
     void addPeople();
     void removeAllPeople();
-    Person *personAt(const Coords &coords);
+    Person *personAt(const Coords &coords) const;
     std::string name;
     std::string cityType;
     PersonList persons;
-    std::string tlk_fname;
+    std::string tlkFileName;
     PersonRoleList personroles;
     std::vector<Person *> personObjects;
     std::vector<Dialogue *> normalDialogues;
     std::vector<Dialogue *> extraDialogues;
 };
 
-bool isCity(Map *punknown);
+bool isCity(Map *pUnknown);
 
-#endif // ifndef CITY_H
+#endif // CITY_H

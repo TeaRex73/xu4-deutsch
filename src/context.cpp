@@ -22,11 +22,11 @@
 
 #include "context.h"
 
-#include "aura.h"
-#include "location.h"
-#include "player.h"
-#include "savegame.h"
-#include "stats.h"
+#include "aura.h" // IWYU pragma: keep
+#include "location.h"  // IWYU pragma: keep
+#include "player.h"  // IWYU pragma: keep
+#include "savegame.h"  // IWYU pragma: keep
+#include "stats.h"  // IWYU pragma: keep
 
 Context::Context()
     :party(nullptr),

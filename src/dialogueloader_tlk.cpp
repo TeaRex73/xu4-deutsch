@@ -11,13 +11,13 @@
 #include "dialogueloader_tlk.h"
 
 #include "conversation.h"
+#include "dialogueloader.h"
 #include "u4file.h"
 #include "utils.h"
 
-DialogueLoader *U4TlkDialogueLoader::instance =
-    DialogueLoader::registerLoader(
-        new U4TlkDialogueLoader, "application/x-u4tlk"
-    );
+DialogueLoader *U4TlkDialogueLoader::instance = registerLoader(
+    new U4TlkDialogueLoader, "application/x-u4tlk"
+);
 
 
 /**
@@ -25,7 +25,7 @@ DialogueLoader *U4TlkDialogueLoader::instance =
  */
 Dialogue *U4TlkDialogueLoader::load(void *source)
 {
-    U4FILE *file = static_cast<U4FILE *>(source);
+    auto *file = static_cast<U4FILE *>(source);
     enum QTrigger {
         NONE = 0,
         JOB = 3,
@@ -42,47 +42,24 @@ Dialogue *U4TlkDialogueLoader::load(void *source)
     char *ptr = &tlk_buffer[3];
     std::vector<std::string> strings;
     for (int i = 0; i < 12; i++) {
-        strings.push_back(ptr);
+        strings.emplace_back(ptr);
         ptr += std::strlen(ptr) + 1;
     }
-    Dialogue *dlg = new Dialogue();
-    unsigned char prob = tlk_buffer[2];
-    QTrigger qtrigger = QTrigger(tlk_buffer[0]);
-    bool humilityTestQuestion = tlk_buffer[1] == 1;
+    auto *dlg = new Dialogue();
+    const unsigned char prob = tlk_buffer[2];
+    const auto q_trigger = static_cast<QTrigger>(tlk_buffer[0]);
+    const bool humilityTestQuestion = tlk_buffer[1] == 1;
     dlg->setTurnAwayProb(prob);
     dlg->setName(strings[0]);
     dlg->setPronoun(strings[1]);
     dlg->setPrompt("\nDein Begehr:\n?");
-#if 0 // Not needed for corrected German files
-    // Fix the actor description string, converting the first character
-    // to lower-case.
-    strings[2][0] = xu4_tolower(strings[2][0]);
-    // ... then replace any newlines in the string with spaces
-    std::size_t index = strings[2].find("\n");
-    while (index != std::string::npos) {
-        strings[2][index] = ' ';
-        index = strings[2].find("\n");
-    }
-    // ... then append a period to the end of the string if one does
-    // not already exist
-    if (!std::ispunct(strings[2][strings[2].length() - 1])) {
-        strings[2] = strings[2] + std::string(".");
-    }
-    // ... and finally, a few characters in the game have descriptions
-    // that do not begin with a definite (the) or indefinite (a/an)
-    // article.  On those characters, insert the appropriate article.
-    if ((strings[0] == "Iolo")
-        || (strings[0] == "Tracie")
-        || (strings[0] == "Dupre")
-        || (strings[0] == "Traveling Dan")) {
-        strings[2] = std::string("a ") + strings[2];
-    }
-#endif // if 0
-    std::string introBase = std::string("\nDu triffst ") + strings[2] + "\n";
-    Response *intro = new Response(uppercase(introBase) + dlg->getPrompt());
-    intro->add(ResponsePart::STARTMUSIC_SILENCE);
+
+    const std::string introBase =
+        std::string("\nDu triffst ") + strings[2] + "\n";
+    auto *intro = new Response(uppercase(introBase) + dlg->getPrompt());
+    intro->add(ResponsePart::START_MUSIC_SILENCE);
     dlg->setIntro(intro);
-    Response *longIntro = new Response(
+    auto *longIntro = new Response(
         uppercase(
             introBase +
             "\n" +
@@ -94,7 +71,7 @@ Dialogue *U4TlkDialogueLoader::load(void *source)
             + dlg->getPrompt()
         )
     );
-    longIntro->add(ResponsePart::STARTMUSIC_SILENCE);
+    longIntro->add(ResponsePart::START_MUSIC_SILENCE);
     dlg->setLongIntro(longIntro);
     dlg->setDefaultAnswer(
         new Response(uppercase(
@@ -102,10 +79,10 @@ Dialogue *U4TlkDialogueLoader::load(void *source)
                          + " sagt:\nDamit kann ich dir nicht helfen."
                      ))
     );
-    Response *yes = new Response(
+    auto *yes = new Response(
         uppercase(dlg->getPronoun() + " sagt:\n" + strings[8])
     );
-    Response *no = new Response(
+    auto *no = new Response(
         uppercase(dlg->getPronoun() + " sagt:\n" + strings[9])
     );
     if (humilityTestQuestion) {
@@ -118,10 +95,10 @@ Dialogue *U4TlkDialogueLoader::load(void *source)
         )
     );
     // one of the following four keywords triggers the speaker's question
-    Response *job = new Response(
+    auto *job = new Response(
         uppercase(dlg->getPronoun() + " sagt:\n" + strings[3])
     );
-    Response *health = new Response(
+    auto *health = new Response(
         uppercase(dlg->getPronoun() + " sagt:\n" + strings[4])
     );
     /* Ignore empty answers which have keyword "A   ", response "A"
@@ -138,7 +115,7 @@ Dialogue *U4TlkDialogueLoader::load(void *source)
             uppercase(dlg->getPronoun() + " sagt:\n" + strings[6])
         );
     }
-    switch (qtrigger) {
+    switch (q_trigger) {
     case JOB:
         job->add(ResponsePart::ASK);
         break;
@@ -167,19 +144,19 @@ Dialogue *U4TlkDialogueLoader::load(void *source)
     // conflict with the standard ones (e.g. Calabrini in Moonglow has
     // HEAL for healer, which is unreachable in u4dos, but clearly
     // more useful than "Fine." for health).
-    std::string look = std::string("Du siehst ") + strings[2];
+    const std::string look = std::string("Du siehst ") + strings[2];
     dlg->addKeyword("schauen", new Response(uppercase(look)));
     dlg->addKeyword("sieh", new Response(uppercase(look)));
     dlg->addKeyword("sehen", new Response(uppercase(look)));
-    Response *name = new Response(uppercase(
-                                      dlg->getPronoun()
-                                      + " sagt:\nIch bin "
-                                      + dlg->getName()
-                                      + "."
-                                  ));
+    auto *name = new Response(uppercase(
+                                  dlg->getPronoun()
+                                  + " sagt:\nIch bin "
+                                  + dlg->getName()
+                                  + "."
+                             ));
     dlg->addKeyword("name", name);
     dlg->addKeyword("wer", name);
-    Response *gib =
+    auto *gib =
         new Response(uppercase(
                          dlg->getPronoun()
                          + " sagt:\nIch brauche dein Gold nicht. "
@@ -195,10 +172,10 @@ Dialogue *U4TlkDialogueLoader::load(void *source)
                          + " sagt:\nIch kann dich nicht begleiten."
                      ))
     );
-    Response *bye = new Response(
+    auto *bye = new Response(
         uppercase(dlg->getPronoun() + " sagt:\nAde.")
     );
-    bye->add(ResponsePart::STOPMUSIC);
+    bye->add(ResponsePart::STOP_MUSIC);
     bye->add(ResponsePart::END);
     dlg->addKeyword("ade", bye);
     dlg->addKeyword("", bye);

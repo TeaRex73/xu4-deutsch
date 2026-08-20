@@ -37,34 +37,32 @@ bool Music::functional = true;
  * Initialize the music
  */
 Music::Music()
-    :filenames(),
-     introMid(NONE),
-     current(NONE),
-     playing(nullptr),
-     logger(new Debug("debug/music.txt", "Music"))
+    : introMid(NONE),
+      current(NONE),
+      playing(nullptr),
+      logger(new Debug("debug/music.txt", "Music"))
 {
     filenames.reserve(MAX);
-    filenames.push_back(""); // filename for MUSIC_NONE;
+    filenames.emplace_back(""); // filename for MUSIC_NONE;
     TRACE(*logger, "Initializing music");
     /*
      * load music track filenames from xml config file
      */
     const Config *config = Config::getInstance();
     TRACE_LOCAL(*logger, "Loading music tracks");
-    std::vector<ConfigElement> musicConfs =
+    const std::vector<ConfigElement> musicConfs =
         config->getElement("music").getChildren();
-    std::vector<ConfigElement>::const_iterator i = musicConfs.cbegin();
-    std::vector<ConfigElement>::const_iterator theEnd = musicConfs.cend();
-    for (; i != theEnd; ++i) {
-        if (i->getName() != "track") {
+
+    for (const auto &musicConf: musicConfs) {
+        if (musicConf.getName() != "track") {
             continue;
         }
-        filenames.push_back(i->getString("file"));
+        filenames.push_back(musicConf.getString("file"));
         TRACE_LOCAL(*logger, std::string("\tTrack file: ") + filenames.back());
     }
     create_sys(); // Call the Sound System specific creation file.
     // Set up the volume.
-    on = (settings.musicVol > 0);
+    on = settings.musicVol > 0;
     setMusicVolume(settings.musicVol);
     setSoundVolume(settings.soundVol);
     eventHandler->getTimer()->add(
@@ -90,7 +88,7 @@ Music::~Music()
 }
 
 
-bool Music::load(Type music)
+bool Music::load(const Type music)
 {
     U4ASSERT(
         music < MAX,
@@ -104,13 +102,11 @@ bool Music::load(Type music)
             return false;
         }
         /* it loaded correctly */
-        else {
-            return true;
-        }
+        return true;
     }
-    std::string pathname(u4find_music(filenames[music]));
+    const std::string pathname(u4find_music(filenames[music]));
     if (!pathname.empty()) {
-        bool status = load_sys(pathname);
+        const bool status = load_sys(pathname);
         if (status) {
             current = music;
         }
@@ -164,7 +160,7 @@ void Music::play()
  */
 void Music::introSwitch(int n)
 {
-    if ((n > NONE) && (n < MAX)) {
+    if (n > NONE && n < MAX) {
         introMid = static_cast<Type>(n);
         intro();
     }
@@ -194,7 +190,7 @@ bool Music::toggle()
 /**
  * Fade out the music
  */
-void Music::fadeOut(int msecs)
+void Music::fadeOut(const int msecs)
 {
     // fade the music out even if 'on' is false
     if (!functional) {
@@ -213,7 +209,7 @@ void Music::fadeOut(int msecs)
 /**
  * Fade in the music
  */
-void Music::fadeIn(int msecs, bool loadFromMap)
+void Music::fadeIn(const int msecs, const bool loadFromMap)
 {
     if (!functional || on) {
         return;

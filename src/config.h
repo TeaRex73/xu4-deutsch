@@ -41,20 +41,21 @@ private:
 class ConfigElement {
 public:
     explicit ConfigElement(xmlNodePtr xmlNode);
-    ConfigElement(const ConfigElement &e);
-    ~ConfigElement();
-    ConfigElement &operator=(const ConfigElement &e);
+
+    /* Rule of Zero */
 
     const std::string &getName() const
     {
         return name;
     }
 
-    bool exists(const std::string &name) const;
-    std::string getString(const std::string &name) const;
-    int getInt(const std::string &name, int defaultValue = 0) const;
-    bool getBool(const std::string &name) const;
-    int getEnum(const std::string &name, const char *enumValues[]) const;
+    bool exists(const std::string &element_name) const;
+    std::string getString(const std::string &element_name) const;
+    int getInt(const std::string &element_name, int defaultValue = 0) const;
+    bool getBool(const std::string &element_name) const;
+    int getEnum(
+        const std::string &element_name, const char *enumValues[]
+    ) const;
     std::vector<ConfigElement> getChildren() const;
 
     xmlNodePtr getNode() const

@@ -4,6 +4,7 @@
 
 #include "vc6.h" // Fixes things if you're using VC6, does nothing otherwise
 
+#include <string>
 #include <vector>
 
 #include "armor.h"
@@ -21,7 +22,7 @@ std::vector<Armor *> Armor::armors;
 /**
  * Returns armor by ArmorType.
  */
-const Armor *Armor::get(ArmorType a)
+const Armor *Armor::get(const ArmorType a)
 {
     // Load in XML if it hasn't been already
     loadConf();
@@ -39,9 +40,9 @@ const Armor *Armor::get(const std::string &name)
 {
     // Load in XML if it hasn't been already
     loadConf();
-    for (unsigned int i = 0; i < armors.size(); i++) {
-        if (xu4_strcasecmp(name.c_str(), armors[i]->name.c_str()) == 0) {
-            return armors[i];
+    for (const auto &armor: armors) {
+        if (xu4_strcasecmp(name.c_str(), armor->name.c_str()) == 0) {
+            return armor;
         }
     }
     return nullptr;
@@ -56,35 +57,34 @@ Armor::Armor(const ConfigElement &conf)
      defense(conf.getInt("defense")),
      mystic(conf.getBool("mystic"))
 {
-    std::vector<ConfigElement> constraintConfs = conf.getChildren();
-    for (std::vector<ConfigElement>::const_iterator i =
-             constraintConfs.cbegin();
-         i != constraintConfs.cend();
-         ++i) {
+    const std::vector<ConfigElement> constraintConfs = conf.getChildren();
+    for (const auto &constraintConf: constraintConfs) {
         unsigned char mask = 0;
-        if (i->getName() != "constraint") {
+        if (constraintConf.getName() != "constraint") {
             continue;
         }
         for (int cl = 0; cl < 8; cl++) {
             if (xu4_strcasecmp(
-                    i->getString("class").c_str(),
+                    constraintConf.getString("class").c_str(),
                     getClassNameEnglish(
                         static_cast<ClassType>(cl))
                 ) == 0) {
-                mask = (1 << cl);
+                mask = 1 << cl;
             }
         }
-        if ((mask == 0)
-            && (xu4_strcasecmp(i->getString("class").c_str(), "all") == 0)) {
+        if (mask == 0
+            && xu4_strcasecmp(
+                constraintConf.getString("class").c_str(), "all"
+            ) == 0) {
             mask = 0xFF;
         }
         if (mask == 0) {
             errorFatal(
                 "malformed armor.xml file: constraint has unknown class %s",
-                i->getString("class").c_str()
+                constraintConf.getString("class").c_str()
             );
         }
-        if (i->getBool("canuse")) {
+        if (constraintConf.getBool("canuse")) {
             canuse |= mask;
         } else {
             canuse &= ~mask;
@@ -94,9 +94,7 @@ Armor::Armor(const ConfigElement &conf)
 
 Armor::~Armor()
 {
-    for (std::vector<Armor *>::iterator i = armors.begin();
-         i != armors.end();
-         ) {
+    for (auto i = armors.begin(); i != armors.end(); ) {
         if (*i == this) {
             i = armors.erase(i);
         } else {
@@ -107,9 +105,8 @@ Armor::~Armor()
 
 void Armor::cleanup()
 {
-    for (std::vector<Armor *>::iterator i = armors.begin();
-         i != armors.end();
-        ) { // no increment, deleting moves consecutive elements to 1st pos
+    for (const auto i = armors.begin(); i != armors.end(); ) {
+        // no increment, deleting moves consecutive elements to 1st pos
         delete *i;
     }
     armors.clear();
@@ -123,14 +120,12 @@ void Armor::loadConf()
         return;
     }
     const Config *config = Config::getInstance();
-    std::vector<ConfigElement> armorConfs =
+    const std::vector<ConfigElement> armorConfs =
         config->getElement("armors").getChildren();
-    for (std::vector<ConfigElement>::const_iterator i = armorConfs.cbegin();
-         i != armorConfs.cend();
-         ++i) {
-        if (i->getName() != "armor") {
+    for (const auto &armorConf: armorConfs) {
+        if (armorConf.getName() != "armor") {
             continue;
         }
-        armors.push_back(new Armor(*i));
+        armors.push_back(new Armor(armorConf));
     }
 }

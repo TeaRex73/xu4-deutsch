@@ -4,53 +4,50 @@
 
 #include "vc6.h" // Fixes things if you're using VC6, does nothing otherwise
 
-#if (defined(__unix__) || defined(unix)) && !defined(USG)
-#include <sys/param.h>
-#endif
-
-#include "utils.h"
 #include <cstdio>
 #include <cstdlib>
 #include <cstring>
 #include <ctime>
+#include <random>
+#include <string>
+#include <vector>
+
+#if (defined(__unix__) || defined(unix)) && !defined(USG)
+#include <sys/param.h>
+#endif
+
+#include "debug.h"
+#include "utils.h"
 
 
-static int rand_limit_precalc[256];
-
+static std::default_random_engine *gen = nullptr;
 
 /**
  * Seed the random number generator.
  */
-void xu4_srandom()
+void xu4_seed_random()
 {
-    int i;
-    std::srand(static_cast<unsigned int>(std::time(nullptr)));
-    for (i = 1; i <= 256; i++) {
-        rand_limit_precalc[i - 1] = RAND_MAX - (((RAND_MAX % i) + 1) % i);
-    }
+    gen = new std::default_random_engine(std::random_device()());
 }
-
 
 /**
  * Generate a random number between 0 and (upperRange - 1).
  */
-int xu4_random(int upperRange)
+int xu4_random(const int upperRange)
 {
-    int r;
-    int rand_limit;
+    U4ASSERT(upperRange >= 1, "upperRange must be positive");
+    U4ASSERT(gen != nullptr, "Random generator not initialized");
+    return std::uniform_int_distribution<>(0, upperRange - 1)(*gen);
+}
 
-    if (upperRange <= 1) {
-        return 0;
-    }
-    if (__builtin_expect((upperRange > 256), false)) {
-        rand_limit = RAND_MAX - (((RAND_MAX % upperRange) + 1) % upperRange);
-    } else {
-        rand_limit = rand_limit_precalc[upperRange - 1];
-    }
-    do {
-        r = std::rand();
-    } while (r > rand_limit);
-    return r % upperRange;
+/**
+ * Deallocate the random number generator.
+ */
+
+void xu4_del_random()
+{
+    delete gen;
+    gen = nullptr;
 }
 
 
@@ -61,39 +58,37 @@ int xu4_random(int upperRange)
  */
 std::string &trim(std::string &val, const std::string &chars_to_trim)
 {
-    std::string::iterator i;
-    if (val.size()) {
-        std::size_t pos;
-        for (i = val.begin();
-             (i != val.end()) &&
-                 (pos = chars_to_trim.find(*i)) != std::string::npos;) {
+    if (!val.empty()) {
+        for (auto i = val.begin();
+             i != val.end() &&
+             chars_to_trim.find(*i) != std::string::npos;) {
             i = val.erase(i);
         }
-        for (i = val.end() - 1;
-             (i != val.begin()) &&
-                 (pos = chars_to_trim.find(*i)) != std::string::npos;) {
+        for (auto i = val.end() - 1;
+             i != val.begin() &&
+                 chars_to_trim.find(*i) != std::string::npos;) {
             i = val.erase(i) - 1;
         }
     }
     return val;
 }
 
-int xu4_islower(int c)
+int xu4_islower(const int c)
 {
-    return ((c >= 'a') && (c <= '~'));
+    return c >= 'a' && c <= '~';
 }
 
-int xu4_toupper(int c)
+int xu4_toupper(const int c)
 {
-    if ((c >= 'a') && (c <= '}')) {
+    if (c >= 'a' && c <= '}') {
         return c - 32;
     }
     return c;
 }
 
-int xu4_tolower(int c)
+int xu4_tolower(const int c)
 {
-    if ((c >= 'A') && (c <= ']')) {
+    if (c >= 'A' && c <= ']') {
         return c + 32;
     }
     return c;
@@ -133,7 +128,7 @@ int xu4_strncasecmp(const char *s1, const char *s2, std::size_t n)
 
 char *xu4_strdup(const char *s)
 {
-    std::size_t length = std::strlen(s) + 1;
+    const std::size_t length = std::strlen(s) + 1;
     void *copy = std::malloc(length);
     if (copy == nullptr) {
         return nullptr;
@@ -146,10 +141,9 @@ char *xu4_strdup(const char *s)
  */
 std::string lowercase(const std::string &val)
 {
-    std::string ret = "";
-    std::string::const_iterator i;
-    for (i = val.cbegin(); i != val.cend(); ++i) {
-        ret += std::string(1, static_cast<char>(xu4_tolower(*i)));
+    std::string ret;
+    for (const char i: val) {
+        ret += {static_cast<char>(xu4_tolower(i))};
     }
     return ret;
 }
@@ -160,13 +154,12 @@ std::string lowercase(const std::string &val)
  */
 std::string uppercase(const std::string &val)
 {
-    std::string ret = "";
-    std::string::const_iterator i;
-    for (i = val.cbegin(); i != val.cend(); ++i) {
-        if (*i == '~') {
+    std::string ret;
+    for (const char i: val) {
+        if (i == '~') {
             ret += "SS";
         } else {
-            ret += std::string(1, static_cast<char>(xu4_toupper(*i)));
+            ret += {static_cast<char>(xu4_toupper(i))};
         }
     }
     return ret;
@@ -174,10 +167,9 @@ std::string uppercase(const std::string &val)
 
 std::string deumlaut(const std::string &val)
 {
-    std::string ret = "";
-    std::string::const_iterator i;
-    for (i = val.cbegin(); i != val.cend(); ++i) {
-        switch (*i) {
+    std::string ret;
+    for (char i: val) {
+        switch (i) {
         case '[':
             ret += "AE";
             break;
@@ -200,7 +192,7 @@ std::string deumlaut(const std::string &val)
             ret += "ss";
             break;
         default:
-            ret += std::string(1, static_cast<char>(*i));
+            ret += {i};
         }
     }
     return ret;
@@ -210,17 +202,17 @@ std::string deumlaut(const std::string &val)
 /**
  * Converts an integer value to a string
  */
-std::string xu4_to_string(int val)
+std::string xu4_to_string(const int val)
 {
     char buffer[16];
     std::snprintf(buffer, 16, "%d", val);
-    return std::string(buffer);
+    return {buffer};
 }
 
 
 /**
  * Splits a string into substrings, divided by the characters in
- * separators.  Multiple adjacent seperators are treated as one.
+ * separators.  Multiple adjacent separators are treated as one.
  */
 std::vector<std::string> split(
     const std::string &s, const std::string &separators
@@ -230,7 +222,7 @@ std::vector<std::string> split(
     std::string current;
     for (unsigned int i = 0; i < s.length(); i++) {
         if (separators.find(s[i]) != std::string::npos) {
-            if (current.length() > 0) {
+            if (!current.empty()) {
                 result.push_back(current);
             }
             current.erase();
@@ -238,7 +230,7 @@ std::vector<std::string> split(
             current += s[i];
         }
     }
-    if (current.length() > 0) {
+    if (!current.empty()) {
         result.push_back(current);
     }
     return result;

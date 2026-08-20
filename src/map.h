@@ -8,6 +8,7 @@
 #include <list>
 #include <map>
 #include <string>
+#include <utility>
 #include <vector>
 
 #include "coords.h"
@@ -27,13 +28,13 @@ class Tileset;
 class Portal;
 
 
-#define MAP_IS_OOB(mapptr, c)                               \
+#define MAP_IS_OOB(mapPtr, c)                               \
     (((c).x) < 0                                            \
-     || ((c).x) >= (static_cast<int>((mapptr)->width))      \
+     || ((c).x) >= (static_cast<int>((mapPtr)->width))      \
      || ((c).y) < 0                                         \
-     || ((c).y) >= (static_cast<int>((mapptr)->height))     \
+     || ((c).y) >= (static_cast<int>((mapPtr)->height))     \
      || ((c).z) < 0                                         \
-     || ((c).z) >= (static_cast<int>((mapptr)->levels)))
+     || ((c).z) >= (static_cast<int>((mapPtr)->levels)))
 
 typedef std::vector<Portal *> PortalList;
 typedef std::list<int> CompressedChunkList;
@@ -60,38 +61,28 @@ typedef std::vector<MapTile> MapData;
  */
 class MapCoords:public Coords {
 public:
-    explicit MapCoords(int initx = 0, int inity = 0, int initz = 0)
-        :Coords(initx, inity, initz),
-         active_x(C2A(initx)),
-         active_y(C2A(inity))
+    explicit MapCoords(
+        const int initX = 0, const int initY = 0, const int initZ = 0
+    )
+        :Coords(initX, initY, initZ),
+         active_x(C2A(initX)),
+         active_y(C2A(initY))
     {
     }
 
-    MapCoords(const MapCoords &a)
-        :Coords(a.x, a.y, a.z),
-         active_x(a.active_x),
-         active_y(a.active_y)
-    {
-    }
+    MapCoords(const MapCoords &a) = default;
+    MapCoords(MapCoords &&a) = default;
+    MapCoords &operator=(const MapCoords &a) = default;
+    MapCoords &operator=(MapCoords &&a) = default;
+    virtual ~MapCoords() = default;
 
     // cppcheck-suppress noExplicitConstructor // implicit intended
+    // NOLINTNEXTLINE(google-explicit-constructor, hicpp-explicit-conversions)
     MapCoords(const Coords &a)
         :Coords(a.x, a.y, a.z),
          active_x(C2A(a.x)),
          active_y(C2A(a.y))
     {
-    }
-
-    MapCoords &operator=(const MapCoords &a)
-    {
-        if (&a != this) {
-            x = a.x;
-            y = a.y;
-            z = a.z;
-            active_x = a.active_x;
-            active_y = a.active_y;
-        }
-        return *this;
     }
 
     MapCoords &operator=(const Coords &a)
@@ -108,42 +99,44 @@ public:
 
     bool operator==(const MapCoords &a) const
     {
-        return static_cast<Coords>(*this) == static_cast<Coords>(a);
+        return static_cast<const Coords &>(*this) == a;
     }
 
     bool operator!=(const MapCoords &a) const
     {
-        return static_cast<Coords>(*this) != static_cast<Coords>(a);
+        return static_cast<const Coords &>(*this) != a;
     }
 
     bool operator<(const MapCoords &a) const
     {
-        return static_cast<Coords>(*this) < static_cast<Coords>(a);
+        return static_cast<const Coords &>(*this) < a;
     }
 
-    MapCoords &wrap(const class Map *map);
-    MapCoords &putInBounds(const class Map *map);
-    MapCoords &move(Direction d, const class Map *map = nullptr);
-    MapCoords &move(int dx, int dy, const class Map *map = nullptr);
+    MapCoords &wrap(const Map *map);
+    MapCoords &putInBounds(const Map *map);
+    MapCoords &move(Direction d, const Map *map = nullptr);
+    MapCoords &move(int dx, int dy, const Map *map = nullptr);
     int getRelativeDirection(
-        const MapCoords &c, const class Map *map = nullptr
+        const MapCoords &mc, const Map *map = nullptr
     ) const;
     Direction pathTo(
-        const MapCoords &c,
-        int valid_dirs = MASK_DIR_ALL,
+        const MapCoords &mc,
+        int valid_directions = MASK_DIR_ALL,
         bool towards = true,
-        const class Map *map = nullptr,
+        const Map *map = nullptr,
         Direction last = DIR_NONE
     ) const;
     Direction pathAway(
-        const MapCoords &c,
-        int valid_dirs = MASK_DIR_ALL,
-        const class Map *map = nullptr,
+        const MapCoords &mc,
+        int valid_directions = MASK_DIR_ALL,
+        const Map *map = nullptr,
         Direction last = DIR_NONE
     ) const;
-    int movementDistance(const MapCoords &c, const class Map *map) const;
-    int distance(const MapCoords &c, const class Map *map) const;
+    int movementDistance(const MapCoords &mc, const Map *map) const;
+    int distance(const MapCoords &mc, const Map *map) const;
+
     static MapCoords nowhere;
+
     unsigned int active_x, active_y;
 };
 
@@ -177,22 +170,23 @@ public:
     class Source {
     public:
         Source()
-            :fname(), type(WORLD)
+            : type(WORLD)
         {
         }
 
-        Source(const std::string &f, Type t)
-            :fname(f), type(t)
+        Source(std::string f, const Type t)
+            :file_name(std::move(f)), type(t)
         {
         }
 
-        std::string fname;
+        std::string file_name;
         Type type;
     };
 
     Map();
     virtual ~Map();
     virtual std::string getName();
+
     Object *objectAt(const Coords &coords) const;
     const Portal *portalAt(const Coords &coords, int actionFlags) const;
     MapTile getTileFromData(const Coords &coords) const;
@@ -205,10 +199,10 @@ public:
     bool isCombatMap() const;
     bool isEnclosed(const Coords &party) const;
     class Creature *addCreature(
-        const class Creature *creature, const Coords &coords
+        const Creature *creature, const Coords &coords
     );
     Object *addObject(
-        MapTile tile, MapTile prevtile, const Coords &coords
+        MapTile tile, MapTile previousTile, const Coords &coords
     );
     Object *addObject(Object *obj, const Coords &coords);
     void removeObject(const Object *rem, bool deleteObject = true);
@@ -216,7 +210,8 @@ public:
         ObjectDeque::iterator rem, bool deleteObject = true
     );
     void clearObjects();
-    class Creature *moveObjects(const MapCoords &avatar) const;
+
+    Creature *moveObjects(const MapCoords &avatar) const;
     void resetObjectAnimations() const;
     int getNumberOfCreatures(int level = -1) const;
     int getValidMoves(
@@ -228,18 +223,17 @@ public:
     // u4dos compatibility
     bool fillMonsterTable(const Location *loc);
     /* Translate from raw tile index */
-    MapTile tfrti(int raw) const;
+    MapTile translateFromRawTile(int raw) const;
     /* Translate to raw tile index */
-    unsigned int ttrti(MapTile tile) const;
+    int translateToRawTile(MapTile tile) const;
 
-public:
     MapId id;
-    std::string fname;
+    std::string file_name;
     Type type;
-    unsigned int width, height, levels;
-    unsigned int chunk_width, chunk_height;
-    unsigned int offset;
-    Source baseSource;
+    int width, height, levels;
+    int chunk_width, chunk_height;
+    int offset;
+    Source base_source;
     CompressedChunkList compressed_chunks;
     BorderBehavior border_behavior;
     PortalList portals;
@@ -252,10 +246,10 @@ public:
     Tileset *tileset;
     TileMap *tilemap;
     // u4dos compatibility
-    SaveGameMonsterRecord monsterTable[MONSTERTABLE_SIZE];
+    SaveGameMonsterRecord monster_table[MONSTER_TABLE_SIZE];
 
 private:
     void findWalkability(const Coords &coords, int *path_data) const;
 };
 
-#endif // ifndef MAP_H
+#endif // MAP_H

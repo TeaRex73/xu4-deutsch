@@ -5,6 +5,8 @@
 #ifndef UTILS_H
 #define UTILS_H
 
+#include "vc6.h"
+
 #include <cstring>
 #include <ctime>
 #include <map>
@@ -14,7 +16,6 @@
 
 #ifndef NPERF
 #   include <cstdio>
-#   include <unistd.h>
 #   include "filesystem.h"
 #endif
 
@@ -23,7 +24,7 @@
 #define U4_STRCAT(dst, src) \
     std::strncat((dst), (src), sizeof(dst) - std::strlen(dst) - 1)
 
-/* The AdjustValue functions used to be #define'd macros, but these are
+/* The AdjustValue functions used to be #define macros, but these are
  * evil for several reasons, *especially* when they contain multiple
  * statements, and have if statements in them. The macros did both.
  * See http://www.parashift.com/c++-faq-lite/inline-functions.html#faq-9.5
@@ -31,7 +32,8 @@
  */
 
 // for unsigned types, checks for overflow/underflow
-template<typename T, typename U> inline void AdjustValueMax_helper(
+template<typename T, typename U>
+void AdjustValueMax_helper(
     T &v, typename std::make_signed<T>::type val, U max, std::true_type
 )
 {
@@ -44,7 +46,8 @@ template<typename T, typename U> inline void AdjustValueMax_helper(
 }
 
 // for signed types, no check since signed overflow is undefined behaviour
-template<typename T, typename U> inline void AdjustValueMax_helper(
+template<typename T, typename U>
+void AdjustValueMax_helper(
     T &v, typename std::make_signed<T>::type val, U max, std::false_type
 )
 {
@@ -56,7 +59,8 @@ template<typename T, typename U> inline void AdjustValueMax_helper(
 }
 
 // use tag dispatch to chose the right one
-template<typename T, typename U> inline void AdjustValueMax(
+template<typename T, typename U>
+void AdjustValueMax(
     T &v, typename std::make_signed<T>::type val, U max
 )
 {
@@ -66,7 +70,8 @@ template<typename T, typename U> inline void AdjustValueMax(
 }
 
 // for unsigned types, checks for overflow/underflow
-template<typename T, typename U> inline void AdjustValueMin_helper(
+template<typename T, typename U>
+void AdjustValueMin_helper(
     T &v, typename std::make_signed<T>::type val, U min, std::true_type
 )
 {
@@ -79,7 +84,8 @@ template<typename T, typename U> inline void AdjustValueMin_helper(
 }
 
 // for signed types, no check since signed overflow is undefined behaviour
-template<typename T, typename U> inline void AdjustValueMin_helper(
+template<typename T, typename U>
+void AdjustValueMin_helper(
     T &v, typename std::make_signed<T>::type val, U min, std::false_type
 )
 {
@@ -91,7 +97,8 @@ template<typename T, typename U> inline void AdjustValueMin_helper(
 }
 
 // use tag dispatch to chose the right one
-template<typename T, typename U> inline void AdjustValueMin(
+template<typename T, typename U>
+void AdjustValueMin(
     T &v, typename std::make_signed<T>::type val, U min
 )
 {
@@ -101,7 +108,8 @@ template<typename T, typename U> inline void AdjustValueMin(
 }
 
 // for unsigned types, checks for overflow/underflow
-template<typename T, typename U> inline void AdjustValue_helper(
+template<typename T, typename U>
+void AdjustValue_helper(
     T &v, typename std::make_signed<T>::type val, U max, U min, std::true_type
 )
 {
@@ -118,7 +126,8 @@ template<typename T, typename U> inline void AdjustValue_helper(
 }
 
 // for signed types, no check since signed overflow is undefined behaviour
-template<typename T, typename U> inline void AdjustValue_helper(
+template<typename T, typename U>
+void AdjustValue_helper(
     T &v, typename std::make_signed<T>::type val, U max, U min, std::false_type
 )
 {
@@ -134,7 +143,8 @@ template<typename T, typename U> inline void AdjustValue_helper(
 }
 
 // use tag dispatch to chose the right one
-template<typename T, typename U> inline void AdjustValue(
+template<typename T, typename U>
+void AdjustValue(
     T &v, typename std::make_signed<T>::type val, U max, U min
 )
 {
@@ -143,8 +153,9 @@ template<typename T, typename U> inline void AdjustValue(
     );
 }
 
-void xu4_srandom();
+void xu4_seed_random();
 int xu4_random(int upperRange);
+void xu4_del_random();
 int xu4_islower(int c);
 int xu4_toupper(int c);
 int xu4_tolower(int c);
@@ -163,7 +174,6 @@ std::vector<std::string> split(
 );
 
 class Performance {
-private:
     typedef std::map<std::string, std::clock_t> TimeMap;
 
 public:
@@ -173,17 +183,19 @@ public:
 #endif
                            )
 #ifndef NPERF
-        :log(), filename(), s(), e(), times()
+        :log(), s(), e()
 #endif
     {
 #ifndef NPERF
         init(s);
 #endif
     }
+
     Performance(const Performance &) = delete;
     Performance(Performance &&) = delete;
     Performance &operator=(const Performance &) = delete;
     Performance &operator=(Performance &&) = delete;
+    ~Performance() = default;
 
     void init(const std::string &
 #ifndef NPERF
@@ -198,7 +210,6 @@ public:
         log = std::fopen(filename.c_str(), "wt");
         if (!log) {
             // FIXME: throw exception
-            return;
         }
 #endif
     }
@@ -210,7 +221,6 @@ public:
             log = std::fopen(filename.c_str(), "at");
             if (!log) {
                 // FIXME: throw exception
-                return;
             }
         }
 #endif
@@ -242,41 +252,41 @@ public:
                             = nullptr)
     {
 #ifndef NPERF
-        static const double msec = double(CLOCKS_PER_SEC) / double(1000);
-        TimeMap::const_iterator i;
+        static constexpr double msec = CLOCKS_PER_SEC / 1000.0;
         std::clock_t total = 0;
         std::map<double, std::string> percentages;
-        std::map<double, std::string>::const_iterator percMap;
         if (pre) { std::fprintf(log, "%s", pre); }
-        for (i = times.cbegin(); i != times.cend(); ++i) {
+        for (const auto &time: times) {
             std::fprintf(
                 log,
                 "%s [%0.2f msecs]\n",
-                i->first.c_str(),
-                double(i->second) / msec
+                time.first.c_str(),
+                static_cast<double>(time.second) / msec
             );
-            total += i->second;
+            total += time.second;
         }
-        for (i = times.cbegin(); i != times.cend(); ++i) {
-            double perc = 100.0 * double(i->second) / total;
-            percentages[perc] = i->first;
+        for (const auto &time: times) {
+            double perc =
+                100.0 * static_cast<double>(time.second)
+                / static_cast<double>(total);
+            percentages[perc] = time.first;
         }
         std::fprintf(log, "\n");
-        for (percMap = percentages.cbegin();
-             percMap != percentages.cend();
-             ++percMap) {
+        for (const auto &percMap: percentages) {
             std::fprintf(
-                log, "%0.1f%% - %s\n", percMap->first, percMap->second.c_str()
+                log, "%0.1f%% - %s\n", percMap.first, percMap.second.c_str()
             );
         }
-        std::fprintf(log, "\nTotal [%0.2f msecs]\n", double(total) / msec);
+        std::fprintf(
+            log, "\nTotal [%0.2f msecs]\n", static_cast<double>(total) / msec
+        );
         std::fflush(log);
-        fsync(fileno(log));
+        fsync(fileno(log)); // NOLINT(misc-include-cleaner)
         std::fclose(log);
-        sync();
+        sync(); // NOLINT(misc-include-cleaner)
         log = nullptr;
         times.clear();
-#endif // ifndef NPERF
+#endif // NPERF
     } // report
 
 #ifndef NPERF
@@ -288,4 +298,4 @@ private:
 #endif
 };
 
-#endif // ifndef UTILS_H
+#endif // UTILS_H

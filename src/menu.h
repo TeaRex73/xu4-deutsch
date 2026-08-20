@@ -26,7 +26,9 @@ public:
         RESET
     };
 
-    MenuEvent(const Menu *menu, Type type, const MenuItem *item = nullptr)
+    MenuEvent(
+        const Menu *menu, const Type type, const MenuItem *item = nullptr
+    )
         :menu(menu), type(type), item(item)
     {
     }
@@ -60,20 +62,26 @@ class Menu:public Observable<Menu *, MenuEvent &> {
 public:
     typedef std::list<MenuItem *> MenuItemList;
     Menu();
-    ~Menu();
+
+    Menu(const Menu &) = delete;
+    Menu(Menu &&) = delete;
+    Menu &operator=(const Menu &) = delete;
+    Menu &operator=(Menu &&) = delete;
+    ~Menu() override;
+
     void removeAll();
-    void add(int id, const std::string &text, short x, short y, int sc = -1);
+    void add(int id, const std::string &text, int x, int y, int sc = -1);
     MenuItem *add(int id, MenuItem *item);
     void addShortcutKey(int id, int shortcutKey) const;
     void setClosesMenu(int id) const;
     MenuItemList::iterator getCurrent() const;
     void setCurrent(MenuItemList::iterator i);
     void setCurrent(int id);
-    void show(TextView *view);
-    bool isVisible();
+    void show(TextView *view) const;
+    bool isVisible() const;
     void next();
     void prev();
-    void highlight(MenuItem *item);
+    void highlight(MenuItem *item) const;
     MenuItemList::iterator begin();
     MenuItemList::iterator end();
     MenuItemList::iterator begin_visible();
@@ -83,12 +91,11 @@ public:
     void activateItem(int id, MenuEvent::Type action);
     bool activateItemByShortcut(int key, MenuEvent::Type action);
     bool getClosed() const;
-    void setClosed(bool closed);
+    void setClosed(bool isClosed);
     void setTitle(const std::string &text, int x, int y);
 
 private:
     MenuItemList items;
-    MenuItemList::iterator current;
     MenuItemList::iterator selected;
     bool closed;
     std::string title;
@@ -103,10 +110,13 @@ private:
 class MenuController:public WaitableController<void *> {
 public:
     MenuController(Menu *menu, TextView *view);
+
     MenuController(const MenuController &) = delete;
     MenuController(MenuController &&) = delete;
     MenuController &operator=(const MenuController &) = delete;
     MenuController &operator=(MenuController &&) = delete;
+    ~MenuController() override = default;
+
     bool keyPressed(int key) override;
 
 protected:
@@ -114,4 +124,4 @@ protected:
     TextView *view;
 };
 
-#endif // ifndef MENU_H
+#endif // MENU_H

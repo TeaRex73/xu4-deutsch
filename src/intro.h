@@ -5,7 +5,7 @@
 #ifndef INTRO_H
 #define INTRO_H
 
-#include <cstdint>
+#include <cstdint> // IWYU pragma: keep
 #include <string>
 #include <vector>
 
@@ -28,24 +28,26 @@ struct SaveGame;
  */
 class IntroBinData {
 public:
-    //disallow assignment, copy construction
+    IntroBinData();
+
     IntroBinData(const IntroBinData &) = delete;
     const IntroBinData &operator=(const IntroBinData &) = delete;
+    IntroBinData(IntroBinData &&) = delete;
+    IntroBinData &operator=(IntroBinData &&) = delete;
+    ~IntroBinData();
 
     const static int INTRO_TEXT_OFFSET;
     const static int INTRO_MAP_OFFSET;
-    const static int INTRO_FIXUPDATA_OFFSET;
+    const static int INTRO_FIXUP_DATA_OFFSET;
     const static int INTRO_SCRIPT_TABLE_SIZE;
     const static int INTRO_SCRIPT_TABLE_OFFSET;
-    const static int INTRO_BASETILE_TABLE_SIZE;
-    const static int INTRO_BASETILE_TABLE_OFFSET;
+    const static int INTRO_BASE_TILE_TABLE_SIZE;
+    const static int INTRO_BASE_TILE_TABLE_OFFSET;
     const static int BEASTIE1_FRAMES;
     const static int BEASTIE2_FRAMES;
     const static int BEASTIE_FRAME_TABLE_OFFSET;
     const static int BEASTIE1_FRAMES_OFFSET;
     const static int BEASTIE2_FRAMES_OFFSET;
-    IntroBinData();
-    ~IntroBinData();
     bool load();
     std::vector<MapTile> introMap;
     unsigned char *sigData;
@@ -83,15 +85,17 @@ public:
     IntroController(IntroController &&) = delete;
     IntroController &operator=(const IntroController &) = delete;
     IntroController &operator=(IntroController &&) = delete;
+    ~IntroController() override = default;
+
     bool init();
     bool hasInitiatedNewGame() const;
     void deleteIntro();
-    virtual bool keyPressed(int key) override;
-    unsigned char *getSigData();
+    bool keyPressed(int key) override;
+    unsigned char *getSigData() const;
     void updateScreen();
-    virtual void timerFired() override;
-    void preloadMap();
-    virtual void update(Menu *menu, MenuEvent &event) override;
+    void timerFired() override;
+    void preloadMap() const;
+    void update(Menu *menu, MenuEvent &event) override;
     void updateConfMenu(const MenuEvent &event);
     void updateVideoMenu(const MenuEvent &event);
     void updateGfxMenu(const MenuEvent &event);
@@ -105,10 +109,10 @@ public:
 
 private:
     void drawMap();
-    void drawMapStatic();
-    void drawMapAnimated();
+    void drawMapStatic() const;
+    void drawMapAnimated() const;
     void drawBeasties(bool musicon = true);
-    void drawBeastie(int beast, int vertoffset, int frame) const;
+    void drawBeastie(int beast, int vertOffset, int frame) const;
     void animateTree(const std::string &frame) const;
     void drawCard(int pos, int card) const;
     void drawAbacusBeads(
@@ -117,7 +121,8 @@ private:
     void initQuestionTree();
     bool doQuestion(int answer);
     void initPlayers(SaveGame *saveGame) const;
-    std::string getQuestion(SexType sex, int v1, int v2) const;
+
+    std::string &getQuestion(SexType sex, int v1, int v2) const;
     void initiateNewGame();
     void finishInitiateGame(const std::string &nameBuffer, SexType sex);
     void startQuestions(SexType sex);
@@ -240,7 +245,12 @@ private:
 
     class AnimElement {
     public:
+        AnimElement(const AnimElement &) = default;
+        AnimElement &operator=(const AnimElement &) = default;
+        AnimElement(AnimElement &&) noexcept = default;
+        AnimElement &operator=(AnimElement &&) noexcept = default;
         ~AnimElement();
+
         int rx, ry; // screen/source x and y
         int rw, rh; // source width and height
         AnimType method; // render method
@@ -258,8 +268,8 @@ private:
     void addTitle(
         int x, int y, int w, int h, AnimType method, int delay, int duration
     );
-    void compactTitle();
-    void drawTitle();
+    void compactTitle() const;
+    void drawTitle() const;
     void getTitleSourceData();
     void skipTitles();
     std::vector<AnimElement> titles; // list of title elements
@@ -271,4 +281,4 @@ private:
 
 extern IntroController *intro;
 
-#endif // ifndef INTRO_H
+#endif // INTRO_H

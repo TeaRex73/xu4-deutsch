@@ -23,17 +23,17 @@ enum Sound {
     SOUND_EVADE, // trap evaded
     SOUND_FLEE, // flee combat
     SOUND_ITEM_STOLEN, // item was stolen from a PC, food or gold
-    SOUND_LBHEAL, // LB heals party
-    SOUND_LEVELUP, // PC level up
+    SOUND_LORD_BRITISH_HEAL, // LB heals party
+    SOUND_LEVEL_UP, // PC level up
     SOUND_MOONGATE, // moongate used
     SOUND_CANNON,
     SOUND_RUMBLE,
-    SOUND_PREMAGIC_MANA_JUMBLE,
+    SOUND_PRE_MAGIC_MANA_JUMBLE,
     SOUND_MAGIC,
     SOUND_WHIRLPOOL,
     SOUND_STORM,
-    SOUND_INTROGATE_OPEN,
-    SOUND_INTROGATE_CLOSE,
+    SOUND_INTRO_GATE_OPEN,
+    SOUND_INTRO_GATE_CLOSE,
     SOUND_MAX
 };
 

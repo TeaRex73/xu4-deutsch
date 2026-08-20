@@ -18,9 +18,13 @@ template<class O, class A = NoArg *> class Observer {
 public:
     virtual void update(O observable, A arg) = 0;
 
-    virtual ~Observer()
-    {
-    }
+    Observer() = default;
+
+    Observer(const Observer &) = default;
+    Observer &operator=(const Observer &) = default;
+    Observer(Observer &&) noexcept = default;
+    Observer &operator=(Observer &&) noexcept = default;
+    virtual ~Observer() = default;
 };
 
 
@@ -41,9 +45,13 @@ public:
 
     virtual void update(O observable) = 0;
 
-    virtual ~Observer()
-    {
-    }
+    Observer() = default;
+
+    Observer(const Observer &) = default;
+    Observer &operator=(const Observer &) = default;
+    Observer(Observer &&) noexcept = default;
+    Observer &operator=(Observer &&) noexcept = default;
+    virtual ~Observer() = default;
 };
 
 

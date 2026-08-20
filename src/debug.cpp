@@ -9,6 +9,7 @@
 #include <algorithm>
 #include <cstdio>
 #include <string>
+#include <utility>
 #include <vector>
 
 #include "filesystem.h"
@@ -28,14 +29,11 @@ void print_trace(std::FILE *file)
 {
     /* Code Taken from GNU C Library manual */
     void *array[256];
-    int size;
-    char **strings;
-    int i;
-    size = backtrace(array, 256);
-    strings = backtrace_symbols(array, size);
+    const int size = backtrace(array, 256);
+    char **strings = backtrace_symbols(array, size);
     std::fprintf(file, "Stack trace (size %d):\n", size);
     /* start at one to omit print_trace */
-    for (i = 1; i < size; i++) {
+    for (int i = 1; i < size; i++) {
         std::fprintf(file, "%s\n", strings[i]);
     }
     std::free(strings);
@@ -95,13 +93,11 @@ std::FILE *Debug::global = nullptr;
  * @param append    If true, appends to the debug file
  *                  instead of overwriting it.
  */
-Debug::Debug(const std::string &fn, const std::string &nm, bool append)
+Debug::Debug(std::string fn, std::string nm, const bool append)
     :disabled(false),
-     filename(fn),
-     name(nm),
+     filename(std::move(fn)),
+     name(std::move(nm)),
      file(nullptr),
-     l_filename(),
-     l_func(),
      l_line(0)
 {
     if (!loggingEnabled(name)) {
@@ -153,7 +149,7 @@ void Debug::trace(
     const std::string &fn,
     const std::string &func,
     const int line,
-    bool glbl
+    bool globally
 )
 {
     if (disabled) {
@@ -169,13 +165,13 @@ void Debug::trace(
     if (!msg.empty()) {
         message += msg;
     }
-    if (!_filename.empty() || (line > 0)) {
+    if (!_filename.empty() || line > 0) {
         brackets = true;
         message += " [";
     }
-    if ((l_filename == _filename)
-        && (l_func == func)
-        && (l_line == line)) {
+    if (l_filename == _filename
+        && l_func == func
+        && l_line == line) {
         message += "...";
     } else {
         if (!func.empty()) {
@@ -201,11 +197,11 @@ void Debug::trace(
         }
     }
     if (brackets) {
-        message += "]";
+        message += ']';
     }
-    message += "\n";
+    message += '\n';
     std::fprintf(file, "%s", message.c_str());
-    if (global && glbl) {
+    if (global && globally) {
         std::fprintf(global, "%12s: %s", name.c_str(), message.c_str());
     }
 } // Debug::trace

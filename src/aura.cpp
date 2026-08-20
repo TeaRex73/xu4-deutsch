@@ -11,7 +11,7 @@ Aura::Aura()
 {
 }
 
-void Aura::setDuration(int d)
+void Aura::setDuration(const int d)
 {
     if (duration >= d) return;
     duration = d;
@@ -19,7 +19,7 @@ void Aura::setDuration(int d)
     notifyObservers(nullptr);
 }
 
-void Aura::set(Type t, int d)
+void Aura::set(const Type t, const int d)
 {
     if (type == t && duration >= d) return;
     type = t;
@@ -28,7 +28,7 @@ void Aura::set(Type t, int d)
     notifyObservers(nullptr);
 }
 
-void Aura::setType(Type t)
+void Aura::setType(const Type t)
 {
     if (type == t) return;
     type = t;

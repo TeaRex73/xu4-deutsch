@@ -22,13 +22,13 @@ class U4FILE;
  */
 class ImageLoader {
 public:
-    ImageLoader()
-    {
-    }
+    ImageLoader() = default;
 
-    virtual ~ImageLoader()
-    {
-    }
+    ImageLoader(const ImageLoader &) = delete;
+    ImageLoader &operator=(const ImageLoader &) = delete;
+    ImageLoader(ImageLoader &&) = delete;
+    ImageLoader &operator=(ImageLoader &&) = delete;
+    virtual ~ImageLoader() = default;
 
     virtual Image *load(
         U4FILE *file, int width, int height, int bpp

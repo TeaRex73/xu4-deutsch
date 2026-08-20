@@ -7,6 +7,7 @@
 #include <cstdarg>
 #include <cstdio>
 #include <cstring>
+#include <string>
 
 #include "textview.h"
 
@@ -15,10 +16,12 @@
 #include "image.h"
 #include "imagemgr.h"
 #include "settings.h"
+#include "textcolor.h"
+#include "view.h"
 
 Image *TextView::charset = nullptr;
 
-TextView::TextView(int x, int y, int columns, int rows)
+TextView::TextView(const int x, const int y, const int columns, const int rows)
     :View(x, y, columns * CHAR_WIDTH, rows * CHAR_HEIGHT),
      columns(columns),
      rows(rows),
@@ -51,7 +54,7 @@ void TextView::reinit()
 /**
  * Draw a character from the charset onto the view.
  */
-void TextView::drawChar(int chr, int x, int y) const
+void TextView::drawChar(const int chr, const int x, const int y) const
 {
     U4ASSERT(x < columns, "x value of %d out of range", x);
     U4ASSERT(y < rows, "y value of %d out of range", y);
@@ -68,11 +71,13 @@ void TextView::drawChar(int chr, int x, int y) const
 
 /**
  * Draw a character from the charset onto the view, but mask it with
- * horizontal lines.  This is used for the avatar symbol in the
+ * horizontal lines.  This is used for the Ankh symbol in the
  * statistics area, where a line is masked out for each virtue in
  * which the player is not an avatar.
  */
-void TextView::drawCharMasked(int chr, int x, int y, unsigned char mask) const
+void TextView::drawCharMasked(
+    const int chr, const int x, const int y, const unsigned char mask
+) const
 {
     drawChar(chr, x, y);
     for (int i = 0; i < 8; i++) {
@@ -92,18 +97,18 @@ void TextView::drawCharMasked(int chr, int x, int y, unsigned char mask) const
 
 
 /* highlight the selected row using a background color */
-void TextView::textSelectedAt(int x, int y, const char *text)
+void TextView::textSelectedAt(const int x, const int y, const char *text)
 {
     if (!settings.enhancementsOptions.textColorization) {
         this->textAt(x, y, "%s", text);
         return;
     }
-    this->setFontColorBG(BG_BRIGHT);
+    setFontColorBG(BG_BRIGHT);
     for (int i = 0; i < this->getWidth() - 1; i++) {
         this->textAt(x - 1 + i, y, " ");
     }
     this->textAt(x, y, "%s", text);
-    this->setFontColorBG(BG_NORMAL);
+    setFontColorBG(BG_NORMAL);
 }
 
 
@@ -117,20 +122,20 @@ std::string TextView::colorizeStatus(char statustype)
     }
     switch (statustype) {
     case 'V':
-        output = FG_GREEN;
+        output = {FG_GREEN};
         break;
     case 'S':
-        output = FG_PURPLE;
+        output = {FG_PURPLE};
         break;
     case 'T':
-        output = FG_RED;
+        output = {FG_RED};
         break;
     default:
-        output = statustype;
+        output = {statustype};
         return output;
     }
-    output += statustype;
-    output += FG_WHITE;
+    output += {statustype};
+    output += {FG_WHITE};
     return output;
 } // TextView::colorizeStatus
 
@@ -138,28 +143,28 @@ std::string TextView::colorizeStatus(char statustype)
 /* depending on the status type, apply colorization to the character */
 std::string TextView::colorizeString(
     const std::string &input,
-    ColorFG color,
-    unsigned int colorstart,
-    unsigned int colorlength
+    const ColorFG color,
+    const unsigned int colorStart,
+    unsigned int colorLength
 )
 {
     if (!settings.enhancementsOptions.textColorization) {
         return input;
     }
-    std::string output = "";
-    std::size_t length = input.length();
+    std::string output;
+    const std::size_t length = input.length();
     bool colorization = false;
     // loop through the entire std::string
     for (std::size_t i = 0; i < length; i++) {
-        if (i == colorstart) {
-            output += color;
+        if (i == colorStart) {
+            output += {static_cast<char>(color)};
             colorization = true;
         }
         output += input[i];
         if (colorization) {
-            colorlength--;
-            if (colorlength == 0) {
-                output += FG_WHITE;
+            colorLength--;
+            if (colorLength == 0) {
+                output += {FG_WHITE};
                 colorization = false;
             }
         }
@@ -167,36 +172,40 @@ std::string TextView::colorizeString(
     // if we reached the end of the string without
     // resetting the color to white, do it now
     if (colorization) {
-        output += FG_WHITE;
+        output += {FG_WHITE};
     }
     return output;
 } // TextView::colorizeString
 
-void TextView::setFontColor(ColorFG fg, ColorBG bg)
+void TextView::setFontColor(const ColorFG fg, const ColorBG bg)
 {
+    // ReSharper disable once CppExpressionWithoutSideEffects
     charset->setFontColorFG(fg);
+    // ReSharper disable once CppExpressionWithoutSideEffects
     charset->setFontColorBG(bg);
 }
 
-void TextView::setFontColorFG(ColorFG fg)
+void TextView::setFontColorFG(const ColorFG fg)
 {
+    // ReSharper disable once CppExpressionWithoutSideEffects
     charset->setFontColorFG(fg);
 }
 
-void TextView::setFontColorBG(ColorBG bg)
+void TextView::setFontColorBG(const ColorBG bg)
 {
+    // ReSharper disable once CppExpressionWithoutSideEffects
     charset->setFontColorBG(bg);
 }
 
-void TextView::textAt(int x, int y, const char *fmt, ...)
+void TextView::textAt(const int x, const int y, const char *fmt, ...)
 {
     char buffer[1024];
     unsigned int i;
     unsigned int offset = 0;
-    bool reenableCursor = false;
+    bool reEnableCursor = false;
     if (cursorFollowsText && cursorEnabled) {
         disableCursor();
-        reenableCursor = true;
+        reEnableCursor = true;
     }
     std::va_list args;
     va_start(args, fmt);
@@ -215,13 +224,13 @@ void TextView::textAt(int x, int y, const char *fmt, ...)
             offset++;
             break;
         default:
-            drawChar(buffer[i], x + (i - offset), y);
+            drawChar(buffer[i], x + static_cast<int>(i - offset), y);
         }
     }
     if (cursorFollowsText) {
-        setCursorPos(x + i, y, true);
+        setCursorPos(x + static_cast<int>(i), y, true);
     }
-    if (reenableCursor) {
+    if (reEnableCursor) {
         enableCursor();
     }
 } // TextView::textAt
@@ -248,7 +257,7 @@ void TextView::scroll()
     update();
 }
 
-void TextView::setCursorPos(int x, int y, bool clearOld)
+void TextView::setCursorPos(int x, int y, const bool clearOld)
 {
     while (x >= columns) {
         x -= columns;
@@ -302,7 +311,7 @@ void TextView::drawCursor()
 
 void TextView::cursorTimer(void *data)
 {
-    TextView *thiz = static_cast<TextView *>(data);
-    thiz->cursorPhase = (thiz->cursorPhase + 1) % 4;
-    thiz->drawCursor();
+    auto *textViewPtr = static_cast<TextView *>(data);
+    textViewPtr->cursorPhase = (textViewPtr->cursorPhase + 1) % 4;
+    textViewPtr->drawCursor();
 }

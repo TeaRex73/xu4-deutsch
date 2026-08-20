@@ -32,7 +32,7 @@ enum MoveResult {
 
 class MoveEvent {
 public:
-    MoveEvent(Direction d, bool user)
+    MoveEvent(const Direction d, const bool user)
         :dir(d), userEvent(user), result(MOVE_SUCCEEDED)
     {
     }
@@ -45,12 +45,12 @@ public:
 void moveAvatar(MoveEvent &event);
 void moveAvatarInDungeon(MoveEvent &event);
 bool moveObject(
-    const class Map *map, class Creature *obj, const MapCoords &avatar
+    const Map *map, Creature *obj, const MapCoords &avatar
 );
 bool moveCombatObject(
     int act,
-    const class Map *map,
-    class Creature *obj,
+    const Map *map,
+    Creature *obj,
     const MapCoords &target
 );
 void movePartyMember(MoveEvent &event);
@@ -58,4 +58,4 @@ bool slowedByTile(const Tile *tile);
 bool slowedByWind(int direction);
 extern std::atomic_bool collisionOverride;
 
-#endif // ifndef MOVEMENT_H
+#endif // MOVEMENT_H

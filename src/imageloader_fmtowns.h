@@ -12,9 +12,9 @@
 
 class FMTOWNSImageLoader:public ImageLoader {
 public:
-    virtual Image *load(U4FILE *file, int width, int height, int bpp) override;
+    Image *load(U4FILE *file, int width, int height, int bpp) override;
 
-    explicit FMTOWNSImageLoader(int offset)
+    explicit FMTOWNSImageLoader(const int offset)
         :offset(offset)
     {
     }

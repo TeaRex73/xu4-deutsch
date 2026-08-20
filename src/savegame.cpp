@@ -4,6 +4,8 @@
 
 #include "vc6.h" // Fixes things if you're using VC6, does nothing otherwise
 
+#include <cstdio>
+
 #include "savegame.h"
 
 #include "u4io.h"
@@ -34,17 +36,17 @@ bool SaveGame::write(std::FILE *f) const
         || !writeShort(sextants, f)) {
         return false;
     }
-    for (i = 0; i < ARMR_MAX; i++) {
+    for (i = 0; i < ARMOR_MAX; i++) {
         if (!writeShort(armor[i], f)) {
             return false;
         }
     }
-    for (i = 0; i < WEAP_MAX; i++) {
+    for (i = 0; i < WEAPON_MAX; i++) {
         if (!writeShort(weapons[i], f)) {
             return false;
         }
     }
-    for (i = 0; i < REAG_MAX; i++) {
+    for (i = 0; i < REAGENT_MAX; i++) {
         if (!writeShort(reagents[i], f)) {
             return false;
         }
@@ -61,19 +63,19 @@ bool SaveGame::write(std::FILE *f) const
         || !writeChar(runes, f)
         || !writeShort(members, f)
         || !writeShort(transport, f)
-        || !writeShort(balloonstate, f)
-        || !writeShort(trammelphase, f)
-        || !writeShort(feluccaphase, f)
-        || !writeShort(shiphull, f)
-        || !writeShort(lbintro, f)
-        || !writeShort(lastcamp, f)
-        || !writeShort(lastreagent, f)
-        || !writeShort(lastmeditation, f)
-        || !writeShort(lastvirtue, f)
-        || !writeChar(dngx, f)
-        || !writeChar(dngy, f)
+        || !writeShort(balloon_state, f)
+        || !writeShort(trammel_phase, f)
+        || !writeShort(felucca_phase, f)
+        || !writeShort(ship_hull, f)
+        || !writeShort(lord_british_intro, f)
+        || !writeShort(last_camp, f)
+        || !writeShort(last_reagent, f)
+        || !writeShort(last_meditation, f)
+        || !writeShort(last_virtue, f)
+        || !writeChar(dungeon_x, f)
+        || !writeChar(dungeon_y, f)
         || !writeShort(orientation, f)
-        || !writeShort(dnglevel, f)
+        || !writeShort(dungeon_level, f)
         || !writeShort(location, f)) {
         return false;
     }
@@ -96,7 +98,7 @@ bool SaveGame::read(std::FILE *f)
         return false;
     }
     for (i = 0; i < 8; i++) {
-        if (!readShort(&(karma[i]), f)) {
+        if (!readShort(&karma[i], f)) {
             return false;
         }
     }
@@ -106,23 +108,23 @@ bool SaveGame::read(std::FILE *f)
         || !readShort(&sextants, f)) {
         return false;
     }
-    for (i = 0; i < ARMR_MAX; i++) {
-        if (!readShort(&(armor[i]), f)) {
+    for (i = 0; i < ARMOR_MAX; i++) {
+        if (!readShort(&armor[i], f)) {
             return false;
         }
     }
-    for (i = 0; i < WEAP_MAX; i++) {
-        if (!readShort(&(weapons[i]), f)) {
+    for (i = 0; i < WEAPON_MAX; i++) {
+        if (!readShort(&weapons[i], f)) {
             return false;
         }
     }
-    for (i = 0; i < REAG_MAX; i++) {
-        if (!readShort(&(reagents[i]), f)) {
+    for (i = 0; i < REAGENT_MAX; i++) {
+        if (!readShort(&reagents[i], f)) {
             return false;
         }
     }
     for (i = 0; i < SPELL_MAX; i++) {
-        if (!readShort(&(mixtures[i]), f)) {
+        if (!readShort(&mixtures[i], f)) {
             return false;
         }
     }
@@ -133,25 +135,25 @@ bool SaveGame::read(std::FILE *f)
         || !readChar(&runes, f)
         || !readShort(&members, f)
         || !readShort(&transport, f)
-        || !readShort(&balloonstate, f)
-        || !readShort(&trammelphase, f)
-        || !readShort(&feluccaphase, f)
-        || !readShort(&shiphull, f)
-        || !readShort(&lbintro, f)
-        || !readShort(&lastcamp, f)
-        || !readShort(&lastreagent, f)
-        || !readShort(&lastmeditation, f)
-        || !readShort(&lastvirtue, f)
-        || !readChar(&dngx, f)
-        || !readChar(&dngy, f)
+        || !readShort(&balloon_state, f)
+        || !readShort(&trammel_phase, f)
+        || !readShort(&felucca_phase, f)
+        || !readShort(&ship_hull, f)
+        || !readShort(&lord_british_intro, f)
+        || !readShort(&last_camp, f)
+        || !readShort(&last_reagent, f)
+        || !readShort(&last_meditation, f)
+        || !readShort(&last_virtue, f)
+        || !readChar(&dungeon_x, f)
+        || !readChar(&dungeon_y, f)
         || !readShort(&orientation, f)
-        || !readShort(&dnglevel, f)
+        || !readShort(&dungeon_level, f)
         || !readShort(&location, f)) {
         return false;
     }
     /* workaround of U4DOS bug to retain savegame compatibility */
-    if ((location == 0) && (dnglevel == 0)) {
-        dnglevel = 0xFFFF;
+    if (location == 0 && dungeon_level == 0) {
+        dungeon_level = 0xFFFF;
     }
     return true;
 } // SaveGame::read
@@ -174,13 +176,13 @@ void SaveGame::init(const SaveGamePlayerRecord *avatarInfo)
     gems = 0;
     keys = 0;
     sextants = 0;
-    for (i = 0; i < ARMR_MAX; i++) {
+    for (i = 0; i < ARMOR_MAX; i++) {
         armor[i] = 0;
     }
-    for (i = 0; i < WEAP_MAX; i++) {
+    for (i = 0; i < WEAPON_MAX; i++) {
         weapons[i] = 0;
     }
-    for (i = 0; i < REAG_MAX; i++) {
+    for (i = 0; i < REAGENT_MAX; i++) {
         reagents[i] = 0;
     }
     for (i = 0; i < SPELL_MAX; i++) {
@@ -193,27 +195,26 @@ void SaveGame::init(const SaveGamePlayerRecord *avatarInfo)
     runes = 0;
     members = 1;
     transport = 0x1f;
-    balloonstate = 0;
-    trammelphase = 0;
-    feluccaphase = 0;
-    shiphull = 50;
-    lbintro = 0;
-    lastcamp = 0;
-    lastreagent = 0;
-    lastmeditation = 0;
-    lastvirtue = 0;
-    dngx = 0;
-    dngy = 0;
+    balloon_state = 0;
+    trammel_phase = 0;
+    felucca_phase = 0;
+    ship_hull = 50;
+    lord_british_intro = 0;
+    last_camp = 0;
+    last_reagent = 0;
+    last_meditation = 0;
+    last_virtue = 0;
+    dungeon_x = 0;
+    dungeon_y = 0;
     orientation = 0;
-    dnglevel = 0xFFFF;
+    dungeon_level = 0xFFFF;
     location = 0;
 } // SaveGame::init
 
 bool SaveGamePlayerRecord::write(std::FILE *f) const
 {
-    int i;
     if (!writeShort(hp, f)
-        || !writeShort(hpMax, f)
+        || !writeShort(hp_max, f)
         || !writeShort(xp, f)
         || !writeShort(str, f)
         || !writeShort(dex, f)
@@ -224,14 +225,14 @@ bool SaveGamePlayerRecord::write(std::FILE *f) const
         || !writeShort(armor, f)) {
         return false;
     }
-    for (i = 0; i < 16; i++) {
-        if (!writeChar(name[i], f)) {
+    for (const char name_char: name) {
+        if (!writeChar(name_char, f)) {
             return false;
         }
     }
-    if (!writeChar(static_cast<unsigned char>(sex), f)
-        || !writeChar(static_cast<unsigned char>(klass), f)
-        || !writeChar(static_cast<unsigned char>(status), f)) {
+    if (!writeChar(sex, f)
+        || !writeChar(klass, f)
+        || !writeChar(status, f)) {
         return false;
     }
     return true;
@@ -239,11 +240,10 @@ bool SaveGamePlayerRecord::write(std::FILE *f) const
 
 bool SaveGamePlayerRecord::read(std::FILE *f)
 {
-    int i;
     unsigned char ch;
     unsigned short s;
     if (!readShort(&hp, f)
-        || !readShort(&hpMax, f)
+        || !readShort(&hp_max, f)
         || !readShort(&xp, f)
         || !readShort(&str, f)
         || !readShort(&dex, f)
@@ -260,11 +260,11 @@ bool SaveGamePlayerRecord::read(std::FILE *f)
         return false;
     }
     armor = static_cast<ArmorType>(s);
-    for (i = 0; i < 16; i++) {
+    for (char &name_char: name) {
         if (!readChar(&ch, f)) {
             return false;
         }
-        name[i] = static_cast<char>(ch);
+        name_char = static_cast<char>(ch);
     }
     if (!readChar(&ch, f)) {
         return false;
@@ -283,19 +283,18 @@ bool SaveGamePlayerRecord::read(std::FILE *f)
 
 void SaveGamePlayerRecord::init()
 {
-    int i;
     hp = 0;
-    hpMax = 0;
+    hp_max = 0;
     xp = 0;
     str = 0;
     dex = 0;
     intel = 0;
     mp = 0;
     unknown = 0;
-    weapon = WEAP_HANDS;
-    armor = ARMR_NONE;
-    for (i = 0; i < 16; i++) {
-        name[i] = '\0';
+    weapon = WEAPON_HANDS;
+    armor = ARMOR_NONE;
+    for (char &name_char: name) {
+        name_char = '\0';
     }
     sex = SEX_MALE;
     klass = CLASS_MAGE;
@@ -306,52 +305,51 @@ bool saveGameMonstersWrite(
     const SaveGameMonsterRecord *monsterTable, std::FILE *f
 )
 {
-    int i;
     if (monsterTable) {
-        for (i = 0; i < MONSTERTABLE_SIZE; i++) {
+        for (int i = 0; i < MONSTER_TABLE_SIZE; i++) {
             if (!writeChar(monsterTable[i].tile, f)) {
                 return false;
             }
         }
-        for (i = 0; i < MONSTERTABLE_SIZE; i++) {
+        for (int i = 0; i < MONSTER_TABLE_SIZE; i++) {
             if (!writeChar(monsterTable[i].x, f)) {
                 return false;
             }
         }
-        for (i = 0; i < MONSTERTABLE_SIZE; i++) {
+        for (int i = 0; i < MONSTER_TABLE_SIZE; i++) {
             if (!writeChar(monsterTable[i].y, f)) {
                 return false;
             }
         }
-        for (i = 0; i < MONSTERTABLE_SIZE; i++) {
-            if (!writeChar(monsterTable[i].prevTile, f)) {
+        for (int i = 0; i < MONSTER_TABLE_SIZE; i++) {
+            if (!writeChar(monsterTable[i].previous_tile, f)) {
                 return false;
             }
         }
-        for (i = 0; i < MONSTERTABLE_SIZE; i++) {
-            if (!writeChar(monsterTable[i].prevx, f)) {
+        for (int i = 0; i < MONSTER_TABLE_SIZE; i++) {
+            if (!writeChar(monsterTable[i].previous_x, f)) {
                 return false;
             }
         }
-        for (i = 0; i < MONSTERTABLE_SIZE; i++) {
-            if (!writeChar(monsterTable[i].prevy, f)) {
+        for (int i = 0; i < MONSTER_TABLE_SIZE; i++) {
+            if (!writeChar(monsterTable[i].previous_y, f)) {
                 return false;
             }
         }
-        for (i = 0; i < MONSTERTABLE_SIZE; i++) {
+        for (int i = 0; i < MONSTER_TABLE_SIZE; i++) {
             if (!writeChar(monsterTable[i].z, f)) {
                 return false;
             }
         }
-        for (i = 0; i < MONSTERTABLE_SIZE; i++) {
+        for (int i = 0; i < MONSTER_TABLE_SIZE; i++) {
             if (!writeChar(monsterTable[i].unused, f)) {
                 return false;
             }
         }
     } else {
-        int max = MONSTERTABLE_SIZE * 8;
-        for (i = 0; i < max; i++) {
-            if (!writeChar(static_cast<unsigned char>(0), f)) {
+        constexpr int max = MONSTER_TABLE_SIZE * 8;
+        for (int i = 0; i < max; i++) {
+            if (!writeChar(0, f)) {
                 return false;
             }
         }
@@ -362,42 +360,42 @@ bool saveGameMonstersWrite(
 bool saveGameMonstersRead(SaveGameMonsterRecord *monsterTable, std::FILE *f)
 {
     int i;
-    for (i = 0; i < MONSTERTABLE_SIZE; i++) {
+    for (i = 0; i < MONSTER_TABLE_SIZE; i++) {
         if (!readChar(&monsterTable[i].tile, f)) {
             return false;
         }
     }
-    for (i = 0; i < MONSTERTABLE_SIZE; i++) {
+    for (i = 0; i < MONSTER_TABLE_SIZE; i++) {
         if (!readChar(&monsterTable[i].x, f)) {
             return false;
         }
     }
-    for (i = 0; i < MONSTERTABLE_SIZE; i++) {
+    for (i = 0; i < MONSTER_TABLE_SIZE; i++) {
         if (!readChar(&monsterTable[i].y, f)) {
             return false;
         }
     }
-    for (i = 0; i < MONSTERTABLE_SIZE; i++) {
-        if (!readChar(&monsterTable[i].prevTile, f)) {
+    for (i = 0; i < MONSTER_TABLE_SIZE; i++) {
+        if (!readChar(&monsterTable[i].previous_tile, f)) {
             return false;
         }
     }
-    for (i = 0; i < MONSTERTABLE_SIZE; i++) {
-        if (!readChar(&monsterTable[i].prevx, f)) {
+    for (i = 0; i < MONSTER_TABLE_SIZE; i++) {
+        if (!readChar(&monsterTable[i].previous_x, f)) {
             return false;
         }
     }
-    for (i = 0; i < MONSTERTABLE_SIZE; i++) {
-        if (!readChar(&monsterTable[i].prevy, f)) {
+    for (i = 0; i < MONSTER_TABLE_SIZE; i++) {
+        if (!readChar(&monsterTable[i].previous_y, f)) {
             return false;
         }
     }
-    for (i = 0; i < MONSTERTABLE_SIZE; i++) {
+    for (i = 0; i < MONSTER_TABLE_SIZE; i++) {
         if (!readChar(&monsterTable[i].z, f)) {
             return false;
         }
     }
-    for (i = 0; i < MONSTERTABLE_SIZE; i++) {
+    for (i = 0; i < MONSTER_TABLE_SIZE; i++) {
         if (!readChar(&monsterTable[i].unused, f)) {
             return false;
         }

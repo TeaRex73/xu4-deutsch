@@ -5,15 +5,77 @@
 #ifndef OBJECT_H
 #define OBJECT_H
 
+#include <atomic>
+#include <cstdio>
 #include <deque>
-#include <set>
+#include <unordered_set>
 
 #include "coords.h"
+#include "debug.h"
 #include "direction.h"
 #include "tile.h"
 #include "types.h"
 
-typedef std::deque<class Object *> ObjectDeque;
+class Object;
+
+
+template <typename T>
+class Registered {
+protected:
+    Registered()
+    {
+        registrees.insert(static_cast<T *>(this));
+    }
+
+    Registered(const Registered &)
+    {
+        registrees.insert(static_cast<T *>(this));
+    }
+
+    Registered(Registered &&) noexcept
+    {
+        registrees.insert(static_cast<T *>(this));
+    }
+
+    Registered &operator=(const Registered &) = default;
+    Registered &operator=(Registered &&) noexcept = default;
+
+    ~Registered()
+    {
+        const bool found =
+            static_cast<bool>(registrees.erase(static_cast<T *>(this)));
+        U4ASSERT(found, "Tried to delete non-existing Object\n");
+    }
+
+public:
+    static void cleanup()
+    {
+        // Use duplicate set to iterate over; changing the original set,
+        // while iterating over it, is very bad.
+        // (the destructor, which is invoked by "delete reg", does change it)
+        std::unordered_set<T *> tmp = registrees;
+        for (const auto *reg: tmp) {
+            delete reg;
+        }
+        registrees.clear();
+    }
+
+private:
+    static std::unordered_set<T *> registrees;
+};
+
+template <typename T>
+std::unordered_set<T *> Registered<T>::registrees {
+    []() -> std::unordered_set<T *> {
+        std::unordered_set<T *> tmp;
+        tmp.reserve(512);
+        return tmp;
+    }()
+};
+
+
+typedef std::deque<Object *> ObjectDeque;
+typedef std::deque<const Object *> ConstObjectDeque;
 
 typedef enum {
     MOVEMENT_FIXED,
@@ -22,20 +84,23 @@ typedef enum {
     MOVEMENT_ATTACK_AVATAR
 } ObjectMovementBehavior;
 
-class Object {
+class Object: public Registered<Object> {
 public:
     enum Type {
         UNKNOWN,
         CREATURE,
         PERSON,
-        PARTYMEMBER
+        PARTY_MEMBER
     };
 
     explicit Object(Type type = UNKNOWN);
-    Object(const Object &o);
-    Object &operator=(const Object &o);
+
+    Object(const Object &) = default;
+    Object(Object &&) noexcept = default;
+    Object &operator=(const Object &) = default;
+    Object &operator=(Object &&) noexcept = default;
+    // ReSharper disable once CppHidingFunction
     virtual ~Object();
-    static void cleanup();
 
     MapTile getTile() const
     {
@@ -84,7 +149,7 @@ public:
         return animated;
     }
 
-    void setTile(MapTile t)
+    void setTile(const MapTile t)
     {
         tile = t;
     }
@@ -94,59 +159,58 @@ public:
         tile = t->getId();
     }
 
-    void setPrevTile(MapTile t)
+    void setPrevTile(const MapTile t)
     {
         prevTile = t;
     }
 
-    void setCoords(const Coords &c);
+    void setCoords(const Coords &co);
 
-    void setPrevCoords(const Coords &c)
+    void setPrevCoords(const Coords &pc)
     {
-        prevCoords = c;
+        prevCoords = pc;
     }
 
-    void setMovementBehavior(ObjectMovementBehavior b)
+    void setMovementBehavior(const ObjectMovementBehavior b)
     {
         movement_behavior = b;
     }
 
-    void setType(Type t)
+    void setType(const Type t)
     {
         objType = t;
     }
 
-    void setFocus(bool f = true)
+    void setFocus(const bool f = true)
     {
         focused = f;
     }
 
-    void setVisible(bool v = true)
+    void setVisible(const bool v = true)
     {
         visible = v;
     }
 
-    void setAnimated(bool a = true)
+    void setAnimated(const bool a = true)
     {
         animated = a;
     }
 
     void setMap(class Map *m);
     Map *getMap() const;
-    void remove(); /**< remove self from any maps that it's part of */
+    void remove() const; /**< remove self from any maps that it's part of */
     bool setDirection(Direction d);
     void animateMovement() const;
 
 protected:
-    MapTile tile, prevTile;
+    std::deque<Map *> maps; /**< maps that this object is part of */
     Coords coords, prevCoords;
-    ObjectMovementBehavior movement_behavior;
-    Type objType;
-    std::deque<class Map *> maps; /**< maps that this object is part of */
-    bool focused;
-    bool visible;
-    bool animated;
-    static std::set<Object *> all_objects;
+    MapTile tile = 0, prevTile = 0;
+    ObjectMovementBehavior movement_behavior = MOVEMENT_FIXED;
+    Type objType = UNKNOWN;
+    bool focused = false;
+    bool visible = true;
+    bool animated = true;
 };
 
-#endif // ifndef OBJECT_H
+#endif // OBJECT_H

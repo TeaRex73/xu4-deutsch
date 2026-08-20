@@ -10,35 +10,40 @@
 
 #include <libxml/globals.h>
 #include <libxml/parser.h>
+#include <libxml/tree.h>
 #include <libxml/xmlstring.h>
-#include <strings.h>
+#include <strings.h> // IWYU pragma: keep
 
 #define TLK_BUF_SIZE 384
 
 static char *my_strdup(const char *s);
 static xmlNodePtr addAsText(xmlDocPtr doc, xmlNodePtr node, const char *in);
-static void xmlToTlk(xmlDocPtr doc, FILE *tlk);
+static void xmlToTlk(xmlDocPtr doc, FILE *tlk); // NOLINT(misc-include-cleaner)
 static xmlDocPtr tlkToXml(FILE *tlk);
 
 static char *my_strdup(const char *s)
 {
-    char *ret = strdup(s);
+    char *ret = strdup(s); // NOLINT(misc-include-cleaner)
     if (!ret) {
-        perror("out of memory");
-        exit(EXIT_FAILURE);
+        perror("out of memory"); // NOLINT(misc-include-cleaner)
+        exit(EXIT_FAILURE); // NOLINT(misc-include-cleaner)
     }
     return ret;
 }
 
-static xmlNodePtr addAsText(xmlDocPtr doc, xmlNodePtr node, const char *in)
+
+static xmlNodePtr addAsText(
+    // NOLINTNEXTLINE(misc-misplaced-const)
+    const xmlDocPtr doc, const xmlNodePtr node, const char *in
+)
 {
     const char *begin, *end;
     char buffer[600];
     begin = in;
     while (*begin) {
-        end = strchr(begin, '\n');
+        end = strchr(begin, '\n'); // NOLINT(misc-include-cleaner)
         if (!end) {
-            end = begin + strlen(begin);
+            end = begin + strlen(begin); // NOLINT(misc-include-cleaner)
         }
         strncpy(buffer, begin, end - begin);
         buffer[end - begin] = '\0';
@@ -54,7 +59,8 @@ static xmlNodePtr addAsText(xmlDocPtr doc, xmlNodePtr node, const char *in)
     return node;
 }
 
-static void xmlToTlk(xmlDocPtr doc, FILE *tlk)
+// NOLINTNEXTLINE(misc-misplaced-const)
+static void xmlToTlk(const xmlDocPtr doc, FILE *tlk)
 {
     xmlNodePtr root, person, node;
     const char *val;
@@ -69,8 +75,8 @@ static void xmlToTlk(xmlDocPtr doc, FILE *tlk)
         RESPONSE1,
         RESPONSE2,
         QUESTION,
-        YESRESP,
-        NORESP,
+        YES_RESPONSE,
+        NO_RESPONSE,
         KEYWORD1,
         KEYWORD2,
         MAX
@@ -80,6 +86,7 @@ static void xmlToTlk(xmlDocPtr doc, FILE *tlk)
     root = xmlDocGetRootElement(doc);
     for (person = root->children; person; person = person->next) {
         int kw = KEYWORD1;
+        // NOLINTNEXTLINE(misc-include-cleaner)
         if (strcmp((const char *)person->name, "person") != 0) {
             continue;
         }
@@ -88,7 +95,8 @@ static void xmlToTlk(xmlDocPtr doc, FILE *tlk)
         str[NAME] = (char *) xmlGetProp(person, (xmlChar *) "name");
         str[PRONOUN] = (char *) xmlGetProp(person, (xmlChar *) "pronoun");
         val = (const char *) xmlGetProp(person, (xmlChar *) "turnAwayProb");
-        tlk_buffer[2] = (unsigned char) strtoul(val, NULL, 10);
+        // NOLINTNEXTLINE(misc-include-cleaner)
+        tlk_buffer[2] = (char) (unsigned char) strtoul(val, NULL, 10);
         for (node = person->children; node; node = node->next) {
             xmlNodePtr child;
             if (!node->children) {
@@ -100,6 +108,7 @@ static void xmlToTlk(xmlDocPtr doc, FILE *tlk)
             } else if (strcmp((char *) node->name, "topic") == 0) {
                 char *query = (char *) xmlGetProp(node, (xmlChar *) "query");
                 char trigger = 0;
+                // NOLINTNEXTLINE(misc-include-cleaner)
                 if (strcasecmp(query, "job") == 0) {
                     str[JOB] =
                         (char *)xmlNodeListGetString(doc, node->children, 1);
@@ -110,7 +119,7 @@ static void xmlToTlk(xmlDocPtr doc, FILE *tlk)
                     trigger = 4;
                 } else {
                     if (kw > KEYWORD2) {
-                        fprintf(
+                        fprintf( // NOLINT(misc-include-cleaner)
                             stderr,
                             ".tlk files only allow 2 topics other than 'job' "
                             "and 'health'\n"
@@ -127,35 +136,36 @@ static void xmlToTlk(xmlDocPtr doc, FILE *tlk)
                     str[kw - (KEYWORD1 - RESPONSE1)] =
                         (char *)xmlNodeListGetString(doc, node->children, 1);
                     str[kw] = query;
-                    trigger = 6 - (KEYWORD2 - kw);
+                    trigger = (char)(6 - (KEYWORD2 - kw));
                     kw++;
                 }
                 // Check for questions
                 for (child = node->children; child; child = child->next) {
-                    xmlNodePtr qchild;
+                    xmlNodePtr q_child;
                     if (strcasecmp((const char *)child->name, "question")
                         != 0) {
                         continue;
                     }
                     tlk_buffer[0] = trigger;
                     val = (const char *) xmlGetProp(child, (xmlChar *) "type");
-                    tlk_buffer[1] = (unsigned char) strtoul(val, NULL, 10);
-                    for (qchild = child->children;
-                         qchild;
-                         qchild = qchild->next) {
-                        if (xmlNodeIsText(qchild)) {
-                            str[QUESTION] = (char *)xmlNodeGetContent(qchild);
+                    tlk_buffer[1] =
+                        (char) (unsigned char) strtoul(val, NULL, 10);
+                    for (q_child = child->children;
+                         q_child;
+                         q_child = q_child->next) {
+                        if (xmlNodeIsText(q_child)) {
+                            str[QUESTION] = (char *)xmlNodeGetContent(q_child);
                         } else if (strcasecmp(
-                                       (const char *)qchild->name, "yes"
+                                       (const char *)q_child->name, "yes"
                                    ) == 0) {
-                            str[YESRESP] = (char *)xmlNodeListGetString(
-                                doc, qchild->children, 1
+                            str[YES_RESPONSE] = (char *)xmlNodeListGetString(
+                                doc, q_child->children, 1
                             );
                         } else if (strcasecmp(
-                                       (const char *)qchild->name, "no"
+                                       (const char *)q_child->name, "no"
                                    ) == 0) {
-                            str[NORESP] = (char *)xmlNodeListGetString(
-                                doc, qchild->children, 1
+                            str[NO_RESPONSE] = (char *)xmlNodeListGetString(
+                                doc, q_child->children, 1
                             );
                         }
                     }
@@ -173,11 +183,11 @@ static void xmlToTlk(xmlDocPtr doc, FILE *tlk)
         if (!str[QUESTION]) {
             str[QUESTION] = my_strdup("\0");
         }
-        if (!str[YESRESP]) {
-            str[YESRESP] = my_strdup("\0");
+        if (!str[YES_RESPONSE]) {
+            str[YES_RESPONSE] = my_strdup("\0");
         }
-        if (!str[NORESP]) {
-            str[NORESP] = my_strdup("\0");
+        if (!str[NO_RESPONSE]) {
+            str[NO_RESPONSE] = my_strdup("\0");
         }
         ptr = &tlk_buffer[3];
         for (i = 0; i < MAX; i++) {
@@ -192,12 +202,14 @@ static void xmlToTlk(xmlDocPtr doc, FILE *tlk)
             }
             snprintf(ptr, tlk_buffer + sizeof(tlk_buffer) - ptr, "%s", str[i]);
             ptr += strlen(str[i]) + 1;
+            // NOLINTNEXTLINE(bugprone-branch-clone)
             if (*str[i] == '\0') {
-                free(str[i]);
+                free(str[i]); // NOLINT(misc-include-cleaner)
             } else {
                 xmlFree(str[i]);
             }
         }
+        // NOLINTNEXTLINE(misc-include-cleaner)
         fwrite(tlk_buffer, sizeof(tlk_buffer), 1, tlk);
     }
 }
@@ -219,6 +231,7 @@ static xmlDocPtr tlkToXml(FILE *tlk)
         char *ptr;
         char *response1, *response2, *question, *yes, *no;
         xmlNodePtr node, job, health, kw1, kw2, target;
+        // NOLINTNEXTLINE(misc-include-cleaner)
         if (fread(tlk_buffer, 1, sizeof(tlk_buffer), tlk)
             != sizeof(tlk_buffer)) {
             break;
@@ -331,7 +344,7 @@ static xmlDocPtr tlkToXml(FILE *tlk)
     return doc;
 }
 
-int main(int argc, char **argv)
+int main(const int argc, char **argv)
 {
     FILE *in, *out;
     xmlDocPtr doc;
@@ -345,7 +358,7 @@ int main(int argc, char **argv)
         );
         exit(1);
     }
-    in = fopen(argv[2], "rb");
+    in = fopen(argv[2], "rb"); // NOLINT(misc-include-cleaner)
     if (!in) {
         perror(argv[2]);
         exit(1);
@@ -361,10 +374,14 @@ int main(int argc, char **argv)
         fwrite(xml, xmlSize, 1, out);
         xmlFree(xml);
     } else if (strcmp(argv[1], "--fromxml") == 0) {
-        fseek(in, 0L, SEEK_END);
-        xmlSize = ftell(in);
+        fseek(in, 0L, SEEK_END); // NOLINT(misc-include-cleaner)
+        xmlSize = (int)ftell(in); // NOLINT(misc-include-cleaner)
         fseek(in, 0L, SEEK_SET);
-        xml = (char *) malloc(xmlSize);
+        xml = (char *) malloc(xmlSize); // NOLINT(misc-include-cleaner)
+        if (!xml) {
+            perror("out of memory");
+            exit(EXIT_FAILURE);
+        }
         if (fread(xml, xmlSize, 1, in) != 1) perror("fread failed");
         doc = xmlParseMemory(xml, xmlSize);
         if (doc) {
@@ -374,7 +391,7 @@ int main(int argc, char **argv)
         fprintf(stderr, "%s: invalid option\n", argv[1]);
         exit(1);
     }
-    fclose(in);
+    fclose(in); // NOLINT(misc-include-cleaner)
     fclose(out);
     return 0;
 }

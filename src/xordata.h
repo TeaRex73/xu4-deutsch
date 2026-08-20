@@ -5,7 +5,7 @@
 #ifndef XORDATA_H
 #define XORDATA_H
 
-#include <cstdint>
+#include <cstdint> // IWYU pragma: keep
 #include <map>
 #include <string>
 #include <vector>

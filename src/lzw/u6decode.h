@@ -31,6 +31,6 @@ int lzw_decompress(
     long destination_length
 );
 int lzw_decompress(std::FILE *input_file, std::FILE *output_file);
-};
+}
 
 #endif

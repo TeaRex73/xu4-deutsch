@@ -43,7 +43,7 @@ void print_trace(std::FILE *file);
         if (!(exp)) {                                  \
             std::fprintf(                              \
                 stderr,                                \
-                "%s:%s:%d: assert `%s' gescheitert. ", \
+                "%s:%s:%d: assert '%s' gescheitert. ", \
                 __FILE__, XU4_FUNC, __LINE__, #exp     \
             );                                         \
             std::fprintf(stderr, __VA_ARGS__);         \
@@ -67,15 +67,16 @@ void U4ASSERT(bool exp, const char *desc, ...);
  */
 class Debug {
 public:
-    // disallow assignments, copy contruction
+    // disallow assignments, copy construction
     Debug(const Debug &) = delete;
     Debug(Debug &&) = delete;
     const Debug &operator=(const Debug &) = delete;
     const Debug &operator=(Debug &&) = delete;
+    ~Debug() = default;
 
     explicit Debug(
-        const std::string &fn,
-        const std::string &nm = "",
+        std::string fn,
+        std::string nm = "",
         bool append = false
     );
     static void initGlobal(const std::string &filename);
@@ -83,8 +84,8 @@ public:
         const std::string &msg,
         const std::string &fn = "",
         const std::string &func = "",
-        const int line = -1,
-        bool glbl = true
+        int line = -1,
+        bool globally = true
     );
 
 private:
@@ -97,4 +98,4 @@ private:
     int l_line;
 };
 
-#endif /* ifndef DEBUG_H */
+#endif // DEBUG_H

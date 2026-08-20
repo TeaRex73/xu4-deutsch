@@ -2,8 +2,8 @@
  * $Id$
  */
 
-#ifndef TYPEDEFS_H
-#define TYPEDEFS_H
+#ifndef TYPES_H
+#define TYPES_H
 
 #include "direction.h"
 
@@ -14,16 +14,16 @@ typedef unsigned char MapId;
 typedef enum {
     FAST,
     SLOW,
-    VSLOW,
-    VVSLOW
+    VERY_SLOW,
+    VERY_VERY_SLOW
 } TileSpeed;
 
 typedef enum {
     EFFECT_NONE,
     EFFECT_FIRE,
     EFFECT_SLEEP,
+    EFFECT_SWAMP,
     EFFECT_POISON,
-    EFFECT_POISONFIELD,
     EFFECT_ELECTRICITY,
     EFFECT_LAVA
 } TileEffect;
@@ -32,10 +32,10 @@ typedef enum {
     ANIM_NONE,
     ANIM_SCROLL,
     ANIM_CAMPFIRE,
-    ANIM_CITYFLAG,
-    ANIM_CASTLEFLAG,
-    ANIM_SHIPFLAG,
-    ANIM_LCBFLAG,
+    ANIM_CITY_FLAG,
+    ANIM_CASTLE_FLAG,
+    ANIM_SHIP_FLAG,
+    ANIM_LCB_FLAG,
     ANIM_FRAMES
 } TileAnimationStyle;
 
@@ -50,25 +50,13 @@ public:
     {
     }
 
+    /* Rule of Zero */
+
     // cppcheck-suppress noExplicitConstructor //implicit intended
-    MapTile(TileId i, unsigned char f = 0)
+    // NOLINTNEXTLINE(google-explicit-constructor, hicpp-explicit-conversions)
+    MapTile(const TileId i, const unsigned char f = 0)
         :id(i), frame(f), freezeAnimation(false)
     {
-    }
-
-    MapTile(const MapTile &t)
-        :id(t.id), frame(t.frame), freezeAnimation(t.freezeAnimation)
-    {
-    }
-
-    MapTile &operator=(const MapTile &t)
-    {
-        if (this != &t) {
-            id = t.id;
-            frame = t.frame;
-            freezeAnimation = t.freezeAnimation;
-        }
-        return *this;
     }
 
     TileId getId() const
@@ -81,7 +69,7 @@ public:
         return frame;
     }
 
-    void setFrame(unsigned char f)
+    void setFrame(const unsigned char f)
     {
         frame = f;
     }
@@ -91,32 +79,32 @@ public:
         return freezeAnimation;
     }
 
-    void setFreezeAnimation(bool f)
+    void setFreezeAnimation(const bool f)
     {
         freezeAnimation = f;
     }
 
-    bool operator==(const MapTile &m) const
+    bool operator==(const MapTile m) const
     {
         return id == m.id;
     }
 
-    bool operator==(const TileId &i) const
+    bool operator==(const TileId i) const
     {
         return id == i;
     }
 
-    bool operator!=(const MapTile &m) const
+    bool operator!=(const MapTile m) const
     {
         return id != m.id;
     }
 
-    bool operator!=(const TileId &i) const
+    bool operator!=(const TileId i) const
     {
         return id != i;
     }
 
-    bool operator<(const MapTile &m) const
+    bool operator<(const MapTile m) const
     {
         return id < m.id; /* for std::less */
     }
@@ -130,4 +118,4 @@ public:
     bool freezeAnimation;
 };
 
-#endif // ifndef TYPEDEFS_H
+#endif // TYPES_H

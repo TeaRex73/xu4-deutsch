@@ -6,6 +6,7 @@
 
 #include <cstdlib>
 #include <cstring>
+#include <string>
 
 #include "cheat.h"
 
@@ -44,7 +45,7 @@ bool CheatMenuController::keyPressed(int key)
 {
     int i;
     bool valid = true;
-    if ((key >= 'A') && (key <= ']')) {
+    if (key >= 'A' && key <= ']') {
         key = xu4_tolower(key);
     }
     switch (key) {
@@ -69,28 +70,28 @@ bool CheatMenuController::keyPressed(int key)
         break;
     case 'a':
     {
-        int newTrammelphase = c->saveGame->trammelphase + 1;
-        if (newTrammelphase > 7) {
-            newTrammelphase = 0;
+        int newTrammelPhase = c->saveGame->trammel_phase + 1;
+        if (newTrammelPhase > 7) {
+            newTrammelPhase = 0;
         }
         screenMessage("MONDLAUF!\n");
-        while (c->saveGame->trammelphase != newTrammelphase) {
-            game->updateMoons(true);
+        while (c->saveGame->trammel_phase != newTrammelPhase) {
+            GameController::updateMoons(true);
         }
         break;
     }
     case 'c':
         collisionOverride = !collisionOverride;
         screenMessage(
-            "KOLLISONSTEST %s!\n", collisionOverride ? "AUS" : "EIN"
+            "KOLLISIONSTEST %s!\n", collisionOverride ? "AUS" : "EIN"
         );
         break;
     case 'e':
         screenMessage("AUSR]STUNG!\n");
-        for (i = ARMR_NONE + 1; i < ARMR_MAX; i++) {
+        for (i = ARMOR_NONE + 1; i < ARMOR_MAX; i++) {
             c->saveGame->armor[i] = 8;
         }
-        for (i = WEAP_HANDS + 1; i < WEAP_MAX; i++) {
+        for (i = WEAPON_HANDS + 1; i < WEAPON_MAX; i++) {
             const Weapon *weapon = Weapon::get(static_cast<WeaponType>(i));
             if (weapon->loseWhenUsed() || weapon->loseWhenRanged()) {
                 c->saveGame->weapons[i] = 99;
@@ -105,25 +106,26 @@ bool CheatMenuController::keyPressed(int key)
             c->saveGame->players[i].str = 50;
             c->saveGame->players[i].dex = 50;
             c->saveGame->players[i].intel = 50;
-            if (c->saveGame->players[i].hpMax < 800) {
+            if (c->saveGame->players[i].hp_max < 800) {
                 c->saveGame->players[i].xp = 9999;
-                c->saveGame->players[i].hpMax = 800;
+                c->saveGame->players[i].hp_max = 800;
                 c->saveGame->players[i].hp = 800;
             }
         }
         break;
     case 'g':
     {
+
         screenMessage("GEH ZU: ");
         std::string dest = lowercase(gameGetInput(8));
         bool found = false;
         for (unsigned int p = 0; p < c->location->map->portals.size(); p++) {
-            MapId destid = c->location->map->portals[p]->destid;
+            MapId destId = c->location->map->portals[p]->destId;
             std::string destNameLower =
-                lowercase(mapMgr->get(destid)->getName());
+                lowercase(mapMgr->get(destId)->getName());
             if (destNameLower.find(dest) != std::string::npos) {
                 screenMessage(
-                    "\n%s\n", mapMgr->get(destid)->getName().c_str()
+                    "\n%s\n", mapMgr->get(destId)->getName().c_str()
                 );
                 c->location->coords = c->location->map->portals[p]->coords;
                 found = true;
@@ -265,8 +267,8 @@ bool CheatMenuController::keyPressed(int key)
         screenMessage("OPAZIT[T %s!\n", c->opacity ? "EIN" : "AUS");
         break;
     case 'p':
-        if ((c->location->viewMode == VIEW_NORMAL)
-            || (c->location->viewMode == VIEW_DUNGEON)) {
+        if (c->location->viewMode == VIEW_NORMAL
+            || c->location->viewMode == VIEW_DUNGEON) {
             c->location->viewMode = VIEW_GEM;
         } else if (c->location->context == CTX_DUNGEON) {
             c->location->viewMode = VIEW_DUNGEON;
@@ -277,7 +279,7 @@ bool CheatMenuController::keyPressed(int key)
         break;
     case 'r':
         screenMessage("REAGENZIEN!\n");
-        for (i = 0; i < REAG_MAX; i++) {
+        for (i = 0; i < REAGENT_MAX; i++) {
             c->saveGame->reagents[i] = 99;
         }
         break;
@@ -295,7 +297,7 @@ bool CheatMenuController::keyPressed(int key)
                 balloon = c->location->map->tileset->getByName("balloon")
                 ->getId();
             MapTile choice;
-            screenMessage("ERZEUGE TRASNPORT!\nWELCHEN? ");
+            screenMessage("ERZEUGE TRANSPORT!\nWELCHEN? ");
             // Get the transport of choice
             char transport = ReadChoiceController::getChar("spb \033\015");
             switch (transport) {
@@ -381,8 +383,8 @@ bool CheatMenuController::keyPressed(int key)
         break;
     case 'y':
         screenMessage("STEIG AUF!\n");
-        if ((c->location->context & CTX_DUNGEON)
-            && (c->location->coords.z > 0)) {
+        if (c->location->context & CTX_DUNGEON
+            && c->location->coords.z > 0) {
             c->location->coords.z--;
         } else {
             screenMessage("VERLASSE...\n");
@@ -392,32 +394,33 @@ bool CheatMenuController::keyPressed(int key)
         break;
     case 'z':
         screenMessage("STEIG AB!\n");
-        if ((c->location->context & CTX_DUNGEON)
-            && (c->location->coords.z < 7)) {
+        if (c->location->context & CTX_DUNGEON
+            && c->location->coords.z < 7) {
             c->location->coords.z++;
         } else {
             soundPlay(SOUND_ERROR);
             screenMessage("HIER NICHT!\n");
         }
         break;
-    case U4_FKEY + 0:
-    case U4_FKEY + 1:
-    case U4_FKEY + 2:
-    case U4_FKEY + 3:
-    case U4_FKEY + 4:
-    case U4_FKEY + 5:
-    case U4_FKEY + 6:
-    case U4_FKEY + 7:
+    case U4_F_KEY + 0:
+    case U4_F_KEY + 1:
+    case U4_F_KEY + 2:
+    case U4_F_KEY + 3:
+    case U4_F_KEY + 4:
+    case U4_F_KEY + 5:
+    case U4_F_KEY + 6:
+    case U4_F_KEY + 7:
         screenMessage(
-            "STEIGERE %s!\n", getVirtueName(static_cast<Virtue>(key - U4_FKEY))
+            "STEIGERE %s!\n",
+            getVirtueName(static_cast<Virtue>(key - U4_F_KEY))
         );
-        if (c->saveGame->karma[key - U4_FKEY] == 99) {
-            c->saveGame->karma[key - U4_FKEY] = 0;
-        } else if (c->saveGame->karma[key - U4_FKEY] != 0) {
-            c->saveGame->karma[key - U4_FKEY] += 10;
+        if (c->saveGame->karma[key - U4_F_KEY] == 99) {
+            c->saveGame->karma[key - U4_F_KEY] = 0;
+        } else if (c->saveGame->karma[key - U4_F_KEY] != 0) {
+            c->saveGame->karma[key - U4_F_KEY] += 10;
         }
-        if (c->saveGame->karma[key - U4_FKEY] > 99) {
-            c->saveGame->karma[key - U4_FKEY] = 99;
+        if (c->saveGame->karma[key - U4_F_KEY] > 99) {
+            c->saveGame->karma[key - U4_F_KEY] = 99;
         }
         c->stats->update();
         break;
@@ -453,8 +456,8 @@ void CheatMenuController::summonCreature(const std::string &name)
         return;
     }
     /* find the creature by its id and spawn it */
-    unsigned int id = std::atoi(creatureName.c_str());
-    if (id > 0) {
+    const unsigned long id = std::strtoul(creatureName.c_str(), nullptr, 10);
+    if (id > 0 && id <= MAX_CREATURE_ID) {
         m = creatureMgr->getById(id);
     }
     if (!m) {
@@ -472,7 +475,7 @@ void CheatMenuController::summonCreature(const std::string &name)
     screenMessage("\n%s UNBEKANNT!\n", creatureName.c_str());
 } // CheatMenuController::summonCreature
 
-bool WindCmdController::keyPressed(int key)
+bool WindCmdController::keyPressed(const int key)
 {
     switch (key) {
     case U4_UP:
@@ -491,6 +494,8 @@ bool WindCmdController::keyPressed(int key)
         screenMessage("WINDRICHTUNG %sSPERRT!\n", c->windLock ? "GE" : "ENT");
         doneWaiting();
         return true;
+    default:
+        ;
     }
     return KeyHandler::defaultHandler(key, nullptr);
 }

@@ -22,13 +22,12 @@ typedef std::map<std::string, class TileRule *> TileRuleMap;
 class TileRule {
 public:
     TileRule()
-        :name(),
-         mask(0),
-         movementMask(0),
-         speed(FAST),
-         effect(EFFECT_NONE),
-         walkonDirs(0),
-         walkoffDirs(0)
+        : mask(0),
+          movementMask(0),
+          speed(FAST),
+          effect(EFFECT_NONE),
+          walkOnDirs(0),
+          walkOffDirs(0)
     {
     }
 
@@ -42,8 +41,8 @@ public:
     unsigned short movementMask;
     TileSpeed speed;
     TileEffect effect;
-    int walkonDirs;
-    int walkoffDirs;
+    int walkOnDirs;
+    int walkOffDirs;
 };
 
 
@@ -57,12 +56,7 @@ public:
     typedef std::map<std::string, Tile *> TileStrMap;
 
     Tileset()
-        :name(),
-         tiles(),
-         totalFrames(0),
-         imageName(),
-         extends(nullptr),
-         nameMap()
+        : totalFrames(0), extends(nullptr)
     {
     }
 
@@ -70,6 +64,7 @@ public:
     Tileset(Tileset &&) = delete;
     Tileset &operator=(const Tileset &) = delete;
     Tileset &operator=(Tileset &&) = delete;
+    ~Tileset() = default;
 
     static void loadAll();
     static void unloadAll();
@@ -81,7 +76,7 @@ public:
     void unload();
     void unloadImages() const;
     Tile *get(TileId id);
-    Tile *getByName(const std::string &name);
+    Tile *getByName(const std::string &nameToGet);
     std::string getImageName() const;
     unsigned int numTiles() const;
     unsigned int numFrames() const;
@@ -96,4 +91,4 @@ private:
     TileStrMap nameMap;
 };
 
-#endif // ifndef TILESET_H
+#endif // TILESET_H

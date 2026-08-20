@@ -17,7 +17,7 @@
  */
 #include <windows.h>
 
-void errorFatal(const char *fmt, ...)
+[[noreturn]] void errorFatal(const char *fmt, ...)
 {
     char buffer[1000];
     std::va_list args;
@@ -47,7 +47,7 @@ void errorWarning(const char *fmt, ...)
 
 bool need_gtk_init = true;
 
-void errorFatal(const char *fmt, ...)
+[[noreturn]] void errorFatal(const char *fmt, ...)
 {
     char buffer[1000];
     std::va_list args;
@@ -94,7 +94,7 @@ void errorWarning(const char *fmt, ...)
 /*
  * no GUI error functions: errors go to standard error stream
  */
-void errorFatal(const char *fmt, ...)
+[[noreturn]] void errorFatal(const char *fmt, ...)
 {
     std::va_list args;
     std::fprintf(stderr, "xu4: error: ");

@@ -35,7 +35,7 @@
 #define DEFAULT_FILTER "Point"
 #define DEFAULT_VIDEO_TYPE "EGA"
 #define DEFAULT_GEM_LAYOUT "Standard"
-#define DEFAULT_LINEOFSIGHT "DOS"
+#define DEFAULT_LINE_OF_SIGHT "DOS"
 #define DEFAULT_SCREEN_SHAKES 1
 #define DEFAULT_GAMMA 100
 #define DEFAULT_MUSIC_VOLUME 10
@@ -127,20 +127,18 @@ class SettingsData {
 public:
     SettingsData()
         :battleSpeed(DEFAULT_BATTLE_SPEED),
-         campingAlwaysCombat(0),
+         campingAlwaysCombat(false),
          campTime(DEFAULT_CAMP_TIME),
          debug(DEFAULT_DEBUG),
          enhancements(DEFAULT_ENHANCEMENTS),
-         enhancementsOptions(),
          filterMoveMessages(DEFAULT_FILTER_MOVE_MESSAGES),
          fullscreen(DEFAULT_FULLSCREEN),
          gameCyclesPerSecond(DEFAULT_CYCLES_PER_SECOND),
          screenAnimationFramesPerSecond(DEFAULT_ANIMATION_FRAMES_PER_SECOND),
-         innAlwaysCombat(0),
+         innAlwaysCombat(false),
          innTime(DEFAULT_INN_TIME),
-         keydelay(DEFAULT_KEY_DELAY),
-         keyinterval(DEFAULT_KEY_INTERVAL),
-         mouseOptions(),
+         keyDelay(DEFAULT_KEY_DELAY),
+         keyInterval(DEFAULT_KEY_INTERVAL),
          musicVol(DEFAULT_MUSIC_VOLUME),
 #if 0
          scale(DEFAULT_SCALE),
@@ -160,15 +158,20 @@ public:
          pauseForEachMovement(DEFAULT_PAUSE_FOR_EACH_MOVEMENT),
          filter(DEFAULT_FILTER),
          gemLayout(DEFAULT_GEM_LAYOUT),
-         lineOfSight(DEFAULT_LINEOFSIGHT),
+         lineOfSight(DEFAULT_LINE_OF_SIGHT),
          videoType(DEFAULT_VIDEO_TYPE),
          battleDiff(DEFAULT_BATTLE_DIFFICULTY),
-         logging(DEFAULT_LOGGING),
+         logging(DEFAULT_LOGGING), //NOLINT(readability-redundant-string-init)
          game("Ultima IV")
     {
     }
 
+    SettingsData(const SettingsData &) = default;
+    SettingsData &operator=(const SettingsData &) = default;
+    SettingsData(SettingsData &&) noexcept = default;
+    SettingsData &operator=(SettingsData &&) noexcept = default;
     virtual ~SettingsData() = default;
+
     bool operator==(const SettingsData &) const;
     bool operator!=(const SettingsData &) const;
     int battleSpeed;
@@ -183,11 +186,11 @@ public:
     int screenAnimationFramesPerSecond;
     bool innAlwaysCombat;
     int innTime;
-    int keydelay;
-    int keyinterval;
+    int keyDelay;
+    int keyInterval;
     MouseOptions mouseOptions;
     int musicVol;
-    static const int scale = DEFAULT_SCALE;
+    static constexpr int scale = DEFAULT_SCALE;
     bool screenShakes;
     int gamma;
     int shakeInterval;
@@ -226,9 +229,13 @@ class Settings
     :public SettingsData,
      public Observable<Settings *> {
 public:
-    void init(const bool useProfile, const std::string &profileName);
+    void init(bool useProfile, const std::string &profileName);
 
-    virtual ~Settings() = default;
+    Settings(const Settings &) = delete;
+    Settings &operator=(const Settings &) = delete;
+    Settings(Settings &&) = delete;
+    Settings &operator=(Settings &&) = delete;
+    ~Settings() override = default;
 
     static Settings &getInstance()
     {
@@ -245,7 +252,7 @@ public:
     const std::vector<std::string> &getBattleDiffs() const;
 
 private:
-    typedef std::map<std::string, int, std::less<std::string> > SettingsMap;
+    typedef std::map<std::string, int> SettingsMap;
 
     Settings();
     static Settings *instance;
@@ -257,4 +264,4 @@ private:
 /* the global settings */
 #define settings (Settings::getInstance())
 
-#endif // ifndef SETTINGS_H
+#endif // SETTINGS_H

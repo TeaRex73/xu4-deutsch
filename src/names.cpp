@@ -6,9 +6,10 @@
 
 #include "names.h"
 
+#include "direction.h"
 #include "savegame.h"
 
-const char *getClassNameEnglish(ClassType klass)
+const char *getClassNameEnglish(const ClassType klass)
 {
     switch (klass) {
     case CLASS_MAGE:
@@ -32,7 +33,7 @@ const char *getClassNameEnglish(ClassType klass)
     }
 }
 
-const char *getClassNameTranslated(ClassType klass, SexType sex)
+const char *getClassNameTranslated(const ClassType klass, const SexType sex)
 {
     switch (klass) {
     case CLASS_MAGE:
@@ -112,9 +113,9 @@ const char *getClassNameTranslated(ClassType klass, SexType sex)
     } // switch
 } // getClassNameTranslated
 
-const char *getReagentName(Reagent reagent)
+const char *getReagentName(const Reagent reagent)
 {
-    static const char *const reagentNames[] = {
+    static constexpr const char *reagentNames[] = {
         "Schwelasche",
         "Ginseng",
         "Knoblauch",
@@ -124,16 +125,15 @@ const char *getReagentName(Reagent reagent)
         "Schatten",
         "Alraune"
     };
-    if (reagent < REAG_MAX) {
-        return reagentNames[reagent - REAG_ASH];
-    } else {
-        return "???";
+    if (reagent < REAGENT_MAX) {
+        return reagentNames[reagent - REAGENT_ASH];
     }
+    return "???";
 }
 
-const char *getVirtueName(Virtue virtue)
+const char *getVirtueName(const Virtue virtue)
 {
-    static const char *const virtueNames[] = {
+    static constexpr const char *virtueNames[] = {
         "Ehrlichkeit",
         "Mitgef}hl",
         "Tapferkeit",
@@ -144,60 +144,63 @@ const char *getVirtueName(Virtue virtue)
         "Demut"
     };
     if (virtue < 8) {
-        return virtueNames[virtue - VIRT_HONESTY];
-    } else {
-        return "???";
+        return virtueNames[virtue - VIRTUE_HONESTY];
     }
+    return "???";
 }
 
-const char *getBaseVirtueName(int virtueMask)
+const char *getBaseVirtueName(const int virtueMask)
 {
-    if (virtueMask == VIRT_TRUTH) {
+    if (virtueMask == VIRTUE_TRUTH) {
         return "Wahrheit";
-    } else if (virtueMask == VIRT_LOVE) {
-        return "Liebe";
-    } else if (virtueMask == VIRT_COURAGE) {
-        return "Mut";
-    } else if (virtueMask == (VIRT_TRUTH | VIRT_LOVE)) {
-        return "Wahrheit und Liebe";
-    } else if (virtueMask == (VIRT_LOVE | VIRT_COURAGE)) {
-        return "Liebe und Mut";
-    } else if (virtueMask == (VIRT_COURAGE | VIRT_TRUTH)) {
-        return "Mut und Wahrheit";
-    } else if (virtueMask == (VIRT_TRUTH | VIRT_LOVE | VIRT_COURAGE)) {
-        return "Wahrheit, Liebe und Mut";
-    } else {
-        return "???";
     }
+    if (virtueMask == VIRTUE_LOVE) {
+        return "Liebe";
+    }
+    if (virtueMask == VIRTUE_COURAGE) {
+        return "Mut";
+    }
+    if (virtueMask == (VIRTUE_TRUTH | VIRTUE_LOVE)) {
+        return "Wahrheit und Liebe";
+    }
+    if (virtueMask == (VIRTUE_LOVE | VIRTUE_COURAGE)) {
+        return "Liebe und Mut";
+    }
+    if (virtueMask == (VIRTUE_COURAGE | VIRTUE_TRUTH)) {
+        return "Mut und Wahrheit";
+    }
+    if (virtueMask == (VIRTUE_TRUTH | VIRTUE_LOVE | VIRTUE_COURAGE)) {
+        return "Wahrheit, Liebe und Mut";
+    }
+    return "???";
 }
 
-int getBaseVirtues(Virtue virtue)
+int getBaseVirtues(const Virtue virtue)
 {
     switch (virtue) {
-    case VIRT_HONESTY:
-        return VIRT_TRUTH;
-    case VIRT_COMPASSION:
-        return VIRT_LOVE;
-    case VIRT_VALOR:
-        return VIRT_COURAGE;
-    case VIRT_JUSTICE:
-        return VIRT_TRUTH | VIRT_LOVE;
-    case VIRT_SACRIFICE:
-        return VIRT_LOVE | VIRT_COURAGE;
-    case VIRT_HONOR:
-        return VIRT_COURAGE | VIRT_TRUTH;
-    case VIRT_SPIRITUALITY:
-        return VIRT_TRUTH | VIRT_LOVE | VIRT_COURAGE;
-    case VIRT_HUMILITY:
-        return 0;
+    case VIRTUE_HONESTY:
+        return VIRTUE_TRUTH;
+    case VIRTUE_COMPASSION:
+        return VIRTUE_LOVE;
+    case VIRTUE_VALOR:
+        return VIRTUE_COURAGE;
+    case VIRTUE_JUSTICE:
+        return VIRTUE_TRUTH | VIRTUE_LOVE;
+    case VIRTUE_SACRIFICE:
+        return VIRTUE_LOVE | VIRTUE_COURAGE;
+    case VIRTUE_HONOR:
+        return VIRTUE_COURAGE | VIRTUE_TRUTH;
+    case VIRTUE_SPIRITUALITY:
+        return VIRTUE_TRUTH | VIRTUE_LOVE | VIRTUE_COURAGE;
+    case VIRTUE_HUMILITY:
     default:
         return 0;
     }
 }
 
-const char *getVirtueAdjective(Virtue virtue)
+const char *getVirtueAdjective(const Virtue virtue)
 {
-    static const char *const virtueAdjectives[] = {
+    static constexpr const char *virtueAdjectives[] = {
         "ehrlich",
         "mitf}hlend",
         "tapfer",
@@ -208,15 +211,14 @@ const char *getVirtueAdjective(Virtue virtue)
         "dem}tig"
     };
     if (virtue < 8) {
-        return virtueAdjectives[virtue - VIRT_HONESTY];
-    } else {
-        return "???";
+        return virtueAdjectives[virtue - VIRTUE_HONESTY];
     }
+    return "???";
 }
 
-const char *getStoneName(Virtue virtue)
+const char *getStoneName(const Virtue virtue)
 {
-    static const char *const virtueNames[] = {
+    static constexpr const char *virtueNames[] = {
         "Blau",
         "Gelb",
         "Rot",
@@ -226,14 +228,13 @@ const char *getStoneName(Virtue virtue)
         "Wei~",
         "Schwarz"
     };
-    if (virtue < VIRT_MAX) {
-        return virtueNames[virtue - VIRT_HONESTY];
-    } else {
-        return "???";
+    if (virtue < VIRTUE_MAX) {
+        return virtueNames[virtue - VIRTUE_HONESTY];
     }
+    return "???";
 }
 
-const char *getItemName(Item item)
+const char *getItemName(const Item item)
 {
     switch (item) {
     case ITEM_SKULL:
@@ -259,17 +260,16 @@ const char *getItemName(Item item)
     }
 }
 
-const char *getDirectionName(Direction dir)
+const char *getDirectionName(const Direction dir)
 {
-    static const char *const directionNames[] = {
+    static constexpr const char *directionNames[] = {
         "West",
         "Nord",
         "Ost",
         "S}d"
     };
-    if ((dir >= DIR_WEST) && (dir <= DIR_SOUTH)) {
+    if (dir >= DIR_WEST && dir <= DIR_SOUTH) {
         return directionNames[dir - DIR_WEST];
-    } else {
-        return "???";
     }
+    return "???";
 }

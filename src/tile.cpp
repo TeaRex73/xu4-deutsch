@@ -10,18 +10,21 @@
 
 #include "config.h"
 #include "context.h"
+#include "direction.h"
 #include "error.h"
 #include "image.h"
 #include "imagemgr.h"
+#include "screen.h"
 #include "settings.h"
 #include "tileanim.h"
 #include "tileset.h"
+#include "types.h"
+
 
 TileId Tile::nextId = 0;
 
 Tile::Tile(Tileset *tileset)
     :id(nextId++),
-     name(),
      tileset(tileset),
      w(0),
      h(0),
@@ -32,12 +35,8 @@ Tile::Tile(Tileset *tileset)
      foreground(),
      waterForeground(),
      rule(nullptr),
-     imageName(),
-     looks_like(),
      image(nullptr),
-     tiledInDungeon(false),
-     directions(),
-     animationRule("")
+     tiledInDungeon(false)
 {
 }
 
@@ -81,7 +80,7 @@ void Tile::loadProperties(const ConfigElement &conf)
     }
     tiledInDungeon = conf.getBool("tiledInDungeon");
     if (conf.exists("directions")) {
-        std::string dirs = conf.getString("directions");
+        const std::string dirs = conf.getString("directions");
         if (dirs.length() != static_cast<std::size_t>(frames)) {
             errorFatal(
                 "Error: %llu directions for tile but only %d frames",
@@ -125,7 +124,7 @@ void Tile::loadImage()
     if (!image) {
         scale = settings.scale;
         const SubImage *subimage = nullptr;
-        ImageInfo *info = imageMgr->get(imageName);
+        const ImageInfo *info = imageMgr->get(imageName);
         if (!info) {
             subimage = imageMgr->getSubImage(imageName);
             if (subimage) {
@@ -156,8 +155,8 @@ void Tile::loadImage()
             subimage->width * scale :
             info->width * scale / info->prescale;
         h = subimage ?
-            (subimage->height * scale) / frames :
-            (info->height * scale / info->prescale) / frames;
+            subimage->height * scale / frames :
+            info->height * scale / info->prescale / frames;
         image = Image::create(
             w, h * frames, false, Image::SOFTWARE
         );
@@ -180,11 +179,10 @@ void Tile::loadImage()
         }
 
         info->image->alphaOff();
-        if (animationRule.size() > 0) {
-            extern TileAnimSet *tileanims;
+        if (!animationRule.empty()) {
             anim = nullptr;
-            if (tileanims) {
-                anim = tileanims->getByName(animationRule);
+            if (tileAnimations) {
+                anim = tileAnimations->getByName(animationRule);
             }
             if (anim == nullptr) {
                 errorWarning(
@@ -216,14 +214,14 @@ Direction MapTile::getDirection() const
     return getTileType()->directionForFrame(frame);
 }
 
-bool MapTile::setDirection(Direction d)
+bool MapTile::setDirection(const Direction d)
 {
     /* if we're already pointing the right direction, do nothing! */
     if (getDirection() == d) {
         return false;
     }
     const Tile *type = getTileType();
-    int new_frame = type->frameForDirection(d);
+    const int new_frame = type->frameForDirection(d);
     if (new_frame != -1) {
         frame = new_frame;
         return true;
@@ -255,16 +253,15 @@ bool Tile::isForeground() const
     return rule->mask & MASK_FOREGROUND;
 }
 
-Direction Tile::directionForFrame(int frame) const
+Direction Tile::directionForFrame(const int frame) const
 {
     if (static_cast<unsigned int>(frame) >= directions.size()) {
         return DIR_NONE;
-    } else {
-        return directions[frame];
     }
+    return directions[frame];
 }
 
-int Tile::frameForDirection(Direction d) const
+int Tile::frameForDirection(const Direction d) const
 {
     for (int i = 0;
          static_cast<unsigned int>(i) < directions.size() && i < frames;

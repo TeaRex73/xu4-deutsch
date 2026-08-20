@@ -31,9 +31,13 @@ class Dungeon;
  */
 class MapLoader {
 public:
-    virtual ~MapLoader()
-    {
-    }
+    MapLoader() = default;
+
+    MapLoader(const MapLoader &) = delete;
+    MapLoader &operator=(const MapLoader &) = delete;
+    MapLoader(MapLoader &&) = delete;
+    MapLoader &operator=(MapLoader &&) = delete;
+    virtual ~MapLoader() = default;
 
     static MapLoader *getLoader(Map::Type type);
     virtual bool load(Map *map) = 0;
@@ -42,7 +46,7 @@ public:
 protected:
     static MapLoader *registerLoader(MapLoader *loader, Map::Type type);
     static bool loadData(Map *map, U4FILE *f);
-    static bool isChunkCompressed(Map *map, int chunk);
+    static bool isChunkCompressed(const Map *map, int chunk);
 
 private:
     static std::map<Map::Type, MapLoader *> *loaderMap;
@@ -50,7 +54,7 @@ private:
 
 class CityMapLoader:public MapLoader {
 public:
-    virtual bool load(Map *map) override;
+    bool load(Map *map) override;
 
 private:
     static MapLoader *instance;
@@ -58,7 +62,7 @@ private:
 
 class ConMapLoader:public MapLoader {
 public:
-    virtual bool load(Map *map) override;
+    bool load(Map *map) override;
 
 private:
     static MapLoader *instance;
@@ -66,16 +70,16 @@ private:
 
 class DngMapLoader:public MapLoader {
 public:
-    virtual bool load(Map *map) override;
+    bool load(Map *map) override;
 
 private:
     static MapLoader *instance;
-    static void initDungeonRoom(Dungeon *dng, int room);
+    static void initDungeonRoom(const Dungeon *dng, int room);
 };
 
 class WorldMapLoader:public MapLoader {
 public:
-    virtual bool load(Map *map) override;
+    bool load(Map *map) override;
 
 private:
     static MapLoader *instance;

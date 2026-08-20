@@ -48,7 +48,12 @@ typedef Mix_Chunk OSSoundChunk;
 
 class SoundManager {
 public:
+    SoundManager(const SoundManager &) = delete;
+    SoundManager &operator=(const SoundManager &) = delete;
+    SoundManager(SoundManager &&) = delete;
+    SoundManager &operator=(SoundManager &&) = delete;
     ~SoundManager();
+
     static SoundManager *getInstance();
     bool init();
     bool load(Sound sound);
@@ -74,7 +79,7 @@ private:
         bool onlyOnce,
         int specificDurationInTicks,
         bool wait = false
-    );
+    ) const;
     bool load_sys(Sound sound, const std::string &pathname);
     static void stop_sys(int channel);
     std::vector<std::string> soundFilenames;

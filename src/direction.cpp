@@ -14,7 +14,7 @@
 /**
  * Returns the opposite direction.
  */
-Direction dirReverse(Direction dir)
+Direction dirReverse(const Direction dir)
 {
     switch (dir) {
     case DIR_NONE:
@@ -35,15 +35,18 @@ Direction dirReverse(Direction dir)
     }
 }
 
-Direction dirFromMask(int dir_mask)
+Direction dirFromMask(const int dir_mask)
 {
     if (dir_mask & MASK_DIR_NORTH) {
         return DIR_NORTH;
-    } else if (dir_mask & MASK_DIR_EAST) {
+    }
+    if (dir_mask & MASK_DIR_EAST) {
         return DIR_EAST;
-    } else if (dir_mask & MASK_DIR_SOUTH) {
+    }
+    if (dir_mask & MASK_DIR_SOUTH) {
         return DIR_SOUTH;
-    } else if (dir_mask & MASK_DIR_WEST) {
+    }
+    if (dir_mask & MASK_DIR_WEST) {
         return DIR_WEST;
     }
     return DIR_NONE;
@@ -73,12 +76,12 @@ Direction dirRotateCCW(Direction dir)
  * direction. For instance, dirGetBroadsidesDirs(DIR_NORTH) returns:
  * (MASK_DIR(DIR_WEST) | MASK_DIR(DIR_EAST))
  */
-int dirGetBroadsidesDirs(Direction dir)
+int dirGetBroadsidesDirs(const Direction dir)
 {
-    int dirmask = MASK_DIR_ALL;
-    dirmask = DIR_REMOVE_FROM_MASK(dir, dirmask);
-    dirmask = DIR_REMOVE_FROM_MASK(dirReverse(dir), dirmask);
-    return dirmask;
+    int dir_mask = MASK_DIR_ALL;
+    dir_mask = DIR_REMOVE_FROM_MASK(dir, dir_mask);
+    dir_mask = DIR_REMOVE_FROM_MASK(dirReverse(dir), dir_mask);
+    return dir_mask;
 }
 
 
@@ -86,13 +89,14 @@ int dirGetBroadsidesDirs(Direction dir)
  * Returns a random direction from a provided mask of available
  * directions.
  */
-Direction dirRandomDir(int valid_directions_mask, Direction preferred)
+Direction dirRandomDir(
+    const int valid_directions_mask, const Direction preferred
+)
 {
-    int i, n;
     Direction d[4];
-    Direction disliked = dirReverse(preferred);
-    n = 0;
-    for (i = DIR_WEST; i <= DIR_SOUTH; i++) {
+    const Direction disliked = dirReverse(preferred);
+    int n = 0;
+    for (int i = DIR_WEST; i <= DIR_SOUTH; i++) {
         if (
             DIR_IN_MASK(i, valid_directions_mask)
             && static_cast<Direction>(i) != disliked
@@ -118,10 +122,10 @@ Direction dirRandomDir(int valid_directions_mask, Direction preferred)
 /**
  * Normalizes the direction based on the orientation given
  * (if facing west, and 'up' is pressed, the 'up' is translated
- *  into DIR_NORTH -- this function tranlates that direction
+ *  into DIR_NORTH -- this function translates that direction
  *  to DIR_WEST, the correct direction in this case).
  */
-Direction dirNormalize(Direction orientation, Direction dir)
+Direction dirNormalize(const Direction orientation, const Direction dir)
 {
     Direction temp = orientation, realDir = dir;
     while (temp != DIR_NORTH) {
@@ -135,7 +139,7 @@ Direction dirNormalize(Direction orientation, Direction dir)
 /**
  * Translates a keyboard code into a direction
  */
-Direction keyToDirection(int key)
+Direction keyToDirection(const int key)
 {
     switch (key) {
     case U4_UP:
@@ -155,7 +159,7 @@ Direction keyToDirection(int key)
 /**
  * Translates a direction into a keyboard code
  */
-int directionToKey(Direction dir)
+int directionToKey(const Direction dir)
 {
     switch (dir) {
     case DIR_WEST:
@@ -170,7 +174,7 @@ int directionToKey(Direction dir)
     case DIR_ADVANCE:
     case DIR_RETREAT:
     default:
-        U4ASSERT(0, "Invalid diration passed to directionToKey()");
+        U4ASSERT(0, "Invalid direction passed to directionToKey()");
         return 0;
     }
 }
