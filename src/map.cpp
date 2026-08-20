@@ -441,20 +441,19 @@ bool Map::isCombatMap() const
  */
 bool Map::isEnclosed(const Coords &party) const
 {
-    unsigned int x, y;
     int *path_data;
     if (border_behavior != BORDER_WRAP) {
         return true;
     }
     path_data = new int[width * height];
-    for (unsigned int i = 0; i < width * height; i++) {
+    for (int i = 0; i < width * height; i++) {
         path_data[i] = -1;
     }
     // Determine what's walkable (1), and what's border-walkable (2)
     findWalkability(party, path_data);
     // Find two connecting pathways where the avatar can reach both
     // without wrapping
-    for (x = 0; x < width; x++) {
+    for (int x = 0; x < width; x++) {
         int index = x;
         if ((path_data[index] == 2)
             && (path_data[index + ((height - 1) * width)] == 2)) {
@@ -462,7 +461,7 @@ bool Map::isEnclosed(const Coords &party) const
             return false;
         }
     }
-    for (y = 0; y < width; y++) {
+    for (int y = 0; y < width; y++) {
         int index = (y * width);
         if ((path_data[index] == 2) && (path_data[index + width - 1] == 2)) {
             delete[] path_data;
@@ -880,7 +879,7 @@ void Map::alertGuards() const
     for (i = objects.cbegin(); i != objects.cend(); ++i) {
         const Creature *m = creatureMgr->getByTile((*i)->getTile());
         if (m && ((m->getId() == GUARD_ID)
-                  || (m->getId() == LORDBRITISH_ID))) {
+                  || (m->getId() == LORD_BRITISH_ID))) {
             (*i)->setMovementBehavior(MOVEMENT_ATTACK_AVATAR);
         }
     }

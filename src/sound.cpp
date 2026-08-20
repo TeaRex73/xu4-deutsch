@@ -48,7 +48,7 @@ void soundStop(int channel)
     SoundManager::getInstance()->stop(channel);
 }
 
-SoundManager *SoundManager::instance = 0;
+SoundManager *SoundManager::instance = nullptr;
 
 SoundManager::SoundManager()
     :soundFilenames(), soundChunk()
@@ -58,7 +58,7 @@ SoundManager::SoundManager()
 SoundManager::~SoundManager()
 {
     del();
-    instance = 0;
+    instance = nullptr;
 }
 
 SoundManager *SoundManager::getInstance()

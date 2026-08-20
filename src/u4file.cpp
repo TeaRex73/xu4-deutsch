@@ -4,9 +4,9 @@
 
 #include "vc6.h" // Fixes things if you're using VC6, does nothing otherwise
 
-#include <cctype>
+#include <cctype> // IWYU pragma: keep
 #include <climits>
-#include <cstdint>
+#include <cstdint> // IWYU pragma: keep
 #include <cstdio>
 #include <cwchar>
 

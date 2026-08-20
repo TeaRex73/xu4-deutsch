@@ -4,7 +4,6 @@
 
 #include "vc6.h" // Fixes things if you're using VC6, does nothing otherwise
 
-#include <deque>
 #include <string>
 #include <vector>
 
@@ -34,7 +33,7 @@
 #include "utils.h"
 
 void campTimer(void *data);
-void campEnd(void);
+void campEnd();
 int campHeal(HealType heal_type);
 void innTimer(void *data);
 
@@ -70,7 +69,7 @@ void CampController::begin()
     EventHandler::wait_msecs(settings.campTime * 1000);
     screenEnableCursor();
     /* Is the party ambushed during their rest? */
-    if (settings.campingAlwaysCombat || (xu4_random(8) == 0)) {
+    if (settings.campingAlwaysCombat || xu4_random(8) == 0) {
         const Creature *m = creatureMgr->randomAmbushing();
         musicMgr->play();
         screenMessage("HINTERHALT!\n");
@@ -91,23 +90,23 @@ void CampController::begin()
         /* Make sure we've waited long enough for camping
            to be effective */
         bool healed = false;
-        if (((c->saveGame->moves / CAMP_HEAL_INTERVAL) >= 0x10000)
-            || (((c->saveGame->moves / CAMP_HEAL_INTERVAL) & 0xffff)
-                != c->saveGame->lastcamp)) {
+        if (c->saveGame->moves / CAMP_HEAL_INTERVAL >= 0x10000
+            || (c->saveGame->moves / CAMP_HEAL_INTERVAL & 0xffff)
+            != c->saveGame->lastcamp) {
             healed = heal();
         }
         screenMessage(healed ?
                       "SPIELER GEHEILT!\n" :
                       "KEINE WIRKUNG.\n");
         c->saveGame->lastcamp =
-            (c->saveGame->moves / CAMP_HEAL_INTERVAL) & 0xffff;
+            c->saveGame->moves / CAMP_HEAL_INTERVAL & 0xffff;
         eventHandler->popController();
         game->exitToParentMap();
         musicMgr->play();
     }
 } // CampController::begin
 
-void CampController::end(bool adjustKarma)
+void CampController::end(const bool adjustKarma)
 {
     // wake everyone up!
     for (int i = 0; i < c->party->size(); i++) {
@@ -123,7 +122,7 @@ bool CampController::heal()
     for (int i = 0; i < c->party->size(); i++) {
         PartyMember *m = c->party->member(i);
         m->setMp(m->getMaxMp());
-        if ((m->getHp() < m->getMaxHp()) && m->heal(HT_CAMPHEAL)) {
+        if (m->getHp() < m->getMaxHp() && m->heal(HT_CAMPHEAL)) {
             healed = true;
         }
     }
@@ -145,13 +144,7 @@ void InnController::begin()
     /* first, show the avatar before sleeping */
     gameUpdateScreen();
     /* in the original, the vendor music plays straight
-       through sleeping */
-#if 0 // Not in German version
-    if (settings.enhancements) {
-        musicMgr->pause(); /* Stop Music */
-    }
-#endif
-    // EventHandler::wait_msecs(INN_FADE_OUT_TIME);
+       through sleeping, so don't pause it here */
     // make sure everyone's asleep
     for (int i = 0; i < c->party->size(); i++) {
         c->party->member(i)->putToSleep(false);
@@ -174,14 +167,14 @@ void InnController::begin()
     /* Is there a special encounter during your stay? */
     // mwinterrowd suggested code, based on u4dos
     if (c->party->member(0)->isDead()
-        || (!settings.innAlwaysCombat && (xu4_random(8) != 0))) {
-        bool metIsaac = maybeMeetIsaac();
+        || (!settings.innAlwaysCombat && xu4_random(8) != 0)) {
+        const bool metIsaac = maybeMeetIsaac();
         /* Wake everyone up! */
         for (int i = 0; i < c->party->size(); i++) {
             c->party->member(i)->wakeUp();
         }
         /* The "eerie noise" text goes here (in u4apple2, u4dos doesn't
-           have it at all), not in a non-existing rat enconter */
+           have it at all), not in a non-existing rat encounter */
         screenMessage(
             metIsaac ?
             "\nDU ERWACHST VON EINEM SCHAURIGEN GER[USCHE!\n\n" :
@@ -201,7 +194,7 @@ bool InnController::heal()
     for (int i = 0; i < c->party->size(); i++) {
         PartyMember *m = c->party->member(i);
         m->setMp(m->getMaxMp());
-        if ((m->getHp() < m->getMaxHp()) && m->heal(HT_INNHEAL)) {
+        if (m->getHp() < m->getMaxHp() && m->heal(HT_INNHEAL)) {
             healed = true;
         }
     }
@@ -212,25 +205,24 @@ bool InnController::maybeMeetIsaac()
 {
     // Does Isaac the Ghost pay a visit to the Avatar?
     // He does so in 1 of 4 cases in the inn of Skara Brae
-    if ((c->location->map->id == MAP_SKARABRAE) && (xu4_random(4) == 0)) {
-        City *city = dynamic_cast<City *>(c->location->map);
-        if ((city->extraDialogues.size() == 1)
-            && (city->extraDialogues[0]->getName() == "Isaac")) {
-            Coords coords(27, xu4_random(3) + 10, c->location->coords.z);
+    if (c->location->map->id == MAP_SKARABRAE && xu4_random(4) == 0) {
+        auto *city = dynamic_cast<City *>(c->location->map);
+        if (city->extraDialogues.size() == 1
+            && city->extraDialogues[0]->getName() == "Isaac") {
+            const Coords coords(
+                27, xu4_random(3) + 10, c->location->coords.z
+            );
             // If Isaac is already around, just bring him back to the inn
-            for (ObjectDeque::const_iterator i =
-                     c->location->map->objects.cbegin();
-                 i != c->location->map->objects.cend();
-                 ++i) {
-                Person *p = dynamic_cast<Person *>(*i);
-                if (p && (p->getName() == "Isaac")) {
+            for (const auto object: c->location->map->objects) {
+                auto *p = dynamic_cast<Person *>(object);
+                if (p && p->getName() == "Isaac") {
                     p->setCoords(coords);
                     return true;
                 }
             }
             // Otherwise, we need to create Isaac
-            Person *Isaac;
-            Isaac = new Person(creatureMgr->getById(GHOST_ID)->getTile());
+            auto *Isaac =
+                new Person(creatureMgr->getById(GHOST_ID)->getTile());
             Isaac->setMovementBehavior(MOVEMENT_WANDER);
             Isaac->setDialogue(city->extraDialogues[0]);
             Isaac->getStart() = coords;
@@ -245,9 +237,6 @@ bool InnController::maybeMeetIsaac()
 
 void InnController::maybeAmbush()
 {
-    MapId mapid;
-    Creature *creature;
-
     /* Wake up the Avatar! */
     c->party->member(0)->wakeUp();
 
@@ -255,12 +244,12 @@ void InnController::maybeAmbush()
        rogues in the streets
        - in fact, rat encounters in the inn don't exist at all in u4dos
        or u4apple2, removing them. The "eerie noise" text belongs to
-       meeting Isaac, not to an encouter */
+       meeting Isaac, not to an encounter */
 
     /* While strolling down the street,
        attacked by rogues! */
-    mapid = MAP_INN_CON;
-    creature = c->location->map->addCreature(
+    constexpr MapId mapid = MAP_INN_CON;
+    Creature *creature = c->location->map->addCreature(
         creatureMgr->getById(ROGUE_ID),
         c->location->coords
     );

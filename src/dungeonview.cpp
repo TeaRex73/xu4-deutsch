@@ -6,11 +6,13 @@
 
 #include <algorithm>
 #include <string>
+#include <vector>
 
 #include "dungeonview.h"
 
 #include "context.h"
 #include "debug.h"
+#include "direction.h"
 #include "dungeon.h"
 #include "image.h"
 #include "imagemgr.h"
@@ -27,8 +29,10 @@
 #include "view.h"
 
 
-DungeonView::DungeonView(int x, int y, int columns, int rows)
-    :TileView(x, y, rows, columns), screen3dDungeonViewEnabled(true)
+DungeonView::DungeonView(
+    const int x, const int y, const int columns, const int rows
+)
+    :TileView(x, y, columns, rows), screen3dDungeonViewEnabled(true)
 {
 }
 
@@ -52,24 +56,20 @@ void DungeonView::cleanup()
     delete instance;
 }
 
-void DungeonView::display(Context *c, TileView *view)
+void DungeonView::display(const Context *ctx, TileView *view) const
 {
     /* 1st-person perspective */
     if (screen3dDungeonViewEnabled) {
-        // Note: This shouldn't go above 4, unless we check
-        //opaque tiles each step of the way.
-        const int frthst_nw_vis = 4;
         screenEraseMapArea();
-        if (c->party->getTorchDuration() > 0) {
+        if (ctx->party->getTorchDuration() > 0) {
             for (int y = 3; y >= 0; y--) {
-                DungeonGraphicType type;
                 // FIXME: Maybe this should be in a loop
                 std::vector<MapTile> tiles = getTiles(y, -1);
-                type = tilesToGraphic(tiles);
+                DungeonGraphicType type = tilesToGraphic(tiles);
                 drawWall(
                     -1,
                     y,
-                    static_cast<Direction>(c->saveGame->orientation),
+                    static_cast<Direction>(ctx->saveGame->orientation),
                     type
                 );
                 tiles = getTiles(y, 1);
@@ -77,7 +77,7 @@ void DungeonView::display(Context *c, TileView *view)
                 drawWall(
                     1,
                     y,
-                    static_cast<Direction>(c->saveGame->orientation),
+                    static_cast<Direction>(ctx->saveGame->orientation),
                     type
                 );
                 tiles = getTiles(y, 0);
@@ -85,34 +85,39 @@ void DungeonView::display(Context *c, TileView *view)
                 drawWall(
                     0,
                     y,
-                    static_cast<Direction>(c->saveGame->orientation),
+                    static_cast<Direction>(ctx->saveGame->orientation),
                     type
                 );
                 // This only checks that the tile at
                 // y==3 is opaque
-                if ((y == 3) && !tiles.front().getTileType()->isOpaque()) {
-                    for (int y_obj = frthst_nw_vis; y_obj > y; y_obj--) {
+                if (y == 3 && !tiles.front().getTileType()->isOpaque()) {
+                    // Note: This shouldn't go above 4, unless we check
+                    // opaque tiles each step of the way.
+                    constexpr int furthest_nw_vis = 4;
+                    for (int y_obj = furthest_nw_vis; y_obj > y; y_obj--) {
                         std::vector<MapTile> dts = getTiles(y_obj, 0);
-                        DungeonGraphicType dt = tilesToGraphic(dts);
-                        if ((dt == DNGGRAPHIC_DNGTILE)
-                            || (dt == DNGGRAPHIC_BASETILE)) {
+                        const DungeonGraphicType dt = tilesToGraphic(dts);
+                        if (dt == DNG_GRAPHIC_DNG_TILE
+                            || dt == DNG_GRAPHIC_BASE_TILE) {
                             drawTile(
-                                c->location->map->tileset
+                                ctx->location->map->tileset
                                 ->get(dts.front().getId()),
                                 0,
                                 y_obj,
-                                Direction(c->saveGame->orientation)
+                                static_cast<Direction>(
+                                    ctx->saveGame->orientation
+                                )
                             );
                         }
                     }
                 }
-                if ((type == DNGGRAPHIC_DNGTILE)
-                    || (type == DNGGRAPHIC_BASETILE)) {
+                if (type == DNG_GRAPHIC_DNG_TILE
+                    || type == DNG_GRAPHIC_BASE_TILE) {
                     drawTile(
-                        c->location->map->tileset->get(tiles.front().getId()),
+                        ctx->location->map->tileset->get(tiles.front().getId()),
                         0,
                         y,
-                        Direction(c->saveGame->orientation)
+                        static_cast<Direction>(ctx->saveGame->orientation)
                     );
                 }
             }
@@ -121,20 +126,20 @@ void DungeonView::display(Context *c, TileView *view)
     /* 3rd-person perspective */
     else {
         static MapTile black =
-            c->location->map->tileset->getByName("black")->getId();
+            ctx->location->map->tileset->getByName("black")->getId();
         static MapTile avatar =
-            c->location->map->tileset->getByName("avatar")->getId();
+            ctx->location->map->tileset->getByName("avatar")->getId();
         for (int y = 0; y < VIEWPORT_H; y++) {
             for (int x = 0; x < VIEWPORT_W; x++) {
                         std::vector<MapTile> tiles =
                             getTiles(
-                                (VIEWPORT_H / 2) - y,
-                                x - (VIEWPORT_W / 2)
+                                VIEWPORT_H / 2 - y,
+                                x - VIEWPORT_W / 2
                             );
                 /* Only show blackness if there is no light */
-                if (c->party->getTorchDuration() <= 0) {
+                if (ctx->party->getTorchDuration() <= 0) {
                     view->drawTile(black, false, x, y);
-                } else if ((x == VIEWPORT_W / 2) && (y == VIEWPORT_H / 2)) {
+                } else if (x == VIEWPORT_W / 2 && y == VIEWPORT_H / 2) {
                     view->drawTile(avatar, false, x, y);
                 } else {
                     view->drawTile(tiles, false, x, y);
@@ -147,37 +152,37 @@ void DungeonView::display(Context *c, TileView *view)
 void DungeonView::drawInDungeon(
     Tile *tile,
     int,
-    int distance,
-    Direction orientation,
-    bool tiledWall
-)
+    const int distance,
+    const Direction orientation,
+    const bool tiledWall
+) const
 {
     Image *scaled;
-    const static int nscale_vga[] = { 12, 8, 4, 2, 1 };
-    const static int nscale_ega[] = { 8, 4, 2, 1, 0 };
-    const int lscale_vga[] = { 22, 18, 10, 4, 1 };
-    const int lscale_ega[] = { 22, 14, 6, 3, 1 };
-    const int *lscale;
-    const int *nscale;
+    const static int n_scale_vga[] = { 12, 8, 4, 2, 1 };
+    const static int n_scale_ega[] = { 8, 4, 2, 1, 0 };
+    const int l_scale_vga[] = { 22, 18, 10, 4, 1 };
+    const int l_scale_ega[] = { 22, 14, 6, 3, 1 };
+    const int *l_scale;
+    const int *n_scale;
     int offset_multiplier = 0;
     int offset_adj = 0;
     if (settings.videoType != "EGA") {
-        lscale = &lscale_vga[0];
-        nscale = &nscale_vga[0];
+        l_scale = &l_scale_vga[0];
+        n_scale = &n_scale_vga[0];
         offset_multiplier = 1;
         offset_adj = 2;
     } else {
-        lscale = &lscale_ega[0];
-        nscale = &nscale_ega[0];
+        l_scale = &l_scale_ega[0];
+        n_scale = &n_scale_ega[0];
         offset_adj = 1;
         offset_multiplier = 4;
     }
-    const int *dscale = tiledWall ? lscale : nscale;
+    const int *d_scale = tiledWall ? l_scale : n_scale;
     // Clear scratchpad and set a background color
     animated->initializeToBackgroundColor();
     // Put tile on animated scratchpad
     if (tile->getAnim()) {
-        MapTile mt = tile->getId();
+        const MapTile mt = tile->getId();
         tile->getAnim()->draw(animated, tile, mt, orientation);
     } else {
         tile->getImage()->drawOn(animated, 0, 0);
@@ -188,47 +193,48 @@ void DungeonView::drawInDungeon(
     // It will not play well with semi-transparent graphics.
     /* scale is based on distance; 1 means half size, 2 regular,
        4 means scale by 2x, etc. */
-    if (dscale[distance] == 0) {
+    if (d_scale[distance] == 0) {
         return;
-    } else if (dscale[distance] == 1) {
+    }
+    if (d_scale[distance] == 1) {
         scaled = screenScaleDown(animated, 2);
     } else {
-        scaled = screenScale(animated, dscale[distance] / 2, 1, 0);
+        scaled = screenScale(animated, d_scale[distance] / 2, 1, 0);
     }
     if (tiledWall) {
-        int i_x = static_cast<int>(
+        const int i_x = static_cast<int>(
             SCALED((VIEWPORT_W * tileWidth / 2.0) + this->x)
-            - (scaled->width() / 2)
+            - (scaled->width() >> 1)
         );
-        int i_y = static_cast<int>(
+        const int i_y = static_cast<int>(
             SCALED((VIEWPORT_H * tileHeight / 2.0) + this->y)
-            - (scaled->height() / 2)
+            - (scaled->height() >> 1)
         );
-        int f_x = i_x + scaled->width();
-        int f_y = i_y + scaled->height();
-        int d_x = animated->width();
-        int d_y = animated->height();
+        const int f_x = i_x + scaled->width();
+        const int f_y = i_y + scaled->height();
+        const int d_x = animated->width();
+        const int d_y = animated->height();
         for (int x = i_x; x < f_x; x += d_x) {
             for (int y = i_y; y < f_y; y += d_y) {
                 animated->drawSubRectOn(
-                    this->screen, x, y, 0, 0, f_x - x, f_y - y
+                    screen, x, y, 0, 0, f_x - x, f_y - y
                 );
             }
         }
     } else {
-        int y_offset = std::max(
-            0, (dscale[distance] - offset_adj) * offset_multiplier
+        const int y_offset = std::max(
+            0, (d_scale[distance] - offset_adj) * offset_multiplier
         );
-        int x = static_cast<int>(
+        const int x = static_cast<int>(
             SCALED((VIEWPORT_W * tileWidth / 2.0) + this->x)
-            - (scaled->width() / 2)
+            - (scaled->width() >> 1)
         );
-        int y = static_cast<int>(
+        const int y = static_cast<int>(
             SCALED((VIEWPORT_H * tileHeight / 2.0) + this->y + y_offset)
-            - (scaled->height() / 8)
+            - (scaled->height() >> 3)
         );
         scaled->drawSubRectOn(
-            this->screen,
+            screen,
             x,
             y,
             0,
@@ -241,32 +247,34 @@ void DungeonView::drawInDungeon(
 } // DungeonView::drawInDungeon
 
 int DungeonView::graphicIndex(
-    int xoffset, int distance, Direction orientation, DungeonGraphicType type
+    const int x_offset,
+    const int distance,
+    const Direction orientation,
+    const DungeonGraphicType type
 )
 {
-    int index;
-    index = 0;
-    if ((type == DNGGRAPHIC_LADDERUP) && (xoffset == 0)) {
+    int index = 0;
+    if (type == DNG_GRAPHIC_LADDER_UP && x_offset == 0) {
         return 48
-            + (distance * 2)
+            + distance * 2
             + (
                 DIR_IN_MASK(orientation, MASK_DIR_SOUTH | MASK_DIR_NORTH) ?
                 1 :
                 0
             );
     }
-    if ((type == DNGGRAPHIC_LADDERDOWN) && (xoffset == 0)) {
+    if (type == DNG_GRAPHIC_LADDER_DOWN && x_offset == 0) {
         return 56
-            + (distance * 2)
+            + distance * 2
             + (
                 DIR_IN_MASK(orientation, MASK_DIR_SOUTH | MASK_DIR_NORTH) ?
                 1 :
                 0
             );
     }
-    if ((type == DNGGRAPHIC_LADDERUPDOWN) && (xoffset == 0)) {
+    if (type == DNG_GRAPHIC_LADDER_UP_DOWN && x_offset == 0) {
         return 64
-            + (distance * 2)
+            + distance * 2
             + (
                 DIR_IN_MASK(orientation, MASK_DIR_SOUTH | MASK_DIR_NORTH) ?
                 1 :
@@ -275,13 +283,13 @@ int DungeonView::graphicIndex(
     }
 
     /* FIXME */
-    if ((type != DNGGRAPHIC_WALL) && (type != DNGGRAPHIC_DOOR)) {
+    if (type != DNG_GRAPHIC_WALL && type != DNG_GRAPHIC_DOOR) {
         return -1;
     }
-    if (type == DNGGRAPHIC_DOOR) {
+    if (type == DNG_GRAPHIC_DOOR) {
         index += 24;
     }
-    index += (xoffset + 1) * 2;
+    index += (x_offset + 1) * 2;
     index += distance * 6;
     if (DIR_IN_MASK(orientation, MASK_DIR_SOUTH | MASK_DIR_NORTH)) {
         index++;
@@ -290,7 +298,10 @@ int DungeonView::graphicIndex(
 } // DungeonView::graphicIndex
 
 void DungeonView::drawTile(
-    Tile *tile, int x_offset, int distance, Direction orientation
+    Tile *tile,
+    const int x_offset,
+    const int distance,
+    const Direction orientation
 )
 {
     // Draw the tile to the screen
@@ -299,7 +310,7 @@ void DungeonView::drawTile(
     );
 }
 
-std::vector<MapTile> DungeonView::getTiles(int fwd, int side)
+std::vector<MapTile> DungeonView::getTiles(const int fwd, const int side)
 {
     MapCoords coords = c->location->coords;
     switch (c->saveGame->orientation) {
@@ -334,7 +345,7 @@ DungeonGraphicType DungeonView::tilesToGraphic(
     const std::vector<MapTile> &tiles
 )
 {
-    MapTile tile = tiles.front();
+    const MapTile tile = tiles.front();
     static const MapTile corridor =
         c->location->map->tileset->getByName("brick_floor")->getId();
     static const MapTile up_ladder =
@@ -349,41 +360,43 @@ DungeonGraphicType DungeonView::tilesToGraphic(
      */
     if (tiles.size() > 1) {
         if (tile.getId() == up_ladder.getId()) {
-            return DNGGRAPHIC_LADDERUP;
-        } else if (tile.getId() == down_ladder.getId()) {
-            return DNGGRAPHIC_LADDERDOWN;
-        } else if (tile.getId() == updown_ladder.getId()) {
-            return DNGGRAPHIC_LADDERUPDOWN;
-        } else if (tile.getId() == corridor.getId()) {
-            return DNGGRAPHIC_NONE;
-        } else {
-            return DNGGRAPHIC_BASETILE;
+            return DNG_GRAPHIC_LADDER_UP;
         }
+        if (tile.getId() == down_ladder.getId()) {
+            return DNG_GRAPHIC_LADDER_DOWN;
+        }
+        if (tile.getId() == updown_ladder.getId()) {
+            return DNG_GRAPHIC_LADDER_UP_DOWN;
+        }
+        if (tile.getId() == corridor.getId()) {
+            return DNG_GRAPHIC_NONE;
+        }
+        return DNG_GRAPHIC_BASE_TILE;
     }
     /*
      * if not an annotation or object, then the tile is a dungeon
      * token
      */
     const Dungeon *dungeon = dynamic_cast<Dungeon *>(c->location->map);
-    DungeonToken token = dungeon->tokenForTile(tile);
+    const DungeonToken token = dungeon->tokenForTile(tile);
     switch (token) {
     case DUNGEON_TRAP:
     case DUNGEON_CORRIDOR:
-        return DNGGRAPHIC_NONE;
+        return DNG_GRAPHIC_NONE;
     case DUNGEON_WALL:
     case DUNGEON_SECRET_DOOR:
-        return DNGGRAPHIC_WALL;
+        return DNG_GRAPHIC_WALL;
     case DUNGEON_ROOM:
     case DUNGEON_DOOR:
-        return DNGGRAPHIC_DOOR;
+        return DNG_GRAPHIC_DOOR;
     case DUNGEON_LADDER_UP:
-        return DNGGRAPHIC_LADDERUP;
+        return DNG_GRAPHIC_LADDER_UP;
     case DUNGEON_LADDER_DOWN:
-        return DNGGRAPHIC_LADDERDOWN;
+        return DNG_GRAPHIC_LADDER_DOWN;
     case DUNGEON_LADDER_UPDOWN:
-        return DNGGRAPHIC_LADDERUPDOWN;
+        return DNG_GRAPHIC_LADDER_UP_DOWN;
     default:
-        return DNGGRAPHIC_DNGTILE;
+        return DNG_GRAPHIC_DNG_TILE;
     }
 } // DungeonView::tilesToGraphic
 
@@ -393,87 +406,593 @@ const struct {
     int vga_x2, vga_y2;
     const char *subimage2;
 } dngGraphicInfo[] = {
-    { "dung0_lft_ew", 0, 0, 0, 0, nullptr },
-    { "dung0_lft_ns", 0, 0, 0, 0, nullptr },
-    { "dung0_mid_ew", 0, 0, 0, 0, nullptr },
-    { "dung0_mid_ns", 0, 0, 0, 0, nullptr },
-    { "dung0_rgt_ew", 0, 0, 0, 0, nullptr },
-    { "dung0_rgt_ns", 0, 0, 0, 0, nullptr },
-    { "dung1_lft_ew", 0, 32, 0, 8, "dung1_xxx_ew" },
-    { "dung1_lft_ns", 0, 32, 0, 8, "dung1_xxx_ns" },
-    { "dung1_mid_ew", 0, 0, 0, 0, nullptr },
-    { "dung1_mid_ns", 0, 0, 0, 0, nullptr },
-    { "dung1_rgt_ew", 144, 32, 160, 8, "dung1_xxx_ew" },
-    { "dung1_rgt_ns", 144, 32, 160, 8, "dung1_xxx_ns" },
-    { "dung2_lft_ew", 0, 64, 0, 48, "dung2_xxx_ew" },
-    { "dung2_lft_ns", 0, 64, 0, 48, "dung2_xxx_ns" },
-    { "dung2_mid_ew", 0, 0, 0, 0, nullptr },
-    { "dung2_mid_ns", 0, 0, 0, 0, nullptr },
-    { "dung2_rgt_ew", 112, 64, 128, 48, "dung2_xxx_ew" },
-    { "dung2_rgt_ns", 112, 64, 128, 48, "dung2_xxx_ns" },
-    { "dung3_lft_ew", 0, 80, 48, 72, "dung3_xxx_ew" },
-    { "dung3_lft_ns", 0, 80, 48, 72, "dung3_xxx_ns" },
-    { "dung3_mid_ew", 0, 0, 0, 0, nullptr },
-    { "dung3_mid_ns", 0, 0, 0, 0, nullptr },
-    { "dung3_rgt_ew", 96, 80, 104, 72, "dung3_xxx_ew" },
-    { "dung3_rgt_ns", 96, 80, 104, 72, "dung3_xxx_ns" },
-    { "dung0_lft_ew_door", 0, 0, 0, 0, nullptr },
-    { "dung0_lft_ns_door", 0, 0, 0, 0, nullptr },
-    { "dung0_mid_ew_door", 0, 0, 0, 0, nullptr },
-    { "dung0_mid_ns_door", 0, 0, 0, 0, nullptr },
-    { "dung0_rgt_ew_door", 0, 0, 0, 0, nullptr },
-    { "dung0_rgt_ns_door", 0, 0, 0, 0, nullptr },
-    { "dung1_lft_ew_door", 0, 32, 0, 8, "dung1_xxx_ew" },
-    { "dung1_lft_ns_door", 0, 32, 0, 8, "dung1_xxx_ns" },
-    { "dung1_mid_ew_door", 0, 0, 0, 0, nullptr },
-    { "dung1_mid_ns_door", 0, 0, 0, 0, nullptr },
-    { "dung1_rgt_ew_door", 144, 32, 160, 8, "dung1_xxx_ew" },
-    { "dung1_rgt_ns_door", 144, 32, 160, 8, "dung1_xxx_ns" },
-    { "dung2_lft_ew_door", 0, 64, 0, 48, "dung2_xxx_ew" },
-    { "dung2_lft_ns_door", 0, 64, 0, 48, "dung2_xxx_ns" },
-    { "dung2_mid_ew_door", 0, 0, 0, 0, nullptr },
-    { "dung2_mid_ns_door", 0, 0, 0, 0, nullptr },
-    { "dung2_rgt_ew_door", 112, 64, 128, 48, "dung2_xxx_ew" },
-    { "dung2_rgt_ns_door", 112, 64, 128, 48, "dung2_xxx_ns" },
-    { "dung3_lft_ew_door", 0, 80, 48, 72, "dung3_xxx_ew" },
-    { "dung3_lft_ns_door", 0, 80, 48, 72, "dung3_xxx_ns" },
-    { "dung3_mid_ew_door", 0, 0, 0, 0, nullptr },
-    { "dung3_mid_ns_door", 0, 0, 0, 0, nullptr },
-    { "dung3_rgt_ew_door", 96, 80, 104, 72, "dung3_xxx_ew" },
-    { "dung3_rgt_ns_door", 96, 80, 104, 72, "dung3_xxx_ns" },
-    { "dung0_ladderup", 0, 0, 0, 0, nullptr },
-    { "dung0_ladderup_side", 0, 0, 0, 0, nullptr },
-    { "dung1_ladderup", 0, 0, 0, 0, nullptr },
-    { "dung1_ladderup_side", 0, 0, 0, 0, nullptr },
-    { "dung2_ladderup", 0, 0, 0, 0, nullptr },
-    { "dung2_ladderup_side", 0, 0, 0, 0, nullptr },
-    { "dung3_ladderup", 0, 0, 0, 0, nullptr },
-    { "dung3_ladderup_side", 0, 0, 0, 0, nullptr },
-    { "dung0_ladderdown", 0, 0, 0, 0, nullptr },
-    { "dung0_ladderdown_side", 0, 0, 0, 0, nullptr },
-    { "dung1_ladderdown", 0, 0, 0, 0, nullptr },
-    { "dung1_ladderdown_side", 0, 0, 0, 0, nullptr },
-    { "dung2_ladderdown", 0, 0, 0, 0, nullptr },
-    { "dung2_ladderdown_side", 0, 0, 0, 0, nullptr },
-    { "dung3_ladderdown", 0, 0, 0, 0, nullptr },
-    { "dung3_ladderdown_side", 0, 0, 0, 0, nullptr },
-    { "dung0_ladderupdown", 0, 0, 0, 0, nullptr },
-    { "dung0_ladderupdown_side", 0, 0, 0, 0, nullptr },
-    { "dung1_ladderupdown", 0, 0, 0, 0, nullptr },
-    { "dung1_ladderupdown_side", 0, 0, 0, 0, nullptr },
-    { "dung2_ladderupdown", 0, 0, 0, 0, nullptr },
-    { "dung2_ladderupdown_side", 0, 0, 0, 0, nullptr },
-    { "dung3_ladderupdown", 0, 0, 0, 0, nullptr },
-    { "dung3_ladderupdown_side", 0, 0, 0, 0, nullptr },
+    {
+        .subimage = "dung0_lft_ew",
+        .ega_x2 = 0,
+        .ega_y2 = 0,
+        .vga_x2 = 0,
+        .vga_y2 = 0,
+        .subimage2 = nullptr
+    },
+    {
+        .subimage = "dung0_lft_ns",
+        .ega_x2 = 0,
+        .ega_y2 = 0,
+        .vga_x2 = 0,
+        .vga_y2 = 0,
+        .subimage2 = nullptr
+    },
+    {
+        .subimage = "dung0_mid_ew",
+        .ega_x2 = 0,
+        .ega_y2 = 0,
+        .vga_x2 = 0,
+        .vga_y2 = 0,
+        .subimage2 = nullptr
+    },
+    {
+        .subimage = "dung0_mid_ns",
+        .ega_x2 = 0,
+        .ega_y2 = 0,
+        .vga_x2 = 0,
+        .vga_y2 = 0,
+        .subimage2 = nullptr
+    },
+    {
+        .subimage = "dung0_rgt_ew",
+        .ega_x2 = 0,
+        .ega_y2 = 0,
+        .vga_x2 = 0,
+        .vga_y2 = 0,
+        .subimage2 = nullptr
+    },
+    {
+        .subimage = "dung0_rgt_ns",
+        .ega_x2 = 0,
+        .ega_y2 = 0,
+        .vga_x2 = 0,
+        .vga_y2 = 0,
+        .subimage2 = nullptr
+    },
+    {
+        .subimage = "dung1_lft_ew",
+        .ega_x2 = 0,
+        .ega_y2 = 32,
+        .vga_x2 = 0,
+        .vga_y2 = 8,
+        .subimage2 = "dung1_xxx_ew"
+    },
+    {
+        .subimage = "dung1_lft_ns",
+        .ega_x2 = 0,
+        .ega_y2 = 32,
+        .vga_x2 = 0,
+        .vga_y2 = 8,
+        .subimage2 = "dung1_xxx_ns"
+    },
+    {
+        .subimage = "dung1_mid_ew",
+        .ega_x2 = 0,
+        .ega_y2 = 0,
+        .vga_x2 = 0,
+        .vga_y2 = 0,
+        .subimage2 = nullptr
+    },
+    {
+        .subimage = "dung1_mid_ns",
+        .ega_x2 = 0,
+        .ega_y2 = 0,
+        .vga_x2 = 0,
+        .vga_y2 = 0,
+        .subimage2 = nullptr
+    },
+    {
+        .subimage = "dung1_rgt_ew",
+        .ega_x2 = 144,
+        .ega_y2 = 32,
+        .vga_x2 = 160,
+        .vga_y2 = 8,
+        .subimage2 = "dung1_xxx_ew"
+    },
+    {
+        .subimage = "dung1_rgt_ns",
+        .ega_x2 = 144,
+        .ega_y2 = 32,
+        .vga_x2 = 160,
+        .vga_y2 = 8,
+        .subimage2 = "dung1_xxx_ns"
+    },
+    {
+        .subimage = "dung2_lft_ew",
+        .ega_x2 = 0,
+        .ega_y2 = 64,
+        .vga_x2 = 0,
+        .vga_y2 = 48,
+        .subimage2 = "dung2_xxx_ew"
+    },
+    {
+        .subimage = "dung2_lft_ns",
+        .ega_x2 = 0,
+        .ega_y2 = 64,
+        .vga_x2 = 0,
+        .vga_y2 = 48,
+        .subimage2 = "dung2_xxx_ns"
+    },
+    {
+        .subimage = "dung2_mid_ew",
+        .ega_x2 = 0,
+        .ega_y2 = 0,
+        .vga_x2 = 0,
+        .vga_y2 = 0,
+        .subimage2 = nullptr
+    },
+    {
+        .subimage = "dung2_mid_ns",
+        .ega_x2 = 0,
+        .ega_y2 = 0,
+        .vga_x2 = 0,
+        .vga_y2 = 0,
+        .subimage2 = nullptr
+    },
+    {
+        .subimage = "dung2_rgt_ew",
+        .ega_x2 = 112,
+        .ega_y2 = 64,
+        .vga_x2 = 128,
+        .vga_y2 = 48,
+        .subimage2 = "dung2_xxx_ew"
+    },
+    {
+        .subimage = "dung2_rgt_ns",
+        .ega_x2 = 112,
+        .ega_y2 = 64,
+        .vga_x2 = 128,
+        .vga_y2 = 48,
+        .subimage2 = "dung2_xxx_ns"
+    },
+    {
+        .subimage = "dung3_lft_ew",
+        .ega_x2 = 0,
+        .ega_y2 = 80,
+        .vga_x2 = 48,
+        .vga_y2 = 72,
+        .subimage2 = "dung3_xxx_ew"
+    },
+    {
+        .subimage = "dung3_lft_ns",
+        .ega_x2 = 0,
+        .ega_y2 = 80,
+        .vga_x2 = 48,
+        .vga_y2 = 72,
+        .subimage2 = "dung3_xxx_ns"
+    },
+    {
+        .subimage = "dung3_mid_ew",
+        .ega_x2 = 0,
+        .ega_y2 = 0,
+        .vga_x2 = 0,
+        .vga_y2 = 0,
+        .subimage2 = nullptr
+    },
+    {
+        .subimage = "dung3_mid_ns",
+        .ega_x2 = 0,
+        .ega_y2 = 0,
+        .vga_x2 = 0,
+        .vga_y2 = 0,
+        .subimage2 = nullptr
+    },
+    {
+        .subimage = "dung3_rgt_ew",
+        .ega_x2 = 96,
+        .ega_y2 = 80,
+        .vga_x2 = 104,
+        .vga_y2 = 72,
+        .subimage2 = "dung3_xxx_ew"
+    },
+    {
+        .subimage = "dung3_rgt_ns",
+        .ega_x2 = 96,
+        .ega_y2 = 80,
+        .vga_x2 = 104,
+        .vga_y2 = 72,
+        .subimage2 = "dung3_xxx_ns"
+    },
+    {
+        .subimage = "dung0_lft_ew_door",
+        .ega_x2 = 0,
+        .ega_y2 = 0,
+        .vga_x2 = 0,
+        .vga_y2 = 0,
+        .subimage2 = nullptr
+    },
+    {
+        .subimage = "dung0_lft_ns_door",
+        .ega_x2 = 0,
+        .ega_y2 = 0,
+        .vga_x2 = 0,
+        .vga_y2 = 0,
+        .subimage2 = nullptr
+    },
+    {
+        .subimage = "dung0_mid_ew_door",
+        .ega_x2 = 0,
+        .ega_y2 = 0,
+        .vga_x2 = 0,
+        .vga_y2 = 0,
+        .subimage2 = nullptr
+    },
+    {
+        .subimage = "dung0_mid_ns_door",
+        .ega_x2 = 0,
+        .ega_y2 = 0,
+        .vga_x2 = 0,
+        .vga_y2 = 0,
+        .subimage2 = nullptr
+    },
+    {
+        .subimage = "dung0_rgt_ew_door",
+        .ega_x2 = 0,
+        .ega_y2 = 0,
+        .vga_x2 = 0,
+        .vga_y2 = 0,
+        .subimage2 = nullptr
+    },
+    {
+        .subimage = "dung0_rgt_ns_door",
+        .ega_x2 = 0,
+        .ega_y2 = 0,
+        .vga_x2 = 0,
+        .vga_y2 = 0,
+        .subimage2 = nullptr
+    },
+    {
+        .subimage = "dung1_lft_ew_door",
+        .ega_x2 = 0,
+        .ega_y2 = 32,
+        .vga_x2 = 0,
+        .vga_y2 = 8,
+        .subimage2 = "dung1_xxx_ew"
+    },
+    {
+        .subimage = "dung1_lft_ns_door",
+        .ega_x2 = 0,
+        .ega_y2 = 32,
+        .vga_x2 = 0,
+        .vga_y2 = 8,
+        .subimage2 = "dung1_xxx_ns"
+    },
+    {
+        .subimage = "dung1_mid_ew_door",
+        .ega_x2 = 0,
+        .ega_y2 = 0,
+        .vga_x2 = 0,
+        .vga_y2 = 0,
+        .subimage2 = nullptr
+    },
+    {
+        .subimage = "dung1_mid_ns_door",
+        .ega_x2 = 0,
+        .ega_y2 = 0,
+        .vga_x2 = 0,
+        .vga_y2 = 0,
+        .subimage2 = nullptr
+    },
+    {
+        .subimage = "dung1_rgt_ew_door",
+        .ega_x2 = 144,
+        .ega_y2 = 32,
+        .vga_x2 = 160,
+        .vga_y2 = 8,
+        .subimage2 = "dung1_xxx_ew"
+    },
+    {
+        .subimage = "dung1_rgt_ns_door",
+        .ega_x2 = 144,
+        .ega_y2 = 32,
+        .vga_x2 = 160,
+        .vga_y2 = 8,
+        .subimage2 = "dung1_xxx_ns"
+    },
+    {
+        .subimage = "dung2_lft_ew_door",
+        .ega_x2 = 0,
+        .ega_y2 = 64,
+        .vga_x2 = 0,
+        .vga_y2 = 48,
+        .subimage2 = "dung2_xxx_ew"
+    },
+    {
+        .subimage = "dung2_lft_ns_door",
+        .ega_x2 = 0,
+        .ega_y2 = 64,
+        .vga_x2 = 0,
+        .vga_y2 = 48,
+        .subimage2 = "dung2_xxx_ns"
+    },
+    {
+        .subimage = "dung2_mid_ew_door",
+        .ega_x2 = 0,
+        .ega_y2 = 0,
+        .vga_x2 = 0,
+        .vga_y2 = 0,
+        .subimage2 = nullptr
+    },
+    {
+        .subimage = "dung2_mid_ns_door",
+        .ega_x2 = 0,
+        .ega_y2 = 0,
+        .vga_x2 = 0,
+        .vga_y2 = 0,
+        .subimage2 = nullptr
+    },
+    {
+        .subimage = "dung2_rgt_ew_door",
+        .ega_x2 = 112,
+        .ega_y2 = 64,
+        .vga_x2 = 128,
+        .vga_y2 = 48,
+        .subimage2 = "dung2_xxx_ew"
+    },
+    {
+        .subimage = "dung2_rgt_ns_door",
+        .ega_x2 = 112,
+        .ega_y2 = 64,
+        .vga_x2 = 128,
+        .vga_y2 = 48,
+        .subimage2 = "dung2_xxx_ns"
+    },
+    {
+        .subimage = "dung3_lft_ew_door",
+        .ega_x2 = 0,
+        .ega_y2 = 80,
+        .vga_x2 = 48,
+        .vga_y2 = 72,
+        .subimage2 = "dung3_xxx_ew"
+    },
+    {
+        .subimage = "dung3_lft_ns_door",
+        .ega_x2 = 0,
+        .ega_y2 = 80,
+        .vga_x2 = 48,
+        .vga_y2 = 72,
+        .subimage2 = "dung3_xxx_ns"
+    },
+    {
+        .subimage = "dung3_mid_ew_door",
+        .ega_x2 = 0,
+        .ega_y2 = 0,
+        .vga_x2 = 0,
+        .vga_y2 = 0,
+        .subimage2 = nullptr
+    },
+    {
+        .subimage = "dung3_mid_ns_door",
+        .ega_x2 = 0,
+        .ega_y2 = 0,
+        .vga_x2 = 0,
+        .vga_y2 = 0,
+        .subimage2 = nullptr
+    },
+    {
+        .subimage = "dung3_rgt_ew_door",
+        .ega_x2 = 96,
+        .ega_y2 = 80,
+        .vga_x2 = 104,
+        .vga_y2 = 72,
+        .subimage2 = "dung3_xxx_ew"
+    },
+    {
+        .subimage = "dung3_rgt_ns_door",
+        .ega_x2 = 96,
+        .ega_y2 = 80,
+        .vga_x2 = 104,
+        .vga_y2 = 72,
+        .subimage2 = "dung3_xxx_ns"
+    },
+    {
+        .subimage = "dung0_ladderup",
+        .ega_x2 = 0,
+        .ega_y2 = 0,
+        .vga_x2 = 0,
+        .vga_y2 = 0,
+        .subimage2 = nullptr
+    },
+    {
+        .subimage = "dung0_ladderup_side",
+        .ega_x2 = 0,
+        .ega_y2 = 0,
+        .vga_x2 = 0,
+        .vga_y2 = 0,
+        .subimage2 = nullptr
+    },
+    {
+        .subimage = "dung1_ladderup",
+        .ega_x2 = 0,
+        .ega_y2 = 0,
+        .vga_x2 = 0,
+        .vga_y2 = 0,
+        .subimage2 = nullptr
+    },
+    {
+        .subimage = "dung1_ladderup_side",
+        .ega_x2 = 0,
+        .ega_y2 = 0,
+        .vga_x2 = 0,
+        .vga_y2 = 0,
+        .subimage2 = nullptr
+    },
+    {
+        .subimage = "dung2_ladderup",
+        .ega_x2 = 0,
+        .ega_y2 = 0,
+        .vga_x2 = 0,
+        .vga_y2 = 0,
+        .subimage2 = nullptr
+    },
+    {
+        .subimage = "dung2_ladderup_side",
+        .ega_x2 = 0,
+        .ega_y2 = 0,
+        .vga_x2 = 0,
+        .vga_y2 = 0,
+        .subimage2 = nullptr
+    },
+    {
+        .subimage = "dung3_ladderup",
+        .ega_x2 = 0,
+        .ega_y2 = 0,
+        .vga_x2 = 0,
+        .vga_y2 = 0,
+        .subimage2 = nullptr
+    },
+    {
+        .subimage = "dung3_ladderup_side",
+        .ega_x2 = 0,
+        .ega_y2 = 0,
+        .vga_x2 = 0,
+        .vga_y2 = 0,
+        .subimage2 = nullptr
+    },
+    {
+        .subimage = "dung0_ladderdown",
+        .ega_x2 = 0,
+        .ega_y2 = 0,
+        .vga_x2 = 0,
+        .vga_y2 = 0,
+        .subimage2 = nullptr
+    },
+    {
+        .subimage = "dung0_ladderdown_side",
+        .ega_x2 = 0,
+        .ega_y2 = 0,
+        .vga_x2 = 0,
+        .vga_y2 = 0,
+        .subimage2 = nullptr
+    },
+    {
+        .subimage = "dung1_ladderdown",
+        .ega_x2 = 0,
+        .ega_y2 = 0,
+        .vga_x2 = 0,
+        .vga_y2 = 0,
+        .subimage2 = nullptr
+    },
+    {
+        .subimage = "dung1_ladderdown_side",
+        .ega_x2 = 0,
+        .ega_y2 = 0,
+        .vga_x2 = 0,
+        .vga_y2 = 0,
+        .subimage2 = nullptr
+    },
+    {
+        .subimage = "dung2_ladderdown",
+        .ega_x2 = 0,
+        .ega_y2 = 0,
+        .vga_x2 = 0,
+        .vga_y2 = 0,
+        .subimage2 = nullptr
+    },
+    {
+        .subimage = "dung2_ladderdown_side",
+        .ega_x2 = 0,
+        .ega_y2 = 0,
+        .vga_x2 = 0,
+        .vga_y2 = 0,
+        .subimage2 = nullptr
+    },
+    {
+        .subimage = "dung3_ladderdown",
+        .ega_x2 = 0,
+        .ega_y2 = 0,
+        .vga_x2 = 0,
+        .vga_y2 = 0,
+        .subimage2 = nullptr
+    },
+    {
+        .subimage = "dung3_ladderdown_side",
+        .ega_x2 = 0,
+        .ega_y2 = 0,
+        .vga_x2 = 0,
+        .vga_y2 = 0,
+        .subimage2 = nullptr
+    },
+    {
+        .subimage = "dung0_ladderupdown",
+        .ega_x2 = 0,
+        .ega_y2 = 0,
+        .vga_x2 = 0,
+        .vga_y2 = 0,
+        .subimage2 = nullptr
+    },
+    {
+        .subimage = "dung0_ladderupdown_side",
+        .ega_x2 = 0,
+        .ega_y2 = 0,
+        .vga_x2 = 0,
+        .vga_y2 = 0,
+        .subimage2 = nullptr
+    },
+    {
+        .subimage = "dung1_ladderupdown",
+        .ega_x2 = 0,
+        .ega_y2 = 0,
+        .vga_x2 = 0,
+        .vga_y2 = 0,
+        .subimage2 = nullptr
+    },
+    {
+        .subimage = "dung1_ladderupdown_side",
+        .ega_x2 = 0,
+        .ega_y2 = 0,
+        .vga_x2 = 0,
+        .vga_y2 = 0,
+        .subimage2 = nullptr
+    },
+    {
+        .subimage = "dung2_ladderupdown",
+        .ega_x2 = 0,
+        .ega_y2 = 0,
+        .vga_x2 = 0,
+        .vga_y2 = 0,
+        .subimage2 = nullptr
+    },
+    {
+        .subimage = "dung2_ladderupdown_side",
+        .ega_x2 = 0,
+        .ega_y2 = 0,
+        .vga_x2 = 0,
+        .vga_y2 = 0,
+        .subimage2 = nullptr
+    },
+    {
+        .subimage = "dung3_ladderupdown",
+        .ega_x2 = 0,
+        .ega_y2 = 0,
+        .vga_x2 = 0,
+        .vga_y2 = 0,
+        .subimage2 = nullptr
+    },
+    {
+        .subimage = "dung3_ladderupdown_side",
+        .ega_x2 = 0,
+        .ega_y2 = 0,
+        .vga_x2 = 0,
+        .vga_y2 = 0,
+        .subimage2 = nullptr
+    }
 };
 
 void DungeonView::drawWall(
-    int xoffset, int distance, Direction orientation, DungeonGraphicType type
+    const int x_offset,
+    const int distance,
+    const Direction orientation,
+    const DungeonGraphicType type
 )
 {
-    int index;
-    index = graphicIndex(xoffset, distance, orientation, type);
-    if ((index == -1) || (distance >= 4)) {
+    const int index = graphicIndex(x_offset, distance, orientation, type);
+    if (index == -1 || distance >= 4) {
         return;
     }
     int x = 0, y = 0;

@@ -29,7 +29,7 @@
 #define U4_ALT 128
 #define U4_KEYPAD_ENTER 271
 #define U4_META 323
-#define U4_FKEY 282
+#define U4_F_KEY 282
 #define U4_RIGHT_SHIFT 303
 #define U4_LEFT_SHIFT 304
 #define U4_RIGHT_CTRL 305
@@ -54,9 +54,7 @@ public:
     KeyHandler &operator=(KeyHandler &&) = default;
     KeyHandler &operator=(const KeyHandler &) = default;
 
-    virtual ~KeyHandler()
-    {
-    }
+    virtual ~KeyHandler() = default;
 
     typedef bool (*Callback)(int, void *);
 
@@ -73,8 +71,9 @@ public:
     } GetChoice;
 
     // cppcheck-suppress noExplicitConstructor // implicit intended
+    // NOLINTNEXTLINE(google-explicit-constructor, hicpp-explicit-conversions)
     KeyHandler(
-        Callback func, void *d = nullptr, bool asyncronous = true
+        Callback func, void *d = nullptr, bool asynchronous = true
     );
     static int setKeyRepeat(int delay, int interval);
     static bool globalHandler(int key);
@@ -92,7 +91,7 @@ protected:
 
 
 /**
- * A controller that wraps a keyhander function.  Keyhandlers are
+ * A controller that wraps a key handler function.  Key handlers are
  * deprecated -- please use a controller instead.
  */
 class KeyHandlerController:public Controller {
@@ -102,8 +101,9 @@ public:
     KeyHandlerController(KeyHandlerController &&) = delete;
     KeyHandlerController &operator=(const KeyHandlerController &) = delete;
     KeyHandlerController &operator=(KeyHandlerController &&) = delete;
-    ~KeyHandlerController();
-    virtual bool keyPressed(int key) override;
+    ~KeyHandlerController() override;
+
+    bool keyPressed(int key) override;
     const KeyHandler *getKeyHandler() const;
 
 private:
@@ -117,7 +117,7 @@ private:
 class ReadStringController:public WaitableController<std::string> {
 public:
     ReadStringController(
-        int maxlen,
+        int max_len,
         int screenX, int
         screenY,
         const std::string &accepted_chars =
@@ -126,7 +126,7 @@ public:
         "1234567890 \n\r\010"
     );
     ReadStringController(
-        int maxlen,
+        int max_len,
         TextView *view,
         const std::string &accepted_chars =
         "abcdefghijklmnopqrstuvwxyz{|}~"
@@ -138,16 +138,16 @@ public:
     ReadStringController &operator=(const ReadStringController &) = delete;
     ReadStringController &operator=(ReadStringController &&) = delete;
 
-    virtual bool keyPressed(int key) override;
+    bool keyPressed(int key) override;
     static std::string getString(
-        int maxlen, int screenX, int screenY, EventHandler *eh = nullptr
+        int max_len, int screenX, int screenY, EventHandler *eh = nullptr
     );
     static std::string getString(
-        int maxlen, TextView *view, EventHandler *eh = nullptr
+        int max_len, TextView *view, EventHandler *eh = nullptr
     );
 
 protected:
-    int maxlen, screenX, screenY;
+    int max_len, screenX, screenY;
     TextView *view;
     std::string accepted;
 };
@@ -159,9 +159,9 @@ protected:
  */
 class ReadIntController:public ReadStringController {
 public:
-    ReadIntController(int maxlen, int screenX, int screenY);
+    ReadIntController(int max_len, int screenX, int screenY);
     static int getInt(
-        int maxlen, int screenX, int screenY, EventHandler *eh = nullptr
+        int max_len, int screenX, int screenY, EventHandler *eh = nullptr
     );
     int stringToInt() const;
 };
@@ -173,7 +173,7 @@ public:
 class ReadChoiceController:public WaitableController<int> {
 public:
     explicit ReadChoiceController(const std::string &choices);
-    virtual bool keyPressed(int key) override;
+    bool keyPressed(int key) override;
     static char getChar(
         const std::string &choices, EventHandler *eh = nullptr
     );
@@ -189,7 +189,7 @@ protected:
 class ReadDirController:public WaitableController<Direction> {
 public:
     ReadDirController();
-    virtual bool keyPressed(int key) override;
+    bool keyPressed(int key) override;
 };
 
 
@@ -199,11 +199,11 @@ public:
  */
 class WaitController:public Controller {
 public:
-    explicit WaitController(unsigned int c);
-    virtual bool keyPressed(int key) override;
-    virtual void timerFired() override;
+    explicit WaitController(unsigned int cyc);
+    bool keyPressed(int key) override;
+    void timerFired() override;
     static void wait();
-    void setCycles(int c);
+    void setCycles(int cyc);
 
 private:
     unsigned int cycles;
@@ -219,9 +219,9 @@ public:
     typedef std::list<TimedEvent *> List;
     typedef void (*Callback)(void *);
 
-    TimedEvent(Callback callback, int i, void *d = nullptr);
+    TimedEvent(Callback cb, int i, void *d = nullptr);
     Callback getCallback() const;
-    void *getData();
+    void *getData() const;
     void tick();
 
 protected:
@@ -256,7 +256,7 @@ public:
     void tick();
     void stop();
     void start();
-    void reset(unsigned int interval); /**< sets new base interval */
+    void reset(int interval); /**< sets new base interval */
 
 protected:
     static unsigned int instances;
@@ -286,7 +286,7 @@ public:
     static EventHandler *getInstance();
     static void sleep(unsigned int msec);
     static void wait_msecs(unsigned int msecs);
-    static void simulateDiskLoad(int duration, bool reenableMusic = true);
+    static void simulateDiskLoad(int duration, bool reEnableMusic = true);
     static void wait_cycles(unsigned int cycles);
     static void setControllerDone(bool done = true);
     static bool getControllerDone();
@@ -294,19 +294,19 @@ public:
     static bool timerQueueEmpty();
     TimedEventMgr *getTimer();
     void run();
-    void setScreenUpdate(void (*updateScreen)());
-    Controller *pushController(Controller *c);
+    void setScreenUpdate(void (*update_screen)());
+    Controller *pushController(Controller *controller);
     Controller *popController();
     Controller *getController() const;
-    void setController(Controller *c);
+    void setController(Controller *controller);
     void pushKeyHandler(const KeyHandler &kh);
     void popKeyHandler();
     const KeyHandler *getKeyHandler() const;
-    void setKeyHandler(const KeyHandler &kh);
+    void setKeyHandler(KeyHandler &kh);
     void pushMouseAreaSet(MouseArea *mouseAreas);
     void popMouseAreaSet();
     MouseArea *getMouseAreaSet() const;
-    MouseArea *mouseAreaForPoint(int x, int y);
+    MouseArea *mouseAreaForPoint(int x, int y) const;
 
 protected:
     static bool controllerDone;
@@ -320,4 +320,4 @@ private:
     static EventHandler *instance;
 };
 
-#endif // ifndef EVENT_H
+#endif // EVENT_H

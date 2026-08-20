@@ -221,7 +221,7 @@ bool moveObject(const Map *map, Creature *obj, const MapCoords &avatar)
             || (map->isCityMap() && xu4_random(2)) // 50% chance
             || (map->isWorldMap() && xu4_random(4)) // 75% chance
         ) {
-            int dirmask =
+            dirmask =
                 map->getValidMoves(new_coords, obj->getTile(), true);
             if (map->isDungeonMap()) {
                 switch (dirmask) {

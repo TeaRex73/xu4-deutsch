@@ -67,7 +67,7 @@ void U4ASSERT(bool exp, const char *desc, ...);
  */
 class Debug {
 public:
-    // disallow assignments, copy contruction
+    // disallow assignments, copy construction
     Debug(const Debug &) = delete;
     Debug(Debug &&) = delete;
     const Debug &operator=(const Debug &) = delete;
@@ -83,8 +83,8 @@ public:
         const std::string &msg,
         const std::string &fn = "",
         const std::string &func = "",
-        const int line = -1,
-        bool glbl = true
+        int line = -1,
+        bool globally = true
     );
 
 private:
@@ -97,4 +97,4 @@ private:
     int l_line;
 };
 
-#endif /* ifndef DEBUG_H */
+#endif // DEBUG_H

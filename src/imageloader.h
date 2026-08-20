@@ -22,13 +22,8 @@ class U4FILE;
  */
 class ImageLoader {
 public:
-    ImageLoader()
-    {
-    }
-
-    virtual ~ImageLoader()
-    {
-    }
+    ImageLoader() = default;
+    virtual ~ImageLoader() = default;
 
     virtual Image *load(
         U4FILE *file, int width, int height, int bpp

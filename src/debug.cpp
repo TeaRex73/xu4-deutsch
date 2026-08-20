@@ -95,13 +95,11 @@ std::FILE *Debug::global = nullptr;
  * @param append    If true, appends to the debug file
  *                  instead of overwriting it.
  */
-Debug::Debug(const std::string &fn, const std::string &nm, bool append)
+Debug::Debug(const std::string &fn, const std::string &nm, const bool append)
     :disabled(false),
      filename(fn),
      name(nm),
      file(nullptr),
-     l_filename(),
-     l_func(),
      l_line(0)
 {
     if (!loggingEnabled(name)) {
@@ -153,7 +151,7 @@ void Debug::trace(
     const std::string &fn,
     const std::string &func,
     const int line,
-    bool glbl
+    bool globally
 )
 {
     if (disabled) {
@@ -169,13 +167,13 @@ void Debug::trace(
     if (!msg.empty()) {
         message += msg;
     }
-    if (!_filename.empty() || (line > 0)) {
+    if (!_filename.empty() || line > 0) {
         brackets = true;
         message += " [";
     }
-    if ((l_filename == _filename)
-        && (l_func == func)
-        && (l_line == line)) {
+    if (l_filename == _filename
+        && l_func == func
+        && l_line == line) {
         message += "...";
     } else {
         if (!func.empty()) {
@@ -201,11 +199,11 @@ void Debug::trace(
         }
     }
     if (brackets) {
-        message += "]";
+        message += ']';
     }
-    message += "\n";
+    message += '\n';
     std::fprintf(file, "%s", message.c_str());
-    if (global && glbl) {
+    if (global && globally) {
         std::fprintf(global, "%12s: %s", name.c_str(), message.c_str());
     }
 } // Debug::trace

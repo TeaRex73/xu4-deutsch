@@ -22,8 +22,8 @@ typedef enum {
     EFFECT_NONE,
     EFFECT_FIRE,
     EFFECT_SLEEP,
+    EFFECT_SWAMP,
     EFFECT_POISON,
-    EFFECT_POISONFIELD,
     EFFECT_ELECTRICITY,
     EFFECT_LAVA
 } TileEffect;
@@ -51,15 +51,13 @@ public:
     }
 
     // cppcheck-suppress noExplicitConstructor //implicit intended
+    // NOLINTNEXTLINE(google-explicit-constructor, hicpp-explicit-conversions)
     MapTile(TileId i, unsigned char f = 0)
         :id(i), frame(f), freezeAnimation(false)
     {
     }
 
-    MapTile(const MapTile &t)
-        :id(t.id), frame(t.frame), freezeAnimation(t.freezeAnimation)
-    {
-    }
+    MapTile(const MapTile &t) = default;
 
     MapTile &operator=(const MapTile &t)
     {

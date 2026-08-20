@@ -10,6 +10,7 @@
 
 #include "config.h"
 #include "direction.h"
+#include "error.h"
 #include "image.h"
 #include "screen.h"
 #include "tile.h"
@@ -93,6 +94,8 @@ TileAnimTransform *TileAnimTransform::create(const ConfigElement &conf)
     case 5:
         transform = new TileAnimScrambleTransform();
         break;
+    default:
+        errorFatal("BUG: wrong type in TileAnimTransform");
     } // switch
     /**
      * See if the transform is performed randomly

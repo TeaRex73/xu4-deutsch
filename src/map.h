@@ -75,6 +75,7 @@ public:
     }
 
     // cppcheck-suppress noExplicitConstructor // implicit intended
+    // NOLINTNEXTLINE(google-explicit-constructor, hicpp-explicit-conversions)
     MapCoords(const Coords &a)
         :Coords(a.x, a.y, a.z),
          active_x(C2A(a.x)),
@@ -236,9 +237,9 @@ public:
     MapId id;
     std::string fname;
     Type type;
-    unsigned int width, height, levels;
-    unsigned int chunk_width, chunk_height;
-    unsigned int offset;
+    int width, height, levels;
+    int chunk_width, chunk_height;
+    int offset;
     Source baseSource;
     CompressedChunkList compressed_chunks;
     BorderBehavior border_behavior;

@@ -111,7 +111,7 @@ void MapLoader::cleanup()
  */
 bool MapLoader::loadData(Map *map, U4FILE *f)
 {
-    unsigned int x, xch, y, ych;
+    int x, xch, y, ych;
     /* allocate the space we need for the map data */
     map->data.resize(map->height * map->width, MapTile(0));
     if (map->chunk_height == 0) {
@@ -207,7 +207,7 @@ bool CityMapLoader::load(Map *map)
     if (!ult) {
         errorFatal("unable to load map data");
     }
-    U4FILE *tlk = u4fopen(city->tlk_fname);
+    U4FILE *tlk = u4fopen(city->tlkFileName);
     if (!tlk) {
         errorFatal("unable to load map data");
     }
@@ -374,13 +374,13 @@ bool ConMapLoader::load(Map *map)
     if (map->type != Map::SHRINE) {
         CombatMap *cm = getCombatMap(map);
         for (int i = 0; i < AREA_CREATURES; i++) {
-            cm->creature_start[i] = MapCoords(u4fgetc(con));
+            cm->creature_start[i] = Coords(u4fgetc(con));
         }
         for (int i = 0; i < AREA_CREATURES; i++) {
             cm->creature_start[i].y = u4fgetc(con);
         }
         for (int i = 0; i < AREA_PLAYERS; i++) {
-            cm->player_start[i] = MapCoords(u4fgetc(con));
+            cm->player_start[i] = Coords(u4fgetc(con));
         }
         for (int i = 0; i < AREA_PLAYERS; i++) {
             cm->player_start[i].y = u4fgetc(con);
@@ -419,8 +419,7 @@ bool DngMapLoader::load(Map *map)
         DNG_HEIGHT
     );
     /* load the dungeon map */
-    unsigned int i, j;
-    for (i = 0; i < (DNG_HEIGHT * DNG_WIDTH * dungeon->levels); i++) {
+    for (int i = 0; i < (DNG_HEIGHT * DNG_WIDTH * dungeon->levels); i++) {
         unsigned char mapData = u4fgetc(dng);
         MapTile tile = map->tfrti(mapData);
         /* determine what type of tile it is */
@@ -430,9 +429,9 @@ bool DngMapLoader::load(Map *map)
     /* read in the dungeon rooms */
     /* FIXME: needs a cleanup function to free this memory later */
     dungeon->rooms = new DngRoom[dungeon->n_rooms];
-    for (i = 0; i < dungeon->n_rooms; i++) {
+    for (int i = 0; i < dungeon->n_rooms; i++) {
         unsigned char room_tiles[121];
-        for (j = 0; j < DNGROOM_NTRIGGERS; j++) {
+        for (unsigned int j = 0; j < DNGROOM_NTRIGGERS; j++) {
             int tmp;
             dungeon->rooms[i].triggers[j].tile =
                 TileMap::get("base")->translate(u4fgetc(dng)).getId();
@@ -523,12 +522,14 @@ bool DngMapLoader::load(Map *map)
             dungeon->rooms[i].buffer, sizeof(dungeon->rooms[i].buffer), 1, dng
         );
         /* translate each creature tile to a tile id */
-        for (j = 0; j < sizeof(dungeon->rooms[i].creature_tiles); j++) {
+        for (unsigned int j = 0;
+            j < sizeof(dungeon->rooms[i].creature_tiles);
+            j++) {
             dungeon->rooms[i].creature_tiles[j] = TileMap::get("base")
                 ->translate(dungeon->rooms[i].creature_tiles[j]).getId();
         }
         /* translate each map tile to a tile id */
-        for (j = 0; j < sizeof(room_tiles); j++) {
+        for (unsigned int j = 0; j < sizeof(room_tiles); j++) {
             dungeon->rooms[i].map_data.push_back(
                 TileMap::get("base")->translate(room_tiles[j])
             );
@@ -556,7 +557,7 @@ bool DngMapLoader::load(Map *map)
                 }, y1[8] = {
                     0x3, 0x2, 0x3, 0x2, 0x1, 0x3, 0x2, 0x1
                 };
-                for (j = 0; j < 8; j++) {
+                for (unsigned int j = 0; j < 8; j++) {
                     dungeon->rooms[i].party_east_start_x[j] = x1[j];
                     dungeon->rooms[i].party_east_start_y[j] = y1[j];
                 }
@@ -567,7 +568,7 @@ bool DngMapLoader::load(Map *map)
                 }, y2[8] = {
                     0x8, 0x8, 0x9, 0x9, 0x9, 0xA, 0xA, 0xA
                 };
-                for (j = 0; j < 8; j++) {
+                for (unsigned int j = 0; j < 8; j++) {
                     dungeon->rooms[i].party_east_start_x[j] = x2[j];
                     dungeon->rooms[i].party_east_start_y[j] = y2[j];
                 }
@@ -579,7 +580,7 @@ bool DngMapLoader::load(Map *map)
                 }, y1[3] = {
                     0x5, 0x5, 0x6
                 };
-                for (j = 0; j < 3; j++) {
+                for (unsigned int j = 0; j < 3; j++) {
                     dungeon->rooms[i].creature_start_x[j] = x1[j];
                     dungeon->rooms[i].creature_start_y[j] = y1[j];
                 }
@@ -590,7 +591,7 @@ bool DngMapLoader::load(Map *map)
                 }, y2[8] = {
                     0x9, 0x8, 0x9, 0x8, 0x7, 0x9, 0x8, 0x7
                 };
-                for (j = 0; j < 8; j++) {
+                for (unsigned int j = 0; j < 8; j++) {
                     dungeon->rooms[i].party_west_start_x[j] = x2[j];
                     dungeon->rooms[i].party_west_start_y[j] = y2[j];
                 }
@@ -607,7 +608,7 @@ bool DngMapLoader::load(Map *map)
                     Coords(1, 8, 0x16),
                     Coords(0, 9, 0x16)
                 };
-                for (j = 0;
+                for (unsigned int j = 0;
                      j < static_cast<int>(sizeof(tile) / sizeof(Coords));
                      j++) {
                     const int index = (tile[j].y * CON_WIDTH) + tile[j].x;
@@ -619,7 +620,7 @@ bool DngMapLoader::load(Map *map)
     }
     u4fclose(dng);
     dungeon->roomMaps = new CombatMap *[dungeon->n_rooms];
-    for (i = 0; i < dungeon->n_rooms; i++) {
+    for (int i = 0; i < dungeon->n_rooms; i++) {
         initDungeonRoom(dungeon, i);
     }
     return true;

@@ -324,7 +324,7 @@ static const ItemLocation items[] = {
         "lasergun",
         &isWeaponInInventory,
         &putWeaponInInventory,
-        0,
+        nullptr,
         16,
         0
     },

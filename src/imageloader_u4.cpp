@@ -20,11 +20,11 @@
 #include "u4file.h"
 
 ImageLoader *U4RawImageLoader::instance =
-    ImageLoader::registerLoader(new U4RawImageLoader, "image/x-u4raw");
+    registerLoader(new U4RawImageLoader, "image/x-u4raw");
 ImageLoader *U4RleImageLoader::instance =
-    ImageLoader::registerLoader(new U4RleImageLoader, "image/x-u4rle");
+    registerLoader(new U4RleImageLoader, "image/x-u4rle");
 ImageLoader *U4LzwImageLoader::instance =
-    ImageLoader::registerLoader(new U4LzwImageLoader, "image/x-u4lzw");
+    registerLoader(new U4LzwImageLoader, "image/x-u4lzw");
 
 RGBA *U4PaletteLoader::bwPalette = nullptr;
 RGBA *U4PaletteLoader::egaPalette = nullptr;
@@ -35,9 +35,11 @@ RGBA *U4PaletteLoader::vgaPalette = nullptr;
  * Loads in the raw image and apply the standard U4 16 or 256 color
  * palette.
  */
-Image *U4RawImageLoader::load(U4FILE *file, int width, int height, int bpp)
+Image *U4RawImageLoader::load(
+    U4FILE *file, const int width, const int height, const int bpp
+)
 {
-    if ((width == -1) || (height == -1) || (bpp == -1)) {
+    if (width == -1 || height == -1 || bpp == -1) {
         errorFatal("dimensions not set for u4raw image");
     }
     U4ASSERT(
@@ -45,10 +47,10 @@ Image *U4RawImageLoader::load(U4FILE *file, int width, int height, int bpp)
         "invalid bpp: %d",
         bpp
     );
-    long rawLen = file->length();
-    unsigned char *raw = static_cast<unsigned char *>(std::malloc(rawLen));
+    const long rawLen = file->length();
+    auto *raw = static_cast<unsigned char *>(std::malloc(rawLen));
     file->read(raw, 1, rawLen);
-    long requiredLength = (width * height * bpp / 8);
+    const long requiredLength = width * height * bpp / 8;
     if (rawLen < requiredLength) {
         if (raw) {
             std::free(raw);
@@ -68,13 +70,12 @@ Image *U4RawImageLoader::load(U4FILE *file, int width, int height, int bpp)
         return nullptr;
     }
     image->alphaOff();
-    U4PaletteLoader paletteLoader;
     if (bpp == 8) {
-        image->setPalette(paletteLoader.loadVgaPalette(), 256);
+        image->setPalette(U4PaletteLoader::loadVgaPalette(), 256);
     } else if (bpp == 4) {
-        image->setPalette(paletteLoader.loadEgaPalette(), 16);
+        image->setPalette(U4PaletteLoader::loadEgaPalette(), 16);
     } else if (bpp == 1) {
-        image->setPalette(paletteLoader.loadBWPalette(), 2);
+        image->setPalette(U4PaletteLoader::loadBWPalette(), 2);
     }
     setFromRawData(image, width, height, bpp, raw);
     std::free(raw);
@@ -86,9 +87,11 @@ Image *U4RawImageLoader::load(U4FILE *file, int width, int height, int bpp)
  * Loads in the rle-compressed image and apply the standard U4 16 or
  * 256 color palette.
  */
-Image *U4RleImageLoader::load(U4FILE *file, int width, int height, int bpp)
+Image *U4RleImageLoader::load(
+    U4FILE *file, const int width, const int height, const int bpp
+)
 {
-    if ((width == -1) || (height == -1) || (bpp == -1)) {
+    if (width == -1 || height == -1 || bpp == -1) {
         errorFatal("dimensions not set for u4rle image");
     }
     U4ASSERT(
@@ -96,15 +99,15 @@ Image *U4RleImageLoader::load(U4FILE *file, int width, int height, int bpp)
         "invalid bpp: %d",
         bpp
     );
-    long compressedLen = file->length();
-    unsigned char *compressed =
+    const long compressedLen = file->length();
+    auto *compressed =
         static_cast<unsigned char *>(std::malloc(compressedLen));
     file->read(compressed, 1, compressedLen);
     unsigned char *raw = nullptr;
-    long rawLen = rleDecompressMemory(compressed, compressedLen, &raw);
+    const long rawLen = rleDecompressMemory(compressed, compressedLen, &raw);
     std::free(compressed);
     compressed = nullptr;
-    if (rawLen != (width * height * bpp / 8)) {
+    if (rawLen != width * height * bpp / 8) {
         if (raw) {
             std::free(raw);
         }
@@ -118,13 +121,12 @@ Image *U4RleImageLoader::load(U4FILE *file, int width, int height, int bpp)
         return nullptr;
     }
     image->alphaOff();
-    U4PaletteLoader paletteLoader;
     if (bpp == 8) {
-        image->setPalette(paletteLoader.loadVgaPalette(), 256);
+        image->setPalette(U4PaletteLoader::loadVgaPalette(), 256);
     } else if (bpp == 4) {
-        image->setPalette(paletteLoader.loadEgaPalette(), 16);
+        image->setPalette(U4PaletteLoader::loadEgaPalette(), 16);
     } else if (bpp == 1) {
-        image->setPalette(paletteLoader.loadBWPalette(), 2);
+        image->setPalette(U4PaletteLoader::loadBWPalette(), 2);
     }
     setFromRawData(image, width, height, bpp, raw);
     std::free(raw);
@@ -136,9 +138,11 @@ Image *U4RleImageLoader::load(U4FILE *file, int width, int height, int bpp)
  * Loads in the lzw-compressed image and apply the standard U4 16 or
  * 256 color palette.
  */
-Image *U4LzwImageLoader::load(U4FILE *file, int width, int height, int bpp)
+Image *U4LzwImageLoader::load(
+    U4FILE *file, const int width, const int height, const int bpp
+)
 {
-    if ((width == -1) || (height == -1) || (bpp == -1)) {
+    if (width == -1 || height == -1 || bpp == -1) {
         errorFatal("dimensions not set for u4lzw image");
     }
     U4ASSERT(
@@ -146,15 +150,15 @@ Image *U4LzwImageLoader::load(U4FILE *file, int width, int height, int bpp)
         "invalid bpp: %d",
         bpp
     );
-    long compressedLen = file->length();
-    unsigned char *compressed =
+    const long compressedLen = file->length();
+    auto *compressed =
         static_cast<unsigned char *>(std::malloc(compressedLen));
     file->read(compressed, 1, static_cast<std::size_t>(compressedLen));
     unsigned char *raw = nullptr;
-    long rawLen = decompress_u4_memory(compressed, compressedLen, &raw);
+    const long rawLen = decompress_u4_memory(compressed, compressedLen, &raw);
     std::free(compressed);
     compressed = nullptr;
-    if (rawLen != (width * height * bpp / 8)) {
+    if (rawLen != width * height * bpp / 8) {
         if (raw) {
             std::free(raw);
         }
@@ -168,13 +172,12 @@ Image *U4LzwImageLoader::load(U4FILE *file, int width, int height, int bpp)
         return nullptr;
     }
     image->alphaOff();
-    U4PaletteLoader paletteLoader;
     if (bpp == 8) {
-        image->setPalette(paletteLoader.loadVgaPalette(), 256);
+        image->setPalette(U4PaletteLoader::loadVgaPalette(), 256);
     } else if (bpp == 4) {
-        image->setPalette(paletteLoader.loadEgaPalette(), 16);
+        image->setPalette(U4PaletteLoader::loadEgaPalette(), 16);
     } else if (bpp == 1) {
-        image->setPalette(paletteLoader.loadBWPalette(), 2);
+        image->setPalette(U4PaletteLoader::loadBWPalette(), 2);
     }
     setFromRawData(image, width, height, bpp, raw);
     std::free(raw);
@@ -215,7 +218,7 @@ RGBA *U4PaletteLoader::loadEgaPalette()
         int index = 0;
         const Config *config = Config::getInstance();
         egaPalette = new RGBA[16];
-        std::vector<ConfigElement> paletteConf =
+        const std::vector<ConfigElement> paletteConf =
 #ifdef RASB_PI
             config->getElement("egaPalettePi").getChildren();
 #else
@@ -224,16 +227,13 @@ RGBA *U4PaletteLoader::loadEgaPalette()
         U4ASSERT(
             paletteConf.size() == 16, "EGA palette does not have 16 entries"
         );
-        for (std::vector<ConfigElement>::const_iterator i =
-                 paletteConf.cbegin();
-             i != paletteConf.cend();
-             ++i) {
-            if (i->getName() != "color") {
+        for (const auto &i: paletteConf) {
+            if (i.getName() != "color") {
                 continue;
             }
-            egaPalette[index].r = i->getInt("red");
-            egaPalette[index].g = i->getInt("green");
-            egaPalette[index].b = i->getInt("blue");
+            egaPalette[index].r = i.getInt("red");
+            egaPalette[index].g = i.getInt("green");
+            egaPalette[index].b = i.getInt("blue");
             index++;
         }
     }

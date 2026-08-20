@@ -34,7 +34,7 @@ typedef enum {
 class Context:public Script::Provider {
 public:
     Context();
-    virtual ~Context();
+    ~Context() override;
     Context(const Context &) = delete;
     Context(Context &&) = delete;
     Context &operator=(const Context &) = delete;
@@ -59,7 +59,7 @@ public:
     /**
      * Provides scripts with information
      */
-    virtual std::string translate(std::vector<std::string> &parts) override
+    std::string translate(std::vector<std::string> &parts) override
     {
         if (parts.size() == 1 && parts[0] == "wind") {
             return getDirectionName(static_cast<Direction>(windDirection));
@@ -70,4 +70,4 @@ public:
 
 extern Context *c;
 
-#endif // ifndef CONTEXT_H
+#endif // CONTEXT_H

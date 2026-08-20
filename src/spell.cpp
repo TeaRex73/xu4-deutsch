@@ -340,16 +340,14 @@ void spellSetEffectCallback(SpellEffectCallback callback)
 }
 
 Ingredients::Ingredients()
+    :reagents{0}
 {
-    for (int i = 0; i < REAG_MAX; i++) {
-        reagents[i] = 0;
-    }
 }
 
 bool Ingredients::addReagent(Reagent reagent)
 {
     U4ASSERT(reagent < REAG_MAX, "invalid reagent: %d", reagent);
-    if (c->party->getReagent(reagent) < 1) {
+    if (Party::getReagent(reagent) < 1) {
         return false;
     }
     c->party->adjustReagent(reagent, -1);
@@ -376,8 +374,7 @@ int Ingredients::getReagent(Reagent reagent) const
 
 void Ingredients::revert()
 {
-    int reg;
-    for (reg = 0; reg < REAG_MAX; reg++) {
+    for (int reg = 0; reg < REAG_MAX; reg++) {
         c->saveGame->reagents[reg] += reagents[reg];
         reagents[reg] = 0;
     }
@@ -436,7 +433,6 @@ TransportContext spellGetTransportContext(unsigned int spell)
 
 std::string spellGetErrorMessage(unsigned int spell, SpellCastError error)
 {
-    unsigned int i;
     SpellCastError err = error;
     /* try to find a more specific error message */
     if (err == CASTERR_WRONGCONTEXT) {
@@ -455,12 +451,12 @@ std::string spellGetErrorMessage(unsigned int spell, SpellCastError error)
         }
     }
     /* find the message that we're looking for and return it! */
-    for (i = 0; i < sizeof(spellErrorMsgs) / sizeof(spellErrorMsgs[0]); i++) {
-        if (err == spellErrorMsgs[i].err) {
-            return std::string(spellErrorMsgs[i].msg);
+    for (auto spellErrorMsg: spellErrorMsgs) {
+        if (err == spellErrorMsg.err) {
+            return spellErrorMsg.msg;
         }
     }
-    return std::string();
+    return "";
 } // spellGetErrorMessage
 
 
@@ -470,10 +466,9 @@ std::string spellGetErrorMessage(unsigned int spell, SpellCastError error)
  */
 bool spellMix(unsigned int spell, const Ingredients *ingredients)
 {
-    int regmask, reg;
     U4ASSERT(spell < N_SPELLS, "invalid spell: %u", spell);
-    regmask = 0;
-    for (reg = 0; reg < REAG_MAX; reg++) {
+    int regmask = 0;
+    for (int reg = 0; reg < REAG_MAX; reg++) {
         if (ingredients->getReagent(static_cast<Reagent>(reg)) > 0) {
             regmask |= (1 << reg);
         }
@@ -556,11 +551,10 @@ bool spellCast(
     // subtract the mp needed for the spell
     p->adjustMp(-spells[spell].mp);
     if (spellEffect) {
-        int time;
         /* recalculate spell speed - based on 5/sec */
         double MP_OF_LARGEST_SPELL = 45;
         int spellMp = spells[spell].mp;
-        time = static_cast<int>(
+        const int time = static_cast<int>(
             17790.4 / settings.spellEffectSpeed * spellMp / MP_OF_LARGEST_SPELL
         );
         soundPlay(SOUND_PREMAGIC_MANA_JUMBLE, false, time);
@@ -576,7 +570,7 @@ bool spellCast(
 
 CombatController *spellCombatController()
 {
-    CombatController *cc = dynamic_cast<CombatController *>(
+    auto *cc = dynamic_cast<CombatController *>(
         eventHandler->getController()
     );
 
@@ -697,16 +691,14 @@ static bool spellBlink(int dir)
     bool success;
     if (c->location->map->tileTypeAt(coords, WITH_OBJECTS)->isWalkable()) {
         /* we didn't move! */
-        if (c->location->coords == coords) {
-            success = false;
-        } else if (
-            settings.enhancements && (coords.x >= 192) && (coords.y >= 192)
-        ) {
+        if ((c->location->coords == coords) ||
             /* CHANGE: No teleporting onto isle of abyss and surroundings */
+            (settings.enhancements && (coords.x >= 192) && (coords.y >= 192))) {
             success = false;
         } else {
             EventHandler::simulateDiskLoad(2000);
-            c->location->coords = MapCoords(static_cast<Coords>(coords));
+            c->location->coords =
+                MapCoords(Coords(coords.x, coords.y, coords.z));
             success = true;
         }
     } else {
@@ -745,8 +737,8 @@ static bool spellDispel(int dir)
      * need to provide a valid replacement annotation to fill in the gap :)
      */
     Annotation::List a = c->location->map->annotations->allAt(field);
-    if (a.size() > 0) {
-        Annotation::List::const_iterator i = std::find_if(
+    if (!a.empty()) {
+        const auto i = std::find_if(
              a.cbegin(),
              a.cend(),
              [&](const Annotation &v) -> bool {
@@ -787,7 +779,7 @@ static bool spellEField(int param)
 {
     /* Unpack fieldType and direction */
     int fieldType = param >> 4u;
-    int dir = param & 0xFu;
+    unsigned int dir = param & 0xFu;
     /* Make sure params valid */
     MapTile fieldTile = 0;
     if (c->location->map->isDungeonMap()) {
@@ -860,11 +852,10 @@ static bool spellEField(int param)
         /* Get rid of old field, if any */
         Annotation::List a =
             c->location->map->annotations->allAt(coords);
-        if (a.size() > 0) {
-            Annotation::List::iterator i;
-            for (i = a.begin(); i != a.end(); ++i) {
-                if (i->getTile().getTileType()->canDispel()) {
-                    c->location->map->annotations->remove(*i);
+        if (!a.empty()) {
+            for (auto &i: a) {
+                if (i.getTile().getTileType()->canDispel()) {
+                    c->location->map->annotations->remove(i);
                 }
             }
         }
@@ -881,9 +872,8 @@ static bool spellFireball(int dir)
 
 static bool spellGate(int phase)
 {
-    const Coords *moongate;
     GameController::flashTile(c->location->coords, "moongate", 4);
-    moongate = moongateGetGateCoordsForPhase(phase);
+    const Coords *moongate = moongateGetGateCoordsForPhase(phase);
     if (moongate) {
         EventHandler::simulateDiskLoad(2000);
         c->location->coords = *moongate;
@@ -966,14 +956,12 @@ static bool spellSleep(int)
 {
     CombatMap *cm = getCombatMap();
     CreatureVector creatures = cm->getCreatures();
-    CreatureVector::const_iterator i;
     /* try to put each creature to sleep */
-    for (i = creatures.cbegin(); i != creatures.cend(); ++i) {
-        Creature *m = *i;
+    for (auto m : creatures) {
         Coords coords = m->getCoords();
         GameController::flashTile(coords, "wisp", 4);
         // BUGFIX from u4apple2: Balron resists sleep AND fire, which our
-        // creatures.xml file cannot currenty model
+        // creatures.xml file cannot currently model
         if ((m->getResists() != EFFECT_SLEEP)
             && (m->getId() != BALRON_ID)
             && (xu4_random(0xFF) >= m->getHp())) {
@@ -991,9 +979,7 @@ static bool spellTremor(int)
 {
     CombatController *ct = spellCombatController();
     CreatureVector creatures = ct->getMap()->getCreatures();
-    CreatureVector::const_iterator i;
-    for (i = creatures.cbegin(); i != creatures.cend(); ++i) {
-        Creature *m = *i;
+    for (auto *m: creatures) {
         Coords coords = m->getCoords();
         // GameController::flashTile(coords, "rocks", 4);
         /* creatures with over 192 hp are unaffected */
@@ -1026,9 +1012,7 @@ static bool spellUndead(int)
 {
     const CombatController *ct = spellCombatController();
     const CreatureVector creatures = ct->getMap()->getCreatures();
-    CreatureVector::const_iterator i;
-    for (i = creatures.cbegin(); i != creatures.cend(); ++i) {
-        Creature *m = *i;
+    for (auto *m: creatures) {
         if (m && m->isUndead()) {
             if (m->getHp() > 23) {
                 m->setHp(23);
@@ -1070,7 +1054,7 @@ static bool spellXit(int)
 static bool spellYup(int)
 {
     MapCoords coords = c->location->coords;
-    const Dungeon *dungeon = dynamic_cast<const Dungeon *>(c->location->map);
+    const auto *dungeon = dynamic_cast<const Dungeon *>(c->location->map);
     /* can't cast in the Abyss CHANGE: or in Hythloth - too easy */
     if (c->location->map->id == MAP_ABYSS ||
         (settings.enhancements && c->location->map->id == MAP_HYTHLOTH)) {
@@ -1105,14 +1089,12 @@ static bool spellYup(int)
 static bool spellZdown(int)
 {
     MapCoords coords = c->location->coords;
-    const Dungeon *dungeon = dynamic_cast<const Dungeon *>(c->location->map);
+    const auto *dungeon = dynamic_cast<const Dungeon *>(c->location->map);
     /* can't cast in the Abyss CHANGE: or in Hythloth - too easy */
     if (c->location->map->id == MAP_ABYSS ||
-        (settings.enhancements && c->location->map->id == MAP_HYTHLOTH)) {
-        return false;
-    }
-    /* can't go lower than level 8 */
-    else if (coords.z >= 7) {
+        (settings.enhancements && c->location->map->id == MAP_HYTHLOTH) ||
+        /* can't go lower than level 8 */
+        coords.z >= 7) {
         return false;
     } else {
         for (int i = 0; i < 0x100; i++) {

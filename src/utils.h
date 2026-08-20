@@ -143,7 +143,7 @@ template<typename T, typename U> inline void AdjustValue(
     );
 }
 
-void xu4_srandom();
+void xu4_seed_random();
 int xu4_random(int upperRange);
 int xu4_islower(int c);
 int xu4_toupper(int c);

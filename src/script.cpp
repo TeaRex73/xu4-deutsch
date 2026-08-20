@@ -1395,7 +1395,7 @@ Script::ReturnCode Script::input(xmlNodePtr script, xmlNodePtr current)
     if (xmlPropExists(current, "maxlen")) {
         this->inputMaxLen = getPropAsInt(current, "maxlen");
     } else {
-        this->inputMaxLen = Conversation::BUFFERLEN;
+        this->inputMaxLen = Conversation::BUFFER_LEN;
     }
     // Should we name the variable something other than "input"
     if (xmlPropExists(current, "name")) {
@@ -1571,7 +1571,7 @@ Script::ReturnCode Script::damage(xmlNodePtr, xmlNodePtr current)
     int pts = getPropAsInt(current, "pts");
     PartyMember *p;
     p = c->party->member(player);
-    p->applyDamage(pts);
+    p->applyDamage(pts, false);
     if (debug) {
         std::fprintf(
             debug, "\nDamage: %d damage to player %d", pts, player + 1

@@ -19,7 +19,8 @@ public:
     CheatMenuController(CheatMenuController &&) = delete;
     CheatMenuController &operator=(const CheatMenuController &) = delete;
     CheatMenuController &operator=(CheatMenuController &&) = delete;
-    virtual bool keyPressed(int key) override;
+
+    bool keyPressed(int key) override;
 
 private:
     static void summonCreature(const std::string &name);
@@ -34,7 +35,7 @@ private:
  */
 class WindCmdController:public WaitableController<void *> {
 public:
-    virtual bool keyPressed(int key) override;
+    bool keyPressed(int key) override;
 };
 
-#endif /* CHEAT_H */
+#endif // CHEAT_H

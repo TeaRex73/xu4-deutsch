@@ -1,5 +1,7 @@
-#ifndef __VC6_H
-#define __VC6_H
+#ifndef VC6_H
+#define VC6_H
+
+// IWYU pragma: always_keep
 
 /* VC6 Compiler issues */
 #if defined(_MSC_VER)
@@ -39,7 +41,8 @@ static inline int fsync(int fd)
 static inline void sync(void)
 {
 }
-
+#else
+# include <unistd.h>
 #endif
 
 #endif

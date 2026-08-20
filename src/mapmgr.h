@@ -115,7 +115,7 @@ private:
     static void initDungeonFromConf(
         const ConfigElement &dungeonConf, Dungeon *dungeon
     );
-    void initDungeonRoom(Dungeon *dng, int room);
+    // void initDungeonRoom(Dungeon *dng, int room);
     static void createMoongateFromConf(const ConfigElement &moongateConf);
     static int initCompressedChunkFromConf(
         const ConfigElement &compressedChunkConf

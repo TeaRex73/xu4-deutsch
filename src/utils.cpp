@@ -2,6 +2,8 @@
  * $Id$
  */
 
+#include <random>
+
 #include "vc6.h" // Fixes things if you're using VC6, does nothing otherwise
 
 #if (defined(__unix__) || defined(unix)) && !defined(USG)
@@ -21,10 +23,10 @@ static int rand_limit_precalc[256];
 /**
  * Seed the random number generator.
  */
-void xu4_srandom()
+void xu4_seed_random()
 {
     int i;
-    std::srand(static_cast<unsigned int>(std::time(nullptr)));
+    std::srand(std::random_device()());
     for (i = 1; i <= 256; i++) {
         rand_limit_precalc[i - 1] = RAND_MAX - (((RAND_MAX % i) + 1) % i);
     }
@@ -63,15 +65,14 @@ std::string &trim(std::string &val, const std::string &chars_to_trim)
 {
     std::string::iterator i;
     if (val.size()) {
-        std::size_t pos;
         for (i = val.begin();
-             (i != val.end()) &&
-                 (pos = chars_to_trim.find(*i)) != std::string::npos;) {
+             i != val.end() &&
+                 chars_to_trim.find(*i) != std::string::npos;) {
             i = val.erase(i);
         }
         for (i = val.end() - 1;
-             (i != val.begin()) &&
-                 (pos = chars_to_trim.find(*i)) != std::string::npos;) {
+             i != val.begin() &&
+                 chars_to_trim.find(*i) != std::string::npos;) {
             i = val.erase(i) - 1;
         }
     }

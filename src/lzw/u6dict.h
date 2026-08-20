@@ -1,3 +1,6 @@
+#ifndef U6DICT_H
+#define U6DICT_H
+
 #include <vector>
 
 namespace U6Decode
@@ -45,3 +48,4 @@ private:
 };
 
 }
+#endif // U6DICT_H

@@ -13,10 +13,10 @@
  */
 class U4TlkDialogueLoader:public DialogueLoader {
 public:
-    virtual Dialogue *load(void *source) override;
+    Dialogue *load(void *source) override;
 
  private:
     static DialogueLoader *instance;
 };
 
-#endif
+#endif // DIALOGUELOADER_TLK_H

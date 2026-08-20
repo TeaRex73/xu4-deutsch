@@ -5,13 +5,19 @@
 #include "vc6.h" // Fixes things if you're using VC6, does nothing otherwise
 
 #include <algorithm>
+#include <atomic>
 #include <cctype>
 #include <cstdlib>
+#include <limits>
 #include <list>
+#include <string>
 
 #include "event.h"
 
 #include "context.h"
+#include "controller.h"
+#include "debug.h"
+#include "direction.h"
 #include "music.h"
 #include "screen.h"
 #include "settings.h"
@@ -30,7 +36,7 @@ EventHandler *EventHandler::instance = nullptr;
 EventHandler::~EventHandler()
 {
     while (!controllers.empty()) {
-        Controller *controller = controllers.back();
+        const Controller *controller = controllers.back();
         popController();
         delete controller;
     }
@@ -47,25 +53,28 @@ EventHandler *EventHandler::getInstance()
 /**
  * Waits a given number of milliseconds before continuing
  */
-void EventHandler::wait_msecs(unsigned int msecs)
+void EventHandler::wait_msecs(const unsigned int msecs)
 {
-    int msecs_per_cycle = (1000 / settings.gameCyclesPerSecond);
-    int cycles = msecs / msecs_per_cycle;
+    const unsigned int msecs_per_cycle =
+        1000 / settings.gameCyclesPerSecond;
+    const unsigned int cycles = msecs / msecs_per_cycle;
     if (cycles > 0) {
         WaitController waitCtrl(cycles);
         getInstance()->pushController(&waitCtrl);
-        waitCtrl.wait();
+        WaitController::wait();
     }
     // Sleep the rest of the msecs we can't wait for
-    EventHandler::sleep(msecs % msecs_per_cycle);
+    sleep(msecs % msecs_per_cycle);
 }
 
 /**
- * Simulates the delay caused by loading stuff from flopp disk
+ * Simulates the delay caused by loading stuff from floppy disk
  */
-void EventHandler::simulateDiskLoad(int duration, bool reenableMusic)
+void EventHandler::simulateDiskLoad(
+    const int duration, const bool reEnableMusic
+)
 {
-    if (reenableMusic) musicMgr->freeze(); else musicMgr->pause();
+    if (reEnableMusic) musicMgr->freeze(); else musicMgr->pause();
     soundStop();
     screenDisableCursor();
     screenHideCursor();
@@ -74,20 +83,20 @@ void EventHandler::simulateDiskLoad(int duration, bool reenableMusic)
     screenMoving = true;
     screenEnableCursor();
     screenShowCursor();
-    if (reenableMusic) musicMgr->thaw();
+    if (reEnableMusic) musicMgr->thaw();
 }
 
 /**
  * Waits a given number of game cycles before continuing
  */
-void EventHandler::wait_cycles(unsigned int cycles)
+void EventHandler::wait_cycles(const unsigned int cycles)
 {
     WaitController waitCtrl(cycles);
     getInstance()->pushController(&waitCtrl);
-    waitCtrl.wait();
+    WaitController::wait();
 }
 
-void EventHandler::setControllerDone(bool done)
+void EventHandler::setControllerDone(const bool done)
 {
     controllerDone = done;
 }   /**< Sets the controller exit flag for the event handler */
@@ -108,11 +117,13 @@ TimedEventMgr *EventHandler::getTimer()
     return &timer;
 }
 
-Controller *EventHandler::pushController(Controller *c)
+Controller *EventHandler::pushController(Controller *controller)
 {
-    controllers.push_back(c);
-    getTimer()->add(&Controller::timerCallback, c->getTimerInterval(), c);
-    return c;
+    controllers.push_back(controller);
+    getTimer()->add(
+        &Controller::timerCallback, controller->getTimerInterval(), controller
+    );
+    return controller;
 }
 
 Controller *EventHandler::popController()
@@ -134,20 +145,20 @@ Controller *EventHandler::getController() const
     return controllers.back();
 }
 
-void EventHandler::setController(Controller *c)
+void EventHandler::setController(Controller *controller)
 {
     while (!controllers.empty()) {
-        Controller *oc = controllers.back();
+        const Controller *old_controller = controllers.back();
         popController();
-        if (oc != c) {
-            delete oc;
+        if (old_controller != controller) {
+            delete old_controller;
         }
     }
-    pushController(c);
+    pushController(controller);
 }
 
 /* TimedEvent functions */
-TimedEvent::TimedEvent(TimedEvent::Callback cb, int i, void *d)
+TimedEvent::TimedEvent(const Callback cb, const int i, void *d)
     :callback(cb), data(d), interval(i), current(0)
 {
 }
@@ -157,7 +168,7 @@ TimedEvent::Callback TimedEvent::getCallback() const
     return callback;
 }
 
-void *TimedEvent::getData()
+void *TimedEvent::getData() const
 {
     return data;
 }
@@ -189,7 +200,7 @@ bool TimedEventMgr::isLocked() const
  * Adds a timed event to the event queue.
  */
 void TimedEventMgr::add(
-    TimedEvent::Callback callback, int interval, void *data
+    const TimedEvent::Callback callback, const int interval, void *data
 )
 {
     events.push_back(new TimedEvent(callback, interval, data));
@@ -199,20 +210,19 @@ void TimedEventMgr::add(
 /**
  * Removes a timed event from the event queue.
  */
-TimedEventMgr::List::iterator TimedEventMgr::remove(List::iterator i)
+TimedEventMgr::List::iterator TimedEventMgr::remove(const List::iterator i)
 {
     if (isLocked()) {
         deferredRemovals.push_back(*i);
         return i;
-    } else {
-        delete *i;
-        return events.erase(i);
     }
+    delete *i;
+    return events.erase(i);
 }
 
 void TimedEventMgr::remove(const TimedEvent *event)
 {
-    List::iterator i = std::find_if(
+    const auto i = std::find_if(
         events.begin(),
         events.end(),
         [&](const TimedEvent *v) -> bool {
@@ -224,12 +234,14 @@ void TimedEventMgr::remove(const TimedEvent *event)
     }
 }
 
-void TimedEventMgr::remove(TimedEvent::Callback callback, const void *data)
+void TimedEventMgr::remove(
+    const TimedEvent::Callback callback, const void *data
+)
 {
-    List::iterator i = std::find_if(
+    const auto i = std::find_if(
         events.begin(),
         events.end(),
-        [&](TimedEvent *v) -> bool {
+        [&](const TimedEvent *v) -> bool {
             return v->getCallback() == callback && v->getData() == data;
         }
     );
@@ -274,7 +286,7 @@ void EventHandler::pushMouseAreaSet(MouseArea *mouseAreas)
 
 void EventHandler::popMouseAreaSet()
 {
-    if (mouseAreaSets.size()) {
+    if (!mouseAreaSets.empty()) {
         mouseAreaSets.pop_front();
     }
 }
@@ -285,25 +297,27 @@ void EventHandler::popMouseAreaSet()
  */
 MouseArea *EventHandler::getMouseAreaSet() const
 {
-    if (mouseAreaSets.size()) {
+    if (!mouseAreaSets.empty()) {
         return mouseAreaSets.front();
-    } else {
-        return nullptr;
     }
+    return nullptr;
 }
 
 
 /**
- * @param maxlen the maximum length of the string
+ * @param max_len the maximum length of the string
  * @param screenX the screen column where to begin input
  * @param screenY the screen row where to begin input
  * @param accepted_chars a string of characters to be accepted for input
  */
 ReadStringController::ReadStringController(
-    int maxlen, int screenX, int screenY, const std::string &accepted_chars
+    const int max_len,
+    const int screenX,
+    const int screenY,
+    const std::string &accepted_chars
 )
 
-    :maxlen(maxlen),
+    :max_len(max_len),
      screenX(screenX),
      screenY(screenY),
      view(nullptr),
@@ -312,9 +326,9 @@ ReadStringController::ReadStringController(
 }
 
 ReadStringController::ReadStringController(
-    int maxlen, TextView *view, const std::string &accepted_chars
+    const int max_len, TextView *view, const std::string &accepted_chars
 )
-    :maxlen(maxlen),
+    :max_len(max_len),
      screenX(view->getCursorX()),
      screenY(view->getCursorY()),
      view(view),
@@ -322,12 +336,13 @@ ReadStringController::ReadStringController(
 {
 }
 
-bool ReadStringController::keyPressed(int key)
+bool ReadStringController::keyPressed(const int key)
 {
-    int valid = true, len = value.length();
+    bool valid = true;
+    const int len = static_cast<int>(value.length());
     std::size_t pos = std::string::npos;
     if (key < U4_ALT) {
-        pos = accepted.find_first_of(key);
+        pos = accepted.find_first_of(static_cast<char>(key));
     }
     if (pos != std::string::npos) {
         if (key == U4_BACKSPACE) {
@@ -344,11 +359,16 @@ bool ReadStringController::keyPressed(int key)
                     screenShowCursor();
                 }
             }
-        } else if ((key == '\n') || (key == '\r')) {
+        } else if (key == '\n' || key == '\r') {
             doneWaiting();
-        } else if (len < maxlen) {
+        } else if (len < max_len) {
             /* add a character to the end */
-            value += key;
+            U4ASSERT(
+                key <= std::numeric_limits<char>::max(),
+                "Key too large to use as char: %d",
+                key
+            );
+            value += static_cast<char>(key);
             if (view) {
                 view->textAt(screenX + len, screenY, "%c", key);
             } else {
@@ -366,42 +386,44 @@ bool ReadStringController::keyPressed(int key)
 } // ReadStringController::keyPressed
 
 std::string ReadStringController::getString(
-    int maxlen, int screenX, int screenY, EventHandler *eh
+    const int max_len, const int screenX, const int screenY, EventHandler *eh
 )
 {
     if (!eh) {
         eh = eventHandler;
     }
-    ReadStringController ctrl(maxlen, screenX, screenY);
+    ReadStringController ctrl(max_len, screenX, screenY);
     eh->pushController(&ctrl);
     return deumlaut(ctrl.waitFor());
 }
 
 std::string ReadStringController::getString(
-    int maxlen, TextView *view, EventHandler *eh
+    const int max_len, TextView *view, EventHandler *eh
 )
 {
     if (!eh) {
         eh = eventHandler;
     }
-    ReadStringController ctrl(maxlen, view);
+    ReadStringController ctrl(max_len, view);
     eh->pushController(&ctrl);
     return deumlaut(ctrl.waitFor());
 }
 
-ReadIntController::ReadIntController(int maxlen, int screenX, int screenY)
-    :ReadStringController(maxlen, screenX, screenY, "0123456789 \n\r\010")
+ReadIntController::ReadIntController(
+    const int max_len, const int screenX, const int screenY
+)
+    :ReadStringController(max_len, screenX, screenY, "0123456789 \n\r\010")
 {
 }
 
 int ReadIntController::getInt(
-    int maxlen, int screenX, int screenY, EventHandler *eh
+    const int max_len, const int screenX, const int screenY, EventHandler *eh
 )
 {
     if (!eh) {
         eh = eventHandler;
     }
-    ReadIntController ctrl(maxlen, screenX, screenY);
+    ReadIntController ctrl(max_len, screenX, screenY);
     eh->pushController(&ctrl);
     ctrl.waitFor();
     return ctrl.stringToInt();
@@ -421,7 +443,12 @@ bool ReadChoiceController::keyPressed(int key)
 {
     key = xu4_tolower(key);
     value = key;
-    if (choices.empty() || (choices.find_first_of(value) < choices.length())) {
+    if (!choices.empty() && key > std::numeric_limits<char>::max()) {
+        return false;
+    }
+    if (choices.empty()
+        || choices.find_first_of(static_cast<char>(value))
+            != std::string::npos) {
         // If the value is printable, display it
         if (!choices.empty() && std::isgraph(key)) {
             screenMessage("%c", xu4_toupper(key));
@@ -443,7 +470,7 @@ char ReadChoiceController::getChar(
     }
     ReadChoiceController ctrl(choices);
     eh->pushController(&ctrl);
-    return ctrl.waitFor();
+    return static_cast<char>(ctrl.waitFor());
 }
 
 ReadDirController::ReadDirController()
@@ -451,10 +478,10 @@ ReadDirController::ReadDirController()
     value = DIR_NONE;
 }
 
-bool ReadDirController::keyPressed(int key)
+bool ReadDirController::keyPressed(const int key)
 {
-    Direction d = keyToDirection(key);
-    bool valid = (d != DIR_NONE);
+    const Direction d = keyToDirection(key);
+    const bool valid = d != DIR_NONE;
     switch (key) {
     case U4_ESC:
     case U4_SPACE:
@@ -473,8 +500,8 @@ bool ReadDirController::keyPressed(int key)
     return false;
 }
 
-WaitController::WaitController(unsigned int c)
-    :Controller(), cycles(c), current(0)
+WaitController::WaitController(const unsigned int cyc)
+    : cycles(cyc), current(0)
 {
 }
 
@@ -496,7 +523,7 @@ void WaitController::wait()
     Controller_startWait();
 }
 
-void WaitController::setCycles(int c)
+void WaitController::setCycles(const int cyc)
 {
-    cycles = c;
+    cycles = cyc;
 }

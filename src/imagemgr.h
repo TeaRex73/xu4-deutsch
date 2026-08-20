@@ -37,31 +37,31 @@ class U4FILE;
 #define BKGD_WAGON "wagon"
 #define BKGD_GYPSY "gypsy"
 #define BKGD_ABACUS "abacus"
-#define BKGD_HONECARD "honecard"
-#define BKGD_COMPCARD "compcard"
-#define BKGD_VALOCARD "valocard"
+#define BKGD_HONESTY_CARD "honecard"
+#define BKGD_COMPASSION_CARD "compcard"
+#define BKGD_VALOR_CARD "valocard"
 #define BKGD_JUSTCARD "justcard"
-#define BKGD_SACRCARD "sacrcard"
-#define BKGD_SPIRCARD "spircard"
-#define BKGD_HUMICARD "humicard"
-#define BKGD_HONCOM "honcom"
-#define BKGD_VALJUS "valjus"
-#define BKGD_SACHONOR "sachonor"
-#define BKGD_SPIRHUM "spirhum"
+#define BKGD_SACRIFICE_CARD "sacrcard"
+#define BKGD_SPIRITUALITY_CARD "spircard"
+#define BKGD_HUMILITY_CARD "humicard"
+#define BKGD_HON_COM "honcom"
+#define BKGD_VAL_JUS "valjus"
+#define BKGD_SAC_HONOR "sachonor"
+#define BKGD_SPIR_HUM "spirhum"
 #define BKGD_ANIMATE "beasties"
 #define BKGD_KEY "key"
 #define BKGD_HONESTY "honesty"
-#define BKGD_COMPASSN "compassn"
+#define BKGD_COMPASSION "compassn"
 #define BKGD_VALOR "valor"
 #define BKGD_JUSTICE "justice"
-#define BKGD_SACRIFIC "sacrific"
+#define BKGD_SACRIFICE "sacrific"
 #define BKGD_HONOR "honor"
-#define BKGD_SPIRIT "spirit"
+#define BKGD_SPIRITUALITY "spirit"
 #define BKGD_HUMILITY "humility"
 #define BKGD_TRUTH "truth"
 #define BKGD_LOVE "love"
 #define BKGD_COURAGE "courage"
-#define BKGD_STONCRCL "stoncrcl"
+#define BKGD_STONE_CIRCLE "stoncrcl"
 #define BKGD_RUNE_INF "rune0"
 #define BKGD_SHRINE_HON "rune1"
 #define BKGD_SHRINE_COM "rune2"
@@ -71,16 +71,16 @@ class U4FILE;
 #define BKGD_SHRINE_HNR "rune6"
 #define BKGD_SHRINE_SPI "rune7"
 #define BKGD_SHRINE_HUM "rune8"
-#define BKGD_GEMTILES "gemtiles"
+#define BKGD_GEM_TILES "gemtiles"
 
 enum ImageFixup {
     FIXUP_NONE,
     FIXUP_INTRO,
     FIXUP_ABYSS,
     FIXUP_ABACUS,
-    FIXUP_DUNGNS,
-    FIXUP_BLACKTRANSPARENCYHACK,
-    FIXUP_FMTOWNSSCREEN
+    FIXUP_DUNGEON_NS,
+    FIXUP_BLACK_TRANSPARENCY_HACK,
+    FIXUP_FM_TOWNS_SCREEN
 };
 
 
@@ -90,20 +90,16 @@ enum ImageFixup {
 class ImageInfo {
 public:
     ImageInfo()
-        :name(),
-         filename(),
-         width(0),
-         height(0),
-         depth(0),
-         prescale(0),
-         filetype(),
-         tiles(0),
-         introOnly(false),
-         transparentIndex(0),
-         xu4Graphic(false),
-         fixup(FIXUP_NONE),
-         image(nullptr),
-         subImages()
+        : width(0),
+          height(0),
+          depth(0),
+          prescale(0),
+          tiles(0),
+          introOnly(false),
+          transparentIndex(0),
+          xu4Graphic(false),
+          fixup(FIXUP_NONE),
+          image(nullptr)
     {
     }
 
@@ -136,38 +132,38 @@ public:
  */
 class ImageMgr:Observer<Settings *> {
 public:
-    static ImageMgr *getInstance();
-    static void destroy();
-    ImageInfo *get(const std::string &name, bool returnUnscaled = false);
-    SubImage *getSubImage(const std::string &name);
-    void freeIntroBackgrounds();
-    const std::vector<std::string> &getSetNames() const;
-    U4FILE *getImageFile(const ImageInfo *info);
-    bool imageExists(const ImageInfo *info);
-
-private:
-    ImageMgr();
     ImageMgr(const ImageMgr &) = delete;
     ImageMgr(ImageMgr &&) = delete;
     ImageMgr &operator=(const ImageMgr &) = delete;
     ImageMgr &operator=(ImageMgr &&) = delete;
-    ~ImageMgr();
+    static ImageMgr *getInstance();
+    static void destroy();
+    ImageInfo *get(const std::string &name, bool returnUnscaled = false);
+    SubImage *getSubImage(const std::string &name);
+    void freeIntroBackgrounds() const;
+    const std::vector<std::string> &getSetNames() const;
+    U4FILE *getImageFile(const ImageInfo *info);
+    bool imageExists(const ImageInfo *info);
+    void update(Settings *newSettings) override;
+
+private:
+    ImageMgr();
+    ~ImageMgr() override;
     void init();
-    ImageSet *loadImageSetFromConf(const ConfigElement &conf);
+    ImageSet *loadImageSetFromConf(const ConfigElement &conf) const;
     static ImageInfo *loadImageInfoFromConf(const ConfigElement &conf);
     static SubImage *loadSubImageFromConf(
         const ImageInfo *info, const ConfigElement &conf
     );
-    ImageSet *getSet(const std::string &setname);
+    ImageSet *getSet(const std::string &setName);
     ImageInfo *getInfo(const std::string &name);
     ImageInfo *getInfoFromSet(const std::string &name, ImageSet *imageset);
     static std::string guessFileType(const std::string &filename);
-    static void fixupIntro(Image *im, int prescale);
+    static void fixupIntro(const Image *im, int prescale);
     static void fixupAbyssVision(const Image *im, int prescale);
-    static void fixupAbacus(Image *im, int prescale);
+    static void fixupAbacus(const Image *im, int prescale);
     static void fixupDungNS(const Image *im, int prescale);
     static void fixupFMTowns(const Image *im, int prescale);
-    void update(Settings *newSettings) override;
     static ImageMgr *instance;
     static ImageInfo *screenInfo;
     std::map<std::string, ImageSet *> imageSets;

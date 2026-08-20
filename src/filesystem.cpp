@@ -4,9 +4,13 @@
 
 #include "vc6.h" // Fixes things if you're using VC6, does nothing otherwise
 
-#include <cstdio>
-
 #include <sys/stat.h>
+
+#include <cstddef>
+#include <cstdio>
+#include <list>
+#include <string>
+#include <utility>
 
 #include "filesystem.h"
 
@@ -26,18 +30,19 @@ const char Path::delim = '/';
 /**
  * Creates a path to a directory or file
  */
-Path::Path(const std::string &p)
-    :path(p), dirs(), file(), ext()
+Path::Path(std::string p)
+    :path(std::move(p))
 {
-    struct stat path_stat;
+    struct stat path_stat {};
     char src_char, dest_char;
-    unsigned int pos;
+    std::size_t pos;
     bool _exists = false, _isDir = false;
     /* first, we need to translate the path into something the
        filesystem will recognize */
     dest_char = delim;
     if (delim == '\\') {
         src_char = '/';
+    // ReSharper disable once CppRedundantElseKeywordInsideCompoundStatement
     } else {
         src_char = '\\';
     }
@@ -46,10 +51,10 @@ Path::Path(const std::string &p)
         path[pos] = dest_char;
     }
     /* determine if the path really exists */
-    _exists = (stat(path.c_str(), &path_stat) == 0);
+    _exists = stat(path.c_str(), &path_stat) == 0;
     /* if so, let's glean more information */
     if (_exists) {
-        _isDir = (path_stat.st_mode & S_IFDIR);
+        _isDir = path_stat.st_mode & S_IFDIR;
     }
     /* find the elements of the path that involve directory structure */
     std::string dir_path =
@@ -65,10 +70,10 @@ Path::Path(const std::string &p)
     }
     /* If it's for sure a file, get file information! */
     if (_exists && !_isDir) {
-        file = dirs.size() ?
-            path.substr(path.find_last_of(dest_char) + 1) :
-            path;
-        if ((pos = file.find_last_of(".")) < file.size()) {
+        file = dirs.empty() ?
+            path :
+            path.substr(path.find_last_of(dest_char) + 1);
+        if ((pos = file.find_last_of('.')) < file.size()) {
             ext = file.substr(pos + 1);
             file.resize(pos);
         }
@@ -81,7 +86,7 @@ Path::Path(const std::string &p)
  */
 bool Path::exists() const
 {
-    struct stat path_stat;
+    struct stat path_stat {};
     return stat(path.c_str(), &path_stat) == 0;
 }
 
@@ -91,9 +96,9 @@ bool Path::exists() const
  */
 bool Path::isFile() const
 {
-    struct stat path_stat;
-    if ((stat(path.c_str(), &path_stat) == 0)
-        && ((path_stat.st_mode & S_IFDIR) == 0)) {
+    struct stat path_stat {};
+    if (stat(path.c_str(), &path_stat) == 0
+        && (path_stat.st_mode & S_IFDIR) == 0) {
         return true;
     }
     return false;
@@ -105,9 +110,9 @@ bool Path::isFile() const
  */
 bool Path::isDir() const
 {
-    struct stat path_stat;
-    if ((stat(path.c_str(), &path_stat) == 0)
-        && (path_stat.st_mode & S_IFDIR)) {
+    struct stat path_stat {};
+    if (stat(path.c_str(), &path_stat) == 0
+        && path_stat.st_mode & S_IFDIR) {
         return true;
     }
     return false;
@@ -119,10 +124,9 @@ bool Path::isDir() const
  */
 std::string Path::getDir() const
 {
-    std::list<std::string>::const_iterator i;
     std::string dir;
-    for (i = dirs.cbegin(); i != dirs.cend(); ++i) {
-        dir += *i + delim;
+    for (const auto &i: dirs) {
+        dir += i + delim;
     }
     return dir;
 }
@@ -131,7 +135,7 @@ std::string Path::getDir() const
 /** Returns the full filename of the file designated in the path */
 std::string Path::getFilename() const
 {
-    return (ext.empty()) ? file : file + std::string(".") + ext;
+    return ext.empty() ? file : file + std::string(".") + ext;
 }
 
 std::string Path::getBaseFilename() const
@@ -150,7 +154,7 @@ std::string Path::getExt() const
  */
 bool Path::exists(const std::string &path)
 {
-    struct stat path_stat;
+    struct stat path_stat {};
     return stat(path.c_str(), &path_stat) == 0;
 }
 
@@ -161,7 +165,7 @@ bool Path::exists(const std::string &path)
  */
 std::FILE *FileSystem::openFile(const std::string &filepath, const char *mode)
 {
-    Path path(filepath);
+    const Path path(filepath);
     createDirectory(filepath);
     return std::fopen(path.getPath().c_str(), mode);
 }
@@ -174,11 +178,10 @@ std::FILE *FileSystem::openFile(const std::string &filepath, const char *mode)
  */
 void FileSystem::createDirectory(Path &path)
 {
-    std::list<std::string>::const_iterator i;
-    std::list<std::string> *dirs = path.getDirTree();
+    const std::list<std::string> *dirs = path.getDirTree();
     std::string dir;
-    for (i = dirs->cbegin(); i != dirs->cend(); ++i) {
-        dir += *i;
+    for (const auto &i: *dirs) {
+        dir += i;
         /* create each directory leading up to our path */
         if (!Path::exists(dir)) {
 #ifdef FS_WINDOWS

@@ -22,15 +22,15 @@
 
 #include "hash.h"
 
-int probe1(unsigned char root, int codeword)
+int probe1(const unsigned char root, const int codeword)
 {
-    int newHashCode = ((root << 4) ^ codeword) & 0xfff;
+    const int newHashCode = ((root << 4) ^ codeword) & 0xfff;
     return newHashCode;
 }
 
 /* The secondary probe uses some assembler instructions that aren't
    easily translated to C. */
-int probe2(unsigned char root, int codeword)
+int probe2(const unsigned char root, const int codeword)
 {
     /* registers[0] == AX, registers[1] == DX */
     long registers[2], temp;
@@ -38,7 +38,7 @@ int probe2(unsigned char root, int codeword)
     int i,j;
     /* the pre-mul part */
     registers[1] = 0;
-    registers[0] = ((root << 1) + codeword) | 0x800;
+    registers[0] = (root << 1) + codeword | 0x800;
     /* the mul part (simulated mul instruction) */
     /* DX:AX = AX * AX                          */
     temp = (registers[0] & 0xff) * (registers[0] & 0xff);
@@ -52,7 +52,7 @@ int probe2(unsigned char root, int codeword)
         carry = 1;
     }
     /* the rcl part */
-    for (i = 0; i < 2; i++) { /* 2 rcl's */
+    for (i = 0; i < 2; i++) { /* 2x rotate left with carry */
         for (j = 0; j < 2; j++) { /* rotate through 2 registers */
             oldCarry = carry;
             carry = (registers[j] >> 15) & 1;
@@ -66,9 +66,9 @@ int probe2(unsigned char root, int codeword)
     return (int)registers[0];
 }
 
-int probe3(int hashCode)
+int probe3(const int hashCode)
 {
     const long probeOffset = 0x1fd;   /* 0x1fd (decimal 509) is prime */
-    long newHashCode = (hashCode + probeOffset) & 0xfff;
+    const long newHashCode = hashCode + probeOffset & 0xfff;
     return (int)newHashCode;
 }

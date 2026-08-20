@@ -37,7 +37,7 @@
 #include "vc6.h" /* Fixes things if you're using VC6, does nothing otherwise */
 
 #include <stdio.h>
-#include <stdlib.h>
+#include <stdlib.h> // IWYU pragma: keep
 #include <string.h>
 
 #include "lzw.h"
@@ -49,13 +49,13 @@ typedef void (*WRITE_DECOMP)(
     unsigned char root, unsigned char *destination, long *position
 );
 
-typedef struct _lzwDictionaryEntry {
+typedef struct lzwDictionaryEntry {
     unsigned char root;
     int codeword;
     unsigned char occupied;
 } lzwDictionaryEntry;
 
-long generalizedDecompress(
+static long generalizedDecompress(
     WRITE_DECOMP outFunc,
     const unsigned char *compressedMem,
     unsigned char *decompressedMem,

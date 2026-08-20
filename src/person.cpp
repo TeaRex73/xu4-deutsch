@@ -298,21 +298,21 @@ std::list<std::string> Person::getConversationText(
             text += lordBritishGetQuestionResponse(cnv, inquiry);
             break;
         case Conversation::ASK:
-        case Conversation::ASKYESNO:
+        case Conversation::ASK_YES_NO:
             U4ASSERT(
                 npcType != NPC_HAWKWIND,
                 "invalid state for hawkwind conversation"
             );
             text += talkerGetQuestionResponse(cnv, inquiry);
             break;
-        case Conversation::GIVEBEGGAR:
+        case Conversation::GIVE_BEGGAR:
             U4ASSERT(
                 npcType == NPC_TALKER_BEGGAR, "invalid npc type: %d", npcType
             );
             text = beggarGetQuantityResponse(cnv, inquiry);
             break;
-        case Conversation::FULLHEAL:
-        case Conversation::ADVANCELEVELS:
+        case Conversation::FULL_HEAL:
+        case Conversation::ADVANCE_LEVELS:
             /* handled elsewhere */
             break;
         default:
@@ -334,13 +334,13 @@ std::string Person::getPrompt(Conversation *cnv) const
     std::string prompt;
     if (cnv->state == Conversation::ASK) {
         prompt = uppercase(getQuestion(cnv));
-    } else if (cnv->state == Conversation::GIVEBEGGAR) {
+    } else if (cnv->state == Conversation::GIVE_BEGGAR) {
         prompt = "Wie viel-";
     } else if (cnv->state == Conversation::CONFIRMATION) {
         prompt = uppercase(
             "\nEr fragt:\nGeht es dir gut?\n\nDeine Antwort:\n?"
         );
-    } else if (cnv->state != Conversation::ASKYESNO) {
+    } else if (cnv->state != Conversation::ASK_YES_NO) {
         prompt = uppercase(dialogue->getPrompt());
     }
     return prompt;
@@ -357,7 +357,7 @@ const char *Person::getChoices(Conversation *cnv)
     }
     switch (cnv->state) {
     case Conversation::CONFIRMATION:
-    case Conversation::CONTINUEQUESTION:
+    case Conversation::CONTINUE_QUESTION:
         return "nj\015 \033";
     case Conversation::PLAYER:
         return "012345678\015 \033";
@@ -400,7 +400,7 @@ std::string Person::processResponse(Conversation *cnv, Response *response)
         }
         // otherwise, append response part to reply
         else {
-            text += *i;
+            text += static_cast<std::string>(*i);
         }
     }
     return text;
@@ -419,21 +419,21 @@ void Person::runCommand(Conversation *cnv, const ResponsePart &command)
         c->party->adjustKarma(KA_BRAGGED);
     } else if (command == ResponsePart::HUMBLE) {
         c->party->adjustKarma(KA_HUMBLE);
-    } else if (command == ResponsePart::ADVANCELEVELS) {
-        cnv->state = Conversation::ADVANCELEVELS;
-    } else if (command == ResponsePart::HEALCONFIRM) {
+    } else if (command == ResponsePart::ADVANCE_LEVELS) {
+        cnv->state = Conversation::ADVANCE_LEVELS;
+    } else if (command == ResponsePart::HEAL_CONFIRM) {
         cnv->state = Conversation::CONFIRMATION;
-    } else if (command == ResponsePart::STARTMUSIC_LB) {
+    } else if (command == ResponsePart::START_MUSIC_LB) {
         musicMgr->lordBritish();
-    } else if (command == ResponsePart::STARTMUSIC_HW) {
+    } else if (command == ResponsePart::START_MUSIC_HW) {
         musicMgr->hawkwind();
-    } else if (command == ResponsePart::STARTMUSIC_SILENCE) {
+    } else if (command == ResponsePart::START_MUSIC_SILENCE) {
         musicMgr->pause();
-    } else if (command == ResponsePart::STOPMUSIC) {
+    } else if (command == ResponsePart::STOP_MUSIC) {
         musicMgr->play();
     } else if (command == ResponsePart::HAWKWIND) {
         c->party->adjustKarma(KA_HAWKWIND);
-    } else if (command == ResponsePart::DISKLOAD) {
+    } else if (command == ResponsePart::DISK_LOAD) {
         EventHandler::simulateDiskLoad(2000);
     } else {
         U4ASSERT(
@@ -461,7 +461,7 @@ std::string Person::getResponse(Conversation *cnv, const char *inquiry)
         && ((xu4_strncasecmp(inquiry, "gib", 3) == 0)
             || (xu4_strncasecmp(inquiry, "gebe", 4) == 0))) {
         reply = "\b";
-        cnv->state = Conversation::GIVEBEGGAR;
+        cnv->state = Conversation::GIVE_BEGGAR;
     } else if ((xu4_strncasecmp(inquiry, "begl", 4) == 0)
                && c->party->canPersonJoin(getName(), &v)) {
         CannotJoinError join = c->party->join(getName());
@@ -499,14 +499,14 @@ std::string Person::talkerGetQuestionResponse(
 )
 {
     bool valid = false;
-    bool yes;
+    bool yes = false;
     char ans = xu4_tolower(answer[0]);
     if ((ans == 'j') || (ans == 'n')) {
         valid = true;
         yes = ans == 'j';
     }
     if (!valid) {
-        cnv->state = Conversation::ASKYESNO;
+        cnv->state = Conversation::ASK_YES_NO;
         return uppercase(
             dialogue->getPronoun()  + " fragt:\nJa oder nein?\n"
         ) + "\nDeine Antwort:\n?";
@@ -547,7 +547,7 @@ std::string Person::lordBritishGetQuestionResponse(
         reply = "Er sagt:\nDas ist gut.\n\n";
     } else if (xu4_tolower(answer[0]) == 'n') {
         reply = "Er sagt:\nLa~ mich deine Wunden heilen!\n\n";
-        cnv->state = Conversation::FULLHEAL;
+        cnv->state = Conversation::FULL_HEAL;
     } else {
         reply = "Er sagt:\nDamit kann ich dir nicht helfen.\n\n";
     }

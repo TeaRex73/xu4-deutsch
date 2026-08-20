@@ -4,7 +4,7 @@
 
 #include "vc6.h" // Fixes things if you're using VC6, does nothing otherwise
 
-#include <ctime>
+#include <ctime> // IWYU pragma: keep
 #include <string>
 #include <vector>
 
@@ -50,15 +50,14 @@ static std::vector<std::string> codexEndgameText2;
  */
 static bool codexInit()
 {
-    U4FILE *codextext;
-    codextext = u4fopen("codex.ger");
-    if (!codextext) {
+    U4FILE *codexText = u4fopen("codex.ger");
+    if (!codexText) {
         return false;
     }
-    codexVirtueQuestions = u4read_stringtable(codextext, 0, 11);
-    codexEndgameText1 = u4read_stringtable(codextext, -1, 7);
-    codexEndgameText2 = u4read_stringtable(codextext, -1, 5);
-    u4fclose(codextext);
+    codexVirtueQuestions = u4read_stringtable(codexText, 0, 11);
+    codexEndgameText1 = u4read_stringtable(codexText, -1, 7);
+    codexEndgameText2 = u4read_stringtable(codexText, -1, 5);
+    u4fclose(codexText);
     return true;
 }
 
@@ -128,24 +127,8 @@ void codexStart()
  * Ejects you from the chamber of the codex (and the Abyss, for that matter)
  * with the correct message.
  */
-static void codexEject(CodexEjectCode code)
+static void codexEject(const CodexEjectCode code)
 {
-    struct {
-        int x, y;
-    } startLocations[] = {
-        { 231, 136 },
-        { 83, 105 },
-        { 35, 221 },
-        { 59, 44 },
-        { 158, 21 },
-        { 105, 183 },
-        { 23, 129 },
-        { 186, 171 },
-        { 216, 106 },
-        { 29, 48 },
-        { 145, 243 },
-        { 89, 106 }
-    };
     switch (code) {
     case CODEX_EJECT_NO_3_PART_KEY:
         screenMessage(
@@ -209,8 +192,24 @@ static void codexEject(CodexEjectCode code)
      * then teleport the party to the starting location for
      * that virtue/principle (Castle Britannia for missed final question).
      */
-    if ((code >= CODEX_EJECT_HONESTY) && (code <= CODEX_EJECT_BAD_INFINITY)) {
-        int virtue = code - CODEX_EJECT_HONESTY;
+    if (code >= CODEX_EJECT_HONESTY && code <= CODEX_EJECT_BAD_INFINITY) {
+        static const struct {
+            int x, y;
+        } startLocations[] = {
+            { .x = 231, .y = 136 },
+            { .x = 83, .y = 105 },
+            { .x = 35, .y = 221 },
+            { .x = 59, .y = 44 },
+            { .x = 158, .y = 21 },
+            { .x = 105, .y = 183 },
+            { .x = 23, .y = 129 },
+            { .x = 186, .y = 171 },
+            { .x = 216, .y = 106 },
+            { .x = 29, .y = 48 },
+            { .x = 145, .y = 243 },
+            { .x = 89, .y = 106 }
+        };
+        const int virtue = code - CODEX_EJECT_HONESTY;
         c->location->coords.x = startLocations[virtue].x;
         c->location->coords.y = startLocations[virtue].y;
     }
@@ -243,8 +242,8 @@ static void codexHandleWOP(const std::string &word)
             return;
         }
         /* eject them if they're not a full avatar at this point */
-        for (int i = 0; i < VIRT_MAX; i++) {
-            if (c->saveGame->karma[i] != 0) {
+        for (const unsigned short k: c->saveGame->karma) {
+            if (k != 0) {
                 codexEject(CODEX_EJECT_NO_FULL_AVATAR);
                 return;
             }
@@ -261,7 +260,7 @@ static void codexHandleWOP(const std::string &word)
         return;
     }
     /* entered incorrectly - give 3 tries before ejecting */
-    else if (tries++ < 3) {
+    if (tries++ < 3) {
         codexImpureThoughts();
         screenMessage("\"Wie lautet das Wort des ]berganges?\"\n\n");
         codexHandleWOP(gameGetInput());
@@ -281,12 +280,12 @@ static void codexHandleVirtues(const std::string &virtue)
 {
     static const char *codexImageNames[] = {
         BKGD_HONESTY,
-        BKGD_COMPASSN,
+        BKGD_COMPASSION,
         BKGD_VALOR,
         BKGD_JUSTICE,
-        BKGD_SACRIFIC,
+        BKGD_SACRIFICE,
         BKGD_HONOR,
-        BKGD_SPIRIT,
+        BKGD_SPIRITUALITY,
         BKGD_HUMILITY,
         BKGD_TRUTH,
         BKGD_LOVE,
@@ -300,17 +299,17 @@ static void codexHandleVirtues(const std::string &virtue)
     screenDisableCursor();
     EventHandler::sleep(1000);
     /* answered with the correct one of eight virtues */
-    if ((current < VIRT_MAX)
-        && (xu4_strcasecmp(
-                deumlaut(virtue).c_str(),
-                deumlaut(getVirtueName(static_cast<Virtue>(current))).c_str()
-            ) == 0)) {
+    if (current < VIRT_MAX
+        && xu4_strcasecmp(
+            deumlaut(virtue).c_str(),
+            deumlaut(getVirtueName(static_cast<Virtue>(current))).c_str()
+        ) == 0) {
         screenDrawImageInMapArea(codexImageNames[current]);
         screenRedrawMapArea();
         current++;
         if (current == VIRT_MAX) {
             screenMessage(
-                "\nDu bist wohlversiert in den Tugenden des Avatars.\n"
+                "\nDu bist wohl versiert in den Tugenden des Avatars.\n"
             );
             EventHandler::sleep(5000);
         }
@@ -322,15 +321,13 @@ static void codexHandleVirtues(const std::string &virtue)
         codexHandleVirtues(gameGetInput());
     }
     /* answered with the correct base virtue (truth, love, courage) */
-    else if ((current >= VIRT_MAX)
-             && (xu4_strcasecmp(
-                     deumlaut(virtue).c_str(),
-                     deumlaut(
-                         getBaseVirtueName(
-                             static_cast<BaseVirtue>(1 << (current - VIRT_MAX))
-                         )
-                     ).c_str()
-                 ) == 0)) {
+    else if (current >= VIRT_MAX
+             && xu4_strcasecmp(
+                deumlaut(virtue).c_str(),
+                deumlaut(
+                    getBaseVirtueName(1 << (current - VIRT_MAX))
+                ).c_str()
+             ) == 0) {
         screenDrawImageInMapArea(codexImageNames[current]);
         screenRedrawMapArea();
         current++;
@@ -438,7 +435,7 @@ static bool codexHandleEndgameAnyKey(int, void *)
             }
             screenMessage("%s", codexEndgameText1[index].c_str());
         } else if (index == 7) {
-            screenDrawImageInMapArea(BKGD_STONCRCL);
+            screenDrawImageInMapArea(BKGD_STONE_CIRCLE);
             screenRedrawMapArea();
             musicMgr->create_or_win();
             screenMessage("\n\n%s", codexEndgameText2[0].c_str());

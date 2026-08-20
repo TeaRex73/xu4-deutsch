@@ -113,11 +113,11 @@ public:
     unsigned char currentSubToken() const;
     DungeonToken tokenAt(const MapCoords &coords) const;
     unsigned char subTokenAt(const MapCoords &coords) const;
-    bool ladderUpAt(const MapCoords &coords);
-    bool ladderDownAt(const MapCoords &coords);
+    bool ladderUpAt(const MapCoords &coords) const;
+    bool ladderDownAt(const MapCoords &coords) const;
     bool validTeleportLocation(const MapCoords &coords) const;
     std::string name;
-    unsigned int n_rooms;
+    int n_rooms;
     std::vector<unsigned char> dataSubTokens;
     DngRoom *rooms;
     CombatMap **roomMaps;

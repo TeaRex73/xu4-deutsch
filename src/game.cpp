@@ -6,14 +6,16 @@
 
 #include <algorithm>
 #include <atomic>
-#include <climits>
 #include <cstdio>
 #include <cstdlib>
 #include <cstring>
 #include <ctime>
 #include <deque>
+#include <limits>
 #include <list>
 #include <map>
+#include <string>
+#include <vector>
 
 #include <unistd.h>
 
@@ -27,6 +29,7 @@
 #include "city.h"
 #include "combat.h"
 #include "context.h"
+#include "controller.h"
 #include "conversation.h"
 #include "creature.h"
 #include "death.h"
@@ -80,8 +83,8 @@ GameController *game = nullptr;
 /*-----------------*/
 /* Functions BEGIN */
 /* main game functions */
-static std::time_t gameTimeSinceLastCommand(void);
-static bool gameSave(void);
+static std::time_t gameTimeSinceLastCommand();
+static bool gameSave();
 
 /* spell functions */
 static void gameCastSpell(unsigned int spell, int caster, int param);
@@ -110,10 +113,9 @@ static void wearArmor(int player = -1);
 static void ztatsFor(int player = -1);
 
 /* checking functions */
-static void gameLordBritishCheckLevels(void);
+static void gameLordBritishCheckLevels();
 
 /* creature functions */
-void gameDestroyAllCreatures(void);
 static void gameFixupObjects(Map *map);
 static void gameCreatureAttack(Creature *m);
 
@@ -123,39 +125,55 @@ static void gameCreatureAttack(Creature *m);
 extern int quit;
 
 #if defined(FS_WINDOWS)
-const std::string tmpstr ="X";
+const std::string tmpStr ="X";
 #elif defined(FS_POSIX)
-const std::string tmpstr = "/tmp/";
+const std::string tmpStr = "/tmp/";
 #else
 #error filesystem not defined
 #endif
 
 Context *c = nullptr;
-Debug gameDbg("debug/game.txt", "Game");
-MouseArea mouseAreas[] = {
+static Debug gameDbg("debug/game.txt", "Game");
+static MouseArea mouseAreas[] = {
     {
-        3,
-        { { 8, 8 }, { 8, 184 }, { 96, 96 } },
-        MC_WEST,
-        { U4_ENTER, 0, U4_LEFT }
+        .npoints = 3,
+        .point = {
+            { .x = 8, .y = 8 },
+            { .x = 8, .y = 184 },
+            { .x = 96, .y = 96 }
+        },
+        .cursor = MC_WEST,
+        .command = { U4_ENTER, 0, U4_LEFT }
     },
     {
-        3,
-        { { 8, 8 }, { 184, 8 }, { 96, 96 } },
-        MC_NORTH,
-        { U4_ENTER, 0, U4_UP }
+        .npoints = 3,
+        .point = {
+            { .x = 8, .y = 8 },
+            { .x = 184, .y = 8 },
+            { .x = 96, .y = 96 }
+        },
+        .cursor = MC_NORTH,
+        .command = { U4_ENTER, 0, U4_UP }
     },
     {
-        3,
-        { { 184, 8 }, { 184, 184 }, { 96, 96 } },
-        MC_EAST,
-        { U4_ENTER, 0, U4_RIGHT }
+        .npoints = 3,
+        .point = {
+            { .x = 184, .y = 8 },
+            { .x = 184, .y = 184 },
+            { .x = 96, .y = 96 }
+        },
+        .cursor = MC_EAST,
+        .command = { U4_ENTER, 0, U4_RIGHT }
     },
     {
-        3,
-        { { 8, 184 }, { 184, 184 }, { 96, 96 } },
-        MC_SOUTH,
-        { U4_ENTER, 0, U4_DOWN }
+        .npoints = 3,
+        .point = {
+            { .x = 8, .y = 184 },
+            { .x = 184, .y = 184 },
+            { .x = 96, .y = 96 }
+        },
+        .cursor = MC_SOUTH,
+        .command = { U4_ENTER, 0, U4_DOWN }
     },
     {}
 };
@@ -165,13 +183,11 @@ ReadPlayerController::ReadPlayerController()
 {
 }
 
-ReadPlayerController::~ReadPlayerController()
-{
-}
+ReadPlayerController::~ReadPlayerController() = default;
 
 bool ReadPlayerController::keyPressed(int key)
 {
-    bool valid = ReadChoiceController::keyPressed(key);
+    const bool valid = ReadChoiceController::keyPressed(key);
     if (valid) {
         if (value == '0') {
             value = '9';
@@ -243,7 +259,7 @@ GameController::~GameController()
 
 void GameController::initScreen()
 {
-    Image *screen = imageMgr->get("screen")->image;
+    const Image *screen = imageMgr->get("screen")->image;
     screen->fillRect(0, 0, screen->width(), screen->height(), 0, 0, 0);
     screenRedrawScreen();
 }
@@ -292,7 +308,7 @@ void GameController::init()
     /* load in the save game */
     // First the temporary just-inited save game...
     std::FILE *saveGameFile = std::fopen(
-        (tmpstr + PARTY_SAV_BASE_FILENAME).c_str(), "rb"
+        (tmpStr + PARTY_SAV_BASE_FILENAME).c_str(), "rb"
     );
     if (!saveGameFile) {
         // ...and if that fails the real, main save game
@@ -315,14 +331,14 @@ void GameController::init()
     c->party->addObserver(this);
     c->stats = new StatsArea();
     /* set the map to the world map by default */
-    setMap(mapMgr->get(MAP_WORLD), 0, nullptr);
+    setMap(mapMgr->get(MAP_WORLD), false, nullptr);
     c->location->map->clearObjects();
     TRACE_LOCAL(gameDbg, "World map set.");
 #if 0
     ++pb;
 #endif
     /* initialize our start location */
-    Map *map = mapMgr->get(MapId(c->saveGame->location));
+    Map *map = mapMgr->get(static_cast<MapId>(c->saveGame->location));
     TRACE_LOCAL(gameDbg, "Initializing start location.");
     /* if our map is not the world map, then load our map */
     U4ASSERT(
@@ -330,26 +346,26 @@ void GameController::init()
         "Initial Map must be World or Dungeon map!"
     );
     if (map->isDungeonMap()) {
-        setMap(map, 1, nullptr);
+        setMap(map, true, nullptr);
         std::FILE *dngMapFile = std::fopen(
             (settings.getUserPath() + DNGMAP_SAV_BASE_FILENAME).c_str(), "rb"
         );
         if (dngMapFile) {
-            Dungeon *dungeon = dynamic_cast<Dungeon *>(map);
+            auto *dungeon = dynamic_cast<Dungeon *>(map);
             U4ASSERT(dungeon, "Map to Dungeon Conversion failed!");
             dungeon->tempData = dungeon->data;
             dungeon->data.clear();
             dungeon->tempDataSubTokens = dungeon->dataSubTokens;
             dungeon->dataSubTokens.clear();
-            for (unsigned int i = 0;
+            for (int i = 0;
                  i < (DNG_HEIGHT * DNG_WIDTH * dungeon->levels);
                  i++) {
-                int intMapData = std::fgetc(dngMapFile);
+                const int intMapData = std::fgetc(dngMapFile);
                 if (intMapData == EOF) {
                     std::fclose(dngMapFile);
                     errorFatal("DngMapFile read error!");
                 }
-                unsigned char mapData = static_cast<unsigned char>(intMapData);
+                auto mapData = static_cast<unsigned char>(intMapData);
                 switch (mapData & 0xF0) {
                 case 0x80:
                 case 0x90:
@@ -404,7 +420,7 @@ void GameController::init()
 #endif
     /* load in monsters.sav */
     std::FILE *monstersFile = std::fopen(
-        (tmpstr + MONSTERS_SAV_BASE_FILENAME).c_str(), "rb"
+        (tmpStr + MONSTERS_SAV_BASE_FILENAME).c_str(), "rb"
     );
     if (!monstersFile) {
         monstersFile = std::fopen(
@@ -516,13 +532,12 @@ static bool gameSave()
      * Write dungeon info
      */
     if (c->location->context & CTX_DUNGEON) {
-        unsigned int x, y, z;
         typedef std::map<CreatureId, int> DngCreatureIdMap;
         static DngCreatureIdMap id_map;
         /**
          * Map creatures to u4dos dungeon creature Ids
          */
-        if (id_map.size() == 0) {
+        if (id_map.empty()) {
             id_map[RAT_ID] = 1;
             id_map[BAT_ID] = 2;
             id_map[GIANT_SPIDER_ID] = 3;
@@ -546,9 +561,9 @@ static bool gameSave()
             screenMessage("Error opening " DNGMAP_SAV_BASE_FILENAME "\n");
             return false;
         }
-        for (z = 0; z < c->location->map->levels; z++) {
-            for (y = 0; y < c->location->map->height; y++) {
-                for (x = 0; x < c->location->map->width; x++) {
+        for (int z = 0; z < c->location->map->levels; z++) {
+            for (int y = 0; y < c->location->map->height; y++) {
+                for (int x = 0; x < c->location->map->width; x++) {
                     unsigned char tile = c->location->map->ttrti(
                         c->location->map->tileAt(
                             MapCoords(x, y, z), WITHOUT_OBJECTS
@@ -571,8 +586,7 @@ static bool gameSave()
                             c->location->map->objectAt(MapCoords(x, y, z));
                         if (obj && (obj->getType() == Object::CREATURE)) {
                             const Creature *m = dynamic_cast<Creature *>(obj);
-                            DngCreatureIdMap::iterator m_id =
-                                id_map.find(m->getId());
+                            auto m_id = id_map.find(m->getId());
                             if (m_id != id_map.end()) {
                                 tile |= m_id->second;
                             }
@@ -693,7 +707,7 @@ void GameController::setMap(
      * want to keep */
     if (!saveLocation) {
         // don't quench torch if going through altar room into other dungeon
-        bool shouldQuenchTorch = !map->isDungeonMap();
+        const bool shouldQuenchTorch = !map->isDungeonMap();
         exitToParentMap(shouldQuenchTorch);
     }
     switch (map->type) {
@@ -758,8 +772,8 @@ bool GameController::exitToParentMap(bool shouldQuenchTorch)
         if (c->location->prev->map != c->location->map) {
             c->location->map->annotations->clear();
             c->location->map->clearObjects();
-            Dungeon *dungeon = dynamic_cast<Dungeon *>(c->location->map);
-            if (dungeon && (dungeon->tempData.size() > 0)) {
+            auto *dungeon = dynamic_cast<Dungeon *>(c->location->map);
+            if (dungeon && (!dungeon->tempData.empty())) {
                 dungeon->data = dungeon->tempData;
                 dungeon->tempData.clear();
                 dungeon->dataSubTokens = dungeon->tempDataSubTokens;
@@ -785,7 +799,6 @@ bool GameController::exitToParentMap(bool shouldQuenchTorch)
  */
 void GameController::finishTurn()
 {
-    extern std::atomic_bool deathSequenceRunning;
     if (deathSequenceRunning) {
         /* none of this makes sense if party is already dead,
            and we have to re-check it after every function call that
@@ -795,7 +808,7 @@ void GameController::finishTurn()
     }
     c->lastCommandTime = std::time(nullptr);
     Creature *attacker = nullptr;
-    while (1) {
+    while (true) {
         /* adjust food and moves */
         c->party->endTurn();
         /* count down the aura, if there is one */
@@ -906,11 +919,11 @@ void GameController::flashTile(
 }
 
 void GameController::flashTile(
-    const Coords &coords, const std::string &tilename, int timeFactor
+    const Coords &coords, const std::string &tileName, int timeFactor
 )
 {
-    const Tile *tile = c->location->map->tileset->getByName(tilename);
-    U4ASSERT(tile, "no tile named '%s' found in tileset", tilename.c_str());
+    const Tile *tile = c->location->map->tileset->getByName(tileName);
+    U4ASSERT(tile, "no tile named '%s' found in tileset", tileName.c_str());
     flashTile(coords, tile->getId(), timeFactor);
 }
 
@@ -942,7 +955,7 @@ void GameController::update(Party *, PartyEvent &event)
         soundPlay(SOUND_PC_STRUCK, false);
         // 2 damage to each party member for starving!
         for (i = 0; i < c->saveGame->members; i++) {
-            c->party->member(i)->applyDamage(2);
+            c->party->member(i)->applyDamage(2, false);
         }
         break;
     default:
@@ -971,16 +984,15 @@ void GameController::update(Location *location, MoveEvent &event)
     }
 }
 
-void gameSpellEffect(int spell, int player, Sound sound)
+void gameSpellEffect(unsigned int spell, int player, Sound sound)
 {
-    int time;
     Spell::SpecialEffects effect = Spell::SFX_INVERT;
     game->paused = true;
     game->pausedTimer = 0;
     if (player >= 0) {
         c->stats->highlightPlayer(player);
     }
-    time = settings.spellEffectSpeed * 800 / settings.gameCyclesPerSecond;
+    int time = settings.spellEffectSpeed * 800 / settings.gameCyclesPerSecond;
     time -= time % 10;
     soundPlay(sound, false, time);
     ///The following effect multipliers are not accurate
@@ -1014,7 +1026,7 @@ static void gameCastSpell(unsigned int spell, int caster, int param)
 {
     SpellCastError spellError;
     if (!spellCast(spell, caster, param, &spellError, true)) {
-        std::string msg = spellGetErrorMessage(spell, spellError);
+        const std::string msg = spellGetErrorMessage(spell, spellError);
         if (!msg.empty()) {
             soundPlay(SOUND_FLEE);
             screenMessage("%s", msg.c_str());
@@ -1075,17 +1087,16 @@ bool GameController::keyPressed(int key)
             key = 'y';
         }
         if (c->location->context == CTX_DUNGEON) {
-            Dungeon *dungeon = static_cast<Dungeon *>(c->location->map);
-            bool up = dungeon->ladderUpAt(c->location->coords);
-            bool down = dungeon->ladderDownAt(c->location->coords);
-            if (up && down) {
+            const auto *dungeon = dynamic_cast<Dungeon *>(c->location->map);
+            U4ASSERT(dungeon, "Map to Dungeon Conversion failed!");
+            const bool up = dungeon->ladderUpAt(c->location->coords);
+            const bool down = dungeon->ladderDownAt(c->location->coords);
+            if (up) {
                 // On double ladder, prefer "up".
                 // This is consistent with the previous code.
                 // Ideally, I would have a UI here as well.
                 key = 'q';
-            } else if (up) {
-                key = 'q';
-            } else {
+            } else if (down) {
                 key = 'y';
             }
         }
@@ -1096,7 +1107,7 @@ bool GameController::keyPressed(int key)
         }
         /* Get Chest? */
         if (!c->party->isFlying()) {
-            MapTile tile = c->location->map->tileAt(
+            const MapTile tile = c->location->map->tileAt(
                 c->location->coords, WITH_GROUND_OBJECTS
             );
             if (tile.getTileType()->isChest()) {
@@ -1120,8 +1131,9 @@ bool GameController::keyPressed(int key)
         case U4_RIGHT:
         {
             /* move the avatar */
-            std::string previous_map = c->location->map->fname;
-            MoveResult retval = c->location->move(keyToDirection(key), true);
+            const std::string previous_map = c->location->map->fname;
+            const MoveResult retval =
+                c->location->move(keyToDirection(key), true);
             /* horse doubles speed (make sure we're on the same map
                as the previous move first) */
             if (retval & (MOVE_SUCCEEDED | MOVE_SLOWED)
@@ -1136,59 +1148,60 @@ bool GameController::keyPressed(int key)
             endTurn = !!(retval & MOVE_END_TURN);
             break;
         }
-        case U4_FKEY:
-        case U4_FKEY + 1:
-        case U4_FKEY + 2:
-        case U4_FKEY + 3:
-        case U4_FKEY + 4:
-        case U4_FKEY + 5:
-        case U4_FKEY + 6:
-        case U4_FKEY + 7:
+        case U4_F_KEY:
+        case U4_F_KEY + 1:
+        case U4_F_KEY + 2:
+        case U4_F_KEY + 3:
+        case U4_F_KEY + 4:
+        case U4_F_KEY + 5:
+        case U4_F_KEY + 6:
+        case U4_F_KEY + 7:
             /* teleport to dungeon entrances! */
             if (settings.debug
                 && (c->location->context & CTX_WORLDMAP)
                 && (c->transportContext & TRANSPORT_FOOT_OR_HORSE)) {
-                int portal = 16 + (key - U4_FKEY); /* find dungeon portal */
+                const int portal =
+                    16 + (key - U4_F_KEY); /* find dungeon portal */
                 c->location->coords =
                     c->location->map->portals[portal]->coords;
             } else {
                 valid = false;
             }
             break;
-        case U4_FKEY + 8:
+        case U4_F_KEY + 8:
             /* the altar room of truth */
             if (settings.debug && (c->location->context & CTX_WORLDMAP)) {
-                setMap(mapMgr->get(MAP_DECEIT), 1, nullptr);
+                setMap(mapMgr->get(MAP_DECEIT), true, nullptr);
                 c->location->coords = MapCoords(1, 0, 7);
                 c->saveGame->orientation = DIR_SOUTH;
             } else {
                 valid = false;
             }
             break;
-        case U4_FKEY + 9:
+        case U4_F_KEY + 9:
             /* the altar room of love */
             if (settings.debug && (c->location->context & CTX_WORLDMAP)) {
-                setMap(mapMgr->get(MAP_DESPISE), 1, nullptr);
+                setMap(mapMgr->get(MAP_DESPISE), true, nullptr);
                 c->location->coords = MapCoords(3, 2, 7);
                 c->saveGame->orientation = DIR_SOUTH;
             } else {
                 valid = false;
             }
             break;
-        case U4_FKEY + 10:
+        case U4_F_KEY + 10:
             /* the altar room of courage */
             if (settings.debug && (c->location->context & CTX_WORLDMAP)) {
-                setMap(mapMgr->get(MAP_DESTARD), 1, nullptr);
+                setMap(mapMgr->get(MAP_DESTARD), true, nullptr);
                 c->location->coords = MapCoords(7, 6, 7);
                 c->saveGame->orientation = DIR_SOUTH;
             } else {
                 valid = false;
             }
             break;
-        case U4_FKEY + 11:
+        case U4_F_KEY + 11:
             /* show torch duration */
             if (settings.debug) {
-                screenMessage("Torch: %d\n", c->party->getTorchDuration());
+                screenMessage("Fackel: %d\n", c->party->getTorchDuration());
                 screenPrompt();
             } else {
                 valid = false;
@@ -1220,7 +1233,7 @@ bool GameController::keyPressed(int key)
                 screenPrompt();
                 /* Help! send me to Lord British (who conveniently is
                    right around where you are)! */
-                setMap(mapMgr->get(100), 1, nullptr);
+                setMap(mapMgr->get(100), true, nullptr);
                 c->location->coords.x = 19;
                 c->location->coords.y = 8;
                 c->location->coords.z = 0;
@@ -1251,7 +1264,7 @@ bool GameController::keyPressed(int key)
         case '-':
         case U4_KEYPAD_ENTER:
             if (settings.debug) {
-                int old_cycles = settings.gameCyclesPerSecond;
+                const int old_cycles = settings.gameCyclesPerSecond;
                 if ((key == '+')
                     && (++settings.gameCyclesPerSecond
                         >= MAX_CYCLES_PER_SECOND)) {
@@ -1353,7 +1366,7 @@ bool GameController::keyPressed(int key)
             // The reason why is that Lord British's farewell is dependent
             // on the number of party members. Instead of just redoing the
             // dialog, it's a bit severe, but easier to unload the whole level.
-            bool cleanMap =
+            const bool cleanMap =
                 (c->party->size() < 3 && c->location->map->id == 100);
             if (!usePortalAt(
                     c->location, c->location->coords, ACTION_DESCEND
@@ -1471,7 +1484,8 @@ bool GameController::keyPressed(int key)
                 gameSave();
                 EventHandler::simulateDiskLoad(2000);
                 screenMessage("\nGESPEICHERT!\n\nReise beenden?");
-                int choice = ReadChoiceController::getChar("jn\015 \033");
+                const char choice =
+                    ReadChoiceController::getChar("jn\015 \033");
                 if (choice == 'j') {
                     quit = 1;
                     EventHandler::end();
@@ -1527,7 +1541,7 @@ bool GameController::keyPressed(int key)
             screenMessage("Verwenden...\n");
             EventHandler::simulateDiskLoad(2000);
             screenMessage("WELCHES DING:\n?");
-            if (1 /* was settings.enhancements */) {
+            if (true /* was settings.enhancements */) {
                 /* a little xu4 enhancement: show items in inventory when
                    prompted for an item to use */
                 c->stats->setView(STATS_ITEMS);
@@ -1536,7 +1550,7 @@ bool GameController::keyPressed(int key)
             if (c->location->viewMode == VIEW_CODEX) {
                 break;
             }
-            if (1 /* was settings.enhancements */) {
+            if (true /* was settings.enhancements */) {
                 c->stats->setView(STATS_PARTY_OVERVIEW);
             }
             c->lastCommandTime = std::time(nullptr);
@@ -1601,7 +1615,7 @@ bool GameController::keyPressed(int key)
                 /* first teleport to the abyss */
                 c->location->coords.x = 0xe9;
                 c->location->coords.y = 0xe9;
-                setMap(mapMgr->get(MAP_ABYSS), 1, nullptr);
+                setMap(mapMgr->get(MAP_ABYSS), true, nullptr);
                 /* then to the final altar */
                 c->location->coords.x = 7;
                 c->location->coords.y = 7;
@@ -1684,7 +1698,7 @@ bool GameController::keyPressed(int key)
             // Quit to the main menu
             endTurn = false;
             screenMessage("ZUR]CK INS MEN]?");
-            char choice = ReadChoiceController::getChar("jn \n\033");
+            const char choice = ReadChoiceController::getChar("jn \n\033");
             // screenMessage("%c", choice);
             if (choice != 'j') {
                 screenMessage("\n");
@@ -1763,12 +1777,12 @@ bool GameController::keyPressed(int key)
     return valid || KeyHandler::defaultHandler(key, nullptr);
 } // GameController::keyPressed
 
-std::string gameGetInput(int maxlen)
+std::string gameGetInput(int maxLen)
 {
     screenEnableCursor();
     screenShowCursor();
     return ReadStringController::getString(
-        maxlen, TEXT_AREA_X + c->col, TEXT_AREA_Y + c->line
+        maxLen, TEXT_AREA_X + c->col, TEXT_AREA_Y + c->line
     );
 }
 
@@ -1819,7 +1833,7 @@ Direction gameGetDirection()
     ReadDirController dirController;
     screenMessage("-");
     eventHandler->pushController(&dirController);
-    Direction dir = dirController.waitFor();
+    const Direction dir = dirController.waitFor();
     if (dir == DIR_NONE) {
         screenMessage("NICHTS\n");
         return dir;
@@ -1890,7 +1904,9 @@ bool ZtatsController::keyPressed(int key)
     case '7':
     case '8':
         if (c->saveGame->members >= key - '0') {
-            c->stats->setView(StatsView(STATS_CHAR1 + key - '1'));
+            c->stats->setView(
+                static_cast<StatsView>(STATS_CHAR1 + key - '1')
+            );
         }
         return true;
     case '0':
@@ -1899,7 +1915,7 @@ bool ZtatsController::keyPressed(int key)
     case U4_ESC:
     case U4_SPACE:
     case U4_ENTER:
-        c->stats->setView(StatsView(STATS_PARTY_OVERVIEW));
+        c->stats->setView(STATS_PARTY_OVERVIEW);
         doneWaiting();
         return true;
     default:
@@ -1910,11 +1926,11 @@ bool ZtatsController::keyPressed(int key)
 void destroy()
 {
     screenMessage("Zerst|re Objekt\nRICHTUNG");
-    Direction dir = gameGetDirection();
+    const Direction dir = gameGetDirection();
     if (dir == DIR_NONE) {
         return;
     }
-    std::vector<Coords> path = gameGetDirectionalActionPath(
+    const std::vector<Coords> path = gameGetDirectionalActionPath(
         MASK_DIR(dir), MASK_DIR_ALL, c->location->coords, 1, 1, nullptr, true
     );
     if (
@@ -1937,10 +1953,10 @@ static bool destroyAt(const Coords &coords)
     Object *obj = c->location->map->objectAt(coords);
     if (obj) {
         if (isCreature(obj)) {
-            Creature *m = dynamic_cast<Creature *>(obj);
+            const auto *m = dynamic_cast<Creature *>(obj);
             screenMessage("%s ZERST\\RT!\n", uppercase(m->getName()).c_str());
         } else {
-            Tile *t = c->location->map->tileset->get(obj->getTile().getId());
+            const Tile *t = c->location->map->tileset->get(obj->getTile().getId());
             screenMessage("%s ZERST\\RT!\n", uppercase(t->getName()).c_str());
         }
         c->location->map->removeObject(obj);
@@ -1958,11 +1974,11 @@ void attack()
         screenMessage("-%cNUR DRIFT!%c\n", FG_GREY, FG_WHITE);
         return;
     }
-    Direction dir = gameGetDirection();
+    const Direction dir = gameGetDirection();
     if (dir == DIR_NONE) {
         return;
     }
-    std::vector<Coords> path = gameGetDirectionalActionPath(
+    const std::vector<Coords> path = gameGetDirectionalActionPath(
         MASK_DIR(dir), MASK_DIR_ALL, c->location->coords, 1, 1, nullptr, true
     );
     if (
@@ -1987,8 +2003,7 @@ void attack()
  */
 static bool attackAt(const Coords &coords)
 {
-    Creature *m =
-        dynamic_cast<Creature *>(c->location->map->objectAt(coords));
+    auto *m = dynamic_cast<Creature *>(c->location->map->objectAt(coords));
     /* nothing attackable: move on to next tile */
     if ((m == nullptr) || !m->isAttackable()) {
         return false;
@@ -2020,7 +2035,7 @@ static bool attackAt(const Coords &coords)
         c->party->adjustKarma(KA_ATTACKED_GOOD);
     }
     EventHandler::simulateDiskLoad(1000, false);
-    CombatController *cc = new CombatController(
+    auto *cc = new CombatController(
         CombatMap::mapForTile(
             ground, c->party->getTransport().getTileType(), m
         )
@@ -2076,7 +2091,7 @@ void castSpell(int player)
     c->stats->setView(STATS_MIXTURES);
     screenMessage("\nZAUBER-");
     // ### Put the iPad thing too.
-    int spell = AlphaActionController::get('z', "ZAUBER-");
+    const int spell = AlphaActionController::get('z', "ZAUBER-");
     if (spell == -1) {
         return;
     }
@@ -2096,7 +2111,7 @@ void castSpell(int player)
     case Spell::PARAM_PHASE:
     {
         screenMessage("ZU PHASE-");
-        int choice = ReadChoiceController::getChar("12345678 \033\n");
+        const int choice = ReadChoiceController::getChar("12345678 \033\n");
         if ((choice < '1') || (choice > '8')) {
             screenMessage("KEINE!\n");
         } else {
@@ -2108,7 +2123,7 @@ void castSpell(int player)
     case Spell::PARAM_PLAYER:
     {
         screenMessage("WEN-");
-        int subject = gameGetPlayer(true, false, false);
+        const int subject = gameGetPlayer(true, false, false);
         screenMessage("\n");
         if (subject != -1) {
             gameCastSpell(spell, player, subject);
@@ -2120,7 +2135,7 @@ void castSpell(int player)
             gameCastSpell(spell, player, c->saveGame->orientation);
         } else {
             screenMessage("RICHTUNG");
-            Direction dir = gameGetDirection();
+            const Direction dir = gameGetDirection();
             if (dir != DIR_NONE) {
                 gameCastSpell(spell, player, static_cast<int>(dir));
             }
@@ -2130,7 +2145,7 @@ void castSpell(int player)
     {
         screenMessage("ENERGIETYP?");
         EnergyFieldType fieldType = ENERGYFIELD_NONE;
-        char key = ReadChoiceController::getChar("fbgs \033\n\r");
+        const char key = ReadChoiceController::getChar("fbgs \033\n\r");
         switch (key) {
         case 'f':
             fieldType = ENERGYFIELD_FIRE;
@@ -2177,7 +2192,7 @@ void castSpell(int player)
     case Spell::PARAM_FROMDIR:
     {
         screenMessage("AUS RICHTUNG");
-        Direction dir = gameGetDirection();
+        const Direction dir = gameGetDirection();
         if (dir != DIR_NONE) {
             gameCastSpell(spell, player, static_cast<int>(dir));
         }
@@ -2194,19 +2209,19 @@ void fire()
         return;
     }
     screenMessage("Kanone feuern\nRichtung");
-    Direction dir = gameGetDirection();
+    const Direction dir = gameGetDirection();
     if (dir == DIR_NONE) {
         return;
     }
     // can only fire broadsides
-    int broadsidesDirs = dirGetBroadsidesDirs(c->party->getDirection());
+    const int broadsidesDirs = dirGetBroadsidesDirs(c->party->getDirection());
     if (!DIR_IN_MASK(dir, broadsidesDirs)) {
         soundPlay(SOUND_ERROR);
         screenMessage("%cNUR BREITSEITEN!%c\n", FG_GREY, FG_WHITE);
         return;
     }
     // nothing (not even mountains!) can block cannonballs
-    std::vector<Coords> path = gameGetDirectionalActionPath(
+    const std::vector<Coords> path = gameGetDirectionalActionPath(
         MASK_DIR(dir),
         broadsidesDirs,
         c->location->coords,
@@ -2235,7 +2250,7 @@ bool fireAt(const Coords &coords, bool originAvatar)
         c->location->map->tileset->getByName("miss_flash")->getId();
     GameController::flashTile(coords, tile, 1);
     const Object *obj = c->location->map->objectAt(coords);
-    const Creature *m = dynamic_cast<const Creature *>(obj);
+    const auto *m = dynamic_cast<const Creature *>(obj);
     if (m && m->isAttackable()) {
         validObject = true;
     }
@@ -2273,7 +2288,7 @@ bool fireAt(const Coords &coords, bool originAvatar)
             soundPlay(SOUND_NPC_STRUCK, false);
             GameController::flashTile(coords, "hit_flash", 4);
             if (xu4_random(4) == 0) { /* reverse-engineered from u4dos */
-                if (!m || m->getId() != LORDBRITISH_ID) { //LB is immortal
+                if (!m || m->getId() != LORD_BRITISH_ID) { //LB is immortal
                     c->location->map->removeObject(obj);
                 }
             }
@@ -2325,7 +2340,7 @@ void getChest(int player)
         if (obj) {
             c->location->map->removeObject(obj);
         } else {
-            TileId newTile = c->location->getReplacementTile(coords, tile);
+            const TileId newTile = c->location->getReplacementTile(coords, tile);
             c->location->map->annotations->add(coords, newTile, false, true);
         }
         // see if the chest is trapped and handle it
@@ -2355,11 +2370,11 @@ void getChest(int player)
 static bool getChestTrapHandler(int player)
 {
     TileEffect trapType = EFFECT_FIRE;
-    int passTest = xu4_random(2); /* xu4-enhanced */
+    const int passTest = xu4_random(2); /* xu4-enhanced */
     /* Chest is trapped! 50/50 chance */
     if (passTest) {
         /* Figure out which trap the chest has */
-        int randNum = xu4_random(4);
+        const int randNum = xu4_random(4);
         switch (randNum & xu4_random(4)) {
         case 0:
             trapType = EFFECT_FIRE;
@@ -2368,7 +2383,7 @@ static bool getChestTrapHandler(int player)
             trapType = EFFECT_SLEEP;
             break; /* sleep trap (19% chance - 3/16) */
         case 2:
-            trapType = EFFECT_POISON;
+            trapType = EFFECT_SWAMP;
             break; /* poison trap (19% chance - 3/16) */
         case 3:
             trapType = EFFECT_LAVA;
@@ -2379,7 +2394,7 @@ static bool getChestTrapHandler(int player)
         /* apply the effects from the trap */
         if (trapType == EFFECT_FIRE) {
             screenMessage("\n%cS[URE%cFALLE!\n", FG_BLUE, FG_WHITE);
-        } else if (trapType == EFFECT_POISON) {
+        } else if (trapType == EFFECT_SWAMP) {
             screenMessage("\n%cGIFT%cFALLE!\n", FG_GREEN, FG_WHITE);
         } else if (trapType == EFFECT_SLEEP) {
             screenMessage("\n%cSCHLAF%cFALLE!\n", FG_PURPLE, FG_WHITE);
@@ -2435,15 +2450,15 @@ void holeUp()
  */
 void GameController::initMoons()
 {
-    int trammelphase = c->saveGame->trammelphase,
-        feluccaphase = c->saveGame->feluccaphase;
+    const int trammelPhase = c->saveGame->trammelphase;
+    const int feluccaPhase = c->saveGame->feluccaphase;
 
     U4ASSERT(c != nullptr, "Game context doesn't exist!");
     U4ASSERT(c->saveGame != nullptr, "Savegame doesn't exist!");
     c->saveGame->trammelphase = c->saveGame->feluccaphase = 0;
     c->moonPhase = 0;
-    while ((c->saveGame->trammelphase != trammelphase)
-           || (c->saveGame->feluccaphase != feluccaphase)) {
+    while ((c->saveGame->trammelphase != trammelPhase)
+           || (c->saveGame->feluccaphase != feluccaPhase)) {
         updateMoons(false);
     }
 }
@@ -2453,21 +2468,23 @@ void GameController::initMoons()
  * Updates the phases of the moons and shows
  * the visual moongates on the map, if desired
  */
-void GameController::updateMoons(bool showmoongates)
+void GameController::updateMoons(bool show_moongates)
 {
-    if (c->location->map->isWorldMap() || !showmoongates) {
-        int oldTrammel = c->saveGame->trammelphase;
+    if (c->location->map->isWorldMap() || !show_moongates) {
+        const int oldTrammel = c->saveGame->trammelphase;
         if (++c->moonPhase >= MOON_PHASES * MOON_SECONDS_PER_PHASE * 4) {
             c->moonPhase = 0;
         }
-        int trammelSubphase = c->moonPhase % (MOON_SECONDS_PER_PHASE * 4 * 3);
-        int realMoonPhase = (c->moonPhase / (4 * MOON_SECONDS_PER_PHASE));
+        const int trammelSubphase =
+            c->moonPhase % (MOON_SECONDS_PER_PHASE * 4 * 3);
+        const int realMoonPhase =
+            c->moonPhase / (4 * MOON_SECONDS_PER_PHASE);
         c->saveGame->trammelphase = realMoonPhase / 3;
         c->saveGame->feluccaphase = realMoonPhase % 8;
         if (c->saveGame->trammelphase > 7) {
             c->saveGame->trammelphase = 7;
         }
-        if (showmoongates) {
+        if (show_moongates) {
             const Coords *gate;
             /* update the moongates if trammel changed */
             if (trammelSubphase == 0) {
@@ -2612,9 +2629,9 @@ void GameController::avatarMoved(MoveEvent &event)
             /* if shortcuts are enabled, try them! */
             if (settings.shortcutCommands) {
                 MapCoords new_coords = c->location->coords;
-                MapTile tile;
                 new_coords.move(event.dir, c->location->map);
-                tile = c->location->map->tileAt(new_coords, WITH_OBJECTS);
+                const MapTile tile =
+                    c->location->map->tileAt(new_coords, WITH_OBJECTS);
                 if (tile.getTileType()->isDoor()) {
                     openAt(new_coords);
                     event.result = static_cast<MoveResult>(
@@ -2654,42 +2671,42 @@ void GameController::avatarMoved(MoveEvent &event)
     /* simulate disk load when part of next 16x16 square becomes visible */
     if ((event.result & MOVE_SUCCEEDED) &&
         (c->location->context == CTX_WORLDMAP)) {
-        unsigned int globalX = c->location->coords.x >> 4;
-        unsigned int globalY = c->location->coords.y >> 4;
-        unsigned int localX  = c->location->coords.x & 0xF;
-        unsigned int localY  = c->location->coords.y & 0xF;
-        unsigned int activeX = c->location->coords.active_x;
-        unsigned int activeY = c->location->coords.active_y;
+        const unsigned int globalX = c->location->coords.x >> 4;
+        const unsigned int globalY = c->location->coords.y >> 4;
+        const unsigned int localX  = c->location->coords.x & 0xF;
+        const unsigned int localY  = c->location->coords.y & 0xF;
+        const unsigned int activeX = c->location->coords.active_x;
+        const unsigned int activeY = c->location->coords.active_y;
         if (
-            (event.dir == DIR_WEST ) &&
-            (globalX == activeX) &&
-            (localX == 4)
+            event.dir == DIR_WEST &&
+            globalX == activeX &&
+            localX == 4
         ) {
             c->location->coords.active_x = (activeX - 1) & 0xF;
             EventHandler::simulateDiskLoad(500);
         }
         if (
-            (event.dir == DIR_NORTH) &&
-            (globalY == activeY) &&
-            (localY ==  4)
+            event.dir == DIR_NORTH &&
+            globalY == activeY &&
+            localY ==  4
         ) {
             c->location->coords.active_y = (activeY - 1) & 0xF;
             EventHandler::simulateDiskLoad(500);
         }
         if (
-            (event.dir == DIR_EAST ) &&
-            (globalX == ((activeX + 1) & 0xF)) &&
-            (localX == 11)
+            event.dir == DIR_EAST &&
+            globalX == (activeX + 1 & 0xF) &&
+            localX == 11
         ) {
-            c->location->coords.active_x = (activeX + 1) & 0xF;
+            c->location->coords.active_x = activeX + 1 & 0xF;
             EventHandler::simulateDiskLoad(500);
         }
         if (
-            (event.dir == DIR_SOUTH) &&
-            (globalY == ((activeY + 1) & 0xF)) &&
-            (localY == 11)
+            event.dir == DIR_SOUTH &&
+            globalY == (activeY + 1 & 0xF) &&
+            localY == 11
         ) {
-            c->location->coords.active_y = (activeY + 1) & 0xF;
+            c->location->coords.active_y = activeY + 1 & 0xF;
             EventHandler::simulateDiskLoad(500);
         }
     }
@@ -2722,7 +2739,7 @@ void GameController::avatarMoved(MoveEvent &event)
 void GameController::avatarMovedInDungeon(const MoveEvent &event)
 {
     const Dungeon *dungeon = dynamic_cast<Dungeon *>(c->location->map);
-    Direction realDir = dirNormalize(
+    const Direction realDir = dirNormalize(
         static_cast<Direction>(c->saveGame->orientation),
         event.dir
     );
@@ -2774,11 +2791,11 @@ void GameController::avatarMovedInDungeon(const MoveEvent &event)
             if (c->location->map->id == MAP_ABYSS) {
                 room = (0x10 * (c->location->coords.z / 2)) + room;
             }
-            Dungeon *dng = dynamic_cast<Dungeon *>(c->location->map);
+            auto *dng = dynamic_cast<Dungeon *>(c->location->map);
             dng->currentRoom = room;
             /* set the map and start combat! */
             EventHandler::simulateDiskLoad(1000, false);
-            CombatController *cc = new CombatController(dng->roomMaps[room]);
+            auto *cc = new CombatController(dng->roomMaps[room]);
             cc->initDungeonRoom(room, dirReverse(realDir));
             musicMgr->play();
             cc->begin();
@@ -2789,11 +2806,11 @@ void GameController::avatarMovedInDungeon(const MoveEvent &event)
 void jimmy()
 {
     screenMessage("Dietrich");
-    Direction dir = gameGetDirection();
+    const Direction dir = gameGetDirection();
     if (dir == DIR_NONE) {
         return;
     }
-    std::vector<Coords> path = gameGetDirectionalActionPath(
+    const std::vector<Coords> path = gameGetDirectionalActionPath(
         MASK_DIR(dir), MASK_DIR_ALL, c->location->coords, 1, 1, nullptr, true
     );
     if (
@@ -2819,7 +2836,7 @@ void jimmy()
  */
 static bool jimmyAt(const Coords &coords)
 {
-    MapTile tile = c->location->map->tileAt(coords, WITH_OBJECTS);
+    const MapTile tile = c->location->map->tileAt(coords, WITH_OBJECTS);
     if (!tile.getTileType()->isLockedDoor()) {
         return false;
     }
@@ -2845,11 +2862,11 @@ void opendoor()
         screenMessage("-%cHIER NICHT!%c\n", FG_GREY, FG_WHITE);
         return;
     }
-    Direction dir = gameGetDirection();
+    const Direction dir = gameGetDirection();
     if (dir == DIR_NONE) {
         return;
     }
-    std::vector<Coords> path = gameGetDirectionalActionPath(
+    const std::vector<Coords> path = gameGetDirectionalActionPath(
         MASK_DIR(dir), MASK_DIR_ALL, c->location->coords, 1, 1, nullptr, true
     );
     if (
@@ -2911,11 +2928,11 @@ void readyWeapon(int player)
     // get the weapon to use
     c->stats->setView(STATS_WEAPONS);
     screenMessage("WAFFE-");
-    WeaponType weapon = static_cast<WeaponType>(
+    const WeaponType weapon = static_cast<WeaponType>(
         AlphaActionController::get(WEAP_MAX + 'a' - 1, "WAFFE-")
     );
     c->stats->setView(STATS_PARTY_OVERVIEW);
-    if (weapon == USHRT_MAX) {
+    if (weapon == std::numeric_limits<WeaponType>::max()) {
         return;
     }
     PartyMember *p = c->party->member(player);
@@ -2957,11 +2974,11 @@ void talk()
         screenMessage("-%cNUR DRIFT!%c\n", FG_GREY, FG_WHITE);
         return;
     }
-    Direction dir = gameGetDirection();
+    const Direction dir = gameGetDirection();
     if (dir == DIR_NONE) {
         return;
     }
-    std::vector<Coords> path = gameGetDirectionalActionPath(
+    const std::vector<Coords> path = gameGetDirectionalActionPath(
         MASK_DIR(dir),
         MASK_DIR_ALL,
         c->location->coords,
@@ -2999,8 +3016,8 @@ static void mixReagents()
     while (!done) {
             // Verify that there are reagents remaining in the inventory
         bool found = false;
-        for (int i = 0; i < 8; i++) {
-            if (c->saveGame->reagents[i] > 0) {
+        for (const unsigned short reagent: c->saveGame->reagents) {
+            if (reagent > 0) {
                 found = true;
                 break;
             }
@@ -3012,7 +3029,7 @@ static void mixReagents()
         } else {
             screenMessage("F]R SPRUCH-");
             c->stats->setView(STATS_MIXTURES);
-            int choice = ReadChoiceController::getChar(
+            const char choice = ReadChoiceController::getChar(
                 "abcdefghijklmnopqrstuvwxyz \033\n\r"
             );
             if ((choice == ' ')
@@ -3021,7 +3038,7 @@ static void mixReagents()
                 || (choice == '\r')) {
                 break;
             }
-            int spell = choice - 'a';
+            const int spell = choice - 'a';
             screenMessage("%s\n", uppercase(spellGetName(spell)).c_str());
             // ensure the mixtures for the spell isn't already maxed out
             if (c->saveGame->mixtures[spell] == 99) {
@@ -3058,8 +3075,8 @@ static bool mixReagentsForSpellU4(int spell)
 {
     Ingredients ingredients;
     screenMessage("REAGENZ-");
-    while (1) {
-        int choice = ReadChoiceController::getChar("abcdefgh\n\r \033");
+    while (true) {
+        const char choice = ReadChoiceController::getChar("abcdefgh\n\r \033");
         // done selecting reagents? mix it up and prompt to mix
         // another spell
         if ((choice == '\n') || (choice == '\r') || (choice == ' ')) {
@@ -3105,7 +3122,7 @@ static bool mixReagentsForSpellU5(int spell)
     c->stats->getMainArea()->disableCursor();
     screenEnableCursor();
     screenMessage("WIE VIELE? ");
-    int howmany = ReadIntController::getInt(
+    const int howmany = ReadIntController::getInt(
                 2, TEXT_AREA_X + c->col, TEXT_AREA_Y + c->line
         );
     gameSpellMixHowMany(spell, howmany, &ingredients);
@@ -3120,7 +3137,7 @@ static bool mixReagentsForSpellU5(int spell)
 static void newOrder()
 {
     screenMessage("Ordnung {ndern\nTAUSCHE-");
-    int player1 = gameGetPlayer(true, false, false);
+    const int player1 = gameGetPlayer(true, false, false);
     if (player1 == -1) {
         return;
     }
@@ -3133,7 +3150,7 @@ static void newOrder()
         return;
     }
     screenMessage("\nGEGEN-");
-    int player2 = gameGetPlayer(true, false, false);
+    const int player2 = gameGetPlayer(true, false, false);
     if (player2 == -1) {
         return;
     }
@@ -3167,7 +3184,7 @@ bool gamePeerCity(int city, void *)
         game->pausedTimer = 0;
         musicMgr->gem();
         screenDisableCursor();
-        game->setMap(peerMap, 1, nullptr);
+        game->setMap(peerMap, true, nullptr);
         c->location->viewMode = VIEW_GEM;
         ReadChoiceController::getChar("\015 \033");
         c->location->viewMode = VIEW_NORMAL;
@@ -3218,13 +3235,12 @@ void peer(bool useGem)
  */
 static bool talkAt(const Coords &coords, int distance)
 {
-    City *city;
     /* can't have any conversations outside of town */
     if (!isCity(c->location->map)) {
         screenMessage("KOMISCH, KEINE ANTWORT!\n");
         return true;
     }
-    city = dynamic_cast<City *>(c->location->map);
+    const City *city = dynamic_cast<City *>(c->location->map);
     Person *talker = city->personAt(coords);
     /* make sure we have someone we can talk with */
     if (!talker || !talker->canConverse()) {
@@ -3281,15 +3297,14 @@ static void talkRunConversation(
 {
     c->willPassTurn = false;
     while (conv.state != Conversation::DONE) {
-        // TODO: instead of calculating linesused again, cache the
+        // TODO: instead of calculating lines_used again, cache the
         // result in person.cpp somewhere.
-        int linesused = linecount(conv.reply.front(), TEXT_AREA_W);
+        const int lines_used = linecount(conv.reply.front(), TEXT_AREA_W);
         screenMessage("%s", uppercase(conv.reply.front()).c_str());
         conv.reply.pop_front();
         /* if all chunks haven't been shown, wait for a key and process
            next chunk*/
-        int size = conv.reply.size();
-        if (size > 0) {
+        if (!conv.reply.empty()) {
             ReadChoiceController::getChar("");
             continue;
         }
@@ -3305,9 +3320,8 @@ static void talkRunConversation(
             break;
         }
         /* When Lord British heals the party */
-        else if (conv.state == Conversation::FULLHEAL) {
-            int i;
-            for (i = 0; i < c->party->size(); i++) {
+        else if (conv.state == Conversation::FULL_HEAL) {
+            for (int i = 0; i < c->party->size(); i++) {
                 c->party->member(i)->heal(HT_CURE); // cure the party
                 c->party->member(i)->heal(HT_FULLHEAL); // heal the party
             }
@@ -3316,7 +3330,7 @@ static void talkRunConversation(
             conv.state = Conversation::TALK;
         }
         /* When Lord British checks and advances each party member's level */
-        else if (conv.state == Conversation::ADVANCELEVELS) {
+        else if (conv.state == Conversation::ADVANCE_LEVELS) {
             gameLordBritishCheckLevels();
             conv.state = Conversation::TALK;
         }
@@ -3325,7 +3339,7 @@ static void talkRunConversation(
             if (!prompt.empty()) {
                 if ((conv.state == Conversation::ASK)
                     || (conv.state == Conversation::CONFIRMATION)
-                    || (linesused + linecount(prompt, TEXT_AREA_W)
+                    || (lines_used + linecount(prompt, TEXT_AREA_W)
                         > TEXT_AREA_H)) {
                     ReadChoiceController::getChar("");
                 }
@@ -3345,7 +3359,7 @@ static void talkRunConversation(
         case Conversation::INPUT_CHARACTER:
         {
             char message[2];
-            int choice = ReadChoiceController::getChar("");
+            const char choice = ReadChoiceController::getChar("");
             message[0] = choice;
             message[1] = '\0';
             conv.reply = talker->getConversationText(&conv, message);
@@ -3358,7 +3372,7 @@ static void talkRunConversation(
             break;
         }
     }
-    if (conv.reply.size() > 0) {
+    if (!conv.reply.empty()) {
         screenMessage("%s", uppercase(conv.reply.front()).c_str());
     }
     c->lastCommandTime = std::time(nullptr);
@@ -3383,11 +3397,11 @@ static void wearArmor(int player)
     }
     c->stats->setView(STATS_ARMOR);
     screenMessage("R]STUNG-");
-    ArmorType armor = static_cast<ArmorType>(
+    const ArmorType armor = static_cast<ArmorType>(
         AlphaActionController::get(ARMR_MAX + 'a' - 1, "R}STUNG-")
     );
     c->stats->setView(STATS_PARTY_OVERVIEW);
-    if (armor == USHRT_MAX) {
+    if (armor == std::numeric_limits<ArmorType>::max()) {
         return;
     }
     const Armor *a = Armor::get(armor);
@@ -3440,7 +3454,7 @@ static void ztatsFor(int player)
     // the menu highlight from the current item, and
     // hiding reagents that you don't have
     c->stats->resetReagentsMenu();
-    c->stats->setView(StatsView(STATS_CHAR1 + player));
+    c->stats->setView(static_cast<StatsView>(STATS_CHAR1 + player));
     ZtatsController ctrl;
     eventHandler->pushController(&ctrl);
     ctrl.waitFor();
@@ -3572,14 +3586,14 @@ void GameController::checkSpecialCreatures(Direction dir)
         int x, y;
         Direction dir;
     } pirateInfo[] = {
-        { 224, 220, DIR_EAST }, /* N'M" O'A" */
-        { 224, 228, DIR_EAST }, /* O'E" O'A" */
-        { 226, 220, DIR_EAST }, /* O'E" O'C" */
-        { 227, 228, DIR_EAST }, /* O'E" O'D" */
-        { 228, 227, DIR_SOUTH }, /* O'D" O'E" */
-        { 229, 225, DIR_SOUTH }, /* O'B" O'F" */
-        { 229, 223, DIR_NORTH }, /* N'P" O'F" */
-        { 228, 222, DIR_NORTH } /* N'O" O'E" */
+        { .x = 224, .y = 220, .dir = DIR_EAST }, /* N'M" O'A" */
+        { .x = 224, .y = 228, .dir = DIR_EAST }, /* O'E" O'A" */
+        { .x = 226, .y = 220, .dir = DIR_EAST }, /* O'E" O'C" */
+        { .x = 227, .y = 228, .dir = DIR_EAST }, /* O'E" O'D" */
+        { .x = 228, .y = 227, .dir = DIR_SOUTH }, /* O'D" O'E" */
+        { .x = 229, .y = 225, .dir = DIR_SOUTH }, /* O'B" O'F" */
+        { .x = 229, .y = 223, .dir = DIR_NORTH }, /* N'P" O'F" */
+        { .x = 228, .y = 222, .dir = DIR_NORTH } /* N'O" O'E" */
     };
     /*
      * if heading east into pirates cove (O'A" N'N"), generate pirate
@@ -3589,13 +3603,13 @@ void GameController::checkSpecialCreatures(Direction dir)
         && (c->location->coords.x == 0xdd)
         && (c->location->coords.y == 0xe0)) {
         creatureCleanup(true);
-        for (int i = 0; i < 8; i++) {
+        for (const auto &i: pirateInfo) {
             Object *obj = c->location->map->addCreature(
                 creatureMgr->getById(PIRATE_ID),
-                MapCoords(pirateInfo[i].x,
-                          pirateInfo[i].y)
+                MapCoords(i.x,
+                          i.y)
             );
-            obj->setDirection(pirateInfo[i].dir);
+            obj->setDirection(i.dir);
         }
     }
     /*
@@ -3625,9 +3639,8 @@ void GameController::checkSpecialCreatures(Direction dir)
 bool GameController::checkMoongates()
 {
     Coords dest;
-    int trammel, felucca;
-    trammel = c->saveGame->trammelphase;
-    felucca = c->saveGame->feluccaphase;
+    const int trammel = c->saveGame->trammelphase;
+    const int felucca = c->saveGame->feluccaphase;
     if (moongateFindActiveGateAt(
             trammel, felucca, c->location->coords, dest
         )) {
@@ -3640,9 +3653,9 @@ bool GameController::checkMoongates()
             if (!c->party->canEnterShrine(VIRT_SPIRITUALITY)) {
                 return true;
             }
-            Shrine *shrine_spirituality =
+            auto *shrine_spirituality =
                 dynamic_cast<Shrine *>(mapMgr->get(MAP_SHRINE_SPIRITUALITY));
-            setMap(shrine_spirituality, 1, nullptr);
+            setMap(shrine_spirituality, true, nullptr);
             musicMgr->play();
             shrine_spirituality->enter();
         }
@@ -3658,20 +3671,18 @@ bool GameController::checkMoongates()
  */
 static void gameFixupObjects(Map *map)
 {
-    int i;
     Object *obj;
-    int z;
     /* add stuff from the monster table to the map */
-    for (i = 0; i < MONSTERTABLE_SIZE; i++) {
-        SaveGameMonsterRecord *monster = &map->monsterTable[i];
+    for (int i = 0; i < MONSTERTABLE_SIZE; i++) {
+        const SaveGameMonsterRecord *monster = &map->monsterTable[i];
         if (monster->prevTile != 0) {
-            z = map->isDungeonMap() ? monster->z : 0;
+            const int z = map->isDungeonMap() ? monster->z : 0;
             Coords coords(monster->x, monster->y, z);
             // tile values stored in monsters.sav hardcoded to index
             // into base tilemap
-            MapTile tile = TileMap::get("base")->translate(monster->tile),
-                oldTile = TileMap::get("base")->translate(monster->prevTile);
-            int limitForCreatures =
+            MapTile tile = TileMap::get("base")->translate(monster->tile);
+            const MapTile oldTile = TileMap::get("base")->translate(monster->prevTile);
+            const int limitForCreatures =
                 map->isDungeonMap() ?
                 MONSTERTABLE_SIZE :
                 MONSTERTABLE_CREATURES_SIZE;
@@ -3724,24 +3735,23 @@ static std::time_t gameTimeSinceLastCommand()
  */
 static void gameCreatureAttack(Creature *m)
 {
-    Object *under;
-    const Tile *ground;
     screenMessage("\nANGRIFF DURCH %s\n", uppercase(m->getName()).c_str());
     /// TODO: CHEST: Make a user option to not make chests change battlefield
     /// map (2 of 2)
-    ground =
-        c->location->map->tileTypeAt(c->location->coords, WITH_GROUND_OBJECTS);
+    const Tile *ground = c->location->map->tileTypeAt(
+        c->location->coords, WITH_GROUND_OBJECTS
+    );
     if (!ground->isChest()) {
         ground = c->location->map->tileTypeAt(
             c->location->coords, WITHOUT_OBJECTS
         );
-        if ((under = c->location->map->objectAt(c->location->coords))
-            && under->getTile().getTileType()->isShip()) {
+        const Object *under = c->location->map->objectAt(c->location->coords);
+        if (under && under->getTile().getTileType()->isShip()) {
             ground = under->getTile().getTileType();
         }
     }
     EventHandler::simulateDiskLoad(1000, false);
-    CombatController *cc = new CombatController(
+    auto *cc = new CombatController(
         CombatMap::mapForTile(
             ground, c->party->getTransport().getTileType(), m
         )
@@ -3759,10 +3769,10 @@ bool creatureRangeAttack(const Coords &coords, const Creature *m)
 {
     // int attackdelay = MAX_BATTLE_SPEED - settings.battleSpeed;
     // Figure out what the ranged attack should look like
-    MapTile tile =
+    const MapTile tile =
         c->location->map->tileset->getByName(
-            (m && !m->getWorldrangedtile().empty()) ?
-            m->getWorldrangedtile() :
+            (m && !m->getWorldRangedTile().empty()) ?
+            m->getWorldRangedTile() :
             "hit_flash"
         )->getId();
     GameController::flashTile(coords, tile, 1);
@@ -3798,7 +3808,7 @@ bool creatureRangeAttack(const Coords &coords, const Creature *m)
  * only if includeBlocked is true.
  */
 std::vector<Coords> gameGetDirectionalActionPath(
-    int dirmask,
+    int dirMask,
     int validDirections,
     const Coords &origin,
     int minDistance,
@@ -3810,14 +3820,14 @@ std::vector<Coords> gameGetDirectionalActionPath(
     std::vector<Coords> path;
     Direction dirx = DIR_NONE, diry = DIR_NONE;
     /* Figure out which direction the action is going */
-    if (DIR_IN_MASK(DIR_WEST, dirmask)) {
+    if (DIR_IN_MASK(DIR_WEST, dirMask)) {
         dirx = DIR_WEST;
-    } else if (DIR_IN_MASK(DIR_EAST, dirmask)) {
+    } else if (DIR_IN_MASK(DIR_EAST, dirMask)) {
         dirx = DIR_EAST;
     }
-    if (DIR_IN_MASK(DIR_NORTH, dirmask)) {
+    if (DIR_IN_MASK(DIR_NORTH, dirMask)) {
         diry = DIR_NORTH;
-    } else if (DIR_IN_MASK(DIR_SOUTH, dirmask)) {
+    } else if (DIR_IN_MASK(DIR_SOUTH, dirMask)) {
         diry = DIR_SOUTH;
     }
     /*
@@ -3867,32 +3877,29 @@ std::vector<Coords> gameGetDirectionalActionPath(
  */
 void gameDamageParty(int minDamage, int maxDamage)
 {
-    int i;
-    int damage;
-    int lastdmged = -1;
-    extern std::atomic_bool deathSequenceRunning;
+    int last_damaged = -1;
     if (deathSequenceRunning) {
         /* none of this makes sense if party is already dead */
         return;
     }
     soundPlay(SOUND_PC_STRUCK, false, -1, true);
-    for (i = 0; i < c->party->size(); i++) {
+    for (int i = 0; i < c->party->size(); i++) {
         if (c->party->member(i)->getStatus() != STAT_DEAD
             && xu4_random(2) != 0) {
-            damage = ((minDamage >= 0) && (minDamage < maxDamage)) ?
-                xu4_random((maxDamage + 1) - minDamage) + minDamage :
-                maxDamage;
-            c->party->member(i)->applyDamage(damage);
+            const int damage = minDamage >= 0 && minDamage < maxDamage
+                ? xu4_random((maxDamage + 1) - minDamage) + minDamage
+                : maxDamage;
+            c->party->member(i)->applyDamage(damage, false);
             c->stats->highlightPlayer(i);
             soundPlay(SOUND_NPC_STRUCK, false);
             screenShake(1);
-            lastdmged = i;
+            last_damaged = i;
             EventHandler::sleep(50);
         }
     }
     // Un-highlight the last player
-    if (lastdmged != -1) {
-        c->stats->highlightPlayer(lastdmged);
+    if (last_damaged != -1) {
+        c->stats->highlightPlayer(last_damaged);
     }
 } // gameDamageParty
 
@@ -3904,13 +3911,12 @@ void gameDamageParty(int minDamage, int maxDamage)
  */
 void gameDamageShip(int minDamage, int maxDamage)
 {
-    extern std::atomic_bool deathSequenceRunning;
     if (deathSequenceRunning) {
         /* none of this makes sense if party is already dead */
         return;
     }
     if (c->transportContext == TRANSPORT_SHIP) {
-        int damage = ((minDamage >= 0) && (minDamage < maxDamage)) ?
+        const int damage = ((minDamage >= 0) && (minDamage < maxDamage)) ?
             xu4_random((maxDamage + 1) - minDamage) + minDamage :
             maxDamage;
         soundPlay(SOUND_PC_STRUCK, false);
@@ -3949,13 +3955,12 @@ void gameSetActivePlayer(int player)
  */
 void GameController::creatureCleanup(bool allCreatures)
 {
-    ObjectDeque::iterator i;
     Map *map = c->location->map;
-    for (i = map->objects.begin(); i != map->objects.end();) {
+    for (auto i = map->objects.begin(); i != map->objects.end();) {
         const Object *obj = *i;
         const MapCoords &o_coords = obj->getCoords();
-        unsigned int globalX = o_coords.x >> 4u;
-        unsigned int globalY = o_coords.y >> 4u;
+        const unsigned int globalX = o_coords.x >> 4u;
+        const unsigned int globalY = o_coords.y >> 4u;
         if ((obj->getType() == Object::CREATURE)
             && (allCreatures ||
                 (
@@ -4001,17 +4006,16 @@ static int maxCreaturesPerLevel(int level)
  */
 void GameController::checkRandomCreatures()
 {
-    int i;
-    bool inDungeon = c->location->context & CTX_DUNGEON;
-    bool canSpawnHere =
+    const bool inDungeon = c->location->context & CTX_DUNGEON;
+    const bool canSpawnHere =
         c->location->map->isWorldMap() || inDungeon;
     if (!canSpawnHere) return; // can spawn only outdoors or in a dungeon
-    int spawnDivisor = inDungeon ? 1 : 16;
-    int numberOfCreatures =
+    const int spawnDivisor = inDungeon ? 1 : 16;
+    const int numberOfCreatures =
         c->location->map->getNumberOfCreatures(
             inDungeon ? c->location->coords.z : -1
         );
-    int maxCreatures =
+    const int maxCreatures =
         inDungeon ?
         maxCreaturesPerLevel(c->location->coords.z) :
         MAX_CREATURES_ON_MAP;
@@ -4020,7 +4024,7 @@ void GameController::checkRandomCreatures()
         || (xu4_random(spawnDivisor) != 0)) {
         return;
     }
-    for (i = numberOfCreatures; i < maxCreatures; i++) {
+    for (int i = numberOfCreatures; i < maxCreatures; i++) {
         gameSpawnCreature(nullptr);
     }
 }
@@ -4046,7 +4050,7 @@ void GameController::checkBridgeTrolls()
     Creature *m = c->location->map->addCreature(
         creatureMgr->getById(TROLL_ID), c->location->coords
     );
-    CombatController *cc = new CombatController(MAP_BRIDGE_CON);
+    auto *cc = new CombatController(MAP_BRIDGE_CON);
     cc->init(m);
     cc->begin();
 }
@@ -4080,15 +4084,14 @@ static void gameLordBritishCheckLevels()
  */
 bool gameSpawnCreature(const Creature *m)
 {
-    static const int MAX_TRIES = 0x100;
+    static constexpr int MAX_TRIES = 0x100;
     const Creature *creature;
     MapCoords coords = c->location->coords;
 
     if (c->location->context & CTX_DUNGEON) {
         /* FIXME: for some reason dungeon monsters aren't spawning
            correctly */
-        MapCoords new_coords;
-        new_coords = MapCoords(
+        const MapCoords new_coords = MapCoords(
             xu4_random(c->location->map->width),
             xu4_random(c->location->map->height),
             coords.z
@@ -4106,7 +4109,7 @@ bool gameSpawnCreature(const Creature *m)
         }
         coords = new_coords;
     } else { // not dungeon
-        int dx, dy;
+        int dx = 0, dy = 0;
         bool ok = false;
         int tries = 0;
         while (!ok && (tries < MAX_TRIES)) {
@@ -4177,7 +4180,7 @@ bool gameSpawnCreature(const Creature *m)
 /**
  * Destroys all creatures on the current map.
  */
-void gameDestroyAllCreatures(void)
+void gameDestroyAllCreatures()
 {
     gameSpellEffect('t', -1, SOUND_MAGIC); /* same effect as tremor */
     if (c->location->context & CTX_COMBAT) {
@@ -4187,20 +4190,19 @@ void gameDestroyAllCreatures(void)
             CreatureVector creatures = cm->getCreatures();
             CreatureVector::iterator obj;
             for (obj = creatures.begin(); obj != creatures.end(); ++obj) {
-                if ((*obj)->getId() != LORDBRITISH_ID) {
+                if ((*obj)->getId() != LORD_BRITISH_ID) {
                     cm->removeObject(*obj);
                 }
             }
         }
     } else {
         /* destroy all creatures on the map */
-        ObjectDeque::iterator current;
         Map *map = c->location->map;
-        for (current = map->objects.begin(); current != map->objects.end();) {
+        for (auto current = map->objects.begin(); current != map->objects.end();) {
             const Creature *m = dynamic_cast<Creature *>(*current);
             if (m) {
                 /* the skull does not destroy Lord British */
-                if (m->getId() != LORDBRITISH_ID) {
+                if (m->getId() != LORD_BRITISH_ID) {
                     current = map->removeObject(current);
                 } else {
                     ++current;
@@ -4221,10 +4223,8 @@ void gameDestroyAllCreatures(void)
  */
 bool GameController::createBalloon(Map *map)
 {
-    ObjectDeque::const_iterator i;
     /* see if the balloon has already been created (and not destroyed) */
-    for (i = map->objects.cbegin(); i != map->objects.cend(); ++i) {
-        const Object *obj = *i;
+    for (const auto *obj: map->objects) {
         if (obj->getTile().getTileType()->isBalloon()) {
             return false;
         }

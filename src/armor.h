@@ -36,13 +36,13 @@ public:
     }
 
     /** Returns the defense value of the armor */
-    int getDefense(bool needsMystic) const
+    int getDefense(const bool needsMystic) const
     {
         return needsMystic ? (mystic ? defense : 96) : defense;
     }
 
     /** Returns true if the class given can wear the armor */
-    bool canWear(ClassType klass) const
+    bool canWear(const ClassType klass) const
     {
         return canuse & (1 << klass);
     }
@@ -61,4 +61,4 @@ private:
     bool mystic;
 };
 
-#endif // ifndef ARMOR_H
+#endif // ARMOR_H

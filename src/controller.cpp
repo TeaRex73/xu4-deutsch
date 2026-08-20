@@ -7,14 +7,12 @@
 #include "controller.h"
 #include "event.h"
 
-Controller::Controller(int timerInterval)
+Controller::Controller(const int timerInterval)
     :timerInterval(timerInterval)
 {
 }
 
-Controller::~Controller()
-{
-}
+Controller::~Controller() = default;
 
 
 /**
@@ -22,7 +20,7 @@ Controller::~Controller()
  * controller that a key has been pressed.  The key will be passed on
  * to the virtual keyPressed method.
  */
-bool Controller::notifyKeyPressed(int key)
+bool Controller::notifyKeyPressed(const int key)
 {
     bool processed = KeyHandler::globalHandler(key);
     if (!processed) {
@@ -53,7 +51,7 @@ void Controller::timerFired()
  */
 void Controller::timerCallback(void *data)
 {
-    Controller *controller = static_cast<Controller *>(data);
+    auto *controller = static_cast<Controller *>(data);
     controller->timerFired();
 }
 

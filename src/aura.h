@@ -29,7 +29,7 @@ public:
         return duration;
     }
 
-    Aura::Type getType() const
+    Type getType() const
     {
         return type;
     }
@@ -60,4 +60,4 @@ private:
     int duration;
 };
 
-#endif // ifndef AURA_H
+#endif // AURA_H

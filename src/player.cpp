@@ -215,11 +215,11 @@ ClassType PartyMember::getClass() const
 CreatureState PartyMember::getState() const
 {
     if (getHp() <= 0) {
-        return MSTAT_DEAD;
+        return M_STAT_DEAD;
     } else if (getHp() < 24) {
-        return MSTAT_FLEEING;
+        return M_STAT_FLEEING;
     } else {
-        return MSTAT_BARELYWOUNDED;
+        return M_STAT_BARELY_WOUNDED;
     }
 }
 
@@ -358,13 +358,13 @@ void PartyMember::applyEffect(TileEffect effect)
     case EFFECT_LAVA:
     case EFFECT_FIRE:
         soundPlay(SOUND_PC_STRUCK, false);
-        applyDamage(xu4_random(30)); // From u4apple2
+        applyDamage(xu4_random(30), false); // From u4apple2
         break;
     case EFFECT_SLEEP:
         putToSleep();
         break;
-    case EFFECT_POISONFIELD:
     case EFFECT_POISON:
+    case EFFECT_SWAMP:
         if (getStatus() != STAT_POISONED) {
             soundPlay(SOUND_POISON_EFFECT, false);
             addStatus(STAT_POISONED);
@@ -997,7 +997,7 @@ void Party::adjustKarma(KarmaAction action)
             if (newKarma[v] < 100) { /* but lost it */
                 saveGame->karma[v] = newKarma[v];
                 setChanged();
-                PartyEvent event(PartyEvent::LOST_EIGHTH, 0);
+                PartyEvent event(PartyEvent::LOST_EIGHTH, nullptr);
                 notifyObservers(event);
             } else {
                 saveGame->karma[v] = 0;
@@ -1019,8 +1019,8 @@ void Party::applyEffect(TileEffect effect)
 
     /* In the unenhanced game, poison fields are no worse
        than swamps */
-    if ((!settings.enhancements) && (effect == EFFECT_POISONFIELD)) {
-        effect = EFFECT_POISON;
+    if ((!settings.enhancements) && (effect == EFFECT_POISON)) {
+        effect = EFFECT_SWAMP;
     }
 
     switch (effect) {
@@ -1041,12 +1041,12 @@ void Party::applyEffect(TileEffect effect)
                 members[i]->applyEffect(effect);
                 break;
             case EFFECT_SLEEP:
-            case EFFECT_POISONFIELD:
+            case EFFECT_POISON:
                 if (xu4_random(settings.enhancements ? 2 : 4) == 0) {
                     members[i]->applyEffect(effect);
                 }
                 break;
-            case EFFECT_POISON:
+            case EFFECT_SWAMP:
                 if (xu4_random(8) == 0) {
                     members[i]->applyEffect(effect);
                     break;
@@ -1191,7 +1191,7 @@ void Party::endTurn()
                  * played after the combat screen appears
                  */
                 soundPlay(SOUND_POISON_DAMAGE, false);
-                members[i]->applyDamage(2);
+                members[i]->applyDamage(2, false);
                 break;
             default:
                 break;
@@ -1207,7 +1207,7 @@ void Party::endTurn()
     if ((saveGame->food == 0)
         && ((c->location->context & CTX_NON_COMBAT) == c->location->context)) {
         setChanged();
-        PartyEvent event(PartyEvent::STARVING, 0);
+        PartyEvent event(PartyEvent::STARVING, nullptr);
         notifyObservers(event);
     }
     /* heal ship (25% chance it is healed each turn) */
@@ -1406,7 +1406,7 @@ void Party::reviveParty()
     saveGame->gold = 200;
     setTransport(Tileset::findTileByName("avatar")->getId());
     setChanged();
-    PartyEvent event(PartyEvent::PARTY_REVIVED, 0);
+    PartyEvent event(PartyEvent::PARTY_REVIVED, nullptr);
     notifyObservers(event);
 } // Party::reviveParty
 
@@ -1485,7 +1485,7 @@ void Party::setActivePlayer(int p)
     setChanged();
     PartyEvent event(
         PartyEvent::ACTIVE_PLAYER_CHANGED,
-        activePlayer < 0 ? 0 : members[activePlayer]
+        activePlayer < 0 ? nullptr : members[activePlayer]
     );
     notifyObservers(event);
 }

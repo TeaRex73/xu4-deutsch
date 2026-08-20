@@ -5,8 +5,6 @@
 #ifndef FILESYSTEM_H
 #define FILESYSTEM_H
 
-#include <cstdio>
-#include <cwchar>
 #include <list>
 #include <string>
 
@@ -30,7 +28,7 @@
  */
 class Path {
 public:
-    explicit Path(const std::string &p);
+    explicit Path(std::string p);
     bool exists() const;
     bool isFile() const;
     bool isDir() const;
@@ -73,4 +71,4 @@ public:
     static void createDirectory(const std::string &filepath);
 };
 
-#endif // ifndef FILESYSTEM_H
+#endif // FILESYSTEM_H

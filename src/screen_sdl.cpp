@@ -488,6 +488,8 @@ SDL_Cursor *screenInitCursor(const char *const xpm[])
                 break;
             case ' ':
                 break;
+            default:
+                errorFatal("BUG: wrong char in xpm");
             }
         }
     }

@@ -18,7 +18,12 @@ typedef SDL_Surface *BackendSurface;
 
 class alignas(int) RGBA {
 public:
-    RGBA(std::uint8_t r, std::uint8_t g, std::uint8_t b, std::uint8_t a)
+    RGBA(
+        const std::uint8_t r,
+        const std::uint8_t g,
+        const std::uint8_t b,
+        const std::uint8_t a
+    )
         :r(r), g(g), b(b), a(a)
     {
     }
@@ -38,7 +43,7 @@ class Image;
 class SubImage {
 public:
     SubImage()
-        :name(), srcImageName(), x(0), y(0), width(0), height(0)
+        : x(0), y(0), width(0), height(0)
     {
     }
 
@@ -61,7 +66,7 @@ public:
  */
 class Image {
 public:
-    // disallow assignments, copy contruction
+    // disallow assignments, copy construction
     Image(const Image &) = delete;
     Image(Image &&) = delete;
     const Image &operator=(const Image &) = delete;
@@ -74,27 +79,27 @@ public:
 
     static Image *create(int w, int h, bool indexed, Type type);
     static Image *createScreenImage();
-    static Image *duplicate(Image *image);
+    static Image *duplicate(const Image *image);
     ~Image();
     /* palette handling */
-    void setPalette(const RGBA *colors, unsigned int n_colors);
-    void setPaletteFromImage(const Image *src);
+    void setPalette(const RGBA *colors, int n_colors) const;
+    void setPaletteFromImage(const Image *src) const;
     bool getTransparentIndex(unsigned int &index) const;
     void performTransparencyHack(
         unsigned int colorValue,
         unsigned int numFrames,
         unsigned int currentFrameIndex,
         unsigned int haloWidth,
-        unsigned int hoibpd // haloOpacityIncrementByPixelDistance
-    );
-    void setTransparentIndex(unsigned int index);
-    bool setFontColor(ColorFG fg, ColorBG bg);
-    bool setFontColorFG(ColorFG fg);
-    bool setFontColorBG(ColorBG bg);
+        unsigned int haloOpacityIncrementByPixelDistance
+    ) const;
+    void setTransparentIndex(unsigned int index) const;
+    bool setFontColor(ColorFG fg, ColorBG bg) const;
+    bool setFontColorFG(ColorFG fg) const;
+    bool setFontColorBG(ColorBG bg) const;
     // returns the color of the specified palette index
     RGBA getPaletteColor(int index) const;
     // sets the specified palette index to the specified RGB color
-    bool setPaletteIndex(unsigned int index, RGBA color);
+    bool setPaletteIndex(unsigned int index, RGBA color) const;
     // returns the palette index of the specified RGB color
     int getPaletteIndex(RGBA color) const;
     static RGBA setColor(
@@ -110,13 +115,13 @@ public:
     /* Will clear the image to the background color,
        and set the internal backgroundColor variable */
     void initializeToBackgroundColor(
-        RGBA backgroundColor = DARK_GRAY_HALO
+        RGBA bgColor = DARK_GRAY_HALO
     );
     /* Will make the pixels that match the background
        color disappear, with a blur halo */
     void makeBackgroundColorTransparent(
         int haloSize = 0, int shadowOpacity = 255
-    );
+    ) const;
 
     /* writing to image */
 
@@ -139,8 +144,8 @@ public:
     void fillRect(
         int x,
         int y,
-        int w,
-        int h,
+        int ww,
+        int hh,
         std::uint8_t r,
         std::uint8_t g,
         std::uint8_t b,
@@ -164,7 +169,7 @@ public:
     /**
      * Draws the entire image onto the screen at the given offset.
      */
-    void draw(int x, int y) const
+    void draw(const int x, const int y) const
     {
         drawOn(nullptr, x, y);
     }
@@ -175,7 +180,14 @@ public:
      * The area of the image to draw is defined by the rectangle rx, ry,
      * rw, rh.
      */
-    void drawSubRect(int x, int y, int rx, int ry, int rw, int rh) const
+    void drawSubRect(
+        const int x,
+        const int y,
+        const int rx,
+        const int ry,
+        const int rw,
+        const int rh
+    ) const
     {
         drawSubRectOn(nullptr, x, y, rx, ry, rw, rh);
     }
@@ -187,7 +199,12 @@ public:
      * rw, rh.
      */
     void drawSubRectInverted(
-        int x, int y, int rx, int ry, int rw, int rh
+        const int x,
+        const int y,
+        const int rx,
+        const int ry,
+        const int rw,
+        const int rh
     ) const
     {
         drawSubRectInvertedOn(nullptr, x, y, rx, ry, rw, rh);
@@ -195,9 +212,9 @@ public:
 
     /* image drawing methods for drawing onto another image instead of
        the screen */
-    void drawOn(Image *d, int x, int y, bool anyway = false) const;
+    void drawOn(const Image *d, int x, int y, bool anyway = false) const;
     void drawSubRectOn(
-        Image *d,
+        const Image *d,
         int x,
         int y,
         int rx,
@@ -207,7 +224,7 @@ public:
         bool anyway = false
     ) const;
     void drawSubRectInvertedOn(
-        Image *d,
+        const Image *d,
         int x,
         int y,
         int rx,
@@ -241,7 +258,7 @@ public:
     void drawHighlighted() const;
 
 private:
-    unsigned int w, h;
+    int w, h;
     bool indexed;
     RGBA backgroundColor;
     Image(); /* use create method to construct images */

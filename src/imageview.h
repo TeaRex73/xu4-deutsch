@@ -18,7 +18,7 @@ public:
     explicit ImageView(
         int x = 0, int y = 0, int width = 320, int height = 200
     );
-    virtual ~ImageView();
+    ~ImageView() override;
     void draw(const std::string &imageName, int x = 0, int y = 0) const;
 };
 

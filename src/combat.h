@@ -44,7 +44,7 @@ class CombatController
      public Observer<Party *, PartyEvent &>,
      public TurnCompleter {
 public:
-    //Uncopyable
+    // can't be copied
     CombatController(const CombatController &) = delete;
     CombatController(CombatController &&) = delete;
     CombatController &operator=(const CombatController &) = delete;
@@ -52,9 +52,9 @@ public:
 
     explicit CombatController(CombatMap *m);
     explicit CombatController(MapId id);
-    virtual ~CombatController();
+    ~CombatController() override;
 
-    virtual bool isCombatController() const override
+    bool isCombatController() const override
     {
         return true;
     }
@@ -66,54 +66,46 @@ public:
     CombatMap *getMap() const;
     Creature *getCreature() const;
     PartyMemberVector *getParty();
-    PartyMember *getCurrentPlayer();
+    PartyMember *getCurrentPlayer() const;
     void setExitDir(Direction d);
     void setCreature(Creature *);
-    void setWinOrLose(bool worl = true);
+    void setWinOrLose(bool wOrL = true);
     void showCombatMessage(bool show = true);
     virtual void init(Creature *m);
     void initDungeonRoom(int room, Direction from);
-    void applyCreatureTileEffects();
+    void applyCreatureTileEffects() const;
     virtual void begin();
     virtual void end(bool adjustKarma);
-    void fillCreatureTable(const Creature *creature);
-    int initialNumberOfCreatures(const Creature *creature) const;
+    void fillCreatureTable(const Creature *creat);
+    int initialNumberOfCreatures(const Creature *creat) const;
     bool isWon() const;
     bool isLost() const;
     void moveCreatures();
-    void placeCreatures();
+    void placeCreatures() const;
     void placePartyMembers();
     bool setActivePlayer(int player);
     static bool attackHit(
         const Creature *attacker, const Creature *defender, bool harder
     );
     virtual void awardLoot();
-    void attack();
+    void attack() const;
     bool attackAt(
         const Coords &coords,
         PartyMember *attacker,
         int dir,
         int range,
         int distance
-    );
-    bool rangedAttack(const Coords &coords, Creature *attacker);
-    void rangedMiss(const Coords &coords, const Creature *attacker);
-    bool returnWeaponToOwner(
+    ) const;
+    bool rangedAttack(const Coords &coords, Creature *attacker) const;
+    void rangedMiss(const Coords &coords, const Creature *attacker) const;
+
+    void returnWeaponToOwner(
         const Coords &coords, int distance, int dir, const Weapon *weapon
-    );
-#if 0
-    static void attackFlash(
-        const Coords &coords, MapTile tile, int timeFactor
-    );
-    static void attackFlash(
-        const Coords &coords, const std::string &tilename, int timeFactor
-    );
-#endif
-    static void doScreenAnimationsWhilePausing(int timeFactor);
-    virtual bool keyPressed(int key) override;
-    virtual void finishTurn() override;
-    void movePartyMember(const MoveEvent &event);
-    virtual void update(Party *party, PartyEvent &event) override;
+    ) const;
+    bool keyPressed(int key) override;
+    void finishTurn() override;
+    void movePartyMember(const MoveEvent &event) const;
+    void update(Party *party, PartyEvent &event) override;
 
 protected:
     CombatController();
@@ -129,8 +121,6 @@ protected:
     bool winOrLose;
     bool showMessage;
     Direction exitDir;
-
-private:
 };
 
 
@@ -140,10 +130,10 @@ private:
 class CombatMap:public Map {
 public:
     CombatMap();
-    CreatureVector getCreatures();
-    PartyMemberVector getPartyMembers();
-    PartyMember *partyMemberAt(const Coords &coords);
-    Creature *creatureAt(const Coords &coords);
+    CreatureVector getCreatures() const;
+    PartyMemberVector getPartyMembers() const;
+    PartyMember *partyMemberAt(const Coords &coords) const;
+    Creature *creatureAt(const Coords &coords) const;
     static MapId mapForTile(
         const Tile *groundTile, const Tile *transport, const Object *obj
     );
@@ -168,17 +158,17 @@ public:
         return altarRoom;
     }
 
-    void setAltarRoom(BaseVirtue ar)
+    void setAltarRoom(const BaseVirtue ar)
     {
         altarRoom = ar;
     }
 
-    void setDungeonRoom(bool d)
+    void setDungeonRoom(const bool d)
     {
         dungeonRoom = d;
     }
 
-    void setContextual(bool c)
+    void setContextual(const bool c)
     {
         contextual = c;
     }
@@ -193,6 +183,6 @@ protected:
 };
 
 
-CombatMap *getCombatMap(Map *punknown = nullptr);
+CombatMap *getCombatMap(Map *pUnknown = nullptr);
 
-#endif // ifndef COMBAT_H
+#endif // COMBAT_H

@@ -151,7 +151,7 @@ public:
     void setMp(int mp);
     EquipError setArmor(const Armor *a);
     EquipError setWeapon(const Weapon *w);
-    virtual bool applyDamage(int damage, bool byplayer = false) override;
+    virtual bool applyDamage(int damage, bool byplayer) override;
     virtual int getAttackBonus() const override;
     virtual int getDefense(bool needsMystic) const override;
     virtual bool dealDamage(Creature *m, int damage) override;

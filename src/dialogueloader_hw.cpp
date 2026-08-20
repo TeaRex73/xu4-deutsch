@@ -12,6 +12,7 @@
 #include "context.h"
 #include "conversation.h"
 #include "debug.h"
+#include "dialogueloader.h"
 #include "names.h"
 #include "player.h"
 #include "savegame.h"
@@ -19,24 +20,24 @@
 #include "utils.h"
 
 
-Response *hawkwindGetAdvice(const DynamicResponse *dynResp);
-Response *hawkwindGetIntro(const DynamicResponse *dynResp);
+static Response *hawkwindGetAdvice(const DynamicResponse *dynResp);
+static Response *hawkwindGetIntro(const DynamicResponse *dynResp);
 
 /* Hawkwind text indexes */
-#define HW_SPEAKONLYWITH 40
-#define HW_RETURNWHEN 41
-#define HW_ISREVIVED 42
+#define HW_SPEAK_ONLY_WITH 40
+#define HW_RETURN_WHEN 41
+#define HW_IS_REVIVED 42
 #define HW_WELCOME 43
 #define HW_GREETING1 44
 #define HW_GREETING2 45
 #define HW_PROMPT 46
 #define HW_DEFAULT 49
-#define HW_ALREADYAVATAR 50
-#define HW_GOTOSHRINE 51
+#define HW_ALREADY_AVATAR 50
+#define HW_GOTO_SHRINE 51
 #define HW_BYE 52
 
-std::vector<std::string> hawkwindText;
-DialogueLoader *U4HWDialogueLoader::instance = DialogueLoader::registerLoader(
+static std::vector<std::string> hawkwindText;
+DialogueLoader *U4HWDialogueLoader::instance = registerLoader(
     new U4HWDialogueLoader, "application/x-u4hwtlk"
 );
 
@@ -62,7 +63,7 @@ Dialogue *U4HWDialogueLoader::load(void *)
     }
     hawkwindText = u4read_stringtable(hawkwind, 0, 53);
     u4fclose(hawkwind);
-    Dialogue *dlg = new Dialogue();
+    auto *dlg = new Dialogue();
     dlg->setTurnAwayProb(0);
     dlg->setName(uppercase("Hawkwind"));
     dlg->setPronoun(uppercase("Er"));
@@ -83,8 +84,8 @@ Dialogue *U4HWDialogueLoader::load(void *)
             virtue, new DynamicResponse(&hawkwindGetAdvice, virtue)
         );
     }
-    Response *bye = new Response(uppercase(hawkwindText[HW_BYE]) + "\n");
-    bye->add(ResponsePart::STOPMUSIC);
+    auto *bye = new Response(uppercase(hawkwindText[HW_BYE]) + "\n");
+    bye->add(ResponsePart::STOP_MUSIC);
     bye->add(ResponsePart::END);
     dlg->addKeyword("ade", bye);
     dlg->addKeyword("", bye);
@@ -114,15 +115,15 @@ Response *hawkwindGetAdvice(const DynamicResponse *dynResp)
     if (virtue != -1) {
         text = "\n";
         if (virtueLevel == 0) {
-            text += hawkwindText[HW_ALREADYAVATAR] /* + "\n" */;
+            text += hawkwindText[HW_ALREADY_AVATAR] /* + "\n" */;
         } else if (virtueLevel < 80) {
-            text += hawkwindText[(virtueLevel / 20) * 8 + virtue];
+            text += hawkwindText[virtueLevel / 20 * 8 + virtue];
         } else if (virtueLevel < 99) {
             text += hawkwindText[3 * 8 + virtue];
         } else { /* virtueLevel >= 99 */
             text += hawkwindText[4 * 8 + virtue]
                 + " "
-                + hawkwindText[HW_GOTOSHRINE];
+                + hawkwindText[HW_GOTO_SHRINE];
         }
     } else {
         text = std::string("\n") + hawkwindText[HW_DEFAULT];
@@ -132,26 +133,26 @@ Response *hawkwindGetAdvice(const DynamicResponse *dynResp)
 
 Response *hawkwindGetIntro(const DynamicResponse *)
 {
-    Response *intro = new Response("");
+    auto *intro = new Response("");
 
-    if ((c->party->member(0)->getStatus() == STAT_SLEEPING)
-        || (c->party->member(0)->getStatus() == STAT_DEAD)) {
+    if (c->party->member(0)->getStatus() == STAT_SLEEPING
+        || c->party->member(0)->getStatus() == STAT_DEAD) {
         intro->add(uppercase(
                        "\n\n"
-                       + hawkwindText[HW_SPEAKONLYWITH]
+                       + hawkwindText[HW_SPEAK_ONLY_WITH]
                        + " "
                        + c->party->member(0)->getName()
                        + " "
-                       + hawkwindText[HW_RETURNWHEN]
+                       + hawkwindText[HW_RETURN_WHEN]
                        + " "
                        + c->party->member(0)->getName()
                        + " "
-                       + hawkwindText[HW_ISREVIVED] + "\n"
+                       + hawkwindText[HW_IS_REVIVED] + "\n"
                    ));
-        intro->add(ResponsePart::STOPMUSIC);
+        intro->add(ResponsePart::STOP_MUSIC);
         intro->add(ResponsePart::END);
     } else {
-        intro->add(ResponsePart::STARTMUSIC_HW);
+        intro->add(ResponsePart::START_MUSIC_HW);
         intro->add(ResponsePart::HAWKWIND);
         intro->add(uppercase(
                        "\n\n"

@@ -5,7 +5,7 @@
 #ifndef INTRO_H
 #define INTRO_H
 
-#include <cstdint>
+#include <cstdint> // IWYU pragma: keep
 #include <string>
 #include <vector>
 
@@ -34,11 +34,11 @@ public:
 
     const static int INTRO_TEXT_OFFSET;
     const static int INTRO_MAP_OFFSET;
-    const static int INTRO_FIXUPDATA_OFFSET;
+    const static int INTRO_FIXUP_DATA_OFFSET;
     const static int INTRO_SCRIPT_TABLE_SIZE;
     const static int INTRO_SCRIPT_TABLE_OFFSET;
-    const static int INTRO_BASETILE_TABLE_SIZE;
-    const static int INTRO_BASETILE_TABLE_OFFSET;
+    const static int INTRO_BASE_TILE_TABLE_SIZE;
+    const static int INTRO_BASE_TILE_TABLE_OFFSET;
     const static int BEASTIE1_FRAMES;
     const static int BEASTIE2_FRAMES;
     const static int BEASTIE_FRAME_TABLE_OFFSET;
@@ -86,12 +86,12 @@ public:
     bool init();
     bool hasInitiatedNewGame() const;
     void deleteIntro();
-    virtual bool keyPressed(int key) override;
-    unsigned char *getSigData();
+    bool keyPressed(int key) override;
+    unsigned char *getSigData() const;
     void updateScreen();
-    virtual void timerFired() override;
+    void timerFired() override;
     void preloadMap();
-    virtual void update(Menu *menu, MenuEvent &event) override;
+    void update(Menu *menu, MenuEvent &event) override;
     void updateConfMenu(const MenuEvent &event);
     void updateVideoMenu(const MenuEvent &event);
     void updateGfxMenu(const MenuEvent &event);
@@ -108,7 +108,7 @@ private:
     void drawMapStatic();
     void drawMapAnimated();
     void drawBeasties(bool musicon = true);
-    void drawBeastie(int beast, int vertoffset, int frame) const;
+    void drawBeastie(int beast, int vertOffset, int frame) const;
     void animateTree(const std::string &frame) const;
     void drawCard(int pos, int card) const;
     void drawAbacusBeads(
@@ -117,7 +117,8 @@ private:
     void initQuestionTree();
     bool doQuestion(int answer);
     void initPlayers(SaveGame *saveGame) const;
-    std::string getQuestion(SexType sex, int v1, int v2) const;
+
+    std::string &getQuestion(SexType sex, int v1, int v2) const;
     void initiateNewGame();
     void finishInitiateGame(const std::string &nameBuffer, SexType sex);
     void startQuestions(SexType sex);
@@ -258,8 +259,8 @@ private:
     void addTitle(
         int x, int y, int w, int h, AnimType method, int delay, int duration
     );
-    void compactTitle();
-    void drawTitle();
+    void compactTitle() const;
+    void drawTitle() const;
     void getTitleSourceData();
     void skipTitles();
     std::vector<AnimElement> titles; // list of title elements
@@ -271,4 +272,4 @@ private:
 
 extern IntroController *intro;
 
-#endif // ifndef INTRO_H
+#endif // INTRO_H

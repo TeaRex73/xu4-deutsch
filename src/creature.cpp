@@ -5,9 +5,10 @@
 #include "vc6.h" // Fixes things if you're using VC6, does nothing otherwise
 
 #include <algorithm>
-#include <climits>
+#include <limits>
 #include <cstdlib>
 #include <deque>
+#include <vector>
 
 #include "creature.h"
 
@@ -18,9 +19,12 @@
 #include "coords.h"
 #include "debug.h"
 #include "direction.h"
+#include "error.h"
 #include "game.h" /* required by specialAction and specialEffect functions */
 #include "location.h"
 #include "map.h"
+#include "movement.h"
+#include "object.h"
 #include "player.h" /* required by specialAction and specialEffect functions */
 #include "savegame.h"
 #include "screen.h" /* FIXME: remove dependence on this */
@@ -29,42 +33,37 @@
 #include "textcolor.h" /* required to change color of screen message text */
 #include "tile.h"
 #include "tileset.h"
+#include "types.h"
 #include "utils.h"
 
 
 CreatureMgr *CreatureMgr::instance = nullptr;
 
-bool isCreature(Object *punknown)
+bool isCreature(Object *pUnknown)
 {
-    if (dynamic_cast<Creature *>(punknown) != nullptr) {
+    if (dynamic_cast<Creature *>(pUnknown) != nullptr) {
         return true;
-    } else {
-        return false;
     }
+    return false;
 }
 
 /**
  * Creature class implementation
  */
 Creature::Creature(MapTile tile)
-    :Object(Object::CREATURE),
-     name(),
-     rangedhittile(),
-     rangedmisstile(),
+    :Object(CREATURE),
      id(0),
-     camouflageTile(),
      leader(0),
-     basehp(0),
+     base_hp(0),
      hp(0),
      status(STAT_GOOD),
      xp(0),
      ranged(0),
-     worldrangedtile(),
-     leavestile(false),
-     mattr(),
-     movementAttr(),
-     slowedType(SLOWED_BY_TILE),
-     encounterSize(0),
+     leaves_tile(false),
+     m_attr(),
+     movement_attr(),
+     slowed_type(SLOWED_BY_TILE),
+     encounter_size(0),
      resists(0),
      spawn(0)
 {
@@ -81,62 +80,62 @@ void Creature::load(const ConfigElement &conf)
         const char *name;
         unsigned int mask;
     } booleanAttributes[] = {
-        { "undead", MATTR_UNDEAD },
-        { "good", MATTR_GOOD },
-        { "swims", MATTR_WATER },
-        { "sails", MATTR_WATER },
-        { "cantattack", MATTR_NONATTACKABLE },
-        { "camouflage", MATTR_CAMOUFLAGE },
-        { "wontattack", MATTR_NOATTACK },
-        { "ambushes", MATTR_AMBUSHES },
-        { "incorporeal", MATTR_INCORPOREAL },
-        { "nochest", MATTR_NOCHEST },
-        { "divides", MATTR_DIVIDES },
-        { "forceOfNature", MATTR_FORCE_OF_NATURE }
+        { .name = "undead", .mask = M_ATTR_UNDEAD },
+        { .name = "good", .mask = M_ATTR_GOOD },
+        { .name = "swims", .mask = M_ATTR_WATER },
+        { .name = "sails", .mask = M_ATTR_WATER },
+        { .name = "cantattack", .mask = M_ATTR_NON_ATTACKABLE },
+        { .name = "camouflage", .mask = M_ATTR_CAMOUFLAGE },
+        { .name = "wontattack", .mask = M_ATTR_NO_ATTACK },
+        { .name = "ambushes", .mask = M_ATTR_AMBUSHES },
+        { .name = "incorporeal", .mask = M_ATTR_INCORPOREAL },
+        { .name = "nochest", .mask = M_ATTR_NO_CHEST },
+        { .name = "divides", .mask = M_ATTR_DIVIDES },
+        { .name = "forceOfNature", .mask = M_ATTR_FORCE_OF_NATURE }
     };
     /* steals="" */
-    static const struct {
+    static constexpr struct {
         const char *name;
         unsigned int mask;
     } steals[] = {
-        { "food", MATTR_STEALFOOD },
-        { "gold", MATTR_STEALGOLD }
+        { .name = "food", .mask = M_ATTR_STEAL_FOOD },
+        { .name = "gold", .mask = M_ATTR_STEAL_GOLD }
     };
     /* casts="" */
-    static const struct {
+    static constexpr struct {
         const char *name;
         unsigned int mask;
     } casts[] = {
-        { "sleep", MATTR_CASTS_SLEEP },
-        { "negate", MATTR_NEGATE }
+        { .name = "sleep", .mask = M_ATTR_CASTS_SLEEP },
+        { .name = "negate", .mask = M_ATTR_NEGATE }
     };
     /* movement="" */
-    static const struct {
+    static constexpr struct {
         const char *name;
         unsigned int mask;
     } movement[] = {
-        { "none", MATTR_STATIONARY },
-        { "wanders", MATTR_WANDERS }
+        { .name = "none", .mask = M_ATTR_STATIONARY },
+        { .name = "wanders", .mask = M_ATTR_WANDERS }
     };
     /* boolean attributes that affect movement */
-    static const struct {
+    static constexpr struct {
         const char *name;
         unsigned int mask;
     } movementBoolean[] = {
-        { "swims", MATTR_SWIMS },
-        { "sails", MATTR_SAILS },
-        { "flies", MATTR_FLIES },
-        { "teleports", MATTR_TELEPORT },
-        { "canMoveOntoCreatures", MATTR_CANMOVECREATURES },
-        { "canMoveOntoAvatar", MATTR_CANMOVEAVATAR }
+        { .name = "swims", .mask = M_ATTR_SWIMS },
+        { .name = "sails", .mask = M_ATTR_SAILS },
+        { .name = "flies", .mask = M_ATTR_FLIES },
+        { .name = "teleports", .mask = M_ATTR_TELEPORT },
+        { .name = "canMoveOntoCreatures", .mask = M_ATTR_CAN_MOVE_CREATURES },
+        { .name = "canMoveOntoAvatar", .mask = M_ATTR_CAN_MOVE_AVATAR }
     };
-    static const struct {
+    static constexpr struct {
         const char *name;
         TileEffect effect;
     } effects[] = {
-        { "fire", EFFECT_FIRE },
-        { "poison", EFFECT_POISONFIELD },
-        { "sleep", EFFECT_SLEEP }
+        { .name = "fire", .effect = EFFECT_FIRE },
+        { .name = "poison", .effect = EFFECT_POISON },
+        { .name = "sleep", .effect = EFFECT_SLEEP }
     };
     name = conf.getString("name");
     id = static_cast<unsigned short>(conf.getInt("id"));
@@ -148,34 +147,33 @@ void Creature::load(const ConfigElement &conf)
     setTile(Tileset::findTileByName(conf.getString("tile")));
     setHitTile("hit_flash");
     setMissTile("miss_flash");
-    mattr = static_cast<CreatureAttrib>(0);
-    movementAttr = static_cast<CreatureMovementAttrib>(0);
+    m_attr = static_cast<CreatureAttrib>(0);
+    movement_attr = static_cast<CreatureMovementAttrib>(0);
     resists = 0;
     /* get the encounter size */
-    encounterSize = conf.getInt("encounterSize", 0);
+    encounter_size = conf.getInt("encounterSize", 0);
     /* get the base hp */
-    basehp = conf.getInt("basehp", 0);
+    base_hp = conf.getInt("basehp", 0);
     /* adjust basehp according to battle difficulty setting */
     if (settings.battleDiff == "Hard") {
-        basehp *= 2;
+        base_hp *= 2;
     }
     if (settings.battleDiff == "Expert") {
-        basehp *= 4;
+        base_hp *= 4;
     }
     /* get the camouflaged tile */
     if (conf.exists("camouflageTile")) {
-        camouflageTile = conf.getString("camouflageTile");
+        camouflage_tile = conf.getString("camouflageTile");
     }
     /* get the ranged tile for world map attacks */
     if (conf.exists("worldrangedtile")) {
-        worldrangedtile = conf.getString("worldrangedtile");
+        world_ranged_tile = conf.getString("worldrangedtile");
     }
     /* get ranged hit tile */
     if (conf.exists("rangedhittile")) {
         if (conf.getString("rangedhittile") == "random") {
-            /* mattr is still zero here, which cppcheck doesn't like */
-            mattr =
-                static_cast<CreatureAttrib>(/* mattr | */ MATTR_RANDOMRANGED);
+            /* m_attr is still zero here, which cppcheck doesn't like */
+            m_attr = M_ATTR_RANDOM_RANGED;
         } else {
             setHitTile(conf.getString("rangedhittile"));
         }
@@ -183,13 +181,13 @@ void Creature::load(const ConfigElement &conf)
     /* get ranged miss tile */
     if (conf.exists("rangedmisstile")) {
         if (conf.getString("rangedmisstile") == "random") {
-            mattr = static_cast<CreatureAttrib>(mattr | MATTR_RANDOMRANGED);
+            m_attr = static_cast<CreatureAttrib>(m_attr | M_ATTR_RANDOM_RANGED);
         } else {
             setMissTile(conf.getString("rangedmisstile"));
         }
     }
     /* find out if the creature leaves a tile behind on ranged attacks */
-    leavestile = conf.getBool("leavestile");
+    leaves_tile = conf.getBool("leavestile");
     /* get effects that this creature is immune to */
     for (idx = 0; idx < sizeof(effects) / sizeof(effects[0]); idx++) {
         if (conf.getString("resists") == effects[idx].name) {
@@ -201,8 +199,8 @@ void Creature::load(const ConfigElement &conf)
          idx < sizeof(booleanAttributes) / sizeof(booleanAttributes[0]);
          idx++) {
         if (conf.getBool(booleanAttributes[idx].name)) {
-            mattr = static_cast<CreatureAttrib>(
-                mattr | booleanAttributes[idx].mask
+            m_attr = static_cast<CreatureAttrib>(
+                m_attr | booleanAttributes[idx].mask
             );
         }
     }
@@ -211,57 +209,57 @@ void Creature::load(const ConfigElement &conf)
          idx < sizeof(movementBoolean) / sizeof(movementBoolean[0]);
          idx++) {
         if (conf.getBool(movementBoolean[idx].name)) {
-            movementAttr = static_cast<CreatureMovementAttrib>(
-                movementAttr | movementBoolean[idx].mask
+            movement_attr = static_cast<CreatureMovementAttrib>(
+                movement_attr | movementBoolean[idx].mask
             );
         }
     }
     /* steals="" */
     for (idx = 0; idx < sizeof(steals) / sizeof(steals[0]); idx++) {
         if (conf.getString("steals") == steals[idx].name) {
-            mattr = static_cast<CreatureAttrib>(mattr | steals[idx].mask);
+            m_attr = static_cast<CreatureAttrib>(m_attr | steals[idx].mask);
         }
     }
     /* casts="" */
     for (idx = 0; idx < sizeof(casts) / sizeof(casts[0]); idx++) {
         if (conf.getString("casts") == casts[idx].name) {
-            mattr = static_cast<CreatureAttrib>(mattr | casts[idx].mask);
+            m_attr = static_cast<CreatureAttrib>(m_attr | casts[idx].mask);
         }
     }
     /* movement="" */
     for (idx = 0; idx < sizeof(movement) / sizeof(movement[0]); idx++) {
         if (conf.getString("movement") == movement[idx].name) {
-            movementAttr = static_cast<CreatureMovementAttrib>(
-                movementAttr | movement[idx].mask
+            movement_attr = static_cast<CreatureMovementAttrib>(
+                movement_attr | movement[idx].mask
             );
         }
     }
     if (conf.exists("spawnsOnDeath")) {
-        mattr = static_cast<CreatureAttrib>(mattr | MATTR_SPAWNSONDEATH);
+        m_attr = static_cast<CreatureAttrib>(m_attr | M_ATTR_SPAWNS_ON_DEATH);
         spawn = static_cast<unsigned char>(
             conf.getInt("spawnsOnDeath")
         );
     }
     /* Figure out which 'slowed' function to use. */
-    slowedType = SLOWED_BY_TILE;
+    slowed_type = SLOWED_BY_TILE;
     if (sails()) {
         /* sailing creatures (pirate ships) */
-        slowedType = SLOWED_BY_WIND;
+        slowed_type = SLOWED_BY_WIND;
     } else if (flies() || isIncorporeal()) {
         /* flying creatures (dragons, bats, etc.) and
            incorporeal creatures (ghosts, zorns) */
-        slowedType = SLOWED_BY_NOTHING;
+        slowed_type = SLOWED_BY_NOTHING;
     }
 } // Creature::load
 
 bool Creature::isAttackable() const
 {
-    if (mattr & MATTR_NONATTACKABLE) {
+    if (m_attr & M_ATTR_NON_ATTACKABLE) {
         return false;
     }
     /* can't attack horse transport */
     if (tile.getTileType()->isHorse()
-        && (getMovementBehavior() == MOVEMENT_FIXED)) {
+        && getMovementBehavior() == MOVEMENT_FIXED) {
         return false;
     }
     return true;
@@ -269,13 +267,13 @@ bool Creature::isAttackable() const
 
 int Creature::getDamage() const
 {
-    return xu4_random(basehp >> 2);
+    return xu4_random(base_hp >> 2);
 }
 
-int Creature::setInitialHp(int points)
+int Creature::setInitialHp(const int points)
 {
     if (points < 0) {
-        hp = xu4_random(basehp) | (basehp / 2);
+        hp = xu4_random(base_hp) | base_hp / 2;
     } else {
         hp = points;
     }
@@ -290,39 +288,43 @@ void Creature::setRandomRanged()
 {
     switch (xu4_random(4)) {
     case 0:
-        rangedhittile = rangedmisstile = "poison_field";
+        ranged_hit_tile = ranged_miss_tile = "poison_field";
         break;
     case 1:
-        rangedhittile = rangedmisstile = "energy_field";
+        ranged_hit_tile = ranged_miss_tile = "energy_field";
         break;
     case 2:
-        rangedhittile = rangedmisstile = "fire_field";
+        ranged_hit_tile = ranged_miss_tile = "fire_field";
         break;
     case 3:
-        rangedhittile = rangedmisstile = "sleep_field";
+        ranged_hit_tile = ranged_miss_tile = "sleep_field";
         break;
+    default:
+        errorFatal("BUG: xu4_random(4) output should be 0-3");
     }
 }
 
 CreatureState Creature::getState() const
 {
-    int heavy_threshold, light_threshold, crit_threshold;
-    crit_threshold = basehp >> 2;
-    heavy_threshold = basehp >> 1;
-    light_threshold = crit_threshold + heavy_threshold;
+    const int crit_threshold = base_hp >> 2;
+    const int heavy_threshold = base_hp >> 1;
+    const int light_threshold = crit_threshold + heavy_threshold;
     if (hp <= 0) {
-        return MSTAT_DEAD;
-    } else if (hp < 24) {
-        return MSTAT_FLEEING;
-    } else if (hp < crit_threshold) {
-        return MSTAT_CRITICAL;
-    } else if (hp < heavy_threshold) {
-        return MSTAT_HEAVILYWOUNDED;
-    } else if (hp < light_threshold) {
-        return MSTAT_LIGHTLYWOUNDED;
-    } else {
-        return MSTAT_BARELYWOUNDED;
+        return M_STAT_DEAD;
     }
+    if (hp < 24) {
+        return M_STAT_FLEEING;
+    }
+    if (hp < crit_threshold) {
+        return M_STAT_CRITICAL;
+    }
+    if (hp < heavy_threshold) {
+        return M_STAT_HEAVILY_WOUNDED;
+    }
+    if (hp < light_threshold) {
+        return M_STAT_LIGHTLY_WOUNDED;
+    }
+    return M_STAT_BARELY_WOUNDED;
 } // Creature::getState
 
 
@@ -331,16 +333,17 @@ CreatureState Creature::getState() const
  * Returns true if the action takes up the creatures
  * whole turn (i.e. it can't move afterwords)
  */
-bool Creature::specialAction()
+bool Creature::specialAction() const
 {
     bool retval = false;
-    int dx = std::abs(c->location->coords.x - coords.x);
-    int dy = std::abs(c->location->coords.y - coords.y);
-    int mapdist = c->location->coords.distance(coords, c->location->map);
+    const int dx = std::abs(c->location->coords.x - coords.x);
+    const int dy = std::abs(c->location->coords.y - coords.y);
+    const int map_dist =
+        c->location->coords.distance(coords, c->location->map);
     /* find out which direction the avatar is
        in relation to the creature */
-    MapCoords mapcoords(coords);
-    int dir = mapcoords.getRelativeDirection(
+    const MapCoords map_coords(coords);
+    const int dir = map_coords.getRelativeDirection(
         c->location->coords, c->location->map
     );
     // Init outside of switch
@@ -354,11 +357,11 @@ bool Creature::specialAction()
            close enough and not in a city
            Note: Monsters in settlements in U3 do fire on party
         */
-        if ((mapdist <= 3)
-            && (xu4_random(2) == 0)
-            && ((c->location->context & CTX_CITY) == 0)) {
+        if (map_dist <= 3
+            && xu4_random(2) == 0
+            && (c->location->context & CTX_CITY) == 0) {
             soundPlay(SOUND_NPC_ATTACK);
-            std::vector<Coords> path = gameGetDirectionalActionPath(
+            const std::vector<Coords> path = gameGetDirectionalActionPath(
                 dir, MASK_DIR_ALL, coords, 1, 3, nullptr, false
             );
             static_cast<void>(
@@ -378,14 +381,14 @@ bool Creature::specialAction()
         retval = true;
         broadsidesDirs = dirGetBroadsidesDirs(tile.getDirection());
         /* avatar is close enough and on the same column, OR */
-        if ((((dx == 0) && (dy <= 3)) ||
+        if (((dx == 0 && dy <= 3) ||
              /* avatar is close enough and on the same row, AND */
-             ((dy == 0) && (dx <= 3))) &&
+             (dy == 0 && dx <= 3)) &&
             /* pirate ship is firing broadsides */
-            ((broadsidesDirs & dir) > 0)) {
+            (broadsidesDirs & dir) > 0) {
             // nothing (not even mountains!) can block cannonballs
             soundPlay(SOUND_NPC_ATTACK);
-            std::vector<Coords> path = gameGetDirectionalActionPath(
+            const std::vector<Coords> path = gameGetDirectionalActionPath(
                 dir, broadsidesDirs, coords, 1, 3, nullptr, false
             );
             static_cast<void>(
@@ -420,7 +423,6 @@ bool Creature::specialEffect()
     switch (id) {
     case STORM_ID:
     {
-        ObjectDeque::iterator i;
         if (coords == c->location->coords) {
             soundPlay(SOUND_STORM, false, -1, true);
             for (int j = 0; j < 4; j++) {
@@ -429,11 +431,11 @@ bool Creature::specialEffect()
             return true;
         }
         /* See if the storm is on top of any objects and destroy them! */
-        for (i = c->location->map->objects.begin();
+        for (auto i = c->location->map->objects.begin();
              i != c->location->map->objects.end();
              /* nothing */ ) {
             obj = *i;
-            if ((this != obj) && (obj->getCoords() == coords)) {
+            if (this != obj && obj->getCoords() == coords) {
                 /* Converged with an object, destroy the object! */
                 soundPlay(SOUND_NPC_STRUCK, false);
                 i = c->location->map->removeObject(i);
@@ -446,35 +448,34 @@ bool Creature::specialEffect()
     }
     case WHIRLPOOL_ID:
     {
-        ObjectDeque::iterator i;
-        if ((coords == c->location->coords)
-            && (c->transportContext == TRANSPORT_SHIP)) {
+        if (coords == c->location->coords
+            && c->transportContext == TRANSPORT_SHIP) {
             soundPlay(SOUND_WHIRLPOOL, false, -1, true);
             /* Deal 10 damage to the ship */
             c->party->applyEffect(EFFECT_FIRE);
             /* Send the party to Loch Lake */
-            MapCoords old_c = c->location->coords;
+            const MapCoords old_c = c->location->coords;
             c->location->coords = c->location->map->getLabel(
                 "lockelake"
             );
             /* Teleport the whirlpool far away */
-            int newx = 128, newy = 128;
+            int new_x = 128, new_y = 128;
             if (old_c.x >= 64 && old_c.x < 192) {
-                newx = 0;
+                new_x = 0;
             }
             if (old_c.y >= 64 && old_c.y < 192) {
-                newy = 0;
+                new_y = 0;
             }
-            this->setCoords(Coords(newx, newy, 0));
+            this->setCoords(Coords(new_x, new_y, 0));
             retval = true;
             break;
         }
         /* See if the whirlpool is on top of any objects and destroy them! */
-        for (i = c->location->map->objects.begin();
+        for (auto i = c->location->map->objects.begin();
              i != c->location->map->objects.end();
              /* nothing */ ) {
             obj = *i;
-            if ((this != obj) && (obj->getCoords() == coords)) {
+            if (this != obj && obj->getCoords() == coords) {
                 const Creature *m = dynamic_cast<Creature *>(obj);
                 /* Make sure the object isn't a flying creature or object */
                 if (!m || ((m->swims() || m->sails()) && !m->flies())) {
@@ -497,14 +498,13 @@ bool Creature::specialEffect()
     return retval;
 } // Creature::specialEffect
 
-void Creature::act(CombatController *controller)
+void Creature::act(const CombatController *controller)
 {
     int dist;
     CombatAction action;
-    Creature *target;
     bool harder;
     /* see if creature wakes up if it is asleep */
-    if ((getStatus() == STAT_SLEEPING) && (xu4_random(8) == 0)) {
+    if (getStatus() == STAT_SLEEPING && xu4_random(8) == 0) {
         wakeUp();
     }
     /* if the creature is still asleep, then do nothing */
@@ -518,24 +518,24 @@ void Creature::act(CombatController *controller)
      * figure out what to do
      */
     // creatures who teleport do so 1/8 of the time
-    if (teleports() && (xu4_random(8) == 0)) {
+    if (teleports() && xu4_random(8) == 0) {
         action = CA_TELEPORT;
     }
     // creatures who ranged attack do so 1/4 of the time.  Make sure
     // their ranged attack is not negated!
-    else if ((ranged != 0)
-             && (xu4_random(4) == 0)
-             && ((rangedhittile != "magic_flash")
-                 || (*c->aura != Aura::NEGATE))) {
+    else if (ranged != 0
+             && xu4_random(4) == 0
+             && (ranged_hit_tile != "magic_flash"
+                 || *c->aura != Aura::NEGATE)) {
         action = CA_RANGED;
     }
     // creatures who cast sleep do so 1/4 of the time they
     // don't ranged attack
     else if (castsSleep()
-             && (*c->aura != Aura::NEGATE)
-             && (xu4_random(4) == 0)) {
+             && *c->aura != Aura::NEGATE
+             && xu4_random(4) == 0) {
         action = CA_CAST_SLEEP;
-    } else if (getState() == MSTAT_FLEEING) {
+    } else if (getState() == M_STAT_FLEEING) {
         action = CA_FLEE;
     }
     // default action: attack (or move towards) closest target
@@ -545,11 +545,11 @@ void Creature::act(CombatController *controller)
     /*
      * now find out who to do it to
      */
-    target = nearestOpponent(&dist, action == CA_RANGED);
+    Creature *target = nearestOpponent(&dist, action == CA_RANGED);
     if (target == nullptr) {
         return;
     }
-    if ((action == CA_ATTACK) && (dist > 1)) {
+    if (action == CA_ATTACK && dist > 1) {
         action = CA_ADVANCE;
     }
     /* let's see if the creature blends into the background, or if he
@@ -560,8 +560,8 @@ void Creature::act(CombatController *controller)
     switch (action) {
     case CA_ATTACK:
         soundPlay(SOUND_NPC_ATTACK, false); // NPC_ATTACK, melee
-        harder = (*c->aura == Aura::PROTECTION);
-        if (controller->attackHit(this, target, harder)) {
+        harder = *c->aura == Aura::PROTECTION;
+        if (CombatController::attackHit(this, target, harder)) {
             // PC_STRUCK, melee and ranged
             soundPlay(SOUND_PC_STRUCK, false);
             GameController::flashTile(target->getCoords(), "hit_flash", 4);
@@ -574,10 +574,10 @@ void Creature::act(CombatController *controller)
         // u4apple2: stealing happens even if the creature misses
         if (target && isPartyMember(target)) {
             /* steal gold if the creature steals gold */
-            if (stealsGold() && (xu4_random(4) == 0)) {
+            if (stealsGold() && xu4_random(4) == 0) {
                 // ITEM_STOLEN, gold
                 soundPlay(SOUND_ITEM_STOLEN, false);
-                c->party->adjustGold(-(xu4_random(0x40)));
+                c->party->adjustGold(-xu4_random(0x40));
             }
             /* steal food if the creature steals food */
             if (stealsFood()) {
@@ -593,12 +593,11 @@ void Creature::act(CombatController *controller)
         gameSpellEffect('s', -1, SOUND_MAGIC);
         /* Apply the sleep spell to party members still in combat */
         if (!isPartyMember(this)) {
-            PartyMemberVector party =
+            const PartyMemberVector party =
                 controller->getMap()->getPartyMembers();
-            PartyMemberVector::const_iterator j;
-            for (j = party.cbegin(); j != party.cend(); ++j) {
+            for (auto *j: party) {
                 if (xu4_random(2) == 0) {
-                    (*j)->putToSleep();
+                    j->putToSleep();
                 }
             }
         }
@@ -618,7 +617,7 @@ void Creature::act(CombatController *controller)
             const Tile *tile = map->tileTypeAt(new_c, WITH_OBJECTS);
             if (tile->isCreatureWalkable()) {
                 /* If the tile would slow down, try again! */
-                if (firstTry && (tile->getSpeed() != FAST)) {
+                if (firstTry && tile->getSpeed() != FAST) {
                     firstTry = false;
                 }
                 /* OK, good enough! */
@@ -638,13 +637,13 @@ void Creature::act(CombatController *controller)
         if (hasRandomRanged()) {
             setRandomRanged();
         }
-        MapCoords m_coords = getCoords(),
-            p_coords = target->getCoords();
+        const MapCoords m_coords = getCoords();
+        const MapCoords p_coords = target->getCoords();
         // figure out which direction to fire the weapon
-        int dir = m_coords.getRelativeDirection(p_coords);
+        const int dir = m_coords.getRelativeDirection(p_coords);
         // NPC_ATTACK, ranged
         soundPlay(SOUND_NPC_ATTACK, false);
-        std::vector<Coords> path = gameGetDirectionalActionPath(
+        const std::vector<Coords> path = gameGetDirectionalActionPath(
             dir,
             MASK_DIR_ALL,
             m_coords,
@@ -653,14 +652,14 @@ void Creature::act(CombatController *controller)
             &Tile::canAttackOverTile,
             false
         );
-        bool hit = std::any_of(
+        const bool hit = std::any_of(
             path.cbegin(),
             path.cend(),
             [&](const Coords &v) -> bool {
                 return controller->rangedAttack(v, this);
             }
         );
-        if (!hit && (path.size() > 0)) {
+        if (!hit && !path.empty()) {
             controller->rangedMiss(path[path.size() - 1], this);
         }
         break;
@@ -670,7 +669,7 @@ void Creature::act(CombatController *controller)
     {
         Map *map = getMap();
         if (moveCombatObject(action, map, this, target->getCoords())) {
-            Coords coords = getCoords();
+            const Coords coords = getCoords();
             if (MAP_IS_OOB(map, coords)) {
                 screenMessage(
                     "\n%c%s\nFLIEHT%c\n",
@@ -697,9 +696,9 @@ void Creature::act(CombatController *controller)
 /**
  * Add status effects to the creature, in order of importance
  */
-void Creature::addStatus(StatusType s)
+void Creature::addStatus(const StatusType s)
 {
-    StatusType prev = status;
+    const StatusType prev = status;
     if (prev == s) { /* same as before */
         return;
     }
@@ -709,9 +708,8 @@ void Creature::addStatus(StatusType s)
         (prev == STAT_POISONED && s == STAT_GOOD)) {
         /* new status is "better" - do nothing */
         return;
-    } else {
-        status = s;
     }
+    status = s;
     switch (status) {
     case STAT_GOOD:
     case STAT_POISONED:
@@ -730,14 +728,14 @@ void Creature::addStatus(StatusType s)
     }
 }
 
-void Creature::applyTileEffect(TileEffect effect)
+void Creature::applyTileEffect(const TileEffect effect)
 {
     if (effect != EFFECT_NONE) {
         gameUpdateScreen();
         switch (effect) {
         case EFFECT_SLEEP:
             /* creature fell asleep! */
-            if ((resists != EFFECT_SLEEP) && (xu4_random(256) >= hp)) {
+            if (resists != EFFECT_SLEEP && xu4_random(256) >= hp) {
                 putToSleep();
             }
             break;
@@ -745,19 +743,19 @@ void Creature::applyTileEffect(TileEffect effect)
         case EFFECT_FIRE:
             /* deal 0 - 127 damage to the creature
                if it is not immune to fire damage */
-            if ((resists != EFFECT_FIRE) && (resists != EFFECT_LAVA)) {
-                applyDamage(xu4_random(128), false);
-            }
-            break;
-        case EFFECT_POISONFIELD:
-            /* deal 0 - 127 damage to the creature
-               if it is not immune to poison field damage */
-            if (resists != EFFECT_POISONFIELD) {
-                wakeUp(); /* just to be fair - poison wakes up players too */
+            if (resists != EFFECT_FIRE && resists != EFFECT_LAVA) {
                 applyDamage(xu4_random(128), false);
             }
             break;
         case EFFECT_POISON:
+            /* deal 0 - 127 damage to the creature
+               if it is not immune to poison field damage */
+            if (resists != EFFECT_POISON) {
+                wakeUp(); /* just to be fair - poison wakes up players too */
+                applyDamage(xu4_random(128), false);
+            }
+            break;
+        case EFFECT_SWAMP:
             /* "Normal" poison from swamps doesn't affect creatures */
         default:
             break;
@@ -778,8 +776,8 @@ int Creature::getDefense(bool) const
 bool Creature::divide()
 {
     Map *map = getMap();
-    int dirmask = map->getValidMoves(getCoords(), getTile());
-    Direction d = dirRandomDir(dirmask);
+    const int dir_mask = map->getValidMoves(getCoords(), getTile());
+    const Direction d = dirRandomDir(dir_mask);
     /* this is a game enhancement, make sure it's turned on! */
     if (!settings.enhancementsOptions.slimeDivides) {
         return false;
@@ -792,7 +790,7 @@ bool Creature::divide()
         coords.move(d, map);
         /* create our new creature! */
         Creature *addedCreature = map->addCreature(this, coords);
-        int dividedHp = (this->hp + 1) / 2;
+        const int dividedHp = (this->hp + 1) / 2;
         addedCreature->hp = dividedHp;
         this->hp = dividedHp;
         return true;
@@ -800,18 +798,17 @@ bool Creature::divide()
     return false;
 } // Creature::divide
 
-bool Creature::spawnOnDeath()
+void Creature::spawnOnDeath() const
 {
     Map *map = getMap();
     /* this is a game enhancement, make sure it's turned on! */
     if (!settings.enhancementsOptions.gazerSpawnsInsects) {
-        return false;
+        return;
     }
     /* make sure there's a place to put the divided creature! */
-    MapCoords coords(getCoords());
+    const MapCoords coords(getCoords());
     /* create our new creature! */
     map->addCreature(creatureMgr->getById(spawn), coords);
-    return true;
 }
 
 StatusType Creature::getStatus() const
@@ -835,7 +832,7 @@ bool Creature::hideOrShow()
     /* ok, now we've got the nearest party member.
        Now, see if they're close enough */
     if (nearestOpponent(&dist, false) != nullptr) {
-        if ((dist < 5) && !isVisible()) {
+        if (dist < 5 && !isVisible()) {
             setVisible(); /* show yourself */
         } else if (dist >= 5) {
             setVisible(false); /* hide and take no action! */
@@ -844,28 +841,27 @@ bool Creature::hideOrShow()
     return isVisible();
 }
 
-Creature *Creature::nearestOpponent(int *dist, bool ranged)
+Creature *Creature::nearestOpponent(int *dist, const bool ranged_attack)
 {
     Creature *opponent = nullptr;
-    int d, leastDist = INT_MAX;
-    ObjectDeque::const_iterator i;
-    bool jinx = (*c->aura == Aura::JINX);
-    Map *map = getMap();
-    for (i = map->objects.cbegin(); i != map->objects.cend(); ++i) {
+    int d, leastDist = std::numeric_limits<int>::max();
+    const bool jinx = *c->aura == Aura::JINX;
+    const Map *map = getMap();
+    for (auto i = map->objects.cbegin(); i != map->objects.cend(); ++i) {
         if (!isCreature(*i)) {
             continue;
         }
-        bool amPlayer = isPartyMember(this);
-        bool fightingPlayer = isPartyMember(*i);
+        const bool amPlayer = isPartyMember(this);
+        const bool fightingPlayer = isPartyMember(*i);
         /* if a party member, find a creature.
            If a creature, find a party member */
         /* if jinxed is false, find anything that isn't self */
-        if ((amPlayer != fightingPlayer)
-            || (jinx && !amPlayer && (*i != this))) {
+        if (amPlayer != fightingPlayer
+            || (jinx && !amPlayer && *i != this)) {
             MapCoords objCoords = (*i)->getCoords();
             /* if ranged, get the distance using diagonals,
                otherwise get movement distance */
-            if (ranged) {
+            if (ranged_attack) {
                 d = objCoords.distance(getCoords(), map);
             } else {
                 d = objCoords.movementDistance(getCoords(), map);
@@ -887,18 +883,17 @@ void Creature::putToSleep(bool)
     addStatus(STAT_SLEEPING);
 }
 
-void Creature::removeStatus(StatusType s)
+void Creature::removeStatus(const StatusType s)
 {
-    StatusType prev = status;
+    const StatusType prev = status;
     if (prev != s) {
         return;
-    } else {
-        status = STAT_GOOD;
     }
+    status = STAT_GOOD;
     setAnimated(); /* animate creature */
 }
 
-void Creature::setStatus(StatusType s)
+void Creature::setStatus(const StatusType s)
 {
     status = s;
 }
@@ -917,15 +912,15 @@ void Creature::wakeUp()
  * fire or poison, or as a result of jinx) we don't report experience
  * on death
  */
-bool Creature::applyDamage(int damage, bool byplayer)
+bool Creature::applyDamage(const int damage, const bool by_player)
 {
     /* deal the damage - LB is invulnerable */
-    if (id != LORDBRITISH_ID) {
+    if (id != LORD_BRITISH_ID) {
         AdjustValueMin(hp, -damage, 0);
     }
     switch (getState()) {
-    case MSTAT_DEAD:
-        if (byplayer) {
+    case M_STAT_DEAD:
+        if (by_player) {
             screenMessage(
                 "\n%c%s\nGET\\TET%c\nERF.+%d\n",
                 FG_RED,
@@ -951,7 +946,7 @@ bool Creature::applyDamage(int damage, bool byplayer)
         // Remove yourself from the map
         remove();
         return false;
-    case MSTAT_FLEEING:
+    case M_STAT_FLEEING:
         screenMessage(
             "\n%c%s\nAUF DER FLUCHT%c\n",
             FG_YELLOW,
@@ -959,28 +954,28 @@ bool Creature::applyDamage(int damage, bool byplayer)
             FG_WHITE
         );
         break;
-    case MSTAT_CRITICAL:
+    case M_STAT_CRITICAL:
         screenMessage("\n%s\nKRITISCH\n", uppercase(name).c_str());
         break;
-    case MSTAT_HEAVILYWOUNDED:
+    case M_STAT_HEAVILY_WOUNDED:
         screenMessage("\n%s\nSCHWER VERWUNDET\n", uppercase(name).c_str());
         break;
-    case MSTAT_LIGHTLYWOUNDED:
+    case M_STAT_LIGHTLY_WOUNDED:
         screenMessage("\n%s\nLEICHT VERWUNDET\n", uppercase(name).c_str());
         break;
-    case MSTAT_BARELYWOUNDED:
+    case M_STAT_BARELY_WOUNDED:
         screenMessage("\n%s\nKAUM VERWUNDET\n", uppercase(name).c_str());
         break;
     } // switch
       /* creature is still alive and has the chance to
          divide - xu4 enhancement */
-    if (divides() && (xu4_random(2) == 0)) {
+    if (divides() && xu4_random(2) == 0) {
         divide();
     }
     return true;
 } // Creature::applyDamage
 
-bool Creature::dealDamage(Creature *m, int damage)
+bool Creature::dealDamage(Creature *m, const int damage)
 {
     return m->applyDamage(damage, isPartyMember(this));
 }
@@ -1006,16 +1001,14 @@ CreatureMgr::~CreatureMgr()
 void CreatureMgr::loadAll()
 {
     const Config *config = Config::getInstance();
-    std::vector<ConfigElement> creatureConfs =
+    const std::vector<ConfigElement> creatureConfs =
         config->getElement("creatures").getChildren();
-    for (std::vector<ConfigElement>::const_iterator i = creatureConfs.cbegin();
-         i != creatureConfs.cend();
-         ++i) {
-        if (i->getName() != "creature") {
+    for (const auto &creatureConf: creatureConfs) {
+        if (creatureConf.getName() != "creature") {
             continue;
         }
-        Creature *m = new Creature(0);
-        m->load(*i);
+        auto *m = new Creature(0);
+        m->load(creatureConf);
         /* add the creature to the list */
         creatures[m->getId()] = m;
     }
@@ -1026,9 +1019,9 @@ void CreatureMgr::loadAll()
  * Returns a creature using a tile to find which one to create
  * or nullptr if a creature with that tile cannot be found
  */
-Creature *CreatureMgr::getByTile(MapTile tile)
+Creature *CreatureMgr::getByTile(MapTile tile) const
 {
-    CreatureMap::const_iterator i = std::find_if(
+    const auto i = std::find_if(
         creatures.cbegin(),
         creatures.cend(),
         [&](const CreatureMap::value_type &v) -> bool {
@@ -1037,9 +1030,8 @@ Creature *CreatureMgr::getByTile(MapTile tile)
     );
     if (i != creatures.cend()) {
         return i->second;
-    } else {
-        return nullptr;
     }
+    return nullptr;
 }
 
 
@@ -1048,14 +1040,13 @@ Creature *CreatureMgr::getByTile(MapTile tile)
  * or returns nullptr if no creature with that id could
  * be found.
  */
-Creature *CreatureMgr::getById(CreatureId id)
+Creature *CreatureMgr::getById(const CreatureId id)
 {
-    CreatureMap::const_iterator i = creatures.find(id);
+    const CreatureMap::const_iterator i = creatures.find(id);
     if (i != creatures.cend()) {
         return i->second;
-    } else {
-        return nullptr;
     }
+    return nullptr;
 }
 
 
@@ -1064,9 +1055,9 @@ Creature *CreatureMgr::getById(CreatureId id)
  * or returns nullptr if no creature can be found with
  * that name (case insensitive)
  */
-Creature *CreatureMgr::getByName(const std::string &name)
+Creature *CreatureMgr::getByName(const std::string &name) const
 {
-    CreatureMap::const_iterator i = std::find_if(
+    const auto i = std::find_if(
         creatures.cbegin(),
         creatures.cend(),
         [&](const CreatureMap::value_type &v) -> bool {
@@ -1078,16 +1069,15 @@ Creature *CreatureMgr::getByName(const std::string &name)
     );
     if (i == creatures.cend()) {
         return nullptr;
-    } else {
-        return i->second;
     }
+    return i->second;
 }
 
 
 /**
  * Creates a random creature based on the tile given
  */
-Creature *CreatureMgr::randomForTile(const Tile *tile)
+Creature *CreatureMgr::randomForTile(const Tile *tile) const
 {
     if (tile->spawnsSeaMonster()) {
         if (xu4_random(8) != 0) {
@@ -1095,11 +1085,11 @@ Creature *CreatureMgr::randomForTile(const Tile *tile)
         }
         TileId randTile = creatures.find(PIRATE_ID)->second->getTile().getId();
         // Pirates are twice as likely as others
-        int tempRand = xu4_random(8);
-        randTile += (tempRand == 7 ? 0 : tempRand);
+        const int tempRand = xu4_random(8);
+        randTile += tempRand == 7 ? 0 : tempRand;
         return getByTile(randTile);
     }
-    else if (tile->spawnsLandMonster()) {
+    if (tile->spawnsLandMonster()) {
         int era;
         if (c->saveGame->moves >= 30000) {
             era = 0x0f;
@@ -1112,16 +1102,16 @@ Creature *CreatureMgr::randomForTile(const Tile *tile)
         randTile += era & xu4_random(0x10) & xu4_random(0x10);
         return getByTile(randTile);
     }
-    else return nullptr;
+    return nullptr;
 } // CreatureMgr::randomForTile
 
 
 /**
  * Creates a random creature based on the dungeon level given
  */
-Creature *CreatureMgr::randomForDungeon(int dngLevel)
+Creature *CreatureMgr::randomForDungeon(const int dngLevel)
 {
-    CreatureId monster = RAT_ID + dngLevel + xu4_random(4);
+    const CreatureId monster = RAT_ID + dngLevel + xu4_random(4);
     if (monster == MIMIC_ID) {
         return nullptr;
     }
@@ -1132,36 +1122,33 @@ Creature *CreatureMgr::randomForDungeon(int dngLevel)
 /**
  * Creates a random ambushing creature
  */
-Creature *CreatureMgr::randomAmbushing()
+Creature *CreatureMgr::randomAmbushing() const
 {
-    CreatureMap::const_iterator i;
     static int numAmbushingCreatures = -1;
     /* first, find out how many creatures exist that might ambush you */
     /* this is done only once */
     if (numAmbushingCreatures == -1) {
-        numAmbushingCreatures = std::count_if(
+        numAmbushingCreatures = static_cast<int>(std::count_if(
             creatures.cbegin(),
             creatures.cend(),
             [&](const CreatureMap::value_type &v) -> bool {
                 return v.second->ambushes();
             }
-        );
+        ));
     }
     if (numAmbushingCreatures > 0) {
         /* now, randomly select one of them */
-        int randCreature = xu4_random(numAmbushingCreatures);
+        const int randCreature = xu4_random(numAmbushingCreatures);
         int countAmbushingCreatures = 0;
         /* now, find the one we selected */
-        for (i = creatures.cbegin(); i != creatures.cend(); ++i) {
-            if (i->second->ambushes()) {
+        for (const auto creature: creatures) {
+            if (creature.second->ambushes()) {
                 /* found the creature - return it! */
                 if (countAmbushingCreatures == randCreature) {
-                    return i->second;
+                    return creature.second;
                 }
                 /* move on to the next creature */
-                else {
-                    countAmbushingCreatures++;
-                }
+                countAmbushingCreatures++;
             }
         }
     }

@@ -4,28 +4,33 @@
 
 #include "vc6.h" // Fixes things if you're using VC6, does nothing otherwise
 
+#include <string>
+
+#include "imageview.h"
+
 #include "error.h"
 #include "image.h"
 #include "imagemgr.h"
-#include "imageview.h"
 #include "settings.h"
+#include "view.h"
 
-ImageView::ImageView(int x, int y, int width, int height)
+ImageView::ImageView(
+    const int x, const int y, const int width, const int height
+)
     :View(x, y, width, height)
 {
 }
 
-ImageView::~ImageView()
-{
-}
-
+ImageView::~ImageView() = default;
 
 /**
  * Draw the image at the optionally specified offset.
  */
-void ImageView::draw(const std::string &imageName, int x, int y) const
+void ImageView::draw(
+    const std::string &imageName, const int x, const int y
+) const
 {
-    ImageInfo *info = imageMgr->get(imageName);
+    const ImageInfo *info = imageMgr->get(imageName);
     if (info) {
         info->image->draw(SCALED(this->x + x), SCALED(this->y + y));
         return;

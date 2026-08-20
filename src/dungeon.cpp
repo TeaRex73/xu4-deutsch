@@ -19,6 +19,7 @@
 #include "game.h"
 #include "item.h"
 #include "location.h"
+#include "map.h"
 #include "mapmgr.h"
 #include "player.h"
 #include "savegame.h"
@@ -34,7 +35,7 @@
 Dungeon::~Dungeon()
 {
     if (roomMaps) {
-        for (unsigned int i = 0; i < n_rooms; i++) {
+        for (int i = 0; i < n_rooms; i++) {
             delete roomMaps[i];
         }
     }
@@ -56,56 +57,55 @@ std::string Dungeon::getName()
  */
 DungeonToken Dungeon::tokenForTile(MapTile tile) const
 {
-    typedef std::pair<std::string, int> sipair;
-    const static sipair tileNames[] = {
-        sipair("brick_floor", DUNGEON_CORRIDOR),
-        sipair("up_ladder", DUNGEON_LADDER_UP),
-        sipair("down_ladder", DUNGEON_LADDER_DOWN),
-        sipair("up_down_ladder", DUNGEON_LADDER_UPDOWN),
-        sipair("chest", DUNGEON_CHEST),
-        sipair("magic_orb", DUNGEON_MAGIC_ORB),
-        sipair("wind_trap", DUNGEON_TRAP),
-        sipair("falling_rocks_trap", DUNGEON_TRAP),
-        sipair("pit_trap", DUNGEON_TRAP),
-        sipair("fountain_normal", DUNGEON_FOUNTAIN),
-        sipair("fountain_healing", DUNGEON_FOUNTAIN),
-        sipair("fountain_acid", DUNGEON_FOUNTAIN),
-        sipair("fountain_cure", DUNGEON_FOUNTAIN),
-        sipair("fountain_poison", DUNGEON_FOUNTAIN),
-        sipair("dungeon_poison_field", DUNGEON_FIELD),
-        sipair("dungeon_energy_field", DUNGEON_FIELD),
-        sipair("dungeon_fire_field", DUNGEON_FIELD),
-        sipair("dungeon_sleep_field", DUNGEON_FIELD),
-        sipair("dungeon_altar", DUNGEON_ALTAR),
-        sipair("dungeon_door", DUNGEON_DOOR),
-        sipair("dungeon_room_0", DUNGEON_ROOM),
-        sipair("dungeon_room_1", DUNGEON_ROOM),
-        sipair("dungeon_room_2", DUNGEON_ROOM),
-        sipair("dungeon_room_3", DUNGEON_ROOM),
-        sipair("dungeon_room_4", DUNGEON_ROOM),
-        sipair("dungeon_room_5", DUNGEON_ROOM),
-        sipair("dungeon_room_6", DUNGEON_ROOM),
-        sipair("dungeon_room_7", DUNGEON_ROOM),
-        sipair("dungeon_room_8", DUNGEON_ROOM),
-        sipair("dungeon_room_9", DUNGEON_ROOM),
-        sipair("dungeon_room_a", DUNGEON_ROOM),
-        sipair("dungeon_room_b", DUNGEON_ROOM),
-        sipair("dungeon_room_c", DUNGEON_ROOM),
-        sipair("dungeon_room_d", DUNGEON_ROOM),
-        sipair("dungeon_room_e", DUNGEON_ROOM),
-        sipair("dungeon_room_f", DUNGEON_ROOM),
-        sipair("secret_door", DUNGEON_SECRET_DOOR),
-        sipair("brick_wall", DUNGEON_WALL),
-        sipair("", 0)
+    typedef std::pair<std::string, int> StrIntPair;
+    const static StrIntPair tileNames[] = {
+        StrIntPair("brick_floor", DUNGEON_CORRIDOR),
+        StrIntPair("up_ladder", DUNGEON_LADDER_UP),
+        StrIntPair("down_ladder", DUNGEON_LADDER_DOWN),
+        StrIntPair("up_down_ladder", DUNGEON_LADDER_UPDOWN),
+        StrIntPair("chest", DUNGEON_CHEST),
+        StrIntPair("magic_orb", DUNGEON_MAGIC_ORB),
+        StrIntPair("wind_trap", DUNGEON_TRAP),
+        StrIntPair("falling_rocks_trap", DUNGEON_TRAP),
+        StrIntPair("pit_trap", DUNGEON_TRAP),
+        StrIntPair("fountain_normal", DUNGEON_FOUNTAIN),
+        StrIntPair("fountain_healing", DUNGEON_FOUNTAIN),
+        StrIntPair("fountain_acid", DUNGEON_FOUNTAIN),
+        StrIntPair("fountain_cure", DUNGEON_FOUNTAIN),
+        StrIntPair("fountain_poison", DUNGEON_FOUNTAIN),
+        StrIntPair("dungeon_poison_field", DUNGEON_FIELD),
+        StrIntPair("dungeon_energy_field", DUNGEON_FIELD),
+        StrIntPair("dungeon_fire_field", DUNGEON_FIELD),
+        StrIntPair("dungeon_sleep_field", DUNGEON_FIELD),
+        StrIntPair("dungeon_altar", DUNGEON_ALTAR),
+        StrIntPair("dungeon_door", DUNGEON_DOOR),
+        StrIntPair("dungeon_room_0", DUNGEON_ROOM),
+        StrIntPair("dungeon_room_1", DUNGEON_ROOM),
+        StrIntPair("dungeon_room_2", DUNGEON_ROOM),
+        StrIntPair("dungeon_room_3", DUNGEON_ROOM),
+        StrIntPair("dungeon_room_4", DUNGEON_ROOM),
+        StrIntPair("dungeon_room_5", DUNGEON_ROOM),
+        StrIntPair("dungeon_room_6", DUNGEON_ROOM),
+        StrIntPair("dungeon_room_7", DUNGEON_ROOM),
+        StrIntPair("dungeon_room_8", DUNGEON_ROOM),
+        StrIntPair("dungeon_room_9", DUNGEON_ROOM),
+        StrIntPair("dungeon_room_a", DUNGEON_ROOM),
+        StrIntPair("dungeon_room_b", DUNGEON_ROOM),
+        StrIntPair("dungeon_room_c", DUNGEON_ROOM),
+        StrIntPair("dungeon_room_d", DUNGEON_ROOM),
+        StrIntPair("dungeon_room_e", DUNGEON_ROOM),
+        StrIntPair("dungeon_room_f", DUNGEON_ROOM),
+        StrIntPair("secret_door", DUNGEON_SECRET_DOOR),
+        StrIntPair("brick_wall", DUNGEON_WALL),
+        StrIntPair("", 0)
     };
-    int i;
     const Tile *t = tileset->get(tile.getId());
-    for (i = 0; !tileNames[i].first.empty(); i++) {
+    for (int i = 0; !tileNames[i].first.empty(); i++) {
         if (t->getName() == tileNames[i].first) {
-            return DungeonToken(tileNames[i].second);
+            return static_cast<DungeonToken>(tileNames[i].second);
         }
     }
-    return DungeonToken(0);
+    return static_cast<DungeonToken>(0);
 }
 
 
@@ -151,7 +151,8 @@ DungeonToken Dungeon::tokenAt(const MapCoords &coords) const
  */
 unsigned char Dungeon::subTokenAt(const MapCoords &coords) const
 {
-    int index = coords.x + (coords.y * width) + (width * height * coords.z);
+    const int index =
+        coords.x + width * coords.y + width * height * coords.z;
     return dataSubTokens[index];
 }
 
@@ -159,13 +160,13 @@ unsigned char Dungeon::subTokenAt(const MapCoords &coords) const
 /**
  * Handles 's'earching while in dungeons
  */
-void dungeonSearch(void)
+void dungeonSearch()
 {
-    Dungeon *dungeon = dynamic_cast<Dungeon *>(c->location->map);
+    const auto *dungeon = dynamic_cast<Dungeon *>(c->location->map);
     DungeonToken token = dungeon->currentToken();
-    Annotation::List a = dungeon->annotations->allAt(c->location->coords);
-    const ItemLocation *item;
-    if (a.size() > 0) {
+    const Annotation::List a =
+        dungeon->annotations->allAt(c->location->coords);
+    if (!a.empty()) {
         token = DUNGEON_CORRIDOR;
     }
     screenMessage("Nachschauen...\n");
@@ -180,9 +181,10 @@ void dungeonSearch(void)
     default:
         /* see if there is an item at the current location
            (stones on altars, etc.) */
-        item = itemAtLocation(dungeon, c->location->coords);
+        const ItemLocation *item =
+            itemAtLocation(dungeon, c->location->coords);
         if (item) {
-            if ((*item->isItemInInventory != nullptr)
+            if (*item->isItemInInventory != nullptr
                 && (*item->isItemInInventory)(item->data)) {
                 screenMessage("%cHIER IST NICHTS!%c\n", FG_GREY, FG_WHITE);
             } else {
@@ -207,12 +209,12 @@ void dungeonSearch(void)
 void dungeonDrinkFountain()
 {
     screenMessage("Du findest eine Quelle.\nWer trinkt-");
-    int player = gameGetPlayer(false, false, false);
+    const int player = gameGetPlayer(false, false, false);
     if (player == -1) {
         return;
     }
     const Dungeon *dungeon = dynamic_cast<Dungeon *>(c->location->map);
-    FountainType type = static_cast<FountainType>(dungeon->currentSubToken());
+    const auto type = static_cast<FountainType>(dungeon->currentSubToken());
     switch (type) {
     case FOUNTAIN_NORMAL:
         screenMessage("\nHmm... Keine Wirkung!\n");
@@ -225,7 +227,7 @@ void dungeonDrinkFountain()
         }
         break;
     case FOUNTAIN_ACID:
-        c->party->member(player)->applyDamage(100);
+        c->party->member(player)->applyDamage(100, false);
         screenMessage("\nB{h... Scheu~lich!\n");
         break;
     case FOUNTAIN_CURE:
@@ -238,9 +240,9 @@ void dungeonDrinkFountain()
     case FOUNTAIN_POISON:
         if (c->party->member(player)->getStatus() != STAT_POISONED) {
             soundPlay(SOUND_POISON_DAMAGE);
-            c->party->member(player)->applyEffect(EFFECT_POISON);
+            c->party->member(player)->applyEffect(EFFECT_SWAMP);
             /* 100 damage to drinker also */
-            c->party->member(player)->applyDamage(100);
+            c->party->member(player)->applyDamage(100, false);
             screenMessage("\nArchh... R|chel... Japs...\n");
         } else {
             screenMessage("\nHmm... Keine Wirkung!\n");
@@ -262,7 +264,7 @@ void dungeonDrinkFountain()
 void dungeonTouchOrb()
 {
     screenMessage("Du findest eine magische Kugel.\nWer ber}hrt-");
-    int player = gameGetPlayer(false, false, false);
+    const int player = gameGetPlayer(false, false, false);
     if (player == -1) {
         return;
     }
@@ -270,7 +272,7 @@ void dungeonTouchOrb()
     int damage = 100;
     /* Get current position and find a replacement tile for it */
     const Tile *orb_tile = c->location->map->tileset->getByName("magic_orb");
-    MapTile replacementTile =
+    const MapTile replacementTile =
         c->location->getReplacementTile(c->location->coords, orb_tile);
     switch (c->location->map->id) {
     case MAP_DECEIT:
@@ -316,7 +318,7 @@ void dungeonTouchOrb()
     }
     /* deal damage to the party member who touched the orb */
     soundPlay(SOUND_PC_STRUCK, false);
-    c->party->member(player)->applyDamage(damage);
+    c->party->member(player)->applyDamage(damage, false);
     /* remove the orb from the map */
     c->location->map->annotations->add(c->location->coords, replacementTile);
 } // dungeonTouchOrb
@@ -352,16 +354,16 @@ bool dungeonHandleTrap(TrapType)
 /**
  * Returns true if a ladder-up is found at the given coordinates
  */
-bool Dungeon::ladderUpAt(const MapCoords &coords)
+bool Dungeon::ladderUpAt(const MapCoords &coords) const
 {
-    Annotation::List a = annotations->allAt(coords);
-    if ((tokenAt(coords) == DUNGEON_LADDER_UP)
-        || (tokenAt(coords) == DUNGEON_LADDER_UPDOWN)) {
+    const Annotation::List a = annotations->allAt(coords);
+    if (tokenAt(coords) == DUNGEON_LADDER_UP
+        || tokenAt(coords) == DUNGEON_LADDER_UPDOWN) {
         return true;
     }
-    if (a.size() > 0) {
-        TileId upLadderId = tileset->getByName("up_ladder")->getId();
-        Annotation::List::const_iterator i = std::find_if(
+    if (!a.empty()) {
+        const TileId upLadderId = tileset->getByName("up_ladder")->getId();
+        const auto i = std::find_if(
             a.cbegin(),
             a.cend(),
             [&](const Annotation &v) -> bool {
@@ -379,16 +381,17 @@ bool Dungeon::ladderUpAt(const MapCoords &coords)
 /**
  * Returns true if a ladder-down is found at the given coordinates
  */
-bool Dungeon::ladderDownAt(const MapCoords &coords)
+bool Dungeon::ladderDownAt(const MapCoords &coords) const
 {
-    Annotation::List a = annotations->allAt(coords);
-    if ((tokenAt(coords) == DUNGEON_LADDER_DOWN)
-        || (tokenAt(coords) == DUNGEON_LADDER_UPDOWN)) {
+    const Annotation::List a = annotations->allAt(coords);
+    if (tokenAt(coords) == DUNGEON_LADDER_DOWN
+        || tokenAt(coords) == DUNGEON_LADDER_UPDOWN) {
         return true;
     }
-    if (a.size() > 0) {
-        TileId downLadderId = tileset->getByName("down_ladder")->getId();
-        Annotation::List::const_iterator i = std::find_if(
+    if (!a.empty()) {
+        const TileId downLadderId =
+            tileset->getByName("down_ladder")->getId();
+        const auto i = std::find_if(
             a.cbegin(),
             a.cend(),
             [&](const Annotation &v) -> bool {
@@ -404,6 +407,6 @@ bool Dungeon::ladderDownAt(const MapCoords &coords)
 
 bool Dungeon::validTeleportLocation(const MapCoords &coords) const
 {
-    MapTile tile = tileAt(coords, WITH_OBJECTS);
+    const MapTile tile = tileAt(coords, WITH_OBJECTS);
     return tokenForTile(tile) == DUNGEON_CORRIDOR;
 }

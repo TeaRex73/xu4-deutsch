@@ -1,3 +1,6 @@
+#ifndef U6STACK_H
+#define U6STACK_H
+
 #include <vector>
 
 namespace U6Decode
@@ -54,3 +57,4 @@ private:
 };
 
 }
+#endif // U6STACK_H

@@ -59,17 +59,17 @@ public:
         coords = c;       /**< Sets coords for the annotation */
     }
 
-    void setTile(MapTile t)
+    void setTile(MapTile t) // NOLINT(performance-unnecessary-value-param)
     {
         tile = t;         /**< Sets tile for the annotation */
     }
 
-    void setVisualOnly(bool v)
+    void setVisualOnly(const bool v)
     {
         visual = v;       /**< Sets if annotation is visual-only */
     }
 
-    void setTTL(int turns)
+    void setTTL(const int turns)
     {
         ttl = turns;      /**< Sets number of turns of annotation */
     }
@@ -113,10 +113,11 @@ public:
     void remove(const Coords &coords, MapTile tile);
     void remove(const Annotation &a);
     void remove(const Annotation::List &l);
-    int size() const;
+
+    std::size_t size() const;
 
 private:
     Annotation::List annotations;
 };
 
-#endif // ifndef ANNOTATION_H
+#endif // ANNOTATION_H

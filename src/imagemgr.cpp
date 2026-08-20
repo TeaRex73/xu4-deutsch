@@ -4,6 +4,8 @@
 
 #include "vc6.h" // Fixes things if you're using VC6, does nothing otherwise
 
+#include <map>
+#include <string>
 #include <vector>
 
 #include "imagemgr.h"
@@ -29,14 +31,7 @@ bool ImageInfo::hasBlackBackground() const
 
 class ImageSet {
 public:
-    ImageSet()
-        :name(),
-         location(),
-         extends(),
-         info()
-    {
-    }
-
+    ImageSet() = default;
     ~ImageSet();
     std::string name;
     std::string location;
@@ -62,10 +57,8 @@ void ImageMgr::destroy()
 }
 
 ImageMgr::ImageMgr()
-    :imageSets(),
-     imageSetNames(),
-     baseSet(nullptr),
-     logger(new Debug("debug/imagemgr.txt", "ImageMgr"))
+    : baseSet(nullptr),
+      logger(new Debug("debug/imagemgr.txt", "ImageMgr"))
 {
     TRACE(*logger, "creating ImageMgr");
     settings.addObserver(this);
@@ -74,11 +67,8 @@ ImageMgr::ImageMgr()
 ImageMgr::~ImageMgr()
 {
     settings.deleteObserver(this);
-    for (std::map<std::string, ImageSet *>::iterator i =
-             imageSets.begin();
-         i != imageSets.end();
-         ++i) {
-        delete i->second;
+    for (const auto &imageSet: imageSets) {
+        delete imageSet.second;
     }
     delete logger;
     delete screenInfo;
@@ -110,49 +100,39 @@ void ImageMgr::init()
      * register all the images declared in the config files
      */
     const Config *config = Config::getInstance();
-    std::vector<ConfigElement> graphicsConf =
+    const std::vector<ConfigElement> graphicsConf =
 #ifdef RASB_PI
         config->getElement("graphicsPi").getChildren();
 #else
         config->getElement("graphics").getChildren();
 #endif
-    for (std::vector<ConfigElement>::const_iterator conf =
-             graphicsConf.cbegin();
-         conf != graphicsConf.cend();
-         ++conf) {
-        if (conf->getName() == "imageset") {
-            ImageSet *set = loadImageSetFromConf(*conf);
+    for (const auto &conf: graphicsConf) {
+        if (conf.getName() == "imageset") {
+            ImageSet *set = loadImageSetFromConf(conf);
             imageSets[set->name] = set;
             // all image sets include the "screen" image
             set->info[screenInfo->name] = screenInfo;
         }
     }
     imageSetNames.clear();
-    for (std::map<std::string, ImageSet *>::const_iterator set =
-             imageSets.cbegin();
-         set != imageSets.cend();
-         ++set) {
-        imageSetNames.push_back(set->first);
+    for (const auto& imageSet: imageSets) {
+        imageSetNames.push_back(imageSet.first);
     }
     update(&settings);
 } // ImageMgr::init
 
-ImageSet *ImageMgr::loadImageSetFromConf(const ConfigElement &conf)
+ImageSet *ImageMgr::loadImageSetFromConf(const ConfigElement &conf) const
 {
-    ImageSet *set;
-    set = new ImageSet;
+    auto *set = new ImageSet;
     set->name = conf.getString("name");
     set->location = conf.getString("location");
     set->extends = conf.getString("extends");
     TRACE(*logger, std::string("loading image set ") + set->name);
-    std::vector<ConfigElement> children = conf.getChildren();
-    for (std::vector<ConfigElement>::const_iterator i = children.cbegin();
-         i != children.cend();
-         ++i) {
-        if (i->getName() == "image") {
-            ImageInfo *info = loadImageInfoFromConf(*i);
-            std::map<std::string, ImageInfo *>::iterator dup =
-                set->info.find(info->name);
+    const std::vector<ConfigElement> children = conf.getChildren();
+    for (const auto &child: children) {
+        if (child.getName() == "image") {
+            ImageInfo *info = loadImageInfoFromConf(child);
+            auto dup = set->info.find(info->name);
             if (dup != set->info.end()) {
                 delete dup->second;
                 set->info.erase(dup);
@@ -165,8 +145,6 @@ ImageSet *ImageMgr::loadImageSetFromConf(const ConfigElement &conf)
 
 ImageInfo *ImageMgr::loadImageInfoFromConf(const ConfigElement &conf)
 {
-    ImageInfo *info;
-
     static const char *fixupEnumStrings[] = {
         "none",
         "intro",
@@ -178,7 +156,7 @@ ImageInfo *ImageMgr::loadImageInfoFromConf(const ConfigElement &conf)
         nullptr
     };
 
-    info = new ImageInfo;
+    auto *info = new ImageInfo;
     info->name = conf.getString("name");
     info->filename = conf.getString("filename");
     info->width = conf.getInt("width", -1);
@@ -194,12 +172,10 @@ ImageInfo *ImageMgr::loadImageInfoFromConf(const ConfigElement &conf)
         conf.getEnum("fixup", fixupEnumStrings)
     );
     info->image = nullptr;
-    std::vector<ConfigElement> children = conf.getChildren();
-    for (std::vector<ConfigElement>::const_iterator i = children.cbegin();
-         i != children.cend();
-         ++i) {
-        if (i->getName() == "subimage") {
-            SubImage *subimage = loadSubImageFromConf(info, *i);
+    const std::vector<ConfigElement> children = conf.getChildren();
+    for (const auto &child: children) {
+        if (child.getName() == "subimage") {
+            SubImage *subimage = loadSubImageFromConf(info, child);
             info->subImages[subimage->name] = subimage;
         }
     }
@@ -210,9 +186,8 @@ SubImage *ImageMgr::loadSubImageFromConf(
     const ImageInfo *info, const ConfigElement &conf
 )
 {
-    SubImage *subimage;
     static int x = 0, y = 0, last_width = 0, last_height = 0;
-    subimage = new SubImage;
+    auto *subimage = new SubImage;
     subimage->name = conf.getString("name");
     subimage->width = conf.getInt("width");
     subimage->height = conf.getInt("height");
@@ -236,15 +211,14 @@ SubImage *ImageMgr::loadSubImageFromConf(
     return subimage;
 } // ImageMgr::loadSubImageFromConf
 
-void ImageMgr::fixupIntro(Image *im, int prescale)
+void ImageMgr::fixupIntro(const Image *im, const int prescale)
 {
-    const unsigned char *sigData;
-    bool alpha = im->isAlphaOn();
+    const bool alpha = im->isAlphaOn();
     RGBA color;
-    sigData = intro->getSigData();
+    const unsigned char *sigData = intro->getSigData();
     im->alphaOff();
-    if ((settings.videoType != "VGA-ALLPNG")
-        && (settings.videoType != "new")) {
+    if (settings.videoType != "VGA-ALLPNG"
+        && settings.videoType != "new") {
         /* ----------------------------
          * update the position of "and"
          * ---------------------------- */
@@ -430,30 +404,29 @@ void ImageMgr::fixupIntro(Image *im, int prescale)
                 BKGD_BORDERS,
                 settings.game.c_str()
             );
-        } else {
-            delete borderInfo->image;
-            borderInfo->image = nullptr;
-            borderInfo = imageMgr->get(BKGD_BORDERS, true);
-            im->setPaletteFromImage(borderInfo->image);
-            // update the color of "and" and "present"
-            im->setPaletteIndex(15, im->setColor(255, 255, 255));
-            // update the color of "Origin Systems, Inc."
-            im->setPaletteIndex(9, im->setColor(255, 255, 255));
-            borderInfo->image->save("border.png");
-            // update the border appearance
-            borderInfo->image->alphaOff();
-            borderInfo->image->drawSubRectOn(im, 0, 96, 0, 0, 16, 56);
-            for (int i = 0; i < 9; i++) {
-                borderInfo->image->drawSubRectOn(
-                    im, 16 + (i * 32), 96, 144, 0, 48, 48
-                );
-            }
-            im->drawSubRectInvertedOn(im, 0, 144, 0, 104, 320, 40);
-            im->drawSubRectOn(im, 0, 184, 0, 96, 320, 8);
-            borderInfo->image->alphaOn();
-            delete borderInfo->image;
-            borderInfo->image = nullptr;
         }
+        delete borderInfo->image;
+        borderInfo->image = nullptr;
+        borderInfo = imageMgr->get(BKGD_BORDERS, true);
+        im->setPaletteFromImage(borderInfo->image);
+        // update the color of "and" and "present"
+        im->setPaletteIndex(15, Image::setColor(255, 255, 255));
+        // update the color of "Origin Systems, Inc."
+        im->setPaletteIndex(9, Image::setColor(255, 255, 255));
+        borderInfo->image->save("border.png");
+        // update the border appearance
+        borderInfo->image->alphaOff();
+        borderInfo->image->drawSubRectOn(im, 0, 96, 0, 0, 16, 56);
+        for (int i = 0; i < 9; i++) {
+            borderInfo->image->drawSubRectOn(
+                im, 16 + i * 32, 96, 144, 0, 48, 48
+            );
+        }
+        im->drawSubRectInvertedOn(im, 0, 144, 0, 104, 320, 40);
+        im->drawSubRectOn(im, 0, 184, 0, 96, 320, 8);
+        borderInfo->image->alphaOn();
+        delete borderInfo->image;
+        borderInfo->image = nullptr;
     }
     /* -----------------------------
      * draw "Lord British" signature
@@ -461,21 +434,20 @@ void ImageMgr::fixupIntro(Image *im, int prescale)
 #ifdef RASB_PI
     color = im->setColor(255, 255, 255); // white for EGA
 #else
-    color = im->setColor(241, 241, 241); // white for EGA
+    color = Image::setColor(241, 241, 241); // white for EGA
 #endif
-    const int blue[16] = {
-        255, 250, 226, 226, 210, 194, 161, 161,
-        129,  97,  97,  64,  64,  32,  32,   0
-    };
-
     for (int i = 0; sigData[i] != 0; i += 2) {
         /* (x/y) are unscaled coordinates, i.e. in 320x200 */
-        int x = sigData[i] + 0x14;
-        int y = 0xBF - sigData[i + 1];
+        const int x = sigData[i] + 0x14;
+        const int y = 0xBF - sigData[i + 1];
         if (settings.videoType != "EGA") {
+            constexpr int blue[16] = {
+                255, 250, 226, 226, 210, 194, 161, 161,
+                129,  97,  97,  64,  64,  32,  32,   0
+            };
             // yellow gradient
-            color = im->setColor(
-                255, (y == 1 ? 250 : 255), blue[y]
+            color = Image::setColor(
+                255, y == 1 ? 250 : 255, blue[y]
             );
         }
         im->fillRect(
@@ -493,12 +465,12 @@ void ImageMgr::fixupIntro(Image *im, int prescale)
      * -------------------------------------------------------------- */
     /* we're still working with an unscaled surface */
     if (settings.videoType != "EGA") {
-        color = im->setColor(0, 0, 161); // dark blue
+        color = Image::setColor(0, 0, 161); // dark blue
     } else {
 #ifdef RASB_PI
         color = im->setColor(56, 139, 255); // blue for EGA
 #else
-        color = im->setColor(54, 146, 255); // blue for EGA
+        color = Image::setColor(54, 146, 255); // blue for EGA
 #endif
     }
     for (int i = 84; i < 236; i++) { // 152 px wide
@@ -542,7 +514,7 @@ void ImageMgr::fixupAbyssVision(const Image *im, int)
     }
 } // ImageMgr::fixupAbyssVision
 
-void ImageMgr::fixupAbacus(Image *im, int prescale)
+void ImageMgr::fixupAbacus(const Image *im, const int prescale)
 {
     /*
      * surround each bead with a row green pixels to avoid artifacts
@@ -662,15 +634,13 @@ void ImageMgr::fixupFMTowns(const Image *im, int)
 /**
  * Returns information for the given image set.
  */
-ImageSet *ImageMgr::getSet(const std::string &setname)
+ImageSet *ImageMgr::getSet(const std::string &setName)
 {
-    std::map<std::string, ImageSet *>::iterator i =
-        imageSets.find(setname);
+    const auto i = imageSets.find(setName);
     if (i != imageSets.end()) {
         return i->second;
-    } else {
-        return nullptr;
     }
+    return nullptr;
 }
 
 
@@ -695,8 +665,7 @@ ImageInfo *ImageMgr::getInfoFromSet(
     }
     /* if the image set contains the image we want,
        AND IT EXISTS we are done */
-    std::map<std::string, ImageInfo *>::iterator i =
-        imageset->info.find(name);
+    const auto i = imageset->info.find(name);
     if (i != imageset->info.end()) {
         if (imageExists(i->second)) {
             return i->second;
@@ -704,7 +673,7 @@ ImageInfo *ImageMgr::getInfoFromSet(
     }
     /* otherwise if this image set extends another,
        check the base image set */
-    while (imageset->extends != "") {
+    while (!imageset->extends.empty()) {
         imageset = getSet(imageset->extends);
         return getInfoFromSet(name, imageset);
     }
@@ -713,17 +682,16 @@ ImageInfo *ImageMgr::getInfoFromSet(
 
 std::string ImageMgr::guessFileType(const std::string &filename)
 {
-    if ((filename.length() >= 4)
-        && (filename.compare(filename.length() - 4, 4, ".png") == 0)) {
+    if (filename.length() >= 4
+        && filename.compare(filename.length() - 4, 4, ".png") == 0) {
         return "image/png";
-    } else {
-        return "";
     }
+    return "";
 }
 
 bool ImageMgr::imageExists(const ImageInfo *info)
 {
-    if (info->filename == "") { // If it's an abstract image like "screen"
+    if (info->filename.empty()) { // If it's an abstract image like "screen"
         return true;
     }
     U4FILE *file = getImageFile(info);
@@ -740,14 +708,14 @@ U4FILE *ImageMgr::getImageFile(const ImageInfo *info)
     /*
      * If the u4 VGA upgrade is installed (i.e. setup has been run and
      * the u4dos files have been renamed), we need to use VGA names
-     * for EGA and vice versa, but *only* when the upgrade file has a
-     * .old extention.  The charset and tiles have a .vga extention
+     * for EGA and vice versa, but *only* when the upgrade file has an
+     * .old extension.  The charset and tiles have a .vga extension
      * and are not renamed in the upgrade installation process
      */
     if (u4isUpgradeInstalled()
-        && (getInfoFromSet(
+        && getInfoFromSet(
             info->name, getSet("VGA")
-        )->filename.find(".old") != std::string::npos)) {
+        )->filename.find(".old") != std::string::npos) {
         if (settings.videoType == "EGA") {
             filename = getInfoFromSet(
                 info->name, getSet("VGA")
@@ -758,12 +726,12 @@ U4FILE *ImageMgr::getImageFile(const ImageInfo *info)
             )->filename;
         }
     }
-    if (filename == "") {
+    if (filename.empty()) {
         return nullptr;
     }
     U4FILE *file = nullptr;
     if (info->xu4Graphic) {
-        std::string pathname(u4find_graphics(filename));
+        const std::string &pathname = u4find_graphics(filename);
         if (!pathname.empty()) {
             file = u4fopen_stdio(pathname);
         }
@@ -777,7 +745,7 @@ U4FILE *ImageMgr::getImageFile(const ImageInfo *info)
 /**
  * Load in a background image from a ".ega" file.
  */
-ImageInfo *ImageMgr::get(const std::string &name, bool returnUnscaled)
+ImageInfo *ImageMgr::get(const std::string &name, const bool returnUnscaled)
 {
     ImageInfo *info = getInfo(name);
     if (!info) {
@@ -800,7 +768,7 @@ ImageInfo *ImageMgr::get(const std::string &name, bool returnUnscaled)
         if (info->filetype.empty()) {
             info->filetype = guessFileType(info->filename);
         }
-        std::string filetype = info->filetype;
+        const std::string &filetype = info->filetype;
         ImageLoader *loader = ImageLoader::getLoader(filetype);
         if (loader == nullptr) {
             errorWarning(
@@ -852,29 +820,29 @@ ImageInfo *ImageMgr::get(const std::string &name, bool returnUnscaled)
     case FIXUP_ABACUS:
         fixupAbacus(unscaled, info->prescale);
         break;
-    case FIXUP_DUNGNS:
+    case FIXUP_DUNGEON_NS:
         fixupDungNS(unscaled, info->prescale);
         break;
-    case FIXUP_FMTOWNSSCREEN:
+    case FIXUP_FM_TOWNS_SCREEN:
         fixupFMTowns(unscaled, info->prescale);
         break;
-    case FIXUP_BLACKTRANSPARENCYHACK:
+    case FIXUP_BLACK_TRANSPARENCY_HACK:
         // Apply transparency shadow hack to ultima4
         // ega and vga upgrade classic graphics.
-        Image *unscaled_original = unscaled;
+        const Image *unscaled_original = unscaled;
         unscaled = Image::duplicate(unscaled);
         delete unscaled_original;
         if (Settings::getInstance().enhancementsOptions
             .u4TileTransparencyHack) {
-            int transparency_shadow_size =
+            const int transparency_shadow_size =
                 Settings::getInstance().enhancementsOptions
                 .u4TileTransparencyHackShadowBreadth;
-            int black_index = 0;
-            int opacity =
+            const int opacity =
                 Settings::getInstance().enhancementsOptions
                 .u4TileTransparencyHackPixelShadowOpacity;
-            int frames = info->tiles;
+            const int frames = info->tiles;
             for (int f = 0; f < frames; ++f) {
+                constexpr int black_index = 0;
                 unscaled->performTransparencyHack(
                     black_index,
                     frames,
@@ -891,8 +859,9 @@ ImageInfo *ImageMgr::get(const std::string &name, bool returnUnscaled)
         return info;
     }
     int imageScale = settings.scale;
-    if ((settings.scale % info->prescale) != 0) {
-        int orig_scale = settings.scale;
+    if (settings.scale % info->prescale != 0) {
+        // ReSharper disable once CppVariableCanBeMadeConstexpr
+        const int orig_scale = settings.scale;
 #if 0
         settings.scale = info->prescale;
 #endif
@@ -918,15 +887,11 @@ ImageInfo *ImageMgr::get(const std::string &name, bool returnUnscaled)
  */
 SubImage *ImageMgr::getSubImage(const std::string &name)
 {
-    ImageSet *set = baseSet;
+    const ImageSet *set = baseSet;
     while (set != nullptr) {
-        for (std::map<std::string, ImageInfo *>::const_iterator i =
-                 set->info.cbegin();
-             i != set->info.cend();
-             ++i) {
-            ImageInfo *info = i->second;
-            std::map<std::string, SubImage *>::iterator j =
-                info->subImages.find(name);
+        for (const auto &i: set->info) {
+            ImageInfo *info = i.second;
+            auto j = info->subImages.find(name);
             if (j != info->subImages.end()) {
                 return j->second;
             }
@@ -940,19 +905,13 @@ SubImage *ImageMgr::getSubImage(const std::string &name)
 /**
  * Free up any background images used only in the animations.
  */
-void ImageMgr::freeIntroBackgrounds()
+void ImageMgr::freeIntroBackgrounds() const
 {
-    for (std::map<std::string, ImageSet *>::iterator i =
-             imageSets.begin();
-         i != imageSets.end();
-         ++i) {
-        ImageSet *set = i->second;
-        for (std::map<std::string, ImageInfo *>::iterator j =
-                 set->info.begin();
-             j != set->info.end();
-             ++j) {
-            ImageInfo *info = j->second;
-            if ((info->image != nullptr) && info->introOnly) {
+    for (const auto &imageSet: imageSets) {
+        const ImageSet *set = imageSet.second;
+        for (const auto &j: set->info) {
+            ImageInfo *info = j.second;
+            if (info->image != nullptr && info->introOnly) {
                 delete info->image;
                 info->image = nullptr;
             }
@@ -972,21 +931,18 @@ const std::vector<std::string> &ImageMgr::getSetNames() const
  // cppcheck-suppress constParameterPointer // Observer pattern -> no const
 void ImageMgr::update(Settings *newSettings)
 {
-    std::string setname;
-    setname = newSettings->videoType;
+    const std::string &setName = newSettings->videoType;
     TRACE(
         *logger,
-        std::string("base image set is '") + setname + std::string("'")
+        std::string("base image set is '") + setName + std::string("'")
     );
-    baseSet = getSet(setname);
+    baseSet = getSet(setName);
 }
 
 ImageSet::~ImageSet()
 {
-    for (std::map<std::string, ImageInfo *>::iterator i = info.begin();
-         i != info.end();
-         ++i) {
-        ImageInfo *imageInfo = i->second;
+    for (const auto &i: info) {
+        const ImageInfo *imageInfo = i.second;
         if (imageInfo->name != "screen") {
             delete imageInfo;
         }
@@ -995,11 +951,8 @@ ImageSet::~ImageSet()
 
 ImageInfo::~ImageInfo()
 {
-    for (std::map<std::string, SubImage *>::iterator i =
-             subImages.begin();
-         i != subImages.end();
-         ++i) {
-        delete i->second;
+    for (const auto &subImage: subImages) {
+        delete subImage.second;
     }
     delete image;
 }

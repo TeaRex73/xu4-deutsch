@@ -240,7 +240,7 @@ void MapMgr::initCityFromConf(const ConfigElement &cityConf, City *city)
 {
     city->name = cityConf.getString("name");
     city->cityType = cityConf.getString("type");
-    city->tlk_fname = cityConf.getString("tlk_fname");
+    city->tlkFileName = cityConf.getString("tlk_fname");
     std::vector<ConfigElement> children = cityConf.getChildren();
     for (std::vector<ConfigElement>::const_iterator i = children.cbegin();
          i != children.cend();

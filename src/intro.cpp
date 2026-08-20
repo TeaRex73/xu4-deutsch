@@ -7,12 +7,17 @@
 #include <algorithm>
 #include <cstdint>
 #include <cstdio>
+#include <cstdlib>
+#include <random>
+#include <string>
+#include <vector>
 
-#include <SDL.h>
+#include <SDL.h> // IWYU pragma: keep
 #include <unistd.h>
 
 #include "intro.h"
 
+#include "controller.h"
 #include "debug.h"
 #include "error.h"
 #include "event.h"
@@ -44,9 +49,9 @@ extern int quit;
 IntroController *intro = nullptr;
 
 #if defined(FS_WINDOWS)
-const std::string tmpstr = "X";
+const std::string tmpStr = "X";
 #elif defined(FS_POSIX)
-const std::string tmpstr = "/tmp/";
+const std::string tmpStr = "/tmp/";
 #else
 #error filesystem not defined
 #endif
@@ -58,12 +63,12 @@ const std::string tmpstr = "/tmp/";
 #define INTRO_TEXT_WIDTH 40
 #define INTRO_TEXT_HEIGHT 7
 
-#define GYP_PLACES_FIRST 0
-#define GYP_PLACES_TWOMORE 1
-#define GYP_PLACES_LAST 2
-#define GYP_UPON_TABLE 3
-#define GYP_SEGUE1 12
-#define GYP_SEGUE2 13
+#define GYPSY_PLACES_FIRST 0
+#define GYPSY_PLACES_TWO_MORE 1
+#define GYPSY_PLACES_LAST 2
+#define GYPSY_UPON_TABLE 3
+#define GYPSY_SEGUE1 12
+#define GYPSY_SEGUE2 13
 
 class IntroObjectState {
 public:
@@ -77,15 +82,15 @@ public:
 };
 
 /* temporary place-holder for settings changes */
-SettingsData settingsChanged;
+static SettingsData settingsChanged;
 
 const int IntroBinData::INTRO_TEXT_OFFSET = 17445 - 1;  // (start at zero)
 const int IntroBinData::INTRO_MAP_OFFSET = 30339;
-const int IntroBinData::INTRO_FIXUPDATA_OFFSET = 29806;
+const int IntroBinData::INTRO_FIXUP_DATA_OFFSET = 29806;
 const int IntroBinData::INTRO_SCRIPT_TABLE_SIZE = 548;
 const int IntroBinData::INTRO_SCRIPT_TABLE_OFFSET = 30434;
-const int IntroBinData::INTRO_BASETILE_TABLE_SIZE = 15;
-const int IntroBinData::INTRO_BASETILE_TABLE_OFFSET = 16584;
+const int IntroBinData::INTRO_BASE_TILE_TABLE_SIZE = 15;
+const int IntroBinData::INTRO_BASE_TILE_TABLE_OFFSET = 16584;
 const int IntroBinData::BEASTIE1_FRAMES = 0x80;
 const int IntroBinData::BEASTIE2_FRAMES = 0x40;
 const int IntroBinData::BEASTIE_FRAME_TABLE_OFFSET = 0x7380;
@@ -93,15 +98,14 @@ const int IntroBinData::BEASTIE1_FRAMES_OFFSET = 0;
 const int IntroBinData::BEASTIE2_FRAMES_OFFSET = 0x78;
 
 IntroBinData::IntroBinData()
-    :introMap(),
-     sigData(nullptr),
-     scriptTable(nullptr),
-     baseTileTable(nullptr),
-     beastie1FrameTable(nullptr),
-     beastie2FrameTable(nullptr),
-     introText(),
-     introQuestions(),
-     introGypsy()
+    : sigData(nullptr),
+      scriptTable(nullptr),
+      baseTileTable(nullptr),
+      beastie1FrameTable(nullptr),
+      beastie2FrameTable(nullptr),
+      introText(),
+      introQuestions(),
+      introGypsy()
 {
 }
 
@@ -128,26 +132,26 @@ IntroBinData::~IntroBinData()
 bool IntroBinData::load()
 {
     int i;
-    U4FILE *introger = u4fopen("introm.ger");
-    if (!introger) {
+    U4FILE *introGerman = u4fopen("introm.ger");
+    if (!introGerman) {
         return false;
     }
     U4FILE *title = u4fopen("title.exe");
     if (!title) {
         return false;
     }
-    introQuestions[0] = u4read_stringtable(introger, 0, 28);
-    introText[0] = u4read_stringtable(introger, -1, 25);
-    introGypsy[0] = u4read_stringtable(introger, -1, 14);
-    u4fclose(introger);
-    introger = u4fopen("introf.ger");
-    if (!introger) {
+    introQuestions[0] = u4read_stringtable(introGerman, 0, 28);
+    introText[0] = u4read_stringtable(introGerman, -1, 25);
+    introGypsy[0] = u4read_stringtable(introGerman, -1, 14);
+    u4fclose(introGerman);
+    introGerman = u4fopen("introf.ger");
+    if (!introGerman) {
         return false;
     }
-    introQuestions[1] = u4read_stringtable(introger, 0, 28);
-    introText[1] = u4read_stringtable(introger, -1, 25);
-    introGypsy[1] = u4read_stringtable(introger, -1, 14);
-    u4fclose(introger);
+    introQuestions[1] = u4read_stringtable(introGerman, 0, 28);
+    introText[1] = u4read_stringtable(introGerman, -1, 25);
+    introGypsy[1] = u4read_stringtable(introGerman, -1, 14);
+    u4fclose(introGerman);
 
     /* clean up stray newlines at end of strings */
     for (i = 0; i < 14; i++) {
@@ -155,7 +159,7 @@ bool IntroBinData::load()
     }
     delete sigData;
     sigData = new unsigned char[533];
-    u4fseek(title, INTRO_FIXUPDATA_OFFSET, SEEK_SET);
+    u4fseek(title, INTRO_FIXUP_DATA_OFFSET, SEEK_SET);
     u4fread(sigData, 1, 533, title);
     u4fseek(title, INTRO_MAP_OFFSET, SEEK_SET);
     introMap.resize(INTRO_MAP_WIDTH * INTRO_MAP_HEIGHT, MapTile(0));
@@ -167,9 +171,9 @@ bool IntroBinData::load()
     for (i = 0; i < INTRO_SCRIPT_TABLE_SIZE; i++) {
         scriptTable[i] = u4fgetc(title);
     }
-    u4fseek(title, INTRO_BASETILE_TABLE_OFFSET, SEEK_SET);
-    baseTileTable = new Tile *[INTRO_BASETILE_TABLE_SIZE];
-    for (i = 0; i < INTRO_BASETILE_TABLE_SIZE; i++) {
+    u4fseek(title, INTRO_BASE_TILE_TABLE_OFFSET, SEEK_SET);
+    baseTileTable = new Tile *[INTRO_BASE_TILE_TABLE_SIZE];
+    for (i = 0; i < INTRO_BASE_TILE_TABLE_SIZE; i++) {
         MapTile tile = TileMap::get("base")->translate(u4fgetc(title));
         baseTileTable[i] = Tileset::get("base")->get(tile.getId());
     }
@@ -200,7 +204,6 @@ bool IntroBinData::load()
 IntroController::IntroController()
     :Controller(1),
      mode(INTRO_TITLES),
-     backgroundArea(),
      menuArea(1 * CHAR_WIDTH, 13 * CHAR_HEIGHT + 4, 38, 11),
      extendedMenuArea(2 * CHAR_WIDTH, 10 * CHAR_HEIGHT + 4, 36, 13),
      questionArea(
@@ -211,22 +214,12 @@ IntroController::IntroController()
      ),
      mapArea(
          BORDER_WIDTH,
-         (TILE_HEIGHT * 6) + BORDER_HEIGHT + 4,
+         TILE_HEIGHT * 6 + BORDER_HEIGHT + 4,
          INTRO_MAP_WIDTH,
          INTRO_MAP_HEIGHT,
          "base"
      ),
-     mainMenu(),
-     confMenu(),
-     videoMenu(),
-     gfxMenu(),
-     soundMenu(),
-     inputMenu(),
-     speedMenu(),
-     gameplayMenu(),
-     interfaceMenu(),
      binData(nullptr),
-     errorMessage(),
      answerInd(0),
      questionRound(0),
      questionTree(),
@@ -239,10 +232,8 @@ IntroController::IntroController()
      objectStateTable(nullptr),
      justInitiatedNewGame(false),
      initiatingNewGame(false),
-     titles(), // element list
      title(titles.begin()), // element iterator
-     transparentIndex(2), // palette index for transparency
-     transparentColor(), // palette color for transparency
+     transparentIndex(2), // palette color for transparency
      bSkipTitles(false)
 {
     // initialize menus
@@ -764,8 +755,8 @@ IntroController::AnimElement::~AnimElement()
  */
 bool IntroController::init()
 {
-    std::remove((tmpstr + PARTY_SAV_BASE_FILENAME).c_str());
-    std::remove((tmpstr + MONSTERS_SAV_BASE_FILENAME).c_str());
+    std::remove((tmpStr + PARTY_SAV_BASE_FILENAME).c_str());
+    std::remove((tmpStr + MONSTERS_SAV_BASE_FILENAME).c_str());
     justInitiatedNewGame = false;
     initiatingNewGame = false;
     // sigData is referenced during Titles initialization
@@ -791,7 +782,7 @@ bool IntroController::init()
     sleepCycles = 0;
     scrPos = 0;
     objectStateTable =
-        new IntroObjectState[IntroBinData::INTRO_BASETILE_TABLE_SIZE];
+        new IntroObjectState[IntroBinData::INTRO_BASE_TILE_TABLE_SIZE];
     backgroundArea.reinit();
     menuArea.reinit();
     extendedMenuArea.reinit();
@@ -824,7 +815,7 @@ void IntroController::deleteIntro()
     bSkipTitles = true;
 }
 
-unsigned char *IntroController::getSigData()
+unsigned char *IntroController::getSigData() const
 {
     U4ASSERT(binData->sigData != nullptr, "intro sig data not loaded");
     return binData->sigData;
@@ -847,7 +838,7 @@ bool IntroController::keyPressed(int key)
         updateScreen();
         break;
     case INTRO_MENU:
-        if ((key >= 'A') && (key <= ']')) {
+        if (key >= 'A' && key <= ']') {
             key = xu4_tolower(key);
         }
         switch (key) {
@@ -940,9 +931,9 @@ void IntroController::drawMap()
                     binData->scriptTable[scrPos + 1] & 0x1f;
                 objectStateTable[dataNibble].y = commandNibble;
                 // See if the tile id needs to be recalculated
-                if ((binData->scriptTable[scrPos + 1] >> 5)
+                if (binData->scriptTable[scrPos + 1] >> 5
                     >= binData->baseTileTable[dataNibble]->getFrames()) {
-                    int frame = (binData->scriptTable[scrPos + 1] >> 5)
+                    const int frame = (binData->scriptTable[scrPos + 1] >> 5)
                         - binData->baseTileTable[dataNibble]->getFrames();
                     objectStateTable[dataNibble].tile = MapTile(
                         binData->baseTileTable[dataNibble]->getId() + 1
@@ -997,12 +988,11 @@ void IntroController::drawMap()
 
 void IntroController::drawMapStatic()
 {
-    int x, y;
     // draw unmodified map
-    for (y = 0; y < INTRO_MAP_HEIGHT; y++) {
-        for (x = 0; x < INTRO_MAP_WIDTH; x++) {
+    for (int y = 0; y < INTRO_MAP_HEIGHT; y++) {
+        for (int x = 0; x < INTRO_MAP_WIDTH; x++) {
             mapArea.drawTile(
-                binData->introMap[x + (y * INTRO_MAP_WIDTH)], false, x, y
+                binData->introMap[x + y * INTRO_MAP_WIDTH], false, x, y
             );
         }
     }
@@ -1010,17 +1000,16 @@ void IntroController::drawMapStatic()
 
 void IntroController::drawMapAnimated()
 {
-    int i;
     int x, y;
     MapTile tempMap[INTRO_MAP_WIDTH][INTRO_MAP_HEIGHT];
     // draw unmodified map
     for (y = 0; y < INTRO_MAP_HEIGHT; y++) {
         for (x = 0; x < INTRO_MAP_WIDTH; x++) {
-            tempMap[x][y] = binData->introMap[x + (y * INTRO_MAP_WIDTH)];
+            tempMap[x][y] = binData->introMap[x + y * INTRO_MAP_WIDTH];
         }
     }
     // draw animated objects
-    for (i = 0; i < IntroBinData::INTRO_BASETILE_TABLE_SIZE; i++) {
+    for (int i = 0; i < IntroBinData::INTRO_BASE_TILE_TABLE_SIZE; i++) {
         if (objectStateTable[i].tile != 0) {
 #if 0
             std::vector<MapTile> tiles;
@@ -1047,7 +1036,7 @@ void IntroController::drawMapAnimated()
 /**
  * Draws the animated beasts in the upper corners of the screen.
  */
-void IntroController::drawBeasties(bool musicon)
+void IntroController::drawBeasties(const bool musicon)
 {
     static bool music_has_started = false;
     if (bSkipTitles) beastieOffset = 0;
@@ -1069,15 +1058,16 @@ void IntroController::drawBeasties(bool musicon)
  * screen.  vertoffset is used lower the creatures down from the top
  * of the screen.
  */
-void IntroController::drawBeastie(int beast, int vertoffset, int frame) const
+void IntroController::drawBeastie(
+    const int beast, const int vertOffset, const int frame
+) const
 {
     char buffer[16];
-    int destx;
-    Image *screen = imageMgr->get("screen")->image;
+    const Image *screen = imageMgr->get("screen")->image;
     U4ASSERT(beast == 0 || beast == 1, "invalid beast: %d", beast);
     std::snprintf(buffer, 16, "beast%dframe%02d", beast, frame);
-    destx = beast ? (320 - 48) : 0;
-    backgroundArea.draw(buffer, destx, vertoffset + 4);
+    const int destX = beast ? 320 - 48 : 0;
+    backgroundArea.draw(buffer, destX, vertOffset + 4);
     screen->fillRect(
         0, 0, 320 * settings.scale, 4 * settings.scale, 0, 0, 0
     );
@@ -1102,7 +1092,7 @@ void IntroController::animateTree(const std::string &frame) const
 /**
  * Draws the cards in the character creation sequence with the gypsy.
  */
-void IntroController::drawCard(int pos, int card) const
+void IntroController::drawCard(const int pos, const int card) const
 {
     static const char *cardNames[] = {
         "honestycard",
@@ -1124,7 +1114,7 @@ void IntroController::drawCard(int pos, int card) const
  * Draws the beads in the abacus during the character creation sequence
  */
 void IntroController::drawAbacusBeads(
-    int row, int selectedVirtue, int rejectedVirtue
+    const int row, const int selectedVirtue, const int rejectedVirtue
 ) const
 {
     U4ASSERT(row >= 0 && row < 7, "invalid row: %d", row);
@@ -1139,10 +1129,10 @@ void IntroController::drawAbacusBeads(
         rejectedVirtue
     );
     backgroundArea.draw(
-        "whitebead", 132 + (selectedVirtue * 7), 16 + (row * 16)
+        "whitebead", 132 + selectedVirtue * 7, 16 + row * 16
     );
     backgroundArea.draw(
-        "blackbead", 132 + (rejectedVirtue * 7), 16 + (row * 16)
+        "blackbead", 132 + rejectedVirtue * 7, 16 + row * 16
     );
 }
 
@@ -1161,7 +1151,9 @@ void IntroController::updateScreen()
         // display the profile name if a local profile is being used
         if (useProfile) {
             screenTextAt(
-                40 - profileName.length(), 24, "%s", profileName.c_str()
+                40 - static_cast<int>(profileName.length()),
+                24,
+                "%s", profileName.c_str()
             );
         }
         break;
@@ -1187,7 +1179,7 @@ void IntroController::updateScreen()
             10,
             5,
             "%s",
-            menuArea.colorizeString(
+            TextView::colorizeString(
                 "Zur}ck zur Ansicht", FG_YELLOW, 0, 1
             ).c_str()
         );
@@ -1195,7 +1187,7 @@ void IntroController::updateScreen()
             10,
             6,
             "%s",
-            menuArea.colorizeString(
+            TextView::colorizeString(
                 "Reise fortsetzen", FG_YELLOW, 0, 1
             ).c_str()
         );
@@ -1203,7 +1195,7 @@ void IntroController::updateScreen()
             10,
             7,
             "%s",
-            menuArea.colorizeString(
+            TextView::colorizeString(
                 "Neues Spiel starten", FG_YELLOW, 0, 1
             ).c_str()
         );
@@ -1230,7 +1222,7 @@ void IntroController::updateScreen()
             10,
             8,
             "%s",
-            menuArea.colorizeString(
+            TextView::colorizeString(
                 "]ber dieses Spiel",
                 FG_YELLOW,
                 0,
@@ -1273,8 +1265,8 @@ void IntroController::initiateNewGame()
     menuArea.enableCursor();
     drawBeasties(false);
     screenRedrawScreen();
-    std::string nameBuffer = ReadStringController::getString(8, &menuArea);
-    if (nameBuffer.length() == 0) {
+    const std::string nameBuffer = ReadStringController::getString(8, &menuArea);
+    if (nameBuffer.empty()) {
         // the user didn't enter a name
         menuArea.disableCursor();
         screenEnableCursor();
@@ -1290,7 +1282,7 @@ void IntroController::initiateNewGame()
     menuArea.setCursorPos(34, 3, true);
     drawBeasties(false);
     SexType sex;
-    int sexChoice = ReadChoiceController::getChar("mw");
+    const int sexChoice = ReadChoiceController::getChar("mw");
     if (sexChoice == 'm') {
         sex = SEX_MALE;
     } else {
@@ -1300,7 +1292,7 @@ void IntroController::initiateNewGame()
 } // IntroController::initiateNewGame
 
 void IntroController::finishInitiateGame(
-    const std::string &nameBuffer, SexType sex
+    const std::string &nameBuffer, const SexType sex
 )
 {
     // no more text entry, so disable the text cursor
@@ -1310,10 +1302,10 @@ void IntroController::finishInitiateGame(
     // ask questions that determine character class
     startQuestions(sex);
     // write out save game and segue into game
-    SaveGame saveGame;
-    SaveGamePlayerRecord avatar;
+    SaveGame saveGame {};
+    SaveGamePlayerRecord avatar {};
     std::FILE *saveGameFile =
-        std::fopen((tmpstr + PARTY_SAV_BASE_FILENAME).c_str(), "wb");
+        std::fopen((tmpStr + PARTY_SAV_BASE_FILENAME).c_str(), "wb");
     if (!saveGameFile) {
         questionArea.disableCursor();
         errorMessage = "Spielstand nicht erstellbar!";
@@ -1337,7 +1329,7 @@ void IntroController::finishInitiateGame(
     std::fclose(saveGameFile);
     sync();
     saveGameFile =
-        std::fopen((tmpstr + MONSTERS_SAV_BASE_FILENAME).c_str(), "wb");
+        std::fopen((tmpStr + MONSTERS_SAV_BASE_FILENAME).c_str(), "wb");
     if (saveGameFile) {
         saveGameMonstersWrite(nullptr, saveGameFile);
         std::fflush(saveGameFile);
@@ -1346,12 +1338,12 @@ void IntroController::finishInitiateGame(
         sync();
     }
     justInitiatedNewGame = true;
-    // show the text thats segues into the main game
-    showText(binData->introGypsy[sex == SEX_FEMALE][GYP_SEGUE1]);
+    // show the text that segues into the main game
+    showText(binData->introGypsy[sex == SEX_FEMALE][GYPSY_SEGUE1]);
     ReadChoiceController pauseController("");
     eventHandler->pushController(&pauseController);
     pauseController.waitFor();
-    showText(binData->introGypsy[sex == SEX_FEMALE][GYP_SEGUE2]);
+    showText(binData->introGypsy[sex == SEX_FEMALE][GYPSY_SEGUE2]);
     eventHandler->pushController(&pauseController);
     pauseController.waitFor();
     backgroundArea.clear();
@@ -1360,13 +1352,13 @@ void IntroController::finishInitiateGame(
     EventHandler::setControllerDone();
 } // IntroController::finishInitiateGame
 
-void IntroController::showStory(SexType sex)
+void IntroController::showStory(const SexType sex)
 {
     ReadChoiceController pauseController("");
     beastiesVisible = false;
     questionArea.setCursorFollowsText(true);
     for (int storyInd = 0; storyInd < 25; storyInd++) {
-        if (storyInd == 0) {
+        if (storyInd == 0 || storyInd == 12) {
             backgroundArea.draw(BKGD_TREE);
         } else if (storyInd == 3) {
             soundPlay(SOUND_INTROGATE_OPEN);
@@ -1376,8 +1368,6 @@ void IntroController::showStory(SexType sex)
             animateTree("items");
         } else if (storyInd == 6) {
             backgroundArea.draw(BKGD_PORTAL);
-        } else if (storyInd == 12) {
-            backgroundArea.draw(BKGD_TREE);
         } else if (storyInd == 15) {
             musicMgr->create_or_win();
         } else if (storyInd == 16) {
@@ -1405,13 +1395,13 @@ void IntroController::showStory(SexType sex)
  * Starts the gypsys questioning that eventually determines the new
  * characters class.
  */
-void IntroController::startQuestions(SexType sex)
+void IntroController::startQuestions(const SexType sex)
 {
     ReadChoiceController pauseController("");
     ReadChoiceController questionController("ab");
     questionRound = 0;
     initQuestionTree();
-    while (1) {
+    while (true) {
         // draw the abacus background, if necessary
         if (questionRound == 0) {
             backgroundArea.draw(BKGD_ABACUS);
@@ -1426,15 +1416,15 @@ void IntroController::startQuestions(SexType sex)
             "%s",
             binData->introGypsy[sex == SEX_FEMALE][
                 questionRound == 0 ?
-                GYP_PLACES_FIRST :
-                (questionRound == 6 ? GYP_PLACES_LAST : GYP_PLACES_TWOMORE)
+                GYPSY_PLACES_FIRST :
+                questionRound == 6 ? GYPSY_PLACES_LAST : GYPSY_PLACES_TWO_MORE
             ].c_str()
         );
         questionArea.textAt(
             0,
             1,
             "%s",
-            binData->introGypsy[sex == SEX_FEMALE][GYP_UPON_TABLE].c_str()
+            binData->introGypsy[sex == SEX_FEMALE][GYPSY_UPON_TABLE].c_str()
         );
         questionArea.textAt(
             0,
@@ -1462,9 +1452,9 @@ void IntroController::startQuestions(SexType sex)
         );
         // wait for an answer
         eventHandler->pushController(&questionController);
-        int choice = questionController.waitFor();
+        const int choice = questionController.waitFor();
         // update the question tree
-        if (doQuestion((choice == 'a') ? 0 : 1)) {
+        if (doQuestion(choice == 'a' ? 0 : 1)) {
             return;
         }
     }
@@ -1475,7 +1465,9 @@ void IntroController::startQuestions(SexType sex)
  * Get the text for the question giving a choice between virtue v1 and
  * virtue v2 (zero based virtue index, starting at honesty).
  */
-std::string IntroController::getQuestion(SexType sex, int v1, int v2) const
+std::string &IntroController::getQuestion(
+    const SexType sex, int v1, int v2
+) const
 {
     int i = 0;
     int d = 7;
@@ -1489,7 +1481,7 @@ std::string IntroController::getQuestion(SexType sex, int v1, int v2) const
         v1--;
         v2--;
     }
-    U4ASSERT((i + v2 - 1) < 28, "calculation failed");
+    U4ASSERT(i + v2 - 1 < 28, "calculation failed");
     return binData->introQuestions[sex == SEX_FEMALE][i + v2 - 1];
 }
 
@@ -1499,15 +1491,14 @@ std::string IntroController::getQuestion(SexType sex, int v1, int v2) const
  */
 void IntroController::journeyOnward()
 {
-    std::FILE *saveGameFile;
     bool validSave = false;
     /*
      * ensure a party.sav file exists, otherwise require user to
      * initiate game
      */
     // First try loading the (temporary) just-inited savegame...
-    saveGameFile =
-        std::fopen((tmpstr + PARTY_SAV_BASE_FILENAME).c_str(), "rb");
+    std::FILE *saveGameFile = std::fopen(
+        (tmpStr + PARTY_SAV_BASE_FILENAME).c_str(), "rb");
     if (!saveGameFile) {
         // ...and if that doesn't work load the real main savegame
         saveGameFile = std::fopen(
@@ -1515,7 +1506,7 @@ void IntroController::journeyOnward()
         );
     }
     if (saveGameFile) {
-        SaveGame *saveGame = new SaveGame;
+        auto *saveGame = new SaveGame;
         // Make sure there are players in party.sav --
         // In the Ultima Collection CD, party.sav exists, but does
         // not contain valid info to journey onward
@@ -1569,11 +1560,11 @@ void IntroController::showText(const std::string &text)
     std::string current = text;
     int lineNo = 0;
     questionArea.clear();
-    std::size_t pos = current.find("\n");
+    std::size_t pos = current.find('\n');
     while (pos < current.length()) {
         questionArea.textAt(0, lineNo++, "%s", current.substr(0, pos).c_str());
         current = current.substr(pos + 1);
-        pos = current.find("\n");
+        pos = current.find('\n');
     }
     /* write the last line (possibly only line) */
     questionArea.textAt(0, lineNo++, "%s", current.substr(0, pos).c_str());
@@ -1584,7 +1575,9 @@ void IntroController::showText(const std::string &text)
  * Run a menu and return when the menu has been closed.  Screen
  * updates are handled by observing the menu.
  */
-void IntroController::runMenu(Menu *menu, TextView *view, bool withBeasties)
+void IntroController::runMenu(
+    Menu *menu, TextView *view, const bool withBeasties
+)
 {
     menu->addObserver(this);
     menu->reset();
@@ -1634,10 +1627,10 @@ void IntroController::timerFired()
     if (EventHandler::timerQueueEmpty()) {
         screenRedrawScreen();
     }
-    if (xu4_random(2) && (++beastie1Cycle >= IntroBinData::BEASTIE1_FRAMES)) {
+    if (xu4_random(2) && ++beastie1Cycle >= IntroBinData::BEASTIE1_FRAMES) {
         beastie1Cycle = 0;
     }
-    if (xu4_random(2) && (++beastie2Cycle >= IntroBinData::BEASTIE2_FRAMES)) {
+    if (xu4_random(2) && ++beastie2Cycle >= IntroBinData::BEASTIE2_FRAMES) {
         beastie2Cycle = 0;
     }
 } // IntroController::timerFired
@@ -1674,9 +1667,9 @@ void IntroController::update(Menu *menu, MenuEvent &event)
 
 void IntroController::updateConfMenu(const MenuEvent &event)
 {
-    if ((event.getType() == MenuEvent::ACTIVATE)
-        || (event.getType() == MenuEvent::INCREMENT)
-        || (event.getType() == MenuEvent::DECREMENT)) {
+    if (event.getType() == MenuEvent::ACTIVATE
+        || event.getType() == MenuEvent::INCREMENT
+        || event.getType() == MenuEvent::DECREMENT) {
         // show or hide game enhancement options if enhancements are
         // enabled/disabled
         confMenu.getItemById(MI_CONF_GAMEPLAY)
@@ -1710,7 +1703,7 @@ void IntroController::updateConfMenu(const MenuEvent &event)
             break;
         case CANCEL:
             // discard settings
-            settingsChanged = settings;
+            settingsChanged = static_cast<SettingsData>(settings);
             break;
         default:
             break;
@@ -1724,9 +1717,9 @@ void IntroController::updateConfMenu(const MenuEvent &event)
 
 void IntroController::updateVideoMenu(const MenuEvent &event)
 {
-    if ((event.getType() == MenuEvent::ACTIVATE)
-        || (event.getType() == MenuEvent::INCREMENT)
-        || (event.getType() == MenuEvent::DECREMENT)) {
+    if (event.getType() == MenuEvent::ACTIVATE
+        || event.getType() == MenuEvent::INCREMENT
+        || event.getType() == MenuEvent::DECREMENT) {
         switch (event.getMenuItem()->getId()) {
         case USE_SETTINGS:
             /* save settings (if necessary) */
@@ -1744,7 +1737,7 @@ void IntroController::updateVideoMenu(const MenuEvent &event)
             break;
         case CANCEL:
             // discard settings
-            settingsChanged = settings;
+            settingsChanged = static_cast<SettingsData>(settings);
             break;
         default:
             break;
@@ -1758,9 +1751,9 @@ void IntroController::updateVideoMenu(const MenuEvent &event)
 
 void IntroController::updateGfxMenu(const MenuEvent &event)
 {
-    if ((event.getType() == MenuEvent::ACTIVATE)
-        || (event.getType() == MenuEvent::INCREMENT)
-        || (event.getType() == MenuEvent::DECREMENT)) {
+    if (event.getType() == MenuEvent::ACTIVATE
+        || event.getType() == MenuEvent::INCREMENT
+        || event.getType() == MenuEvent::DECREMENT) {
         switch (event.getMenuItem()->getId()) {
         case MI_GFX_RETURN:
             runMenu(&videoMenu, &extendedMenuArea, true);
@@ -1777,9 +1770,9 @@ void IntroController::updateGfxMenu(const MenuEvent &event)
 
 void IntroController::updateSoundMenu(const MenuEvent &event) const
 {
-    if ((event.getType() == MenuEvent::ACTIVATE)
-        || (event.getType() == MenuEvent::INCREMENT)
-        || (event.getType() == MenuEvent::DECREMENT)) {
+    if (event.getType() == MenuEvent::ACTIVATE
+        || event.getType() == MenuEvent::INCREMENT
+        || event.getType() == MenuEvent::DECREMENT) {
         switch (event.getMenuItem()->getId()) {
         case MI_SOUND_01:
             musicMgr->setMusicVolume(settingsChanged.musicVol);
@@ -1798,7 +1791,7 @@ void IntroController::updateSoundMenu(const MenuEvent &event) const
             musicMgr->setMusicVolume(settings.musicVol);
             musicMgr->setSoundVolume(settings.soundVol);
             // discard settings
-            settingsChanged = settings;
+            settingsChanged = static_cast<SettingsData>(settings);
             break;
         default:
             break;
@@ -1812,9 +1805,9 @@ void IntroController::updateSoundMenu(const MenuEvent &event) const
 
 void IntroController::updateInputMenu(const MenuEvent &event)
 {
-    if ((event.getType() == MenuEvent::ACTIVATE)
-        || (event.getType() == MenuEvent::INCREMENT)
-        || (event.getType() == MenuEvent::DECREMENT)) {
+    if (event.getType() == MenuEvent::ACTIVATE
+        || event.getType() == MenuEvent::INCREMENT
+        || event.getType() == MenuEvent::DECREMENT) {
         switch (event.getMenuItem()->getId()) {
         case USE_SETTINGS:
             // save settings
@@ -1832,7 +1825,7 @@ void IntroController::updateInputMenu(const MenuEvent &event)
             break;
         case CANCEL:
             // discard settings
-            settingsChanged = settings;
+            settingsChanged = static_cast<SettingsData>(settings);
             break;
         default:
             break;
@@ -1848,21 +1841,21 @@ void IntroController::updateInputMenu(const MenuEvent &event)
 
 void IntroController::updateSpeedMenu(const MenuEvent &event) const
 {
-    if ((event.getType() == MenuEvent::ACTIVATE)
-        || (event.getType() == MenuEvent::INCREMENT)
-        || (event.getType() == MenuEvent::DECREMENT)) {
+    if (event.getType() == MenuEvent::ACTIVATE
+        || event.getType() == MenuEvent::INCREMENT
+        || event.getType() == MenuEvent::DECREMENT) {
         switch (event.getMenuItem()->getId()) {
         case USE_SETTINGS:
             // save settings
             settings.setData(settingsChanged);
             settings.write();
             // re-initialize events
-            eventTimerGranularity = (1000 / settings.gameCyclesPerSecond);
+            eventTimerGranularity = 1000 / settings.gameCyclesPerSecond;
             eventHandler->getTimer()->reset(eventTimerGranularity);
             break;
         case CANCEL:
             // discard settings
-            settingsChanged = settings;
+            settingsChanged = static_cast<SettingsData>(settings);
             break;
         default:
             break;
@@ -1876,9 +1869,9 @@ void IntroController::updateSpeedMenu(const MenuEvent &event) const
 
 void IntroController::updateGameplayMenu(const MenuEvent &event) const
 {
-    if ((event.getType() == MenuEvent::ACTIVATE)
-        || (event.getType() == MenuEvent::INCREMENT)
-        || (event.getType() == MenuEvent::DECREMENT)) {
+    if (event.getType() == MenuEvent::ACTIVATE
+        || event.getType() == MenuEvent::INCREMENT
+        || event.getType() == MenuEvent::DECREMENT) {
         switch (event.getMenuItem()->getId()) {
         case USE_SETTINGS:
             // save settings
@@ -1887,7 +1880,7 @@ void IntroController::updateGameplayMenu(const MenuEvent &event) const
             break;
         case CANCEL:
             // discard settings
-            settingsChanged = settings;
+            settingsChanged = static_cast<SettingsData>(settings);
             break;
         default:
             break;
@@ -1901,9 +1894,9 @@ void IntroController::updateGameplayMenu(const MenuEvent &event) const
 
 void IntroController::updateInterfaceMenu(const MenuEvent &event)
 {
-    if ((event.getType() == MenuEvent::ACTIVATE)
-        || (event.getType() == MenuEvent::INCREMENT)
-        || (event.getType() == MenuEvent::DECREMENT)) {
+    if (event.getType() == MenuEvent::ACTIVATE
+        || event.getType() == MenuEvent::INCREMENT
+        || event.getType() == MenuEvent::DECREMENT) {
         switch (event.getMenuItem()->getId()) {
         case USE_SETTINGS:
             // save settings
@@ -1912,7 +1905,7 @@ void IntroController::updateInterfaceMenu(const MenuEvent &event)
             break;
         case CANCEL:
             // discard settings
-            settingsChanged = settings;
+            settingsChanged = static_cast<SettingsData>(settings);
             break;
         default:
             break;
@@ -1937,16 +1930,12 @@ void IntroController::initQuestionTree()
         questionTree[i] = i;
     }
     for (int i = 0; i < 8; i++) {
-        int r = xu4_random(8);
-        int tmp = questionTree[r];
-        questionTree[r] = questionTree[i];
-        questionTree[i] = tmp;
+        const int r = xu4_random(8);
+        std::swap(questionTree[i], questionTree[r]);
     }
     answerInd = 8;
     if (questionTree[0] > questionTree[1]) {
-        int tmp = questionTree[0];
-        questionTree[0] = questionTree[1];
-        questionTree[1] = tmp;
+        std::swap(questionTree[0], questionTree[1]);
     }
 }
 
@@ -1956,17 +1945,17 @@ void IntroController::initQuestionTree()
  * the next round.
  * @return true if all questions have been answered, false otherwise
  */
-bool IntroController::doQuestion(int answer)
+bool IntroController::doQuestion(const int answer)
 {
-    if (!answer) {
-        questionTree[answerInd] = questionTree[questionRound * 2];
-    } else {
+    if (answer) {
         questionTree[answerInd] = questionTree[questionRound * 2 + 1];
+    } else {
+        questionTree[answerInd] = questionTree[questionRound * 2];
     }
     drawAbacusBeads(
         questionRound,
         questionTree[answerInd],
-        questionTree[questionRound * 2 + ((answer) ? 0 : 1)]
+        questionTree[questionRound * 2 + (answer ? 0 : 1)]
     );
     answerInd++;
     questionRound++;
@@ -1975,9 +1964,10 @@ bool IntroController::doQuestion(int answer)
     }
     if (questionTree[questionRound * 2]
         > questionTree[questionRound * 2 + 1]) {
-        int tmp = questionTree[questionRound * 2];
-        questionTree[questionRound * 2] = questionTree[questionRound * 2 + 1];
-        questionTree[questionRound * 2 + 1] = tmp;
+        std::swap(
+            questionTree[questionRound * 2],
+            questionTree[questionRound * 2 + 1]
+        );
     }
     return false;
 }
@@ -1989,34 +1979,136 @@ bool IntroController::doQuestion(int answer)
  */
 void IntroController::initPlayers(SaveGame *saveGame) const
 {
-    int i, p;
     static const struct {
         WeaponType weapon;
         ArmorType armor;
         int level, xp, x, y;
     } initValuesForClass[] = {
-        { WEAP_STAFF, ARMR_CLOTH, 2, 125, 231, 136 }, /* CLASS_MAGE */
-        { WEAP_SLING, ARMR_CLOTH, 3, 240, 83, 105 }, /* CLASS_BARD */
-        { WEAP_AXE, ARMR_LEATHER, 3, 205, 35, 221 }, /* CLASS_FIGHTER */
-        { WEAP_DAGGER, ARMR_CLOTH, 2, 175, 59, 44 }, /* CLASS_DRUID */
-        { WEAP_MACE, ARMR_LEATHER, 2, 110, 158, 21 }, /* CLASS_TINKER */
-        { WEAP_SWORD, ARMR_CHAIN, 3, 325, 105, 183 }, /* CLASS_PALADIN */
-        { WEAP_SWORD, ARMR_LEATHER, 2, 150, 23, 129 }, /* CLASS_RANGER */
-        { WEAP_STAFF, ARMR_CLOTH, 1, 5, 186, 171 } /* CLASS_SHEPHERD */
+        {
+            .weapon = WEAP_STAFF,
+            .armor = ARMR_CLOTH,
+            .level = 2,
+            .xp = 125,
+            .x = 231,
+            .y = 136
+        }, /* CLASS_MAGE */
+        {
+            .weapon = WEAP_SLING,
+            .armor = ARMR_CLOTH,
+            .level = 3,
+            .xp = 240,
+            .x = 83,
+            .y = 105 }, /* CLASS_BARD */
+        {
+            .weapon = WEAP_AXE,
+            .armor = ARMR_LEATHER,
+            .level = 3,
+            .xp = 205,
+            .x = 35,
+            .y = 221
+        }, /* CLASS_FIGHTER */
+        {
+            .weapon = WEAP_DAGGER,
+            .armor = ARMR_CLOTH,
+            .level = 2,
+            .xp = 175,
+            .x = 59,
+            .y = 44
+        }, /* CLASS_DRUID */
+        {
+            .weapon = WEAP_MACE,
+            .armor = ARMR_LEATHER,
+            .level = 2,
+            .xp = 110,
+            .x = 158,
+            .y = 21
+        }, /* CLASS_TINKER */
+        {
+            .weapon = WEAP_SWORD,
+            .armor = ARMR_CHAIN,
+            .level = 3,
+            .xp = 325,
+            .x = 105,
+            .y = 183
+        }, /* CLASS_PALADIN */
+        {
+            .weapon = WEAP_SWORD,
+            .armor = ARMR_LEATHER,
+            .level = 2,
+            .xp = 150,
+            .x = 23,
+            .y = 129
+        }, /* CLASS_RANGER */
+        {
+            .weapon = WEAP_STAFF,
+            .armor = ARMR_CLOTH,
+            .level = 1,
+            .xp = 5,
+            .x = 186,
+            .y = 171
+        } /* CLASS_SHEPHERD */
     };
     static const struct {
         const char *name;
         int str, dex, intel;
         SexType sex;
     } initValuesForNpcClass[] = {
-        { "Mariah", 9, 12, 20, SEX_FEMALE }, /* CLASS_MAGE */
-        { "Iolo", 16, 19, 13, SEX_MALE }, /* CLASS_BARD */
-        { "Geoffrey", 20, 15, 11, SEX_MALE }, /* CLASS_FIGHTER */
-        { "Jaana", 17, 16, 13, SEX_FEMALE }, /* CLASS_DRUID */
-        { "Julia", 15, 16, 12, SEX_FEMALE }, /* CLASS_TINKER */
-        { "Dupre", 17, 14, 17, SEX_MALE }, /* CLASS_PALADIN */
-        { "Shamino", 16, 15, 15, SEX_MALE }, /* CLASS_RANGER */
-        { "Katrina", 11, 12, 10, SEX_FEMALE } /* CLASS_SHEPHERD */
+        {
+            .name = "Mariah",
+            .str = 9,
+            .dex = 12,
+            .intel = 20,
+            .sex = SEX_FEMALE
+        }, /* CLASS_MAGE */
+        {
+            .name = "Iolo",
+            .str = 16,
+            .dex = 19,
+            .intel = 13,
+            .sex = SEX_MALE
+        }, /* CLASS_BARD */
+        {
+            .name = "Geoffrey",
+            .str = 20,
+            .dex = 15,
+            .intel = 11,
+            .sex = SEX_MALE
+        }, /* CLASS_FIGHTER */
+        {
+            .name = "Jaana",
+            .str = 17,
+            .dex = 16,
+            .intel = 13,
+            .sex = SEX_FEMALE
+        }, /* CLASS_DRUID */
+        {
+            .name = "Julia",
+            .str = 15,
+            .dex = 16,
+            .intel = 12,
+            .sex = SEX_FEMALE
+        }, /* CLASS_TINKER */
+        {
+            .name = "Dupre",
+            .str = 17,
+            .dex = 14,
+            .intel = 17,
+            .sex = SEX_MALE
+        }, /* CLASS_PALADIN */
+        {
+            .name = "Shamino",
+            .str = 16,
+            .dex = 15,
+            .intel = 15,
+            .sex = SEX_MALE
+        }, /* CLASS_RANGER */
+        {
+            .name = "Katrina",
+            .str = 11,
+            .dex = 12,
+            .intel = 10,
+            .sex = SEX_FEMALE
+        } /* CLASS_SHEPHERD */
     };
     saveGame->players[0].klass = static_cast<ClassType>(questionTree[14]);
     U4ASSERT(
@@ -2035,10 +2127,10 @@ void IntroController::initPlayers(SaveGame *saveGame) const
     saveGame->players[0].str = 15;
     saveGame->players[0].dex = 15;
     saveGame->players[0].intel = 15;
-    for (i = 0; i < VIRT_MAX; i++) {
-        saveGame->karma[i] = 50;
+    for (unsigned short &karmum: saveGame->karma) {
+        karmum = 50;
     }
-    for (i = 8; i < 15; i++) {
+    for (int i = 8; i < 15; i++) {
         saveGame->karma[questionTree[i]] += 5;
         switch (questionTree[i]) {
         case VIRT_HONESTY:
@@ -2070,14 +2162,16 @@ void IntroController::initPlayers(SaveGame *saveGame) const
         case VIRT_HUMILITY:
             /* no stats for you! */
             break;
+        default:
+            errorFatal("bad value in questionTree: %d", questionTree[i]);
         } // switch
     }
     PartyMember player(nullptr, &saveGame->players[0]);
     saveGame->players[0].hp = saveGame->players[0].hpMax =
         player.getMaxLevel() * 100;
     saveGame->players[0].mp = player.getMaxMp();
-    p = 1;
-    for (i = 0; i < VIRT_MAX; i++) {
+    int p = 1;
+    for (int i = 0; i < VIRT_MAX; i++) {
         /* Initial setup for party members that aren't in your group yet... */
         if (i != saveGame->players[0].klass) {
             saveGame->players[p].klass = static_cast<ClassType>(i);
@@ -2109,15 +2203,14 @@ void IntroController::initPlayers(SaveGame *saveGame) const
  */
 void IntroController::preloadMap()
 {
-    int x, y, i;
     // draw unmodified map
-    for (y = 0; y < INTRO_MAP_HEIGHT; y++) {
-        for (x = 0; x < INTRO_MAP_WIDTH; x++) {
-            mapArea.loadTile(binData->introMap[x + (y * INTRO_MAP_WIDTH)]);
+    for (int y = 0; y < INTRO_MAP_HEIGHT; y++) {
+        for (int x = 0; x < INTRO_MAP_WIDTH; x++) {
+            mapArea.loadTile(binData->introMap[x + y * INTRO_MAP_WIDTH]);
         }
     }
     // draw animated objects
-    for (i = 0; i < IntroBinData::INTRO_BASETILE_TABLE_SIZE; i++) {
+    for (int i = 0; i < IntroBinData::INTRO_BASE_TILE_TABLE_SIZE; i++) {
         if (objectStateTable[i].tile != 0) {
             mapArea.loadTile(objectStateTable[i].tile);
         }
@@ -2153,21 +2246,28 @@ void IntroController::initTitles()
 // Add the intro element to the element list
 //
 void IntroController::addTitle(
-    int x, int y, int w, int h, AnimType method, int delay, int duration
+    const int x,
+    const int y,
+    const int w,
+    const int h,
+    const AnimType method,
+    const int delay,
+    const int duration
 )
 {
-    AnimElement data = {
-        x, y, // source x and y
-        w, h, // source width and height
-        method, // render method
-        0, // animStep
-        0, // animStepMax
-        0, // timeBase
-        delay, // delay before rendering begins
-        duration, // total animation time
-        nullptr, // storage for the source image
-        nullptr, // storage for the animation frame
-        std::vector<AnimPlot>(), false
+    const AnimElement data = {
+        .rx = x, .ry = y, // source x and y
+        .rw = w, .rh = h, // source width and height
+        .method = method, // render method
+        .animStep = 0, // animStep
+        .animStepMax = 0, // animStepMax
+        .timeBase = 0, // timeBase
+        .timeDelay = delay, // delay before rendering begins
+        .timeDuration = duration, // total animation time
+        .srcImage = nullptr, // storage for the source image
+        .destImage = nullptr, // storage for the animation frame
+        .plotData = std::vector<AnimPlot>(),
+        .prescaled = false
     };         // prescaled
 
     titles.push_back(data);
@@ -2181,7 +2281,7 @@ void IntroController::addTitle(
 void IntroController::getTitleSourceData()
 {
     std::uint8_t r, g, b, a;    // color values
-    const unsigned char *srcData; // plot data
+    // plot data
     // The BKGD_INTRO image is assumed to have not been
     // loaded yet.  The unscaled version will be loaded
     // here, and elements of the image will be stored
@@ -2198,8 +2298,8 @@ void IntroController::getTitleSourceData()
         );
         return; // never executed, errorFatal is noreturn, make cppcheck happy
     }
-    if ((info->width / info->prescale != 320)
-        || (info->height / info->prescale != 200)) {
+    if (info->width / info->prescale != 320
+        || info->height / info->prescale != 200) {
         // the image appears to have been scaled already
         errorWarning(
             "ERROR 1008: The title image (\"%s\") has been scaled too early!"
@@ -2211,93 +2311,93 @@ void IntroController::getTitleSourceData()
     // get the transparent color
     transparentColor = info->image->getPaletteColor(transparentIndex);
     // turn alpha off, if necessary
-    bool alpha = info->image->isAlphaOn();
+    const bool alpha = info->image->isAlphaOn();
     info->image->alphaOff();
     // for each element, get the source data
-    for (unsigned int i = 0; i < titles.size(); i++) {
-        if ((titles[i].method != SIGNATURE) && (titles[i].method != BAR)) {
+    for (auto &t: titles) {
+        if (t.method != SIGNATURE && t.method != BAR) {
             // create a place to store the source image
-            titles[i].srcImage = Image::create(
-                titles[i].rw * info->prescale,
-                titles[i].rh * info->prescale,
+            t.srcImage = Image::create(
+                t.rw * info->prescale,
+                t.rh * info->prescale,
                 false,
                 Image::SOFTWARE
             );
-            titles[i].srcImage->alphaOff();
-            if (titles[i].srcImage->isIndexed()) {
-                titles[i].srcImage->setPaletteFromImage(info->image);
+            t.srcImage->alphaOff();
+            if (t.srcImage->isIndexed()) {
+                t.srcImage->setPaletteFromImage(info->image);
             }
             // get the source image
             info->image->drawSubRectOn(
-                titles[i].srcImage,
+                t.srcImage,
                 0,
                 0,
-                titles[i].rx * info->prescale,
-                titles[i].ry * info->prescale,
-                titles[i].rw * info->prescale,
-                titles[i].rh * info->prescale
+                t.rx * info->prescale,
+                t.ry * info->prescale,
+                t.rw * info->prescale,
+                t.rh * info->prescale
             );
         }
         // after getting the srcImage
-        switch (titles[i].method) {
+        switch (t.method) {
         case SIGNATURE:
         {
             // PLOT: "Lord British"
-            srcData = intro->getSigData();
+            const unsigned char *srcData = intro->getSigData();
             // white for EGA
 #ifdef RASB_PI
-            RGBA color = info->image->setColor(255, 255, 255);
+            RGBA color = Image::setColor(255, 255, 255);
 #else
-            RGBA color = info->image->setColor(241, 241, 241);
+            RGBA color = Image::setColor(241, 241, 241);
 #endif
-            const int blue[16] = {
-                255,
-                250,
-                226,
-                226,
-                210,
-                194,
-                161,
-                161,
-                129,
-                 97,
-                 97,
-                 64,
-                 64,
-                 32,
-                 32,
-                  0
-            };
-            while (srcData[titles[i].animStepMax] != 0) {
-                int x = srcData[titles[i].animStepMax] - 0x4C;
-                int y = 0xC0 - srcData[titles[i].animStepMax + 1];
+            while (srcData[t.animStepMax] != 0) {
+                const int x = srcData[t.animStepMax] - 0x4C;
+                const int y = 0xC0 - srcData[t.animStepMax + 1];
                 if (settings.videoType != "EGA") {
+                    constexpr int blue[16] = {
+                        255,
+                        250,
+                        226,
+                        226,
+                        210,
+                        194,
+                        161,
+                        161,
+                        129,
+                        97,
+                        97,
+                        64,
+                        64,
+                        32,
+                        32,
+                        0
+                    };
                     // yellow gradient
-                    color = info->image->setColor(
-                        255, (y == 2 ? 250 : 255), blue[y - 1]
+                    color = Image::setColor(
+                        255, y == 2 ? 250 : 255, blue[y - 1]
                     );
                 }
                 AnimPlot plot = {
-                    static_cast<std::uint8_t>(color.r),
-                    static_cast<std::uint8_t>(color.g),
-                    static_cast<std::uint8_t>(color.b),
-                    static_cast<std::uint8_t>(255),
-                    static_cast<std::uint8_t>(x),
-                    static_cast<std::uint8_t>(y)
+                    .r = color.r,
+                    .g = color.g,
+                    .b = color.b,
+                    .a = static_cast<std::uint8_t>(255),
+                    .x = static_cast<std::uint8_t>(x),
+                    .y = static_cast<std::uint8_t>(y)
                 };
-                titles[i].plotData.push_back(plot);
-                titles[i].animStepMax += 2;
+                t.plotData.push_back(plot);
+                t.animStepMax += 2;
             }
-            titles[i].animStepMax = titles[i].plotData.size();
+            t.animStepMax = static_cast<int>(t.plotData.size());
             break;
         }
         case BAR:
-            titles[i].animStepMax = titles[i].rw; // image width
+            t.animStepMax = t.rw; // image width
             break;
         case TITLE:
-            for (int y = 0; y < titles[i].rh; y++) {
-                for (int x = 0; x < titles[i].rw; x++) {
-                    titles[i].srcImage->getPixel(
+            for (int y = 0; y < t.rh; y++) {
+                for (int x = 0; x < t.rw; x++) {
+                    t.srcImage->getPixel(
                         x * info->prescale,
                         y * info->prescale,
                         r,
@@ -2307,27 +2407,27 @@ void IntroController::getTitleSourceData()
                     );
                     if (r || g || b) {
                         AnimPlot plot = {
-                            static_cast<std::uint8_t>(r),
-                            static_cast<std::uint8_t>(g),
-                            static_cast<std::uint8_t>(b),
-                            static_cast<std::uint8_t>(a),
-                            static_cast<std::uint8_t>(x + 1),
-                            static_cast<std::uint8_t>(y + 1)
+                            .r = r,
+                            .g = g,
+                            .b = b,
+                            .a = a,
+                            .x = static_cast<std::uint8_t>(x + 1),
+                            .y = static_cast<std::uint8_t>(y + 1)
                         };
-                        titles[i].plotData.push_back(plot);
+                        t.plotData.push_back(plot);
                     }
                 }
             }
-            titles[i].animStepMax = titles[i].plotData.size();
+            t.animStepMax = static_cast<int>(t.plotData.size());
             // let's do this here so it doesn't slow us down later
-            std::random_shuffle(
-                titles[i].plotData.begin(), titles[i].plotData.end()
-            );
+            std::shuffle(
+                t.plotData.begin(), t.plotData.end()
+            , std::default_random_engine(xu4_random(RAND_MAX)));
             break;
         case MAP:
         {
             // fill the map area with the transparent color
-            titles[i].srcImage->fillRect(
+            t.srcImage->fillRect(
                 8,
                 8,
                 304,
@@ -2336,42 +2436,42 @@ void IntroController::getTitleSourceData()
                 transparentColor.g,
                 transparentColor.b
             );
-            Image *scaled; // the scaled and filtered image
-            scaled = screenScale(
-                titles[i].srcImage, settings.scale / info->prescale, 1, 1
+            // the scaled and filtered image
+            Image *scaled = screenScale(
+                t.srcImage, settings.scale / info->prescale, 1, 1
             );
             if (transparentIndex >= 0) {
                 scaled->setTransparentIndex(transparentIndex);
             }
-            titles[i].prescaled = true;
-            delete titles[i].srcImage;
-            titles[i].srcImage = scaled;
-            titles[i].animStepMax = 20;
+            t.prescaled = true;
+            delete t.srcImage;
+            t.srcImage = scaled;
+            t.animStepMax = 20;
             break;
         }
         default:
-            titles[i].animStepMax = titles[i].rh; // image height
+            t.animStepMax = t.rh; // image height
             break;
         } // switch
           // permanently disable alpha
-        if (titles[i].srcImage) {
-            titles[i].srcImage->alphaOff();
+        if (t.srcImage) {
+            t.srcImage->alphaOff();
         }
-        bool indexed = info->image->isIndexed() && titles[i].method != MAP;
+        const bool indexed = info->image->isIndexed() && t.method != MAP;
         // create the initial animation frame
-        titles[i].destImage = Image::create(
+        t.destImage = Image::create(
             2 +
-            (titles[i].prescaled ? SCALED(titles[i].rw) : titles[i].rw)
+            (t.prescaled ? SCALED(t.rw) : t.rw)
             * info->prescale,
             2 +
-            (titles[i].prescaled ? SCALED(titles[i].rh) : titles[i].rh)
+            (t.prescaled ? SCALED(t.rh) : t.rh)
             * info->prescale,
             indexed,
             Image::SOFTWARE
         );
-        titles[i].destImage->alphaOff();
+        t.destImage->alphaOff();
         if (indexed) {
-            titles[i].destImage->setPaletteFromImage(info->image);
+            t.destImage->setPaletteFromImage(info->image);
         }
     }
     // turn alpha back on
@@ -2391,7 +2491,7 @@ void IntroController::getTitleSourceData()
 
 static int getTicks()
 {
-    return SDL_GetTicks();
+    return static_cast<int>(SDL_GetTicks());
 }
 
 //
@@ -2402,10 +2502,10 @@ bool IntroController::updateTitle()
     int animStepTarget = 0;
     int timeCurrent = getTicks();
     double timePercent = 0;
-    if ((title->animStep == 0) && !bSkipTitles) {
+    if (title->animStep == 0 && !bSkipTitles) {
         if (title == titles.begin()) {
             // clear the screen
-            Image *screen = imageMgr->get("screen")->image;
+            const Image *screen = imageMgr->get("screen")->image;
             screen->fillRect(
                 0, 0, screen->width(), screen->height(), 0, 0, 0
             );
@@ -2425,14 +2525,14 @@ bool IntroController::updateTitle()
         return false;
     }
     // delay the drawing of this phase
-    if ((timeCurrent - title->timeBase) < title->timeDelay) {
+    if (timeCurrent - title->timeBase < title->timeDelay) {
         return true;
     }
     // determine how much of the animation should have been drawn up until now
     timePercent =
         static_cast<double>(timeCurrent - title->timeBase - title->timeDelay)
         / title->timeDuration;
-    if ((timePercent > 1) || bSkipTitles) {
+    if (timePercent > 1 || bSkipTitles) {
         timePercent = 1;
     }
     animStepTarget = static_cast<int>(title->animStepMax * timePercent);
@@ -2460,9 +2560,9 @@ bool IntroController::updateTitle()
             title->animStep++;
             // blue for the underline
 #ifdef RASB_PI
-            color = title->destImage->setColor(56, 139, 255);
+            color = Image::setColor(56, 139, 255);
 #else
-            color = title->destImage->setColor(54, 146, 255);
+            color = Image::setColor(54, 146, 255);
 #endif
             // blit bar to the canvas
             title->destImage->fillRect(
@@ -2554,7 +2654,7 @@ bool IntroController::updateTitle()
             title->timeDelay = getTicks() - title->timeBase + 100;
         }
         // blit src to the canvas one row at a time, center out
-        int y = title->rh / 2 - title->animStep + 1;
+        const int y = title->rh / 2 - title->animStep + 1;
         title->srcImage->drawSubRectOn(
             title->destImage,
             1,
@@ -2562,7 +2662,7 @@ bool IntroController::updateTitle()
             0,
             y,
             title->srcImage->width(),
-            1 + ((title->animStep - 1) * 2)
+            1 + (title->animStep - 1) * 2
         );
         break;
     }
@@ -2574,15 +2674,15 @@ bool IntroController::updateTitle()
             title->animStep++;
             title->timeDelay = getTicks() - title->timeBase + 100;
         }
-        int step = (
+        const int step =
             title->animStep == title->animStepMax ?
             title->animStepMax - 1 :
-            title->animStep
-        );
+            title->animStep;
+
         // blit src to the canvas one row at a time, center out
         title->srcImage->drawSubRectOn(
             title->destImage,
-            SCALED(153 - (step * 8)),
+            SCALED(153 - step * 8),
             SCALED(1),
             0,
             0,
@@ -2593,14 +2693,14 @@ bool IntroController::updateTitle()
             title->destImage,
             SCALED(161),
             SCALED(1),
-            SCALED(312 - (step * 8)),
+            SCALED(312 - step * 8),
             0,
             SCALED((step + 1) * 8),
             SCALED(title->srcImage->height())
         );
-        // create a destimage for the map tiles
-        int newtime = getTicks();
-        if (newtime > title->timeDuration + 250 / 4) {
+        // create a destination image for the map tiles
+        const int newTime = getTicks();
+        if (newTime > title->timeDuration + 250 / 4) {
             // grab the map from the screen
             const Image *screen = imageMgr->get("screen")->image;
             // draw the updated map display
@@ -2614,16 +2714,16 @@ bool IntroController::updateTitle()
                 SCALED(38 * 8),
                 SCALED(10 * 8)
             );
-            title->timeDuration = newtime + 250 / 4;
+            title->timeDuration = newTime + 250 / 4;
         }
         title->srcImage->drawSubRectOn(
             title->destImage,
-            SCALED(161 - (step * 8)),
+            SCALED(161 - step * 8),
             SCALED(9),
-            SCALED(160 - (step * 8)),
+            SCALED(160 - step * 8),
             SCALED(8),
-            SCALED((step * 2) * 8),
-            SCALED((10 * 8))
+            SCALED(step * 2 * 8),
+            SCALED(10 * 8)
         );
         break;
     } // case MAP:
@@ -2647,8 +2747,6 @@ bool IntroController::updateTitle()
             // assume this is "Ultima IV" and pre-load sound
             soundLoad(SOUND_TITLE_FADE);
             eventHandler->getTimer()->reset(settings.titleSpeedRandom);
-        } else if (title->method == MAP) {
-            eventHandler->getTimer()->reset(settings.titleSpeedOther);
         } else {
             eventHandler->getTimer()->reset(settings.titleSpeedOther);
         }
@@ -2661,7 +2759,7 @@ bool IntroController::updateTitle()
 // The title element has finished drawing all frames, so
 // delete, remove, or free data that is no longer needed
 //
-void IntroController::compactTitle()
+void IntroController::compactTitle() const
 {
     delete title->srcImage;
     title->srcImage = nullptr;
@@ -2672,7 +2770,7 @@ void IntroController::compactTitle()
 //
 // Scale the animation canvas, then draw it to the screen
 //
-void IntroController::drawTitle()
+void IntroController::drawTitle() const
 {
     Image *scaled;  // the scaled and filtered image
 

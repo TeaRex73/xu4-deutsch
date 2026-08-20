@@ -43,12 +43,12 @@ typedef enum {
     SHEPHERD_ID = 9,
     GUARD_ID = 10,
     VILLAGER_ID = 11,
-    SINGINGBARD_ID = 12,
+    SINGING_BARD_ID = 12,
     JESTER_ID = 13,
     BEGGAR_ID = 14,
     CHILD_ID = 15,
     BULL_ID = 16,
-    LORDBRITISH_ID = 17,
+    LORD_BRITISH_ID = 17,
     PIRATE_ID = 18,
     NIXIE_ID = 19,
     GIANT_SQUID_ID = 20,
@@ -76,54 +76,55 @@ typedef enum {
     HEADLESS_ID = 42,
     CYCLOPS_ID = 43,
     WISP_ID = 44,
-    EVILMAGE_ID = 45,
+    EVIL_MAGE_ID = 45,
     LICH_ID = 46,
     LAVA_LIZARD_ID = 47,
     ZORN_ID = 48,
     DAEMON_ID = 49,
     HYDRA_ID = 50,
     DRAGON_ID = 51,
-    BALRON_ID = 52
+    BALRON_ID = 52,
+    MAX_CREATURE_ID = BALRON_ID
 } CreatureType;
 
 typedef enum {
-    MATTR_STEALFOOD = 0x1,
-    MATTR_STEALGOLD = 0x2,
-    MATTR_CASTS_SLEEP = 0x4,
-    MATTR_UNDEAD = 0x8,
-    MATTR_GOOD = 0x10,
-    MATTR_WATER = 0x20,
-    MATTR_NONATTACKABLE = 0x40,
-    MATTR_NEGATE = 0x80,
-    MATTR_CAMOUFLAGE = 0x100,
-    MATTR_NOATTACK = 0x200,
-    MATTR_AMBUSHES = 0x400,
-    MATTR_RANDOMRANGED = 0x800,
-    MATTR_INCORPOREAL = 0x1000,
-    MATTR_NOCHEST = 0x2000,
-    MATTR_DIVIDES = 0x4000,
-    MATTR_SPAWNSONDEATH = 0x8000,
-    MATTR_FORCE_OF_NATURE = 0x10000
+    M_ATTR_STEAL_FOOD = 0x1,
+    M_ATTR_STEAL_GOLD = 0x2,
+    M_ATTR_CASTS_SLEEP = 0x4,
+    M_ATTR_UNDEAD = 0x8,
+    M_ATTR_GOOD = 0x10,
+    M_ATTR_WATER = 0x20,
+    M_ATTR_NON_ATTACKABLE = 0x40,
+    M_ATTR_NEGATE = 0x80,
+    M_ATTR_CAMOUFLAGE = 0x100,
+    M_ATTR_NO_ATTACK = 0x200,
+    M_ATTR_AMBUSHES = 0x400,
+    M_ATTR_RANDOM_RANGED = 0x800,
+    M_ATTR_INCORPOREAL = 0x1000,
+    M_ATTR_NO_CHEST = 0x2000,
+    M_ATTR_DIVIDES = 0x4000,
+    M_ATTR_SPAWNS_ON_DEATH = 0x8000,
+    M_ATTR_FORCE_OF_NATURE = 0x10000
 } CreatureAttrib;
 
 typedef enum {
-    MATTR_STATIONARY = 0x1,
-    MATTR_WANDERS = 0x2,
-    MATTR_SWIMS = 0x4,
-    MATTR_SAILS = 0x8,
-    MATTR_FLIES = 0x10,
-    MATTR_TELEPORT = 0x20,
-    MATTR_CANMOVECREATURES = 0x40,
-    MATTR_CANMOVEAVATAR = 0x80
+    M_ATTR_STATIONARY = 0x1,
+    M_ATTR_WANDERS = 0x2,
+    M_ATTR_SWIMS = 0x4,
+    M_ATTR_SAILS = 0x8,
+    M_ATTR_FLIES = 0x10,
+    M_ATTR_TELEPORT = 0x20,
+    M_ATTR_CAN_MOVE_CREATURES = 0x40,
+    M_ATTR_CAN_MOVE_AVATAR = 0x80
 } CreatureMovementAttrib;
 
 typedef enum {
-    MSTAT_DEAD,
-    MSTAT_FLEEING,
-    MSTAT_CRITICAL,
-    MSTAT_HEAVILYWOUNDED,
-    MSTAT_LIGHTLYWOUNDED,
-    MSTAT_BARELYWOUNDED
+    M_STAT_DEAD,
+    M_STAT_FLEEING,
+    M_STAT_CRITICAL,
+    M_STAT_HEAVILY_WOUNDED,
+    M_STAT_LIGHTLY_WOUNDED,
+    M_STAT_BARELY_WOUNDED
 } CreatureState;
 
 
@@ -145,7 +146,7 @@ public:
     Creature(Creature &&c) = default;
     Creature &operator=(const Creature &c) = default;
     Creature &operator=(Creature &&c) = default;
-    virtual ~Creature() = default;
+    ~Creature() override = default;
     void load(const ConfigElement &conf);
 
     virtual std::string getName() const
@@ -155,12 +156,12 @@ public:
 
     virtual const std::string &getHitTile() const
     {
-        return rangedhittile;
+        return ranged_hit_tile;
     }
 
     virtual const std::string &getMissTile() const
     {
-        return rangedmisstile;
+        return ranged_miss_tile;
     }
 
     CreatureId getId() const
@@ -183,19 +184,19 @@ public:
         return xp;
     }
 
-    virtual const std::string &getWorldrangedtile() const
+    virtual const std::string &getWorldRangedTile() const
     {
-        return worldrangedtile;
+        return world_ranged_tile;
     }
 
     SlowedType getSlowedType() const
     {
-        return slowedType;
+        return slowed_type;
     }
 
     int getEncounterSize() const
     {
-        return encounterSize;
+        return encounter_size;
     }
 
     unsigned char getResists() const
@@ -210,22 +211,22 @@ public:
 
     void setHitTile(const std::string &t)
     {
-        rangedhittile = t;
+        ranged_hit_tile = t;
     }
 
     void setMissTile(const std::string &t)
     {
-        rangedmisstile = t;
+        ranged_miss_tile = t;
     }
 
-    virtual void setHp(int points)
+    virtual void setHp(const int points)
     {
         hp = points;
     }
 
     bool isGood() const
     {
-        return mattr & MATTR_GOOD;
+        return m_attr & M_ATTR_GOOD;
     }
 
     bool isEvil() const
@@ -235,47 +236,47 @@ public:
 
     bool isUndead() const
     {
-        return mattr & MATTR_UNDEAD;
+        return m_attr & M_ATTR_UNDEAD;
     }
 
     bool leavesChest() const
     {
-        return !isAquatic() && !(mattr & MATTR_NOCHEST);
+        return !isAquatic() && !(m_attr & M_ATTR_NO_CHEST);
     }
 
     bool isAquatic() const
     {
-        return mattr & MATTR_WATER;
+        return m_attr & M_ATTR_WATER;
     }
 
     bool wanders() const
     {
-        return movementAttr & MATTR_WANDERS;
+        return movement_attr & M_ATTR_WANDERS;
     }
 
     bool isStationary() const
     {
-        return movementAttr & MATTR_STATIONARY;
+        return movement_attr & M_ATTR_STATIONARY;
     }
 
     bool flies() const
     {
-        return movementAttr & MATTR_FLIES;
+        return movement_attr & M_ATTR_FLIES;
     }
 
     bool teleports() const
     {
-        return movementAttr & MATTR_TELEPORT;
+        return movement_attr & M_ATTR_TELEPORT;
     }
 
     bool swims() const
     {
-        return movementAttr & MATTR_SWIMS;
+        return movement_attr & M_ATTR_SWIMS;
     }
 
     bool sails() const
     {
-        return movementAttr & MATTR_SAILS;
+        return movement_attr & M_ATTR_SAILS;
     }
 
     bool walks() const
@@ -285,130 +286,141 @@ public:
 
     bool divides() const
     {
-        return mattr & MATTR_DIVIDES;
+        return m_attr & M_ATTR_DIVIDES;
     }
 
     bool spawnsOnDeath() const
     {
-        return mattr & MATTR_SPAWNSONDEATH;
+        return m_attr & M_ATTR_SPAWNS_ON_DEATH;
     }
 
     bool canMoveOntoCreatures() const
     {
-        return movementAttr & MATTR_CANMOVECREATURES;
+        return movement_attr & M_ATTR_CAN_MOVE_CREATURES;
     }
 
     bool canMoveOntoPlayer() const
     {
-        return movementAttr & MATTR_CANMOVEAVATAR;
+        return movement_attr & M_ATTR_CAN_MOVE_AVATAR;
     }
 
     bool isAttackable() const;
 
     bool willAttack() const
     {
-        return !(mattr & MATTR_NOATTACK);
+        return !(m_attr & M_ATTR_NO_ATTACK);
     }
 
     bool stealsGold() const
     {
-        return mattr & MATTR_STEALGOLD;
+        return m_attr & M_ATTR_STEAL_GOLD;
     }
 
     bool stealsFood() const
     {
-        return mattr & MATTR_STEALFOOD;
+        return m_attr & M_ATTR_STEAL_FOOD;
     }
 
     bool negates() const
     {
-        return mattr & MATTR_NEGATE;
+        return m_attr & M_ATTR_NEGATE;
     }
 
     bool camouflages() const
     {
-        return mattr & MATTR_CAMOUFLAGE;
+        return m_attr & M_ATTR_CAMOUFLAGE;
     }
 
     bool ambushes() const
     {
-        return mattr & MATTR_AMBUSHES;
+        return m_attr & M_ATTR_AMBUSHES;
     }
 
     bool isIncorporeal() const
     {
-        return mattr & MATTR_INCORPOREAL;
+        return m_attr & M_ATTR_INCORPOREAL;
     }
 
     bool hasRandomRanged() const
     {
-        return mattr & MATTR_RANDOMRANGED;
+        return m_attr & M_ATTR_RANDOM_RANGED;
     }
 
     bool leavesTile() const
     {
-        return leavestile;
+        return leaves_tile;
     }
 
     bool castsSleep() const
     {
-        return mattr & MATTR_CASTS_SLEEP;
+        return m_attr & M_ATTR_CASTS_SLEEP;
     }
 
     bool isForceOfNature() const
     {
-        return mattr & MATTR_FORCE_OF_NATURE;
+        return m_attr & M_ATTR_FORCE_OF_NATURE;
     }
 
     virtual int getDamage() const;
 
     const std::string &getCamouflageTile() const
     {
-        return camouflageTile;
+        return camouflage_tile;
+    }
+
+    void putToSleep()
+    {
+        putToSleep(true);
+    }
+
+    bool applyDamage(const int damage)
+    {
+        return applyDamage(damage, true);
     }
 
     void setRandomRanged();
     int setInitialHp(int points = -1);
-    bool specialAction();
+    bool specialAction() const;
     bool specialEffect();
     /* combat methods */
-    void act(CombatController *controller);
+    void act(const CombatController *controller);
     virtual void addStatus(StatusType s);
     void applyTileEffect(TileEffect effect);
     virtual int getAttackBonus() const;
     virtual int getDefense(bool needsMystic) const;
     bool divide();
-    bool spawnOnDeath();
+
+    void spawnOnDeath() const;
     virtual CreatureState getState() const;
     StatusType getStatus() const;
     bool isAsleep() const;
     bool hideOrShow();
-    Creature *nearestOpponent(int *dist, bool ranged);
-    virtual void putToSleep(bool sound = true);
+    Creature *nearestOpponent(int *dist, bool ranged_attack);
+    virtual void putToSleep(bool sound);
     virtual void removeStatus(StatusType s);
     virtual void setStatus(StatusType s);
     virtual void wakeUp();
-    virtual bool applyDamage(int damage, bool byplayer = true);
+    virtual bool applyDamage(int damage, bool by_player);
     virtual bool dealDamage(Creature *m, int damage);
 
 protected:
     std::string name;
-    std::string rangedhittile;
-    std::string rangedmisstile;
+    std::string ranged_hit_tile;
+    std::string ranged_miss_tile;
     CreatureId id;
-    std::string camouflageTile;
+    std::string camouflage_tile;
     CreatureId leader;
-    int basehp;
+    int base_hp;
     int hp;
     StatusType status;
     int xp;
     unsigned char ranged;
-    std::string worldrangedtile;
-    bool leavestile;
-    CreatureAttrib mattr;
-    CreatureMovementAttrib movementAttr;
-    SlowedType slowedType;
-    int encounterSize;
+    std::string world_ranged_tile;
+    bool leaves_tile;
+    CreatureAttrib m_attr;
+    CreatureMovementAttrib movement_attr;
+    SlowedType slowed_type;
+    int encounter_size;
     unsigned char resists;
     CreatureId spawn;
 };
@@ -419,7 +431,7 @@ protected:
  */
 class CreatureMgr {
 public:
-    // disallow assignments, copy contruction
+    // disallow assignments, copy construction
     CreatureMgr(const CreatureMgr &) = delete;
     CreatureMgr(CreatureMgr &&) = delete;
     CreatureMgr &operator=(const CreatureMgr &) = delete;
@@ -428,16 +440,15 @@ public:
     ~CreatureMgr();
     static CreatureMgr *getInstance();
     void loadAll();
-    Creature *getByTile(MapTile tile);
+    Creature *getByTile(MapTile tile) const;
     Creature *getById(CreatureId id);
-    Creature *getByName(const std::string &name);
-    Creature *randomForTile(const Tile *tile);
+    Creature *getByName(const std::string &name) const;
+    Creature *randomForTile(const Tile *tile) const;
     Creature *randomForDungeon(int dngLevel);
-    Creature *randomAmbushing();
+    Creature *randomAmbushing() const;
 
 private:
     CreatureMgr()
-        :creatures()
     {
     }
 
@@ -445,8 +456,8 @@ private:
     CreatureMap creatures;
 };
 
-bool isCreature(Object *punknown);
+bool isCreature(Object *pUnknown);
 
 #define creatureMgr (CreatureMgr::getInstance())
 
-#endif // ifndef CREATURE_H
+#endif // CREATURE_H

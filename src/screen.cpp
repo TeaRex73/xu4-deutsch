@@ -292,6 +292,8 @@ void screenMessage(const char *fmt, ...)
         case FG_WHITE:
             screenTextColor(buffer[i]);
             continue;
+        default:
+            ;
         }
         /* check for word wrap */
         if ((c->col + wordlen > 16) || (buffer[i] == '\n') || (c->col == 16)) {
@@ -414,7 +416,7 @@ static Layout *screenLoadLayoutFromConf(const ConfigElement &conf)
 } // screenLoadLayoutFromConf
 
 static std::vector<MapTile> screenViewportTile(
-    unsigned int width, unsigned int height, int x, int y, bool &focus
+    int width, int height, int x, int y, bool &focus
 )
 {
     MapCoords center = c->location->coords;
@@ -441,7 +443,7 @@ static std::vector<MapTile> screenViewportTile(
 } // screenViewportTile
 
 static MapTile screenViewportTileGem(
-    unsigned int width, unsigned int height, int x, int y, bool &focus
+    int width, int height, int x, int y, bool &focus
 )
 {
     MapCoords center(
@@ -669,6 +671,9 @@ void screenTextColor(int color)
     case FG_YELLOW:
     case FG_WHITE:
         charsetInfo->image->setFontColorFG(static_cast<ColorFG>(color));
+        break;
+    default:
+        errorFatal("bad color number");
     }
 }
 
@@ -1312,6 +1317,8 @@ static void screenFindLineOfSightEnhanced(
             ySign = -1;
             reflect = false;
             break;
+        default:
+            errorFatal("BUG: wrong octant");
         } // switch
         // determine the origin point for the current LOS octant
         const int xOrigin = VIEWPORT_W / 2;
@@ -1706,13 +1713,13 @@ static void screenShowGemTile(
         }
     } else {
         if (gemTilesInfo == nullptr) {
-            gemTilesInfo = imageMgr->get(BKGD_GEMTILES);
+            gemTilesInfo = imageMgr->get(BKGD_GEM_TILES);
             if (!gemTilesInfo) {
                 errorFatal(
                     "ERROR 1002: Unable to load the \"%s\" data file.\t\n\n"
                     "Is %s installed?\n\nVisit the XU4 website for additional "
                     "information.\n\thttp://xu4.sourceforge.net/",
-                    BKGD_GEMTILES,
+                    BKGD_GEM_TILES,
                     settings.game.c_str()
                 );
             }

@@ -18,7 +18,7 @@ class RGBA;
  */
 class U4RawImageLoader:public ImageLoader {
 public:
-    virtual Image *load(U4FILE *file, int width, int height, int bpp) override;
+    Image *load(U4FILE *file, int width, int height, int bpp) override;
 
 private:
     static ImageLoader *instance;
@@ -33,7 +33,7 @@ private:
  */
 class U4RleImageLoader:public ImageLoader {
 public:
-    virtual Image *load(U4FILE *file, int width, int height, int bpp) override;
+    Image *load(U4FILE *file, int width, int height, int bpp) override;
 
 private:
     static ImageLoader *instance;
@@ -48,7 +48,7 @@ private:
  */
 class U4LzwImageLoader:public ImageLoader {
 public:
-    virtual Image *load(U4FILE *file, int width, int height, int bpp) override;
+    Image *load(U4FILE *file, int width, int height, int bpp) override;
 
 private:
     static ImageLoader *instance;

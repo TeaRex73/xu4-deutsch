@@ -49,4 +49,4 @@ Direction dirNormalize(Direction orientation, Direction dir);
 Direction keyToDirection(int key);
 int directionToKey(Direction dir);
 
-#endif // ifndef DIRECTION_H
+#endif // DIRECTION_H

@@ -185,7 +185,7 @@ public:
                 return (rule->mask & MASK_SPAWNS_SEA_MONSTER);
         }
 
-    bool isDungeonWalkable() const;
+    // bool isDungeonWalkable() const;
     bool isDungeonFloor() const;
 
     int isSwimable() const

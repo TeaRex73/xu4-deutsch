@@ -182,7 +182,7 @@ int main(int argc, char *argv[])
         );
     }
 
-    xu4_srandom();
+    xu4_seed_random();
     perf.start();
     screenInit();
     screenRedrawScreen();

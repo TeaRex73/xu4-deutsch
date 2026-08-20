@@ -78,8 +78,8 @@ struct Spell {
     int mp;
 };
 
-typedef void (*SpellEffectCallback)(int spell, int player, Sound sound);
-
+typedef void (*SpellEffectCallback)(unsigned int spell, int player, Sound sound);
+extern SpellEffectCallback spellEffectCallback;
 void spellSetEffectCallback(SpellEffectCallback callback);
 const char *spellGetName(unsigned int spell);
 int spellGetRequiredMP(unsigned int spell);

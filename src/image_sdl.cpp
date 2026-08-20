@@ -11,7 +11,7 @@
 #include <string>
 #include <utility>
 
-#include <SDL.h>
+#include <SDL.h> // IWYU pragma: keep
 
 #include "debug.h"
 #include "error.h"
@@ -24,7 +24,6 @@ Image::Image()
     :w(0),
      h(0),
      indexed(false),
-     backgroundColor(),
      surface(nullptr),
      isScreen(false)
 {
@@ -38,37 +37,39 @@ Image::Image()
  * Image type determines whether to create a hardware (i.e. video ram)
  * or software (i.e. normal ram) image.
  */
-Image *Image::create(int w, int h, bool indexed, Image::Type type)
+Image *Image::create(
+    const int w, const int h, const bool indexed, const Type type
+)
 {
-    Uint32 rmask, gmask, bmask, amask;
+    Uint32 r_mask, g_mask, b_mask, a_mask;
     Uint32 flags;
-    Image *im = new Image;
+    auto *im = new Image;
     im->w = w;
     im->h = h;
     im->indexed = indexed;
 #if SDL_BYTEORDER == SDL_BIG_ENDIAN
-    rmask = 0xff000000;
-    gmask = 0x00ff0000;
-    bmask = 0x0000ff00;
-    amask = 0x000000ff;
+    r_mask = 0xff000000;
+    g_mask = 0x00ff0000;
+    b_mask = 0x0000ff00;
+    a_mask = 0x000000ff;
 #else
-    rmask = 0x000000ff;
-    gmask = 0x0000ff00;
-    bmask = 0x00ff0000;
-    amask = 0xff000000;
+    r_mask = 0x000000ff;
+    g_mask = 0x0000ff00;
+    b_mask = 0x00ff0000;
+    a_mask = 0xff000000;
 #endif
-    if (type == Image::HARDWARE) {
+    if (type == HARDWARE) {
         flags = SDL_HWSURFACE | SDL_SRCALPHA;
     } else {
         flags = SDL_SWSURFACE | SDL_SRCALPHA;
     }
     if (indexed) {
         im->surface = SDL_CreateRGBSurface(
-            flags, w, h, 8, rmask, gmask, bmask, amask
+            flags, w, h, 8, r_mask, g_mask, b_mask, a_mask
         );
     } else {
         im->surface = SDL_CreateRGBSurface(
-            flags, w, h, 32, rmask, gmask, bmask, amask
+            flags, w, h, 32, r_mask, g_mask, b_mask, a_mask
         );
     }
     if (!im->surface) {
@@ -84,7 +85,7 @@ Image *Image::create(int w, int h, bool indexed, Image::Type type)
  */
 Image *Image::createScreenImage()
 {
-    Image *screen = new Image();
+    auto *screen = new Image();
 
     screen->surface = SDL_GetVideoSurface();
     U4ASSERT(
@@ -102,9 +103,9 @@ Image *Image::createScreenImage()
 /**
  * Creates a duplicate of another image
  */
-Image *Image::duplicate(Image *image)
+Image *Image::duplicate(const Image *image)
 {
-    bool alphaState = image->isAlphaOn();
+    const bool alphaState = image->isAlphaOn();
     Image *im = create(image->width(), image->height(), false, SOFTWARE);
     /* Turn alpha off before blitting to non-screen surfaces */
     if (alphaState) {
@@ -134,28 +135,28 @@ Image::~Image()
 /**
  * Sets the palette
  */
-void Image::setPalette(const RGBA *colors, unsigned int n_colors)
+void Image::setPalette(const RGBA *colors, const int n_colors) const
 {
     U4ASSERT(indexed, "imageSetPalette called on non-indexed image");
     if (n_colors > 256) {
         errorFatal("n_colors > 256 in Image::setPalette");
     }
-    SDL_Color *sdlcolors = new SDL_Color[n_colors];
-    for (unsigned int i = 0; i < n_colors; i++) {
-        sdlcolors[i].r = colors[i].r;
-        sdlcolors[i].g = colors[i].g;
-        sdlcolors[i].b = colors[i].b;
-        sdlcolors[i].unused = 0;
+    auto *sdl_colors = new SDL_Color[n_colors];
+    for (int i = 0; i < n_colors; i++) {
+        sdl_colors[i].r = colors[i].r;
+        sdl_colors[i].g = colors[i].g;
+        sdl_colors[i].b = colors[i].b;
+        sdl_colors[i].unused = 0;
     }
-    SDL_SetColors(surface, sdlcolors, 0, n_colors);
-    delete[] sdlcolors;
+    SDL_SetColors(surface, sdl_colors, 0, n_colors);
+    delete[] sdl_colors;
 }
 
 
 /**
  * Copies the palette from another image.
  */
-void Image::setPaletteFromImage(const Image *src)
+void Image::setPaletteFromImage(const Image *src) const
 {
     U4ASSERT(
         indexed && src->indexed,
@@ -169,9 +170,9 @@ void Image::setPaletteFromImage(const Image *src)
 
 
 // returns the color of the specified palette index
-RGBA Image::getPaletteColor(int index) const
+RGBA Image::getPaletteColor(const int index) const
 {
-    RGBA color = RGBA(0, 0, 0, 0);
+    auto color = RGBA(0, 0, 0, 0);
     if (indexed) {
         color.r = surface->format->palette->colors[index].r;
         color.g = surface->format->palette->colors[index].g;
@@ -183,15 +184,15 @@ RGBA Image::getPaletteColor(int index) const
 
 
 /* returns the palette index of the specified RGB color */
-int Image::getPaletteIndex(RGBA color) const
+int Image::getPaletteIndex(const RGBA color) const
 {
     if (!indexed) {
         return -1;
     }
     for (int i = 0; i < surface->format->palette->ncolors; i++) {
-        if ((surface->format->palette->colors[i].r == color.r)
-            && (surface->format->palette->colors[i].g == color.g)
-            && (surface->format->palette->colors[i].b == color.b)) {
+        if (surface->format->palette->colors[i].r == color.r
+            && surface->format->palette->colors[i].g == color.g
+            && surface->format->palette->colors[i].b == color.b) {
             return i;
         }
     }
@@ -200,16 +201,19 @@ int Image::getPaletteIndex(RGBA color) const
 }
 
 RGBA Image::setColor(
-    std::uint8_t r, std::uint8_t g, std::uint8_t b, std::uint8_t a
+    const std::uint8_t r,
+    const std::uint8_t g,
+    const std::uint8_t b,
+    const std::uint8_t a
 )
 {
-    RGBA color = RGBA(r, g, b, a);
+    const auto color = RGBA(r, g, b, a);
     return color;
 }
 
 
 /* sets the specified font colors */
-bool Image::setFontColor(ColorFG fg, ColorBG bg)
+bool Image::setFontColor(const ColorFG fg, const ColorBG bg) const
 {
     if (!setFontColorFG(fg)) {
         return false;
@@ -222,7 +226,7 @@ bool Image::setFontColor(ColorFG fg, ColorBG bg)
 
 
 /* sets the specified font colors */
-bool Image::setFontColorFG(ColorFG fg)
+bool Image::setFontColorFG(const ColorFG fg) const
 {
     switch (fg) {
     case FG_GREY:
@@ -349,7 +353,7 @@ bool Image::setFontColorFG(ColorFG fg)
 
 
 /* sets the specified font colors */
-bool Image::setFontColorBG(ColorBG bg)
+bool Image::setFontColorBG(const ColorBG bg) const
 {
     switch (bg) {
     case BG_BRIGHT:
@@ -367,7 +371,7 @@ bool Image::setFontColorBG(ColorBG bg)
 
 
 /* sets the specified palette index to the specified RGB color */
-bool Image::setPaletteIndex(unsigned int index, RGBA color)
+bool Image::setPaletteIndex(const unsigned int index, const RGBA color) const
 {
     if (!indexed) {
         return false;
@@ -381,26 +385,26 @@ bool Image::setPaletteIndex(unsigned int index, RGBA color)
 
 bool Image::getTransparentIndex(unsigned int &index) const
 {
-    if (!indexed || ((surface->flags & SDL_SRCCOLORKEY) == 0)) {
+    if (!indexed || (surface->flags & SDL_SRCCOLORKEY) == 0) {
         return false;
     }
     index = surface->format->colorkey;
     return true;
 }
 
-void Image::initializeToBackgroundColor(RGBA backgroundColor)
+void Image::initializeToBackgroundColor(const RGBA bgColor)
 {
     U4ASSERT(!indexed, "Indexed not supported");
-    this->backgroundColor = backgroundColor;
+    this->backgroundColor = bgColor;
     this->fillRect(
         0,
         0,
         this->w,
         this->h,
-        backgroundColor.r,
-        backgroundColor.g,
-        backgroundColor.b,
-        backgroundColor.a
+        bgColor.r,
+        bgColor.g,
+        bgColor.b,
+        bgColor.a
     );
 }
 
@@ -420,97 +424,128 @@ void Image::alphaOff() const
 }
 
 void Image::putPixel(
-    int x,
-    int y,
-    std::uint8_t r,
-    std::uint8_t g,
-    std::uint8_t b,
-    std::uint8_t a,
-    bool anyway
+    const int x,
+    const int y,
+    const std::uint8_t r,
+    const std::uint8_t g,
+    const std::uint8_t b,
+    const std::uint8_t a,
+    const bool anyway
 ) const
 {
     putPixelIndex(
         x,
         y,
-        SDL_MapRGBA(surface->format, Uint8(r), Uint8(g), Uint8(b), Uint8(a)),
+        SDL_MapRGBA(
+            surface->format,
+            // ReSharper disable once CppRedundantCastExpression
+            static_cast<Uint8>(r),
+            // ReSharper disable once CppRedundantCastExpression
+            static_cast<Uint8>(g),
+            // ReSharper disable once CppRedundantCastExpression
+            static_cast<Uint8>(b),
+            // ReSharper disable once CppRedundantCastExpression
+            static_cast<Uint8>(a)
+        ),
         anyway
     );
 }
 
-void Image::makeBackgroundColorTransparent(int haloSize, int shadowOpacity)
+void Image::makeBackgroundColorTransparent(
+    const int haloSize, const int shadowOpacity
+) const
 {
-    int bgColor = SDL_MapRGBA(
+    const Uint32 bgColor = SDL_MapRGBA(
         surface->format,
-        Uint8(backgroundColor.r),
-        Uint8(backgroundColor.g),
-        Uint8(backgroundColor.b),
-        Uint8(backgroundColor.a)
+        // ReSharper disable once CppRedundantCastExpression
+        static_cast<Uint8>(backgroundColor.r),
+        // ReSharper disable once CppRedundantCastExpression
+        static_cast<Uint8>(backgroundColor.g),
+        // ReSharper disable once CppRedundantCastExpression
+        static_cast<Uint8>(backgroundColor.b),
+        // ReSharper disable once CppRedundantCastExpression
+        static_cast<Uint8>(backgroundColor.a)
     );
-    performTransparencyHack(bgColor, 1, 0, haloSize, shadowOpacity);
+    performTransparencyHack(
+        // ReSharper disable once CppRedundantCastExpression
+        static_cast<unsigned int>(bgColor), 1, 0, haloSize, shadowOpacity
+    );
 }
 
 
 // TODO Separate functionalities found in here
 void Image::performTransparencyHack(
-    unsigned int colorValue,
-    unsigned int numFrames,
-    unsigned int currentFrameIndex,
-    unsigned int haloWidth,
-    unsigned int hoibpd
-)
+    const unsigned int colorValue,
+    const unsigned int numFrames,
+    const unsigned int currentFrameIndex,
+    const unsigned int haloWidth,
+    const unsigned int haloOpacityIncrementByPixelDistance
+) const
 {
     std::list<std::pair<unsigned int, unsigned int> > opaqueXYs;
     unsigned int x, y;
     Uint8 t_r, t_g, t_b;
     SDL_GetRGB(colorValue, surface->format, &t_r, &t_g, &t_b);
-    unsigned int frameHeight = h / numFrames;
+    const unsigned int frameHeight = static_cast<unsigned int>(h) / numFrames;
     // Min'd so that they never go out of range (>=h)
-    unsigned int top = std::min(h, currentFrameIndex * frameHeight);
-    unsigned int bottom = std::min(h, top + frameHeight);
+    const unsigned int top = std::min(
+        static_cast<unsigned int>(h), currentFrameIndex * frameHeight
+    );
+    const unsigned int bottom =
+        std::min(static_cast<unsigned int>(h), top + frameHeight);
     for (y = top; y < bottom; y++) {
-        for (x = 0; x < w; x++) {
+        for (x = 0; x < static_cast<unsigned int>(w); x++) {
             std::uint8_t r, g, b, a;
-            getPixel(x, y, r, g, b, a);
-            if ((r == t_r) && (g == t_g) && (b == t_b)) {
-                putPixel(x, y, r, g, b, IM_TRANSPARENT);
+            getPixel(static_cast<int>(x), static_cast<int>(y), r, g, b, a);
+            if (r == t_r && g == t_g && b == t_b) {
+                putPixel(
+                    static_cast<int>(x),
+                    static_cast<int>(y),
+                    r,
+                    g,
+                    b,
+                    IM_TRANSPARENT
+                );
             } else {
-                putPixel(x, y, r, g, b, a);
+                putPixel(
+                    static_cast<int>(x), static_cast<int>(y), r, g, b, a
+                );
                 if (haloWidth) {
-                    opaqueXYs.push_back(
-                        std::pair<unsigned int, unsigned int>(x, y)
-                    );
+                    opaqueXYs.emplace_back(x, y);
                 }
             }
         }
     }
-    for (std::list<std::pair<unsigned int, unsigned int> >::iterator xy
-             = opaqueXYs.begin();
-         xy != opaqueXYs.end();
-         ++xy) {
-        int ox = xy->first;
-        int oy = xy->second;
-        int span = int(haloWidth);
-        unsigned int x_start = std::max(0, ox - span);
-        unsigned int x_finish = std::min(int(w), ox + span + 1);
+    for (const auto &opaqueXY: opaqueXYs) {
+        const int ox = static_cast<int>(opaqueXY.first);
+        const int oy = static_cast<int>(opaqueXY.second);
+        const int span = static_cast<int>(haloWidth);
+        const unsigned int x_start = std::max(0, ox - span);
+        const unsigned int x_finish =
+            std::min(static_cast<int>(w), ox + span + 1);
         for (x = x_start; x < x_finish; ++x) {
-            unsigned int y_start = std::max(int(top), oy - span);
-            unsigned int y_finish = std::min(int(bottom), oy + span + 1);
+            const unsigned int y_start =
+                std::max(static_cast<int>(top), oy - span);
+            const unsigned int y_finish =
+                std::min(static_cast<int>(bottom), oy + span + 1);
             for (y = y_start; y < y_finish; ++y) {
-                int divisor =
+                const int divisor =
                     1
                     + span * 2
                     - std::abs(static_cast<int>(ox - x))
                     - std::abs(static_cast<int>(oy - y));
                 std::uint8_t r, g, b, a;
-                getPixel(x, y, r, g, b, a);
+                getPixel(
+                    static_cast<int>(x), static_cast<int>(y), r, g, b, a
+                );
                 if (a != IM_OPAQUE) {
                     putPixel(
-                        x,
-                        y,
+                        static_cast<int>(x),
+                        static_cast<int>(y),
                         r,
                         g,
                         b,
-                        std::min(IM_OPAQUE, a + hoibpd / divisor)
+                        std::min(IM_OPAQUE, a + haloOpacityIncrementByPixelDistance / divisor)
                     );
                 }
             }
@@ -518,7 +553,7 @@ void Image::performTransparencyHack(
     }
 } // Image::performTransparencyHack
 
-void Image::setTransparentIndex(unsigned int index)
+void Image::setTransparentIndex(const unsigned int index) const
 {
     if (indexed) {
         SDL_SetColorKey(surface, SDL_SRCCOLORKEY, index);
@@ -533,9 +568,10 @@ void Image::setTransparentIndex(unsigned int index)
  * indexed mode, then the index is simply the palette entry number.
  * If the image is RGB, it is a packed RGB triplet.
  */
-void Image::putPixelIndex(int x, int y, unsigned int index, bool anyway) const
+void Image::putPixelIndex(
+    const int x, const int y, const unsigned int index, const bool anyway
+) const
 {
-    int bpp;
     Uint8 *p;
     Uint16 *p2;
     Uint32 *p4;
@@ -543,7 +579,7 @@ void Image::putPixelIndex(int x, int y, unsigned int index, bool anyway) const
         return;
     }
     if (SDL_MUSTLOCK(surface)) SDL_LockSurface(surface);
-    bpp = surface->format->BytesPerPixel;
+    const int bpp = surface->format->BytesPerPixel;
     switch (__builtin_expect(bpp, 1)) {
     case 1:
         p = static_cast<Uint8 *>(surface->pixels)
@@ -553,7 +589,7 @@ void Image::putPixelIndex(int x, int y, unsigned int index, bool anyway) const
         break;
     case 2:
         p2 = static_cast<Uint16 *>(surface->pixels)
-            + (y * surface->pitch) / 2
+            + y * surface->pitch / 2
             + x;
         *p2 = index;
         break;
@@ -565,6 +601,7 @@ void Image::putPixelIndex(int x, int y, unsigned int index, bool anyway) const
             p[0] = (index >> 16) & 0xff;
             p[1] = (index >> 8) & 0xff;
             p[2] = index & 0xff;
+    // ReSharper disable once CppRedundantElseKeywordInsideCompoundStatement
         } else {
             p[0] = index & 0xff;
             p[1] = (index >> 8) & 0xff;
@@ -573,10 +610,12 @@ void Image::putPixelIndex(int x, int y, unsigned int index, bool anyway) const
         break;
     case 4:
         p4 = static_cast<Uint32 *>(surface->pixels)
-            + (y * surface->pitch) / 4
+            + y * surface->pitch / 4
             + x;
         *p4 = index;
         break;
+    default:
+        errorFatal("wrong bpp, only 1-4 are supported");
     }
     if (SDL_MUSTLOCK(surface)) SDL_UnlockSurface(surface);
 } // Image::putPixelIndex
@@ -586,26 +625,33 @@ void Image::putPixelIndex(int x, int y, unsigned int index, bool anyway) const
  * Fills a rectangle in the image with a given color.
  */
 void Image::fillRect(
-    int x,
-    int y,
-    int w,
-    int h,
-    std::uint8_t r,
-    std::uint8_t g,
-    std::uint8_t b,
-    std::uint8_t a,
-    bool anyway
+    const int x,
+    const int y,
+    const int ww,
+    const int hh,
+    const std::uint8_t r,
+    const std::uint8_t g,
+    const std::uint8_t b,
+    const std::uint8_t a,
+    const bool anyway
 ) const
 {
     SDL_Rect dest;
-    Uint32 pixel;
-    pixel = SDL_MapRGBA(
-        surface->format, Uint8(r), Uint8(g), Uint8(b), Uint8(a)
+    const Uint32 pixel = SDL_MapRGBA(
+        surface->format,
+        // ReSharper disable once CppRedundantCastExpression
+        static_cast<Uint8>(r),
+        // ReSharper disable once CppRedundantCastExpression
+        static_cast<Uint8>(g),
+        // ReSharper disable once CppRedundantCastExpression
+        static_cast<Uint8>(b),
+        // ReSharper disable once CppRedundantCastExpression
+        static_cast<Uint8>(a)
     );
-    dest.x = x;
-    dest.y = y;
-    dest.w = w;
-    dest.h = h;
+    dest.x = static_cast<Sint16>(x);
+    dest.y = static_cast<Sint16>(y);
+    dest.w = ww;
+    dest.h = hh;
     if (__builtin_expect(screenMoving, true) || !isScreen || anyway) {
         SDL_FillRect(surface, &dest, pixel);
     }
@@ -616,8 +662,8 @@ void Image::fillRect(
  * Gets the color of a single pixel.
  */
 void Image::getPixel(
-    int x,
-    int y,
+    const int x,
+    const int y,
     std::uint8_t &r,
     std::uint8_t &g,
     std::uint8_t &b,
@@ -640,13 +686,13 @@ void Image::getPixel(
  * indexed mode, then the index is simply the palette entry number.
  * If the image is RGB, it is a packed RGB triplet.
  */
-void Image::getPixelIndex(int x, int y, unsigned int &index) const
+void Image::getPixelIndex(const int x, const int y, unsigned int &index) const
 {
     const Uint8 *p1, *p3;
     const Uint16 *p2;
     const Uint32 *p4;
     if (SDL_MUSTLOCK(surface)) SDL_LockSurface(surface);
-    int bpp = surface->format->BytesPerPixel;
+    const int bpp = surface->format->BytesPerPixel;
     switch (__builtin_expect(bpp, 1)) {
     case 1:
         p1 = static_cast<Uint8 *>(surface->pixels)
@@ -656,7 +702,7 @@ void Image::getPixelIndex(int x, int y, unsigned int &index) const
         break;
     case 2:
         p2 = static_cast<Uint16 *>(surface->pixels)
-            + (y * surface->pitch) / 2
+            + y * surface->pitch / 2
             + x;
         index = *p2;
         break;
@@ -666,13 +712,14 @@ void Image::getPixelIndex(int x, int y, unsigned int &index) const
             + x * 3;
         if (SDL_BYTEORDER == SDL_BIG_ENDIAN) {
             index = p3[0] << 16 | p3[1] << 8 | p3[2];
+    // ReSharper disable once CppRedundantElseKeywordInsideCompoundStatement
         } else {
             index = p3[0] | p3[1] << 8 | p3[2] << 16;
         }
         break;
     case 4:
         p4 = static_cast<Uint32 *>(surface->pixels)
-            + (y * surface->pitch) / 4
+            + y * surface->pitch / 4
             + x;
         index = *p4;
         break;
@@ -686,7 +733,9 @@ void Image::getPixelIndex(int x, int y, unsigned int &index) const
 /**
  * Draws the image onto another image.
  */
-void Image::drawOn(Image *d, int x, int y, bool anyway) const
+void Image::drawOn(
+    const Image *d, const int x, const int y, const bool anyway
+) const
 {
     SDL_Rect r;
     SDL_Surface *destSurface;
@@ -695,8 +744,8 @@ void Image::drawOn(Image *d, int x, int y, bool anyway) const
     } else {
         destSurface = d->surface;
     }
-    r.x = x;
-    r.y = y;
+    r.x = static_cast<Sint16>(x);
+    r.y = static_cast<Sint16>(y);
     /* dest w & h unused */
     if (
         __builtin_expect(screenMoving, true) ||
@@ -712,14 +761,14 @@ void Image::drawOn(Image *d, int x, int y, bool anyway) const
  * Draws a piece of the image onto another image.
  */
 void Image::drawSubRectOn(
-    Image *d,
-    int x,
-    int y,
-    int rx,
-    int ry,
-    int rw,
-    int rh,
-    bool anyway
+    const Image *d,
+    const int x,
+    const int y,
+    const int rx,
+    const int ry,
+    const int rw,
+    const int rh,
+    const bool anyway
 ) const
 {
     SDL_Rect src, dest;
@@ -729,12 +778,12 @@ void Image::drawSubRectOn(
     } else {
         destSurface = d->surface;
     }
-    src.x = rx;
-    src.y = ry;
+    src.x = static_cast<Sint16>(rx);
+    src.y = static_cast<Sint16>(ry);
     src.w = rw;
     src.h = rh;
-    dest.x = x;
-    dest.y = y;
+    dest.x = static_cast<Sint16>(x);
+    dest.y = static_cast<Sint16>(y);
     /* dest w & h unused */
     if (
         __builtin_expect(screenMoving, true) ||
@@ -750,17 +799,16 @@ void Image::drawSubRectOn(
  * Draws a piece of the image onto another image, inverted.
  */
 void Image::drawSubRectInvertedOn(
-    Image *d,
-    int x,
-    int y,
-    int rx,
-    int ry,
-    int rw,
-    int rh,
-    bool anyway
+    const Image *d,
+    const int x,
+    const int y,
+    const int rx,
+    const int ry,
+    const int rw,
+    const int rh,
+    const bool anyway
 ) const
 {
-    int i;
     SDL_Rect src, dest;
     SDL_Surface *destSurface;
     if (d == nullptr) {
@@ -768,13 +816,13 @@ void Image::drawSubRectInvertedOn(
     } else {
         destSurface = d->surface;
     }
-    for (i = 0; i < rh; i++) {
-        src.x = rx;
-        src.y = ry + i;
+    for (int i = 0; i < rh; i++) {
+        src.x = static_cast<Sint16>(rx);
+        src.y = static_cast<Sint16>(ry + i);
         src.w = rw;
         src.h = 1;
-        dest.x = x;
-        dest.y = y + rh - i - 1;
+        dest.x = static_cast<Sint16>(x);
+        dest.y = static_cast<Sint16>(y + rh - i - 1);
         /* dest w & h unused */
         if (
             __builtin_expect(screenMoving, true) ||
@@ -800,8 +848,8 @@ void Image::save(const std::string &filename) const
 void Image::drawHighlighted() const
 {
     RGBA c;
-    for (unsigned int i = 0; i < h; i++) {
-        for (unsigned int j = 0; j < w; j++) {
+    for (int i = 0; i < h; i++) {
+        for (int j = 0; j < w; j++) {
             getPixel(j, i, c.r, c.g, c.b, c.a);
             putPixel(j, i, 0xff - c.r, 0xff - c.g, 0xff - c.b, c.a);
         }

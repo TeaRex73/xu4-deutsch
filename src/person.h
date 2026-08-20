@@ -69,7 +69,7 @@ public:
         Conversation *cnv, const char *inquiry
     );
     std::string getPrompt(Conversation *cnv) const;
-    const char *getChoices(Conversation *cnv);
+    // const char *getChoices(Conversation *cnv);
     std::string getIntro(Conversation *cnv);
     std::string processResponse(Conversation *cnv, Response *response);
     void runCommand(Conversation *cnv, const ResponsePart &command);

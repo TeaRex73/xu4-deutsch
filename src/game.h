@@ -6,6 +6,7 @@
 #define GAME_H
 
 #include <string>
+#include <utility>
 #include <vector>
 
 #include "controller.h"
@@ -43,10 +44,10 @@ typedef enum {
 class ReadPlayerController:public ReadChoiceController {
 public:
     ReadPlayerController();
-    ~ReadPlayerController();
-    virtual bool keyPressed(int key) override;
+    ~ReadPlayerController() override;
+    bool keyPressed(int key) override;
     int getPlayer() const;
-    virtual int waitFor() override;
+    int waitFor() override;
 };
 
 
@@ -56,12 +57,12 @@ public:
  */
 class AlphaActionController:public WaitableController<int> {
 public:
-    AlphaActionController(char letter, const std::string &p)
-        :lastValidLetter(letter), prompt(p)
+    AlphaActionController(const char letter, std::string p)
+        :lastValidLetter(letter), prompt(std::move(p))
     {
     }
 
-    virtual bool keyPressed(int key) override;
+    bool keyPressed(int key) override;
     static int get(
         char lastValidLetter,
         const std::string &prompt,
@@ -75,19 +76,17 @@ private:
 
 
 /**
- * Controls interaction while Ztats are being displayed.
+ * Controls interaction while Stats are being displayed.
  */
 class ZtatsController:public WaitableController<void *> {
 public:
-    virtual bool keyPressed(int key) override;
+    bool keyPressed(int key) override;
 };
 
 
 class TurnCompleter {
 public:
-    virtual ~TurnCompleter()
-    {
-    }
+    virtual ~TurnCompleter() = default;
 
     virtual void finishTurn() = 0;
 };
@@ -109,10 +108,10 @@ class GameController
      public TurnCompleter {
 public:
     GameController();
-    ~GameController();
+    ~GameController() override;
     /* controller functions */
-    virtual bool keyPressed(int key) override;
-    virtual void timerFired() override;
+    bool keyPressed(int key) override;
+    void timerFired() override;
     /* main game functions */
     void init();
     static void initScreen();
@@ -124,18 +123,18 @@ public:
         TurnCompleter *turnCompleter = nullptr
     );
     bool exitToParentMap(bool shouldQuenchTorch = true);
-    virtual void finishTurn() override;
-    virtual void update(Party *party, PartyEvent &event) override;
-    virtual void update(Location *location, MoveEvent &event) override;
+    void finishTurn() override;
+    void update(Party *party, PartyEvent &event) override;
+    void update(Location *location, MoveEvent &event) override;
     static void initMoons();
-    static void updateMoons(bool showmoongates);
+    static void updateMoons(bool show_moongates);
     static void flashTile(
         const Coords &coords, MapTile tile, int frames
     );
     static void flashTile(
-        const Coords &coords, const std::string &tilename, int timeFactor
+        const Coords &coords, const std::string &tileName, int timeFactor
     );
-    static void doScreenAnimationsWhilePausing(int timeFactor);
+    // static void doScreenAnimationsWhilePausing(int timeFactor);
     TileView mapArea;
     bool paused;
     int pausedTimer;
@@ -157,7 +156,7 @@ void gameSetViewMode(ViewMode newMode);
 void gameUpdateScreen();
 /* spell functions */
 void castSpell(int player = -1);
-void gameSpellEffect(int spell, int player, Sound sound);
+void gameSpellEffect(unsigned int spell, int player, Sound sound);
 /* action functions */
 void destroy();
 void attack();
@@ -178,9 +177,9 @@ void gameCheckHullIntegrity();
 /* creature functions */
 bool creatureRangeAttack(const Coords &coords, const Creature *m);
 void gameCreatureCleanup();
-bool gameSpawnCreature(const class Creature *m);
+bool gameSpawnCreature(const Creature *m);
 /* etc */
-std::string gameGetInput(int maxlen = 32);
+std::string gameGetInput(int maxLen = 32);
 int gameGetPlayer(
     bool canBeDisabled, bool canBeActivePlayer, bool zeroIsValid
 );
@@ -191,7 +190,7 @@ void gameDamageParty(int minDamage, int maxDamage);
 void gameDamageShip(int minDamage, int maxDamage);
 void gameSetActivePlayer(int player);
 std::vector<Coords> gameGetDirectionalActionPath(
-    int dirmask,
+    int dirMask,
     int validDirections,
     const Coords &origin,
     int minDistance,
@@ -199,6 +198,6 @@ std::vector<Coords> gameGetDirectionalActionPath(
     bool (*blockedPredicate)(const Tile *tile),
     bool includeBlocked
 );
-void gameDestroyAllCreatures(void);
+void gameDestroyAllCreatures();
 
-#endif // ifndef GAME_H
+#endif // GAME_H
