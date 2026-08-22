@@ -8,22 +8,25 @@
 #include <map>
 #include <set>
 #include <string>
+#include <vector>
 
 #include "location.h"
 
 #include "annotation.h"
 #include "combat.h"
 #include "context.h"
-#include "controller.h"
 #include "creature.h"
+#include "direction.h"
 #include "event.h"
 #include "game.h"
 #include "map.h"
+#include "movement.h"
 #include "object.h"
 #include "player.h"
 #include "settings.h"
 #include "tile.h"
 #include "tileset.h"
+#include "types.h"
 
 
 /* FIXME: locationPush is never used, and locationPop only
@@ -40,14 +43,14 @@ static Location *locationPop(Location **stack);
 Location::Location(
     const MapCoords &coords,
     Map *map,
-    int viewmode,
-    LocationContext ctx,
+    const int viewMode,
+    const LocationContext ctx,
     TurnCompleter *turnCompleter,
     Location *prev
 )
     :coords(coords),
      map(map),
-     viewMode(viewmode),
+     viewMode(viewMode),
      context(ctx),
      turnCompleter(turnCompleter),
      prev(prev)
@@ -66,30 +69,33 @@ Location::~Location()
 /**
  * Return the entire stack of objects at the given location.
  */
-std::vector<MapTile> Location::tilesAt(const MapCoords &coords, bool &focus)
+std::vector<MapTile> Location::tilesAt(
+    const MapCoords &objectCoords, bool &focus
+) const
 {
     std::vector<MapTile> tiles;
-    std::list<const Annotation *> a = map->annotations->ptrsToAllAt(coords);
+    const std::list<const Annotation *> a =
+        map->annotations->ptrsToAllAt(objectCoords);
     std::list<const Annotation *>::const_iterator i;
-    const Object *obj = map->objectAt(coords);
-    const Creature *m = dynamic_cast<const Creature *>(obj);
+    const Object *obj = map->objectAt(objectCoords);
+    const auto *m = dynamic_cast<const Creature *>(obj);
     focus = false;
-    bool avatar = this->coords == coords;
+    const bool avatar = this->coords == objectCoords;
     /* Do not return objects for VIEW_GEM mode,
        show only the avatar and tiles */
-    if ((viewMode == VIEW_GEM)
-        && (!settings.enhancementsOptions.peerShowsObjects)) {
+    if (viewMode == VIEW_GEM
+        && !settings.enhancementsOptions.peerShowsObjects) {
         // When viewing a gem, always show the avatar regardless
         // of whether or not it is shown in our normal view
         if (avatar) {
             tiles.push_back(c->party->getTransport());
         } else {
-            tiles.push_back(map->tileAt(coords, WITHOUT_OBJECTS));
+            tiles.push_back(map->tileAt(objectCoords, WITHOUT_OBJECTS));
         }
         return tiles;
     }
     /* Add the avatar to gem view */
-    if (avatar && (viewMode == VIEW_GEM)) {
+    if (avatar && viewMode == VIEW_GEM) {
         tiles.push_back(c->party->getTransport());
     }
     /* Add visual-only annotations to the list */
@@ -116,17 +122,17 @@ std::vector<MapTile> Location::tilesAt(const MapCoords &coords, bool &focus)
         tiles.push_back(visibleCreatureAndObjectTile);
     }
     /* then the avatar is drawn */
-    if ((map->flags & SHOW_AVATAR)
+    if (map->flags & SHOW_AVATAR
         && avatar) {
         tiles.push_back(c->party->getTransport());
     }
     /* then camouflaged creatures that have a disguise */
     if (obj
-        && (obj->getType() == Object::CREATURE)
+        && obj->getType() == Object::CREATURE
         && !obj->isVisible()
-        && (!m->getCamouflageTile().empty())) {
+        && !m->getCamouflageTile().empty()) {
         focus = focus || obj->hasFocus();
-        tiles.push_back(
+        tiles.emplace_back(
             map->tileset->getByName(m->getCamouflageTile())->getId()
         );
     }
@@ -154,7 +160,7 @@ std::vector<MapTile> Location::tilesAt(const MapCoords &coords, bool &focus)
         }
     }
     /* finally the base tile */
-    MapTile tileFromMapData = map->getTileFromData(coords);
+    MapTile tileFromMapData = map->getTileFromData(objectCoords);
     const Tile *tileType = tileFromMapData.getTileType();
     if (tileType->isLivingObject()) {
         // This animation should be frozen because a living
@@ -167,7 +173,7 @@ std::vector<MapTile> Location::tilesAt(const MapCoords &coords, bool &focus)
     if (tileType->isLandForeground()
         || tileType->isWaterForeground()
         || tileType->isLivingObject()) {
-        tiles.push_back(getReplacementTile(coords, tileType));
+        tiles.emplace_back(getReplacementTile(objectCoords, tileType));
     }
     return tiles;
 } // Location::tilesAt
@@ -182,27 +188,27 @@ std::vector<MapTile> Location::tilesAt(const MapCoords &coords, bool &focus)
  */
 TileId Location::getReplacementTile(
     const MapCoords &atCoords, const Tile *forTile
-)
+) const
 {
     std::map<TileId, int> validMapTileCount;
-    const static int dirs[][2] = {
+    static constexpr int dirs[][2] = {
         { -1, 0 }, { 1, 0 }, { 0, -1 }, { 0, 1 }
     };
-    const static int dirs_per_step = sizeof(dirs) / sizeof(*dirs);
     int loop_count = 0;
     std::set<MapCoords> searched;
     std::list<MapCoords> searchQueue;
     // Pathfinding to closest traversable tile with appropriate
     // replacement properties.
-    // For tiles marked water-replaceable, pathfinding includes swimmables.
+    // For tiles marked water-replaceable, pathfinding includes
+    // swimmable tiles.
     searchQueue.push_back(atCoords);
     do {
         MapCoords currentStep = searchQueue.front();
         searchQueue.pop_front();
         searched.insert(currentStep);
-        for (int i = 0; i < dirs_per_step; i++) {
+        for (const auto *dir: dirs) {
             MapCoords newStep(currentStep);
-            newStep.move(dirs[i][0], dirs[i][1], map);
+            newStep.move(dir[0], dir[1], map);
             Tile const *tileType =
                 map->tileTypeAt(newStep, WITHOUT_OBJECTS);
             if (!tileType->isOpaque()) {
@@ -215,8 +221,7 @@ TileId Location::getReplacementTile(
                      || forTile->isLivingObject()))
                 || (tileType->isWaterReplacement()
                     && forTile->isWaterForeground())) {
-                std::map<TileId, int>::iterator validCount =
-                    validMapTileCount.find(tileType->getId());
+                auto validCount = validMapTileCount.find(tileType->getId());
                 if (validCount == validMapTileCount.end()) {
                     validMapTileCount[tileType->getId()] = 1;
                 } else {
@@ -224,9 +229,8 @@ TileId Location::getReplacementTile(
                 }
             }
         }
-        if (validMapTileCount.size() > 0) {
-            std::map<TileId, int>::iterator itr =
-                validMapTileCount.begin();
+        if (!validMapTileCount.empty()) {
+            auto itr = validMapTileCount.begin();
             TileId winner = itr->first;
             int score = itr->second;
             while (++itr != validMapTileCount.end()) {
@@ -239,14 +243,13 @@ TileId Location::getReplacementTile(
         }
         /* loop_count is an ugly hack to temporarily fix infinite loop */
     } while (++loop_count < 128
-             && searchQueue.size() > 0
+             && !searchQueue.empty()
              && searchQueue.size() < 64);
     /* couldn't find a tile, give it the classic default */
     if (map->isDungeonMap()) {
         return map->tileset->getByName("brick_floor")->getId();
-    } else {
-        return map->tileset->getByName("grass")->getId();
     }
+    return map->tileset->getByName("grass")->getId();
 } // Location::getReplacementTile
 
 
@@ -255,19 +258,18 @@ TileId Location::getReplacementTile(
  *     If in combat - returns the coordinates of party member with focus
  *     If elsewhere - returns the coordinates of the avatar
  */
-void Location::getCurrentPosition(MapCoords *coords)
+MapCoords Location::getCurrentPosition() const
 {
     if (context & CTX_COMBAT) {
-        CombatController *cc =
+        auto *cc =
             dynamic_cast<CombatController *>(eventHandler->getController());
-        PartyMemberVector *party = cc->getParty();
-        *coords = (*party)[cc->getFocus()]->getCoords();
-    } else {
-        *coords = this->coords;
+        const PartyMemberVector *party = cc->getParty();
+        return (*party)[cc->getFocus()]->getCoords();
     }
+    return this->coords;
 }
 
-MoveResult Location::move(Direction dir, bool userEvent)
+MoveResult Location::move(const Direction dir, const bool userEvent)
 {
     MoveEvent event(dir, userEvent);
     switch (map->type) {

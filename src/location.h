@@ -36,19 +36,23 @@ public:
     Location(
         const MapCoords &coords,
         Map *map,
-        int viewmode,
+        int viewMode,
         LocationContext ctx,
         TurnCompleter *turnCompleter,
         Location *prev
     );
-    ~Location();
+    ~Location() override;
     Location(const Location &) = delete;
     Location(Location &&) = delete;
     Location &operator=(const Location &) = delete;
     Location &operator=(Location &&) = delete;
-    std::vector<MapTile> tilesAt(const MapCoords &coords, bool &focus);
-    TileId getReplacementTile(const MapCoords &atCoords, Tile const *forTile);
-    void getCurrentPosition(MapCoords *coords);
+    std::vector<MapTile> tilesAt(const MapCoords &objectCoords, bool &focus) const;
+
+    TileId getReplacementTile(
+        const MapCoords &atCoords, Tile const *forTile
+    ) const;
+
+    MapCoords getCurrentPosition() const;
     MoveResult move(Direction dir, bool userEvent);
     MapCoords coords;
     Map *map;
@@ -60,4 +64,4 @@ public:
 
 void locationFree(Location **stack);
 
-#endif // ifndef LOCATION_H
+#endif // LOCATION_H

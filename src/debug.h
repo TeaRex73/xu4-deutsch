@@ -43,7 +43,7 @@ void print_trace(std::FILE *file);
         if (!(exp)) {                                  \
             std::fprintf(                              \
                 stderr,                                \
-                "%s:%s:%d: assert `%s' gescheitert. ", \
+                "%s:%s:%d: assert '%s' gescheitert. ", \
                 __FILE__, XU4_FUNC, __LINE__, #exp     \
             );                                         \
             std::fprintf(stderr, __VA_ARGS__);         \

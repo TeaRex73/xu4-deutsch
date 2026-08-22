@@ -4,6 +4,8 @@
 
 #include "vc6.h" // Fixes things if you're using VC6, does nothing otherwise
 
+#include <string>
+
 #include "item.h"
 
 #include "annotation.h"
@@ -32,19 +34,21 @@
 #include "weapon.h"
 
 
-DestroyAllCreaturesCallback destroyAllCreaturesCallback;
+static DestroyAllCreaturesCallback destroyAllCreaturesCallback;
 
-void itemSetDestroyAllCreaturesCallback(DestroyAllCreaturesCallback callback)
+void itemSetDestroyAllCreaturesCallback(
+    const DestroyAllCreaturesCallback callback
+)
 {
     destroyAllCreaturesCallback = callback;
 }
 
-int needStoneNames = 0;
-unsigned char stoneMask = 0;
-static bool isRuneInInventory(int virt);
-static void putRuneInInventory(int virt);
-static bool isStoneInInventory(int virt);
-static void putStoneInInventory(int virt);
+static int needStoneNames = 0;
+static unsigned char stoneMask = 0;
+static bool isRuneInInventory(int virtue);
+static void putRuneInInventory(int virtue);
+static bool isStoneInInventory(int virtue);
+static void putStoneInInventory(int virtue);
 static bool isItemInInventory(int item);
 static bool isSkullInInventory(int);
 static void putItemInInventory(int item);
@@ -60,392 +64,390 @@ static bool isWeaponInInventory(int weapon);
 static void putWeaponInInventory(int weapon);
 static void useTelescope(int);
 static bool isReagentInInventory(int);
-static void putReagentInInventory(int reag);
+static void putReagentInInventory(int reagent);
 static void itemHandleStones(const std::string &color);
-static bool itemConditionsMet(unsigned char conditions);
+static bool itemConditionsMet(unsigned int conditions);
 
 static const ItemLocation items[] = {
     {
-        "Alraune",
-        nullptr,
-        "mandrake1",
-        &isReagentInInventory,
-        &putReagentInInventory,
-        nullptr,
-        REAG_MANDRAKE,
-        SC_NEWMOONS | SC_REAGENTDELAY
+        .name = "Alraune",
+        .shortname = nullptr,
+        .locationLabel = "mandrake1",
+        .isItemInInventory = &isReagentInInventory,
+        .putItemInInventory = &putReagentInInventory,
+        .useItem = nullptr,
+        .data = REAG_MANDRAKE,
+        .conditions = SC_NEW_MOONS | SC_REAGENT_DELAY
     },
     {
-        "Alraune",
-        nullptr,
-        "mandrake2",
-        &isReagentInInventory,
-        &putReagentInInventory,
-        nullptr,
-        REAG_MANDRAKE,
-        SC_NEWMOONS | SC_REAGENTDELAY
+        .name = "Alraune",
+        .shortname = nullptr,
+        .locationLabel = "mandrake2",
+        .isItemInInventory = &isReagentInInventory,
+        .putItemInInventory = &putReagentInInventory,
+        .useItem = nullptr,
+        .data = REAG_MANDRAKE,
+        .conditions = SC_NEW_MOONS | SC_REAGENT_DELAY
     },
     {
-        "Schatten",
-        nullptr,
-        "nightshade1",
-        &isReagentInInventory,
-        &putReagentInInventory,
-        nullptr,
-        REAG_NIGHTSHADE,
-        SC_NEWMOONS | SC_REAGENTDELAY
+        .name = "Schatten",
+        .shortname = nullptr,
+        .locationLabel = "nightshade1",
+        .isItemInInventory = &isReagentInInventory,
+        .putItemInInventory = &putReagentInInventory,
+        .useItem = nullptr,
+        .data = REAG_NIGHTSHADE,
+        .conditions = SC_NEW_MOONS | SC_REAGENT_DELAY
     },
     {
-        "Schatten",
-        nullptr,
-        "nightshade2",
-        &isReagentInInventory,
-        &putReagentInInventory,
-        nullptr,
-        REAG_NIGHTSHADE,
-        SC_NEWMOONS | SC_REAGENTDELAY
+        .name = "Schatten",
+        .shortname = nullptr,
+        .locationLabel = "nightshade2",
+        .isItemInInventory = &isReagentInInventory,
+        .putItemInInventory = &putReagentInInventory,
+        .useItem = nullptr,
+        .data = REAG_NIGHTSHADE,
+        .conditions = SC_NEW_MOONS | SC_REAGENT_DELAY
     },
     {
-        "die Glocke des Mutes",
-        "glocke",
-        "bell",
-        &isItemInInventory,
-        &putItemInInventory,
-        &useBBC,
-        ITEM_BELL,
-        0
+        .name = "die Glocke des Mutes",
+        .shortname = "glocke",
+        .locationLabel = "bell",
+        .isItemInInventory = &isItemInInventory,
+        .putItemInInventory = &putItemInInventory,
+        .useItem = &useBBC,
+        .data = ITEM_BELL,
+        .conditions = 0
     },
     {
-        "das Buch der Wahrheit",
-        "buch",
-        "book",
-        &isItemInInventory,
-        &putItemInInventory,
-        &useBBC,
-        ITEM_BOOK,
-        0
+        .name = "das Buch der Wahrheit",
+        .shortname = "buch",
+        .locationLabel = "book",
+        .isItemInInventory = &isItemInInventory,
+        .putItemInInventory = &putItemInInventory,
+        .useItem = &useBBC,
+        .data = ITEM_BOOK,
+        .conditions = 0
     },
     {
-        "die Kerze der Liebe",
-        "kerze",
-        "candle",
-        &isItemInInventory,
-        &putItemInInventory,
-        &useBBC,
-        ITEM_CANDLE,
-        0
+        .name = "die Kerze der Liebe",
+        .shortname = "kerze",
+        .locationLabel = "candle",
+        .isItemInInventory = &isItemInInventory,
+        .putItemInInventory = &putItemInInventory,
+        .useItem = &useBBC,
+        .data = ITEM_CANDLE,
+        .conditions = 0
     },
     {
-        "ein Silbernes Horn",
-        "horn",
-        "horn",
-        &isItemInInventory,
-        &putItemInInventory,
-        &useHorn,
-        ITEM_HORN,
-        0
+        .name = "ein Silbernes Horn",
+        .shortname = "horn",
+        .locationLabel = "horn",
+        .isItemInInventory = &isItemInInventory,
+        .putItemInInventory = &putItemInInventory,
+        .useItem = &useHorn,
+        .data = ITEM_HORN,
+        .conditions = 0
     },
     {
-        "das Steuer von Seiner Majest{t Schiff 'Kap'",
-        "steuer",
-        "wheel",
-        &isItemInInventory,
-        &putItemInInventory,
-        &useWheel,
-        ITEM_WHEEL,
-        0
+        .name = "das Steuer von Seiner Majest{t Schiff 'Kap'",
+        .shortname = "steuer",
+        .locationLabel = "wheel",
+        .isItemInInventory = &isItemInInventory,
+        .putItemInInventory = &putItemInInventory,
+        .useItem = &useWheel,
+        .data = ITEM_WHEEL,
+        .conditions = 0
     },
     {
-        "den Sch{del Mondains des Zauberers",
-        "sch{del",
-        "skull",
-        &isSkullInInventory,
-        &putItemInInventory,
-        &useSkull,
-        ITEM_SKULL,
-        SC_NEWMOONS
+        .name = "den Sch{del Mondains des Zauberers",
+        .shortname = "sch{del",
+        .locationLabel = "skull",
+        .isItemInInventory = &isSkullInInventory,
+        .putItemInInventory = &putItemInInventory,
+        .useItem = &useSkull,
+        .data = ITEM_SKULL,
+        .conditions = SC_NEW_MOONS
     },
     {
-        "den Roten Stein",
-        "rot",
-        "redstone",
-        &isStoneInInventory,
-        &putStoneInInventory,
-        &useStone,
-        STONE_RED,
-        0
+        .name = "den Roten Stein",
+        .shortname = "rot",
+        .locationLabel = "redstone",
+        .isItemInInventory = &isStoneInInventory,
+        .putItemInInventory = &putStoneInInventory,
+        .useItem = &useStone,
+        .data = STONE_RED,
+        .conditions = 0
     },
     {
-        "den Orangenen Stein",
-        "orange",
-        "orangestone",
-        &isStoneInInventory,
-        &putStoneInInventory,
-        &useStone,
-        STONE_ORANGE,
-        0
+        .name = "den Orangenen Stein",
+        .shortname = "orange",
+        .locationLabel = "orangestone",
+        .isItemInInventory = &isStoneInInventory,
+        .putItemInInventory = &putStoneInInventory,
+        .useItem = &useStone,
+        .data = STONE_ORANGE,
+        .conditions = 0
     },
     {
-        "den Gelben Stein",
-        "gelb",
-        "yellowstone",
-        &isStoneInInventory,
-        &putStoneInInventory,
-        &useStone,
-        STONE_YELLOW,
-        0
+        .name = "den Gelben Stein",
+        .shortname = "gelb",
+        .locationLabel = "yellowstone",
+        .isItemInInventory = &isStoneInInventory,
+        .putItemInInventory = &putStoneInInventory,
+        .useItem = &useStone,
+        .data = STONE_YELLOW,
+        .conditions = 0
     },
     {
-        "den Gr}nen Stein",
-        "gr}n",
-        "greenstone",
-        &isStoneInInventory,
-        &putStoneInInventory,
-        &useStone,
-        STONE_GREEN,
-        0
+        .name = "den Gr}nen Stein",
+        .shortname = "gr}n",
+        .locationLabel = "greenstone",
+        .isItemInInventory = &isStoneInInventory,
+        .putItemInInventory = &putStoneInInventory,
+        .useItem = &useStone,
+        .data = STONE_GREEN,
+        .conditions = 0
     },
     {
-        "den Blauen Stein",
-        "blau",
-        "bluestone",
-        &isStoneInInventory,
-        &putStoneInInventory,
-        &useStone,
-        STONE_BLUE,
-        0
+        .name = "den Blauen Stein",
+        .shortname = "blau",
+        .locationLabel = "bluestone",
+        .isItemInInventory = &isStoneInInventory,
+        .putItemInInventory = &putStoneInInventory,
+        .useItem = &useStone,
+        .data = STONE_BLUE,
+        .conditions = 0
     },
     {
-        "den Violetten Stein",
-        "violett",
-        "purplestone",
-        &isStoneInInventory,
-        &putStoneInInventory,
-        &useStone,
-        STONE_PURPLE,
-        0
+        .name = "den Violetten Stein",
+        .shortname = "violett",
+        .locationLabel = "purplestone",
+        .isItemInInventory = &isStoneInInventory,
+        .putItemInInventory = &putStoneInInventory,
+        .useItem = &useStone,
+        .data = STONE_PURPLE,
+        .conditions = 0
     },
     {
-        "den Schwarzen Stein",
-        "schwarz",
-        "blackstone",
-        &isStoneInInventory,
-        &putStoneInInventory,
-        &useStone,
-        STONE_BLACK,
-        SC_NEWMOONS
+        .name = "den Schwarzen Stein",
+        .shortname = "schwarz",
+        .locationLabel = "blackstone",
+        .isItemInInventory = &isStoneInInventory,
+        .putItemInInventory = &putStoneInInventory,
+        .useItem = &useStone,
+        .data = STONE_BLACK,
+        .conditions = SC_NEW_MOONS
     },
     {
-        "den Wei~en Stein",
-        "wei~",
-        "whitestone",
-        &isStoneInInventory,
-        &putStoneInInventory,
-        &useStone,
-        STONE_WHITE,
-        0
+        .name = "den Wei~en Stein",
+        .shortname = "wei~",
+        .locationLabel = "whitestone",
+        .isItemInInventory = &isStoneInInventory,
+        .putItemInInventory = &putStoneInInventory,
+        .useItem = &useStone,
+        .data = STONE_WHITE,
+        .conditions = 0
     },
     /* handlers for using generic objects */
     {
-        nullptr,
-        "stein",
-        nullptr,
-        &isStoneInInventory,
-        nullptr,
-        &useStone,
-        -1,
-        0
+        .name = nullptr,
+        .shortname = "stein",
+        .locationLabel = nullptr,
+        .isItemInInventory = &isStoneInInventory,
+        .putItemInInventory = nullptr,
+        .useItem = &useStone,
+        .data = -1,
+        .conditions = 0
     },
     {
-        nullptr,
-        "steine",
-        nullptr,
-        &isStoneInInventory,
-        nullptr,
-        &useStone,
-        -1,
-        0
+        .name = nullptr,
+        .shortname = "steine",
+        .locationLabel = nullptr,
+        .isItemInInventory = &isStoneInInventory,
+        .putItemInInventory = nullptr,
+        .useItem = &useStone,
+        .data = -1,
+        .conditions = 0
     },
     {
-        nullptr,
-        "schl}ssel",
-        nullptr,
-        &isItemInInventory,
-        nullptr,
-        &useKey,
-        ITEM_KEY_C | ITEM_KEY_L | ITEM_KEY_T,
-        0
+        .name = nullptr,
+        .shortname = "schl}ssel",
+        .locationLabel = nullptr,
+        .isItemInInventory = &isItemInInventory,
+        .putItemInInventory = nullptr,
+        .useItem = &useKey,
+        .data = ITEM_KEY_C | ITEM_KEY_L | ITEM_KEY_T,
+        .conditions = 0
     },
     {
-        nullptr,
-        "schl}ssel",
-        nullptr,
-        &isItemInInventory,
-        nullptr,
-        &useKey,
-        ITEM_KEY_C | ITEM_KEY_L | ITEM_KEY_T,
-        0
+        .name = nullptr,
+        .shortname = "schl}ssel",
+        .locationLabel = nullptr,
+        .isItemInInventory = &isItemInInventory,
+        .putItemInInventory = nullptr,
+        .useItem = &useKey,
+        .data = ITEM_KEY_C | ITEM_KEY_L | ITEM_KEY_T,
+        .conditions = 0
     },
-    /* Lycaeum telescope */
+    /* Lyceum telescope */
     {
-        nullptr,
-        nullptr,
-        "telescope",
-        nullptr,
-        &useTelescope,
-        nullptr,
-        0,
-        0
-    },
-    {
-        "Mystische R}stung",
-        nullptr,
-        "mysticarmor",
-        &isMysticInInventory,
-        &putMysticInInventory,
-        nullptr,
-        ARMR_MYSTICROBES,
-        SC_FULLAVATAR
+        .name = nullptr,
+        .shortname = nullptr,
+        .locationLabel = "telescope",
+        .isItemInInventory = nullptr,
+        .putItemInInventory = &useTelescope,
+        .useItem = nullptr,
+        .data = 0,
+        .conditions = 0
     },
     {
-        "Mystische Schwerter",
-        nullptr,
-        "mysticswords",
-        &isMysticInInventory,
-        &putMysticInInventory,
-        nullptr,
-        WEAP_MYSTICSWORD,
-        SC_FULLAVATAR
+        .name = "Mystische R}stung",
+        .shortname = nullptr,
+        .locationLabel = "mysticarmor",
+        .isItemInInventory = &isMysticInInventory,
+        .putItemInInventory = &putMysticInInventory,
+        .useItem = nullptr,
+        .data = ARMR_MYSTICROBES,
+        .conditions = SC_FULL_AVATAR
     },
     {
-        "die verschwelten ]berreste einer uralten sosarischen "
+        .name = "Mystische Schwerter",
+        .shortname = nullptr,
+        .locationLabel = "mysticswords",
+        .isItemInInventory = &isMysticInInventory,
+        .putItemInInventory = &putMysticInInventory,
+        .useItem = nullptr,
+        .data = WEAP_MYSTICSWORD,
+        .conditions = SC_FULL_AVATAR
+    },
+    {
+        .name = "die verschwelten ]berreste einer uralten sosarischen "
         "Laserpistole. Sie zerf{llt in deinen Fingern zu Asche",
-        nullptr,
-        "lasergun",
-        &isWeaponInInventory,
-        &putWeaponInInventory,
-        nullptr,
-        16,
-        0
+        .shortname = nullptr,
+        .locationLabel = "lasergun",
+        .isItemInInventory = &isWeaponInInventory,
+        .putItemInInventory = &putWeaponInInventory,
+        .useItem = nullptr,
+        .data = 16,
+        .conditions = 0
     },
     {
-        "die Rune der Ehrlichkeit",
-        nullptr,
-        "honestyrune",
-        &isRuneInInventory,
-        &putRuneInInventory,
-        nullptr,
-        RUNE_HONESTY,
-        0
+        .name = "die Rune der Ehrlichkeit",
+        .shortname = nullptr,
+        .locationLabel = "honestyrune",
+        .isItemInInventory = &isRuneInInventory,
+        .putItemInInventory = &putRuneInInventory,
+        .useItem = nullptr,
+        .data = RUNE_HONESTY,
+        .conditions = 0
     },
     {
-        "die Rune des Mitgef}hls",
-        nullptr,
-        "compassionrune",
-        &isRuneInInventory,
-        &putRuneInInventory,
-        nullptr,
-        RUNE_COMPASSION,
-        0
+        .name = "die Rune des Mitgef}hls",
+        .shortname = nullptr,
+        .locationLabel = "compassionrune",
+        .isItemInInventory = &isRuneInInventory,
+        .putItemInInventory = &putRuneInInventory,
+        .useItem = nullptr,
+        .data = RUNE_COMPASSION,
+        .conditions = 0
     },
     {
-        "die Rune der Tapferkeit",
-        nullptr,
-        "valorrune",
-        &isRuneInInventory,
-        &putRuneInInventory,
-        nullptr,
-        RUNE_VALOR,
-        0
+        .name = "die Rune der Tapferkeit",
+        .shortname = nullptr,
+        .locationLabel = "valorrune",
+        .isItemInInventory = &isRuneInInventory,
+        .putItemInInventory = &putRuneInInventory,
+        .useItem = nullptr,
+        .data = RUNE_VALOR,
+        .conditions = 0
     },
     {
-        "die Rune der Gerechtigkeit",
-        nullptr,
-        "justicerune",
-        &isRuneInInventory,
-        &putRuneInInventory,
-        nullptr,
-        RUNE_JUSTICE,
-        0
+        .name = "die Rune der Gerechtigkeit",
+        .shortname = nullptr,
+        .locationLabel = "justicerune",
+        .isItemInInventory = &isRuneInInventory,
+        .putItemInInventory = &putRuneInInventory,
+        .useItem = nullptr,
+        .data = RUNE_JUSTICE,
+        .conditions = 0
     },
     {
-        "die Rune des Verzichts",
-        nullptr,
-        "sacrificerune",
-        &isRuneInInventory,
-        &putRuneInInventory,
-        nullptr,
-        RUNE_SACRIFICE,
-        0
+        .name = "die Rune des Verzichts",
+        .shortname = nullptr,
+        .locationLabel = "sacrificerune",
+        .isItemInInventory = &isRuneInInventory,
+        .putItemInInventory = &putRuneInInventory,
+        .useItem = nullptr,
+        .data = RUNE_SACRIFICE,
+        .conditions = 0
     },
     {
-        "die Rune der Ehre",
-        nullptr,
-        "honorrune",
-        &isRuneInInventory,
-        &putRuneInInventory,
-        nullptr,
-        RUNE_HONOR,
-        0
+        .name = "die Rune der Ehre",
+        .shortname = nullptr,
+        .locationLabel = "honorrune",
+        .isItemInInventory = &isRuneInInventory,
+        .putItemInInventory = &putRuneInInventory,
+        .useItem = nullptr,
+        .data = RUNE_HONOR,
+        .conditions = 0
     },
     {
-        "die Rune der Spiritualit{t",
-        nullptr,
-        "spiritualityrune",
-        &isRuneInInventory,
-        &putRuneInInventory,
-        nullptr,
-        RUNE_SPIRITUALITY,
-        0
+        .name = "die Rune der Spiritualit{t",
+        .shortname = nullptr,
+        .locationLabel = "spiritualityrune",
+        .isItemInInventory = &isRuneInInventory,
+        .putItemInInventory = &putRuneInInventory,
+        .useItem = nullptr,
+        .data = RUNE_SPIRITUALITY,
+        .conditions = 0
     },
     {
-        "die Rune der Demut",
-        nullptr,
-        "humilityrune",
-        &isRuneInInventory,
-        &putRuneInInventory,
-        nullptr,
-        RUNE_HUMILITY,
-        0
+        .name = "die Rune der Demut",
+        .shortname = nullptr,
+        .locationLabel = "humilityrune",
+        .isItemInInventory = &isRuneInInventory,
+        .putItemInInventory = &putRuneInInventory,
+        .useItem = nullptr,
+        .data = RUNE_HUMILITY,
+        .conditions = 0
     }
 };
 
-#define N_ITEMS (sizeof(items) / sizeof(items[0]))
+#define N_ITEMS (static_cast<int>(sizeof(items) / sizeof(items[0])))
 
-static bool isRuneInInventory(int virt)
+static bool isRuneInInventory(const int virtue)
 {
-    return c->saveGame->runes & virt;
+    return c->saveGame->runes & virtue;
 }
 
-static void putRuneInInventory(int virt)
+static void putRuneInInventory(const int virtue)
 {
     c->party->member(0)->awardXp(100);
     c->party->adjustKarma(KA_FOUND_ITEM);
-    c->saveGame->runes |= virt;
+    c->saveGame->runes |= virtue;
     c->saveGame->lastreagent = c->saveGame->moves & 0xF0;
 }
 
-bool isStoneInInventory(int virt)
+bool isStoneInInventory(const int virtue)
 {
     /* generic test: does the party have any stones yet? */
-    if (virt == -1) {
+    if (virtue == -1) {
         return c->saveGame->stones > 0;
     }
     /* specific test: does the party have a specific stone? */
-    else {
-        return c->saveGame->stones & virt;
-    }
+    return c->saveGame->stones & virtue;
 }
 
-static void putStoneInInventory(int virt)
+static void putStoneInInventory(const int virtue)
 {
     c->party->member(0)->awardXp(200);
     c->party->adjustKarma(KA_FOUND_ITEM);
-    c->saveGame->stones |= virt;
+    c->saveGame->stones |= virtue;
     c->saveGame->lastreagent = c->saveGame->moves & 0xF0;
 }
 
-static bool isItemInInventory(int item)
+static bool isItemInInventory(const int item)
 {
     return c->saveGame->items & item;
 }
@@ -455,7 +457,7 @@ static bool isSkullInInventory(int)
     return c->saveGame->items & (ITEM_SKULL | ITEM_SKULL_DESTROYED);
 }
 
-static void putItemInInventory(int item)
+static void putItemInInventory(const int item)
 {
     /* in u4apple2, findig an item on the world map
        (such as the bell) does not award xp, but I
@@ -470,9 +472,9 @@ static void putItemInInventory(int item)
 /**
  * Use bell, book, or candle on the entrance to the Abyss
  */
-static void useBBC(int item)
+static void useBBC(const int item)
 {
-    Coords abyssEntrance(0xe9, 0xe9);
+    const Coords abyssEntrance(0xe9, 0xe9);
     /* on top of the Abyss entrance */
     if (c->location->coords == abyssEntrance) {
         /* must use bell first */
@@ -481,16 +483,16 @@ static void useBBC(int item)
             c->saveGame->items |= ITEM_BELL_USED;
         }
         /* then the book */
-        else if ((item == ITEM_BOOK)
-                 && (c->saveGame->items & ITEM_BELL_USED)) {
+        else if (item == ITEM_BOOK
+                 && c->saveGame->items & ITEM_BELL_USED) {
             screenMessage(
                 "\n\nDIE WORTE HALLEN MIT DEM L[UTEN MIT!\n"
             );
             c->saveGame->items |= ITEM_BOOK_USED;
         }
         /* then the candle */
-        else if ((item == ITEM_CANDLE)
-                 && (c->saveGame->items & ITEM_BOOK_USED)) {
+        else if (item == ITEM_CANDLE
+                 && c->saveGame->items & ITEM_BOOK_USED) {
             screenMessage(
                 "\n\nALS DU DIE KERZE ENTZ]NDEST, ERBEBT DIE ERDE!\n"
             );
@@ -505,7 +507,7 @@ static void useBBC(int item)
             EventHandler::sleep(100);
             soundPlay(SOUND_NPC_STRUCK, false);
             screenShake(1);
-            EventHandler::sleep(100);
+            EventHandler::sleep(200);
             screenEnableCursor();
             c->saveGame->items |= ITEM_CANDLE_USED;
         } else {
@@ -537,8 +539,8 @@ static void useHorn(int)
  */
 static void useWheel(int)
 {
-    if ((c->transportContext == TRANSPORT_SHIP)
-        && (c->saveGame->shiphull == 50)) {
+    if (c->transportContext == TRANSPORT_SHIP
+        && c->saveGame->shiphull == 50) {
         screenMessage(
             "\n\nNACH DEM EINBAU ERGL]HT DAS STEUER IN BLAUEM LICHTE!\n"
         );
@@ -564,8 +566,9 @@ static void useSkull(int)
         return;
     }
     /* destroy the skull! pat yourself on the back */
-    if ((c->location->coords.x == 0xe9)
-        && (c->location->coords.y == 0xe9)) {
+    const Coords abyssEntrance(0xe9, 0xe9);
+    /* on top of the Abyss entrance */
+    if (c->location->coords == abyssEntrance) {
         screenMessage(
             "\n\nDU WIRFST DEN SCH[DEL MONDAINS IN DEN ABGRUND!\n"
         );
@@ -590,11 +593,10 @@ static void useSkull(int)
 /**
  * Handles using the virtue stones in dungeon altar rooms and on dungeon altars
  */
-static void useStone(int item)
+static void useStone(const int item)
 {
-    MapCoords coords;
-    unsigned char stone = static_cast<unsigned char>(item);
-    c->location->getCurrentPosition(&coords);
+    const auto stone = static_cast<unsigned char>(item);
+    const MapCoords coords = c->location->getCurrentPosition();
     /**
      * Named a specific stone (after using "stone" or "stones")
      */
@@ -603,11 +605,11 @@ static void useStone(int item)
         if (needStoneNames) {
             /* named a stone while in a dungeon altar room */
             if (c->location->context & CTX_ALTAR_ROOM) {
-                const unsigned char truth =
+                constexpr unsigned char truth =
                     STONE_WHITE | STONE_PURPLE | STONE_GREEN | STONE_BLUE;
-                const unsigned char love =
+                constexpr unsigned char love =
                     STONE_WHITE | STONE_YELLOW | STONE_GREEN | STONE_ORANGE;
-                const unsigned char courage =
+                constexpr unsigned char courage =
                     STONE_WHITE | STONE_RED | STONE_PURPLE | STONE_ORANGE;
                 static const unsigned char *attr = nullptr;
                 needStoneNames--;
@@ -627,7 +629,7 @@ static void useStone(int item)
                 /* make sure we're in an altar room */
                 if (attr) {
                     /* we need to use the stone, and we haven't used it yet */
-                    if ((*attr & stone) && (stone & ~stoneMask)) {
+                    if (*attr & stone && stone & ~stoneMask) {
                         stoneMask |= stone;
                     }
                     /* we already used that stone! */
@@ -649,7 +651,7 @@ static void useStone(int item)
                 /* all the stones have been entered,
                    verify them! */
                 else {
-                    unsigned short key = 0xFFFF;
+                    unsigned short key;
                     switch (cm->getAltarRoom()) {
                     case VIRT_TRUTH:
                         key = ITEM_KEY_T;
@@ -661,12 +663,13 @@ static void useStone(int item)
                         key = ITEM_KEY_C;
                         break;
                     default:
+                        key = static_cast<unsigned short>(-1);
                         break;
                     }
                     /* in an altar room, named all of the stones, and don't
                        have the key yet... */
                     if (attr
-                        && (stoneMask == *attr)
+                        && stoneMask == *attr
                         && !(c->saveGame->items & key)) {
                         screenMessage(
                             "\n\nDU FINDEST EIN DRITTEL DES DREITEILIGEN "
@@ -684,14 +687,14 @@ static void useStone(int item)
                while in the abyss on top of an altar */
             else {
                 /* see if they entered the correct stone */
-                if (stone == (1 << c->location->coords.z)) {
+                if (stone == 1 << c->location->coords.z) {
                     if (c->location->coords.z < 7) {
                         /* replace the altar with a down-ladder */
-                        MapCoords ladderCoords;
                         screenMessage(
                             "\n\nDER ALTAR VERWANDELT SICH VOR DEINEN AUGEN!\n"
                         );
-                        c->location->getCurrentPosition(&ladderCoords);
+                        const MapCoords ladderCoords =
+                            c->location->getCurrentPosition();
                         c->location->map->annotations->add(
                                 ladderCoords,
                                 c->location->map->tileset->getByName(
@@ -718,11 +721,11 @@ static void useStone(int item)
     /**
      * in the abyss, on an altar to place the stones
      */
-    else if ((c->location->map->id == MAP_ABYSS)
-             && (c->location->context & CTX_DUNGEON)
-             && (dynamic_cast<Dungeon *>(c->location->map)->currentToken()
-                 == DUNGEON_ALTAR)) {
-        int virtueMask = getBaseVirtues(
+    else if (c->location->map->id == MAP_ABYSS
+             && c->location->context & CTX_DUNGEON
+             && dynamic_cast<Dungeon *>(c->location->map)->currentToken()
+             == DUNGEON_ALTAR) {
+        const int virtueMask = getBaseVirtues(
             static_cast<Virtue>(c->location->coords.z)
         );
         if (virtueMask > 0) {
@@ -737,7 +740,7 @@ static void useStone(int item)
                 "der Wahrheit, der Liebe und dem Mute?\n\n"
             );
         }
-        std::string virtue = gameGetInput();
+        const std::string virtue = gameGetInput();
         if (xu4_strncasecmp(
                 virtue.c_str(),
                 getVirtueName(static_cast<Virtue>(c->location->coords.z)),
@@ -756,9 +759,9 @@ static void useStone(int item)
     /**
      * in a dungeon altar room, on the altar
      */
-    else if ((c->location->context & CTX_ALTAR_ROOM)
-             && (coords.x == 5)
-             && (coords.y == 5)) {
+    else if (c->location->context & CTX_ALTAR_ROOM
+             && coords.x == 5
+             && coords.y == 5) {
         needStoneNames = 4;
         screenMessage(
             "\n\nES GIBT \\FFNUNGEN F]R 4 STEINE.\nWELCHE FARBEN:\nA:"
@@ -774,7 +777,7 @@ static void useKey(int)
     screenMessage("\nSIE PASSEN HIER NICHT!\n");
 }
 
-static bool isMysticInInventory(int mystic)
+static bool isMysticInInventory(const int mystic)
 {
     /* FIXME: you could feasibly get more mystic weapons and armor if you
        have 8 party members and equip them all with everything,
@@ -786,15 +789,15 @@ static bool isMysticInInventory(int mystic)
     */
     if (mystic == WEAP_MYSTICSWORD) {
         return c->saveGame->weapons[WEAP_MYSTICSWORD] > 0;
-    } else if (mystic == ARMR_MYSTICROBES) {
-        return c->saveGame->armor[ARMR_MYSTICROBES] > 0;
-    } else {
-        U4ASSERT(0, "Invalid mystic item was tested in isMysticInInventory()");
     }
+    if (mystic == ARMR_MYSTICROBES) {
+        return c->saveGame->armor[ARMR_MYSTICROBES] > 0;
+    }
+    U4ASSERT(0, "Invalid mystic item was tested in isMysticInInventory()");
     return false;
 }
 
-static void putMysticInInventory(int mystic)
+static void putMysticInInventory(const int mystic)
 {
     c->party->member(0)->awardXp(400);
     c->party->adjustKarma(KA_FOUND_ITEM);
@@ -808,21 +811,20 @@ static void putMysticInInventory(int mystic)
     c->saveGame->lastreagent = c->saveGame->moves & 0xF0;
 }
 
-static bool isWeaponInInventory(int weapon)
+static bool isWeaponInInventory(const int weapon)
 {
     if (c->saveGame->weapons[weapon]) {
         return true;
-    } else {
-        for (int i = 0; i < c->party->size(); i++) {
-            if (c->party->member(i)->getWeapon()->getType() == weapon) {
-                return true;
-            }
+    }
+    for (int i = 0; i < c->party->size(); i++) {
+        if (c->party->member(i)->getWeapon()->getType() == weapon) {
+            return true;
         }
     }
     return false;
 }
 
-static void putWeaponInInventory(int weapon)
+static void putWeaponInInventory(const int weapon)
 {
     c->saveGame->weapons[weapon]++;
 }
@@ -830,10 +832,10 @@ static void putWeaponInInventory(int weapon)
 static void useTelescope(int)
 {
     screenMessage(
-        "\nDU SIEHST EIN DREHRAD AM TELESKOPE, MIT MARKIERUNGEN VON "
+        "\nDU SIEHST EIN EINSTELLRAD AM TELESKOPE, MIT MARKIERUNGEN VON "
         "A BIS P.\nDU W[HLST:"
     );
-    int choice = AlphaActionController::get('p', "DU W[HLST:");
+    const int choice = AlphaActionController::get('p', "DU W[HLST:");
     if (choice == -1) {
         return;
     }
@@ -844,16 +846,17 @@ static void useTelescope(int)
 
 static bool isReagentInInventory(int)
 {
+    /* Finding reagents is not hindered by already owning some */
     return false;
 }
 
-static void putReagentInInventory(int reag)
+static void putReagentInInventory(const int reagent)
 {
     c->party->adjustKarma(KA_FOUND_ITEM);
-    c->saveGame->reagents[reag] += xu4_random(8) + 2;
+    c->saveGame->reagents[reagent] += xu4_random(8) + 2;
     c->saveGame->lastreagent = c->saveGame->moves & 0xF0;
-    if (c->saveGame->reagents[reag] > 99) {
-        c->saveGame->reagents[reag] = 99;
+    if (c->saveGame->reagents[reagent] > 99) {
+        c->saveGame->reagents[reagent] = 99;
         screenMessage("ZUM TEIL VERLOREN!\n");
     }
 }
@@ -862,22 +865,22 @@ static void putReagentInInventory(int reag)
 /**
  * Returns true if the specified conditions are met to be able to get the item
  */
-static bool itemConditionsMet(unsigned char conditions)
+static bool itemConditionsMet(const unsigned int conditions)
 {
-    if ((conditions & SC_NEWMOONS)
-        && !((c->saveGame->trammelphase == 0)
-             && (c->saveGame->feluccaphase == 0))) {
+    if (conditions & SC_NEW_MOONS
+        && !(c->saveGame->trammelphase == 0
+             && c->saveGame->feluccaphase == 0)) {
         return false;
     }
-    if (conditions & SC_FULLAVATAR) {
-        for (int i = 0; i < VIRT_MAX; i++) {
-            if (c->saveGame->karma[i] != 0) {
+    if (conditions & SC_FULL_AVATAR) {
+        for (const unsigned short karmum: c->saveGame->karma) {
+            if (karmum != 0) {
                 return false;
             }
         }
     }
-    if ((conditions & SC_REAGENTDELAY)
-        && ((c->saveGame->moves & 0xF0) == c->saveGame->lastreagent)) {
+    if (conditions & SC_REAGENT_DELAY
+        && (c->saveGame->moves & 0xF0) == c->saveGame->lastreagent) {
         return false;
     }
     return true;
@@ -890,14 +893,13 @@ static bool itemConditionsMet(unsigned char conditions)
  */
 const ItemLocation *itemAtLocation(const Map *map, const Coords &coords)
 {
-    unsigned int i;
-    for (i = 0; i < N_ITEMS; i++) {
-        if (!items[i].locationLabel) {
+    for (const auto &item: items) {
+        if (!item.locationLabel) {
             continue;
         }
-        if ((map->getLabel(items[i].locationLabel) == coords)
-            && itemConditionsMet(items[i].conditions)) {
-            return &(items[i]);
+        if (map->getLabel(item.locationLabel) == coords
+            && itemConditionsMet(item.conditions)) {
+            return &item;
         }
     }
     return nullptr;
@@ -909,25 +911,24 @@ const ItemLocation *itemAtLocation(const Map *map, const Coords &coords)
  */
 void itemUse(const std::string &shortname)
 {
-    unsigned int i;
-    const ItemLocation *item = nullptr;
-    for (i = 0; i < N_ITEMS; i++) {
-        if (items[i].shortname
-            && (xu4_strcasecmp(
-                    deumlaut(items[i].shortname).c_str(),
-                    deumlaut(shortname).c_str()
-                ) == 0)) {
-            item = &items[i];
+    bool foundItem = false;
+    for (const auto &item: items) {
+        if (item.shortname
+            && xu4_strcasecmp(
+                deumlaut(item.shortname).c_str(),
+                deumlaut(shortname).c_str()
+            ) == 0) {
+            foundItem = true;
             /* item name found, see if we have that item in
                our inventory */
-            if (!items[i].isItemInInventory
-                || (*items[i].isItemInInventory)(items[i].data)) {
+            if (!item.isItemInInventory
+                || (*item.isItemInInventory)(item.data)) {
                 /* use the item, if we can! */
-                if (!item->useItem) {
+                if (!item.useItem) {
                     soundPlay(SOUND_ERROR);
                     screenMessage("\n\nKEIN NUTZBARER GEGENSTAND!\n");
                 } else {
-                    (*item->useItem)(items[i].data);
+                    (*item.useItem)(item.data);
                 }
             } else {
                 soundPlay(SOUND_ERROR);
@@ -938,7 +939,7 @@ void itemUse(const std::string &shortname)
         }
     }
     /* item was not found */
-    if (!item) {
+    if (!foundItem) {
         screenMessage("\n\nKEIN NUTZBARER GEGENSTAND!\n");
     }
 } // itemUse
@@ -950,15 +951,15 @@ void itemUse(const std::string &shortname)
 bool isAbyssOpened(const Portal *)
 {
     /* make sure the bell, book and candle have all been used */
-    int saveGameItems = c->saveGame->items;
-    int isopened = (saveGameItems & ITEM_BELL_USED)
-        && (saveGameItems & ITEM_BOOK_USED)
-        && (saveGameItems & ITEM_CANDLE_USED);
-    if (!isopened) {
+    const int saveGameItems = c->saveGame->items;
+    const bool isOpen = saveGameItems & ITEM_BELL_USED
+        && saveGameItems & ITEM_BOOK_USED
+        && saveGameItems & ITEM_CANDLE_USED;
+    if (!isOpen) {
         soundPlay(SOUND_ERROR);
         screenMessage("Betreten\nKANN NICHT!\n");
     }
-    return isopened;
+    return isOpen;
 }
 
 
@@ -970,10 +971,10 @@ static void itemHandleStones(const std::string &color)
     bool found = false;
 
     for (int i = 0; i < 8; i++) {
-        if ((xu4_strcasecmp(
-                 deumlaut(color).c_str(),
-                 deumlaut(getStoneName(static_cast<Virtue>(i))).c_str()
-             ) == 0)
+        if (xu4_strcasecmp(
+                deumlaut(color).c_str(),
+                deumlaut(getStoneName(static_cast<Virtue>(i))).c_str()
+            ) == 0
             && isStoneInInventory(1 << i)) {
             found = true;
             itemUse(color);

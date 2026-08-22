@@ -2314,8 +2314,7 @@ void getChest(int player)
     }
     // first check to see if a chest exists at the current location
     // if one exists, prompt the player for the opener, if necessary
-    MapCoords coords;
-    c->location->getCurrentPosition(&coords);
+    const MapCoords coords = c->location->getCurrentPosition();
     const Tile *tile = c->location->map->tileTypeAt(
         coords, WITH_GROUND_OBJECTS
     );

@@ -2,8 +2,8 @@
  * $Id$
  */
 
-#ifndef TYPEDEFS_H
-#define TYPEDEFS_H
+#ifndef TYPES_H
+#define TYPES_H
 
 #include "direction.h"
 
@@ -14,8 +14,8 @@ typedef unsigned char MapId;
 typedef enum {
     FAST,
     SLOW,
-    VSLOW,
-    VVSLOW
+    VERY_SLOW,
+    VERY_VERY_SLOW
 } TileSpeed;
 
 typedef enum {
@@ -32,10 +32,10 @@ typedef enum {
     ANIM_NONE,
     ANIM_SCROLL,
     ANIM_CAMPFIRE,
-    ANIM_CITYFLAG,
-    ANIM_CASTLEFLAG,
-    ANIM_SHIPFLAG,
-    ANIM_LCBFLAG,
+    ANIM_CITY_FLAG,
+    ANIM_CASTLE_FLAG,
+    ANIM_SHIP_FLAG,
+    ANIM_LCB_FLAG,
     ANIM_FRAMES
 } TileAnimationStyle;
 
@@ -52,7 +52,7 @@ public:
 
     // cppcheck-suppress noExplicitConstructor //implicit intended
     // NOLINTNEXTLINE(google-explicit-constructor, hicpp-explicit-conversions)
-    MapTile(TileId i, unsigned char f = 0)
+    MapTile(const TileId i, const unsigned char f = 0)
         :id(i), frame(f), freezeAnimation(false)
     {
     }
@@ -79,7 +79,7 @@ public:
         return frame;
     }
 
-    void setFrame(unsigned char f)
+    void setFrame(const unsigned char f)
     {
         frame = f;
     }
@@ -89,7 +89,7 @@ public:
         return freezeAnimation;
     }
 
-    void setFreezeAnimation(bool f)
+    void setFreezeAnimation(const bool f)
     {
         freezeAnimation = f;
     }
@@ -128,4 +128,4 @@ public:
     bool freezeAnimation;
 };
 
-#endif // ifndef TYPEDEFS_H
+#endif // TYPES_H

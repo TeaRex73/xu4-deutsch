@@ -524,10 +524,10 @@ bool slowedByTile(const Tile *tile)
     case SLOW:
         slow = xu4_random(8) == 0;
         break;
-    case VSLOW:
+    case VERY_SLOW:
         slow = xu4_random(4) == 0;
         break;
-    case VVSLOW:
+    case VERY_VERY_SLOW:
         slow = xu4_random(2) == 0;
         break;
     case FAST:

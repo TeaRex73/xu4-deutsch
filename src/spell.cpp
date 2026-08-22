@@ -718,12 +718,11 @@ static bool spellCure(int player)
 
 static bool spellDispel(int dir)
 {
-    MapCoords field;
     /*
      * get the location of the avatar (or current party member,
      * if in battle)
      */
-    c->location->getCurrentPosition(&field);
+    MapCoords field = c->location->getCurrentPosition();
     /*
      * find where we want to dispel the field
      */
@@ -829,8 +828,7 @@ static bool spellEField(int param)
             return false;
         }
     }
-    MapCoords coords;
-    c->location->getCurrentPosition(&coords);
+    MapCoords coords = c->location->getCurrentPosition();
     coords.move(static_cast<Direction>(dir), c->location->map);
     if (MAP_IS_OOB(c->location->map, coords)) {
         return false;
