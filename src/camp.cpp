@@ -205,7 +205,7 @@ bool InnController::maybeMeetIsaac()
 {
     // Does Isaac the Ghost pay a visit to the Avatar?
     // He does so in 1 of 4 cases in the inn of Skara Brae
-    if (c->location->map->id == MAP_SKARABRAE && xu4_random(4) == 0) {
+    if (c->location->map->id == MAP_SKARA_BRAE && xu4_random(4) == 0) {
         auto *city = dynamic_cast<City *>(c->location->map);
         if (city->extraDialogues.size() == 1
             && city->extraDialogues[0]->getName() == "Isaac") {

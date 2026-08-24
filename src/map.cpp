@@ -8,21 +8,30 @@
 #include <cstdlib>
 #include <deque>
 #include <iterator>
+#include <list>
+#include <map>
+#include <string>
 
 #include "map.h"
 
 #include "annotation.h"
 #include "context.h"
+#include "coords.h"
 #include "creature.h"
 #include "debug.h"
+#include "direction.h"
 #include "location.h"
 #include "movement.h"
+#include "music.h"
+#include "object.h"
 #include "player.h"
 #include "portal.h"
+#include "savegame.h"
 #include "settings.h"
 #include "tile.h"
 #include "tilemap.h"
 #include "tileset.h"
+#include "types.h"
 
 /**
  * MapCoords Class Implementation
@@ -31,7 +40,7 @@ MapCoords MapCoords::nowhere(-1, -1, -1);
 
 MapCoords &MapCoords::wrap(const Map *map)
 {
-    if (map && (map->border_behavior == Map::BORDER_WRAP)) {
+    if (map && map->border_behavior == Map::BORDER_WRAP) {
         while (x < 0) {
             x += map->width;
         }
@@ -73,7 +82,7 @@ MapCoords &MapCoords::putInBounds(const Map *map)
     return *this;
 } // MapCoords::putInBounds
 
-MapCoords &MapCoords::move(Direction d, const Map *map)
+MapCoords &MapCoords::move(const Direction d, const Map *map)
 {
     switch (d) {
     case DIR_NORTH:
@@ -96,7 +105,7 @@ MapCoords &MapCoords::move(Direction d, const Map *map)
     return *this;
 }
 
-MapCoords &MapCoords::move(int dx, int dy, const Map *map)
+MapCoords &MapCoords::move(const int dx, const int dy, const Map *map)
 {
     x += dx;
     y += dy;
@@ -115,50 +124,50 @@ MapCoords &MapCoords::move(int dx, int dy, const Map *map)
  * itself accordingly. If the two coordinates are not on the same z-plane,
  * then this function return DIR_NONE.
  */
-int MapCoords::getRelativeDirection(const MapCoords &c, const Map *map) const
+int MapCoords::getRelativeDirection(const MapCoords &mc, const Map *map) const
 {
-    int dx, dy, dirmask;
-    dirmask = DIR_NONE;
-    if (z != c.z) {
-        return dirmask;
+    int dx, dy;
+    int dir_mask = DIR_NONE;
+    if (z != mc.z) {
+        return dir_mask;
     }
     /* adjust our coordinates to find the closest path */
-    if (map && (map->border_behavior == Map::BORDER_WRAP)) {
+    if (map && map->border_behavior == Map::BORDER_WRAP) {
         MapCoords me = *this;
-        if (std::abs(me.x - c.x)
-            > std::abs(static_cast<int>(me.x + map->width - c.x))) {
+        if (std::abs(me.x - mc.x)
+            > std::abs(me.x + map->width - mc.x)) {
             me.x += map->width;
-        } else if (std::abs(me.x - c.x)
-                   > std::abs(static_cast<int>(me.x - map->width - c.x))) {
+        } else if (std::abs(me.x - mc.x)
+                   > std::abs(me.x - map->width - mc.x)) {
             me.x -= map->width;
         }
-        if (std::abs(me.y - c.y)
-            > std::abs(static_cast<int>(me.y + map->height - c.y))) {
+        if (std::abs(me.y - mc.y)
+            > std::abs(me.y + map->height - mc.y)) {
             me.y += map->height;
-        } else if (std::abs(me.y - c.y)
-                   > std::abs(static_cast<int>(me.y - map->height - c.y))) {
+        } else if (std::abs(me.y - mc.y)
+                   > std::abs(me.y - map->height - mc.y)) {
             me.y -= map->height;
         }
-        dx = me.x - c.x;
-        dy = me.y - c.y;
+        dx = me.x - mc.x;
+        dy = me.y - mc.y;
     } else {
-        dx = x - c.x;
-        dy = y - c.y;
+        dx = x - mc.x;
+        dy = y - mc.y;
     }
     /* add x directions that lead towards to_x to the mask */
     if (dx < 0) {
-        dirmask |= MASK_DIR(DIR_EAST);
+        dir_mask |= MASK_DIR(DIR_EAST);
     } else if (dx > 0) {
-        dirmask |= MASK_DIR(DIR_WEST);
+        dir_mask |= MASK_DIR(DIR_WEST);
     }
     /* add y directions that lead towards to_y to the mask */
     if (dy < 0) {
-        dirmask |= MASK_DIR(DIR_SOUTH);
+        dir_mask |= MASK_DIR(DIR_SOUTH);
     } else if (dy > 0) {
-        dirmask |= MASK_DIR(DIR_NORTH);
+        dir_mask |= MASK_DIR(DIR_NORTH);
     }
     /* return the result */
-    return dirmask;
+    return dir_mask;
 } // MapCoords::getRelativeDirection
 
 
@@ -170,17 +179,18 @@ int MapCoords::getRelativeDirection(const MapCoords &c, const Map *map) const
  * itself accordingly, provided the 'map' parameter is passed
  */
 Direction MapCoords::pathTo(
-    const MapCoords &c,
-    int valid_directions,
-    bool towards,
+    const MapCoords &mc,
+    const int valid_directions,
+    const bool towards,
     const Map *map,
-    Direction last
+    const Direction last
 ) const
 {
-    int directionsToObject;
     /* find the directions that lead [to/away from] our target */
-    directionsToObject =
-        towards ? getRelativeDirection(c, map) : ~getRelativeDirection(c, map);
+    int directionsToObject =
+        towards
+        ? getRelativeDirection(mc, map)
+        : ~getRelativeDirection(mc, map);
     /* make sure we eliminate impossible options */
     directionsToObject &= valid_directions;
     /* get the new direction to move */
@@ -189,9 +199,7 @@ Direction MapCoords::pathTo(
     }
     /* there are no valid directions that lead to our target, just move
        wherever we can! */
-    else {
-        return dirRandomDir(valid_directions, last);
-    }
+    return dirRandomDir(valid_directions, last);
 }
 
 
@@ -199,10 +207,13 @@ Direction MapCoords::pathTo(
  * Finds the appropriate direction to travel to move away from one point
  */
 Direction MapCoords::pathAway(
-    const MapCoords &c, int valid_directions, const Map *map, Direction last
+    const MapCoords &mc,
+    const int valid_directions,
+    const Map *map,
+    const Direction last
 ) const
 {
-    return pathTo(c, valid_directions, false, map, last);
+    return pathTo(mc, valid_directions, false, map, last);
 }
 
 /**
@@ -210,22 +221,22 @@ Direction MapCoords::pathAway(
  * on a map, taking into account map boundaries and such.  If the two coords
  * are not on the same z-plane, the function returns -1.
  */
-int MapCoords::movementDistance(const MapCoords &c, const Map *map) const
+int MapCoords::movementDistance(const MapCoords &mc, const Map *map) const
 {
     int dx, dy;
-    if (z != c.z) return -1;
+    if (z != mc.z) return -1;
     if (map && map->border_behavior == Map::BORDER_WRAP) {
         dx = std::min(
-            std::abs(x - c.x),
-            static_cast<int>(map->width) - std::abs(x - c.x)
+            std::abs(x - mc.x),
+            static_cast<int>(map->width) - std::abs(x - mc.x)
         );
         dy = std::min(
-            std::abs(y - c.y),
-            static_cast<int>(map->height) - std::abs(y - c.y)
+            std::abs(y - mc.y),
+            static_cast<int>(map->height) - std::abs(y - mc.y)
         );
     } else {
-        dx = std::abs(x - c.x);
-        dy = std::abs(y - c.y);
+        dx = std::abs(x - mc.x);
+        dy = std::abs(y - mc.y);
     }
     return dx + dy;
 }
@@ -236,22 +247,22 @@ int MapCoords::movementDistance(const MapCoords &c, const Map *map) const
  * If the two coordinates are not on the same z-plane, then this function
  * returns 256 per level. This function also takes into account map boundaries.
  */
-int MapCoords::distance(const MapCoords &c, const Map *map) const
+int MapCoords::distance(const MapCoords &mc, const Map *map) const
 {
     int dx, dy;
-    if (z != c.z) return 256 * std::abs(z - c.z);
+    if (z != mc.z) return 256 * std::abs(z - mc.z);
     if (map && map->border_behavior == Map::BORDER_WRAP) {
         dx = std::min(
-            std::abs(x - c.x),
-            static_cast<int>(map->width) - std::abs(x - c.x)
+            std::abs(x - mc.x),
+            static_cast<int>(map->width) - std::abs(x - mc.x)
         );
         dy = std::min(
-            std::abs(y - c.y),
-            static_cast<int>(map->height) - std::abs(y - c.y)
+            std::abs(y - mc.y),
+            static_cast<int>(map->height) - std::abs(y - mc.y)
         );
     } else {
-        dx = std::abs(x - c.x);
-        dy = std::abs(y - c.y);
+        dx = std::abs(x - mc.x);
+        dy = std::abs(y - mc.y);
     }
     return std::max(dx, dy);
 }
@@ -262,7 +273,6 @@ int MapCoords::distance(const MapCoords &c, const Map *map) const
  */
 Map::Map()
     :id(0),
-     fname(),
      type(WORLD),
      width(0),
      height(0),
@@ -270,35 +280,27 @@ Map::Map()
      chunk_width(0),
      chunk_height(0),
      offset(0),
-     baseSource(),
-     compressed_chunks(),
      border_behavior(BORDER_WRAP),
-     portals(),
      annotations(new AnnotationMgr()),
      flags(0),
      music(Music::Type::NONE),
-     data(),
-     objects(),
-     labels(),
      tileset(nullptr),
      tilemap(nullptr),
-     monsterTable()
+     monster_table()
 {
 }
 
 Map::~Map()
 {
-    for (PortalList::const_iterator i = portals.cbegin();
-         i != portals.cend();
-         ++i) {
-        delete *i;
+    for (const auto *portal: portals) {
+        delete portal;
     }
     delete annotations;
 }
 
 std::string Map::getName()
 {
-    return baseSource.fname;
+    return base_source.file_name;
 }
 
 
@@ -309,20 +311,13 @@ std::string Map::getName()
 Object *Map::objectAt(const Coords &coords) const
 {
     /* FIXME: return a list instead of one object */
-    ObjectDeque::const_iterator i;
     Object *objAt = nullptr;
-    for (i = objects.cbegin(); i != objects.cend(); ++i) {
-        Object *obj = *i;
+    for (auto *obj: objects) {
         if (__builtin_expect(obj->getCoords() == coords, false)) {
             /* get the most visible object */
-            if (!objAt) {
-                objAt = obj;
-            }
-            else if (objAt->getType() < obj->getType()) {
-                objAt = obj;
-            }
-            /* give priority to objects that have the focus */
-            else if ((!objAt->hasFocus()) && (obj->hasFocus())) {
+            if (!objAt
+                || objAt->getType() < obj->getType()
+                || (!objAt->hasFocus() && obj->hasFocus())) {
                 objAt = obj;
             }
         }
@@ -332,24 +327,23 @@ Object *Map::objectAt(const Coords &coords) const
 
 
 /**
- * Returns the portal for the correspoding action(s) given.
+ * Returns the portal for the corresponding action(s) given.
  * If there is no portal that corresponds to the actions flagged
  * by 'actionFlags' at the given (x,y,z) coords, it returns nullptr.
  */
-const Portal *Map::portalAt(const Coords &coords, int actionFlags) const
+const Portal *Map::portalAt(const Coords &coords, const int actionFlags) const
 {
-    PortalList::const_iterator i = std::find_if(
+    const auto i = std::find_if(
         portals.cbegin(),
         portals.cend(),
         [&](const Portal *v) -> bool {
-            return (v->coords == coords) && (v->trigger_action & actionFlags);
+            return v->coords == coords && v->trigger_action & actionFlags;
         }
     );
     if (i != portals.cend()) {
         return *i;
-    } else {
-        return nullptr;
     }
+    return nullptr;
 }
 
 
@@ -362,7 +356,8 @@ MapTile Map::getTileFromData(const Coords &coords) const
     if (MAP_IS_OOB(this, coords)) {
         return blank;
     }
-    int index = coords.x + (coords.y * width) + (width * height * coords.z);
+    const int index =
+        coords.x + coords.y * width + coords.z * width * height;
     return data[index];
 }
 
@@ -372,35 +367,34 @@ MapTile Map::getTileFromData(const Coords &coords) const
  * annotations like moongates and attack icons are ignored.  Any walkable tiles
  * are taken into account (treasure chests, ships, balloon, etc.)
  */
-MapTile Map::tileAt(const Coords &coords, int withObjects) const
+MapTile Map::tileAt(const Coords &coords, const int withObjects) const
 {
     /* FIXME: this should return a list of tiles, with the most visible
        at the front */
-    std::list<const Annotation *> a = annotations->ptrsToAllAt(coords);
+    const std::list<const Annotation *> a = annotations->ptrsToAllAt(coords);
     const Object *obj = objectAt(coords);
     MapTile tile = getTileFromData(coords);
     /* FIXME: this only returns the first valid annotation it can find */
-    std::list<const Annotation *>::const_iterator i = std::find_if(
+    const auto i = std::find_if(
         a.cbegin(),
         a.cend(),
         [&](const Annotation *v) -> bool {
-            return !(v->isVisualOnly());
+            return !v->isVisualOnly();
         }
     );
     if (i != a.cend()) {
         return (*i)->getTile();
     }
-    if ((withObjects == WITH_OBJECTS) && obj) {
-        tile = obj->getTile();
-    } else if ((withObjects == WITH_GROUND_OBJECTS)
-               && obj
-               && obj->getTile().getTileType()->isWalkable()) {
+    if ((withObjects == WITH_OBJECTS && obj)
+        || (withObjects == WITH_GROUND_OBJECTS
+            && obj
+            && obj->getTile().getTileType()->isWalkable())) {
         tile = obj->getTile();
     }
     return tile;
 } // Map::tileAt
 
-const Tile *Map::tileTypeAt(const Coords &coords, int withObjects) const
+const Tile *Map::tileTypeAt(const Coords &coords, const int withObjects) const
 {
     return tileAt(coords, withObjects).getTileType();
 }
@@ -441,11 +435,10 @@ bool Map::isCombatMap() const
  */
 bool Map::isEnclosed(const Coords &party) const
 {
-    int *path_data;
     if (border_behavior != BORDER_WRAP) {
         return true;
     }
-    path_data = new int[width * height];
+    auto *path_data = new int[width * height];
     for (int i = 0; i < width * height; i++) {
         path_data[i] = -1;
     }
@@ -454,16 +447,16 @@ bool Map::isEnclosed(const Coords &party) const
     // Find two connecting pathways where the avatar can reach both
     // without wrapping
     for (int x = 0; x < width; x++) {
-        int index = x;
-        if ((path_data[index] == 2)
-            && (path_data[index + ((height - 1) * width)] == 2)) {
+        const int index = x;
+        if (path_data[index] == 2
+            && path_data[index + (height - 1) * width] == 2) {
             delete[] path_data;
             return false;
         }
     }
     for (int y = 0; y < width; y++) {
-        int index = (y * width);
-        if ((path_data[index] == 2) && (path_data[index + width - 1] == 2)) {
+        const int index = y * width;
+        if (path_data[index] == 2 && path_data[index + width - 1] == 2) {
             delete[] path_data;
             return false;
         }
@@ -475,33 +468,34 @@ bool Map::isEnclosed(const Coords &party) const
 void Map::findWalkability(const Coords &coords, int *path_data) const
 {
     const Tile *mt = tileTypeAt(coords, WITHOUT_OBJECTS);
-    int index = coords.x + (coords.y * width);
+    const int index = coords.x + coords.y * width;
     if (mt->isWalkable()) {
-        bool isBorderTile = (coords.x == 0)
-            || (coords.x == static_cast<int>(width - 1))
-            || (coords.y == 0)
-            || (coords.y == static_cast<int>(height - 1));
+        const bool isBorderTile =
+            coords.x == 0
+            || coords.x == width - 1
+            || coords.y == 0
+            || coords.y == height - 1;
         path_data[index] = isBorderTile ? 2 : 1;
-        if ((coords.x > 0)
-            && (path_data[coords.x - 1 + (coords.y * width)] < 0)) {
+        if (coords.x > 0
+            && path_data[coords.x - 1 + coords.y * width] < 0) {
             findWalkability(
                 Coords(coords.x - 1, coords.y, coords.z), path_data
             );
         }
-        if ((coords.x < static_cast<int>(width - 1))
-            && (path_data[coords.x + 1 + (coords.y * width)] < 0)) {
+        if (coords.x < width - 1
+            && path_data[coords.x + 1 + coords.y * width] < 0) {
             findWalkability(
                 Coords(coords.x + 1, coords.y, coords.z), path_data
             );
         }
-        if ((coords.y > 0)
-            && (path_data[coords.x + ((coords.y - 1) * width)] < 0)) {
+        if (coords.y > 0
+            && path_data[coords.x + (coords.y - 1) * width] < 0) {
             findWalkability(
                 Coords(coords.x, coords.y - 1, coords.z), path_data
             );
         }
-        if ((coords.y < static_cast<int>(height - 1))
-            && (path_data[coords.x + ((coords.y + 1) * width)] < 0)) {
+        if (coords.y < height - 1
+            && path_data[coords.x + (coords.y + 1) * width] < 0) {
             findWalkability(
                 Coords(coords.x, coords.y + 1, coords.z), path_data
             );
@@ -518,7 +512,7 @@ void Map::findWalkability(const Coords &coords, int *path_data) const
 Creature *Map::addCreature(const Creature *creature, const Coords &coords)
 {
     /* make a copy of the creature before placing it */
-    Creature *m = new Creature(*creature);
+    auto *m = new Creature(*creature);
 
     m->setInitialHp();
     m->setStatus(STAT_GOOD);
@@ -528,14 +522,14 @@ Creature *Map::addCreature(const Creature *creature, const Coords &coords)
     /* initialize the creature before placing it */
     if (m->isStationary()) {
         m->setMovementBehavior(MOVEMENT_FIXED);
-    } else if (m->wanders() || type == Map::DUNGEON) {
+    } else if (m->wanders() || type == DUNGEON) {
         // U4DOS: All Dungeon creatures wander, except stationary ones
         m->setMovementBehavior(MOVEMENT_WANDER);
     } else {
         m->setMovementBehavior(MOVEMENT_ATTACK_AVATAR);
     }
     /* hide camouflaged creatures from view during combat */
-    if (m->camouflages() && (type == COMBAT)) {
+    if (m->camouflages() && type == COMBAT) {
         m->setVisible(false);
     }
     /* place the creature on the map */
@@ -558,13 +552,12 @@ Object *Map::addObject(Object *obj, const Coords &)
 }
 
 Object *Map::addObject(
-    MapTile tile, MapTile prevtile, const Coords &coords
+    MapTile tile, MapTile previousTile, const Coords &coords
 )
 {
-    Object *obj = new Object;
-
+    auto *obj = new Object;
     obj->setTile(tile);
-    obj->setPrevTile(prevtile);
+    obj->setPrevTile(previousTile);
     obj->setMap(this);
     obj->setCoords(coords);
     obj->setPrevCoords(coords);
@@ -582,9 +575,9 @@ Object *Map::addObject(
 // ObjectDeque, as the iterator will be invalidated and the
 // results will be unpredictable.  Instead, use the function
 // below.
-void Map::removeObject(const Object *rem, bool deleteObject)
+void Map::removeObject(const Object *rem, const bool deleteObject)
 {
-    ObjectDeque::const_iterator i = std::find(
+    const auto i = std::find(
         objects.cbegin(),
         objects.cend(),
         rem
@@ -599,7 +592,7 @@ void Map::removeObject(const Object *rem, bool deleteObject)
 }
 
 ObjectDeque::iterator Map::removeObject(
-    ObjectDeque::iterator rem, bool deleteObject
+    const ObjectDeque::iterator rem, const bool deleteObject
 )
 {
     /* Party members persist through different maps, so don't delete them! */
@@ -617,16 +610,15 @@ ObjectDeque::iterator Map::removeObject(
  */
 Creature *Map::moveObjects(const MapCoords &avatar) const
 {
-    ObjectDeque::const_iterator i;
     Creature *attacker = nullptr;
-    for (i = objects.cbegin(); i != objects.cend(); ++i) {
-        Creature *m = dynamic_cast<Creature *>(*i);
+    for (auto *object: objects) {
+        auto *m = dynamic_cast<Creature *>(object);
         if (m) {
             /* check if the object is an attacking creature and not
                just a normal, docile person in town or an inanimate object */
-            if (((m->getType() == Object::PERSON)
-                 && (m->getMovementBehavior() == MOVEMENT_ATTACK_AVATAR))
-                || ((m->getType() == Object::CREATURE) && m->willAttack())) {
+            if ((m->getType() == Object::PERSON
+                 && m->getMovementBehavior() == MOVEMENT_ATTACK_AVATAR)
+                || (m->getType() == Object::CREATURE && m->willAttack())) {
                 MapCoords o_coords = m->getCoords();
                 /* don't move objects that aren't on the same level as us */
                 if (o_coords.z != avatar.z) {
@@ -664,9 +656,7 @@ Creature *Map::moveObjects(const MapCoords &avatar) const
  */
 void Map::resetObjectAnimations() const
 {
-    ObjectDeque::const_iterator i;
-    for (i = objects.cbegin(); i != objects.cend(); ++i) {
-        Object *obj = *i;
+    for (auto *obj: objects) {
         if (obj->getType() == Object::CREATURE) {
             obj->setPrevTile(
                 creatureMgr->getByTile(obj->getTile())->getTile()
@@ -688,12 +678,10 @@ void Map::clearObjects()
  * Returns the number of creatures on the given map level,
    or all levels if level == -1
  */
-int Map::getNumberOfCreatures(int level) const
+int Map::getNumberOfCreatures(const int level) const
 {
-    ObjectDeque::const_iterator i;
     int n = 0;
-    for (i = objects.cbegin(); i != objects.cend(); ++i) {
-        const Object *obj = *i;
+    for (const auto *obj: objects) {
         if (obj->getType() == Object::CREATURE) {
             if (level == -1 || obj->getCoords().z == level) {
                 n++;
@@ -708,21 +696,21 @@ int Map::getNumberOfCreatures(int level) const
  * Returns a mask of valid moves for the given transport on the given map
  */
 int Map::getValidMoves(
-    const MapCoords &from, MapTile transport, bool wanders
+    const MapCoords &from, MapTile transport, const bool wanders
 ) const
 {
-    int retval;
-    Direction d;
-    const Object *obj;
-    const Creature *m, *to_m;
     // get the creature object, if it exists (the one that's moving)
-    m = creatureMgr->getByTile(transport);
-    bool isAvatar = (c->location->coords == from);
+    const Creature *m = creatureMgr->getByTile(transport);
+    bool isAvatar = c->location->coords == from;
     if (m && m->canMoveOntoPlayer()) {
         isAvatar = false;
     }
-    retval = 0;
-    for (d = DIR_WEST; d <= DIR_SOUTH; d = static_cast<Direction>(d + 1)) {
+    int retval = 0;
+    for (
+        Direction d = DIR_WEST;
+        d <= DIR_SOUTH;
+        d = static_cast<Direction>(d + 1)
+    ) {
         MapCoords coords = from;
         bool ontoAvatar = false;
         bool ontoCreature = false;
@@ -733,13 +721,13 @@ int Map::getValidMoves(
             retval = DIR_ADD_TO_MASK(d, retval);
             continue;
         }
-        obj = objectAt(coords);
+        const Object *obj = objectAt(coords);
         // see if it's trying to move onto the avatar
-        if ((flags & SHOW_AVATAR) && (coords == c->location->coords)) {
+        if (flags & SHOW_AVATAR && coords == c->location->coords) {
             ontoAvatar = true;
         }
         // see if it's trying to move onto a person or creature
-        else if (obj && (obj->getType() != Object::UNKNOWN)) {
+        else if (obj && obj->getType() != Object::UNKNOWN) {
             ontoCreature = true;
         }
         // get the destination tile
@@ -754,7 +742,7 @@ int Map::getValidMoves(
         MapTile prev_tile = tileAt(from, WITHOUT_OBJECTS);
         // get the other creature object, if it exists (the one that's
         // being moved onto)
-        to_m = dynamic_cast<const Creature *>(obj);
+        const auto *to_m = dynamic_cast<const Creature *>(obj);
         // move on if unable to move onto the avatar or another creature
         // some creatures/persons have the same
         // tile as the avatar, so we have to adjust
@@ -791,7 +779,7 @@ int Map::getValidMoves(
                 retval = DIR_ADD_TO_MASK(d, retval);
             }
             // avatar or horseback: check walkable
-            else if ((transport == tileset->getByName("avatar")->getId())
+            else if (transport == tileset->getByName("avatar")->getId()
                      || transport.getTileType()->isHorse()) {
                 if (tile.getTileType()->canWalkOn(d)
                     && (!transport.getTileType()->isHorse()
@@ -830,7 +818,7 @@ int Map::getValidMoves(
             }
             // ghosts and other incorporeal creatures
             // u4apple2: they can't go through dungeon walls
-            else if (m->isIncorporeal() && type != Map::DUNGEON) {
+            else if (m->isIncorporeal() && type != DUNGEON) {
                 // can move anywhere but onto water, unless of course the
                 // creature can swim (but that has been dealt with above)
                 retval = DIR_ADD_TO_MASK(d, retval);
@@ -858,7 +846,7 @@ int Map::getValidMoves(
     return retval;
 } // Map::getValidMoves
 
-bool Map::move(Object *obj, Direction d)
+bool Map::move(Object *obj, const Direction d)
 {
     MapCoords new_coords = obj->getCoords();
     if (new_coords.move(d) != obj->getCoords()) {
@@ -874,21 +862,18 @@ bool Map::move(Object *obj, Direction d)
  */
 void Map::alertGuards() const
 {
-    ObjectDeque::const_iterator i;
     /* switch all the guards to attack mode */
-    for (i = objects.cbegin(); i != objects.cend(); ++i) {
-        const Creature *m = creatureMgr->getByTile((*i)->getTile());
-        if (m && ((m->getId() == GUARD_ID)
-                  || (m->getId() == LORD_BRITISH_ID))) {
-            (*i)->setMovementBehavior(MOVEMENT_ATTACK_AVATAR);
+    for (auto *object: objects) {
+        const Creature *m = creatureMgr->getByTile(object->getTile());
+        if (m && (m->getId() == GUARD_ID || m->getId() == LORD_BRITISH_ID)) {
+            object->setMovementBehavior(MOVEMENT_ATTACK_AVATAR);
         }
     }
 }
 
 const MapCoords &Map::getLabel(const std::string &name) const
 {
-    std::map<std::string, MapCoords>::const_iterator i =
-        labels.find(name);
+    const auto i = labels.find(name);
     if (i == labels.cend()) {
         return MapCoords::nowhere;
     }
@@ -917,7 +902,7 @@ bool Map::fillMonsterTable(const Location *loc)
     int nObjects = 0;
     int i;
     for (i = 0; i < MONSTERTABLE_SIZE; i++) {
-        monsterTable[i] = {};
+        monster_table[i] = {};
     }
     /**
      * First, categorize all the objects we have
@@ -944,9 +929,9 @@ bool Map::fillMonsterTable(const Location *loc)
             continue;
         }
         /* moving objects first */
-        if ((obj->getType() == Object::CREATURE)
+        if (obj->getType() == Object::CREATURE
             /* && (obj->getMovementBehavior() != MOVEMENT_FIXED) */ ) {
-            const Creature *m = dynamic_cast<const Creature *>(obj);
+            const auto *m = dynamic_cast<const Creature *>(obj);
             /* whirlpools and storms are separated from other moving objects */
             if (m->isForceOfNature()) {
                 nForcesOfNature++;
@@ -973,13 +958,13 @@ bool Map::fillMonsterTable(const Location *loc)
      */
     /* sort first, see above */
     std::sort(other_creatures.begin(), other_creatures.end(), isCloser);
-    while (other_creatures.size()) {
+    while (!other_creatures.empty()) {
         monsters.push_back(other_creatures.front());
         other_creatures.pop_front();
     }
     /* limit monsters */
     int limitForCreatures =
-        type == Map::DUNGEON ?
+        type == DUNGEON ?
         MONSTERTABLE_SIZE :
         MONSTERTABLE_CREATURES_SIZE;
 
@@ -996,11 +981,11 @@ bool Map::fillMonsterTable(const Location *loc)
     /**
      * Finally, add inanimate objects (not in dungeon - there can't be any)
      */
-    if (type != Map::DUNGEON) {
+    if (type != DUNGEON) {
         /* sort first, see above, but leave lastShip as first one
            if it exists */
         if (
-            inanimate_objects.size()
+            !inanimate_objects.empty()
             && inanimate_objects[0] == c->lastShip
             && inanimate_objects[0]->getMap() == this
         ) {
@@ -1014,7 +999,7 @@ bool Map::fillMonsterTable(const Location *loc)
                 inanimate_objects.begin(), inanimate_objects.end(), isCloser
             );
         }
-        while (inanimate_objects.size()) {
+        while (!inanimate_objects.empty()) {
             monsters.push_back(inanimate_objects.front());
             inanimate_objects.pop_front();
         }
@@ -1035,28 +1020,28 @@ bool Map::fillMonsterTable(const Location *loc)
      */
     for (i = 0; i < MONSTERTABLE_SIZE; i++) {
         const Coords &co = monsters[i]->getCoords(),
-            &prevco = monsters[i]->getPrevCoords();
-        monsterTable[i].tile =
+            &prev_co = monsters[i]->getPrevCoords();
+        monster_table[i].tile =
             TileMap::get("base")->untranslate(monsters[i]->getTile());
-        monsterTable[i].x = co.x;
-        monsterTable[i].y = co.y;
-        monsterTable[i].prevTile =
+        monster_table[i].x = co.x;
+        monster_table[i].y = co.y;
+        monster_table[i].prevTile =
             TileMap::get("base")->untranslate(monsters[i]->getPrevTile());
-        monsterTable[i].prevx = prevco.x;
-        monsterTable[i].prevy = prevco.y;
-        monsterTable[i].z = (type == Map::DUNGEON) ? co.z : 0;
-        monsterTable[i].unused = 0;
+        monster_table[i].prevx = prev_co.x;
+        monster_table[i].prevy = prev_co.y;
+        monster_table[i].z = type == DUNGEON ? co.z : 0;
+        monster_table[i].unused = 0;
     }
     return true;
 } // Map::fillMonsterTable
 
-MapTile Map::tfrti(int raw) const
+MapTile Map::translateFromRawTile(const int raw) const
 {
     U4ASSERT(tilemap != nullptr, "tilemap hasn't been set");
     return tilemap->translate(raw);
 }
 
-unsigned int Map::ttrti(MapTile tile) const
+unsigned int Map::translateToRawTile(const MapTile tile) const
 {
     U4ASSERT(tilemap != nullptr, "tilemap hasn't been set");
     return tilemap->untranslate(tile);

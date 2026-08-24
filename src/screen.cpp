@@ -1724,7 +1724,7 @@ static void screenShowGemTile(
                 );
             }
         }
-        unsigned int tile = map->ttrti(t);
+        unsigned int tile = map->translateToRawTile(t);
         if (tile < 128) {
             gemTilesInfo->image->drawSubRect(
                 (layout->viewport.x + (x * layout->tileshape.width))

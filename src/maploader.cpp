@@ -41,22 +41,22 @@ class Dialogue;
 
 std::map<Map::Type, MapLoader *> *MapLoader::loaderMap = nullptr;
 
-MapLoader *CityMapLoader::instance = MapLoader::registerLoader(
+MapLoader *CityMapLoader::instance = registerLoader(
     new CityMapLoader, Map::CITY
 );
 
-MapLoader *ConMapLoader::instance = MapLoader::registerLoader(
-    MapLoader::registerLoader(
+MapLoader *ConMapLoader::instance = registerLoader(
+    registerLoader(
         new ConMapLoader, Map::COMBAT
     ), Map::SHRINE
 );
 
 
-MapLoader *DngMapLoader::instance = MapLoader::registerLoader(
+MapLoader *DngMapLoader::instance = registerLoader(
     new DngMapLoader, Map::DUNGEON
 );
 
-MapLoader *WorldMapLoader::instance = MapLoader::registerLoader(
+MapLoader *WorldMapLoader::instance = registerLoader(
     new WorldMapLoader, Map::WORLD
 );
 
@@ -64,7 +64,7 @@ MapLoader *WorldMapLoader::instance = MapLoader::registerLoader(
 /**
  * Gets a map loader for the given map type.
  */
-MapLoader *MapLoader::getLoader(Map::Type type)
+MapLoader *MapLoader::getLoader(const Map::Type type)
 {
     U4ASSERT(
         loaderMap != nullptr,
@@ -80,7 +80,7 @@ MapLoader *MapLoader::getLoader(Map::Type type)
 /**
  * Registers a loader for the given map type.
  */
-MapLoader *MapLoader::registerLoader(MapLoader *loader, Map::Type type)
+MapLoader *MapLoader::registerLoader(MapLoader *loader, const Map::Type type)
 {
     if (loaderMap == nullptr) {
         loaderMap = new std::map<Map::Type, MapLoader *>;
@@ -94,12 +94,9 @@ MapLoader *MapLoader::registerLoader(MapLoader *loader, Map::Type type)
 
 void MapLoader::cleanup()
 {
-    for (std::map<Map::Type, MapLoader *>::iterator i =
-             loaderMap->begin();
-         i != loaderMap->end();
-         ++i) {
-        if (i->first != Map::SHRINE) {
-            delete i->second;
+    for (const auto &i: *loaderMap) {
+        if (i.first != Map::SHRINE) {
+            delete i.second;
         }
     }
     delete loaderMap;
@@ -111,7 +108,7 @@ void MapLoader::cleanup()
  */
 bool MapLoader::loadData(Map *map, U4FILE *f)
 {
-    int x, xch, y, ych;
+    int x, y;
     /* allocate the space we need for the map data */
     map->data.resize(map->height * map->width, MapTile(0));
     if (map->chunk_height == 0) {
@@ -125,39 +122,39 @@ bool MapLoader::loadData(Map *map, U4FILE *f)
     std::clock_t start = std::clock();
 #endif
     u4fseek(f, map->offset, SEEK_CUR);
-    for (ych = 0; ych < (map->height / map->chunk_height); ych++) {
-        for (xch = 0; xch < (map->width / map->chunk_width); xch++) {
+    for (int ych = 0; ych < map->height / map->chunk_height; ych++) {
+        for (int xch = 0; xch < map->width / map->chunk_width; xch++) {
             if (isChunkCompressed(map, ych * map->chunk_width + xch)) {
-                MapTile water = map->tileset->getByName("sea")->getId();
+                const MapTile water = map->tileset->getByName("sea")->getId();
                 for (y = 0; y < map->chunk_height; y++) {
                     for (x = 0; x < map->chunk_width; x++) {
                         map->data[
                             x
-                            + (y * map->width)
-                            + (xch * map->chunk_width)
-                            + (ych * map->chunk_height * map->width)
+                            + y * map->width
+                            + xch * map->chunk_width
+                            + ych * map->chunk_height * map->width
                         ] = water;
                     }
                 }
             } else {
                 for (y = 0; y < map->chunk_height; y++) {
                     for (x = 0; x < map->chunk_width; x++) {
-                        int c = u4fgetc(f);
-                        if (c == EOF) {
+                        const int ch = u4fgetc(f);
+                        if (ch == EOF) {
                             return false;
                         }
 #ifndef NPERF
                         std::clock_t s = std::clock();
 #endif
-                        MapTile mt = map->tfrti(c);
+                        const MapTile mt = map->translateFromRawTile(ch);
 #ifndef NPERF
                         total += std::clock() - s;
 #endif
                         map->data[
                             x
-                            + (y * map->width)
-                            + (xch * map->chunk_width)
-                            + (ych * map->chunk_height * map->width)
+                            + y * map->width
+                            + xch * map->chunk_width
+                            + ych * map->chunk_height * map->width
                         ] = mt;
                     }
                 }
@@ -180,7 +177,7 @@ bool MapLoader::loadData(Map *map, U4FILE *f)
     return true;
 } // MapLoader::loadData
 
-bool MapLoader::isChunkCompressed(Map *map, int chunk)
+bool MapLoader::isChunkCompressed(const Map *map, const int chunk)
 {
     return std::any_of(
         map->compressed_chunks.cbegin(),
@@ -197,13 +194,13 @@ bool MapLoader::isChunkCompressed(Map *map, int chunk)
  */
 bool CityMapLoader::load(Map *map)
 {
-    City *city = dynamic_cast<City *>(map);
-    unsigned int i, j;
+    auto *city = dynamic_cast<City *>(map);
+    int i;
     Person *people[CITY_MAX_PERSONS];
     Dialogue *dialogues[CITY_MAX_PERSONS];
     DialogueLoader *dlgLoader =
         DialogueLoader::getLoader("application/x-u4tlk");
-    U4FILE *ult = u4fopen(city->fname);
+    U4FILE *ult = u4fopen(city->file_name);
     if (!ult) {
         errorFatal("unable to load map data");
     }
@@ -229,7 +226,7 @@ bool CityMapLoader::load(Map *map)
     }
     /* Properly construct people for the city */
     for (i = 0; i < CITY_MAX_PERSONS; i++) {
-        people[i] = new Person(map->tfrti(u4fgetc(ult)));
+        people[i] = new Person(map->translateFromRawTile(u4fgetc(ult)));
     }
     for (i = 0; i < CITY_MAX_PERSONS; i++) {
         people[i]->getStart().x = u4fgetc(ult);
@@ -238,14 +235,14 @@ bool CityMapLoader::load(Map *map)
         people[i]->getStart().y = u4fgetc(ult);
     }
     for (i = 0; i < CITY_MAX_PERSONS; i++) {
-        people[i]->setPrevTile(map->tfrti(u4fgetc(ult)));
+        people[i]->setPrevTile(map->translateFromRawTile(u4fgetc(ult)));
     }
     for (i = 0; i < CITY_MAX_PERSONS * 2; i++) {
-        /* read redundant startx/starty */
+        /* read redundant start_x/start_y */
         u4fgetc(ult);
     }
     for (i = 0; i < CITY_MAX_PERSONS; i++) {
-        unsigned char ch = u4fgetc(ult);
+        const unsigned char ch = u4fgetc(ult);
         if (ch == 0) {
             people[i]->setMovementBehavior(MOVEMENT_FIXED);
         } else if (ch == 1) {
@@ -270,12 +267,12 @@ bool CityMapLoader::load(Map *map)
     // to the Ankh without killing anybody.
     // In unenhanced game the move happens unconditionally to match
     // the map from later releases of Ultima IV.
-    if ((city->id == MAP_SKARABRAE)
+    if (city->id == MAP_SKARA_BRAE
         && (!settings.enhancements ||
-            (c->party->member(0)->getClass() == CLASS_RANGER))) {
+            c->party->member(0)->getClass() == CLASS_RANGER)) {
         for (i = 0; i < CITY_MAX_PERSONS; i++) {
             if (conv_idx[i] == 1) {
-                (people[i]->getStart().x)--;
+                people[i]->getStart().x--;
             }
         }
     }
@@ -288,7 +285,7 @@ bool CityMapLoader::load(Map *map)
          * Match up dialogues with their respective people
          */
         bool found = false;
-        for (j = 0; j < CITY_MAX_PERSONS; j++) {
+        for (unsigned int j = 0; j < CITY_MAX_PERSONS; j++) {
             if (conv_idx[j] == i + 1) {
                 people[j]->setDialogue(dialogues[i]);
                 found = true;
@@ -313,7 +310,7 @@ bool CityMapLoader::load(Map *map)
         for (current = city->personroles.cbegin();
              current != city->personroles.cend();
              ++current) {
-            if (static_cast<unsigned int>((*current)->id) == (i + 1)) {
+            if ((*current)->id == i + 1) {
                 if ((*current)->role == NPC_LORD_BRITISH) {
                     Dialogue *dlg =
                         DialogueLoader::getLoader("application/x-u4lbtlk")
@@ -354,7 +351,7 @@ bool CityMapLoader::load(Map *map)
  */
 bool ConMapLoader::load(Map *map)
 {
-    U4FILE *con = u4fopen(map->fname);
+    U4FILE *con = u4fopen(map->file_name);
     if (!con) {
         errorFatal("unable to load map data");
     }
@@ -373,17 +370,17 @@ bool ConMapLoader::load(Map *map)
     );
     if (map->type != Map::SHRINE) {
         CombatMap *cm = getCombatMap(map);
-        for (int i = 0; i < AREA_CREATURES; i++) {
-            cm->creature_start[i] = Coords(u4fgetc(con));
+        for (auto &i: cm->creature_start) {
+            i = Coords(u4fgetc(con));
         }
-        for (int i = 0; i < AREA_CREATURES; i++) {
-            cm->creature_start[i].y = u4fgetc(con);
+        for (auto &i: cm->creature_start) {
+            i.y = u4fgetc(con);
         }
-        for (int i = 0; i < AREA_PLAYERS; i++) {
-            cm->player_start[i] = Coords(u4fgetc(con));
+        for (auto &i: cm->player_start) {
+            i = Coords(u4fgetc(con));
         }
-        for (int i = 0; i < AREA_PLAYERS; i++) {
-            cm->player_start[i].y = u4fgetc(con);
+        for (auto &i: cm->player_start) {
+            i.y = u4fgetc(con);
         }
         u4fseek(con, 16L, SEEK_CUR);
     }
@@ -400,8 +397,8 @@ bool ConMapLoader::load(Map *map)
  */
 bool DngMapLoader::load(Map *map)
 {
-    Dungeon *dungeon = dynamic_cast<Dungeon *>(map);
-    U4FILE *dng = u4fopen(dungeon->fname);
+    auto *dungeon = dynamic_cast<Dungeon *>(map);
+    U4FILE *dng = u4fopen(dungeon->file_name);
     if (!dng) {
         errorFatal("unable to load map data");
     }
@@ -419,9 +416,9 @@ bool DngMapLoader::load(Map *map)
         DNG_HEIGHT
     );
     /* load the dungeon map */
-    for (int i = 0; i < (DNG_HEIGHT * DNG_WIDTH * dungeon->levels); i++) {
-        unsigned char mapData = u4fgetc(dng);
-        MapTile tile = map->tfrti(mapData);
+    for (int i = 0; i < DNG_HEIGHT * DNG_WIDTH * dungeon->levels; i++) {
+        const unsigned char mapData = u4fgetc(dng);
+        MapTile tile = map->translateFromRawTile(mapData);
         /* determine what type of tile it is */
         dungeon->data.push_back(tile);
         dungeon->dataSubTokens.push_back(mapData % 16);
@@ -431,28 +428,27 @@ bool DngMapLoader::load(Map *map)
     dungeon->rooms = new DngRoom[dungeon->n_rooms];
     for (int i = 0; i < dungeon->n_rooms; i++) {
         unsigned char room_tiles[121];
-        for (unsigned int j = 0; j < DNGROOM_NTRIGGERS; j++) {
-            int tmp;
-            dungeon->rooms[i].triggers[j].tile =
+        for (auto &trigger: dungeon->rooms[i].triggers) {
+            trigger.tile =
                 TileMap::get("base")->translate(u4fgetc(dng)).getId();
+            int tmp = u4fgetc(dng);
+            if (tmp == EOF) {
+                return false;
+            }
+            trigger.x = (tmp >> 4) & 0x0F;
+            trigger.y = tmp & 0x0F;
             tmp = u4fgetc(dng);
             if (tmp == EOF) {
                 return false;
             }
-            dungeon->rooms[i].triggers[j].x = (tmp >> 4) & 0x0F;
-            dungeon->rooms[i].triggers[j].y = tmp & 0x0F;
+            trigger.change_x1 = (tmp >> 4) & 0x0F;
+            trigger.change_y1 = tmp & 0x0F;
             tmp = u4fgetc(dng);
             if (tmp == EOF) {
                 return false;
             }
-            dungeon->rooms[i].triggers[j].change_x1 = (tmp >> 4) & 0x0F;
-            dungeon->rooms[i].triggers[j].change_y1 = tmp & 0x0F;
-            tmp = u4fgetc(dng);
-            if (tmp == EOF) {
-                return false;
-            }
-            dungeon->rooms[i].triggers[j].change_x2 = (tmp >> 4) & 0x0F;
-            dungeon->rooms[i].triggers[j].change_y2 = tmp & 0x0F;
+            trigger.change_x2 = (tmp >> 4) & 0x0F;
+            trigger.change_y2 = tmp & 0x0F;
         }
         u4fread(
             dungeon->rooms[i].creature_tiles,
@@ -522,23 +518,21 @@ bool DngMapLoader::load(Map *map)
             dungeon->rooms[i].buffer, sizeof(dungeon->rooms[i].buffer), 1, dng
         );
         /* translate each creature tile to a tile id */
-        for (unsigned int j = 0;
-            j < sizeof(dungeon->rooms[i].creature_tiles);
-            j++) {
-            dungeon->rooms[i].creature_tiles[j] = TileMap::get("base")
-                ->translate(dungeon->rooms[i].creature_tiles[j]).getId();
+        for (unsigned char &creature_tile: dungeon->rooms[i].creature_tiles) {
+            creature_tile = TileMap::get("base")
+                ->translate(creature_tile).getId();
         }
         /* translate each map tile to a tile id */
-        for (unsigned int j = 0; j < sizeof(room_tiles); j++) {
+        for (const unsigned char room_tile: room_tiles) {
             dungeon->rooms[i].map_data.push_back(
-                TileMap::get("base")->translate(room_tiles[j])
+                TileMap::get("base")->translate(room_tile)
             );
         }
         //
         // dungeon room fixup
         //
         if (map->id == MAP_HYTHLOTH) {
-            // A couple rooms in hythloth have nullptr player
+            // A couple rooms in Hythloth have nullptr player
             // positions, which causes the entire party to
             // appear in the upper-left tile when entering the
             // dungeon room. Also, one dungeon room is apparently
@@ -552,46 +546,50 @@ bool DngMapLoader::load(Map *map)
             if (i == 0x7) {
                 // update party start positions when
                 // entering from the east
-                const unsigned char x1[8] = {
-                    0x8, 0x8, 0x9, 0x9, 0x9, 0xA, 0xA, 0xA
-                }, y1[8] = {
-                    0x3, 0x2, 0x3, 0x2, 0x1, 0x3, 0x2, 0x1
-                };
-                for (unsigned int j = 0; j < 8; j++) {
+                for (int j = 0; j < 8; j++) {
+                    constexpr unsigned char y1[8] = {
+                        0x3, 0x2, 0x3, 0x2, 0x1, 0x3, 0x2, 0x1
+                    };
+                    constexpr unsigned char x1[8] = {
+                        0x8, 0x8, 0x9, 0x9, 0x9, 0xA, 0xA, 0xA
+                    };
                     dungeon->rooms[i].party_east_start_x[j] = x1[j];
                     dungeon->rooms[i].party_east_start_y[j] = y1[j];
                 }
                 // update party start positions when
                 // entering from the south
-                const unsigned char x2[8] = {
-                    0x3, 0x2, 0x3, 0x2, 0x1, 0x3, 0x2, 0x1
-                }, y2[8] = {
-                    0x8, 0x8, 0x9, 0x9, 0x9, 0xA, 0xA, 0xA
-                };
-                for (unsigned int j = 0; j < 8; j++) {
+                for (int j = 0; j < 8; j++) {
+                    constexpr unsigned char y2[8] = {
+                        0x8, 0x8, 0x9, 0x9, 0x9, 0xA, 0xA, 0xA
+                    };
+                    constexpr unsigned char x2[8] = {
+                        0x3, 0x2, 0x3, 0x2, 0x1, 0x3, 0x2, 0x1
+                    };
                     dungeon->rooms[i].party_east_start_x[j] = x2[j];
                     dungeon->rooms[i].party_east_start_y[j] = y2[j];
                 }
             } else if (i == 0x9) {
                 // update the starting position of
                 // monsters 7, 8, and 9
-                const unsigned char x1[3] = {
-                    0x4, 0x6, 0x5
-                }, y1[3] = {
-                    0x5, 0x5, 0x6
-                };
-                for (unsigned int j = 0; j < 3; j++) {
+                for (int j = 0; j < 3; j++) {
+                    constexpr unsigned char y1[3] = {
+                        0x5, 0x5, 0x6
+                    };
+                    constexpr unsigned char x1[3] = {
+                        0x4, 0x6, 0x5
+                    };
                     dungeon->rooms[i].creature_start_x[j] = x1[j];
                     dungeon->rooms[i].creature_start_y[j] = y1[j];
                 }
                 // update party start positions
                 // when entering from the west
-                const unsigned char x2[8] = {
-                    0x2, 0x2, 0x1, 0x1, 0x1, 0x0, 0x0, 0x0
-                }, y2[8] = {
-                    0x9, 0x8, 0x9, 0x8, 0x7, 0x9, 0x8, 0x7
-                };
-                for (unsigned int j = 0; j < 8; j++) {
+                for (int j = 0; j < 8; j++) {
+                    constexpr unsigned char y2[8] = {
+                        0x9, 0x8, 0x9, 0x8, 0x7, 0x9, 0x8, 0x7
+                    };
+                    constexpr unsigned char x2[8] = {
+                        0x2, 0x2, 0x1, 0x1, 0x1, 0x0, 0x0, 0x0
+                    };
                     dungeon->rooms[i].party_west_start_x[j] = x2[j];
                     dungeon->rooms[i].party_west_start_y[j] = y2[j];
                 }
@@ -600,7 +598,7 @@ bool DngMapLoader::load(Map *map)
                 // and removing the walls at the lower-left
                 // corner thereby creating
                 // a connection to room 8
-                const Coords tile[] = {
+                const Coords tiles[] = {
                     Coords(5, 5, 0x3C), // chest
                     Coords(0, 7, 0x16), // floor
                     Coords(1, 7, 0x16),
@@ -608,12 +606,10 @@ bool DngMapLoader::load(Map *map)
                     Coords(1, 8, 0x16),
                     Coords(0, 9, 0x16)
                 };
-                for (unsigned int j = 0;
-                     j < static_cast<int>(sizeof(tile) / sizeof(Coords));
-                     j++) {
-                    const int index = (tile[j].y * CON_WIDTH) + tile[j].x;
+                for (const auto &tile: tiles) {
+                    const int index = tile.y * CON_WIDTH + tile.x;
                     dungeon->rooms[i].map_data[index] =
-                        TileMap::get("base")->translate(tile[j].z);
+                        TileMap::get("base")->translate(tile.z);
                 }
             }
         }
@@ -630,7 +626,7 @@ bool DngMapLoader::load(Map *map)
 /**
  * Loads a dungeon room into map->dungeon->room
  */
-void DngMapLoader::initDungeonRoom(Dungeon *dng, int room)
+void DngMapLoader::initDungeonRoom(const Dungeon *dng, const int room)
 {
     dng->roomMaps[room] =
         dynamic_cast<CombatMap *>(mapMgr->initMap(Map::COMBAT));
@@ -650,7 +646,7 @@ void DngMapLoader::initDungeonRoom(Dungeon *dng, int room)
  */
 bool WorldMapLoader::load(Map *map)
 {
-    U4FILE *world = u4fopen(map->fname);
+    U4FILE *world = u4fopen(map->file_name);
     if (!world) {
         errorFatal("unable to load map data");
         return false; // never executed, makes cppcheck happy

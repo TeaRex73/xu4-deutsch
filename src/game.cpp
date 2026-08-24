@@ -375,7 +375,7 @@ void GameController::init()
                 default:
                     mapData &= 0xF0; /* ignore monsters in dngmap.sav */
                 }
-                MapTile tile = map->tfrti(mapData);
+                MapTile tile = map->translateFromRawTile(mapData);
                 /* determine what type of tile it is */
                 dungeon->data.push_back(tile);
                 dungeon->dataSubTokens.push_back(mapData & 0x0F);
@@ -428,7 +428,7 @@ void GameController::init()
         );
     }
     if (monstersFile) {
-        saveGameMonstersRead(c->location->map->monsterTable, monstersFile);
+        saveGameMonstersRead(c->location->map->monster_table, monstersFile);
         std::fclose(monstersFile);
     }
     gameFixupObjects(c->location->map);
@@ -439,7 +439,7 @@ void GameController::init()
         );
         if (outMonstFile) {
             saveGameMonstersRead(
-                c->location->prev->map->monsterTable, outMonstFile
+                c->location->prev->map->monster_table, outMonstFile
             );
             std::fclose(outMonstFile);
         }
@@ -516,7 +516,7 @@ static bool gameSave()
     c->location->map->resetObjectAnimations();
     /* fill the monster table so we can save it */
     c->location->map->fillMonsterTable(c->location);
-    if (!saveGameMonstersWrite(c->location->map->monsterTable, monstersFile)) {
+    if (!saveGameMonstersWrite(c->location->map->monster_table, monstersFile)) {
         screenMessage("Error writing to " MONSTERS_SAV_BASE_FILENAME "\n");
         std::fflush(monstersFile);
         fsync(fileno(monstersFile));
@@ -564,7 +564,7 @@ static bool gameSave()
         for (int z = 0; z < c->location->map->levels; z++) {
             for (int y = 0; y < c->location->map->height; y++) {
                 for (int x = 0; x < c->location->map->width; x++) {
-                    unsigned char tile = c->location->map->ttrti(
+                    unsigned char tile = c->location->map->translateToRawTile(
                         c->location->map->tileAt(
                             MapCoords(x, y, z), WITHOUT_OBJECTS
                         )
@@ -628,7 +628,7 @@ static bool gameSave()
         /* fill the monster table so we can save it */
         c->location->prev->map->fillMonsterTable(c->location->prev);
         if (!saveGameMonstersWrite(
-                c->location->prev->map->monsterTable, outMonstFile
+                c->location->prev->map->monster_table, outMonstFile
             )) {
             screenMessage("Error writing to " OUTMONST_SAV_BASE_FILENAME "\n");
             std::fflush(outMonstFile);
@@ -1131,7 +1131,7 @@ bool GameController::keyPressed(int key)
         case U4_RIGHT:
         {
             /* move the avatar */
-            const std::string previous_map = c->location->map->fname;
+            const std::string previous_map = c->location->map->file_name;
             const MoveResult retval =
                 c->location->move(keyToDirection(key), true);
             /* horse doubles speed (make sure we're on the same map
@@ -1140,7 +1140,7 @@ bool GameController::keyPressed(int key)
                 && (c->transportContext == TRANSPORT_HORSE)
                 && c->horseSpeed) {
                 gameUpdateScreen(); /* to give it a smooth look of movement */
-                if (previous_map == c->location->map->fname) {
+                if (previous_map == c->location->map->file_name) {
                     c->location->move(keyToDirection(key), false);
                 }
             }
@@ -2490,14 +2490,14 @@ void GameController::updateMoons(bool show_moongates)
                 gate = moongateGetGateCoordsForPhase(oldTrammel);
                 if (gate) {
                     c->location->map->annotations->remove(
-                        *gate, c->location->map->tfrti(0x40)
+                        *gate, c->location->map->translateFromRawTile(0x40)
                     );
                 }
                 gate =
                     moongateGetGateCoordsForPhase(c->saveGame->trammelphase);
                 if (gate) {
                     c->location->map->annotations->add(
-                        *gate, c->location->map->tfrti(0x40)
+                        *gate, c->location->map->translateFromRawTile(0x40)
                     );
                 }
             } else if (trammelSubphase == 1) {
@@ -2505,10 +2505,10 @@ void GameController::updateMoons(bool show_moongates)
                     moongateGetGateCoordsForPhase(c->saveGame->trammelphase);
                 if (gate) {
                     c->location->map->annotations->remove(
-                        *gate, c->location->map->tfrti(0x40)
+                        *gate, c->location->map->translateFromRawTile(0x40)
                     );
                     c->location->map->annotations->add(
-                        *gate, c->location->map->tfrti(0x41)
+                        *gate, c->location->map->translateFromRawTile(0x41)
                     );
                 }
             } else if (trammelSubphase == 2) {
@@ -2516,10 +2516,10 @@ void GameController::updateMoons(bool show_moongates)
                     moongateGetGateCoordsForPhase(c->saveGame->trammelphase);
                 if (gate) {
                     c->location->map->annotations->remove(
-                        *gate, c->location->map->tfrti(0x41)
+                        *gate, c->location->map->translateFromRawTile(0x41)
                     );
                     c->location->map->annotations->add(
-                        *gate, c->location->map->tfrti(0x42)
+                        *gate, c->location->map->translateFromRawTile(0x42)
                     );
                 }
             } else if (trammelSubphase == 3) {
@@ -2527,10 +2527,10 @@ void GameController::updateMoons(bool show_moongates)
                     moongateGetGateCoordsForPhase(c->saveGame->trammelphase);
                 if (gate) {
                     c->location->map->annotations->remove(
-                        *gate, c->location->map->tfrti(0x42)
+                        *gate, c->location->map->translateFromRawTile(0x42)
                     );
                     c->location->map->annotations->add(
-                        *gate, c->location->map->tfrti(0x43)
+                        *gate, c->location->map->translateFromRawTile(0x43)
                     );
                 }
             } else if ((trammelSubphase > 3)
@@ -2540,10 +2540,10 @@ void GameController::updateMoons(bool show_moongates)
                     moongateGetGateCoordsForPhase(c->saveGame->trammelphase);
                 if (gate) {
                     c->location->map->annotations->remove(
-                        *gate, c->location->map->tfrti(0x43)
+                        *gate, c->location->map->translateFromRawTile(0x43)
                     );
                     c->location->map->annotations->add(
-                        *gate, c->location->map->tfrti(0x43)
+                        *gate, c->location->map->translateFromRawTile(0x43)
                     );
                 }
             } else if (trammelSubphase
@@ -2552,10 +2552,10 @@ void GameController::updateMoons(bool show_moongates)
                     moongateGetGateCoordsForPhase(c->saveGame->trammelphase);
                 if (gate) {
                     c->location->map->annotations->remove(
-                        *gate, c->location->map->tfrti(0x43)
+                        *gate, c->location->map->translateFromRawTile(0x43)
                     );
                     c->location->map->annotations->add(
-                        *gate, c->location->map->tfrti(0x42)
+                        *gate, c->location->map->translateFromRawTile(0x42)
                     );
                 }
             } else if (trammelSubphase
@@ -2564,10 +2564,10 @@ void GameController::updateMoons(bool show_moongates)
                     moongateGetGateCoordsForPhase(c->saveGame->trammelphase);
                 if (gate) {
                     c->location->map->annotations->remove(
-                        *gate, c->location->map->tfrti(0x42)
+                        *gate, c->location->map->translateFromRawTile(0x42)
                     );
                     c->location->map->annotations->add(
-                        *gate, c->location->map->tfrti(0x41)
+                        *gate, c->location->map->translateFromRawTile(0x41)
                     );
                 }
             } else if (trammelSubphase
@@ -2576,10 +2576,10 @@ void GameController::updateMoons(bool show_moongates)
                     moongateGetGateCoordsForPhase(c->saveGame->trammelphase);
                 if (gate) {
                     c->location->map->annotations->remove(
-                        *gate, c->location->map->tfrti(0x41)
+                        *gate, c->location->map->translateFromRawTile(0x41)
                     );
                     c->location->map->annotations->add(
-                        *gate, c->location->map->tfrti(0x40)
+                        *gate, c->location->map->translateFromRawTile(0x40)
                     );
                 }
             }
@@ -3673,7 +3673,7 @@ static void gameFixupObjects(Map *map)
     Object *obj;
     /* add stuff from the monster table to the map */
     for (int i = 0; i < MONSTERTABLE_SIZE; i++) {
-        const SaveGameMonsterRecord *monster = &map->monsterTable[i];
+        const SaveGameMonsterRecord *monster = &map->monster_table[i];
         if (monster->prevTile != 0) {
             const int z = map->isDungeonMap() ? monster->z : 0;
             Coords coords(monster->x, monster->y, z);

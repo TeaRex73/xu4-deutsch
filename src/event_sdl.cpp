@@ -81,7 +81,7 @@ bool KeyHandler::defaultHandler(const int key, void *)
                 c->location->coords.x,
                 c->location->coords.y,
                 c->location->coords.z,
-                c->location->map->ttrti(
+                c->location->map->translateToRawTile(
                     c->location->map->tileAt(
                         c->location->coords, WITH_OBJECTS
                     )

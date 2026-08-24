@@ -37,7 +37,7 @@ class Shrine;
 #define MAP_YEW 8
 #define MAP_MINOC 9
 #define MAP_TRINSIC 10
-#define MAP_SKARABRAE 11
+#define MAP_SKARA_BRAE 11
 #define MAP_MAGINCIA 12
 #define MAP_PAWS 13
 #define MAP_BUCCANEERS_DEN 14
@@ -89,21 +89,23 @@ class Shrine;
  */
 class MapMgr {
 public:
+    MapMgr(const MapMgr &) = delete;
+    MapMgr(MapMgr &&) = delete;
+    MapMgr &operator=(const MapMgr &) = delete;
+    MapMgr &operator=(MapMgr &&) = delete;
+
     static MapMgr *getInstance();
     static void destroy();
-    Map *get(MapId id);
+    Map *get(MapId id) const;
     static Map *initMap(Map::Type type);
     void unloadMap(MapId id);
 
 private:
     MapMgr();
-    MapMgr(const MapMgr &) = delete;
-    MapMgr(MapMgr &&) = delete;
-    MapMgr &operator=(const MapMgr &) = delete;
-    MapMgr &operator=(MapMgr &&) = delete;
     ~MapMgr();
+
     void registerMap(Map *map);
-    Map *initMapFromConf(const ConfigElement &mapConf);
+    Map *initMapFromConf(const ConfigElement &mapConf) const;
     static void initCityFromConf(const ConfigElement &cityConf, City *city);
     static PersonRole *initPersonRoleFromConf(
         const ConfigElement &personRoleConf
@@ -130,4 +132,4 @@ private:
 
 #define mapMgr (MapMgr::getInstance())
 
-#endif /* MAPMGR_H */
+#endif // MAPMGR_H

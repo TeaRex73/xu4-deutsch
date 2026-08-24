@@ -50,7 +50,7 @@ public:
     ~Person() = default;
     bool canConverse() const;
     bool isVendor() const;
-    virtual std::string getName() const override;
+    std::string getName() const override;
     void goToStartLocation();
     void setDialogue(Dialogue *d);
 
