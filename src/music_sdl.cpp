@@ -2,7 +2,7 @@
 
 #include <string>
 
-#include <SDL.h>
+#include <SDL.h> // IWYU pragma: keep
 #include <SDL_mixer.h>
 
 #include "music.h"
@@ -12,21 +12,21 @@
 #include "settings.h"
 #include "u4_sdl.h"
 
-void Music::create_sys()
+void Music::create_sys() const
 {
     /*
      * initialize sound subsystem
      */
     TRACE_LOCAL(*logger, "Initializing SDL sound subsystem");
-    int audio_rate = 48000;
-    Uint16 audio_format = AUDIO_S16LSB; /* 16-bit stereo */
-    int audio_channels = 2;
-    int audio_buffers = 1024;
+    constexpr int audio_rate = 48000;
+    constexpr Uint16 audio_format = AUDIO_S16LSB; /* 16-bit stereo */
+    constexpr int audio_channels = 2;
+    constexpr int audio_buffers = 1024;
     if (u4_SDL_InitSubSystem(SDL_INIT_AUDIO) == -1) {
         errorWarning(
             "unable to init SDL audio subsystem: %s", SDL_GetError()
         );
-        this->functional = false;
+        functional = false;
         return;
     }
     TRACE_LOCAL(*logger, "Initializing SDL_mixer");
@@ -34,7 +34,7 @@ void Music::create_sys()
         errorWarning(
             "unable to init SDL_mixer: %s", Mix_GetError()
         );
-        this->functional = false;
+        functional = false;
         return;
     }
     TRACE_LOCAL(*logger, "Opening audio");
@@ -42,10 +42,10 @@ void Music::create_sys()
             audio_rate, audio_format, audio_channels, audio_buffers
         )) {
         errorWarning("Unable to open audio!");
-        this->functional = false;
+        functional = false;
         return;
     }
-    this->functional = true;
+    functional = true;
     TRACE_LOCAL(*logger, "Allocating channels");
     Mix_AllocateChannels(16);
 } // Music::create_sys
@@ -87,14 +87,14 @@ bool Music::load_sys(const std::string &pathname)
 /**
  * Play a midi file
  */
-void Music::playMid(Type music)
+void Music::playMid(const Type music)
 {
     if (!functional || !on || music == NONE) {
         return;
     }
     /* loaded a new piece of music */
     if (load(music)) {
-        Mix_PlayMusic(playing, NLOOPS);
+        Mix_PlayMusic(playing, N_LOOPS);
     }
     setMusicVolume_sys(settings.musicVol);
     setSoundVolume_sys(settings.soundVol);
@@ -124,7 +124,7 @@ void Music::thaw()
 /**
  * Set, increase, and decrease sound volume
  */
-void Music::setSoundVolume_sys(int volume)
+void Music::setSoundVolume_sys(const int volume)
 {
     /**
      * Use Channel 1 for sound effects
@@ -150,7 +150,7 @@ bool Music::isPlaying_sys()
 /**
  * Set, increase, and decrease music volume
  */
-void Music::setMusicVolume_sys(int volume)
+void Music::setMusicVolume_sys(const int volume)
 {
     Mix_VolumeMusic(
         static_cast<int>(
@@ -159,14 +159,14 @@ void Music::setMusicVolume_sys(int volume)
     );
 }
 
-void Music::fadeIn_sys(int msecs, bool)
+void Music::fadeIn_sys(const int msecs, bool) const
 {
-    if (Mix_FadeInMusic(playing, NLOOPS, msecs) == -1) {
+    if (Mix_FadeInMusic(playing, N_LOOPS, msecs) == -1) {
         errorWarning("Mix_FadeInMusic: %s\n", Mix_GetError());
     }
 }
 
-void Music::fadeOut_sys(int msecs)
+void Music::fadeOut_sys(const int msecs)
 {
     if (Mix_FadeOutMusic(msecs) == -1) {
         errorWarning("Mix_FadeOutMusic: %s\n", Mix_GetError());

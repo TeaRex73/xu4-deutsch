@@ -6,36 +6,34 @@
 
 #include <algorithm>
 #include <set>
+#include <string>
 
 #include "menu.h"
 
 #include "error.h"
 #include "event.h"
+#include "menuitem.h"
 #include "textcolor.h"
 #include "textview.h"
 
 Menu::Menu()
-    :items(),
-     current(),
-     selected(),
-     closed(false),
-     title(),
-     titleX(0),
-     titleY(0)
+    : closed(false),
+      titleX(0),
+      titleY(0)
 {
 }
 
 Menu::~Menu()
 {
-    for (MenuItemList::iterator i = items.begin(); i != items.end(); ++i) {
-        delete *i;
+    for (const auto *item: items) {
+        delete item;
     }
 }
 
 void Menu::removeAll()
 {
-    for (MenuItemList::iterator i = items.begin(); i != items.end(); ++i) {
-        delete *i;
+    for (const auto *item: items) {
+        delete item;
     }
     items.clear();
 }
@@ -44,45 +42,51 @@ void Menu::removeAll()
 /**
  * Adds an item to the menu list and returns the menu
  */
-void Menu::add(int id, const std::string &text, short x, short y, int sc)
+void Menu::add(
+    const int id,
+    const std::string &text,
+    const short x,
+    const short y,
+    const int sc
+)
 {
-    MenuItem *item = new MenuItem(text, x, y, sc);
+    auto *item = new MenuItem(text, x, y, sc);
     item->setId(id);
     items.push_back(item);
 }
 
-MenuItem *Menu::add(int id, MenuItem *item)
+MenuItem *Menu::add(const int id, MenuItem *item)
 {
     item->setId(id);
     items.push_back(item);
     return item;
 }
 
-void Menu::addShortcutKey(int id, int shortcutKey) const
+void Menu::addShortcutKey(const int id, const int shortcutKey) const
 {
-    MenuItemList::const_iterator i = std::find_if(
+    const auto item = std::find_if(
         items.cbegin(),
         items.cend(),
         [&](const MenuItem *v) -> bool {
             return v->getId() == id;
         }
     );
-    if (i != items.cend()) {
-        (*i)->addShortcutKey(shortcutKey);
+    if (item != items.cend()) {
+        (*item)->addShortcutKey(shortcutKey);
     }
 }
 
-void Menu::setClosesMenu(int id) const
+void Menu::setClosesMenu(const int id) const
 {
-    MenuItemList::const_iterator i = std::find_if(
+    const auto item = std::find_if(
         items.cbegin(),
         items.cend(),
         [&](const MenuItem *v) -> bool {
             return v->getId() == id;
         }
     );
-    if (i != items.cend()) {
-        (*i)->setClosesMenu(true);
+    if (item != items.cend()) {
+        (*item)->setClosesMenu(true);
     }
 }
 
@@ -99,7 +103,7 @@ Menu::MenuItemList::iterator Menu::getCurrent() const
 /**
  * Sets the current menu item to the one indicated by the iterator
  */
-void Menu::setCurrent(MenuItemList::iterator i)
+void Menu::setCurrent(const MenuItemList::iterator i)
 {
     selected = i;
     highlight(*selected);
@@ -108,18 +112,18 @@ void Menu::setCurrent(MenuItemList::iterator i)
     notifyObservers(event);
 }
 
-void Menu::setCurrent(int id)
+void Menu::setCurrent(const int id)
 {
     setCurrent(getById(id));
 }
 
 void Menu::show(TextView *view)
 {
-    if (title.length() > 0) {
+    if (!title.empty()) {
         view->textAt(titleX, titleY, "%s", title.c_str());
     }
     for (current = items.begin(); current != items.end(); ++current) {
-        MenuItem *mi = *current;
+        const MenuItem *mi = *current;
         if (mi->isVisible()) {
             std::string text(mi->getText());
             if (mi->isSelected()) {
@@ -129,7 +133,7 @@ void Menu::show(TextView *view)
                 view->textSelectedAt(
                     mi->getX(),
                     mi->getY(),
-                    view->colorizeString(
+                    TextView::colorizeString(
                         text, FG_YELLOW, mi->getScOffset(), 1
                     ).c_str()
                 );
@@ -146,7 +150,7 @@ void Menu::show(TextView *view)
                     mi->getX(),
                     mi->getY(),
                     "%s",
-                    view->colorizeString(
+                    TextView::colorizeString(
                         text, FG_YELLOW, mi->getScOffset(), 1
                     ).c_str()
                 );
@@ -178,18 +182,18 @@ bool Menu::isVisible()
  */
 void Menu::next()
 {
-    MenuItemList::iterator i = selected;
+    auto item = selected;
     if (isVisible()) {
-        if (++i == items.end()) {
-            i = items.begin();
+        if (++item == items.end()) {
+            item = items.begin();
         }
-        while (!(*i)->isVisible()) {
-            if (++i == items.end()) {
-                i = items.begin();
+        while (!(*item)->isVisible()) {
+            if (++item == items.end()) {
+                item = items.begin();
             }
         }
     }
-    setCurrent(i);
+    setCurrent(item);
 }
 
 
@@ -199,7 +203,7 @@ void Menu::next()
  */
 void Menu::prev()
 {
-    MenuItemList::iterator i = selected;
+    auto i = selected;
     if (isVisible()) {
         if (i == items.begin()) {
             i = items.end();
@@ -269,7 +273,7 @@ Menu::MenuItemList::iterator Menu::begin_visible()
  *      - highlights the first menu item
  *      - selects the first visible menu item
  */
-void Menu::reset(bool highlightFirst)
+void Menu::reset(const bool highlightFirst)
 {
     closed = false;
     /* get the first visible menu item */
@@ -292,7 +296,7 @@ void Menu::reset(bool highlightFirst)
 /**
  * Returns an iterator pointing to the item associated with the given 'id'
  */
-Menu::MenuItemList::iterator Menu::getById(int id)
+Menu::MenuItemList::iterator Menu::getById(const int id)
 {
     if (id == -1) {
         return getCurrent();
@@ -311,7 +315,7 @@ Menu::MenuItemList::iterator Menu::getById(int id)
 /**
  * Returns the menu item associated with the given 'id'
  */
-MenuItem *Menu::getItemById(int id)
+MenuItem *Menu::getItemById(const int id)
 {
     current = getById(id);
     if (current != items.end()) {
@@ -328,7 +332,7 @@ MenuItem *Menu::getItemById(int id)
  * the menu item given by 'menu' and highlights the new menu
  * item that was found for 'id'.
  */
-void Menu::activateItem(int id, MenuEvent::Type action)
+void Menu::activateItem(const int id, const MenuEvent::Type action)
 {
     MenuItem *mi;
     /* find the given menu item by id */
@@ -343,40 +347,41 @@ void Menu::activateItem(int id, MenuEvent::Type action)
         errorFatal(
             "Error: Unable to find menu item with id '%d'", id
         );
-    } else {
-        /* make sure the action given will activate the menu item */
-        if (mi->getClosesMenu()) {
-            setClosed(true);
-        }
-        MenuEvent event(this, action, mi);
-        mi->activate(event);
-        setChanged();
-        notifyObservers(event);
     }
+    /* make sure the action given will activate the menu item */
+    if (mi->getClosesMenu()) {
+        setClosed(true);
+    }
+    MenuEvent event(this, action, mi);
+    mi->activate(event);
+    setChanged();
+    notifyObservers(event);
 } // Menu::activateItem
 
 
 /**
- * Activates a menu item by it's shortcut key.  True is returned if a
+ * Activates a menu item by its shortcut key.  True is returned if a
  * menu item get activated, false otherwise.
  */
-bool Menu::activateItemByShortcut(int key, MenuEvent::Type action)
+bool Menu::activateItemByShortcut(const int key, const MenuEvent::Type action)
 {
-    for (MenuItemList::iterator i = items.begin();
-         i != items.end();
-         ++i) {
-        const std::set<int> &shortcuts = (*i)->getShortcutKeys();
-        if (shortcuts.find(key) != shortcuts.end()) {
-            activateItem((*i)->getId(), action);
-            // if the selection doesn't close the menu,
-            // highlight the selection
-            if (!(*i)->getClosesMenu()) {
-                setCurrent((*i)->getId());
+    return std::any_of(
+        items.cbegin(),
+        items.cend(),
+        [&] (const MenuItem *item) -> bool {
+            const std::set<int> &shortcuts = item->getShortcutKeys();
+            if (shortcuts.find(key) != shortcuts.end()) {
+                activateItem(item->getId(), action);
+                // if the selection doesn't close the menu,
+                // highlight the selection
+                if (!item->getClosesMenu()) {
+                    setCurrent(item->getId());
+                }
+                return true;
             }
-            return true;
+            return false;
         }
-    }
-    return false;
+    );
 }
 
 
@@ -392,12 +397,12 @@ bool Menu::getClosed() const
 /**
  * Update whether the menu has been closed.
  */
-void Menu::setClosed(bool closed)
+void Menu::setClosed(const bool isClosed)
 {
-    this->closed = closed;
+    closed = isClosed;
 }
 
-void Menu::setTitle(const std::string &text, int x, int y)
+void Menu::setTitle(const std::string &text, const int x, const int y)
 {
     title = text;
     titleX = x;
@@ -409,10 +414,10 @@ MenuController::MenuController(Menu *menu, TextView *view)
 {
 }
 
-bool MenuController::keyPressed(int key)
+bool MenuController::keyPressed(const int key)
 {
     bool handled = true;
-    bool cursorOn = view->getCursorEnabled();
+    const bool cursorOn = view->getCursorEnabled();
     if (cursorOn) {
         view->disableCursor();
     }

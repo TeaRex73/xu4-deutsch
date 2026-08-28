@@ -26,7 +26,9 @@ public:
         RESET
     };
 
-    MenuEvent(const Menu *menu, Type type, const MenuItem *item = nullptr)
+    MenuEvent(
+        const Menu *menu, const Type type, const MenuItem *item = nullptr
+    )
         :menu(menu), type(type), item(item)
     {
     }
@@ -60,7 +62,7 @@ class Menu:public Observable<Menu *, MenuEvent &> {
 public:
     typedef std::list<MenuItem *> MenuItemList;
     Menu();
-    ~Menu();
+    ~Menu() override;
     void removeAll();
     void add(int id, const std::string &text, short x, short y, int sc = -1);
     MenuItem *add(int id, MenuItem *item);
@@ -83,7 +85,7 @@ public:
     void activateItem(int id, MenuEvent::Type action);
     bool activateItemByShortcut(int key, MenuEvent::Type action);
     bool getClosed() const;
-    void setClosed(bool closed);
+    void setClosed(bool isClosed);
     void setTitle(const std::string &text, int x, int y);
 
 private:
@@ -114,4 +116,4 @@ protected:
     TextView *view;
 };
 
-#endif // ifndef MENU_H
+#endif // MENU_H

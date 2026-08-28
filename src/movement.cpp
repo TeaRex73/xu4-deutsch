@@ -4,18 +4,21 @@
 
 #include "vc6.h" // Fixes things if you're using VC6, does nothing otherwise
 
+#include <atomic>
+
 #include "movement.h"
 
 #include "annotation.h"
 #include "combat.h"
 #include "context.h"
-#include "controller.h"
 #include "coords.h"
 #include "creature.h"
 #include "debug.h"
+#include "direction.h"
 #include "dungeon.h"
 #include "event.h"
 #include "location.h"
+#include "map.h"
 #include "object.h"
 #include "player.h"
 #include "savegame.h"
@@ -33,10 +36,9 @@ std::atomic_bool collisionOverride(false);
  */
 void moveAvatar(MoveEvent &event)
 {
-    MapCoords newCoords;
     SlowedType slowedType = SLOWED_BY_TILE;
     /* Check to see if we're on the balloon */
-    if ((c->transportContext == TRANSPORT_BALLOON) && event.userEvent) {
+    if (c->transportContext == TRANSPORT_BALLOON && event.userEvent) {
         event.result =
             static_cast<MoveResult>(MOVE_DRIFT_ONLY | MOVE_END_TURN);
         return;
@@ -57,13 +59,13 @@ void moveAvatar(MoveEvent &event)
     }
     /* change direction of horse, if necessary */
     if (c->transportContext == TRANSPORT_HORSE) {
-        if (((event.dir == DIR_WEST) || (event.dir == DIR_EAST))
-            && (c->party->getDirection() != event.dir)) {
+        if ((event.dir == DIR_WEST || event.dir == DIR_EAST)
+            && c->party->getDirection() != event.dir) {
             c->party->setDirection(event.dir);
         }
     }
     /* figure out our new location we're trying to move to */
-    newCoords = c->location->coords;
+    MapCoords newCoords = c->location->coords;
     newCoords.move(event.dir, c->location->map);
     /* see if we moved off the map */
     if (MAP_IS_OOB(c->location->map, newCoords)) {
@@ -73,7 +75,7 @@ void moveAvatar(MoveEvent &event)
         return;
     }
     if (!collisionOverride && !c->party->isFlying()) {
-        int movementMask = c->location->map->getValidMoves(
+        const int movementMask = c->location->map->getValidMoves(
             c->location->coords,
             c->party->getTransport()
         );
@@ -127,16 +129,14 @@ void moveAvatar(MoveEvent &event)
  */
 void moveAvatarInDungeon(MoveEvent &event)
 {
-    MapCoords newCoords;
     /* get our real direction */
-    Direction realDir = dirNormalize(
+    const Direction realDir = dirNormalize(
         static_cast<Direction>(c->saveGame->orientation), event.dir
     );
-    int advancing = (realDir == c->saveGame->orientation),
-        retreating = (realDir == dirReverse(
-                          static_cast<Direction>(c->saveGame->orientation))
-                     );
-    MapTile tile;
+    const int advancing = realDir == c->saveGame->orientation;
+    const int retreating =
+        realDir ==
+            dirReverse(static_cast<Direction>(c->saveGame->orientation));
     /* we're not in a dungeon, failed! */
     U4ASSERT(
         c->location->context & CTX_DUNGEON,
@@ -149,9 +149,9 @@ void moveAvatarInDungeon(MoveEvent &event)
         return;
     }
     /* figure out our new location */
-    newCoords = c->location->coords;
+    MapCoords newCoords = c->location->coords;
     newCoords.move(realDir, c->location->map);
-    tile = c->location->map->tileAt(newCoords, WITH_OBJECTS);
+    const MapTile tile = c->location->map->tileAt(newCoords, WITH_OBJECTS);
     /* see if we moved off the map (really, this should never
        happen in a dungeon) */
     if (MAP_IS_OOB(c->location->map, newCoords)) {
@@ -165,11 +165,10 @@ void moveAvatarInDungeon(MoveEvent &event)
             c->location->coords,
             c->party->getTransport()
         );
-        if (advancing
-            && !tile.getTileType()->canWalkOn(DIR_ADVANCE)) {
-            movementMask = DIR_REMOVE_FROM_MASK(realDir, movementMask);
-        } else if (retreating
-                   && !tile.getTileType()->canWalkOn(DIR_RETREAT)) {
+        if ((advancing
+                && !tile.getTileType()->canWalkOn(DIR_ADVANCE))
+             || (retreating
+                   && !tile.getTileType()->canWalkOn(DIR_RETREAT))) {
             movementMask = DIR_REMOVE_FROM_MASK(realDir, movementMask);
         }
         if (!DIR_IN_MASK(realDir, movementMask)) {
@@ -192,12 +191,11 @@ void moveAvatarInDungeon(MoveEvent &event)
  */
 bool moveObject(const Map *map, Creature *obj, const MapCoords &avatar)
 {
-    int dirmask = DIR_NONE;
-    Direction dir;
+    int dir_mask = DIR_NONE;
     MapCoords new_coords = obj->getCoords();
     int slowed = 0;
     /* determine a direction depending on the object movement behavior */
-    dir = DIR_NONE;
+    Direction dir = DIR_NONE;
     /* Dungeon: All monsters, except reapers and mimics, wander 100%
        of time if they can move in three or four directions or in two
        opposite directions. They wander 75% of time if they can move
@@ -221,21 +219,21 @@ bool moveObject(const Map *map, Creature *obj, const MapCoords &avatar)
             || (map->isCityMap() && xu4_random(2)) // 50% chance
             || (map->isWorldMap() && xu4_random(4)) // 75% chance
         ) {
-            dirmask =
+            dir_mask =
                 map->getValidMoves(new_coords, obj->getTile(), true);
             if (map->isDungeonMap()) {
-                switch (dirmask) {
+                switch (dir_mask) {
                 case MASK_DIR_WEST:
                 case MASK_DIR_NORTH:
                 case MASK_DIR_EAST:
                 case MASK_DIR_SOUTH:
-                    if (!xu4_random(2)) dirmask = 0;
+                    if (!xu4_random(2)) dir_mask = 0;
                     break;
                 case MASK_DIR_NORTHWEST:
                 case MASK_DIR_NORTHEAST:
                 case MASK_DIR_SOUTHEAST:
                 case MASK_DIR_SOUTHWEST:
-                    if (!xu4_random(4)) dirmask = 0;
+                    if (!xu4_random(4)) dir_mask = 0;
                     break;
                 default:
                     /* in theory, if exactly three directions are possible in
@@ -245,7 +243,7 @@ bool moveObject(const Map *map, Creature *obj, const MapCoords &avatar)
                     break;
                 }
             }
-            dir = dirRandomDir(dirmask, obj->getLastDir());
+            dir = dirRandomDir(dir_mask, obj->getLastDir());
             break;
         }
         if (!map->isWorldMap()) {
@@ -256,19 +254,19 @@ bool moveObject(const Map *map, Creature *obj, const MapCoords &avatar)
         /* FALLTHROUGH */
     case MOVEMENT_FOLLOW_AVATAR:
     case MOVEMENT_ATTACK_AVATAR:
-        dirmask = map->getValidMoves(new_coords, obj->getTile());
+        dir_mask = map->getValidMoves(new_coords, obj->getTile());
         /* If the pirate ship turned last move instead
            of moving, this time it must try to move,
            not turn again */
         if (obj->getTile().getTileType()->isPirateShip()
-            && DIR_IN_MASK(obj->getTile().getDirection(), dirmask)
-            && (obj->getTile() != obj->getPrevTile())
-            && (obj->getPrevCoords() == obj->getCoords())) {
+            && DIR_IN_MASK(obj->getTile().getDirection(), dir_mask)
+            && obj->getTile() != obj->getPrevTile()
+            && obj->getPrevCoords() == obj->getCoords()) {
             dir = obj->getTile().getDirection();
             break;
         }
         dir = new_coords.pathTo(
-            avatar, dirmask, true, c->location->map, obj->getLastDir()
+            avatar, dir_mask, true, c->location->map, obj->getLastDir()
         );
         break;
     }
@@ -308,7 +306,7 @@ bool moveObject(const Map *map, Creature *obj, const MapCoords &avatar)
     /**
      * Set the new coordinates
      */
-    if (!(new_coords == obj->getCoords()) && !MAP_IS_OOB(map, new_coords)) {
+    if (new_coords != obj->getCoords() && !MAP_IS_OOB(map, new_coords)) {
         obj->setCoords(new_coords);
         return true;
     }
@@ -326,7 +324,7 @@ bool moveCombatObject(
     MapCoords new_coords = obj->getCoords();
     int valid_dirs = map->getValidMoves(new_coords, obj->getTile());
     Direction dir;
-    CombatAction action = static_cast<CombatAction>(act);
+    const auto action = static_cast<CombatAction>(act);
     SlowedType slowedType = SLOWED_BY_TILE;
     int slowed = 0;
     /* fixed objects cannot move */
@@ -343,12 +341,12 @@ bool moveCombatObject(
         // If they're not fleeing, make sure they don't flee on accident
         if (new_coords.x == 0) {
             valid_dirs = DIR_REMOVE_FROM_MASK(DIR_WEST, valid_dirs);
-        } else if (new_coords.x >= static_cast<int>(map->width - 1)) {
+        } else if (new_coords.x >= map->width - 1) {
             valid_dirs = DIR_REMOVE_FROM_MASK(DIR_EAST, valid_dirs);
         }
         if (new_coords.y == 0) {
             valid_dirs = DIR_REMOVE_FROM_MASK(DIR_NORTH, valid_dirs);
-        } else if (new_coords.y >= static_cast<int>(map->height - 1)) {
+        } else if (new_coords.y >= map->height - 1) {
             valid_dirs = DIR_REMOVE_FROM_MASK(DIR_SOUTH, valid_dirs);
         }
         dir = new_coords.pathTo(
@@ -393,20 +391,19 @@ bool moveCombatObject(
  */
 void movePartyMember(MoveEvent &event)
 {
-    CombatController *ct =
+    auto *ct =
         dynamic_cast<CombatController *>(eventHandler->getController());
     const CombatMap *cm = getCombatMap();
-    int member = ct->getFocus();
-    MapCoords newCoords;
+    const int member = ct->getFocus();
     PartyMemberVector *party = ct->getParty();
     event.result = MOVE_SUCCEEDED;
     /* find our new location */
-    newCoords = (*party)[member]->getCoords();
+    MapCoords newCoords = (*party)[member]->getCoords();
     newCoords.move(event.dir, c->location->map);
     if (MAP_IS_OOB(c->location->map, newCoords)) {
-        bool sameExit = (!cm->isDungeonRoom()
-                         || (ct->getExitDir() == DIR_NONE)
-                         || (event.dir == ct->getExitDir()));
+        const bool sameExit = !cm->isDungeonRoom()
+            || ct->getExitDir() == DIR_NONE
+            || event.dir == ct->getExitDir();
         if (sameExit) {
             /* if in a win-or-lose battle and not camping,
                then it can be bad to flee while healthy */
@@ -415,8 +412,8 @@ void movePartyMember(MoveEvent &event)
                    from an evil creature :( */
                 if (ct->getCreature()
                     && ct->getCreature()->isEvil()
-                    && (c->party->member(member)->getHp()
-                        == c->party->member(member)->getMaxHp())) {
+                    && c->party->member(member)->getHp()
+                        == c->party->member(member)->getMaxHp()) {
                     c->party->adjustKarma(KA_HEALTHY_FLED_EVIL);
                 }
             }
@@ -430,14 +427,13 @@ void movePartyMember(MoveEvent &event)
                 | MOVE_END_TURN
             );
             return;
-        } else {
-            event.result = static_cast<MoveResult>(
-                MOVE_MUST_USE_SAME_EXIT | MOVE_END_TURN
-            );
-            return;
         }
+        event.result = static_cast<MoveResult>(
+            MOVE_MUST_USE_SAME_EXIT | MOVE_END_TURN
+        );
+        return;
     }
-    int movementMask = c->location->map->getValidMoves(
+    const int movementMask = c->location->map->getValidMoves(
         (*party)[member]->getCoords(),
         (*party)[member]->getTile()
     );
@@ -453,10 +449,11 @@ void movePartyMember(MoveEvent &event)
         (*party)[member]->setCoords(newCoords);
         /* handle dungeon room triggers */
         if (cm->isDungeonRoom()) {
-            Dungeon *dungeon = dynamic_cast<Dungeon *>(c->location->prev->map);
-            int i;
-            Trigger *triggers = dungeon->rooms[dungeon->currentRoom].triggers;
-            for (i = 0; i < 4; i++) {
+            const auto *dungeon =
+                dynamic_cast<Dungeon *>(c->location->prev->map);
+            const Trigger *triggers =
+                dungeon->rooms[dungeon->currentRoom].triggers;
+            for (int i = 0; i < 4; i++) {
                 /*const Creature *m =
                   creatures.getByTile(triggers[i].tile);*/
                 /* FIXME: when a creature is created by
@@ -508,7 +505,6 @@ void movePartyMember(MoveEvent &event)
         }
     } else {
         event.result = static_cast<MoveResult>(MOVE_SLOWED | MOVE_END_TURN);
-        return;
     }
 } // movePartyMember
 
@@ -543,17 +539,16 @@ bool slowedByTile(const Tile *tile)
  * Slowed depending on the direction of object with respect to wind direction
  * Returns true if slowed, false if not slowed
  */
-bool slowedByWind(int direction)
+bool slowedByWind(const int direction)
 {
     /* 1 of 4 moves while trying to move into the wind succeeds */
     if (direction == c->windDirection) {
-        return (c->saveGame->moves % 4) != 0;
+        return c->saveGame->moves % 4 != 0;
     }
     /* 1 of 4 moves while moving directly away from wind fails */
-    else if (direction
-             == dirReverse(static_cast<Direction>(c->windDirection))) {
-        return (c->saveGame->moves % 4) == 0;
-    } else {
-        return false;
+    if (direction
+        == dirReverse(static_cast<Direction>(c->windDirection))) {
+        return c->saveGame->moves % 4 == 0;
     }
+    return false;
 }

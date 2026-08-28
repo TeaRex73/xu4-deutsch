@@ -16,7 +16,7 @@
 /* map moon phase to map coordinates */
 typedef std::map<int, Coords> MoongateList;
 
-MoongateList gates;
+static MoongateList gates;
 
 void moongateAdd(int phase, const Coords &coords)
 {
@@ -25,10 +25,9 @@ void moongateAdd(int phase, const Coords &coords)
     }
 }
 
-const Coords *moongateGetGateCoordsForPhase(int phase)
+const Coords *moongateGetGateCoordsForPhase(const int phase)
 {
-    MoongateList::iterator moongate;
-    moongate = gates.find(phase);
+    const auto moongate = gates.find(phase);
     if (moongate != gates.end()) {
         return &moongate->second;
     }
@@ -36,12 +35,11 @@ const Coords *moongateGetGateCoordsForPhase(int phase)
 }
 
 bool moongateFindActiveGateAt(
-    int trammel, int felucca, const Coords &src, Coords &dest
+    const int trammel, const int felucca, const Coords &src, Coords &dest
 )
 {
-    const Coords *moongate_coords;
-    moongate_coords = moongateGetGateCoordsForPhase(trammel);
-    if (moongate_coords && (src == *moongate_coords)) {
+    const Coords *moongate_coords = moongateGetGateCoordsForPhase(trammel);
+    if (moongate_coords && src == *moongate_coords) {
         moongate_coords = moongateGetGateCoordsForPhase(felucca);
         if (moongate_coords) {
             dest = *moongate_coords;
@@ -51,7 +49,7 @@ bool moongateFindActiveGateAt(
     return false;
 }
 
-bool moongateIsEntryToShrineOfSpirituality(int trammel, int felucca)
+bool moongateIsEntryToShrineOfSpirituality(const int trammel, const int felucca)
 {
-    return (trammel == 4 && felucca == 4) ? true : false;
+    return trammel == 4 && felucca == 4;
 }

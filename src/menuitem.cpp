@@ -6,6 +6,10 @@
 
 #include <algorithm>
 #include <cstdio>
+#include <set>
+#include <string>
+#include <utility>
+#include <vector>
 
 #include "menuitem.h"
 
@@ -19,16 +23,17 @@
 /**
  * MenuItem class
  */
-MenuItem::MenuItem(const std::string &t, short xpos, short ypos, int sc)
+MenuItem::MenuItem(
+    std::string t, const short x_pos, const short y_pos, const int sc
+)
     :id(-1),
-     x(xpos),
-     y(ypos),
-     text(t),
+     x(x_pos),
+     y(y_pos),
+     text(std::move(t)),
      highlighted(false),
      selected(false),
      visible(true),
      scOffset(sc),
-     shortcutKeys(),
      closesMenu(false)
 {
     // is the sc/scOffset outside the range of the text std::string ?
@@ -47,12 +52,12 @@ int MenuItem::getId() const
     return id;
 }
 
-short MenuItem::getX() const
+int MenuItem::getX() const
 {
     return x;
 }
 
-short MenuItem::getY() const
+int MenuItem::getY() const
 {
     return y;
 }
@@ -92,19 +97,19 @@ bool MenuItem::getClosesMenu() const
     return closesMenu;
 }
 
-void MenuItem::setId(int i)
+void MenuItem::setId(const int i)
 {
     id = i;
 }
 
-void MenuItem::setX(int xpos)
+void MenuItem::setX(const int x_pos)
 {
-    x = xpos;
+    x = x_pos;
 }
 
-void MenuItem::setY(int ypos)
+void MenuItem::setY(const int y_pos)
 {
-    y = ypos;
+    y = y_pos;
 }
 
 void MenuItem::setText(const std::string &t)
@@ -112,33 +117,37 @@ void MenuItem::setText(const std::string &t)
     text = t;
 }
 
-void MenuItem::setHighlighted(bool h)
+void MenuItem::setHighlighted(const bool h)
 {
     highlighted = h;
 }
 
-void MenuItem::setSelected(bool s)
+void MenuItem::setSelected(const bool s)
 {
     selected = s;
 }
 
-void MenuItem::setVisible(bool v)
+void MenuItem::setVisible(const bool v)
 {
     visible = v;
 }
 
-void MenuItem::addShortcutKey(int sc)
+void MenuItem::addShortcutKey(const int sc)
 {
     shortcutKeys.insert(sc);
 }
 
-void MenuItem::setClosesMenu(bool closesMenu)
+void MenuItem::setClosesMenu(const bool closes)
 {
-    this->closesMenu = closesMenu;
+    closesMenu = closes;
 }
 
 BoolMenuItem::BoolMenuItem(
-    const std::string &text, short x, short y, int shortcutKey, bool *val
+    const std::string &text,
+    const short x,
+    const short y,
+    const int shortcutKey,
+    bool *val
 )
     :MenuItem(text, x, y, shortcutKey), val(val), on("On"), off("Off")
 {
@@ -164,18 +173,18 @@ std::string BoolMenuItem::getText() const
 
 void BoolMenuItem::activate(MenuEvent &event)
 {
-    if ((event.getType() == MenuEvent::DECREMENT)
-        || (event.getType() == MenuEvent::INCREMENT)
-        || (event.getType() == MenuEvent::ACTIVATE)) {
-        *val = !(*val);
+    if (event.getType() == MenuEvent::DECREMENT
+        || event.getType() == MenuEvent::INCREMENT
+        || event.getType() == MenuEvent::ACTIVATE) {
+        *val = !*val;
     }
 }
 
 StringMenuItem::StringMenuItem(
     const std::string &text,
-    short x,
-    short y,
-    int shortcutKey,
+    const short x,
+    const short y,
+    const int shortcutKey,
     std::string *val,
     const std::vector<std::string> &validSettings
 )
@@ -192,14 +201,14 @@ std::string StringMenuItem::getText() const
 
 void StringMenuItem::activate(MenuEvent &event)
 {
-    std::vector<std::string>::const_iterator current =
+    auto current =
         find(validSettings.cbegin(), validSettings.cend(), *val);
     if (current == validSettings.cend()) {
         errorFatal("Error: menu std::string '%s' not a valid choice",
                    val->c_str());
     }
-    if ((event.getType() == MenuEvent::INCREMENT)
-        || (event.getType() == MenuEvent::ACTIVATE)) {
+    if (event.getType() == MenuEvent::INCREMENT
+        || event.getType() == MenuEvent::ACTIVATE) {
         /* move to the next valid choice, wrapping if necessary */
         ++current;
         if (current == validSettings.cend()) {
@@ -218,14 +227,14 @@ void StringMenuItem::activate(MenuEvent &event)
 
 IntMenuItem::IntMenuItem(
     const std::string &text,
-    short x,
-    short y,
-    int shortcutKey,
+    const short x,
+    const short y,
+    const int shortcutKey,
     int *val,
-    int min,
-    int max,
-    int increment,
-    menuOutputType output
+    const int min,
+    const int max,
+    const int increment,
+    const menuOutputType output
 )
     :MenuItem(text, x, y, shortcutKey),
      val(val),
@@ -247,7 +256,7 @@ std::string IntMenuItem::getText() const
             outputBuffer,
             sizeof(outputBuffer),
             "%2hd",
-            static_cast<short>((*val) & 0xFFFF)
+            static_cast<short>(*val & 0xFFFF)
         );
         break;
     case MENU_OUTPUT_GAMMA:
@@ -298,8 +307,8 @@ std::string IntMenuItem::getText() const
 
 void IntMenuItem::activate(MenuEvent &event)
 {
-    if ((event.getType() == MenuEvent::INCREMENT)
-        || (event.getType() == MenuEvent::ACTIVATE)) {
+    if (event.getType() == MenuEvent::INCREMENT
+        || event.getType() == MenuEvent::ACTIVATE) {
         *val += increment;
         if (*val > max) {
             *val = min;
@@ -314,14 +323,14 @@ void IntMenuItem::activate(MenuEvent &event)
 
 UnsignedShortMenuItem::UnsignedShortMenuItem(
     const std::string &text,
-    short x,
-    short y,
-    int shortcutKey,
+    const short x,
+    const short y,
+    const int shortcutKey,
     unsigned short *val,
-    unsigned short min,
-    unsigned short max,
-    unsigned short increment,
-    menuOutputType output
+    const unsigned short min,
+    const unsigned short max,
+    const unsigned short increment,
+    const menuOutputType output
 )
     :MenuItem(text, x, y, shortcutKey),
      val(val),
@@ -343,7 +352,7 @@ std::string UnsignedShortMenuItem::getText() const
             outputBuffer,
             sizeof(outputBuffer),
             "%2hu",
-            (*val)
+            *val
         );
         break;
     case MENU_OUTPUT_GAMMA:
@@ -395,8 +404,8 @@ std::string UnsignedShortMenuItem::getText() const
 
 void UnsignedShortMenuItem::activate(MenuEvent &event)
 {
-    if ((event.getType() == MenuEvent::INCREMENT)
-        || (event.getType() == MenuEvent::ACTIVATE)) {
+    if (event.getType() == MenuEvent::INCREMENT
+        || event.getType() == MenuEvent::ACTIVATE) {
         *val += increment;
         if (*val > max) {
             *val = min;
