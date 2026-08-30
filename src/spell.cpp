@@ -73,14 +73,14 @@ static bool spellYup(int);
 static bool spellZdown(int);
 
 /* masks for reagents */
-#define ASH (1 << REAG_ASH)
-#define GINSENG (1 << REAG_GINSENG)
-#define GARLIC (1 << REAG_GARLIC)
-#define SILK (1 << REAG_SILK)
-#define MOSS (1 << REAG_MOSS)
-#define PEARL (1 << REAG_PEARL)
-#define NIGHTSHADE (1 << REAG_NIGHTSHADE)
-#define MANDRAKE (1 << REAG_MANDRAKE)
+#define ASH (1 << REAGENT_ASH)
+#define GINSENG (1 << REAGENT_GINSENG)
+#define GARLIC (1 << REAGENT_GARLIC)
+#define SILK (1 << REAGENT_SILK)
+#define MOSS (1 << REAGENT_MOSS)
+#define PEARL (1 << REAGENT_PEARL)
+#define NIGHTSHADE (1 << REAGENT_NIGHTSHADE)
+#define MANDRAKE (1 << REAGENT_MANDRAKE)
 
 /* spell error messages */
 static const struct {
@@ -346,7 +346,7 @@ Ingredients::Ingredients()
 
 bool Ingredients::addReagent(Reagent reagent)
 {
-    U4ASSERT(reagent < REAG_MAX, "invalid reagent: %d", reagent);
+    U4ASSERT(reagent < REAGENT_MAX, "invalid reagent: %d", reagent);
     if (Party::getReagent(reagent) < 1) {
         return false;
     }
@@ -357,7 +357,7 @@ bool Ingredients::addReagent(Reagent reagent)
 
 bool Ingredients::removeReagent(Reagent reagent)
 {
-    U4ASSERT(reagent < REAG_MAX, "invalid reagent: %d", reagent);
+    U4ASSERT(reagent < REAGENT_MAX, "invalid reagent: %d", reagent);
     if (reagents[reagent] == 0) {
         return false;
     }
@@ -368,13 +368,13 @@ bool Ingredients::removeReagent(Reagent reagent)
 
 int Ingredients::getReagent(Reagent reagent) const
 {
-    U4ASSERT(reagent < REAG_MAX, "invalid reagent: %d", reagent);
+    U4ASSERT(reagent < REAGENT_MAX, "invalid reagent: %d", reagent);
     return reagents[reagent];
 }
 
 void Ingredients::revert()
 {
-    for (int reg = 0; reg < REAG_MAX; reg++) {
+    for (int reg = 0; reg < REAGENT_MAX; reg++) {
         c->saveGame->reagents[reg] += reagents[reg];
         reagents[reg] = 0;
     }
@@ -382,7 +382,7 @@ void Ingredients::revert()
 
 bool Ingredients::checkMultiple(int batches) const
 {
-    for (int i = 0; i < REAG_MAX; i++) {
+    for (int i = 0; i < REAGENT_MAX; i++) {
         /* see if there's enough reagents to mix
            (-1 because one is already counted) */
         if ((reagents[i] > 0) && (c->saveGame->reagents[i] < batches - 1)) {
@@ -399,7 +399,7 @@ void Ingredients::multiply(int batches)
         "not enough reagents to multiply ingredients by %d\n",
         batches
     );
-    for (int i = 0; i < REAG_MAX; i++) {
+    for (int i = 0; i < REAGENT_MAX; i++) {
         if (reagents[i] > 0) {
             c->saveGame->reagents[i] -= batches - 1;
             reagents[i] += batches - 1;
@@ -468,7 +468,7 @@ bool spellMix(unsigned int spell, const Ingredients *ingredients)
 {
     U4ASSERT(spell < N_SPELLS, "invalid spell: %u", spell);
     int regmask = 0;
-    for (int reg = 0; reg < REAG_MAX; reg++) {
+    for (int reg = 0; reg < REAGENT_MAX; reg++) {
         if (ingredients->getReagent(static_cast<Reagent>(reg)) > 0) {
             regmask |= (1 << reg);
         }
@@ -557,7 +557,7 @@ bool spellCast(
         const int time = static_cast<int>(
             17790.4 / settings.spellEffectSpeed * spellMp / MP_OF_LARGEST_SPELL
         );
-        soundPlay(SOUND_PREMAGIC_MANA_JUMBLE, false, time);
+        soundPlay(SOUND_PRE_MAGIC_MANA_JUMBLE, false, time);
         EventHandler::wait_msecs(time);
         (*spellEffectCallback)(spell + 'a', subject, SOUND_MAGIC);
     }

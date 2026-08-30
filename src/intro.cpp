@@ -1320,8 +1320,8 @@ void IntroController::finishInitiateGame(
     initPlayers(&saveGame);
     saveGame.food = 30000;
     saveGame.gold = 200;
-    saveGame.reagents[REAG_GINSENG] = 3;
-    saveGame.reagents[REAG_GARLIC] = 4;
+    saveGame.reagents[REAGENT_GINSENG] = 3;
+    saveGame.reagents[REAGENT_GARLIC] = 4;
     saveGame.torches = 2;
     saveGame.write(saveGameFile);
     std::fflush(saveGameFile);
@@ -1361,10 +1361,10 @@ void IntroController::showStory(const SexType sex)
         if (storyInd == 0 || storyInd == 12) {
             backgroundArea.draw(BKGD_TREE);
         } else if (storyInd == 3) {
-            soundPlay(SOUND_INTROGATE_OPEN);
+            soundPlay(SOUND_INTRO_GATE_OPEN);
             animateTree("moongate");
         } else if (storyInd == 5) {
-            soundPlay(SOUND_INTROGATE_CLOSE);
+            soundPlay(SOUND_INTRO_GATE_CLOSE);
             animateTree("items");
         } else if (storyInd == 6) {
             backgroundArea.draw(BKGD_PORTAL);
@@ -1985,63 +1985,63 @@ void IntroController::initPlayers(SaveGame *saveGame) const
         int level, xp, x, y;
     } initValuesForClass[] = {
         {
-            .weapon = WEAP_STAFF,
-            .armor = ARMR_CLOTH,
+            .weapon = WEAPON_STAFF,
+            .armor = ARMOR_CLOTH,
             .level = 2,
             .xp = 125,
             .x = 231,
             .y = 136
         }, /* CLASS_MAGE */
         {
-            .weapon = WEAP_SLING,
-            .armor = ARMR_CLOTH,
+            .weapon = WEAPON_SLING,
+            .armor = ARMOR_CLOTH,
             .level = 3,
             .xp = 240,
             .x = 83,
             .y = 105 }, /* CLASS_BARD */
         {
-            .weapon = WEAP_AXE,
-            .armor = ARMR_LEATHER,
+            .weapon = WEAPON_AXE,
+            .armor = ARMOR_LEATHER,
             .level = 3,
             .xp = 205,
             .x = 35,
             .y = 221
         }, /* CLASS_FIGHTER */
         {
-            .weapon = WEAP_DAGGER,
-            .armor = ARMR_CLOTH,
+            .weapon = WEAPON_DAGGER,
+            .armor = ARMOR_CLOTH,
             .level = 2,
             .xp = 175,
             .x = 59,
             .y = 44
         }, /* CLASS_DRUID */
         {
-            .weapon = WEAP_MACE,
-            .armor = ARMR_LEATHER,
+            .weapon = WEAPON_MACE,
+            .armor = ARMOR_LEATHER,
             .level = 2,
             .xp = 110,
             .x = 158,
             .y = 21
         }, /* CLASS_TINKER */
         {
-            .weapon = WEAP_SWORD,
-            .armor = ARMR_CHAIN,
+            .weapon = WEAPON_SWORD,
+            .armor = ARMOR_CHAIN,
             .level = 3,
             .xp = 325,
             .x = 105,
             .y = 183
         }, /* CLASS_PALADIN */
         {
-            .weapon = WEAP_SWORD,
-            .armor = ARMR_LEATHER,
+            .weapon = WEAPON_SWORD,
+            .armor = ARMOR_LEATHER,
             .level = 2,
             .xp = 150,
             .x = 23,
             .y = 129
         }, /* CLASS_RANGER */
         {
-            .weapon = WEAP_STAFF,
-            .armor = ARMR_CLOTH,
+            .weapon = WEAPON_STAFF,
+            .armor = ARMOR_CLOTH,
             .level = 1,
             .xp = 5,
             .x = 186,
@@ -2133,33 +2133,33 @@ void IntroController::initPlayers(SaveGame *saveGame) const
     for (int i = 8; i < 15; i++) {
         saveGame->karma[questionTree[i]] += 5;
         switch (questionTree[i]) {
-        case VIRT_HONESTY:
+        case VIRTUE_HONESTY:
             saveGame->players[0].intel += 3;
             break;
-        case VIRT_COMPASSION:
+        case VIRTUE_COMPASSION:
             saveGame->players[0].dex += 3;
             break;
-        case VIRT_VALOR:
+        case VIRTUE_VALOR:
             saveGame->players[0].str += 3;
             break;
-        case VIRT_JUSTICE:
+        case VIRTUE_JUSTICE:
             saveGame->players[0].intel++;
             saveGame->players[0].dex++;
             break;
-        case VIRT_SACRIFICE:
+        case VIRTUE_SACRIFICE:
             saveGame->players[0].dex++;
             saveGame->players[0].str++;
             break;
-        case VIRT_HONOR:
+        case VIRTUE_HONOR:
             saveGame->players[0].intel++;
             saveGame->players[0].str++;
             break;
-        case VIRT_SPIRITUALITY:
+        case VIRTUE_SPIRITUALITY:
             saveGame->players[0].intel++;
             saveGame->players[0].dex++;
             saveGame->players[0].str++;
             break;
-        case VIRT_HUMILITY:
+        case VIRTUE_HUMILITY:
             /* no stats for you! */
             break;
         default:
@@ -2167,11 +2167,11 @@ void IntroController::initPlayers(SaveGame *saveGame) const
         } // switch
     }
     PartyMember player(nullptr, &saveGame->players[0]);
-    saveGame->players[0].hp = saveGame->players[0].hpMax =
+    saveGame->players[0].hp = saveGame->players[0].hp_max =
         player.getMaxLevel() * 100;
     saveGame->players[0].mp = player.getMaxMp();
     int p = 1;
-    for (int i = 0; i < VIRT_MAX; i++) {
+    for (int i = 0; i < VIRTUE_MAX; i++) {
         /* Initial setup for party members that aren't in your group yet... */
         if (i != saveGame->players[0].klass) {
             saveGame->players[p].klass = static_cast<ClassType>(i);
@@ -2188,7 +2188,7 @@ void IntroController::initPlayers(SaveGame *saveGame) const
                 initValuesForNpcClass[i].name
             );
             saveGame->players[p].sex = initValuesForNpcClass[i].sex;
-            saveGame->players[p].hp = saveGame->players[p].hpMax =
+            saveGame->players[p].hp = saveGame->players[p].hp_max =
                 initValuesForClass[i].level * 100;
             player = PartyMember(nullptr, &saveGame->players[p]);
             saveGame->players[p].mp = player.getMaxMp();

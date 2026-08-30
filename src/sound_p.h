@@ -74,7 +74,7 @@ private:
         bool onlyOnce,
         int specificDurationInTicks,
         bool wait = false
-    );
+    ) const;
     bool load_sys(Sound sound, const std::string &pathname);
     static void stop_sys(int channel);
     std::vector<std::string> soundFilenames;

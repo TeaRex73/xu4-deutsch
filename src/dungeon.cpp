@@ -220,7 +220,7 @@ void dungeonDrinkFountain()
         screenMessage("\nHmm... Keine Wirkung!\n");
         break;
     case FOUNTAIN_HEALING:
-        if (c->party->member(player)->heal(HT_FULLHEAL)) {
+        if (c->party->member(player)->heal(HT_FULL_HEAL)) {
             screenMessage("\nAhh... Erfrischend!\n");
         } else {
             screenMessage("\nHmm... Keine Wirkung!\n");

@@ -196,7 +196,7 @@ void CombatController::init(Creature *m)
     placePartyOnMap = true;
     winOrLose = true;
     map->setDungeonRoom(false);
-    map->setAltarRoom(VIRT_NONE);
+    map->setAltarRoom(VIRTUE_NONE);
     showMessage = true;
     camping = false;
     /* initialize creature info */
@@ -236,11 +236,11 @@ void CombatController::initDungeonRoom(const int room, const Direction from)
     if (c->location->prev->map->id != MAP_ABYSS && room == 0xF) {
         /* figure out which dungeon room they're entering */
         if (c->location->prev->coords.x < 3) {
-            map->setAltarRoom(VIRT_TRUTH);
+            map->setAltarRoom(VIRTUE_TRUTH);
         } else if (c->location->prev->coords.x == 3) {
-            map->setAltarRoom(VIRT_LOVE);
+            map->setAltarRoom(VIRTUE_LOVE);
         } else { // i.e. if (c->location->prev->coords.x > 3)
-            map->setAltarRoom(VIRT_COURAGE);
+            map->setAltarRoom(VIRTUE_COURAGE);
         }
     }
     /* load in creatures and creature start coordinates */
@@ -1345,7 +1345,7 @@ void CombatController::update(Party *, PartyEvent &event)
  * CombatMap class implementation
  */
 CombatMap::CombatMap()
-    :dungeonRoom(false), altarRoom(VIRT_NONE), contextual(false)
+    :dungeonRoom(false), altarRoom(VIRTUE_NONE), contextual(false)
 {
 }
 

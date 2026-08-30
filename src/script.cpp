@@ -1539,7 +1539,7 @@ Script::ReturnCode Script::heal(xmlNodePtr, xmlNodePtr current)
     } else if (type == "heal") {
         p->heal(HT_HEAL);
     } else if (type == "fullheal") {
-        p->heal(HT_FULLHEAL);
+        p->heal(HT_FULL_HEAL);
     } else if (type == "resurrect") {
         p->heal(HT_RESURRECT);
     }

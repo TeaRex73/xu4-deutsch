@@ -4,13 +4,16 @@
 
 #include "vc6.h" // Fixes things if you're using VC6, does nothing otherwise
 
+#include <atomic>
 #include <cfloat>
 #include <cstdarg>
 #include <cstdio>
 #include <cstring>
 #include <list>
 #include <map>
+#include <string>
 #include <utility>
+#include <vector>
 
 #include "screen.h"
 
@@ -44,47 +47,49 @@
 #include "view.h"
 
 
-enum LayoutType {
-    LAYOUT_STANDARD,
-    LAYOUT_GEM,
-    LAYOUT_DUNGEONGEM
-};
+namespace {
+    enum LayoutType {
+        LAYOUT_STANDARD,
+        LAYOUT_GEM,
+        LAYOUT_DUNGEON_GEM
+    };
 
-class Layout {
-public:
-    Layout()
-        :name(),
-         type(LAYOUT_STANDARD),
-         tileshape({0, 0}),
-         viewport({0, 0, 0, 0})
-    {
-    }
 
-    std::string name;
-    LayoutType type;
-    struct {
-        int width, height;
-    } tileshape;
-    struct {
-        int x, y;
-        int width, height;
-    } viewport;
-};
+    class Layout {
+    public:
+        Layout()
+            : type(LAYOUT_STANDARD),
+              tile_shape({.width = 0, .height = 0}),
+              viewport({.x = 0, .y = 0, .width = 0, .height = 0})
+        {
+        }
 
-static void screenLoadGraphicsFromConf(void);
+        std::string name;
+        LayoutType type;
+        struct {
+            int width, height;
+        } tile_shape;
+        struct {
+            int x, y;
+            int width, height;
+        } viewport;
+    };
+}
+
+static void screenLoadGraphicsFromConf();
 static Layout *screenLoadLayoutFromConf(const ConfigElement &conf);
 static void screenShowGemTile(
-    const Layout *layout, Map *map, MapTile t, bool focus, int x, int y
+    const Layout *layout, const Map *map, MapTile t, bool focus, int x, int y
 );
 static Layout *screenGetGemLayout(const Map *map);
 static std::vector<Layout *> layouts;
-static std::vector<TileAnimSet *> tileanimSets;
+static std::vector<TileAnimSet *> tileAnimSets;
 static std::vector<std::string> gemLayoutNames;
 static std::vector<std::string> filterNames;
 static std::vector<std::string> lineOfSightStyles;
-static Layout *gemlayout = nullptr;
+static Layout *gem_layout = nullptr;
 static std::map<std::string, int> dungeonTileChars;
-TileAnimSet *tileanims = nullptr;
+TileAnimSet *tileAnimations = nullptr;
 static ImageInfo *charsetInfo = nullptr;
 static ImageInfo *gemTilesInfo = nullptr;
 static void screenFindLineOfSight(
@@ -103,8 +108,7 @@ static int screenCursorY = 0;
 static int screenCursorStatus = 0;
 static int screenCursorEnabled = 1;
 static int screenLos[VIEWPORT_WIDTH][VIEWPORT_HEIGHT];
-static const int BufferSize = 1024;
-extern bool verbose;
+static constexpr int BufferSize = 1024;
 std::atomic_bool screenMoving;
 // Just extern the system functions here. That way people aren't
 // tempted to call them as part of the public API.
@@ -115,13 +119,13 @@ void screenInit()
 {
     screenMoving = true;
     filterNames.clear();
-    filterNames.push_back("Point");
-    filterNames.push_back("2xBi");
-    filterNames.push_back("2xSaI");
-    filterNames.push_back("Scale2x");
+    filterNames.emplace_back("Point");
+    filterNames.emplace_back("2xBi");
+    filterNames.emplace_back("2xSaI");
+    filterNames.emplace_back("Scale2x");
     lineOfSightStyles.clear();
-    lineOfSightStyles.push_back("DOS");
-    lineOfSightStyles.push_back("Enhanced");
+    lineOfSightStyles.emplace_back("DOS");
+    lineOfSightStyles.emplace_back("Enhanced");
     charsetInfo = nullptr;
     gemTilesInfo = nullptr;
     screenLoadGraphicsFromConf();
@@ -130,21 +134,18 @@ void screenInit()
     }
     screenInit_sys();
     /* if we can't use vga, reset to default:ega */
-    if (!u4isUpgradeAvailable() && (settings.videoType == "VGA")) {
+    if (!u4isUpgradeAvailable() && settings.videoType == "VGA") {
         settings.videoType = "EGA";
     }
     KeyHandler::setKeyRepeat(settings.keydelay, settings.keyinterval);
     /* find the tile animations for our tileset */
-    tileanims = nullptr;
-    for (std::vector<TileAnimSet *>::const_iterator i = tileanimSets.cbegin();
-         i != tileanimSets.cend();
-         ++i) {
-        TileAnimSet *set = *i;
-        if (set->name == settings.videoType) {
-            tileanims = set;
+    tileAnimations = nullptr;
+    for (auto *tileAnimSet: tileAnimSets) {
+        if (tileAnimSet->name == settings.videoType) {
+            tileAnimations = tileAnimSet;
         }
     }
-    if (!tileanims) {
+    if (!tileAnimations) {
         errorFatal(
             "unable to find tile animations for \"%s\" video "
             "mode in graphics.xml",
@@ -196,14 +197,12 @@ void screenInit()
 
 void screenDelete()
 {
-    std::vector<Layout *>::const_iterator i;
-    for (i = layouts.cbegin(); i != layouts.cend(); ++i) {
-        delete (*i);
+    for (const auto *layout: layouts) {
+        delete layout;
     }
     layouts.clear();
-    std::vector<TileAnimSet *>::const_iterator j;
-    for (j = tileanimSets.cbegin(); j != tileanimSets.cend(); ++j) {
-        delete (*j);
+    for (const auto *tileAnimSet: tileAnimSets) {
+        delete tileAnimSet;
     }
     screenDelete_sys();
     ImageMgr::destroy();
@@ -220,7 +219,7 @@ void screenReInit()
     /* unload tilesets, which will be reloaded lazily as needed */
     Tileset::unloadAllImages();
     ImageMgr::destroy();
-    tileanims = nullptr;
+    tileAnimations = nullptr;
     /* delete screen stuff */
     screenDelete();
     /* re-init screen stuff (loading new backgrounds, etc.) */
@@ -229,22 +228,21 @@ void screenReInit()
     intro->init();
 }
 
-void screenTextAt(int x, int y, const char *fmt, ...)
+void screenTextAt(const int x, const int y, const char *fmt, ...)
 {
     char buffer[BufferSize];
-    unsigned int i;
     std::va_list args;
     va_start(args, fmt);
     std::vsnprintf(buffer, BufferSize, fmt, args);
     va_end(args);
-    for (i = 0; i < std::strlen(buffer); i++) {
+    for (int i = 0; i < static_cast<int>(std::strlen(buffer)); i++) {
         screenShowChar(buffer[i], x + i, y);
     }
 }
 
 void screenPrompt()
 {
-    if (screenNeedPrompt && screenCursorEnabled && (c->col == 0)) {
+    if (screenNeedPrompt && screenCursorEnabled && c->col == 0) {
         screenMessage("\n%c", CHARSET_PROMPT);
         screenNeedPrompt = 0;
     }
@@ -270,8 +268,9 @@ void screenMessage(const char *fmt, ...)
     }
     for (unsigned int i = 0; i < std::strlen(buffer); i++) {
         // include whitespace and color-change codes
-        int wordlen =
-            std::strcspn(buffer + i, " \b\t\n\024\025\026\027\030\031");
+        const int word_len = static_cast<int>(
+            std::strcspn(buffer + i, " \b\t\n\024\025\026\027\030\031")
+        );
         /* backspace */
         if (buffer[i] == '\b') {
             c->col--;
@@ -296,8 +295,8 @@ void screenMessage(const char *fmt, ...)
             ;
         }
         /* check for word wrap */
-        if ((c->col + wordlen > 16) || (buffer[i] == '\n') || (c->col == 16)) {
-            if ((buffer[i] == '\n') || (buffer[i] == ' ')) {
+        if (c->col + word_len > 16 || buffer[i] == '\n' || c->col == 16) {
+            if (buffer[i] == '\n' || buffer[i] == ' ') {
                 i++;
             }
             c->line++;
@@ -342,26 +341,22 @@ const std::vector<std::string> &screenGetLineOfSightStyles()
 static void screenLoadGraphicsFromConf()
 {
     const Config *config = Config::getInstance();
-    std::vector<ConfigElement> graphicsConf =
+    const std::vector<ConfigElement> graphicsConf =
 #ifdef RASB_PI
         config->getElement("graphicsPi").getChildren();
 #else
         config->getElement("graphics").getChildren();
 #endif
-    for (std::vector<ConfigElement>::const_iterator conf =
-             graphicsConf.cbegin();
-         conf != graphicsConf.cend();
-         ++conf) {
-        if (conf->getName() == "layout") {
-            layouts.push_back(screenLoadLayoutFromConf(*conf));
-        } else if (conf->getName() == "tileanimset") {
-            tileanimSets.push_back(new TileAnimSet(*conf));
+    for (const auto &conf: graphicsConf) {
+        if (conf.getName() == "layout") {
+            layouts.push_back(screenLoadLayoutFromConf(conf));
+        } else if (conf.getName() == "tileanimset") {
+            tileAnimSets.push_back(new TileAnimSet(conf));
         }
     }
     gemLayoutNames.clear();
-    std::vector<Layout *>::const_iterator i;
-    for (i = layouts.cbegin(); i != layouts.cend(); ++i) {
-        Layout *layout = *i;
+
+    for (const auto *layout: layouts) {
         if (layout->type == LAYOUT_GEM) {
             gemLayoutNames.push_back(layout->name);
         }
@@ -369,15 +364,14 @@ static void screenLoadGraphicsFromConf()
     /*
      * Find gem layout to use.
      */
-    for (i = layouts.cbegin(); i != layouts.cend(); ++i) {
-        Layout *layout = *i;
-        if ((layout->type == LAYOUT_GEM)
-            && (layout->name == settings.gemLayout)) {
-            gemlayout = layout;
+    for (auto *layout: layouts) {
+        if (layout->type == LAYOUT_GEM
+            && layout->name == settings.gemLayout) {
+            gem_layout = layout;
             break;
         }
     }
-    if (!gemlayout) {
+    if (!gem_layout) {
         errorFatal(
             "no gem layout named %s found!\n", settings.gemLayout.c_str()
         );
@@ -386,51 +380,48 @@ static void screenLoadGraphicsFromConf()
 
 static Layout *screenLoadLayoutFromConf(const ConfigElement &conf)
 {
-    Layout *layout;
     static const char *typeEnumStrings[] = {
         "standard",
         "gem",
         "dungeon_gem",
         nullptr
     };
-    layout = new Layout;
+    auto *layout = new Layout;
     layout->name = conf.getString("name");
     layout->type = static_cast<LayoutType>(
         conf.getEnum("type", typeEnumStrings)
     );
-    std::vector<ConfigElement> children = conf.getChildren();
-    for (std::vector<ConfigElement>::const_iterator i = children.cbegin();
-         i != children.cend();
-         ++i) {
-        if (i->getName() == "tileshape") {
-            layout->tileshape.width = i->getInt("width");
-            layout->tileshape.height = i->getInt("height");
-        } else if (i->getName() == "viewport") {
-            layout->viewport.x = i->getInt("x");
-            layout->viewport.y = i->getInt("y");
-            layout->viewport.width = i->getInt("width");
-            layout->viewport.height = i->getInt("height");
+    const std::vector<ConfigElement> children = conf.getChildren();
+    for (const auto &child: children) {
+        if (child.getName() == "tileshape") {
+            layout->tile_shape.width = child.getInt("width");
+            layout->tile_shape.height = child.getInt("height");
+        } else if (child.getName() == "viewport") {
+            layout->viewport.x = child.getInt("x");
+            layout->viewport.y = child.getInt("y");
+            layout->viewport.width = child.getInt("width");
+            layout->viewport.height = child.getInt("height");
         }
     }
     return layout;
 } // screenLoadLayoutFromConf
 
 static std::vector<MapTile> screenViewportTile(
-    int width, int height, int x, int y, bool &focus
+    const int width, const int height, const int x, const int y, bool &focus
 )
 {
     MapCoords center = c->location->coords;
     static MapTile grass =
         c->location->map->tileset->getByName("grass")->getId();
 
-    if ((c->location->map->width <= width)
-        && (c->location->map->height <= height)) {
+    if (c->location->map->width <= width
+        && c->location->map->height <= height) {
         center.x = c->location->map->width / 2;
         center.y = c->location->map->height / 2;
     }
     MapCoords tc = center;
-    tc.x += x - (width / 2);
-    tc.y += y - (height / 2);
+    tc.x += x - width / 2;
+    tc.y += y - height / 2;
     /* Wrap the location if we can */
     tc.wrap(c->location->map);
     /* off the edge of the map: pad with grass tiles */
@@ -443,25 +434,25 @@ static std::vector<MapTile> screenViewportTile(
 } // screenViewportTile
 
 static MapTile screenViewportTileGem(
-    int width, int height, int x, int y, bool &focus
+    const int width, const int height, const int x, const int y, bool &focus
 )
 {
     MapCoords center(
-        ((c->location->coords.active_x + 1) << 4u) & 0xFF,
-        ((c->location->coords.active_y + 1) << 4u) & 0xFF,
+        static_cast<int>(((c->location->coords.active_x + 1) << 4u) & 0xFF),
+        static_cast<int>(((c->location->coords.active_y + 1) << 4u) & 0xFF),
         c->location->coords.z
     );
     static MapTile grass =
         c->location->map->tileset->getByName("grass")->getId();
 
-    if ((c->location->map->width <= width)
-        && (c->location->map->height <= height)) {
+    if (c->location->map->width <= width
+        && c->location->map->height <= height) {
         center.x = c->location->map->width / 2;
         center.y = c->location->map->height / 2;
     }
     MapCoords tc = center;
-    tc.x += x - (width / 2);
-    tc.y += y - (height / 2);
+    tc.x += x - width / 2;
+    tc.y += y - height / 2;
     /* Wrap the location if we can */
     tc.wrap(c->location->map);
     /* off the edge of the map: pad with grass tiles */
@@ -472,7 +463,7 @@ static MapTile screenViewportTileGem(
     return c->location->tilesAt(tc, focus).front();
 } // screenViewportTileGem
 
-bool screenTileUpdate(TileView *view, const Coords &coords, bool redraw)
+bool screenTileUpdate(TileView *view, const Coords &coords, const bool redraw)
 {
     if (c->location->map->flags & FIRST_PERSON) {
         return false;
@@ -481,14 +472,13 @@ bool screenTileUpdate(TileView *view, const Coords &coords, bool redraw)
     bool focus;
     MapCoords mc(coords);
     mc.wrap(c->location->map);
-    std::vector<MapTile> tiles = c->location->tilesAt(mc, focus);
+    const std::vector<MapTile> tiles = c->location->tilesAt(mc, focus);
     // Get the screen coordinates
     int x = coords.x;
     int y = coords.y;
-    int width = c->location->map->width;
-    int height = c->location->map->height;
-    if ((width > VIEWPORT_WIDTH)
-        || (height > VIEWPORT_HEIGHT)) {
+    const int width = c->location->map->width;
+    const int height = c->location->map->height;
+    if (width > VIEWPORT_WIDTH || height > VIEWPORT_HEIGHT) {
         // Center the coordinates to the viewport if you're on centered-view
         // map.
         // Then wrap so that cannon fire works across edge of main map.
@@ -497,7 +487,7 @@ bool screenTileUpdate(TileView *view, const Coords &coords, bool redraw)
             while (x < -(width / 2)) {
                 x += width;
             }
-            while (x > (width / 2)) {
+            while (x > width / 2) {
                 x -= width;
             }
         }
@@ -508,17 +498,17 @@ bool screenTileUpdate(TileView *view, const Coords &coords, bool redraw)
             while (y < -(height / 2)) {
                 y += height;
             }
-            while (y > (height / 2)) {
+            while (y > height / 2) {
                 y -= height;
             }
         }
         y += VIEWPORT_HEIGHT / 2;
     }
     // Draw if it is on screen
-    if ((x >= 0)
-        && (y >= 0)
-        && (x < VIEWPORT_WIDTH)
-        && (y < VIEWPORT_HEIGHT)
+    if (x >= 0
+        && y >= 0
+        && x < VIEWPORT_WIDTH
+        && y < VIEWPORT_HEIGHT
         && screenLos[x][y]) {
         view->drawTile(tiles, focus, x, y);
         if (redraw) {
@@ -531,20 +521,20 @@ bool screenTileUpdate(TileView *view, const Coords &coords, bool redraw)
 
 
 /**
- * Redraw the screen.  If showmap is set, the normal map is drawn in
+ * Redraw the screen.  If show_map is set, the normal map is drawn in
  * the map area.  If blackout is set, the map area is blacked out. If
  * neither is set, the map area is left untouched.
  */
-void screenUpdate(TileView *view, bool showmap, bool blackout)
+void screenUpdate(TileView *view, const bool show_map, const bool blackout)
 {
     U4ASSERT(c != nullptr, "context has not yet been initialized");
     screenLock();
     if (blackout) {
         screenEraseMapArea();
-    } else if (showmap && c->location->map->flags & FIRST_PERSON) {
+    } else if (show_map && c->location->map->flags & FIRST_PERSON) {
         DungeonViewer.display(c, view);
         screenRedrawMapArea();
-    } else if (showmap) {
+    } else if (show_map) {
         static MapTile black =
             c->location->map->tileset->getByName("black")->getId();
 #if 0
@@ -585,9 +575,9 @@ void screenUpdate(TileView *view, bool showmap, bool blackout)
 /**
  * Draw an image or subimage on the screen.
  */
-void screenDrawImage(const std::string &name, int x, int y)
+void screenDrawImage(const std::string &name, const int x, const int y)
 {
-    ImageInfo *info = imageMgr->get(name);
+    const ImageInfo *info = imageMgr->get(name);
     if (info) {
         info->image->alphaOn();
         info->image->draw(x, y);
@@ -620,8 +610,7 @@ void screenDrawImage(const std::string &name, int x, int y)
 
 void screenDrawImageInMapArea(const std::string &name)
 {
-    ImageInfo *info;
-    info = imageMgr->get(name);
+    const ImageInfo *info = imageMgr->get(name);
     if (!info) {
         errorFatal(
             "ERROR 1004: Unable to load data files.\t\n\nIs %s installed?\n\n"
@@ -629,16 +618,15 @@ void screenDrawImageInMapArea(const std::string &name)
             "\thttp://xu4.sourceforge.net/",
             settings.game.c_str()
         );
-    } else {
-        info->image->drawSubRect(
-            BORDER_WIDTH * settings.scale,
-            (BORDER_HEIGHT + 4) * settings.scale,
-            BORDER_WIDTH * settings.scale,
-            BORDER_HEIGHT * settings.scale,
-            VIEWPORT_WIDTH * TILE_WIDTH * settings.scale,
-            VIEWPORT_HEIGHT * TILE_HEIGHT * settings.scale
-        );
     }
+    info->image->drawSubRect(
+        BORDER_WIDTH * settings.scale,
+        (BORDER_HEIGHT + 4) * settings.scale,
+        BORDER_WIDTH * settings.scale,
+        BORDER_HEIGHT * settings.scale,
+        VIEWPORT_WIDTH * TILE_WIDTH * settings.scale,
+        VIEWPORT_HEIGHT * TILE_HEIGHT * settings.scale
+    );
 }
 
 
@@ -681,7 +669,7 @@ void screenTextColor(int color)
 /**
  * Draw a character from the charset onto the screen.
  */
-void screenShowChar(int chr, int x, int y)
+void screenShowChar(const int chr, const int x, const int y)
 {
     if (charsetInfo == nullptr) {
         charsetInfo = imageMgr->get(BKGD_CHARSET);
@@ -714,7 +702,7 @@ void screenScrollMessageArea()
         charsetInfo != nullptr && charsetInfo->image != nullptr,
         "charset not initialized!"
     );
-    Image *screen = imageMgr->get("screen")->image;
+    const Image *screen = imageMgr->get("screen")->image;
     screenLock();
     screen->drawSubRectOn(
         screen,
@@ -750,7 +738,8 @@ void screenCycle()
 
 void screenUpdateCursor()
 {
-    int phase = screenCurrentCycle * SCR_CYCLE_PER_SECOND / SCR_CYCLE_MAX;
+    const int phase =
+        screenCurrentCycle * SCR_CYCLE_PER_SECOND / SCR_CYCLE_MAX;
     U4ASSERT(
         phase >= 0 && phase < 4,
         "derived an invalid cursor phase: %d",
@@ -764,7 +753,6 @@ void screenUpdateCursor()
 
 void screenUpdateMoons()
 {
-    int trammelChar, feluccaChar;
     /* show "L?" for the dungeon level */
     if (c->location->context == CTX_DUNGEON) {
         screenShowChar('E', 11, 0);
@@ -773,12 +761,12 @@ void screenUpdateMoons()
     /* show the current moons (non-combat) */
     else if ((c->location->context & CTX_NON_COMBAT)
              == c->location->context) {
-        trammelChar = (c->saveGame->trammelphase == 0) ?
-            ' ' :
-            MOON_CHAR + c->saveGame->trammelphase - 1;
-        feluccaChar = (c->saveGame->feluccaphase == 0) ?
-            ' ' :
-            MOON_CHAR + c->saveGame->feluccaphase - 1;
+        const int trammelChar = c->saveGame->trammel_phase == 0
+                              ? ' '
+                              : MOON_CHAR + c->saveGame->trammel_phase - 1;
+        const int feluccaChar = c->saveGame->felucca_phase == 0
+                              ? ' '
+                              : MOON_CHAR + c->saveGame->felucca_phase - 1;
         screenShowChar(trammelChar, 11, 0);
         screenShowChar(feluccaChar, 12, 0);
     }
@@ -840,18 +828,18 @@ void screenHideCursor()
     screenCursorStatus = 0;
 }
 
-void screenEnableCursor(void)
+void screenEnableCursor()
 {
     screenCursorEnabled = 1;
 }
 
-void screenDisableCursor(void)
+void screenDisableCursor()
 {
     screenHideCursor();
     screenCursorEnabled = 0;
 }
 
-void screenSetCursorPos(int x, int y)
+void screenSetCursorPos(const int x, const int y)
 {
     screenCursorX = x;
     screenCursorY = y;
@@ -909,97 +897,96 @@ static void screenFindLineOfSightDOS(
     std::vector<MapTile> viewportTiles[VIEWPORT_WIDTH][VIEWPORT_HEIGHT]
 )
 {
-    int x, y;
     screenLos[VIEWPORT_WIDTH / 2][VIEWPORT_HEIGHT / 2] = 1;
-    for (x = VIEWPORT_WIDTH / 2 - 1; x >= 0; x--) {
+    for (int x = VIEWPORT_WIDTH / 2 - 1; x >= 0; x--) {
         if (screenLos[x + 1][VIEWPORT_HEIGHT / 2]
             && !viewportTiles[x + 1][VIEWPORT_HEIGHT / 2].front().getTileType()
             ->isOpaque()) {
             screenLos[x][VIEWPORT_HEIGHT / 2] = 1;
         }
     }
-    for (x = VIEWPORT_WIDTH / 2 + 1; x < VIEWPORT_WIDTH; x++) {
+    for (int x = VIEWPORT_WIDTH / 2 + 1; x < VIEWPORT_WIDTH; x++) {
         if (screenLos[x - 1][VIEWPORT_HEIGHT / 2]
             && !viewportTiles[x - 1][VIEWPORT_HEIGHT / 2].front().getTileType()
             ->isOpaque()) {
             screenLos[x][VIEWPORT_HEIGHT / 2] = 1;
         }
     }
-    for (y = VIEWPORT_HEIGHT / 2 - 1; y >= 0; y--) {
+    for (int y = VIEWPORT_HEIGHT / 2 - 1; y >= 0; y--) {
         if (screenLos[VIEWPORT_WIDTH / 2][y + 1]
             && !viewportTiles[VIEWPORT_WIDTH / 2][y + 1].front().getTileType()
             ->isOpaque()) {
             screenLos[VIEWPORT_WIDTH / 2][y] = 1;
         }
     }
-    for (y = VIEWPORT_HEIGHT / 2 + 1; y < VIEWPORT_HEIGHT; y++) {
+    for (int y = VIEWPORT_HEIGHT / 2 + 1; y < VIEWPORT_HEIGHT; y++) {
         if (screenLos[VIEWPORT_WIDTH / 2][y - 1]
             && !viewportTiles[VIEWPORT_WIDTH / 2][y - 1].front().getTileType()
             ->isOpaque()) {
             screenLos[VIEWPORT_WIDTH / 2][y] = 1;
         }
     }
-    for (y = VIEWPORT_HEIGHT / 2 - 1; y >= 0; y--) {
-        for (x = VIEWPORT_WIDTH / 2 - 1; x >= 0; x--) {
-            if (screenLos[x][y + 1]
+    for (int y = VIEWPORT_HEIGHT / 2 - 1; y >= 0; y--) {
+        for (int x = VIEWPORT_WIDTH / 2 - 1; x >= 0; x--) {
+            if (
+                (screenLos[x][y + 1]
                 && !viewportTiles[x][y + 1].front().getTileType()
-                ->isOpaque()) {
-                screenLos[x][y] = 1;
-            } else if (screenLos[x + 1][y]
+                ->isOpaque())
+                || (screenLos[x + 1][y]
                        && !viewportTiles[x + 1][y].front().getTileType()
-                       ->isOpaque()) {
-                screenLos[x][y] = 1;
-            } else if (screenLos[x + 1][y + 1]
+                       ->isOpaque())
+                || (screenLos[x + 1][y + 1]
                        && !viewportTiles[x + 1][y + 1].front().getTileType()
-                       ->isOpaque()) {
-                screenLos[x][y] = 1;
+                       ->isOpaque())
+                ) {
+                    screenLos[x][y] = 1;
             }
         }
-        for (x = VIEWPORT_WIDTH / 2 + 1; x < VIEWPORT_WIDTH; x++) {
-            if (screenLos[x][y + 1]
+        for (int x = VIEWPORT_WIDTH / 2 + 1; x < VIEWPORT_WIDTH; x++) {
+            if (
+                (screenLos[x][y + 1]
                 && !viewportTiles[x][y + 1].front().getTileType()
-                ->isOpaque()) {
-                screenLos[x][y] = 1;
-            } else if (screenLos[x - 1][y]
+                ->isOpaque())
+                || (screenLos[x - 1][y]
                        && !viewportTiles[x - 1][y].front().getTileType()
-                       ->isOpaque()) {
-                screenLos[x][y] = 1;
-            } else if (screenLos[x - 1][y + 1]
+                       ->isOpaque())
+                || (screenLos[x - 1][y + 1]
                        && !viewportTiles[x - 1][y + 1].front().getTileType()
-                       ->isOpaque()) {
-                screenLos[x][y] = 1;
+                       ->isOpaque())
+                ) {
+                    screenLos[x][y] = 1;
             }
         }
     }
-    for (y = VIEWPORT_HEIGHT / 2 + 1; y < VIEWPORT_HEIGHT; y++) {
-        for (x = VIEWPORT_WIDTH / 2 - 1; x >= 0; x--) {
-            if (screenLos[x][y - 1]
+    for (int y = VIEWPORT_HEIGHT / 2 + 1; y < VIEWPORT_HEIGHT; y++) {
+        for (int x = VIEWPORT_WIDTH / 2 - 1; x >= 0; x--) {
+            if (
+                (screenLos[x][y - 1]
                 && !viewportTiles[x][y - 1].front().getTileType()
-                ->isOpaque()) {
-                screenLos[x][y] = 1;
-            } else if (screenLos[x + 1][y]
+                ->isOpaque())
+                 || (screenLos[x + 1][y]
                        && !viewportTiles[x + 1][y].front().getTileType()
-                       ->isOpaque()) {
-                screenLos[x][y] = 1;
-            } else if (screenLos[x + 1][y - 1]
+                       ->isOpaque())
+                 || (screenLos[x + 1][y - 1]
                        && !viewportTiles[x + 1][y - 1].front().getTileType()
-                       ->isOpaque()) {
+                       ->isOpaque())
+            ) {
                 screenLos[x][y] = 1;
             }
         }
-        for (x = VIEWPORT_WIDTH / 2 + 1; x < VIEWPORT_WIDTH; x++) {
-            if (screenLos[x][y - 1]
-                && !viewportTiles[x][y - 1].front().getTileType()
-                ->isOpaque()) {
-                screenLos[x][y] = 1;
-            } else if (screenLos[x - 1][y]
+        for (int x = VIEWPORT_WIDTH / 2 + 1; x < VIEWPORT_WIDTH; x++) {
+            if (
+                (screenLos[x][y - 1]
+                    && !viewportTiles[x][y - 1].front().getTileType()
+                    ->isOpaque())
+                || (screenLos[x - 1][y]
                        && !viewportTiles[x - 1][y].front().getTileType()
-                       ->isOpaque()) {
-                screenLos[x][y] = 1;
-            } else if (screenLos[x - 1][y - 1]
+                       ->isOpaque())
+                || (screenLos[x - 1][y - 1]
                        && !viewportTiles[x - 1][y - 1].front().getTileType()
-                       ->isOpaque()) {
-                screenLos[x][y] = 1;
+                       ->isOpaque())
+                ) {
+                    screenLos[x][y] = 1;
             }
         }
     }
@@ -1018,7 +1005,7 @@ static void screenFindLineOfSightDOS(
  *   -----
  *   http://www.fadden.com/techmisc/fast-los.html
  *
- * This function uses a lookup table to get the correct shadowmap,
+ * This function uses a lookup table to get the correct shadow map,
  * therefore, the table will need to be updated if the viewport
  * dimensions increase. Also, the function assumes that the
  * viewport width and height are odd values and that the player
@@ -1028,7 +1015,6 @@ static void screenFindLineOfSightEnhanced(
     std::vector<MapTile> viewportTiles[VIEWPORT_WIDTH][VIEWPORT_HEIGHT]
 )
 {
-    int x, y;
     /*
      * the shadow rasters for each viewport octant
      *
@@ -1042,240 +1028,22 @@ static void screenFindLineOfSightEnhanced(
      * shadowRaster[0][6]    // #3 length
      * ...etc...
      */
-    const int shadowRaster[14][13] = {
-        {
-            6,
-            __VCH,
-            4,
-            _N_CH,
-            1,
-            __VCH,
-            3,
-            _N___,
-            1,
-            ___CH,
-            1,
-            __VCH,
-            1
-        }, // raster_1_0
-        {
-            6,
-            __VC_,
-            1,
-            _NVCH,
-            2,
-            __VC_,
-            1,
-            _NVCH,
-            3,
-            _NVCH,
-            2,
-            _NVCH,
-            1
-        }, // raster_1_1
-        //
-        {
-            4,
-            __VCH,
-            3,
-            _N__H,
-            1,
-            ___CH,
-            1,
-            __VCH,
-            1,
-            0,
-            0,
-            0,
-            0
-        }, // raster_2_0
-        {
-            6,
-            __VC_,
-            2,
-            _N_CH,
-            1,
-            __VCH,
-            2,
-            _N_CH,
-            1,
-            __VCH,
-            1,
-            _N__H,
-            1
-        }, // raster_2_1
-        {
-            6,
-            __V__,
-            1,
-            _NVCH,
-            1,
-            __VC_,
-            1,
-            _NVCH,
-            1,
-            __VC_,
-            1,
-            _NVCH,
-            1
-        }, // raster_2_2
-        //
-        {
-            2,
-            __VCH,
-            2,
-            _N__H,
-            2,
-            0,
-            0,
-            0,
-            0,
-            0,
-            0,
-            0,
-            0
-        }, // raster_3_0
-        {
-            3,
-            __VC_,
-            2,
-            _N_CH,
-            1,
-            __VCH,
-            1,
-            0,
-            0,
-            0,
-            0,
-            0,
-            0
-        }, // raster_3_1
-        {
-            3,
-            __VC_,
-            1,
-            _NVCH,
-            2,
-            _N_CH,
-            1,
-            0,
-            0,
-            0,
-            0,
-            0,
-            0
-        }, // raster_3_2
-        {
-            3,
-            _NVCH,
-            1,
-            __V__,
-            1,
-            _NVCH,
-            1,
-            0,
-            0,
-            0,
-            0,
-            0,
-            0
-        }, // raster_3_3
-        //
-        {
-            2,
-            __VCH,
-            1,
-            _N__H,
-            1,
-            0,
-            0,
-            0,
-            0,
-            0,
-            0,
-            0,
-            0
-        }, // raster_4_0
-        {
-            2,
-            __VC_,
-            1,
-            _N__H,
-            1,
-            0,
-            0,
-            0,
-            0,
-            0,
-            0,
-            0,
-            0
-        }, // raster_4_1
-        {
-            2,
-            __VC_,
-            1,
-            _N_CH,
-            1,
-            0,
-            0,
-            0,
-            0,
-            0,
-            0,
-            0,
-            0
-        }, // raster_4_2
-        {
-            2,
-            __V__,
-            1,
-            _NVCH,
-            1,
-            0,
-            0,
-            0,
-            0,
-            0,
-            0,
-            0,
-            0
-        }, // raster_4_3
-        {
-            2,
-            __V__,
-            1,
-            _NVCH,
-            1,
-            0,
-            0,
-            0,
-            0,
-            0,
-            0,
-            0,
-            0
-        } // raster_4_4
-    };
     /*
      * As each viewport tile is processed, it will store the bitmask for
      * the shadow it casts. Later, after processing all octants, the
      * entire viewport will be marked visible except for those tiles that
      * have the __VCH bitmask.
      */
-    const int _OCTANTS = 8;
-    const int _NUM_RASTERS_COLS = 4;
-    int octant;
+    constexpr int OCTANTS = 8;
     int
         xSign = 1,
         ySign = 1,
         reflect = false,
         xTile,
-        yTile,
-        xTileOffset,
-        yTileOffset;
+        yTile;
 
-    for (octant = 0; octant < _OCTANTS; octant++) {
+    for (int octant = 0; octant < OCTANTS; octant++) {
+        constexpr int NUM_RASTERS_COLS = 4;
         switch (octant) {
         case 0:
             xSign = 1;
@@ -1321,8 +1089,8 @@ static void screenFindLineOfSightEnhanced(
             errorFatal("BUG: wrong octant");
         } // switch
         // determine the origin point for the current LOS octant
-        const int xOrigin = VIEWPORT_WIDTH / 2;
-        const int yOrigin = VIEWPORT_HEIGHT / 2;
+        constexpr int xOrigin = VIEWPORT_WIDTH / 2;
+        constexpr int yOrigin = VIEWPORT_HEIGHT / 2;
         // make sure the segment doesn't reach out of bounds
         int maxWidth = xOrigin;
         int maxHeight = yOrigin;
@@ -1331,27 +1099,240 @@ static void screenFindLineOfSightEnhanced(
         // width and height
         if (reflect) {
             // swap height and width for later use
-            int tmp = maxWidth;
-            maxWidth = maxHeight;
-            maxHeight = tmp;
+            std::swap(maxWidth, maxHeight);
         }
         // check the visibility of each tile
         for (int currentCol = 1;
-             currentCol <= _NUM_RASTERS_COLS;
+             currentCol <= NUM_RASTERS_COLS;
              currentCol++) {
             for (int currentRow = 0;
                  currentRow <= currentCol;
                  currentRow++) {
                 // swap X and Y to reflect the octant rasters
                 if (reflect) {
-                    xTile = xOrigin + (currentRow * ySign);
-                    yTile = yOrigin + (currentCol * xSign);
+                    xTile = xOrigin + currentRow * ySign;
+                    yTile = yOrigin + currentCol * xSign;
                 } else {
-                    xTile = xOrigin + (currentCol * xSign);
-                    yTile = yOrigin + (currentRow * ySign);
+                    xTile = xOrigin + currentCol * xSign;
+                    yTile = yOrigin + currentRow * ySign;
                 }
                 if (viewportTiles[xTile][yTile].front().getTileType()
                     ->isOpaque()) {
+                    constexpr int shadowRaster[14][13] = {
+                        {
+                            6,
+                            xxVCH,
+                            4,
+                            xNxCH,
+                            1,
+                            xxVCH,
+                            3,
+                            xNxxx,
+                            1,
+                            xxxCH,
+                            1,
+                            xxVCH,
+                            1
+                        }, // raster_1_0
+                        {
+                            6,
+                            xxVCx,
+                            1,
+                            xNVCH,
+                            2,
+                            xxVCx,
+                            1,
+                            xNVCH,
+                            3,
+                            xNVCH,
+                            2,
+                            xNVCH,
+                            1
+                        }, // raster_1_1
+                        //
+                        {
+                            4,
+                            xxVCH,
+                            3,
+                            xNxxH,
+                            1,
+                            xxxCH,
+                            1,
+                            xxVCH,
+                            1,
+                            0,
+                            0,
+                            0,
+                            0
+                        }, // raster_2_0
+                        {
+                            6,
+                            xxVCx,
+                            2,
+                            xNxCH,
+                            1,
+                            xxVCH,
+                            2,
+                            xNxCH,
+                            1,
+                            xxVCH,
+                            1,
+                            xNxxH,
+                            1
+                        }, // raster_2_1
+                        {
+                            6,
+                            xxVxx,
+                            1,
+                            xNVCH,
+                            1,
+                            xxVCx,
+                            1,
+                            xNVCH,
+                            1,
+                            xxVCx,
+                            1,
+                            xNVCH,
+                            1
+                        }, // raster_2_2
+                        //
+                        {
+                            2,
+                            xxVCH,
+                            2,
+                            xNxxH,
+                            2,
+                            0,
+                            0,
+                            0,
+                            0,
+                            0,
+                            0,
+                            0,
+                            0
+                        }, // raster_3_0
+                        {
+                            3,
+                            xxVCx,
+                            2,
+                            xNxCH,
+                            1,
+                            xxVCH,
+                            1,
+                            0,
+                            0,
+                            0,
+                            0,
+                            0,
+                            0
+                        }, // raster_3_1
+                        {
+                            3,
+                            xxVCx,
+                            1,
+                            xNVCH,
+                            2,
+                            xNxCH,
+                            1,
+                            0,
+                            0,
+                            0,
+                            0,
+                            0,
+                            0
+                        }, // raster_3_2
+                        {
+                            3,
+                            xNVCH,
+                            1,
+                            xxVxx,
+                            1,
+                            xNVCH,
+                            1,
+                            0,
+                            0,
+                            0,
+                            0,
+                            0,
+                            0
+                        }, // raster_3_3
+                        //
+                        {
+                            2,
+                            xxVCH,
+                            1,
+                            xNxxH,
+                            1,
+                            0,
+                            0,
+                            0,
+                            0,
+                            0,
+                            0,
+                            0,
+                            0
+                        }, // raster_4_0
+                        {
+                            2,
+                            xxVCx,
+                            1,
+                            xNxxH,
+                            1,
+                            0,
+                            0,
+                            0,
+                            0,
+                            0,
+                            0,
+                            0,
+                            0
+                        }, // raster_4_1
+                        {
+                            2,
+                            xxVCx,
+                            1,
+                            xNxCH,
+                            1,
+                            0,
+                            0,
+                            0,
+                            0,
+                            0,
+                            0,
+                            0,
+                            0
+                        }, // raster_4_2
+                        {
+                            2,
+                            xxVxx,
+                            1,
+                            xNVCH,
+                            1,
+                            0,
+                            0,
+                            0,
+                            0,
+                            0,
+                            0,
+                            0,
+                            0
+                        }, // raster_4_3
+                        {
+                            2,
+                            xxVxx,
+                            1,
+                            xNVCH,
+                            1,
+                            0,
+                            0,
+                            0,
+                            0,
+                            0,
+                            0,
+                            0,
+                            0
+                        } // raster_4_4
+                    };
                     // a wall was detected, so go through
                     // the raster for this wall segment
                     // and mark everything behind it with
@@ -1359,38 +1340,38 @@ static void screenFindLineOfSightEnhanced(
                     //
                     // first, get the correct raster
                     //
-                    if ((currentCol == 1) && (currentRow == 0)) {
+                    if (currentCol == 1 && currentRow == 0) {
                         currentRaster = 0;
-                    } else if ((currentCol == 1) && (currentRow == 1)) {
+                    } else if (currentCol == 1 && currentRow == 1) {
                         currentRaster = 1;
-                    } else if ((currentCol == 2) && (currentRow == 0)) {
+                    } else if (currentCol == 2 && currentRow == 0) {
                         currentRaster = 2;
-                    } else if ((currentCol == 2) && (currentRow == 1)) {
+                    } else if (currentCol == 2 && currentRow == 1) {
                         currentRaster = 3;
-                    } else if ((currentCol == 2) && (currentRow == 2)) {
+                    } else if (currentCol == 2 && currentRow == 2) {
                         currentRaster = 4;
-                    } else if ((currentCol == 3) && (currentRow == 0)) {
+                    } else if (currentCol == 3 && currentRow == 0) {
                         currentRaster = 5;
-                    } else if ((currentCol == 3) && (currentRow == 1)) {
+                    } else if (currentCol == 3 && currentRow == 1) {
                         currentRaster = 6;
-                    } else if ((currentCol == 3) && (currentRow == 2)) {
+                    } else if (currentCol == 3 && currentRow == 2) {
                         currentRaster = 7;
-                    } else if ((currentCol == 3) && (currentRow == 3)) {
+                    } else if (currentCol == 3 && currentRow == 3) {
                         currentRaster = 8;
-                    } else if ((currentCol == 4) && (currentRow == 0)) {
+                    } else if (currentCol == 4 && currentRow == 0) {
                         currentRaster = 9;
-                    } else if ((currentCol == 4)  && (currentRow == 1)) {
+                    } else if (currentCol == 4  && currentRow == 1) {
                         currentRaster = 10;
-                    } else if ((currentCol == 4) && (currentRow == 2)) {
+                    } else if (currentCol == 4 && currentRow == 2) {
                         currentRaster = 11;
-                    } else if ((currentCol == 4) && (currentRow == 3)) {
+                    } else if (currentCol == 4 && currentRow == 3) {
                         currentRaster = 12;
                     } else {
                         // currentCol and currentRow must equal 4
                         currentRaster = 13;
                     }
-                    xTileOffset = 0;
-                    yTileOffset = 0;
+                    int xTileOffset = 0;
+                    int yTileOffset = 0;
                     // =================================
                     for (int currentSegment = 0;
                          currentSegment < shadowRaster[currentRaster][0];
@@ -1404,15 +1385,14 @@ static void screenFindLineOfSightEnhanced(
                         ];
                         // update the raster length to make sure it fits in
                         // the viewport
-                        shadowLength = (
-                            shadowLength
-                            + 1
-                            + yTileOffset > maxWidth ?  maxWidth : shadowLength
-                        );
+                        shadowLength =
+                            shadowLength + 1 + yTileOffset > maxWidth
+                            ?  maxWidth
+                            : shadowLength;
                         // check to see if we should move up a row
                         if (shadowType & 0x80) {
                             // remove the flag from the shadowType
-                            shadowType ^= _N___;
+                            shadowType ^= xNxxx;
                             // if (currentRow + yTileOffset >= maxHeight) {
                             if (currentRow + yTileOffset > maxHeight) {
                                 break;
@@ -1442,17 +1422,17 @@ static void screenFindLineOfSightEnhanced(
                             // apply the shadow to the shadowMap
                             if (reflect) {
                                 screenLos[
-                                    xTile + ((yTileOffset) * ySign)
+                                    xTile + yTileOffset * ySign
                                 ][
                                     yTile
-                                    + ((currentShadow + xTileOffset) * xSign)
+                                    + (currentShadow + xTileOffset) * xSign
                                 ] |= shadowType;
                             } else {
                                 screenLos[
                                     xTile
-                                    + ((currentShadow + xTileOffset) * xSign)
+                                    + (currentShadow + xTileOffset) * xSign
                                 ][
-                                    yTile + ((yTileOffset) * ySign)
+                                    yTile + yTileOffset * ySign
                                 ] |= shadowType;
                             }
                         }
@@ -1464,15 +1444,15 @@ static void screenFindLineOfSightEnhanced(
     }
     // go through all tiles on the viewable area and set the appropriate
     // visibility
-    for (y = 0; y < VIEWPORT_HEIGHT; y++) {
-        for (x = 0; x < VIEWPORT_WIDTH; x++) {
+    for (int y = 0; y < VIEWPORT_HEIGHT; y++) {
+        for (auto &screenLo: screenLos) {
             // if the shadow flags equal __VCH, hide it, otherwise
             // it's fully visible
             //
-            if ((screenLos[x][y] & __VCH) == __VCH) {
-                screenLos[x][y] = 0;
+            if ((screenLo[y] & xxVCH) == xxVCH) {
+                screenLo[y] = 0;
             } else {
-                screenLos[x][y] = 1;
+                screenLo[y] = 1;
             }
         }
     }
@@ -1486,7 +1466,12 @@ static void screenFindLineOfSightEnhanced(
  * cannot be represented with the above formula.
  */
 static void screenGetLineTerms(
-    int x1, int y1, int x2, int y2, double *a, double *b
+    const int x1,
+    const int y1,
+    const int x2,
+    const int y2,
+    double *a,
+    double *b
 )
 {
     if (x2 - x1 == 0) {
@@ -1494,7 +1479,7 @@ static void screenGetLineTerms(
         *b = x1;
     } else {
         *a = static_cast<double>(y2 - y1) / static_cast<double>(x2 - x1);
-        *b = y1 - ((*a) * x1);
+        *b = y1 - *a * x1;
     }
 }
 
@@ -1505,7 +1490,12 @@ static void screenGetLineTerms(
  * equation "ax + b = y".
  */
 static bool screenPointsOnSameSideOfLine(
-    int x1, int y1, int x2, int y2, double a, double b
+    const int x1,
+    const int y1,
+    const int x2,
+    const int y2,
+    const double a,
+    const double b
 )
 {
     double p1, p2;
@@ -1516,22 +1506,29 @@ static bool screenPointsOnSameSideOfLine(
         p1 = x1 * a + b - y1;
         p2 = x2 * a + b - y2;
     }
-    if (((p1 > 0.0) && (p2 > 0.0))
-        || ((p1 < 0.0) && (p2 < 0.0))
-        || ((p1 == 0.0) && (p2 == 0.0))) {
+    if ((p1 > 0.0 && p2 > 0.0)
+        || (p1 < 0.0 && p2 < 0.0)
+        || (p1 == 0.0 && p2 == 0.0)) {
         return true;
     }
     return false;
 }
 
 static bool screenPointInTriangle(
-    int x, int y, int tx1, int ty1, int tx2, int ty2, int tx3, int ty3
+    const int x,
+    const int y,
+    const int tx1,
+    const int ty1,
+    const int tx2,
+    const int ty2,
+    const int tx3,
+    const int ty3
 )
 {
     double a[3], b[3];
-    screenGetLineTerms(tx1, ty1, tx2, ty2, &(a[0]), &(b[0]));
-    screenGetLineTerms(tx2, ty2, tx3, ty3, &(a[1]), &(b[1]));
-    screenGetLineTerms(tx3, ty3, tx1, ty1, &(a[2]), &(b[2]));
+    screenGetLineTerms(tx1, ty1, tx2, ty2, &a[0], &b[0]);
+    screenGetLineTerms(tx2, ty2, tx3, ty3, &a[1], &b[1]);
+    screenGetLineTerms(tx3, ty3, tx1, ty1, &a[2], &b[2]);
     if (!screenPointsOnSameSideOfLine(x, y, tx3, ty3, a[0], b[0])) {
         return false;
     }
@@ -1548,24 +1545,24 @@ static bool screenPointInTriangle(
 /**
  * Determine if the given point is within a mouse area.
  */
-bool screenPointInMouseArea(int x, int y, const MouseArea *area)
+bool screenPointInMouseArea(const int x, const int y, const MouseArea *area)
 {
     U4ASSERT(
-        area->npoints == 2 || area->npoints == 3,
+        area->n_points == 2 || area->n_points == 3,
         "unsupported number of points in area: %d",
-        area->npoints
+        area->n_points
     );
     /* two points define a rectangle */
-    if (area->npoints == 2) {
-        if ((x >= static_cast<int>(area->point[0].x * settings.scale))
-            && (y >= static_cast<int>(area->point[0].y * settings.scale))
-            && (x < static_cast<int>(area->point[1].x * settings.scale))
-            && (y < static_cast<int>(area->point[1].y * settings.scale))) {
+    if (area->n_points == 2) {
+        if (x >= area->point[0].x * settings.scale
+            && y >= area->point[0].y * settings.scale
+            && x < area->point[1].x * settings.scale
+            && y < area->point[1].y * settings.scale) {
             return true;
         }
     }
     /* three points define a triangle */
-    else if (area->npoints == 3) {
+    else if (area->n_points == 3) {
         return screenPointInTriangle(
             x,
             y,
@@ -1587,7 +1584,7 @@ void screenRedrawMapArea()
 
 void screenEraseMapArea()
 {
-    Image *screen = imageMgr->get("screen")->image;
+    const Image *screen = imageMgr->get("screen")->image;
     screen->fillRect(
         BORDER_WIDTH * settings.scale,
         BORDER_HEIGHT * settings.scale + 4 * settings.scale,
@@ -1599,9 +1596,11 @@ void screenEraseMapArea()
     );
 }
 
-void screenEraseTextArea(int x, int y, int width, int height)
+void screenEraseTextArea(
+    const int x, const int y, const int width, const int height
+)
 {
-    Image *screen = imageMgr->get("screen")->image;
+    const Image *screen = imageMgr->get("screen")->image;
     screen->fillRect(
         x * CHAR_WIDTH * settings.scale,
         y * CHAR_HEIGHT * settings.scale + 4 * settings.scale,
@@ -1617,19 +1616,19 @@ void screenEraseTextArea(int x, int y, int width, int height)
 /**
  * Do the tremor spell effect where the screen shakes.
  */
-void screenShake(int iterations)
+void screenShake(const int iterations)
 {
     // the MSVC8 binary was generating a Access Violation when using
     // drawSubRectOn() or drawOn() to draw the screen surface on top
-    // of itself.  Occured on settings.scale 2 and 4 only.
+    // of itself.  Occurred on settings.scale 2 and 4 only.
     // Therefore, a temporary Image buffer is used to store the area
     // that gets clipped at the bottom.
     if (settings.screenShakes) {
         // specify the size of the offset, and create a buffer
         // to store the offset row plus 1
-        const int shakeOffset = 2;
-        Image *screen = imageMgr->get("screen")->image;
-        Image *bottom = Image::create(
+        constexpr int shakeOffset = 2;
+        const Image *screen = imageMgr->get("screen")->image;
+        const Image *bottom = Image::create(
             SCALED(320), SCALED(shakeOffset + 1), false, Image::SOFTWARE
         );
         bottom->alphaOff();
@@ -1640,7 +1639,7 @@ void screenShake(int iterations)
         // do the actual shaking
         for (int i = 0; i < iterations; i++) {
             // store the bottom row
-            screen->drawOn(bottom, 0, SCALED((shakeOffset + 1) - 200));
+            screen->drawOn(bottom, 0, SCALED(shakeOffset + 1 - 200));
             // shift the screen down and make the top row black
             screen->drawSubRectOn(
                 screen,
@@ -1652,7 +1651,7 @@ void screenShake(int iterations)
                 SCALED(200 - (shakeOffset + 1)),
                 true
             );
-            bottom->drawOn(screen, 0, SCALED(200 - (shakeOffset)), true);
+            bottom->drawOn(screen, 0, SCALED(200 - shakeOffset), true);
             screen->fillRect(
                 0,
                 0,
@@ -1686,7 +1685,12 @@ void screenShake(int iterations)
  * Draw a tile graphic on the screen.
  */
 static void screenShowGemTile(
-    const Layout *layout, Map *map, MapTile t, bool, int x, int y
+    const Layout *layout,
+    const Map *map,
+    MapTile t,
+    bool,
+    const int x,
+    const int y
 )
 {
     // Make sure we account for tiles that look like other tiles
@@ -1697,18 +1701,18 @@ static void screenShowGemTile(
     }
     if (map->isDungeonMap()) {
         U4ASSERT(charsetInfo, "charset not initialized");
-        std::map<std::string, int>::iterator charIndex =
+        const auto charIndex =
             dungeonTileChars.find(t.getTileType()->getName());
         if (charIndex != dungeonTileChars.end()) {
             charsetInfo->image->drawSubRect(
-                (layout->viewport.x + (x * layout->tileshape.width))
+                (layout->viewport.x + x * layout->tile_shape.width)
                 * settings.scale,
-                (layout->viewport.y + (y * layout->tileshape.height))
+                (layout->viewport.y + y * layout->tile_shape.height)
                 * settings.scale + 4 * settings.scale,
                 0,
-                charIndex->second * layout->tileshape.height * settings.scale,
-                layout->tileshape.width * settings.scale,
-                layout->tileshape.height * settings.scale
+                charIndex->second * layout->tile_shape.height * settings.scale,
+                layout->tile_shape.width * settings.scale,
+                layout->tile_shape.height * settings.scale
             );
         }
     } else {
@@ -1724,27 +1728,27 @@ static void screenShowGemTile(
                 );
             }
         }
-        unsigned int tile = map->translateToRawTile(t);
+        const int tile = map->translateToRawTile(t);
         if (tile < 128) {
             gemTilesInfo->image->drawSubRect(
-                (layout->viewport.x + (x * layout->tileshape.width))
+                (layout->viewport.x + x * layout->tile_shape.width)
                 * settings.scale,
-                (layout->viewport.y + (y * layout->tileshape.height))
+                (layout->viewport.y + y * layout->tile_shape.height)
                 * settings.scale + 4 * settings.scale,
                 0,
-                tile * layout->tileshape.height * settings.scale,
-                layout->tileshape.width * settings.scale,
-                layout->tileshape.height * settings.scale
+                tile * layout->tile_shape.height * settings.scale,
+                layout->tile_shape.width * settings.scale,
+                layout->tile_shape.height * settings.scale
             );
         } else {
-            Image *screen = imageMgr->get("screen")->image;
+            const Image *screen = imageMgr->get("screen")->image;
             screen->fillRect(
-                (layout->viewport.x + (x * layout->tileshape.width))
+                (layout->viewport.x + x * layout->tile_shape.width)
                 * settings.scale,
-                (layout->viewport.y + (y * layout->tileshape.height))
+                (layout->viewport.y + y * layout->tile_shape.height)
                 * settings.scale + 4 * settings.scale,
-                layout->tileshape.width * settings.scale,
-                layout->tileshape.height * settings.scale,
+                layout->tile_shape.width * settings.scale,
+                layout->tile_shape.height * settings.scale,
                 0,
                 0,
                 0
@@ -1756,25 +1760,21 @@ static void screenShowGemTile(
 static Layout *screenGetGemLayout(const Map *map)
 {
     if (map->isDungeonMap()) {
-        std::vector<Layout *>::const_iterator i;
-        for (i = layouts.cbegin(); i != layouts.cend(); ++i) {
-            Layout *layout = *i;
-            if (layout->type == LAYOUT_DUNGEONGEM) {
+        for (auto *layout: layouts) {
+            if (layout->type == LAYOUT_DUNGEON_GEM) {
                 return layout;
             }
         }
         errorFatal("no dungeon gem layout found!\n");
-        return nullptr;
-    } else {
-        return gemlayout;
     }
+    return gem_layout;
 }
 
 void screenGemUpdate()
 {
     MapTile tile;
     int x, y;
-    Image *screen = imageMgr->get("screen")->image;
+    const Image *screen = imageMgr->get("screen")->image;
     screen->fillRect(
         BORDER_WIDTH * settings.scale,
         BORDER_HEIGHT * settings.scale + 4 * settings.scale,
@@ -1784,7 +1784,7 @@ void screenGemUpdate()
         0,
         0
     );
-    Layout *layout = screenGetGemLayout(c->location->map);
+    const Layout *layout = screenGetGemLayout(c->location->map);
     // TODO, move the code responsible for determining 'peer' visibility
     // to a non SDL specific part of the code.
     if (c->location->map->isDungeonMap()) {
@@ -1797,20 +1797,20 @@ void screenGemUpdate()
         // Put the avatar's position on the stack
         int center_x = layout->viewport.width / 2 - 1;
         int center_y = layout->viewport.height / 2 - 1;
-        int avt_x = c->location->coords.x - 1;
-        int avt_y = c->location->coords.y - 1;
-        coordStack.push_back(std::pair<int, int>(center_x, center_y));
+        const int avatar_x = c->location->coords.x - 1;
+        const int avatar_y = c->location->coords.y - 1;
+        coordStack.emplace_back(center_x, center_y);
         bool weAreDrawingTheAvatarTile = true;
         // And draw each tile on the growing stack until it is empty
-        while (coordStack.size() > 0) {
-            std::pair<int, int> currentXY = coordStack.back();
+        while (!coordStack.empty()) {
+            const std::pair<int, int> currentXY = coordStack.back();
             coordStack.pop_back();
             x = currentXY.first;
             y = currentXY.second;
-            if ((x < 0)
-                || (x >= layout->viewport.width)
-                || (y < 0)
-                || (y >= layout->viewport.height)) {
+            if (x < 0
+                || x >= layout->viewport.width
+                || y < 0
+                || y >= layout->viewport.height) {
                 continue; // Skip out of range tiles
             }
             if (drawnTiles[x][y]) {
@@ -1822,25 +1822,19 @@ void screenGemUpdate()
             std::vector<MapTile> tiles = screenViewportTile(
                 layout->viewport.width,
                 layout->viewport.height,
-                x - center_x + avt_x,
-                y - center_y + avt_y,
+                x - center_x + avatar_x,
+                y - center_y + avatar_y,
                 focus
             );
             tile = tiles.front();
-            TileId avatarTileId =
+            const TileId avatarTileId =
                 c->location->map->tileset->getByName("avatar")->getId();
             if (!weAreDrawingTheAvatarTile) {
-                // Hack to avoid showing the avatar tile multiple times in
+                // Hack to avoid showing the avatar tile multiple times
                 if (tile.getId() == avatarTileId) {
-#if 0
-                    tile = c->location->map->getTileFromData(
-                        c->location->coords
-                    ).getId();
-#else
                     tile = c->location->map->tileAt(
                         c->location->coords, WITHOUT_OBJECTS
                     ).getId();
-#endif
                 }
             }
             screenShowGemTile(layout, c->location->map, tile, focus, x, y);
@@ -1852,14 +1846,14 @@ void screenGemUpdate()
                 // position in those rare circumstances where he is stuck in a
                 // wall by adding all relative adjacency combinations to the
                 // stack for drawing
-                coordStack.push_back(std::pair<int, int>(x + 1, y - 1));
-                coordStack.push_back(std::pair<int, int>(x + 1, y));
-                coordStack.push_back(std::pair<int, int>(x + 1, y + 1));
-                coordStack.push_back(std::pair<int, int>(x, y - 1));
-                coordStack.push_back(std::pair<int, int>(x, y + 1));
-                coordStack.push_back(std::pair<int, int>(x - 1, y - 1));
-                coordStack.push_back(std::pair<int, int>(x - 1, y));
-                coordStack.push_back(std::pair<int, int>(x - 1, y + 1));
+                coordStack.emplace_back(x + 1, y - 1);
+                coordStack.emplace_back(x + 1, y);
+                coordStack.emplace_back(x + 1, y + 1);
+                coordStack.emplace_back(x, y - 1);
+                coordStack.emplace_back(x, y + 1);
+                coordStack.emplace_back(x - 1, y - 1);
+                coordStack.emplace_back(x - 1, y);
+                coordStack.emplace_back(x - 1, y + 1);
                 // We only draw the avatar tile once, it is the first
                 // tile drawn
                 weAreDrawingTheAvatarTile = false;

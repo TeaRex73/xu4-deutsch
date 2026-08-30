@@ -42,12 +42,11 @@ typedef enum {
 class Person:public Creature {
 public:
     explicit Person(MapTile tile);
-    explicit Person(const Person *p);
     Person(const Person &p) = default;
-    Person(Person &&p) = default;
+    Person(Person &&p) noexcept = default;
     Person &operator=(const Person &p) = default;
     Person &operator=(Person &&p) = default;
-    ~Person() = default;
+    ~Person() override = default;
     bool canConverse() const;
     bool isVendor() const;
     std::string getName() const override;
@@ -67,23 +66,23 @@ public:
     void setNpcType(PersonNpcType t);
     std::list<std::string> getConversationText(
         Conversation *cnv, const char *inquiry
-    );
-    std::string getPrompt(Conversation *cnv) const;
+    ) const;
+    std::string getPrompt(const Conversation *cnv) const;
     // const char *getChoices(Conversation *cnv);
-    std::string getIntro(Conversation *cnv);
-    std::string processResponse(Conversation *cnv, Response *response);
-    void runCommand(Conversation *cnv, const ResponsePart &command);
-    std::string getResponse(Conversation *cnv, const char *inquiry);
+    std::string getIntro(Conversation *cnv) const;
+    std::string processResponse(Conversation *cnv, Response *response) const;
+    void runCommand(Conversation *cnv, const ResponsePart &command) const;
+    std::string getResponse(Conversation *cnv, const char *inquiry) const;
     std::string talkerGetQuestionResponse(
         Conversation *cnv, const char *answer
-    );
+    ) const;
     std::string beggarGetQuantityResponse(
         Conversation *cnv, const char *response
     ) const;
     static std::string lordBritishGetQuestionResponse(
         Conversation *cnv, const char *answer
     );
-    static std::string getQuestion(Conversation *cnv);
+    static std::string getQuestion(const Conversation *cnv);
 
 private:
     Dialogue *dialogue;
@@ -91,8 +90,8 @@ private:
     PersonNpcType npcType;
 };
 
-bool isPerson(Object *punknown);
+bool isPerson(Object *p_unknown);
 std::list<std::string> replySplit(const std::string &text);
-int linecount(const std::string &s, int columnmax);
+int linecount(const std::string &s, int column_max);
 
-#endif // ifndef PERSON_H
+#endif // PERSON_H

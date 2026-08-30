@@ -145,7 +145,7 @@ public:
 
     bool isAltarRoom() const
     {
-        return altarRoom != VIRT_NONE;
+        return altarRoom != VIRTUE_NONE;
     }
 
     bool isContextual() const

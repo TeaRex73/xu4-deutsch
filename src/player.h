@@ -23,7 +23,7 @@ class Weapon;
 
 typedef std::vector<class PartyMember *> PartyMemberVector;
 
-#define ALL_PLAYERS -1
+#define ALL_PLAYERS (-1)
 
 enum KarmaAction {
     KA_FOUND_ITEM,
@@ -52,11 +52,11 @@ enum KarmaAction {
 enum HealType {
     HT_NONE,
     HT_CURE,
-    HT_FULLHEAL,
+    HT_FULL_HEAL,
     HT_RESURRECT,
     HT_HEAL,
-    HT_CAMPHEAL,
-    HT_INNHEAL
+    HT_CAMP_HEAL,
+    HT_INN_HEAL
 };
 
 enum InventoryItem {
@@ -65,7 +65,7 @@ enum InventoryItem {
     INV_ARMOR,
     INV_FOOD,
     INV_REAGENT,
-    INV_GUILDITEM,
+    INV_GUILD_ITEM,
     INV_HORSE
 };
 
@@ -93,16 +93,16 @@ public:
     PartyMember(PartyMember &&p) = default;
     PartyMember &operator=(const PartyMember &p) = default;
     PartyMember &operator=(PartyMember &&p) = default;
-    virtual ~PartyMember();
+    ~PartyMember() override = default;
     void notifyOfChange();
     // Used to translate script values into something useful
-    virtual std::string translate(std::vector<std::string> &parts) override;
+    std::string translate(std::vector<std::string> &parts) override;
 
-    virtual int getHp() const override;
+    int getHp() const override;
 
     int getMaxHp() const
     {
-        return player->hpMax;
+        return player->hp_max;
     }
 
     int getExp() const
@@ -125,7 +125,7 @@ public:
         return player->intel;
     }
 
-    int getMp() const
+    int getMp() const // NOLINT(bugprone-virtual-near-miss)
     {
         return player->mp;
     }
@@ -133,41 +133,41 @@ public:
     int getMaxMp() const;
     const Weapon *getWeapon() const;
     const Armor *getArmor() const;
-    virtual std::string getName() const override;
+    std::string getName() const override;
     SexType getSex() const;
     ClassType getClass() const;
-    virtual CreatureState getState() const override;
+    CreatureState getState() const override;
     int getRealLevel() const;
     int getMaxLevel() const;
-    virtual void addStatus(StatusType s) override;
-    virtual void setStatus(StatusType s) override;
+    void addStatus(StatusType s) override;
+    void setStatus(StatusType s) override;
     void adjustMp(int pts);
     void advanceLevel();
     void applyEffect(TileEffect effect);
     void awardXp(int xp);
     bool heal(HealType type);
-    virtual void removeStatus(StatusType s) override;
-    virtual void setHp(int hp) override;
+    void removeStatus(StatusType s) override;
+    void setHp(int hp) override;
     void setMp(int mp);
     EquipError setArmor(const Armor *a);
     EquipError setWeapon(const Weapon *w);
-    virtual bool applyDamage(int damage, bool byplayer) override;
-    virtual int getAttackBonus() const override;
-    virtual int getDefense(bool needsMystic) const override;
-    virtual bool dealDamage(Creature *m, int damage) override;
-    virtual int getDamage() const override;
-    virtual const std::string &getHitTile() const override;
-    virtual const std::string &getMissTile() const override;
+    bool applyDamage(int damage, bool by_player) override;
+    int getAttackBonus() const override;
+    int getDefense(bool needsMystic) const override;
+    bool dealDamage(Creature *m, int damage) override;
+    int getDamage() const override;
+    const std::string &getHitTile() const override;
+    const std::string &getMissTile() const override;
     bool isDead() const;
     bool isDisabled() const;
     int  loseWeapon();
-    virtual void putToSleep(bool sound = true) override;
-    virtual void wakeUp() override;
+    void putToSleep(bool sound) override;
+    void wakeUp() override;
 
 protected:
     static MapTile tileForClass(int klass);
     SaveGamePlayerRecord *player;
-    class Party *party;
+    Party *party;
 };
 
 
@@ -189,7 +189,7 @@ public:
         INVENTORY_ADDED,
     };
 
-    PartyEvent(Type type, PartyMember *partyMember)
+    PartyEvent(const Type type, PartyMember *partyMember)
         :type(type), player(partyMember)
     {
     }
@@ -211,17 +211,17 @@ public:
     Party(Party &&) = delete;
     Party &operator=(const Party &) = delete;
     Party &operator=(Party &&) = delete;
-    virtual ~Party();
+    ~Party() override = default;
     void notifyOfChange(
         PartyMember *pm = nullptr,
         PartyEvent::Type eventType = PartyEvent::GENERIC
     );
     // Used to translate script values into something useful
-    virtual std::string translate(std::vector<std::string> &parts) override;
+    std::string translate(std::vector<std::string> &parts) override;
     void adjustFood(int food);
     void adjustGold(int gold);
     void adjustKarma(KarmaAction action);
-    void applyEffect(TileEffect effect);
+    void applyEffect(TileEffect effect) const;
     bool attemptElevation(Virtue virtue);
     void burnTorch(int turns = 1);
     bool canEnterShrine(Virtue virtue) const;
@@ -259,10 +259,10 @@ private:
     PartyMemberVector members;
     SaveGame *saveGame;
     MapTile transport;
-    int torchduration;
+    int torchDuration;
     int activePlayer;
 };
 
-bool isPartyMember(Object *punknown);
+bool isPartyMember(Object *p_unknown);
 
-#endif // ifndef PLAYER_H
+#endif // PLAYER_H

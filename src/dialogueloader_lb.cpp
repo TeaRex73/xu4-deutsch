@@ -127,7 +127,7 @@ static Response *lordBritishGetHelp(const DynamicResponse *)
      */
     fullAvatar = true;
     partialAvatar = false;
-    for (v = 0; v < VIRT_MAX; v++) {
+    for (v = 0; v < VIRTUE_MAX; v++) {
         fullAvatar &= c->saveGame->karma[v] == 0;
         partialAvatar |= c->saveGame->karma[v] == 0;
     }
@@ -238,7 +238,7 @@ static Response *lordBritishGetIntro(const DynamicResponse *)
 {
     auto *intro = new Response("");
     intro->add(ResponsePart::START_MUSIC_LB);
-    if (c->saveGame->lbintro) {
+    if (c->saveGame->lord_british_intro) {
         if (c->saveGame->members == 1) {
             intro->add(
                 std::string(
@@ -297,7 +297,7 @@ static Response *lordBritishGetIntro(const DynamicResponse *)
                 "Dein Begehr:\n?"
             )
         );
-        c->saveGame->lbintro = 1;
+        c->saveGame->lord_british_intro = 1;
     }
     return intro;
 } // lordBritishGetIntro

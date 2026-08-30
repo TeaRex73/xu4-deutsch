@@ -10,13 +10,13 @@
 #include "rle.h"
 #include "util/pngconv.h"
 
-int isPowerOfTwo(int n);
+static int isPowerOfTwo(int n);
 
 
 /**
  * A simple command line interface to the U4 RLE and LZW decompressors.
  */
-int main(int argc, const char *argv[])
+int main(const int argc, const char *argv[])
 {
     FILE *infile;
     unsigned char *indata, *outdata;

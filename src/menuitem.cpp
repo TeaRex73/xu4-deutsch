@@ -24,7 +24,7 @@
  * MenuItem class
  */
 MenuItem::MenuItem(
-    std::string t, const short x_pos, const short y_pos, const int sc
+    std::string t, const int x_pos, const int y_pos, const int sc
 )
     :id(-1),
      x(x_pos),
@@ -144,8 +144,8 @@ void MenuItem::setClosesMenu(const bool closes)
 
 BoolMenuItem::BoolMenuItem(
     const std::string &text,
-    const short x,
-    const short y,
+    const int x,
+    const int y,
     const int shortcutKey,
     bool *val
 )
@@ -182,8 +182,8 @@ void BoolMenuItem::activate(MenuEvent &event)
 
 StringMenuItem::StringMenuItem(
     const std::string &text,
-    const short x,
-    const short y,
+    const int x,
+    const int y,
     const int shortcutKey,
     std::string *val,
     const std::vector<std::string> &validSettings
@@ -227,8 +227,8 @@ void StringMenuItem::activate(MenuEvent &event)
 
 IntMenuItem::IntMenuItem(
     const std::string &text,
-    const short x,
-    const short y,
+    const int x,
+    const int y,
     const int shortcutKey,
     int *val,
     const int min,
@@ -323,8 +323,8 @@ void IntMenuItem::activate(MenuEvent &event)
 
 UnsignedShortMenuItem::UnsignedShortMenuItem(
     const std::string &text,
-    const short x,
-    const short y,
+    const int x,
+    const int y,
     const int shortcutKey,
     unsigned short *val,
     const unsigned short min,

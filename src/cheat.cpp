@@ -70,12 +70,12 @@ bool CheatMenuController::keyPressed(int key)
         break;
     case 'a':
     {
-        int newTrammelPhase = c->saveGame->trammelphase + 1;
+        int newTrammelPhase = c->saveGame->trammel_phase + 1;
         if (newTrammelPhase > 7) {
             newTrammelPhase = 0;
         }
         screenMessage("MONDLAUF!\n");
-        while (c->saveGame->trammelphase != newTrammelPhase) {
+        while (c->saveGame->trammel_phase != newTrammelPhase) {
             GameController::updateMoons(true);
         }
         break;
@@ -88,10 +88,10 @@ bool CheatMenuController::keyPressed(int key)
         break;
     case 'e':
         screenMessage("AUSR]STUNG!\n");
-        for (i = ARMR_NONE + 1; i < ARMR_MAX; i++) {
+        for (i = ARMOR_NONE + 1; i < ARMOR_MAX; i++) {
             c->saveGame->armor[i] = 8;
         }
-        for (i = WEAP_HANDS + 1; i < WEAP_MAX; i++) {
+        for (i = WEAPON_HANDS + 1; i < WEAPON_MAX; i++) {
             const Weapon *weapon = Weapon::get(static_cast<WeaponType>(i));
             if (weapon->loseWhenUsed() || weapon->loseWhenRanged()) {
                 c->saveGame->weapons[i] = 99;
@@ -106,9 +106,9 @@ bool CheatMenuController::keyPressed(int key)
             c->saveGame->players[i].str = 50;
             c->saveGame->players[i].dex = 50;
             c->saveGame->players[i].intel = 50;
-            if (c->saveGame->players[i].hpMax < 800) {
+            if (c->saveGame->players[i].hp_max < 800) {
                 c->saveGame->players[i].xp = 9999;
-                c->saveGame->players[i].hpMax = 800;
+                c->saveGame->players[i].hp_max = 800;
                 c->saveGame->players[i].hp = 800;
             }
         }
@@ -120,7 +120,7 @@ bool CheatMenuController::keyPressed(int key)
         std::string dest = lowercase(gameGetInput(8));
         bool found = false;
         for (unsigned int p = 0; p < c->location->map->portals.size(); p++) {
-            MapId destId = c->location->map->portals[p]->destid;
+            MapId destId = c->location->map->portals[p]->destId;
             std::string destNameLower =
                 lowercase(mapMgr->get(destId)->getName());
             if (destNameLower.find(dest) != std::string::npos) {
@@ -279,7 +279,7 @@ bool CheatMenuController::keyPressed(int key)
         break;
     case 'r':
         screenMessage("REAGENZIEN!\n");
-        for (i = 0; i < REAG_MAX; i++) {
+        for (i = 0; i < REAGENT_MAX; i++) {
             c->saveGame->reagents[i] = 99;
         }
         break;

@@ -180,7 +180,7 @@ void StatsArea::update()
             0,
             "L:%04d   SCH:%02d",
             c->saveGame->food / 100,
-            c->saveGame->shiphull
+            c->saveGame->ship_hull
         );
     } else {
         summary.textAt(
@@ -198,7 +198,7 @@ void StatsArea::update()
 void StatsArea::update(Aura *aura)
 {
     unsigned char mask = 0xff;
-    for (int i = 0; i < VIRT_MAX; i++) {
+    for (int i = 0; i < VIRTUE_MAX; i++) {
         if (c->saveGame->karma[i] == 0) {
             mask &= ~(1 << i);
         }
@@ -356,7 +356,7 @@ void StatsArea::showWeapons()
     int line = 0;
     int col = 0;
     mainArea.textAt(0, line++, "A-H[NDE");
-    for (int w = WEAP_HANDS + 1; w < WEAP_MAX; w++) {
+    for (int w = WEAPON_HANDS + 1; w < WEAPON_MAX; w++) {
         int n = c->saveGame->weapons[w];
         if (n >= 100) {
             n = 99;
@@ -367,7 +367,7 @@ void StatsArea::showWeapons()
                 col,
                 line++,
                 format,
-                w - WEAP_HANDS + 'A',
+                w - WEAPON_HANDS + 'A',
                 n,
                 uppercase(
                     Weapon::get(static_cast<WeaponType>(w))->getAbbrev()
@@ -390,7 +390,7 @@ void StatsArea::showArmor()
     setTitle("R]STUNG");
     int line = 0;
     mainArea.textAt(0, line++, "A-KEINE");
-    for (int a = ARMR_NONE + 1; a < ARMR_MAX; a++) {
+    for (int a = ARMOR_NONE + 1; a < ARMOR_MAX; a++) {
         if (c->saveGame->armor[a] > 0) {
             const char *format =
                 (c->saveGame->armor[a] >= 10) ? "%c%d-%s" : "%c-%d-%s";
@@ -398,7 +398,7 @@ void StatsArea::showArmor()
                 0,
                 line++,
                 format,
-                a - ARMR_NONE + 'A',
+                a - ARMOR_NONE + 'A',
                 c->saveGame->armor[a],
                 uppercase(
                     Armor::get(static_cast<ArmorType>(a))->getName()
@@ -508,7 +508,7 @@ void StatsArea::showReagents(bool active)
 {
     setTitle("REAGENZIEN");
     Menu::MenuItemList::const_iterator i;
-    int line = 0, r = REAG_ASH;
+    int line = 0, r = REAGENT_ASH;
     std::string shortcut("A");
     reagentsMixMenu.show(&mainArea);
     for (i = reagentsMixMenu.begin(); i != reagentsMixMenu.end(); ++i, ++r) {

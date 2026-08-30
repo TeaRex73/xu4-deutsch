@@ -252,8 +252,8 @@ int main(int argc, char *argv[])
             if (c == val && count < 255) {
                 count++;
             } else {
-                if (count >= threshold || val == RLE_RUNSTART) {
-                    putc(RLE_RUNSTART, out);
+                if (count >= threshold || val == RLE_RUN_START) {
+                    putc(RLE_RUN_START, out);
                     putc(count, out);
                     putc(val, out);
                 } else {
@@ -265,8 +265,8 @@ int main(int argc, char *argv[])
                 count = 1;
             }
         }
-        if (count >= threshold || val == RLE_RUNSTART) {
-            putc(RLE_RUNSTART, out);
+        if (count >= threshold || val == RLE_RUN_START) {
+            putc(RLE_RUN_START, out);
             putc(count, out);
             putc(val, out);
         } else {

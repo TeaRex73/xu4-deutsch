@@ -18,23 +18,26 @@
 #include "sound_p.h"
 
 
-int soundInit(void)
+int soundInit()
 {
     return SoundManager::getInstance()->init();
 }
 
-void soundDelete(void)
+void soundDelete()
 {
     delete SoundManager::getInstance();
 }
 
-void soundLoad(Sound sound)
+void soundLoad(const Sound sound)
 {
     SoundManager::getInstance()->load(sound);
 }
 
 void soundPlay(
-    Sound sound, bool onlyOnce, int specificDurationInTicks, bool wait
+    const Sound sound,
+    const bool onlyOnce,
+    const int specificDurationInTicks,
+    const bool wait
 )
 {
     SoundManager::getInstance()->play(sound,
@@ -43,17 +46,14 @@ void soundPlay(
                                       wait);
 }
 
-void soundStop(int channel)
+void soundStop(const int channel)
 {
-    SoundManager::getInstance()->stop(channel);
+    SoundManager::stop(channel);
 }
 
 SoundManager *SoundManager::instance = nullptr;
 
-SoundManager::SoundManager()
-    :soundFilenames(), soundChunk()
-{
-}
+SoundManager::SoundManager() = default;
 
 SoundManager::~SoundManager()
 {
@@ -77,20 +77,18 @@ bool SoundManager::init()
     const Config *config = Config::getInstance();
     soundFilenames.reserve(SOUND_MAX);
     soundChunk.resize(SOUND_MAX, nullptr);
-    std::vector<ConfigElement> soundConfs =
+    const std::vector<ConfigElement> soundConfs =
         config->getElement("sound").getChildren();
-    std::vector<ConfigElement>::const_iterator i = soundConfs.cbegin();
-    std::vector<ConfigElement>::const_iterator theEnd = soundConfs.cend();
-    for (; i != theEnd; ++i) {
-        if (i->getName() != "track") {
+    for (const auto &soundConf: soundConfs) {
+        if (soundConf.getName() != "track") {
             continue;
         }
-        soundFilenames.push_back(i->getString("file"));
+        soundFilenames.push_back(soundConf.getString("file"));
     }
     return init_sys();
 }
 
-bool SoundManager::load(Sound sound)
+bool SoundManager::load(const Sound sound)
 {
     U4ASSERT(
         sound < SOUND_MAX, "Attempted to load an invalid sound in soundLoad()"
@@ -100,9 +98,9 @@ bool SoundManager::load(Sound sound)
         return false;
     }
     if (soundChunk[sound] == nullptr) {
-        std::string pathname(u4find_sound(soundFilenames[sound]));
-        std::string basename =
-            pathname.substr(pathname.find_last_of("/") + 1);
+        const std::string pathname(u4find_sound(soundFilenames[sound]));
+        const std::string basename =
+            pathname.substr(pathname.find_last_of('/') + 1);
         if (!basename.empty()) {
             return load_sys(sound, pathname);
         }
@@ -111,7 +109,10 @@ bool SoundManager::load(Sound sound)
 }
 
 void SoundManager::play(
-    Sound sound, bool onlyOnce, int specificDurationInTicks, bool wait
+    const Sound sound,
+    const bool onlyOnce,
+    const int specificDurationInTicks,
+    const bool wait
 )
 {
     U4ASSERT(
@@ -129,7 +130,7 @@ void SoundManager::play(
     play_sys(sound, onlyOnce, specificDurationInTicks, wait);
 }
 
-void SoundManager::stop(int channel)
+void SoundManager::stop(const int channel)
 {
     stop_sys(channel);
 }

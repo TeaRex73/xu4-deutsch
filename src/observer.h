@@ -18,9 +18,7 @@ template<class O, class A = NoArg *> class Observer {
 public:
     virtual void update(O observable, A arg) = 0;
 
-    virtual ~Observer()
-    {
-    }
+    virtual ~Observer() = default;
 };
 
 
@@ -41,9 +39,7 @@ public:
 
     virtual void update(O observable) = 0;
 
-    virtual ~Observer()
-    {
-    }
+    virtual ~Observer() = default;
 };
 
 

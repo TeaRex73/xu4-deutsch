@@ -142,15 +142,15 @@ TileMap *TileMap::get(const std::string &name)
 /**
  * Translates a raw index to a MapTile.
  */
-MapTile TileMap::translate(unsigned int index)
+MapTile TileMap::translate(const int index)
 {
     return tilemap[index];
 }
 
-unsigned int TileMap::untranslate(MapTile tile) const
+int TileMap::untranslate(const MapTile tile) const
 {
-    unsigned int index = 0;
-    TileMapMap::const_iterator i =
+    int index = 0;
+    const auto i =
         std::find_if(
             tilemap.cbegin(),
             tilemap.cend(),

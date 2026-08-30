@@ -231,7 +231,7 @@ public:
     /* Translate from raw tile index */
     MapTile translateFromRawTile(int raw) const;
     /* Translate to raw tile index */
-    unsigned int translateToRawTile(MapTile tile) const;
+    int translateToRawTile(MapTile tile) const;
 
     MapId id;
     std::string file_name;
@@ -252,7 +252,7 @@ public:
     Tileset *tileset;
     TileMap *tilemap;
     // u4dos compatibility
-    SaveGameMonsterRecord monster_table[MONSTERTABLE_SIZE];
+    SaveGameMonsterRecord monster_table[MONSTER_TABLE_SIZE];
 
 private:
     void findWalkability(const Coords &coords, int *path_data) const;

@@ -4,6 +4,8 @@
 
 #include "vc6.h" // Fixes things if you're using VC6, does nothing otherwise
 
+#include <string>
+
 #include "scale.h"
 
 #include "debug.h"
@@ -19,15 +21,17 @@ Scaler scalerGet(const std::string &filter)
 {
     if (filter == "Point") {
         return &scalePoint;
-    } else if (filter == "2xBi") {
-        return &scale2xBilinear;
-    } else if (filter == "2xSaI") {
-        return &scale2xSaI;
-    } else if (filter == "Scale2x") {
-        return &scaleScale2x;
-    } else {
-        return nullptr;
     }
+    if (filter == "2xBi") {
+        return &scale2xBilinear;
+    }
+    if (filter == "2xSaI") {
+        return &scale2xSaI;
+    }
+    if (filter == "Scale2x") {
+        return &scaleScale2x;
+    }
+    return nullptr;
 }
 
 
@@ -43,11 +47,9 @@ int scaler3x(const std::string &filter)
 /**
  * A simple row and column duplicating scaler.
  */
-static Image *scalePoint(const Image *src, int scale, int)
+static Image *scalePoint(const Image *src, const int scale, int)
 {
-    int x, y, i, j;
-    Image *dest;
-    dest = Image::create(
+    Image *dest = Image::create(
         src->width() * scale,
         src->height() * scale,
         src->isIndexed(),
@@ -60,10 +62,10 @@ static Image *scalePoint(const Image *src, int scale, int)
     if (dest->isIndexed()) {
         dest->setPaletteFromImage(src);
     }
-    for (y = 0; y < src->height(); y++) {
-        for (x = 0; x < src->width(); x++) {
-            for (i = 0; i < scale; i++) {
-                for (j = 0; j < scale; j++) {
+    for (int y = 0; y < src->height(); y++) {
+        for (int x = 0; x < src->width(); x++) {
+            for (int i = 0; i < scale; i++) {
+                for (int j = 0; j < scale; j++) {
                     unsigned int index;
                     src->getPixelIndex(x, y, index);
                     dest->putPixelIndex(x * scale + j, y * scale + i, index);
@@ -79,14 +81,13 @@ static Image *scalePoint(const Image *src, int scale, int)
  * A scaler that interpolates each intervening pixel from it's two
  * neighbors.
  */
-static Image *scale2xBilinear(const Image *src, int scale, int N)
+static Image *scale2xBilinear(const Image *src, const int scale, const int N)
 {
-    int i, x, y, xoff, yoff;
+    int x_offset, y_offset;
     RGBA a, b, c, d;
-    Image *dest;
     /* this scaler works only with images scaled by 2x */
     U4ASSERT(scale == 2, "invalid scale: %d", scale);
-    dest = Image::create(
+    Image *dest = Image::create(
         src->width() * scale,
         src->height() * scale,
         false,
@@ -108,25 +109,25 @@ static Image *scale2xBilinear(const Image *src, int scale, int N)
      * [   A   ] [  (A+B)/2  ]
      * [(A+C)/2] [(A+B+C+D)/4]
      */
-    for (i = 0; i < N; i++) {
-        for (y = (src->height() / N) * i;
-             y < (src->height() / N) * (i + 1);
+    for (int i = 0; i < N; i++) {
+        for (int y = src->height() / N * i;
+             y < src->height() / N * (i + 1);
              y++) {
-            if (y == (src->height() / N) * (i + 1) - 1) {
-                yoff = 0;
+            if (y == src->height() / N * (i + 1) - 1) {
+                y_offset = 0;
             } else {
-                yoff = 1;
+                y_offset = 1;
             }
-            for (x = 0; x < src->width(); x++) {
+            for (int x = 0; x < src->width(); x++) {
                 if (x == src->width() - 1) {
-                    xoff = 0;
+                    x_offset = 0;
                 } else {
-                    xoff = 1;
+                    x_offset = 1;
                 }
                 src->getPixel(x, y, a.r, a.g, a.b, a.a);
-                src->getPixel(x + xoff, y, b.r, b.g, b.b, b.a);
-                src->getPixel(x, y + yoff, c.r, c.g, c.b, c.a);
-                src->getPixel(x + xoff, y + yoff, d.r, d.g, d.b, d.a);
+                src->getPixel(x + x_offset, y, b.r, b.g, b.b, b.a);
+                src->getPixel(x, y + y_offset, c.r, c.g, c.b, c.a);
+                src->getPixel(x + x_offset, y + y_offset, d.r, d.g, d.b, d.a);
                 dest->putPixel(x * 2, y * 2, a.r, a.g, a.b, a.a);
                 dest->putPixel(
                     x * 2 + 1,
@@ -158,12 +159,12 @@ static Image *scale2xBilinear(const Image *src, int scale, int N)
     return dest;
 } // scale2xBilinear
 
-static int colorEqual(RGBA a, RGBA b)
+static int colorEqual(const RGBA a, const RGBA b)
 {
     return a.r == b.r && a.g == b.g && a.b == b.b && a.a == b.a;
 }
 
-static RGBA colorAverage(RGBA a, RGBA b)
+static RGBA colorAverage(const RGBA a, const RGBA b)
 {
     RGBA result;
     result.r = (a.r + b.r) >> 1;
@@ -173,21 +174,21 @@ static RGBA colorAverage(RGBA a, RGBA b)
     return result;
 }
 
-static int _2xSaI_GetResult1(
-    RGBA a, RGBA b, RGBA c, RGBA d
+static int helper_2xSaI_GetResult1(
+    const RGBA s, const RGBA t, const RGBA u, const RGBA v
 )
 {
     int x = 0;
     int y = 0;
     int r = 0;
-    if (colorEqual(a, c)) {
+    if (colorEqual(s, u)) {
         x++;
-    } else if (colorEqual(b, c)) {
+    } else if (colorEqual(t, u)) {
         y++;
     }
-    if (colorEqual(a, d)) {
+    if (colorEqual(s, v)) {
         x++;
-    } else if (colorEqual(b, d)) {
+    } else if (colorEqual(t, v)) {
         y++;
     }
     if (x <= 1) {
@@ -199,21 +200,21 @@ static int _2xSaI_GetResult1(
     return r;
 } // _2xSaI_GetResult1
 
-static int _2xSaI_GetResult2(
-    RGBA a, RGBA b, RGBA c, RGBA d
+static int helper_2xSaI_GetResult2(
+    const RGBA s, const RGBA t, const RGBA u, const RGBA v
 )
 {
     int x = 0;
     int y = 0;
     int r = 0;
-    if (colorEqual(a, c)) {
+    if (colorEqual(s, u)) {
         x++;
-    } else if (colorEqual(b, c)) {
+    } else if (colorEqual(t, u)) {
         y++;
     }
-    if (colorEqual(a, d)) {
+    if (colorEqual(s, v)) {
         x++;
-    } else if (colorEqual(b, d)) {
+    } else if (colorEqual(t, v)) {
         y++;
     }
     if (x <= 1) {
@@ -232,7 +233,9 @@ static int _2xSaI_GetResult2(
  */
 static Image *scale2xSaI(const Image *src, int scale, int N)
 {
-    int ii, x, y, xoff0, xoff1, xoff2, yoff0, yoff1, yoff2;
+    int ii, x, y;
+    int x_offset_0, x_offset_1, x_offset_2;
+    int y_offset_0, y_offset_1, y_offset_2;
     RGBA a, b, c, d, e, f, g, h, i, j, k, l, m, n, o, p;
     RGBA prod0, prod1, prod2;
     Image *dest;
@@ -259,56 +262,56 @@ static Image *scale2xSaI(const Image *src, int scale, int N)
      * M N O P
      */
     for (ii = 0; ii < N; ii++) {
-        for (y = (src->height() / N) * ii;
-             y < (src->height() / N) * (ii + 1);
+        for (y = src->height() / N * ii;
+             y < src->height() / N * (ii + 1);
              y++) {
             if (y == 0) {
-                yoff0 = 0;
+                y_offset_0 = 0;
             } else {
-                yoff0 = -1;
+                y_offset_0 = -1;
             }
-            if (y == (src->height() / N) * (ii + 1) - 1) {
-                yoff1 = 0;
-                yoff2 = 0;
-            } else if (y == (src->height() / N) * (ii + 1) - 2) {
-                yoff1 = 1;
-                yoff2 = 1;
+            if (y == src->height() / N * (ii + 1) - 1) {
+                y_offset_1 = 0;
+                y_offset_2 = 0;
+            } else if (y == src->height() / N * (ii + 1) - 2) {
+                y_offset_1 = 1;
+                y_offset_2 = 1;
             } else {
-                yoff1 = 1;
-                yoff2 = 2;
+                y_offset_1 = 1;
+                y_offset_2 = 2;
             }
             for (x = 0; x < src->width(); x++) {
                 if (x == 0) {
-                    xoff0 = 0;
+                    x_offset_0 = 0;
                 } else {
-                    xoff0 = -1;
+                    x_offset_0 = -1;
                 }
                 if (x == src->width() - 1) {
-                    xoff1 = 0;
-                    xoff2 = 0;
+                    x_offset_1 = 0;
+                    x_offset_2 = 0;
                 } else if (x == src->width() - 2) {
-                    xoff1 = 1;
-                    xoff2 = 1;
+                    x_offset_1 = 1;
+                    x_offset_2 = 1;
                 } else {
-                    xoff1 = 1;
-                    xoff2 = 2;
+                    x_offset_1 = 1;
+                    x_offset_2 = 2;
                 }
                 src->getPixel(x, y, a.r, a.g, a.b, a.a);
-                src->getPixel(x + xoff1, y, b.r, b.g, b.b, b.a);
-                src->getPixel(x, y + yoff1, c.r, c.g, c.b, c.a);
-                src->getPixel(x + xoff1, y + yoff1, d.r, d.g, d.b, d.a);
-                src->getPixel(x, y + yoff0, e.r, e.g, e.b, e.a);
-                src->getPixel(x + xoff1, y + yoff0, f.r, f.g, f.b, f.a);
-                src->getPixel(x + xoff0, y, g.r, g.g, g.b, g.a);
-                src->getPixel(x + xoff0, y + yoff1, h.r, h.g, h.b, h.a);
-                src->getPixel(x + xoff0, y + yoff0, i.r, i.g, i.b, i.a);
-                src->getPixel(x + xoff2, y + yoff0, j.r, j.g, j.b, j.a);
-                src->getPixel(x + xoff0, y, k.r, k.g, k.b, k.a);
-                src->getPixel(x + xoff0, y + yoff1, l.r, l.g, l.b, l.a);
-                src->getPixel(x + xoff0, y + yoff2, m.r, m.g, m.b, m.a);
-                src->getPixel(x, y + yoff2, n.r, n.g, n.b, n.a);
-                src->getPixel(x + xoff1, y + yoff2, o.r, o.g, o.b, o.a);
-                src->getPixel(x + xoff2, y + yoff2, p.r, p.g, p.b, p.a);
+                src->getPixel(x + x_offset_1, y, b.r, b.g, b.b, b.a);
+                src->getPixel(x, y + y_offset_1, c.r, c.g, c.b, c.a);
+                src->getPixel(x + x_offset_1, y + y_offset_1, d.r, d.g, d.b, d.a);
+                src->getPixel(x, y + y_offset_0, e.r, e.g, e.b, e.a);
+                src->getPixel(x + x_offset_1, y + y_offset_0, f.r, f.g, f.b, f.a);
+                src->getPixel(x + x_offset_0, y, g.r, g.g, g.b, g.a);
+                src->getPixel(x + x_offset_0, y + y_offset_1, h.r, h.g, h.b, h.a);
+                src->getPixel(x + x_offset_0, y + y_offset_0, i.r, i.g, i.b, i.a);
+                src->getPixel(x + x_offset_2, y + y_offset_0, j.r, j.g, j.b, j.a);
+                src->getPixel(x + x_offset_0, y, k.r, k.g, k.b, k.a);
+                src->getPixel(x + x_offset_0, y + y_offset_1, l.r, l.g, l.b, l.a);
+                src->getPixel(x + x_offset_0, y + y_offset_2, m.r, m.g, m.b, m.a);
+                src->getPixel(x, y + y_offset_2, n.r, n.g, n.b, n.a);
+                src->getPixel(x + x_offset_1, y + y_offset_2, o.r, o.g, o.b, o.a);
+                src->getPixel(x + x_offset_2, y + y_offset_2, p.r, p.g, p.b, p.a);
                 if (colorEqual(a, d) && !colorEqual(b, c)) {
                     if ((colorEqual(a, e)
                          && colorEqual(b, l))
@@ -362,10 +365,10 @@ static Image *scale2xSaI(const Image *src, int scale, int N)
                         int r = 0;
                         prod0 = colorAverage(a, b);
                         prod1 = colorAverage(a, c);
-                        r += _2xSaI_GetResult1(a, b, g, e);
-                        r += _2xSaI_GetResult2(b, a, k, f);
-                        r += _2xSaI_GetResult2(b, a, h, n);
-                        r += _2xSaI_GetResult1(a, b, l, o);
+                        r += helper_2xSaI_GetResult1(a, b, g, e);
+                        r += helper_2xSaI_GetResult2(b, a, k, f);
+                        r += helper_2xSaI_GetResult2(b, a, h, n);
+                        r += helper_2xSaI_GetResult1(a, b, l, o);
                         if (r > 0) {
                             prod2 = a;
                         } else if (r < 0) {
@@ -408,12 +411,12 @@ static Image *scale2xSaI(const Image *src, int scale, int N)
                     prod2.b = (a.b + b.b + c.b + d.b) >> 2;
                     prod2.a = 255;
                 }
-                dest->putPixel((x << 1), (y << 1), a.r, a.g, a.b, a.a);
+                dest->putPixel(x << 1, y << 1, a.r, a.g, a.b, a.a);
                 dest->putPixel(
-                    (x << 1) + 1, (y << 1), prod0.r, prod0.g, prod0.b, prod0.a
+                    (x << 1) + 1, y << 1, prod0.r, prod0.g, prod0.b, prod0.a
                 );
                 dest->putPixel(
-                    (x << 1), (y << 1) + 1, prod1.r, prod1.g, prod1.b, prod1.a
+                    x << 1, (y << 1) + 1, prod1.r, prod1.g, prod1.b, prod1.a
                 );
                 dest->putPixel(
                     (x << 1) + 1,
@@ -436,7 +439,7 @@ static Image *scale2xSaI(const Image *src, int scale, int N)
  */
 static Image *scaleScale2x(const Image *src, int scale, int N)
 {
-    int ii, x, y, xoff0, xoff1, yoff0, yoff1;
+    int ii, x, y, x_offset_0, x_offset_1, y_offset_0, y_offset_1;
     RGBA a, b, c, d, e, f, g, h, i;
     RGBA e0, e1, e2, e3;
     RGBA e4, e5, e6, e7;
@@ -467,64 +470,64 @@ static Image *scaleScale2x(const Image *src, int scale, int N)
      * G H I
      */
     for (ii = 0; ii < N; ii++) {
-        for (y = (src->height() / N) * ii;
-             y < (src->height() / N) * (ii + 1);
+        for (y = src->height() / N * ii;
+             y < src->height() / N * (ii + 1);
              y++) {
             if (y == 0) {
-                yoff0 = 0;
+                y_offset_0 = 0;
             } else {
-                yoff0 = -1;
+                y_offset_0 = -1;
             }
-            if (y == (src->height() / N) * (ii + 1) - 1) {
-                yoff1 = 0;
+            if (y == src->height() / N * (ii + 1) - 1) {
+                y_offset_1 = 0;
             } else {
-                yoff1 = 1;
+                y_offset_1 = 1;
             }
             for (x = 0; x < src->width(); x++) {
                 if (x == 0) {
-                    xoff0 = 0;
+                    x_offset_0 = 0;
                 } else {
-                    xoff0 = -1;
+                    x_offset_0 = -1;
                 }
                 if (x == src->width() - 1) {
-                    xoff1 = 0;
+                    x_offset_1 = 0;
                 } else {
-                    xoff1 = 1;
+                    x_offset_1 = 1;
                 }
-                src->getPixel(x + xoff0, y + yoff0, a.r, a.g, a.b, a.a);
-                src->getPixel(x, y + yoff0, b.r, b.g, b.b, b.a);
-                src->getPixel(x + xoff1, y + yoff0, c.r, c.g, c.b, c.a);
-                src->getPixel(x + xoff0, y, d.r, d.g, d.b, d.a);
+                src->getPixel(x + x_offset_0, y + y_offset_0, a.r, a.g, a.b, a.a);
+                src->getPixel(x, y + y_offset_0, b.r, b.g, b.b, b.a);
+                src->getPixel(x + x_offset_1, y + y_offset_0, c.r, c.g, c.b, c.a);
+                src->getPixel(x + x_offset_0, y, d.r, d.g, d.b, d.a);
                 src->getPixel(x, y, e.r, e.g, e.b, e.a);
-                src->getPixel(x + xoff1, y, f.r, f.g, f.b, f.a);
-                src->getPixel(x + xoff0, y + yoff1, g.r, g.g, g.b, g.a);
-                src->getPixel(x, y + yoff1, h.r, h.g, h.b, h.a);
-                src->getPixel(x + xoff1, y + yoff1, i.r, i.g, i.b, i.a);
-                // lissen diagonals (45deg,135deg,225deg,315deg)
+                src->getPixel(x + x_offset_1, y, f.r, f.g, f.b, f.a);
+                src->getPixel(x + x_offset_0, y + y_offset_1, g.r, g.g, g.b, g.a);
+                src->getPixel(x, y + y_offset_1, h.r, h.g, h.b, h.a);
+                src->getPixel(x + x_offset_1, y + y_offset_1, i.r, i.g, i.b, i.a);
+                // Lissen diagonals (45deg,135deg,225deg,315deg)
                 // corner : if there is gradient towards
                 // a diagonal direction, take the color
                 // of surrounding points in this direction
                 e0 = colorEqual(d, b)
-                    && (!colorEqual(b, f))
-                    && (!colorEqual(d, h)) ?
+                    && !colorEqual(b, f)
+                    && !colorEqual(d, h) ?
                     d :
                     e;
                 e1 = colorEqual(b, f)
-                    && (!colorEqual(b, d))
-                    && (!colorEqual(f, h)) ?
+                    && !colorEqual(b, d)
+                    && !colorEqual(f, h) ?
                     f :
                     e;
                 e2 = colorEqual(d, h)
-                    && (!colorEqual(d, b))
-                    && (!colorEqual(h, f)) ?
+                    && !colorEqual(d, b)
+                    && !colorEqual(h, f) ?
                     d :
                     e;
                 e3 = colorEqual(h, f)
-                    && (!colorEqual(d, h))
-                    && (!colorEqual(b, f)) ?
+                    && !colorEqual(d, h)
+                    && !colorEqual(b, f) ?
                     f :
                     e;
-                // lissen eight more directions
+                // Lissen eight more directions
                 // (22deg or 67deg, 112deg or 157deg...)
                 // middle of side : if there is a gradient
                 // towards one of these directions (middle

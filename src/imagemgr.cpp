@@ -22,7 +22,7 @@
 
 ImageInfo *ImageMgr::screenInfo = nullptr;
 
-Image *screenScale(Image *src, int scale, int n, int filter);
+Image *screenScale(const Image *src, int scale, int n, int filter);
 
 bool ImageInfo::hasBlackBackground() const
 {

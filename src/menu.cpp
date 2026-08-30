@@ -45,8 +45,8 @@ void Menu::removeAll()
 void Menu::add(
     const int id,
     const std::string &text,
-    const short x,
-    const short y,
+    int x,
+    int y,
     const int sc
 )
 {

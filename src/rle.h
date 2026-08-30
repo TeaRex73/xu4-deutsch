@@ -8,27 +8,27 @@
 #ifdef __cplusplus
 extern "C" {
 #include <cstdio>
-#define STDFILE std::FILE
+#define STD_FILE std::FILE
 #else
 #include <stdio.h>
-#define STDFILE FILE
+#define STD_FILE FILE
 #endif
 
-#define RLE_RUNSTART 02
+#define RLE_RUN_START 02
 
-long rleDecompressFile(STDFILE *in, long inlen, unsigned char **out);
+long rleDecompressFile(STD_FILE *in, long in_len, unsigned char **out);
 long rleDecompressMemory(
-    const unsigned char *in, long inlen, unsigned char **out
+    const unsigned char *in, long in_len, unsigned char **out
 );
-long rleGetDecompressedSize(const unsigned char *indata, long inlen);
+long rleGetDecompressedSize(const unsigned char *in_data, long in_len);
 long rleDecompress(
-    const unsigned char *indata,
-    long inlen,
-    unsigned char *outdata,
-    long outlen
+    const unsigned char *in_data,
+    long in_len,
+    unsigned char *out_data,
+    long out_len
 );
 
-#undef STDFILE
+#undef STD_FILE
 #ifdef __cplusplus
 }
 #endif

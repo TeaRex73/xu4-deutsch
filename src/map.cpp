@@ -337,7 +337,7 @@ const Portal *Map::portalAt(const Coords &coords, const int actionFlags) const
         portals.cbegin(),
         portals.cend(),
         [&](const Portal *v) -> bool {
-            return v->coords == coords && v->trigger_action & actionFlags;
+            return v->coords == coords && v->triggerAction & actionFlags;
         }
     );
     if (i != portals.cend()) {
@@ -901,7 +901,7 @@ bool Map::fillMonsterTable(const Location *loc)
     int nCreatures = 0;
     int nObjects = 0;
     int i;
-    for (i = 0; i < MONSTERTABLE_SIZE; i++) {
+    for (i = 0; i < MONSTER_TABLE_SIZE; i++) {
         monster_table[i] = {};
     }
     /**
@@ -948,7 +948,7 @@ bool Map::fillMonsterTable(const Location *loc)
     /* limit forces of nature */
     /* sort first so that, if any, those furthest away get thrown out */
     std::sort(monsters.begin(), monsters.end(), isCloser);
-    while(nForcesOfNature > MONSTERTABLE_FORCESOFNATURE_SIZE) {
+    while(nForcesOfNature > MONSTER_TABLE_FORCES_OF_NATURE_SIZE) {
         monsters.pop_back();
         nForcesOfNature--;
     }
@@ -965,8 +965,8 @@ bool Map::fillMonsterTable(const Location *loc)
     /* limit monsters */
     int limitForCreatures =
         type == DUNGEON ?
-        MONSTERTABLE_SIZE :
-        MONSTERTABLE_CREATURES_SIZE;
+        MONSTER_TABLE_SIZE :
+        MONSTER_TABLE_CREATURES_SIZE;
 
     while (nCreatures > limitForCreatures) {
         monsters.pop_back();
@@ -1004,7 +1004,7 @@ bool Map::fillMonsterTable(const Location *loc)
             inanimate_objects.pop_front();
         }
         /* limit objects */
-        while (nObjects > MONSTERTABLE_OBJECTS_SIZE) {
+        while (nObjects > MONSTER_TABLE_OBJECTS_SIZE) {
             monsters.pop_back();
             nObjects--;
         }
@@ -1012,23 +1012,23 @@ bool Map::fillMonsterTable(const Location *loc)
     /**
      * Fill in the blanks
      */
-    while (monsters.size() < MONSTERTABLE_SIZE) {
+    while (monsters.size() < MONSTER_TABLE_SIZE) {
         monsters.push_back(&empty);
     }
     /**
      * Fill in our monster table
      */
-    for (i = 0; i < MONSTERTABLE_SIZE; i++) {
+    for (i = 0; i < MONSTER_TABLE_SIZE; i++) {
         const Coords &co = monsters[i]->getCoords(),
             &prev_co = monsters[i]->getPrevCoords();
         monster_table[i].tile =
             TileMap::get("base")->untranslate(monsters[i]->getTile());
         monster_table[i].x = co.x;
         monster_table[i].y = co.y;
-        monster_table[i].prevTile =
+        monster_table[i].previous_tile =
             TileMap::get("base")->untranslate(monsters[i]->getPrevTile());
-        monster_table[i].prevx = prev_co.x;
-        monster_table[i].prevy = prev_co.y;
+        monster_table[i].previous_x = prev_co.x;
+        monster_table[i].previous_y = prev_co.y;
         monster_table[i].z = type == DUNGEON ? co.z : 0;
         monster_table[i].unused = 0;
     }
@@ -1041,7 +1041,7 @@ MapTile Map::translateFromRawTile(const int raw) const
     return tilemap->translate(raw);
 }
 
-unsigned int Map::translateToRawTile(const MapTile tile) const
+int Map::translateToRawTile(const MapTile tile) const
 {
     U4ASSERT(tilemap != nullptr, "tilemap hasn't been set");
     return tilemap->untranslate(tile);

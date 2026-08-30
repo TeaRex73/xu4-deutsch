@@ -76,7 +76,7 @@ static const ItemLocation items[] = {
         .isItemInInventory = &isReagentInInventory,
         .putItemInInventory = &putReagentInInventory,
         .useItem = nullptr,
-        .data = REAG_MANDRAKE,
+        .data = REAGENT_MANDRAKE,
         .conditions = SC_NEW_MOONS | SC_REAGENT_DELAY
     },
     {
@@ -86,7 +86,7 @@ static const ItemLocation items[] = {
         .isItemInInventory = &isReagentInInventory,
         .putItemInInventory = &putReagentInInventory,
         .useItem = nullptr,
-        .data = REAG_MANDRAKE,
+        .data = REAGENT_MANDRAKE,
         .conditions = SC_NEW_MOONS | SC_REAGENT_DELAY
     },
     {
@@ -96,7 +96,7 @@ static const ItemLocation items[] = {
         .isItemInInventory = &isReagentInInventory,
         .putItemInInventory = &putReagentInInventory,
         .useItem = nullptr,
-        .data = REAG_NIGHTSHADE,
+        .data = REAGENT_NIGHTSHADE,
         .conditions = SC_NEW_MOONS | SC_REAGENT_DELAY
     },
     {
@@ -106,7 +106,7 @@ static const ItemLocation items[] = {
         .isItemInInventory = &isReagentInInventory,
         .putItemInInventory = &putReagentInInventory,
         .useItem = nullptr,
-        .data = REAG_NIGHTSHADE,
+        .data = REAGENT_NIGHTSHADE,
         .conditions = SC_NEW_MOONS | SC_REAGENT_DELAY
     },
     {
@@ -308,7 +308,7 @@ static const ItemLocation items[] = {
         .isItemInInventory = &isMysticInInventory,
         .putItemInInventory = &putMysticInInventory,
         .useItem = nullptr,
-        .data = ARMR_MYSTICROBES,
+        .data = ARMOR_MYSTIC_ROBES,
         .conditions = SC_FULL_AVATAR
     },
     {
@@ -318,7 +318,7 @@ static const ItemLocation items[] = {
         .isItemInInventory = &isMysticInInventory,
         .putItemInInventory = &putMysticInInventory,
         .useItem = nullptr,
-        .data = WEAP_MYSTICSWORD,
+        .data = WEAPON_MYSTIC_SWORD,
         .conditions = SC_FULL_AVATAR
     },
     {
@@ -426,7 +426,7 @@ static void putRuneInInventory(const int virtue)
     c->party->member(0)->awardXp(100);
     c->party->adjustKarma(KA_FOUND_ITEM);
     c->saveGame->runes |= virtue;
-    c->saveGame->lastreagent = c->saveGame->moves & 0xF0;
+    c->saveGame->last_reagent = c->saveGame->moves & 0xF0;
 }
 
 bool isStoneInInventory(const int virtue)
@@ -444,7 +444,7 @@ static void putStoneInInventory(const int virtue)
     c->party->member(0)->awardXp(200);
     c->party->adjustKarma(KA_FOUND_ITEM);
     c->saveGame->stones |= virtue;
-    c->saveGame->lastreagent = c->saveGame->moves & 0xF0;
+    c->saveGame->last_reagent = c->saveGame->moves & 0xF0;
 }
 
 static bool isItemInInventory(const int item)
@@ -465,7 +465,7 @@ static void putItemInInventory(const int item)
     c->party->member(0)->awardXp(400);
     c->party->adjustKarma(KA_FOUND_ITEM);
     c->saveGame->items |= item;
-    c->saveGame->lastreagent = c->saveGame->moves & 0xF0;
+    c->saveGame->last_reagent = c->saveGame->moves & 0xF0;
 }
 
 
@@ -540,7 +540,7 @@ static void useHorn(int)
 static void useWheel(int)
 {
     if (c->transportContext == TRANSPORT_SHIP
-        && c->saveGame->shiphull == 50) {
+        && c->saveGame->ship_hull == 50) {
         screenMessage(
             "\n\nNACH DEM EINBAU ERGL]HT DAS STEUER IN BLAUEM LICHTE!\n"
         );
@@ -614,13 +614,13 @@ static void useStone(const int item)
                 static const unsigned char *attr = nullptr;
                 needStoneNames--;
                 switch (cm->getAltarRoom()) {
-                case VIRT_TRUTH:
+                case VIRTUE_TRUTH:
                     attr = &truth;
                     break;
-                case VIRT_LOVE:
+                case VIRTUE_LOVE:
                     attr = &love;
                     break;
-                case VIRT_COURAGE:
+                case VIRTUE_COURAGE:
                     attr = &courage;
                     break;
                 default:
@@ -653,13 +653,13 @@ static void useStone(const int item)
                 else {
                     unsigned short key;
                     switch (cm->getAltarRoom()) {
-                    case VIRT_TRUTH:
+                    case VIRTUE_TRUTH:
                         key = ITEM_KEY_T;
                         break;
-                    case VIRT_LOVE:
+                    case VIRTUE_LOVE:
                         key = ITEM_KEY_L;
                         break;
-                    case VIRT_COURAGE:
+                    case VIRTUE_COURAGE:
                         key = ITEM_KEY_C;
                         break;
                     default:
@@ -787,11 +787,11 @@ static bool isMysticInInventory(const int mystic)
        This would be a good candidate for an xu4 "extended" savegame
        format.
     */
-    if (mystic == WEAP_MYSTICSWORD) {
-        return c->saveGame->weapons[WEAP_MYSTICSWORD] > 0;
+    if (mystic == WEAPON_MYSTIC_SWORD) {
+        return c->saveGame->weapons[WEAPON_MYSTIC_SWORD] > 0;
     }
-    if (mystic == ARMR_MYSTICROBES) {
-        return c->saveGame->armor[ARMR_MYSTICROBES] > 0;
+    if (mystic == ARMOR_MYSTIC_ROBES) {
+        return c->saveGame->armor[ARMOR_MYSTIC_ROBES] > 0;
     }
     U4ASSERT(0, "Invalid mystic item was tested in isMysticInInventory()");
     return false;
@@ -801,14 +801,14 @@ static void putMysticInInventory(const int mystic)
 {
     c->party->member(0)->awardXp(400);
     c->party->adjustKarma(KA_FOUND_ITEM);
-    if (mystic == WEAP_MYSTICSWORD) {
-        c->saveGame->weapons[WEAP_MYSTICSWORD] += 8;
-    } else if (mystic == ARMR_MYSTICROBES) {
-        c->saveGame->armor[ARMR_MYSTICROBES] += 8;
+    if (mystic == WEAPON_MYSTIC_SWORD) {
+        c->saveGame->weapons[WEAPON_MYSTIC_SWORD] += 8;
+    } else if (mystic == ARMOR_MYSTIC_ROBES) {
+        c->saveGame->armor[ARMOR_MYSTIC_ROBES] += 8;
     } else {
         U4ASSERT(0, "Invalid mystic item was added in putMysticInInventory()");
     }
-    c->saveGame->lastreagent = c->saveGame->moves & 0xF0;
+    c->saveGame->last_reagent = c->saveGame->moves & 0xF0;
 }
 
 static bool isWeaponInInventory(const int weapon)
@@ -854,7 +854,7 @@ static void putReagentInInventory(const int reagent)
 {
     c->party->adjustKarma(KA_FOUND_ITEM);
     c->saveGame->reagents[reagent] += xu4_random(8) + 2;
-    c->saveGame->lastreagent = c->saveGame->moves & 0xF0;
+    c->saveGame->last_reagent = c->saveGame->moves & 0xF0;
     if (c->saveGame->reagents[reagent] > 99) {
         c->saveGame->reagents[reagent] = 99;
         screenMessage("ZUM TEIL VERLOREN!\n");
@@ -868,8 +868,8 @@ static void putReagentInInventory(const int reagent)
 static bool itemConditionsMet(const unsigned int conditions)
 {
     if (conditions & SC_NEW_MOONS
-        && !(c->saveGame->trammelphase == 0
-             && c->saveGame->feluccaphase == 0)) {
+        && !(c->saveGame->trammel_phase == 0
+             && c->saveGame->felucca_phase == 0)) {
         return false;
     }
     if (conditions & SC_FULL_AVATAR) {
@@ -880,7 +880,7 @@ static bool itemConditionsMet(const unsigned int conditions)
         }
     }
     if (conditions & SC_REAGENT_DELAY
-        && (c->saveGame->moves & 0xF0) == c->saveGame->lastreagent) {
+        && (c->saveGame->moves & 0xF0) == c->saveGame->last_reagent) {
         return false;
     }
     return true;

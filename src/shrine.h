@@ -19,7 +19,7 @@ class Shrine:public Map {
 public:
     Shrine()
       :name(),
-       virtue(VIRT_MAX),
+       virtue(VIRTUE_MAX),
        mantra()
     {
     }

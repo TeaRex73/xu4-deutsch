@@ -7,11 +7,11 @@
 
 #include "direction.h"
 
-enum ClassType : unsigned char;
-enum Item : unsigned short;
-enum Reagent : unsigned char;
-enum SexType : unsigned char;
-enum Virtue : unsigned char;
+enum ClassType: unsigned char;
+enum Item: unsigned short;
+enum Reagent: unsigned char;
+enum SexType: unsigned char;
+enum Virtue: unsigned char;
 
 /*
  * These routines convert the various enumerations for classes, reagents,
@@ -28,4 +28,4 @@ const char *getStoneName(Virtue virtue);
 const char *getItemName(Item item);
 const char *getDirectionName(Direction dir);
 
-#endif
+#endif // NAMES_H

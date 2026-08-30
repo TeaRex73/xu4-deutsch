@@ -92,13 +92,13 @@ void CampController::begin()
         bool healed = false;
         if (c->saveGame->moves / CAMP_HEAL_INTERVAL >= 0x10000
             || (c->saveGame->moves / CAMP_HEAL_INTERVAL & 0xffff)
-            != c->saveGame->lastcamp) {
+            != c->saveGame->last_camp) {
             healed = heal();
         }
         screenMessage(healed ?
                       "SPIELER GEHEILT!\n" :
                       "KEINE WIRKUNG.\n");
-        c->saveGame->lastcamp =
+        c->saveGame->last_camp =
             c->saveGame->moves / CAMP_HEAL_INTERVAL & 0xffff;
         eventHandler->popController();
         game->exitToParentMap();
@@ -122,7 +122,7 @@ bool CampController::heal()
     for (int i = 0; i < c->party->size(); i++) {
         PartyMember *m = c->party->member(i);
         m->setMp(m->getMaxMp());
-        if (m->getHp() < m->getMaxHp() && m->heal(HT_CAMPHEAL)) {
+        if (m->getHp() < m->getMaxHp() && m->heal(HT_CAMP_HEAL)) {
             healed = true;
         }
     }
@@ -194,7 +194,7 @@ bool InnController::heal()
     for (int i = 0; i < c->party->size(); i++) {
         PartyMember *m = c->party->member(i);
         m->setMp(m->getMaxMp());
-        if (m->getHp() < m->getMaxHp() && m->heal(HT_INNHEAL)) {
+        if (m->getHp() < m->getMaxHp() && m->heal(HT_INN_HEAL)) {
             healed = true;
         }
     }

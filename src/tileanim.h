@@ -33,9 +33,7 @@ public:
     TileAnimTransform &operator=(const TileAnimTransform &) = delete;
     TileAnimTransform &operator=(TileAnimTransform &&) = delete;
 
-    virtual ~TileAnimTransform()
-    {
-    }
+    virtual ~TileAnimTransform() = default;
 
     static TileAnimTransform *create(const ConfigElement &conf);
     static RGBA *loadColorFromConf(const ConfigElement &conf);
@@ -53,8 +51,8 @@ public:
 class TileAnimInvertTransform:public TileAnimTransform {
 public:
     TileAnimInvertTransform(int x, int y, int w, int h);
-    virtual void draw(Image *dest, Tile *tile, MapTile mapTile) override;
-    virtual bool drawsTile() const override;
+    void draw(Image *dest, Tile *tile, MapTile mapTile) override;
+    bool drawsTile() const override;
 
 private:
     int x, y, w, h;
@@ -69,9 +67,9 @@ private:
 class TileAnimPixelTransform:public TileAnimTransform {
 public:
     TileAnimPixelTransform(int x, int y);
-    virtual ~TileAnimPixelTransform();
-    virtual void draw(Image *dest, Tile *tile, MapTile mapTile) override;
-    virtual bool drawsTile() const override;
+    ~TileAnimPixelTransform() override;
+    void draw(Image *dest, Tile *tile, MapTile mapTile) override;
+    bool drawsTile() const override;
     int x, y;
     std::vector<RGBA *> colors;
 };
@@ -84,8 +82,8 @@ public:
 class TileAnimScrollTransform:public TileAnimTransform {
 public:
     explicit TileAnimScrollTransform(int i);
-    virtual void draw(Image *dest, Tile *tile, MapTile mapTile) override;
-    virtual bool drawsTile() const override;
+    void draw(Image *dest, Tile *tile, MapTile mapTile) override;
+    bool drawsTile() const override;
 
 private:
     int increment, current, lastOffset;
@@ -98,12 +96,10 @@ private:
  */
 class TileAnimScrambleTransform:public TileAnimTransform {
 public:
-    TileAnimScrambleTransform()
-    {
-    }
+    TileAnimScrambleTransform() = default;
 
-    virtual void draw(Image *dest, Tile *tile, MapTile mapTile) override;
-    virtual bool drawsTile() const override;
+    void draw(Image *dest, Tile *tile, MapTile mapTile) override;
+    bool drawsTile() const override;
 };
 
 

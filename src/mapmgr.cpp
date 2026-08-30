@@ -277,7 +277,7 @@ Portal *MapMgr::initPortalFromConf(const ConfigElement &portalConf)
         portalConf.getInt("y"),
         portalConf.getInt("z", 0)
     );
-    portal->destid = static_cast<MapId>(portalConf.getInt("destmapid"));
+    portal->destId = static_cast<MapId>(portalConf.getInt("destmapid"));
     portal->start.x =
         static_cast<unsigned short>(portalConf.getInt("startx"));
     portal->start.y =
@@ -286,21 +286,21 @@ Portal *MapMgr::initPortalFromConf(const ConfigElement &portalConf)
         static_cast<unsigned short>(portalConf.getInt("startlevel", 0));
     std::string prop = portalConf.getString("action");
     if (prop == "none") {
-        portal->trigger_action = ACTION_NONE;
+        portal->triggerAction = ACTION_NONE;
     } else if (prop == "enter") {
-        portal->trigger_action = ACTION_ENTER;
+        portal->triggerAction = ACTION_ENTER;
     } else if (prop == "klimb") {
-        portal->trigger_action = ACTION_KLIMB;
+        portal->triggerAction = ACTION_KLIMB;
     } else if (prop == "descend") {
-        portal->trigger_action = ACTION_DESCEND;
+        portal->triggerAction = ACTION_DESCEND;
     } else if (prop == "exit_north") {
-        portal->trigger_action = ACTION_EXIT_NORTH;
+        portal->triggerAction = ACTION_EXIT_NORTH;
     } else if (prop == "exit_east") {
-        portal->trigger_action = ACTION_EXIT_EAST;
+        portal->triggerAction = ACTION_EXIT_EAST;
     } else if (prop == "exit_south") {
-        portal->trigger_action = ACTION_EXIT_SOUTH;
+        portal->triggerAction = ACTION_EXIT_SOUTH;
     } else if (prop == "exit_west") {
-        portal->trigger_action = ACTION_EXIT_WEST;
+        portal->triggerAction = ACTION_EXIT_WEST;
     } else {
         errorFatal("unknown trigger_action: %s", prop.c_str());
     }

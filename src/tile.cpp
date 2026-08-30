@@ -21,7 +21,6 @@ TileId Tile::nextId = 0;
 
 Tile::Tile(Tileset *tileset)
     :id(nextId++),
-     name(),
      tileset(tileset),
      w(0),
      h(0),
@@ -32,12 +31,8 @@ Tile::Tile(Tileset *tileset)
      foreground(),
      waterForeground(),
      rule(nullptr),
-     imageName(),
-     looks_like(),
      image(nullptr),
-     tiledInDungeon(false),
-     directions(),
-     animationRule("")
+     tiledInDungeon(false)
 {
 }
 
@@ -180,11 +175,11 @@ void Tile::loadImage()
         }
 
         info->image->alphaOff();
-        if (animationRule.size() > 0) {
-            extern TileAnimSet *tileanims;
+        if (!animationRule.empty()) {
+            extern TileAnimSet *tileAnimations;
             anim = nullptr;
-            if (tileanims) {
-                anim = tileanims->getByName(animationRule);
+            if (tileAnimations) {
+                anim = tileAnimations->getByName(animationRule);
             }
             if (anim == nullptr) {
                 errorWarning(

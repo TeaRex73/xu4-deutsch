@@ -28,7 +28,7 @@ typedef enum {
 
 class MenuItem {
 public:
-    MenuItem(std::string t, short x_pos, short y_pos, int sc = -1);
+    MenuItem(std::string t, int x_pos, int y_pos, int sc = -1);
 
     MenuItem(const MenuItem &) = delete;
     MenuItem(MenuItem &&) = delete;
@@ -82,7 +82,7 @@ protected:
 class BoolMenuItem:public MenuItem {
 public:
     BoolMenuItem(
-        const std::string &text, short x, short y, int shortcutKey, bool *val
+        const std::string &text, int x, int y, int shortcutKey, bool *val
     );
     BoolMenuItem(const BoolMenuItem &) = delete;
     BoolMenuItem(BoolMenuItem &&) = delete;
@@ -109,8 +109,8 @@ class StringMenuItem:public MenuItem {
 public:
     StringMenuItem(
         const std::string &text,
-        short x,
-        short y,
+        int x,
+        int y,
         int shortcutKey,
         std::string *val,
         const std::vector<std::string> &validSettings
@@ -137,8 +137,8 @@ class IntMenuItem:public MenuItem {
 public:
     IntMenuItem(
         const std::string &text,
-        short x,
-        short y,
+        int x,
+        int y,
         int shortcutKey,
         int *val,
         int min,
@@ -168,8 +168,8 @@ class UnsignedShortMenuItem:public MenuItem {
 public:
     UnsignedShortMenuItem(
         const std::string &text,
-        short x,
-        short y,
+        int x,
+        int y,
         int shortcutKey,
         unsigned short *val,
         unsigned short min,

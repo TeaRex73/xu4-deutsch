@@ -54,13 +54,16 @@ Person *City::addPerson(const Person *person)
     // Make a copy of the person before adding them, so
     // things like angering the guards, etc. will be
     // forgotten the next time you visit :)
-    auto *p = new Person(person);
-    /* set the start coordinates for the person */
-    p->setMap(this);
-    p->goToStartLocation();
-    personObjects.push_back(p);
-    objects.push_back(p);
-    return p;
+    if (person) {
+        auto *p = new Person(*person);
+        /* set the start coordinates for the person */
+        p->setMap(this);
+        p->goToStartLocation();
+        personObjects.push_back(p);
+        objects.push_back(p);
+        return p;
+    }
+    return nullptr;
 }
 
 

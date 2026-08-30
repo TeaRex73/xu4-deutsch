@@ -30,7 +30,7 @@ typedef bool (*PortalConditionsMet)(const Portal *p);
 class PortalDestination {
 public:
     PortalDestination()
-        :coords(), mapid(0)
+        : mapid(0)
     {
     }
 
@@ -41,16 +41,13 @@ public:
 class Portal {
 public:
     Portal()
-        :coords(),
-         destid(0),
-         start(),
-         trigger_action(ACTION_NONE),
-         portalConditionsMet(nullptr),
-         retroActiveDest(nullptr),
-         saveLocation(false),
-         message(),
-         portalTransportRequisites(TRANSPORT_ANY),
-         exitPortal(false)
+        : destId(0),
+          triggerAction(ACTION_NONE),
+          portalConditionsMet(nullptr),
+          retroActiveDest(nullptr),
+          saveLocation(false),
+          portalTransportRequisites(TRANSPORT_ANY),
+          exitPortal(false)
     {
     }
 
@@ -61,9 +58,9 @@ public:
     Portal &operator=(Portal &&) = delete;
 
     MapCoords coords;
-    MapId destid;
+    MapId destId;
     MapCoords start;
-    PortalTriggerAction trigger_action;
+    PortalTriggerAction triggerAction;
     PortalConditionsMet portalConditionsMet;
     PortalDestination *retroActiveDest;
     bool saveLocation;
@@ -73,11 +70,11 @@ public:
 };
 
 void createDngLadder(
-    Location *location, PortalTriggerAction action, Portal *p
+    const Location *location, PortalTriggerAction action, Portal *p
 );
 
 bool usePortalAt(
     Location *location, const MapCoords &coords, PortalTriggerAction action
 );
 
-#endif // ifndef PORTAL_H
+#endif // PORTAL_H

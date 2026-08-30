@@ -597,7 +597,7 @@ void Creature::act(const CombatController *controller)
                 controller->getMap()->getPartyMembers();
             for (auto *j: party) {
                 if (xu4_random(2) == 0) {
-                    j->putToSleep();
+                    j->putToSleep(true);
                 }
             }
         }

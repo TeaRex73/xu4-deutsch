@@ -64,7 +64,7 @@ public:
     Menu();
     ~Menu() override;
     void removeAll();
-    void add(int id, const std::string &text, short x, short y, int sc = -1);
+    void add(int id, const std::string &text, int x, int y, int sc = -1);
     MenuItem *add(int id, MenuItem *item);
     void addShortcutKey(int id, int shortcutKey) const;
     void setClosesMenu(int id) const;

@@ -7,18 +7,21 @@
 #include "progress_bar.h"
 
 #include "image.h"
-#include "settings.h"
+#include "view.h"
 
 ProgressBar::ProgressBar(
-    int x, int y, int width, int height, int _min, int _max
+    const int x,
+    const int y,
+    const int width,
+    const int height,
+    const int _min,
+    const int _max
 )
     :View(x, y, width, height),
      min(_min),
      max(_max),
      current(_min),
-     color(),
-     bcolor(),
-     bwidth(0)
+     border_width(0)
 {
 }
 
@@ -38,24 +41,24 @@ ProgressBar &ProgressBar::operator--()
 
 void ProgressBar::draw()
 {
-    Image *bar = Image::create(
+    const Image *bar = Image::create(
         SCALED(width), SCALED(height), false, Image::SOFTWARE
     );
     bar->alphaOff();
-    int pos = static_cast<int>(
-        (static_cast<double>(current - min) / static_cast<double>(max - min))
-                * (width - (bwidth * 2))
+    const int pos = static_cast<int>(
+        static_cast<double>(current - min) / static_cast<double>(max - min)
+                * (width - border_width * 2)
     );
     // border color
     bar->fillRect(
-        0, 0, SCALED(width), SCALED(height), bcolor.r, bcolor.g, bcolor.b
+        0, 0, SCALED(width), SCALED(height), border_color.r, border_color.g, border_color.b
     );
     // color
     bar->fillRect(
-        SCALED(bwidth),
-        SCALED(bwidth),
+        SCALED(border_width),
+        SCALED(border_width),
         SCALED(pos),
-        SCALED(height - (bwidth * 2)),
+        SCALED(height - border_width * 2),
         color.r,
         color.g,
         color.b
@@ -65,20 +68,22 @@ void ProgressBar::draw()
     delete bar;
 }
 
-void ProgressBar::setBorderColor(int r, int g, int b, int a)
+void ProgressBar::setBorderColor(
+    const int r, const int g, const int b, const int a
+)
 {
-    bcolor.r = r;
-    bcolor.g = g;
-    bcolor.b = b;
-    bcolor.a = a;
+    border_color.r = r;
+    border_color.g = g;
+    border_color.b = b;
+    border_color.a = a;
 }
 
-void ProgressBar::setBorderWidth(unsigned int width)
+void ProgressBar::setBorderWidth(const int width)
 {
-    bwidth = width;
+    border_width = width;
 }
 
-void ProgressBar::setColor(int r, int g, int b, int a)
+void ProgressBar::setColor(const int r, const int g, const int b, const int a)
 {
     color.r = r;
     color.g = g;

@@ -5,19 +5,25 @@
 #include "vc6.h" // Fixes things if you're using VC6, does nothing otherwise
 
 #include <cstdlib>
+#include <string>
+#include <utility>
+#include <vector>
 
 #include "player.h"
 
 #include "annotation.h"
 #include "armor.h"
 #include "context.h"
+#include "creature.h"
 #include "debug.h"
+#include "direction.h"
 #include "game.h"
 #include "location.h"
 #include "map.h"
 #include "mapmgr.h"
 #include "names.h"
 #include "object.h"
+#include "savegame.h"
 #include "settings.h"
 #include "sound.h"
 #include "tile.h"
@@ -30,13 +36,12 @@
 class Coords;
 
 
-bool isPartyMember(Object *punknown)
+bool isPartyMember(Object *p_unknown)
 {
-    if (dynamic_cast<PartyMember *>(punknown) != nullptr) {
+    if (dynamic_cast<PartyMember *>(p_unknown) != nullptr) {
         return true;
-    } else {
-        return false;
     }
+    return false;
 }
 
 
@@ -46,15 +51,11 @@ bool isPartyMember(Object *punknown)
 PartyMember::PartyMember(Party *p, SaveGamePlayerRecord *pr)
     :Creature(tileForClass(pr->klass)), player(pr), party(p)
 {
-    setType(Object::PARTYMEMBER);
+    setType(PARTY_MEMBER);
     /* FIXME: we need to rename movement behaviors */
     setMovementBehavior(MOVEMENT_ATTACK_AVATAR);
     this->ranged = Weapon::get(pr->weapon)->getRange() ? 1 : 0;
     PartyMember::setStatus(pr->status);
-}
-
-PartyMember::~PartyMember()
-{
 }
 
 
@@ -74,43 +75,57 @@ void PartyMember::notifyOfChange()
  */
 std::string PartyMember::translate(std::vector<std::string> &parts)
 {
-    if (parts.size() == 0) {
+    if (parts.empty()) {
         return "";
-    } else if (parts.size() == 1) {
+    }
+    if (parts.size() == 1) {
         if (parts[0] == "hp") {
             return xu4_to_string(getHp());
-        } else if (parts[0] == "max_hp") {
+        }
+        if (parts[0] == "max_hp") {
             return xu4_to_string(getMaxHp());
-        } else if (parts[0] == "mp") {
+        }
+        if (parts[0] == "mp") {
             return xu4_to_string(getMp());
-        } else if (parts[0] == "max_mp") {
+        }
+        if (parts[0] == "max_mp") {
             return xu4_to_string(getMaxMp());
-        } else if (parts[0] == "str") {
+        }
+        if (parts[0] == "str") {
             return xu4_to_string(getStr());
-        } else if (parts[0] == "dex") {
+        }
+        if (parts[0] == "dex") {
             return xu4_to_string(getDex());
-        } else if (parts[0] == "int") {
+        }
+        if (parts[0] == "int") {
             return xu4_to_string(getInt());
-        } else if (parts[0] == "exp") {
+        }
+        if (parts[0] == "exp") {
             return xu4_to_string(getExp());
-        } else if (parts[0] == "name") {
+        }
+        if (parts[0] == "name") {
             return getName();
-        } else if (parts[0] == "weapon") {
+        }
+        if (parts[0] == "weapon") {
             return getWeapon()->getName();
-        } else if (parts[0] == "armor") {
+        }
+        if (parts[0] == "armor") {
             return getArmor()->getName();
-        } else if (parts[0] == "sex") {
+        }
+        if (parts[0] == "sex") {
             std::string var = " ";
-            SexType s = getSex();
+            const SexType s = getSex();
             if (s == SEX_MALE) {
                 var[0] = 'm';
             } else if (s == SEX_FEMALE) {
                 var[0] = 'f';
             }
             return var;
-        } else if (parts[0] == "class") {
+        }
+        if (parts[0] == "class") {
             return getClassNameEnglish(getClass());
-        } else if (parts[0] == "level") {
+        }
+        if (parts[0] == "level") {
             return xu4_to_string(getRealLevel());
         }
     } else if (parts.size() == 2) {
@@ -118,21 +133,20 @@ std::string PartyMember::translate(std::vector<std::string> &parts)
             if (parts[1] == "cure") {
                 if (getStatus() == STAT_POISONED) {
                     return "true";
-                } else {
-                    return "false";
                 }
-            } else if ((parts[1] == "heal") || (parts[1] == "fullheal")) {
+                return "false";
+            }
+            if (parts[1] == "heal" || parts[1] == "fullheal") {
                 if (getHp() < getMaxHp()) {
                     return "true";
-                } else {
-                    return "false";
                 }
-            } else if (parts[1] == "resurrect") {
+                return "false";
+            }
+            if (parts[1] == "resurrect") {
                 if (getStatus() == STAT_DEAD) {
                     return "true";
-                } else {
-                    return "false";
                 }
+                return "false";
             }
         }
     }
@@ -216,11 +230,11 @@ CreatureState PartyMember::getState() const
 {
     if (getHp() <= 0) {
         return M_STAT_DEAD;
-    } else if (getHp() < 24) {
-        return M_STAT_FLEEING;
-    } else {
-        return M_STAT_BARELY_WOUNDED;
     }
+    if (getHp() < 24) {
+        return M_STAT_FLEEING;
+    }
+    return M_STAT_BARELY_WOUNDED;
 }
 
 
@@ -229,7 +243,7 @@ CreatureState PartyMember::getState() const
  */
 int PartyMember::getRealLevel() const
 {
-    return player->hpMax / 100;
+    return player->hp_max / 100;
 }
 
 
@@ -251,7 +265,7 @@ int PartyMember::getMaxLevel() const
 /**
  * Adds a status effect to the player
  */
-void PartyMember::addStatus(StatusType s)
+void PartyMember::addStatus(const StatusType s)
 {
     Creature::addStatus(s);
     player->status = status;
@@ -277,7 +291,7 @@ void PartyMember::addStatus(StatusType s)
 /**
  * Unconditionally sets a status effect for the player
  */
-void PartyMember::setStatus(StatusType s)
+void PartyMember::setStatus(const StatusType s)
 {
     Creature::setStatus(s);
     player->status = status;
@@ -303,9 +317,9 @@ void PartyMember::setStatus(StatusType s)
 /**
  * Adjusts the player's mp by 'pts'
  */
-void PartyMember::adjustMp(int pts)
+void PartyMember::adjustMp(const int pts)
 {
-    AdjustValueMax(player->mp, pts, getMaxMp());
+    AdjustValueMax(player->mp, static_cast<short>(pts), getMaxMp());
     notifyOfChange();
 }
 
@@ -319,8 +333,8 @@ void PartyMember::advanceLevel()
         return;
     }
     setStatus(STAT_GOOD);
-    player->hpMax = getMaxLevel() * 100;
-    player->hp = player->hpMax;
+    player->hp_max = getMaxLevel() * 100;
+    player->hp = player->hp_max;
     /* improve stats by 1-8 each */
     player->str += xu4_random(8) + 1;
     player->dex += xu4_random(8) + 1;
@@ -347,7 +361,7 @@ void PartyMember::advanceLevel()
 /**
  * Apply an effect to the party member
  */
-void PartyMember::applyEffect(TileEffect effect)
+void PartyMember::applyEffect(const TileEffect effect)
 {
     if (getStatus() == STAT_DEAD) {
         return;
@@ -361,7 +375,7 @@ void PartyMember::applyEffect(TileEffect effect)
         applyDamage(xu4_random(30), false); // From u4apple2
         break;
     case EFFECT_SLEEP:
-        putToSleep();
+        putToSleep(true);
         break;
     case EFFECT_POISON:
     case EFFECT_SWAMP:
@@ -384,9 +398,9 @@ void PartyMember::applyEffect(TileEffect effect)
 /**
  * Award a player experience points.  Maxs out the players xp at 9999.
  */
-void PartyMember::awardXp(int xp)
+void PartyMember::awardXp(const int xp)
 {
-    AdjustValueMax(player->xp, xp, 9999);
+    AdjustValueMax(player->xp, static_cast<short>(xp), 9999);
     notifyOfChange();
 }
 
@@ -394,7 +408,7 @@ void PartyMember::awardXp(int xp)
 /**
  * Perform a certain type of healing on the party member
  */
-bool PartyMember::heal(HealType type)
+bool PartyMember::heal(const HealType type)
 {
     switch (type) {
     case HT_NONE:
@@ -405,11 +419,11 @@ bool PartyMember::heal(HealType type)
         }
         removeStatus(STAT_POISONED);
         break;
-    case HT_FULLHEAL:
-        if ((getStatus() == STAT_DEAD) || (player->hp == player->hpMax)) {
+    case HT_FULL_HEAL:
+        if (getStatus() == STAT_DEAD || player->hp == player->hp_max) {
             return false;
         }
-        player->hp = player->hpMax;
+        player->hp = player->hp_max;
         break;
     case HT_RESURRECT:
         if (getStatus() != STAT_DEAD) {
@@ -418,28 +432,28 @@ bool PartyMember::heal(HealType type)
         setStatus(STAT_GOOD);
         break;
     case HT_HEAL:
-        if ((getStatus() == STAT_DEAD) || (player->hp == player->hpMax)) {
+        if (getStatus() == STAT_DEAD || player->hp == player->hp_max) {
             return false;
         }
         player->hp += 75 + xu4_random(24);
         break;
-    case HT_CAMPHEAL:
-        if ((getStatus() == STAT_DEAD) || (player->hp == player->hpMax)) {
+    case HT_CAMP_HEAL:
+        if (getStatus() == STAT_DEAD || player->hp == player->hp_max) {
             return false;
         }
         player->hp += 99 + (xu4_random(0x100) & 0x77);
         break;
-    case HT_INNHEAL:
-        if ((getStatus() == STAT_DEAD) || (player->hp == player->hpMax)) {
+    case HT_INN_HEAL:
+        if (getStatus() == STAT_DEAD || player->hp == player->hp_max) {
             return false;
         }
-        player->hp += 100 + (xu4_random(50) * 2);
+        player->hp += 100 + xu4_random(50) * 2;
         break;
     default:
         return false;
     } // switch
-    if (player->hp > player->hpMax) {
-        player->hp = player->hpMax;
+    if (player->hp > player->hp_max) {
+        player->hp = player->hp_max;
     }
     notifyOfChange();
     return true;
@@ -449,7 +463,7 @@ bool PartyMember::heal(HealType type)
 /**
  * Remove status effects from the party member
  */
-void PartyMember::removeStatus(StatusType s)
+void PartyMember::removeStatus(const StatusType s)
 {
     Creature::removeStatus(s);
     player->status = status;
@@ -472,13 +486,13 @@ void PartyMember::removeStatus(StatusType s)
     notifyOfChange();
 }
 
-void PartyMember::setHp(int hp)
+void PartyMember::setHp(const int hp)
 {
     player->hp = hp;
     notifyOfChange();
 }
 
-void PartyMember::setMp(int mp)
+void PartyMember::setMp(const int mp)
 {
     player->mp = mp;
     notifyOfChange();
@@ -486,18 +500,18 @@ void PartyMember::setMp(int mp)
 
 EquipError PartyMember::setArmor(const Armor *a)
 {
-    ArmorType type = a->getType();
-    if ((type != ARMR_NONE) && (party->saveGame->armor[type] < 1)) {
+    const ArmorType type = a->getType();
+    if (type != ARMOR_NONE && party->saveGame->armor[type] < 1) {
         return EQUIP_NONE_LEFT;
     }
     if (!a->canWear(getClass())) {
         return EQUIP_CLASS_RESTRICTED;
     }
-    ArmorType oldArmorType = getArmor()->getType();
-    if (oldArmorType != ARMR_NONE) {
-        party->saveGame->armor[oldArmorType]++;
+    const ArmorType oldType = getArmor()->getType();
+    if (oldType != ARMOR_NONE) {
+        party->saveGame->armor[oldType]++;
     }
-    if (type != ARMR_NONE) {
+    if (type != ARMOR_NONE) {
         party->saveGame->armor[type]--;
     }
     player->armor = type;
@@ -507,18 +521,18 @@ EquipError PartyMember::setArmor(const Armor *a)
 
 EquipError PartyMember::setWeapon(const Weapon *w)
 {
-    WeaponType type = w->getType();
-    if ((type != WEAP_HANDS) && (party->saveGame->weapons[type] < 1)) {
+    const WeaponType type = w->getType();
+    if (type != WEAPON_HANDS && party->saveGame->weapons[type] < 1) {
         return EQUIP_NONE_LEFT;
     }
     if (!w->canReady(getClass())) {
         return EQUIP_CLASS_RESTRICTED;
     }
-    WeaponType old = getWeapon()->getType();
-    if (old != WEAP_HANDS) {
-        party->saveGame->weapons[old]++;
+    const WeaponType oldType = getWeapon()->getType();
+    if (oldType != WEAPON_HANDS) {
+        party->saveGame->weapons[oldType]++;
     }
-    if (type != WEAP_HANDS) {
+    if (type != WEAPON_HANDS) {
         party->saveGame->weapons[type]--;
     }
     player->weapon = type;
@@ -531,11 +545,11 @@ EquipError PartyMember::setWeapon(const Weapon *w)
  * Applies damage to a player, and changes status to dead if hit
  * points drop below zero.
  *
- * Byplayer is ignored for now, since it should always be false for U4.  (Is
+ * byPlayer is ignored for now, since it should always be false for U4.  (Is
  * there anything special about being killed by a party member in U5?)  Also
- * keeps interface consistent for virtual base function Creature::applydamage()
+ * keeps interface consistent for virtual base function Creature::applyDamage()
  */
-bool PartyMember::applyDamage(int damage, bool)
+bool PartyMember::applyDamage(const int damage, bool)
 {
     int newHp = player->hp;
     if (getStatus() == STAT_DEAD) {
@@ -550,14 +564,14 @@ bool PartyMember::applyDamage(int damage, bool)
     notifyOfChange();
     if (c->location->map
         && c->location->map->isCombatMap()
-        && (getStatus() == STAT_DEAD)) {
+        && getStatus() == STAT_DEAD) {
         if (party) {
             const Coords &p = getCoords();
-            Map *map = getMap();
+            const Map *map = getMap();
             map->annotations->add(
                 p,
                 Tileset::findTileByName("corpse")->getId()
-            )->setTTL(party->size() * 2);
+            )->setTTL(party->size() * 2); // FIXME is this right for TTL ??
             party->setChanged();
             PartyEvent event(PartyEvent::PLAYER_KILLED, this);
             event.player = this;
@@ -573,26 +587,25 @@ bool PartyMember::applyDamage(int damage, bool)
 int PartyMember::getAttackBonus() const
 {
     if (Weapon::get(player->weapon)->alwaysHits()) {
-        return 1;
+        return true;
     }
-    return static_cast<int>(xu4_random(256) < (128 + 2 * player->dex));
+    return xu4_random(256) < 128 + 2 * player->dex;
 }
 
-int PartyMember::getDefense(bool needsMystic) const
+int PartyMember::getDefense(const bool needsMystic) const
 {
-    return static_cast<int>(
-        xu4_random(256) < Armor::get(player->armor)->getDefense(needsMystic)
-    );
+    return xu4_random(256) <
+        Armor::get(player->armor)->getDefense(needsMystic);
 }
 
-bool PartyMember::dealDamage(Creature *m, int damage)
+bool PartyMember::dealDamage(Creature *m, const int damage)
 {
     /* we have to record these now, because if we
        kill the target, it gets destroyed */
-    int m_xp = m->getXp();
+    const int m_xp = m->getXp();
     if (!Creature::dealDamage(m, damage)) {
         /* half the time you kill an evil creature you get
-           a karma boost */
+           a karma boost. FIXME: but that doesn't happen here */
         awardXp(m_xp);
         return false;
     }
@@ -605,9 +618,8 @@ bool PartyMember::dealDamage(Creature *m, int damage)
  */
 int PartyMember::getDamage() const
 {
-    int maxDamage;
     const Weapon *playersWeapon = Weapon::get(player->weapon);
-    maxDamage = playersWeapon->getDamage();
+    int maxDamage = playersWeapon->getDamage();
     // CHANGE: Give strength bonus only for melee weapons
     // to make them less useless
     if (!(settings.enhancements && playersWeapon->rangedOnly())) {
@@ -646,9 +658,7 @@ bool PartyMember::isDead() const
 
 bool PartyMember::isDisabled() const
 {
-    return (getStatus() == STAT_GOOD || getStatus() == STAT_POISONED) ?
-        false :
-        true;
+    return getStatus() != STAT_GOOD && getStatus() != STAT_POISONED;
 }
 
 
@@ -659,21 +669,20 @@ bool PartyMember::isDisabled() const
  */
 int PartyMember::loseWeapon()
 {
-    int weapon = player->weapon;
+    const int weapon = player->weapon;
     notifyOfChange();
     if (party->saveGame->weapons[weapon] > 0) {
-        return (--party->saveGame->weapons[weapon]) + 1;
-    } else {
-        player->weapon = WEAP_HANDS;
-        return 0;
+        return --party->saveGame->weapons[weapon] + 1;
     }
+    player->weapon = WEAPON_HANDS;
+    return 0;
 }
 
 
 /**
  * Put the party member to sleep
  */
-void PartyMember::putToSleep(bool sound)
+void PartyMember::putToSleep(const bool sound)
 {
     if (getStatus() != STAT_DEAD) {
         if (sound) {
@@ -692,7 +701,7 @@ void PartyMember::wakeUp()
     removeStatus(STAT_SLEEPING);
 }
 
-MapTile PartyMember::tileForClass(int klass)
+MapTile PartyMember::tileForClass(const int klass)
 {
     const char *name = nullptr;
     switch (klass) {
@@ -733,11 +742,11 @@ MapTile PartyMember::tileForClass(int klass)
  * Party class implementation
  */
 Party::Party(SaveGame *s)
-    :members(), saveGame(s), transport(0), torchduration(0), activePlayer(-1)
+    : saveGame(s), transport(0), torchDuration(0), activePlayer(-1)
 {
-    if ((MAP_DECEIT <= saveGame->location)
-        && (saveGame->location <= MAP_ABYSS)) {
-        torchduration = saveGame->torchduration;
+    if (MAP_DECEIT <= saveGame->location
+        && saveGame->location <= MAP_ABYSS) {
+        torchDuration = saveGame->torch_duration;
     }
     for (int i = 0; i < saveGame->members; i++) {
         // add the members to the party
@@ -748,15 +757,11 @@ Party::Party(SaveGame *s)
     setTransport(TileMap::get("base")->translate(saveGame->transport));
 }
 
-Party::~Party()
-{
-}
-
 
 /**
  * Notify the party that something about it has changed
  */
-void Party::notifyOfChange(PartyMember *pm, PartyEvent::Type eventType)
+void Party::notifyOfChange(PartyMember *pm, const PartyEvent::Type eventType)
 {
     setChanged();
     PartyEvent event(eventType, pm);
@@ -765,9 +770,10 @@ void Party::notifyOfChange(PartyMember *pm, PartyEvent::Type eventType)
 
 std::string Party::translate(std::vector<std::string> &parts)
 {
-    if (parts.size() == 0) {
+    if (parts.empty()) {
         return "";
-    } else if (parts.size() == 1) {
+    }
+    if (parts.size() == 1) {
         // Translate some different items for the script
         if (parts[0] == "transport") {
             if (c->transportContext & TRANSPORT_FOOT) {
@@ -782,36 +788,47 @@ std::string Party::translate(std::vector<std::string> &parts)
             if (c->transportContext & TRANSPORT_BALLOON) {
                 return "balloon";
             }
-        } else if (parts[0] == "gold") {
-            return xu4_to_string(saveGame->gold);
-        } else if (parts[0] == "food") {
-            return xu4_to_string(saveGame->food);
-        } else if (parts[0] == "members") {
-            return xu4_to_string(size());
-        } else if (parts[0] == "keys") {
-            return xu4_to_string(saveGame->keys);
-        } else if (parts[0] == "torches") {
-            return xu4_to_string(saveGame->torches);
-        } else if (parts[0] == "gems") {
-            return xu4_to_string(saveGame->gems);
-        } else if (parts[0] == "sextants") {
-            return xu4_to_string(saveGame->sextants);
-        } else if (parts[0] == "party_members") {
-            return xu4_to_string(saveGame->members);
-        } else if (parts[0] == "moves") {
-            return xu4_to_string(saveGame->moves);
+            return "";
         }
-    } else { // parts.size() >= 2
-        if (parts[0].find_first_of("member") == 0) {
+        if (parts[0] == "gold") {
+            return xu4_to_string(saveGame->gold);
+        }
+        if (parts[0] == "food") {
+            return xu4_to_string(static_cast<int>(saveGame->food));
+        }
+        if (parts[0] == "members") {
+            return xu4_to_string(size());
+        }
+        if (parts[0] == "keys") {
+            return xu4_to_string(saveGame->keys);
+        }
+        if (parts[0] == "torches") {
+            return xu4_to_string(saveGame->torches);
+        }
+        if (parts[0] == "gems") {
+            return xu4_to_string(saveGame->gems);
+        }
+        if (parts[0] == "sextants") {
+            return xu4_to_string(saveGame->sextants);
+        }
+        if (parts[0] == "party_members") {
+            return xu4_to_string(saveGame->members);
+        }
+        if (parts[0] == "moves") {
+            return xu4_to_string(static_cast<int>(saveGame->moves));
+        }
+    } else {
+        // parts.size() >= 2
+        if (parts[0].find("member") == 0) {
             // Make a new parts list, but remove the first item
             std::vector<std::string> new_parts = parts;
             new_parts.erase(new_parts.begin());
             // Find the member we'll be working with
             std::string str = parts[0];
-            std::size_t pos = str.find_first_of("1234567890");
+            const std::size_t pos = str.find_first_of("1234567890");
             if (pos != std::string::npos) {
                 str = str.substr(pos);
-                int p_member =
+                const int p_member =
                     static_cast<int>(std::strtol(str.c_str(), nullptr, 10));
                 // Make the party member translate its
                 // own stuff
@@ -819,17 +836,22 @@ std::string Party::translate(std::vector<std::string> &parts)
                     return member(p_member - 1)->translate(new_parts);
                 }
             }
-        } else if (parts.size() == 2) {
+            return "";
+        }
+        if (parts.size() == 2) {
             if (parts[0] == "weapon") {
                 const Weapon *w = Weapon::get(parts[1]);
                 if (w) {
                     return xu4_to_string(saveGame->weapons[w->getType()]);
                 }
-            } else if (parts[0] == "armor") {
+                return "";
+            }
+            if (parts[0] == "armor") {
                 const Armor *a = Armor::get(parts[1]);
                 if (a) {
                     return xu4_to_string(saveGame->armor[a->getType()]);
                 }
+                return "";
             }
         }
     }
@@ -837,18 +859,18 @@ std::string Party::translate(std::vector<std::string> &parts)
 } // Party::translate
 
 
-void Party::adjustFood(int food)
+void Party::adjustFood(const int food)
 {
-    unsigned int oldFood = saveGame->food;
+    const unsigned int oldFood = saveGame->food;
     AdjustValue(saveGame->food, food, 999900, 0);
-    if ((saveGame->food / 100) != (oldFood / 100)) {
+    if (saveGame->food / 100 != oldFood / 100) {
         notifyOfChange();
     }
 }
 
-void Party::adjustGold(int gold)
+void Party::adjustGold(const int gold)
 {
-    AdjustValue(saveGame->gold, gold, 9999, 0);
+    AdjustValue(saveGame->gold, static_cast<short>(gold), 9999, 0);
     notifyOfChange();
 }
 
@@ -858,119 +880,119 @@ void Party::adjustGold(int gold)
  * observers with a lost eighth event if the player has lost
  * avatarhood.
  */
-void Party::adjustKarma(KarmaAction action)
+void Party::adjustKarma(const KarmaAction action)
 {
     bool timeLimited = false;
-    int v, newKarma[VIRT_MAX], maxVal[VIRT_MAX];
+    int v, newKarma[VIRTUE_MAX], maxVal[VIRTUE_MAX];
     /*
      * make a local copy of all virtues, and adjust it according to
      * the game rules
      */
-    for (v = 0; v < VIRT_MAX; v++) {
+    for (v = 0; v < VIRTUE_MAX; v++) {
         newKarma[v] = saveGame->karma[v] == 0 ? 100 : saveGame->karma[v];
         maxVal[v] = saveGame->karma[v] == 0 ? 100 : 99;
     }
     switch (action) {
     case KA_FOUND_ITEM:
-        AdjustValueMax(newKarma[VIRT_HONOR], 5, maxVal[VIRT_HONOR]);
+        AdjustValueMax(newKarma[VIRTUE_HONOR], 5, maxVal[VIRTUE_HONOR]);
         break;
     case KA_STOLE_CHEST:
-        AdjustValueMin(newKarma[VIRT_HONESTY], -1, 1);
-        AdjustValueMin(newKarma[VIRT_JUSTICE], -1, 1);
-        AdjustValueMin(newKarma[VIRT_HONOR], -1, 1);
+        AdjustValueMin(newKarma[VIRTUE_HONESTY], -1, 1);
+        AdjustValueMin(newKarma[VIRTUE_JUSTICE], -1, 1);
+        AdjustValueMin(newKarma[VIRTUE_HONOR], -1, 1);
         break;
     case KA_GAVE_ALL_TO_BEGGAR:
         // When donating all,
         // you get +3 HONOR in Apple 2, but not in in U4DOS.
         // That is arguably a bug, SACRIFICE should be it.
         // TODO: Make this a configuration option.
-        AdjustValueMax(newKarma[VIRT_SACRIFICE], 3, maxVal[VIRT_SACRIFICE]);
+        AdjustValueMax(newKarma[VIRTUE_SACRIFICE], 3, maxVal[VIRTUE_SACRIFICE]);
         /* FALLTHROUGH */
     case KA_GAVE_TO_BEGGAR:
         // In U4DOS, we only get +2 COMPASSION,
         // no HONOR or SACRIFICE even if
         // donating all.
         timeLimited = true;
-        AdjustValueMax(newKarma[VIRT_COMPASSION], 2, maxVal[VIRT_COMPASSION]);
+        AdjustValueMax(newKarma[VIRTUE_COMPASSION], 2, maxVal[VIRTUE_COMPASSION]);
         break;
     case KA_BRAGGED:
-        AdjustValueMin(newKarma[VIRT_HUMILITY], -5, 1);
+        AdjustValueMin(newKarma[VIRTUE_HUMILITY], -5, 1);
         break;
     case KA_HUMBLE:
         timeLimited = true;
-        AdjustValueMax(newKarma[VIRT_HUMILITY], 5, maxVal[VIRT_HUMILITY]);
+        AdjustValueMax(newKarma[VIRTUE_HUMILITY], 5, maxVal[VIRTUE_HUMILITY]);
         break;
     case KA_HAWKWIND:
     case KA_MEDITATION:
         timeLimited = true;
         AdjustValueMax(
-            newKarma[VIRT_SPIRITUALITY], 3, maxVal[VIRT_SPIRITUALITY]
+            newKarma[VIRTUE_SPIRITUALITY], 3, maxVal[VIRTUE_SPIRITUALITY]
         );
         break;
     case KA_BAD_MANTRA:
-        AdjustValueMin(newKarma[VIRT_SPIRITUALITY], -3, 1);
+        AdjustValueMin(newKarma[VIRTUE_SPIRITUALITY], -3, 1);
         break;
     case KA_ATTACKED_GOOD:
-        AdjustValueMin(newKarma[VIRT_COMPASSION], -5, 1);
-        AdjustValueMin(newKarma[VIRT_JUSTICE], -5, 1);
-        AdjustValueMin(newKarma[VIRT_HONOR], -5, 1);
+        AdjustValueMin(newKarma[VIRTUE_COMPASSION], -5, 1);
+        AdjustValueMin(newKarma[VIRTUE_JUSTICE], -5, 1);
+        AdjustValueMin(newKarma[VIRTUE_HONOR], -5, 1);
         break;
     case KA_FLED_EVIL:
-        AdjustValueMin(newKarma[VIRT_VALOR], -2, 1);
+        AdjustValueMin(newKarma[VIRTUE_VALOR], -2, 1);
         break;
     case KA_HEALTHY_FLED_EVIL:
-        AdjustValueMin(newKarma[VIRT_VALOR], -2, 1);
-        AdjustValueMin(newKarma[VIRT_SACRIFICE], -2, 1);
+        AdjustValueMin(newKarma[VIRTUE_VALOR], -2, 1);
+        AdjustValueMin(newKarma[VIRTUE_SACRIFICE], -2, 1);
         break;
     case KA_KILLED_EVIL:
         AdjustValueMax(
-            newKarma[VIRT_VALOR], xu4_random(2), maxVal[VIRT_VALOR]
+            newKarma[VIRTUE_VALOR], xu4_random(2), maxVal[VIRTUE_VALOR]
         ); /* gain one valor half the time, zero the rest */
         break;
     case KA_FLED_GOOD:
         AdjustValueMax(
-            newKarma[VIRT_COMPASSION], 2, maxVal[VIRT_COMPASSION]
+            newKarma[VIRTUE_COMPASSION], 2, maxVal[VIRTUE_COMPASSION]
         );
         AdjustValueMax(
-            newKarma[VIRT_JUSTICE], 2, maxVal[VIRT_JUSTICE]
+            newKarma[VIRTUE_JUSTICE], 2, maxVal[VIRTUE_JUSTICE]
         );
         break;
     case KA_SPARED_GOOD:
         AdjustValueMax(
-            newKarma[VIRT_COMPASSION], 1, maxVal[VIRT_COMPASSION]
+            newKarma[VIRTUE_COMPASSION], 1, maxVal[VIRTUE_COMPASSION]
         );
         AdjustValueMax(
-            newKarma[VIRT_JUSTICE], 1, maxVal[VIRT_JUSTICE]
+            newKarma[VIRTUE_JUSTICE], 1, maxVal[VIRTUE_JUSTICE]
         );
         break;
     case KA_DONATED_BLOOD:
         AdjustValueMax(
-            newKarma[VIRT_SACRIFICE], 5, maxVal[VIRT_SACRIFICE]
+            newKarma[VIRTUE_SACRIFICE], 5, maxVal[VIRTUE_SACRIFICE]
         );
         break;
     case KA_DIDNT_DONATE_BLOOD:
-        AdjustValueMin(newKarma[VIRT_SACRIFICE], -5, 1);
+        AdjustValueMin(newKarma[VIRTUE_SACRIFICE], -5, 1);
         break;
     case KA_CHEAT_REAGENTS:
-        AdjustValueMin(newKarma[VIRT_HONESTY], -10, 1);
-        AdjustValueMin(newKarma[VIRT_JUSTICE], -10, 1);
-        AdjustValueMin(newKarma[VIRT_HONOR], -10, 1);
+        AdjustValueMin(newKarma[VIRTUE_HONESTY], -10, 1);
+        AdjustValueMin(newKarma[VIRTUE_JUSTICE], -10, 1);
+        AdjustValueMin(newKarma[VIRTUE_HONOR], -10, 1);
         break;
     case KA_DIDNT_CHEAT_REAGENTS:
         timeLimited = true;
-        AdjustValueMax(newKarma[VIRT_HONESTY], 2, maxVal[VIRT_HONESTY]);
-        AdjustValueMax(newKarma[VIRT_JUSTICE], 2, maxVal[VIRT_JUSTICE]);
-        AdjustValueMax(newKarma[VIRT_HONOR], 2, maxVal[VIRT_HONOR]);
+        AdjustValueMax(newKarma[VIRTUE_HONESTY], 2, maxVal[VIRTUE_HONESTY]);
+        AdjustValueMax(newKarma[VIRTUE_JUSTICE], 2, maxVal[VIRTUE_JUSTICE]);
+        AdjustValueMax(newKarma[VIRTUE_HONOR], 2, maxVal[VIRTUE_HONOR]);
         break;
     case KA_USED_SKULL:
         /* using the skull is very, very bad... */
-        for (v = 0; v < VIRT_MAX; v++) {
+        for (v = 0; v < VIRTUE_MAX; v++) {
             AdjustValueMin(newKarma[v], -5, 1);
         }
         break;
     case KA_DESTROYED_SKULL:
         /* ...but destroying it is very, very good */
-        for (v = 0; v < VIRT_MAX; v++) {
+        for (v = 0; v < VIRTUE_MAX; v++) {
             AdjustValueMax(newKarma[v], 10, maxVal[v]);
         }
         break;
@@ -980,9 +1002,9 @@ void Party::adjustKarma(KarmaAction action)
        * action is time limited -- if not, throw away new values
        */
     if (timeLimited) {
-        if (((saveGame->moves / 16) >= 0x10000)
-            || (((saveGame->moves / 16) & 0xFFFF) != saveGame->lastvirtue)) {
-            saveGame->lastvirtue = (saveGame->moves / 16) & 0xFFFF;
+        if (saveGame->moves / 16 >= 0x10000
+            || (saveGame->moves / 16 & 0xFFFF) != saveGame->last_virtue) {
+            saveGame->last_virtue = saveGame->moves / 16 & 0xFFFF;
         } else {
             return;
         }
@@ -992,7 +1014,7 @@ void Party::adjustKarma(KarmaAction action)
     /*
      * return to u4dos compatibility and handle losing of eighths
      */
-    for (v = 0; v < VIRT_MAX; v++) {
+    for (v = 0; v < VIRTUE_MAX; v++) {
         if (maxVal[v] == 100) { /* already an avatar */
             if (newKarma[v] < 100) { /* but lost it */
                 saveGame->karma[v] = newKarma[v];
@@ -1013,13 +1035,11 @@ void Party::adjustKarma(KarmaAction action)
 /**
  * Apply effects to the entire party
  */
-void Party::applyEffect(TileEffect effect)
+void Party::applyEffect(TileEffect effect) const
 {
-    int i;
-
     /* In the unenhanced game, poison fields are no worse
        than swamps */
-    if ((!settings.enhancements) && (effect == EFFECT_POISON)) {
+    if (!settings.enhancements && effect == EFFECT_POISON) {
         effect = EFFECT_SWAMP;
     }
 
@@ -1034,7 +1054,7 @@ void Party::applyEffect(TileEffect effect)
         }
         break;
     default:
-        for (i = 0; i < size(); i++) {
+        for (int i = 0; i < size(); i++) {
             switch (effect) {
             case EFFECT_NONE:
             case EFFECT_ELECTRICITY:
@@ -1042,7 +1062,8 @@ void Party::applyEffect(TileEffect effect)
                 break;
             case EFFECT_SLEEP:
             case EFFECT_POISON:
-                if (xu4_random(settings.enhancements ? 2 : 4) == 0) {
+                // Only used in enhanced game
+                if (xu4_random(2) == 0) {
                     members[i]->applyEffect(effect);
                 }
                 break;
@@ -1061,28 +1082,27 @@ void Party::applyEffect(TileEffect effect)
 /**
  * Attempt to elevate in the given virtue
  */
-bool Party::attemptElevation(Virtue virtue)
+bool Party::attemptElevation(const Virtue virtue)
 {
     if (saveGame->karma[virtue] == 99) {
         saveGame->karma[virtue] = 0;
         notifyOfChange();
         return true;
-    } else {
-        return false;
     }
+    return false;
 }
 
 
 /**
  * Burns a torch's duration down a certain number of turns
  */
-void Party::burnTorch(int turns)
+void Party::burnTorch(const int turns)
 {
-    torchduration -= turns;
-    if (torchduration <= 0) {
-        torchduration = 0;
+    torchDuration -= turns;
+    if (torchDuration <= 0) {
+        torchDuration = 0;
     }
-    saveGame->torchduration = torchduration;
+    saveGame->torch_duration = torchDuration;
     notifyOfChange();
 }
 
@@ -1090,13 +1110,12 @@ void Party::burnTorch(int turns)
 /**
  * Returns true if the party can enter the shrine
  */
-bool Party::canEnterShrine(Virtue virtue) const
+bool Party::canEnterShrine(const Virtue virtue) const
 {
     if (saveGame->runes & (1 << static_cast<int>(virtue))) {
         return true;
-    } else {
-        return false;
     }
+    return false;
 }
 
 
@@ -1105,11 +1124,10 @@ bool Party::canEnterShrine(Virtue virtue) const
  */
 bool Party::canPersonJoin(const std::string &name, Virtue *v) const
 {
-    int i;
     if (name.empty()) {
         return false;
     }
-    for (i = 1; i < 8; i++) {
+    for (int i = 1; i < 8; i++) {
         if (name == saveGame->players[i].name) {
             if (v) {
                 *v = static_cast<Virtue>(saveGame->players[i].klass);
@@ -1124,11 +1142,11 @@ bool Party::canPersonJoin(const std::string &name, Virtue *v) const
 /**
  * Damages the party's ship
  */
-void Party::damageShip(unsigned int pts)
+void Party::damageShip(const unsigned int pts)
 {
-    saveGame->shiphull -= pts;
-    if (static_cast<short>(saveGame->shiphull) < 0) {
-        saveGame->shiphull = 0;
+    saveGame->ship_hull -= pts;
+    if (static_cast<short>(saveGame->ship_hull) < 0) {
+        saveGame->ship_hull = 0;
     }
     notifyOfChange();
 }
@@ -1138,7 +1156,7 @@ void Party::damageShip(unsigned int pts)
  * Donates 'quantity' gold. Returns true if the donation succeeded,
  * or false if there was not enough gold to make the donation
  */
-bool Party::donate(int quantity)
+bool Party::donate(const int quantity)
 {
     if (quantity > saveGame->gold) {
         return false;
@@ -1158,8 +1176,6 @@ bool Party::donate(int quantity)
  */
 void Party::endTurn()
 {
-    int i;
-
     /* u4apple2:
        Moves don't increase during combat. This is important
        for the game balance because of the eras of encounters.
@@ -1170,7 +1186,7 @@ void Party::endTurn()
         saveGame->moves++;
     }
 
-    for (i = 0; i < size(); i++) {
+    for (int i = 0; i < size(); i++) {
         /* Handle player status (only for non-combat turns) */
         if ((c->location->context & CTX_NON_COMBAT) == c->location->context) {
             /* party members eat food (also not during combat) */
@@ -1187,7 +1203,7 @@ void Party::endTurn()
                 /* FIXME:
                  * shouldn't play poison damage sound
                  * in combat, yet if the PC takes damage
-                 * just befor combat begins, the sound is
+                 * just before combat begins, the sound is
                  * played after the combat screen appears
                  */
                 soundPlay(SOUND_POISON_DAMAGE, false);
@@ -1199,21 +1215,21 @@ void Party::endTurn()
         }
         /* regenerate magic points */
         if (!members[i]->isDisabled()
-            && (members[i]->getMp() < members[i]->getMaxMp())) {
+            && members[i]->getMp() < members[i]->getMaxMp()) {
             saveGame->players[i].mp++;
         }
     }
     /* The party is starving! */
-    if ((saveGame->food == 0)
-        && ((c->location->context & CTX_NON_COMBAT) == c->location->context)) {
+    if (saveGame->food == 0
+        && (c->location->context & CTX_NON_COMBAT) == c->location->context) {
         setChanged();
         PartyEvent event(PartyEvent::STARVING, nullptr);
         notifyObservers(event);
     }
     /* heal ship (25% chance it is healed each turn) */
-    if ((c->location->context == CTX_WORLDMAP)
-        && (saveGame->shiphull < 50)
-        && (xu4_random(4) == 0)) {
+    if (c->location->context == CTX_WORLDMAP
+        && saveGame->ship_hull < 50
+        && xu4_random(4) == 0) {
         healShip(1);
     }
 } // Party::endTurn
@@ -1243,18 +1259,18 @@ int Party::getChest()
  */
 int Party::getTorchDuration() const
 {
-    return torchduration;
+    return torchDuration;
 }
 
 
 /**
  * Heals the ship's hull strength by 'pts' points
  */
-void Party::healShip(unsigned int pts)
+void Party::healShip(const unsigned int pts)
 {
-    saveGame->shiphull += pts;
-    if (saveGame->shiphull > 50) {
-        saveGame->shiphull = 50;
+    saveGame->ship_hull += pts;
+    if (saveGame->ship_hull > 50) {
+        saveGame->ship_hull = 50;
     }
     notifyOfChange();
 }
@@ -1265,7 +1281,7 @@ void Party::healShip(unsigned int pts)
  */
 bool Party::isFlying() const
 {
-    return saveGame->balloonstate && torchduration <= 0;
+    return saveGame->balloon_state && torchDuration <= 0;
 }
 
 
@@ -1274,10 +1290,9 @@ bool Party::isFlying() const
  */
 bool Party::isImmobilized() const
 {
-    int i;
     bool immobile = true;
 
-    for (i = 0; i < saveGame->members; i++) {
+    for (int i = 0; i < saveGame->members; i++) {
         if (!members[i]->isDisabled()) {
             immobile = false;
         }
@@ -1291,10 +1306,9 @@ bool Party::isImmobilized() const
  */
 bool Party::isDead() const
 {
-    int i;
     bool dead = true;
 
-    for (i = 0; i < saveGame->members; i++) {
+    for (int i = 0; i < saveGame->members; i++) {
         if (!members[i]->isDead()) {
             dead = false;
         }
@@ -1309,11 +1323,10 @@ bool Party::isDead() const
  */
 bool Party::isPersonJoined(const std::string &name) const
 {
-    int i;
     if (name.empty()) {
         return false;
     }
-    for (i = 1; i < saveGame->members; i++) {
+    for (int i = 1; i < saveGame->members; i++) {
         if (name == saveGame->players[i].name) {
             return true;
         }
@@ -1328,23 +1341,19 @@ bool Party::isPersonJoined(const std::string &name) const
  */
 CannotJoinError Party::join(const std::string &name)
 {
-    int i;
-    SaveGamePlayerRecord tmp;
-    for (i = saveGame->members; i < 8; i++) {
+    for (int i = saveGame->members; i < 8; i++) {
         if (name == saveGame->players[i].name) {
             /* ensure avatar is experienced enough */
             if (saveGame->members + 1 >
-                (saveGame->players[0].hpMax / 100)) {
+                saveGame->players[0].hp_max / 100) {
                 return JOIN_NOT_EXPERIENCED;
             }
             /* ensure character has enough karma */
-            if ((saveGame->karma[saveGame->players[i].klass] > 0)
-                && (saveGame->karma[saveGame->players[i].klass] < 40)) {
+            if (saveGame->karma[saveGame->players[i].klass] > 0
+                && saveGame->karma[saveGame->players[i].klass] < 40) {
                 return JOIN_NOT_VIRTUOUS;
             }
-            tmp = saveGame->players[saveGame->members];
-            saveGame->players[saveGame->members] = saveGame->players[i];
-            saveGame->players[i] = tmp;
+            std::swap(saveGame->players[saveGame->members], saveGame->players[i]);
             members.push_back(
                 new PartyMember(this, &saveGame->players[saveGame->members++])
             );
@@ -1361,7 +1370,7 @@ CannotJoinError Party::join(const std::string &name)
 /**
  * Lights a torch with a default duration of 100
  */
-bool Party::lightTorch(int duration, bool loseTorch)
+bool Party::lightTorch(const int duration, const bool loseTorch)
 {
     if (loseTorch) {
         if (c->saveGame->torches == 0) {
@@ -1369,8 +1378,8 @@ bool Party::lightTorch(int duration, bool loseTorch)
         }
         c->saveGame->torches--;
     }
-    torchduration += duration;
-    saveGame->torchduration = torchduration;
+    torchDuration += duration;
+    saveGame->torch_duration = torchDuration;
     notifyOfChange();
     return true;
 }
@@ -1381,7 +1390,7 @@ bool Party::lightTorch(int duration, bool loseTorch)
  */
 void Party::quenchTorch()
 {
-    torchduration = saveGame->torchduration = 0;
+    torchDuration = saveGame->torch_duration = 0;
     notifyOfChange();
 }
 
@@ -1394,12 +1403,12 @@ void Party::reviveParty()
     for (int i = 0; i < size(); i++) {
         members[i]->wakeUp();
         members[i]->setStatus(STAT_GOOD);
-        saveGame->players[i].hp = saveGame->players[i].hpMax;
+        saveGame->players[i].hp = saveGame->players[i].hp_max;
     }
-    for (int i = ARMR_NONE + 1; i < ARMR_MAX; i++) {
+    for (int i = ARMOR_NONE + 1; i < ARMOR_MAX; i++) {
         saveGame->armor[i] = 0;
     }
-    for (int i = WEAP_HANDS + 1; i < WEAP_MAX; i++) {
+    for (int i = WEAPON_HANDS + 1; i < WEAPON_MAX; i++) {
         saveGame->weapons[i] = 0;
     }
     saveGame->food = 20099;
@@ -1438,13 +1447,13 @@ void Party::setTransport(MapTile tile)
     notifyOfChange();
 }
 
-void Party::setShipHull(int str)
+void Party::setShipHull(const int str)
 {
     int newStr = str;
 
     AdjustValue(newStr, 0, 99, 0);
-    if (saveGame->shiphull != newStr) {
-        saveGame->shiphull = newStr;
+    if (saveGame->ship_hull != newStr) {
+        saveGame->ship_hull = newStr;
         notifyOfChange();
     }
 }
@@ -1454,32 +1463,34 @@ Direction Party::getDirection() const
     return transport.getDirection();
 }
 
-void Party::setDirection(Direction dir)
+void Party::setDirection(const Direction dir)
 {
     transport.setDirection(dir);
     setTransport(transport);
 }
 
-void Party::adjustReagent(int reagent, int amt)
+void Party::adjustReagent(const int reagent, const int amt)
 {
-    int oldVal = c->saveGame->reagents[reagent];
-    AdjustValue(c->saveGame->reagents[reagent], amt, 99, 0);
+    const int oldVal = c->saveGame->reagents[reagent];
+    AdjustValue(
+        c->saveGame->reagents[reagent], static_cast<short>(amt), 99, 0
+    );
     if (oldVal != c->saveGame->reagents[reagent]) {
         notifyOfChange();
     }
 }
 
-int Party::getReagent(int reagent)
+int Party::getReagent(const int reagent)
 {
     return c->saveGame->reagents[reagent];
 }
 
-unsigned short *Party::getReagentPtr(int reagent)
+unsigned short *Party::getReagentPtr(const int reagent)
 {
     return &c->saveGame->reagents[reagent];
 }
 
-void Party::setActivePlayer(int p)
+void Party::setActivePlayer(const int p)
 {
     activePlayer = p;
     setChanged();
@@ -1495,13 +1506,12 @@ int Party::getActivePlayer() const
     return activePlayer;
 }
 
-void Party::swapPlayers(int p1, int p2)
+void Party::swapPlayers(const int p1, const int p2)
 {
     U4ASSERT(p1 < saveGame->members, "p1 out of range: %d", p1);
     U4ASSERT(p2 < saveGame->members, "p2 out of range: %d", p2);
-    SaveGamePlayerRecord tmp_rec = saveGame->players[p1];
-    saveGame->players[p1] = c->saveGame->players[p2];
-    c->saveGame->players[p2] = tmp_rec;
+
+    std::swap(saveGame->players[p1], saveGame->players[p2]);
 
     syncMembers();
 
@@ -1510,13 +1520,8 @@ void Party::swapPlayers(int p1, int p2)
     } else if (p2 == activePlayer) {
         activePlayer = p1;
     }
-#if 0
-    PartyMember *tmp_memb = members[p1];
-    members[p1] = members[p2];
-    members[p2] = tmp_memb;
-#endif
-    members[p1]->player = &(saveGame->players[p1]);
-    members[p2]->player = &(saveGame->players[p2]);
+    members[p1]->player = &saveGame->players[p1];
+    members[p2]->player = &saveGame->players[p2];
     notifyOfChange();
 }
 
@@ -1535,18 +1540,17 @@ void Party::syncMembers()
  */
 int Party::size() const
 {
-    return members.size();
+    return static_cast<int>(members.size());
 }
 
 
 /**
  * Returns a pointer to the party member indicated
  */
-PartyMember *Party::member(int index) const
+PartyMember *Party::member(const int index) const
 {
     if (index >= 0 && index < static_cast<int>(members.size())) {
         return members[index];
-    } else {
-        return nullptr;
     }
+    return nullptr;
 }

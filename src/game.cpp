@@ -136,7 +136,7 @@ Context *c = nullptr;
 static Debug gameDbg("debug/game.txt", "Game");
 static MouseArea mouseAreas[] = {
     {
-        .npoints = 3,
+        .n_points = 3,
         .point = {
             { .x = 8, .y = 8 },
             { .x = 8, .y = 184 },
@@ -146,7 +146,7 @@ static MouseArea mouseAreas[] = {
         .command = { U4_ENTER, 0, U4_LEFT }
     },
     {
-        .npoints = 3,
+        .n_points = 3,
         .point = {
             { .x = 8, .y = 8 },
             { .x = 184, .y = 8 },
@@ -156,7 +156,7 @@ static MouseArea mouseAreas[] = {
         .command = { U4_ENTER, 0, U4_UP }
     },
     {
-        .npoints = 3,
+        .n_points = 3,
         .point = {
             { .x = 184, .y = 8 },
             { .x = 184, .y = 184 },
@@ -166,7 +166,7 @@ static MouseArea mouseAreas[] = {
         .command = { U4_ENTER, 0, U4_RIGHT }
     },
     {
-        .npoints = 3,
+        .n_points = 3,
         .point = {
             { .x = 8, .y = 184 },
             { .x = 184, .y = 184 },
@@ -384,7 +384,7 @@ void GameController::init()
         } // if(dngMapFile)
     } else {
         /* Enable opacity iff not flying (can fly only on the world map) */
-        c->opacity = !c->saveGame->balloonstate;
+        c->opacity = !c->saveGame->balloon_state;
     } // if(map->isDungeonMap())
     /* initialize the moons */
     initMoons();
@@ -393,14 +393,14 @@ void GameController::init()
      */
     if (c->location->prev) {
         c->location->coords =
-            MapCoords(c->saveGame->x, c->saveGame->y, c->saveGame->dnglevel);
+            MapCoords(c->saveGame->x, c->saveGame->y, c->saveGame->dungeon_level);
         c->location->prev->coords =
-            MapCoords(c->saveGame->dngx, c->saveGame->dngy);
+            MapCoords(c->saveGame->dungeon_x, c->saveGame->dungeon_y);
     } else {
         c->location->coords = MapCoords(
             c->saveGame->x,
             c->saveGame->y,
-            static_cast<int>(c->saveGame->dnglevel)
+            static_cast<int>(c->saveGame->dungeon_level)
         );
     }
     c->saveGame->orientation =
@@ -471,15 +471,15 @@ static bool gameSave()
     if (c->location->prev) {
         save.x = c->location->coords.x;
         save.y = c->location->coords.y;
-        save.dnglevel = c->location->coords.z;
-        save.dngx = c->location->prev->coords.x;
-        save.dngy = c->location->prev->coords.y;
+        save.dungeon_level = c->location->coords.z;
+        save.dungeon_x = c->location->prev->coords.x;
+        save.dungeon_y = c->location->prev->coords.y;
     } else {
         save.x = c->location->coords.x;
         save.y = c->location->coords.y;
-        save.dnglevel = c->location->coords.z;
-        save.dngx = c->saveGame->dngx;
-        save.dngy = c->saveGame->dngy;
+        save.dungeon_level = c->location->coords.z;
+        save.dungeon_x = c->saveGame->dungeon_x;
+        save.dungeon_y = c->saveGame->dungeon_y;
     }
     save.location = c->location->map->id;
     save.orientation =
@@ -1381,7 +1381,7 @@ bool GameController::keyPressed(int key)
                     } else if (c->location->map->tileTypeAt(
                                    c->location->coords, WITH_OBJECTS
                                )->canLandBalloon()) {
-                        c->saveGame->balloonstate = 0;
+                        c->saveGame->balloon_state = 0;
                         c->opacity = 1;
                     } else {
                         soundPlay(SOUND_ERROR);
@@ -1435,7 +1435,7 @@ bool GameController::keyPressed(int key)
         case 'q':
             if (!usePortalAt(c->location, c->location->coords, ACTION_KLIMB)) {
                 if (c->transportContext == TRANSPORT_BALLOON) {
-                    c->saveGame->balloonstate = 1;
+                    c->saveGame->balloon_state = 1;
                     c->opacity = 0;
                     screenMessage("Aufsteigen\n");
                 } else {
@@ -2449,15 +2449,15 @@ void holeUp()
  */
 void GameController::initMoons()
 {
-    const int trammelPhase = c->saveGame->trammelphase;
-    const int feluccaPhase = c->saveGame->feluccaphase;
+    const int trammelPhase = c->saveGame->trammel_phase;
+    const int feluccaPhase = c->saveGame->felucca_phase;
 
     U4ASSERT(c != nullptr, "Game context doesn't exist!");
     U4ASSERT(c->saveGame != nullptr, "Savegame doesn't exist!");
-    c->saveGame->trammelphase = c->saveGame->feluccaphase = 0;
+    c->saveGame->trammel_phase = c->saveGame->felucca_phase = 0;
     c->moonPhase = 0;
-    while ((c->saveGame->trammelphase != trammelPhase)
-           || (c->saveGame->feluccaphase != feluccaPhase)) {
+    while ((c->saveGame->trammel_phase != trammelPhase)
+           || (c->saveGame->felucca_phase != feluccaPhase)) {
         updateMoons(false);
     }
 }
@@ -2470,7 +2470,7 @@ void GameController::initMoons()
 void GameController::updateMoons(bool show_moongates)
 {
     if (c->location->map->isWorldMap() || !show_moongates) {
-        const int oldTrammel = c->saveGame->trammelphase;
+        const int oldTrammel = c->saveGame->trammel_phase;
         if (++c->moonPhase >= MOON_PHASES * MOON_SECONDS_PER_PHASE * 4) {
             c->moonPhase = 0;
         }
@@ -2478,10 +2478,10 @@ void GameController::updateMoons(bool show_moongates)
             c->moonPhase % (MOON_SECONDS_PER_PHASE * 4 * 3);
         const int realMoonPhase =
             c->moonPhase / (4 * MOON_SECONDS_PER_PHASE);
-        c->saveGame->trammelphase = realMoonPhase / 3;
-        c->saveGame->feluccaphase = realMoonPhase % 8;
-        if (c->saveGame->trammelphase > 7) {
-            c->saveGame->trammelphase = 7;
+        c->saveGame->trammel_phase = realMoonPhase / 3;
+        c->saveGame->felucca_phase = realMoonPhase % 8;
+        if (c->saveGame->trammel_phase > 7) {
+            c->saveGame->trammel_phase = 7;
         }
         if (show_moongates) {
             const Coords *gate;
@@ -2494,7 +2494,7 @@ void GameController::updateMoons(bool show_moongates)
                     );
                 }
                 gate =
-                    moongateGetGateCoordsForPhase(c->saveGame->trammelphase);
+                    moongateGetGateCoordsForPhase(c->saveGame->trammel_phase);
                 if (gate) {
                     c->location->map->annotations->add(
                         *gate, c->location->map->translateFromRawTile(0x40)
@@ -2502,7 +2502,7 @@ void GameController::updateMoons(bool show_moongates)
                 }
             } else if (trammelSubphase == 1) {
                 gate =
-                    moongateGetGateCoordsForPhase(c->saveGame->trammelphase);
+                    moongateGetGateCoordsForPhase(c->saveGame->trammel_phase);
                 if (gate) {
                     c->location->map->annotations->remove(
                         *gate, c->location->map->translateFromRawTile(0x40)
@@ -2513,7 +2513,7 @@ void GameController::updateMoons(bool show_moongates)
                 }
             } else if (trammelSubphase == 2) {
                 gate =
-                    moongateGetGateCoordsForPhase(c->saveGame->trammelphase);
+                    moongateGetGateCoordsForPhase(c->saveGame->trammel_phase);
                 if (gate) {
                     c->location->map->annotations->remove(
                         *gate, c->location->map->translateFromRawTile(0x41)
@@ -2524,7 +2524,7 @@ void GameController::updateMoons(bool show_moongates)
                 }
             } else if (trammelSubphase == 3) {
                 gate =
-                    moongateGetGateCoordsForPhase(c->saveGame->trammelphase);
+                    moongateGetGateCoordsForPhase(c->saveGame->trammel_phase);
                 if (gate) {
                     c->location->map->annotations->remove(
                         *gate, c->location->map->translateFromRawTile(0x42)
@@ -2537,7 +2537,7 @@ void GameController::updateMoons(bool show_moongates)
                        && (trammelSubphase
                            < (MOON_SECONDS_PER_PHASE * 4 * 3) - 3)) {
                 gate =
-                    moongateGetGateCoordsForPhase(c->saveGame->trammelphase);
+                    moongateGetGateCoordsForPhase(c->saveGame->trammel_phase);
                 if (gate) {
                     c->location->map->annotations->remove(
                         *gate, c->location->map->translateFromRawTile(0x43)
@@ -2549,7 +2549,7 @@ void GameController::updateMoons(bool show_moongates)
             } else if (trammelSubphase
                        == (MOON_SECONDS_PER_PHASE * 4 * 3) - 3) {
                 gate =
-                    moongateGetGateCoordsForPhase(c->saveGame->trammelphase);
+                    moongateGetGateCoordsForPhase(c->saveGame->trammel_phase);
                 if (gate) {
                     c->location->map->annotations->remove(
                         *gate, c->location->map->translateFromRawTile(0x43)
@@ -2561,7 +2561,7 @@ void GameController::updateMoons(bool show_moongates)
             } else if (trammelSubphase
                        == (MOON_SECONDS_PER_PHASE * 4 * 3) - 2) {
                 gate =
-                    moongateGetGateCoordsForPhase(c->saveGame->trammelphase);
+                    moongateGetGateCoordsForPhase(c->saveGame->trammel_phase);
                 if (gate) {
                     c->location->map->annotations->remove(
                         *gate, c->location->map->translateFromRawTile(0x42)
@@ -2573,7 +2573,7 @@ void GameController::updateMoons(bool show_moongates)
             } else if (trammelSubphase
                        == (MOON_SECONDS_PER_PHASE * 4 * 3) - 1) {
                 gate =
-                    moongateGetGateCoordsForPhase(c->saveGame->trammelphase);
+                    moongateGetGateCoordsForPhase(c->saveGame->trammel_phase);
                 if (gate) {
                     c->location->map->annotations->remove(
                         *gate, c->location->map->translateFromRawTile(0x41)
@@ -2928,7 +2928,7 @@ void readyWeapon(int player)
     c->stats->setView(STATS_WEAPONS);
     screenMessage("WAFFE-");
     const WeaponType weapon = static_cast<WeaponType>(
-        AlphaActionController::get(WEAP_MAX + 'a' - 1, "WAFFE-")
+        AlphaActionController::get(WEAPON_MAX + 'a' - 1, "WAFFE-")
     );
     c->stats->setView(STATS_PARTY_OVERVIEW);
     if (weapon == std::numeric_limits<WeaponType>::max()) {
@@ -3272,8 +3272,8 @@ static bool talkAt(const Coords &coords, int distance)
             uppercase(c->party->member(0)->getName()).c_str()
         );
         c->party->member(0)->setStatus(STAT_GOOD);
-        c->party->member(0)->heal(HT_FULLHEAL);
-        gameSpellEffect('r', -1, SOUND_LBHEAL);
+        c->party->member(0)->heal(HT_FULL_HEAL);
+        gameSpellEffect('r', -1, SOUND_LORD_BRITISH_HEAL);
     }
     Conversation conv;
     TRACE_LOCAL(gameDbg, "Setting up script information providers.");
@@ -3322,7 +3322,7 @@ static void talkRunConversation(
         else if (conv.state == Conversation::FULL_HEAL) {
             for (int i = 0; i < c->party->size(); i++) {
                 c->party->member(i)->heal(HT_CURE); // cure the party
-                c->party->member(i)->heal(HT_FULLHEAL); // heal the party
+                c->party->member(i)->heal(HT_FULL_HEAL); // heal the party
             }
             // same spell effect as 'r'esurrect
             gameSpellEffect('r', -1, SOUND_MAGIC);
@@ -3397,7 +3397,7 @@ static void wearArmor(int player)
     c->stats->setView(STATS_ARMOR);
     screenMessage("R]STUNG-");
     const ArmorType armor = static_cast<ArmorType>(
-        AlphaActionController::get(ARMR_MAX + 'a' - 1, "R}STUNG-")
+        AlphaActionController::get(ARMOR_MAX + 'a' - 1, "R}STUNG-")
     );
     c->stats->setView(STATS_PARTY_OVERVIEW);
     if (armor == std::numeric_limits<ArmorType>::max()) {
@@ -3539,7 +3539,7 @@ void gameCheckHullIntegrity()
 
     /* see if the ship has sunk */
     if ((c->transportContext == TRANSPORT_SHIP)
-        && (c->saveGame->shiphull == 0)) {
+        && (c->saveGame->ship_hull == 0)) {
         screenMessage("\nDEIN SCHIFF SINKT!\n\n");
         killAll = true;
     }
@@ -3638,8 +3638,8 @@ void GameController::checkSpecialCreatures(Direction dir)
 bool GameController::checkMoongates()
 {
     Coords dest;
-    const int trammel = c->saveGame->trammelphase;
-    const int felucca = c->saveGame->feluccaphase;
+    const int trammel = c->saveGame->trammel_phase;
+    const int felucca = c->saveGame->felucca_phase;
     if (moongateFindActiveGateAt(
             trammel, felucca, c->location->coords, dest
         )) {
@@ -3649,7 +3649,7 @@ bool GameController::checkMoongates()
         c->location->coords = dest;
         gameSpellEffect(-1, -1, SOUND_MOONGATE); // Again, after arriving
         if (moongateIsEntryToShrineOfSpirituality(trammel, felucca)) {
-            if (!c->party->canEnterShrine(VIRT_SPIRITUALITY)) {
+            if (!c->party->canEnterShrine(VIRTUE_SPIRITUALITY)) {
                 return true;
             }
             auto *shrine_spirituality =
@@ -3672,19 +3672,19 @@ static void gameFixupObjects(Map *map)
 {
     Object *obj;
     /* add stuff from the monster table to the map */
-    for (int i = 0; i < MONSTERTABLE_SIZE; i++) {
+    for (int i = 0; i < MONSTER_TABLE_SIZE; i++) {
         const SaveGameMonsterRecord *monster = &map->monster_table[i];
-        if (monster->prevTile != 0) {
+        if (monster->previous_tile != 0) {
             const int z = map->isDungeonMap() ? monster->z : 0;
             Coords coords(monster->x, monster->y, z);
             // tile values stored in monsters.sav hardcoded to index
             // into base tilemap
             MapTile tile = TileMap::get("base")->translate(monster->tile);
-            const MapTile oldTile = TileMap::get("base")->translate(monster->prevTile);
+            const MapTile oldTile = TileMap::get("base")->translate(monster->previous_tile);
             const int limitForCreatures =
                 map->isDungeonMap() ?
-                MONSTERTABLE_SIZE :
-                MONSTERTABLE_CREATURES_SIZE;
+                MONSTER_TABLE_SIZE :
+                MONSTER_TABLE_CREATURES_SIZE;
 
             if (i < limitForCreatures) {
                 const Creature *m = creatureMgr->getByTile(tile);
@@ -3714,7 +3714,7 @@ static void gameFixupObjects(Map *map)
                enhancement since lastShip is really part
                of the game state and shouldn't be lost by
                saving and reloading the game. */
-            if (i == MONSTERTABLE_CREATURES_SIZE) {
+            if (i == MONSTER_TABLE_CREATURES_SIZE) {
                 if (tile.getTileType()->isShip()) {
                     c->lastShip = obj;
                 }

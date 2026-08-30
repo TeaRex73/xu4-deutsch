@@ -74,7 +74,7 @@ Dialogue *U4HWDialogueLoader::load(void *)
     dlg->setDefaultAnswer(
         new Response("\n" + uppercase(hawkwindText[HW_DEFAULT]))
     );
-    for (int v = 0; v < VIRT_MAX; v++) {
+    for (int v = 0; v < VIRTUE_MAX; v++) {
         std::string virtue(getVirtueName(static_cast<Virtue>(v)));
         lowercase(virtue);
         if (virtue.size() > 4) {
@@ -102,7 +102,7 @@ Response *hawkwindGetAdvice(const DynamicResponse *dynResp)
     std::string text;
     int virtue = -1, virtueLevel = -1;
     /* check if asking about a virtue */
-    for (int v = 0; v < VIRT_MAX; v++) {
+    for (int v = 0; v < VIRTUE_MAX; v++) {
         if (xu4_strncasecmp(
                 dynResp->getParam().c_str(),
                 getVirtueName(static_cast<Virtue>(v)), 4

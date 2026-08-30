@@ -52,17 +52,17 @@ static void showSaveGame(const SaveGame *sg)
         sg->sextants
     );
     std::printf("armor: [ ");
-    for (i = 0; i < ARMR_MAX; i++) {
+    for (i = 0; i < ARMOR_MAX; i++) {
         std::printf("%d ", sg->armor[i]);
     }
     std::printf("]\n");
     std::printf("weapons: [ ");
-    for (i = 0; i < WEAP_MAX; i++) {
+    for (i = 0; i < WEAPON_MAX; i++) {
         std::printf("%d ", sg->weapons[i]);
     }
     std::printf("]\n");
     std::printf("reagents: [ ");
-    for (i = 0; i < REAG_MAX; i++) {
+    for (i = 0; i < REAGENT_MAX; i++) {
         std::printf("%d ", sg->reagents[i]);
     }
     std::printf("]\n");
@@ -76,26 +76,26 @@ static void showSaveGame(const SaveGame *sg)
     std::printf("stones: %-3x runes: %x\n", sg->stones, sg->runes);
     std::printf("party members: %d\n", sg->members);
     std::printf("transport: %x\n", sg->transport);
-    std::printf("balloon state/torch duration: %x\n", sg->balloonstate);
+    std::printf("balloon state/torch duration: %x\n", sg->balloon_state);
     std::printf(
-        "trammel: %d  felucca: %d\n", sg->trammelphase, sg->feluccaphase
+        "trammel: %d  felucca: %d\n", sg->trammel_phase, sg->felucca_phase
     );
-    std::printf("shiphull: %d\n", sg->shiphull);
-    std::printf("lbintro: %d\n", sg->lbintro);
+    std::printf("shiphull: %d\n", sg->ship_hull);
+    std::printf("lbintro: %d\n", sg->lord_british_intro);
     std::printf(
-        "lastcamp: %d       lastreagent: %d\n", sg->lastcamp, sg->lastreagent
+        "lastcamp: %d       lastreagent: %d\n", sg->last_camp, sg->last_reagent
     );
     std::printf(
         "lastmeditation: %d lastvirtue: %d\n",
-        sg->lastmeditation,
-        sg->lastvirtue
+        sg->last_meditation,
+        sg->last_virtue
     );
     std::printf(
         "dngx: %-5d dngy: %-5d orientation: %d dnglevel: %d\n",
-        sg->dngx,
-        sg->dngy,
+        sg->dungeon_x,
+        sg->dungeon_y,
         sg->orientation,
-        sg->dnglevel
+        sg->dungeon_level
     );
     std::printf("location: %x\n", sg->location);
     for (i = 0; i < 8; i++) {
@@ -138,7 +138,7 @@ static void showSaveGamePlayerRecord(const SaveGamePlayerRecord *rec)
         "  name: %-17s hp: %-7d hpMax: %-4d xp: %d\n",
         rec->name,
         rec->hp,
-        rec->hpMax,
+        rec->hp_max,
         rec->xp
     );
     std::printf(

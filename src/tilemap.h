@@ -19,14 +19,12 @@ class ConfigElement;
 class TileMap {
 public:
     typedef std::map<std::string, TileMap *> TileIndexMapMap;
-    typedef std::map<unsigned int, MapTile> TileMapMap;
-    TileMap()
-        :tilemap()
-    {
-    }
+    typedef std::map<int, MapTile> TileMapMap;
+    TileMap() = default;
 
-    MapTile translate(unsigned int index);
-    unsigned int untranslate(MapTile tile) const;
+    MapTile translate(int index);
+
+    int untranslate(MapTile tile) const;
     static void loadAll();
     static void unloadAll();
     static TileMap *get(const std::string &name);

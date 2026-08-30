@@ -5,6 +5,7 @@
 #include "vc6.h" // Fixes things if you're using VC6, does nothing otherwise
 
 #include <algorithm>
+#include <set>
 
 #include "object.h"
 
@@ -17,14 +18,11 @@
 
 std::set<Object *> Object::all_objects;
 
-Object::Object(Type type)
+Object::Object(const Type type)
     :tile(0),
      prevTile(0),
-     coords(),
-     prevCoords(),
      movement_behavior(MOVEMENT_FIXED),
      objType(type),
-     maps(),
      focused(false),
      visible(true),
      animated(true)
@@ -66,7 +64,7 @@ Object &Object::operator=(const Object &o)
 
 Object::~Object()
 {
-    if(c && (c->lastShip == this)) {
+    if(c && c->lastShip == this) {
         c->lastShip = nullptr;
     }
     all_objects.erase(this);
@@ -74,31 +72,29 @@ Object::~Object()
 
 void Object::cleanup()
 {
-    std::set<Object *>::iterator tmp;
-
-    for (std::set<Object *>::iterator i = all_objects.begin();
+    for (auto i = all_objects.begin();
          i != all_objects.end();
          /* nothing */ ) {
-        tmp = i; /* save iterator so deletion doesn't affect it */
+        auto tmp = i; /* save iterator so deletion doesn't affect it */
         ++tmp;
-        delete (*i);
+        delete *i;
         i = tmp;
     }
     all_objects.clear();
 }
 
-void Object::setCoords(const Coords &c)
+void Object::setCoords(const Coords &co)
 {
     prevCoords = coords;
-    coords = c;
+    coords = co;
 }
 
-bool Object::setDirection(Direction d)
+bool Object::setDirection(const Direction d)
 {
     return tile.setDirection(d);
 }
 
-void Object::setMap(class Map *m)
+void Object::setMap(Map *m)
 {
     if (std::find(maps.cbegin(), maps.cend(), m) == maps.cend()) {
         maps.push_back(m);
@@ -116,8 +112,8 @@ Map *Object::getMap() const
 Direction Object::getLastDir() const
 {
     const MapCoords prev = prevCoords;
-    const int dirmask = prev.getRelativeDirection(coords, getMap());
-    switch (dirmask) {
+    const int dir_mask = prev.getRelativeDirection(coords, getMap());
+    switch (dir_mask) {
     case MASK_DIR_NORTH:
         return DIR_NORTH;
     case MASK_DIR_SOUTH:
@@ -131,9 +127,9 @@ Direction Object::getLastDir() const
     }
 }
 
-void Object::remove()
+void Object::remove() const
 {
-    unsigned int size = maps.size();
+    const unsigned int size = maps.size();
     for (unsigned int i = 0; i < size; i++) {
         if (i == size - 1) {
             maps[i]->removeObject(this);

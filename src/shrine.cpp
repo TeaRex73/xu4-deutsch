@@ -44,7 +44,7 @@ std::vector<std::string> shrineAdvice;
  */
 bool shrineCanEnter(const Portal *p)
 {
-    const Shrine *shrine = dynamic_cast<Shrine *>(mapMgr->get(p->destid));
+    const Shrine *shrine = dynamic_cast<Shrine *>(mapMgr->get(p->destId));
     if (!c->party->canEnterShrine(shrine->getVirtue())) {
         soundPlay(SOUND_ERROR);
         screenMessage(
@@ -166,7 +166,7 @@ void Shrine::enter()
     }
     if (((c->saveGame->moves / SHRINE_MEDITATION_INTERVAL) >= 0x10000)
         || (((c->saveGame->moves / SHRINE_MEDITATION_INTERVAL) & 0xffff)
-            != c->saveGame->lastmeditation)) {
+            != c->saveGame->last_meditation)) {
         screenMessage("** MEDITATION **\n");
         meditationCycle();
     } else {
@@ -223,7 +223,7 @@ void Shrine::meditationCycle()
     if (interval <= 0) {
         interval = 1;
     }
-    c->saveGame->lastmeditation =
+    c->saveGame->last_meditation =
         (c->saveGame->moves / SHRINE_MEDITATION_INTERVAL) & 0xffff;
     screenDisableCursor();
     for (int i = 0; i < MEDITATION_MANTRAS_PER_CYCLE; i++) {

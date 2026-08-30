@@ -41,20 +41,20 @@ class Coords;
 /*
  * bitmasks for LOS shadows
  */
-#define ____H 0x01 // obscured along the horizontal face
-#define ___C_ 0x02 // obscured at the center
-#define __V__ 0x04 // obscured along the vertical face
-#define _N___ 0x80 // start of new raster
+#define xxxxH 0x01 // obscured along the horizontal face
+#define xxxCx 0x02 // obscured at the center
+#define xxVxx 0x04 // obscured along the vertical face
+#define xNxxx 0x80 // start of new raster
 
-#define ___CH 0x03
-#define __VCH 0x07
-#define __VC_ 0x06
+#define xxxCH 0x03
+#define xxVCH 0x07
+#define xxVCx 0x06
 
-#define _N__H 0x81
-#define _N_CH 0x83
-#define _NVCH 0x87
-#define _NVC_ 0x86
-#define _NV__ 0x84
+#define xNxxH 0x81
+#define xNxCH 0x83
+#define xNVCH 0x87
+#define xNVCx 0x86
+#define xNVxx 0x84
 
 typedef enum {
     MC_DEFAULT,
@@ -65,7 +65,7 @@ typedef enum {
 } MouseCursor;
 
 struct MouseArea {
-    int npoints;
+    int n_points;
     struct {
         int x, y;
     } point[4];
@@ -106,7 +106,7 @@ void screenTextColor(int color);
 bool screenTileUpdate(
     TileView *view, const Coords &coords, bool redraw = true
 ); // whether screen was affected
-void screenUpdate(TileView *view, bool showmap, bool blackout);
+void screenUpdate(TileView *view, bool show_map, bool blackout);
 void screenUpdateCursor();
 void screenUpdateMoons();
 void screenUpdateWind();
@@ -117,11 +117,11 @@ void screenDisableCursor();
 void screenSetCursorPos(int x, int y);
 void screenSetMouseCursor(MouseCursor cursor);
 bool screenPointInMouseArea(int x, int y, const MouseArea *area);
-Image *screenScale(Image *src, int scale, int n, int filter);
-Image *screenScaleDown(Image *src, int scale);
+Image *screenScale(const Image *src, int scale, int n, int filter);
+Image *screenScaleDown(const Image *src, int scale);
 extern std::atomic_int screenCurrentCycle;
 extern std::atomic_bool screenMoving;
 
 #define SCR_CYCLE_MAX 16
 
-#endif // ifndef SCREEN_H
+#endif // SCREEN_H

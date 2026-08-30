@@ -13,7 +13,7 @@
 #include <string>
 #include <vector>
 
-#include <SDL.h>
+#include <SDL.h>  // IWYU pragma: keep
 #include <SDL_mixer.h>
 
 #include "sound.h"
@@ -22,7 +22,7 @@
 #include "music.h"
 #include "settings.h"
 
-bool SoundManager::load_sys(Sound sound, const std::string &pathname)
+bool SoundManager::load_sys(const Sound sound, const std::string &pathname)
 {
     soundChunk[sound] = Mix_LoadWAV(pathname.c_str());
     if (!soundChunk[sound]) {
@@ -38,14 +38,17 @@ bool SoundManager::load_sys(Sound sound, const std::string &pathname)
 
 static std::atomic_bool finished;
 
-static void channel_finished(int channel)
+static void channel_finished(const int channel)
 {
     if (channel == 1) finished = true;
 }
 
 void SoundManager::play_sys(
-    Sound sound, bool onlyOnce, int specificDurationInTicks, bool wait
-)
+    const Sound sound,
+    const bool onlyOnce,
+    const int specificDurationInTicks,
+    const bool wait
+) const
 {
     /**
      * Use Channel 1 for sound effects
@@ -71,7 +74,7 @@ void SoundManager::play_sys(
             Mix_PlayChannelTimed(
                 1,
                 soundChunk[sound],
-                (specificDurationInTicks == -1) ? 0 : -1,
+                specificDurationInTicks == -1 ? 0 : -1,
                 specificDurationInTicks
             ) < 0
         ) {
@@ -86,7 +89,7 @@ void SoundManager::play_sys(
     }
 }
 
-void SoundManager::stop_sys(int channel)
+void SoundManager::stop_sys(const int channel)
 {
     // If music didn't initialize correctly, then we shouldn't try to stop it
     if (!musicMgr->functional || !settings.soundVol) {

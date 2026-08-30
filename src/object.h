@@ -28,7 +28,7 @@ public:
         UNKNOWN,
         CREATURE,
         PERSON,
-        PARTYMEMBER
+        PARTY_MEMBER
     };
 
     explicit Object(Type type = UNKNOWN);
@@ -99,41 +99,41 @@ public:
         prevTile = t;
     }
 
-    void setCoords(const Coords &c);
+    void setCoords(const Coords &co);
 
     void setPrevCoords(const Coords &c)
     {
         prevCoords = c;
     }
 
-    void setMovementBehavior(ObjectMovementBehavior b)
+    void setMovementBehavior(const ObjectMovementBehavior b)
     {
         movement_behavior = b;
     }
 
-    void setType(Type t)
+    void setType(const Type t)
     {
         objType = t;
     }
 
-    void setFocus(bool f = true)
+    void setFocus(const bool f = true)
     {
         focused = f;
     }
 
-    void setVisible(bool v = true)
+    void setVisible(const bool v = true)
     {
         visible = v;
     }
 
-    void setAnimated(bool a = true)
+    void setAnimated(const bool a = true)
     {
         animated = a;
     }
 
     void setMap(class Map *m);
     Map *getMap() const;
-    void remove(); /**< remove self from any maps that it's part of */
+    void remove() const; /**< remove self from any maps that it's part of */
     bool setDirection(Direction d);
     void animateMovement() const;
 
@@ -149,4 +149,4 @@ protected:
     static std::set<Object *> all_objects;
 };
 
-#endif // ifndef OBJECT_H
+#endif // OBJECT_H

@@ -7,6 +7,7 @@
 #include <cctype>
 #include <cstdlib>
 #include <cstring>
+#include <list>
 #include <string>
 #include <vector>
 
@@ -33,22 +34,21 @@ enum Virtue: unsigned char;
 
 
 static int chars_needed(
-    const char *s, int columnmax, int linesdesired, int *real_lines
+    const char *s, int column_max, int lines_desired, int *real_lines
 );
 
-static int chars_to_next_line(const char *s, int columnmax);
+static int chars_to_next_line(const char *s, int column_max);
 
 /**
- * Returns true of the object that 'punknown' points
+ * Returns true of the object that 'p_unknown' points
  * to is a person object
  */
-bool isPerson(Object *punknown)
+bool isPerson(Object *p_unknown)
 {
-    if (dynamic_cast<Person *>(punknown) != nullptr) {
+    if (dynamic_cast<Person *>(p_unknown) != nullptr) {
         return true;
-    } else {
-        return false;
     }
+    return false;
 }
 
 
@@ -108,15 +108,7 @@ std::list<std::string> replySplit(const std::string &text)
 Person::Person(MapTile tile)
     :Creature(tile), dialogue(nullptr), start(0, 0), npcType(NPC_EMPTY)
 {
-    setType(Object::PERSON);
-}
-
-Person::Person(const Person *p)
-    :Creature(static_cast<Creature>(*p)),
-     dialogue(p->dialogue),
-     start(p->start),
-     npcType(p->npcType)
-{
+    setType(PERSON);
 }
 
 bool Person::canConverse() const
@@ -133,11 +125,11 @@ std::string Person::getName() const
 {
     if (dialogue) {
         return dialogue->getName();
-    } else if (npcType == NPC_EMPTY) {
-        return Creature::getName();
-    } else {
-        return "(unnamed person)";
     }
+    if (npcType == NPC_EMPTY) {
+        return Creature::getName();
+    }
+    return "(unnamed person)";
 }
 
 void Person::goToStartLocation()
@@ -158,7 +150,7 @@ void Person::setDialogue(Dialogue *d)
     }
 }
 
-void Person::setNpcType(PersonNpcType t)
+void Person::setNpcType(const PersonNpcType t)
 {
     npcType = t;
     U4ASSERT(!isVendor() || dialogue == nullptr, "vendor has dialogue");
@@ -166,11 +158,11 @@ void Person::setNpcType(PersonNpcType t)
 
 std::list<std::string> Person::getConversationText(
     Conversation *cnv, const char *inquiry
-)
+) const
 {
     std::string text;
     /*
-     * a convsation with a vendor
+     * a conversation with a vendor
      */
     if (isVendor()) {
         static const std::string ids[] = {
@@ -211,7 +203,7 @@ std::list<std::string> Person::getConversationText(
                         const std::string &choices = script->getChoices();
                         // Get choice
                         char val = ReadChoiceController::getChar(choices);
-                        if (std::isspace(val) || (val == '\033')) {
+                        if (std::isspace(val) || val == '\033') {
                             script->unsetVar(script->getInputName());
                         } else {
                             std::string s_val;
@@ -241,9 +233,9 @@ std::list<std::string> Person::getConversationText(
                             TEXT_AREA_X + c->col,
                             TEXT_AREA_Y + c->line
                         );
-                        if (int strsize = str.size()) {
+                        if (int str_size = static_cast<int>(str.size())) {
                             str = deumlaut(lowercase(str));
-                            if (strsize > 5) {
+                            if (str_size > 5) {
                                 str.resize(5);
                             }
                             script->setVar(script->getInputName(), str);
@@ -326,7 +318,7 @@ std::list<std::string> Person::getConversationText(
 /**
  * Get the prompt shown after each reply.
  */
-std::string Person::getPrompt(Conversation *cnv) const
+std::string Person::getPrompt(const Conversation *cnv) const
 {
     if (isVendor()) {
         return "";
@@ -346,33 +338,11 @@ std::string Person::getPrompt(Conversation *cnv) const
     return prompt;
 }
 
-#if 0 // unused and broken
-/**
- * Returns the valid keyboard choices for a given conversation.
- */
-const char *Person::getChoices(Conversation *cnv)
-{
-    if (isVendor()) {
-        return cnv->script->getChoices().c_str();
-    }
-    switch (cnv->state) {
-    case Conversation::CONFIRMATION:
-    case Conversation::CONTINUE_QUESTION:
-        return "nj\015 \033";
-    case Conversation::PLAYER:
-        return "012345678\015 \033";
-    default:
-        U4ASSERT(0, "invalid state: %d", cnv->state);
-    }
-    return nullptr;
-}
-#endif
-
-std::string Person::getIntro(Conversation *cnv)
+std::string Person::getIntro(Conversation *cnv) const
 {
     if (npcType == NPC_EMPTY) {
         cnv->state = Conversation::DONE;
-        return std::string("KOMISCH, KEINE ANTWORT!\n");
+        return "KOMISCH, KEINE ANTWORT!\n";
     }
     // As far as I can tell, about 50% of the time they tell you their
     // name in the introduction
@@ -387,26 +357,26 @@ std::string Person::getIntro(Conversation *cnv)
     return text;
 }
 
-std::string Person::processResponse(Conversation *cnv, Response *response)
+std::string Person::processResponse(
+    Conversation *cnv, Response *response
+) const
 {
     std::string text;
     const std::vector<ResponsePart> &parts = response->getParts();
-    for (std::vector<ResponsePart>::const_iterator i = parts.cbegin();
-         i != parts.cend();
-         ++i) {
+    for (const auto &part: parts) {
         // check for command triggers
-        if (i->isCommand()) {
-            runCommand(cnv, *i);
+        if (part.isCommand()) {
+            runCommand(cnv, part);
         }
         // otherwise, append response part to reply
         else {
-            text += static_cast<std::string>(*i);
+            text += static_cast<std::string>(part);
         }
     }
     return text;
 }
 
-void Person::runCommand(Conversation *cnv, const ResponsePart &command)
+void Person::runCommand(Conversation *cnv, const ResponsePart &command) const
 {
     if (command == ResponsePart::ASK) {
         cnv->question = dialogue->getQuestion();
@@ -444,7 +414,7 @@ void Person::runCommand(Conversation *cnv, const ResponsePart &command)
     }
 } // Person::runCommand
 
-std::string Person::getResponse(Conversation *cnv, const char *inquiry)
+std::string Person::getResponse(Conversation *cnv, const char *inquiry) const
 {
     std::string reply;
     Virtue v;
@@ -453,16 +423,17 @@ std::string Person::getResponse(Conversation *cnv, const char *inquiry)
     if (action == ResponsePart::END) {
         runCommand(cnv, action);
         return uppercase(dialogue->getPronoun() + " wendet sich ab!\n");
-    } else if (action == ResponsePart::ATTACK) {
+    }
+    if (action == ResponsePart::ATTACK) {
         runCommand(cnv, action);
         return uppercase(getName() + " sagt:\nPa~ auf! Narr!");
     }
-    if ((npcType == NPC_TALKER_BEGGAR)
-        && ((xu4_strncasecmp(inquiry, "gib", 3) == 0)
-            || (xu4_strncasecmp(inquiry, "gebe", 4) == 0))) {
+    if (npcType == NPC_TALKER_BEGGAR
+        && (xu4_strncasecmp(inquiry, "gib", 3) == 0
+            || xu4_strncasecmp(inquiry, "gebe", 4) == 0)) {
         reply = "\b";
         cnv->state = Conversation::GIVE_BEGGAR;
-    } else if ((xu4_strncasecmp(inquiry, "begl", 4) == 0)
+    } else if (xu4_strncasecmp(inquiry, "begl", 4) == 0
                && c->party->canPersonJoin(getName(), &v)) {
         CannotJoinError join = c->party->join(getName());
         if (join == JOIN_SUCCEEDED) {
@@ -473,7 +444,7 @@ std::string Person::getResponse(Conversation *cnv, const char *inquiry)
             cnv->state = Conversation::DONE;
         } else {
             reply = dialogue->getPronoun() + " sagt:\nDu bist nicht ";
-            reply += (join == JOIN_NOT_VIRTUOUS) ?
+            reply += join == JOIN_NOT_VIRTUOUS ?
                 getVirtueAdjective(v) :
                 "erfahren";
             reply += " genug f}r mich, um dich zu begleiten.";
@@ -481,7 +452,7 @@ std::string Person::getResponse(Conversation *cnv, const char *inquiry)
     } else if ((*dialogue)[inquiry]) {
         Dialogue::Keyword *kw = (*dialogue)[inquiry];
         reply = processResponse(cnv, kw->getResponse());
-    } else if (settings.debug && (xu4_strncasecmp(inquiry, "dump", 4) == 0)) {
+    } else if (settings.debug && xu4_strncasecmp(inquiry, "dump", 4) == 0) {
         std::vector<std::string> words = split(inquiry, " \t");
         if (words.size() <= 1) {
             reply = dialogue->dump("");
@@ -496,12 +467,12 @@ std::string Person::getResponse(Conversation *cnv, const char *inquiry)
 
 std::string Person::talkerGetQuestionResponse(
     Conversation *cnv, const char *answer
-)
+) const
 {
     bool valid = false;
     bool yes = false;
-    char ans = xu4_tolower(answer[0]);
-    if ((ans == 'j') || (ans == 'n')) {
+    const char ans = static_cast<char>(xu4_tolower(answer[0]));
+    if (ans == 'j' || ans == 'n') {
         valid = true;
         yes = ans == 'j';
     }
@@ -554,7 +525,7 @@ std::string Person::lordBritishGetQuestionResponse(
     return uppercase(reply);
 }
 
-std::string Person::getQuestion(Conversation *cnv)
+std::string Person::getQuestion(const Conversation *cnv)
 {
     return uppercase("\n" + cnv->question->getText())
         + "\n\nDeine Antwort:\n?";
@@ -565,18 +536,19 @@ std::string Person::getQuestion(Conversation *cnv)
  * Returns the number of characters needed to get to
  * the next line of text (based on column width).
  */
-static int chars_to_next_line(const char *s, int columnmax)
+static int chars_to_next_line(const char *s, const int column_max)
 {
     int chars = -1;
     if (std::strlen(s) > 0) {
-        int lastbreak = columnmax;
+        int lastbreak = column_max;
         chars = 0;
         for (const char *str = s; *str; str++) {
             if (*str == '\n') {
-                return str - s;
-            } else if ((*str == ' ') || (*str == '-')) {
-                lastbreak = (str - s);
-            } else if (++chars >= columnmax) {
+                return static_cast<int>(str - s);
+            }
+            if (*str == ' ' || *str == '-') {
+                lastbreak = static_cast<int>(str - s);
+            } else if (++chars >= column_max) {
                 return lastbreak;
             }
         }
@@ -587,14 +559,14 @@ static int chars_to_next_line(const char *s, int columnmax)
 
 /**
  * Counts the number of lines (of the maximum width given by
- * columnmax) in the string.
+ * column_max) in the string.
  */
-int linecount(const std::string &s, int columnmax)
+int linecount(const std::string &s, const int column_max)
 {
     int lines = 0;
     unsigned int ch = 0;
     while (ch < s.length()) {
-        ch += chars_to_next_line(s.c_str() + ch, columnmax);
+        ch += chars_to_next_line(s.c_str() + ch, column_max);
         if (ch < s.length()) {
             ch++;
         }
@@ -609,11 +581,13 @@ int linecount(const std::string &s, int columnmax)
  * valid screen of text (given a column width and row height)
  */
 static int chars_needed(
-    const char *s, int columnmax, int linesdesired, int *real_lines
+    const char *s,
+    const int column_max,
+    const int lines_desired,
+    int *real_lines
 )
 {
     int chars = 0, totalChars = 0;
-    char *new_str = xu4_strdup(s), *str = new_str;
     // try breaking text into paragraphs first
     std::string text = s;
     std::string paragraphs;
@@ -621,8 +595,8 @@ static int chars_needed(
     int lines = 0;
     while ((pos = text.find("\n\n")) < text.length()) {
         std::string p = text.substr(0, pos);
-        lines += linecount(p, columnmax);
-        if (lines <= linesdesired) {
+        lines += linecount(p, column_max);
+        if (lines <= lines_desired) {
             paragraphs += p + "\n";
         } else {
             break;
@@ -631,31 +605,28 @@ static int chars_needed(
     }
     // Seems to be some sort of clang compilation bug in this code,
     // that causes this addition to not work correctly.
-    int totalPossibleLines = lines + linecount(text, columnmax);
-    if (totalPossibleLines <= linesdesired) {
+    const int totalPossibleLines = lines + linecount(text, column_max);
+    if (totalPossibleLines <= lines_desired) {
         paragraphs += text;
     }
     if (!paragraphs.empty()) {
         *real_lines = lines;
-        std::free(new_str);
-        return paragraphs.length();
-    } else {
-        // reset variables and try another way
-        lines = 1;
+        return static_cast<int>(paragraphs.length());
     }
+    // reset variables and try another way
+    lines = 1;
     // gather all the line breaks
-    while ((chars = chars_to_next_line(str, columnmax)) >= 0) {
-        if (++lines >= linesdesired) {
+    while ((chars = chars_to_next_line(s, column_max)) >= 0) {
+        if (++lines >= lines_desired) {
             break;
         }
         int num_to_move = chars;
-        if (*(str + num_to_move) == '\n') {
+        if (*(s + num_to_move) == '\n') {
             num_to_move++;
         }
         totalChars += num_to_move;
-        str += num_to_move;
+        s += num_to_move;
     }
-    std::free(new_str);
     *real_lines = lines;
     return totalChars;
 } // chars_needed

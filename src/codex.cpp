@@ -299,7 +299,7 @@ static void codexHandleVirtues(const std::string &virtue)
     screenDisableCursor();
     EventHandler::sleep(1000);
     /* answered with the correct one of eight virtues */
-    if (current < VIRT_MAX
+    if (current < VIRTUE_MAX
         && xu4_strcasecmp(
             deumlaut(virtue).c_str(),
             deumlaut(getVirtueName(static_cast<Virtue>(current))).c_str()
@@ -307,7 +307,7 @@ static void codexHandleVirtues(const std::string &virtue)
         screenDrawImageInMapArea(codexImageNames[current]);
         screenRedrawMapArea();
         current++;
-        if (current == VIRT_MAX) {
+        if (current == VIRTUE_MAX) {
             screenMessage(
                 "\nDu bist wohl versiert in den Tugenden des Avatars.\n"
             );
@@ -321,18 +321,18 @@ static void codexHandleVirtues(const std::string &virtue)
         codexHandleVirtues(gameGetInput());
     }
     /* answered with the correct base virtue (truth, love, courage) */
-    else if (current >= VIRT_MAX
+    else if (current >= VIRTUE_MAX
              && xu4_strcasecmp(
                 deumlaut(virtue).c_str(),
                 deumlaut(
-                    getBaseVirtueName(1 << (current - VIRT_MAX))
+                    getBaseVirtueName(1 << (current - VIRTUE_MAX))
                 ).c_str()
              ) == 0) {
         screenDrawImageInMapArea(codexImageNames[current]);
         screenRedrawMapArea();
         current++;
         tries = 1;
-        if (current < VIRT_MAX + 3) {
+        if (current < VIRTUE_MAX + 3) {
             screenMessage("\n\nDie Stimme fragt:\n");
             EventHandler::sleep(2000);
             screenMessage("\n%s\n\n", codexVirtueQuestions[current].c_str());

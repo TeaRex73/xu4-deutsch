@@ -50,7 +50,7 @@ public:
     void multiply(int batches);
 
 private:
-    unsigned short reagents[REAG_MAX];
+    unsigned short reagents[REAGENT_MAX];
 };
 
 struct Spell {
