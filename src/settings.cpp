@@ -8,7 +8,7 @@
 #include <cstdio>
 #include <cstdlib>
 #include <cstring>
-#include <cwchar>
+#include <vector>
 
 #include <unistd.h>
 #if defined(_WIN32) || defined(__CYGWIN__)
@@ -90,7 +90,7 @@ bool SettingsEnhancementOptions::operator!=(
 }
 
 
-bool MouseOptions::operator==(const class MouseOptions &s) const
+bool MouseOptions::operator==(const MouseOptions &s) const
 {
     if (enabled != s.enabled) {
         return false;
@@ -98,7 +98,7 @@ bool MouseOptions::operator==(const class MouseOptions &s) const
     return true;
 }
 
-bool MouseOptions::operator!=(const class MouseOptions &s) const
+bool MouseOptions::operator!=(const MouseOptions &s) const
 {
     return !operator==(s);
 }
@@ -142,10 +142,10 @@ bool SettingsData::operator==(const SettingsData &s) const
     if (innTime != s.innTime) {
         return false;
     }
-    if (keydelay != s.keydelay) {
+    if (keyDelay != s.keyDelay) {
         return false;
     }
-    if (keyinterval != s.keyinterval) {
+    if (keyInterval != s.keyInterval) {
         return false;
     }
     if (mouseOptions != s.mouseOptions) {
@@ -233,10 +233,10 @@ bool SettingsData::operator!=(const SettingsData &s) const
 
 
 /**
- * Default contructor.  Settings is a singleton so this is private.
+ * Default constructor.  Settings is a singleton so this is private.
  */
 Settings::Settings()
-    :userPath(), filename(), battleDiffs({"Normal", "Hard", "Expert"})
+    :battleDiffs({"Normal", "Hard", "Expert"})
 {
 }
 
@@ -248,11 +248,11 @@ void Settings::init(const bool useProfile, const std::string &profileName)
 {
     if (useProfile) {
         userPath = "./profiles/";
-        userPath += profileName.c_str();
-        userPath += "/";
+        userPath += profileName;
+        userPath += '/';
     } else {
 #if defined(__APPLE__) && defined(__MACH__)
-        char *home = std::getenv("HOME");
+        const char *home = std::getenv("HOME");
         if (home && home[0]) {
             userPath += home;
             userPath += "/Library/Application Support/com.ticmanis.u4/";
@@ -316,7 +316,7 @@ Settings &Settings::getInstance()
 void Settings::setData(const SettingsData &data)
 {
     // bitwise copy is safe
-    *(static_cast<SettingsData *>(this)) = data;
+    *static_cast<SettingsData *>(this) = data;
 }
 
 
@@ -326,9 +326,8 @@ void Settings::setData(const SettingsData &data)
 bool Settings::read()
 {
     char buffer[256];
-    std::FILE *settingsFile;
 
-    settingsFile = std::fopen(filename.c_str(), "rt");
+    std::FILE *settingsFile = std::fopen(filename.c_str(), "rt");
     if (!settingsFile) {
         return false;
     }
@@ -382,11 +381,11 @@ bool Settings::read()
                 )
             );
         } else if (std::strstr(buffer, "keydelay=") == buffer) {
-            keydelay = static_cast<int>(
+            keyDelay = static_cast<int>(
                 std::strtoul(buffer + std::strlen("keydelay="), nullptr, 0)
             );
         } else if (std::strstr(buffer, "keyinterval=") == buffer) {
-            keyinterval = static_cast<int>(
+            keyInterval = static_cast<int>(
                 std::strtoul(buffer + std::strlen("keyinterval="), nullptr, 0)
             );
         } else if (std::strstr(buffer, "filterMoveMessages=") == buffer) {
@@ -598,7 +597,7 @@ bool Settings::read()
     }
     std::fclose(settingsFile);
     // set global timer granularity
-    eventTimerGranularity = (1000 / gameCyclesPerSecond);
+    eventTimerGranularity = 1000 / gameCyclesPerSecond;
     return true;
 } // Settings::read
 
@@ -609,8 +608,7 @@ bool Settings::read()
  */
 bool Settings::write()
 {
-    std::FILE *settingsFile;
-    settingsFile = std::fopen(filename.c_str(), "wt");
+    std::FILE *settingsFile = std::fopen(filename.c_str(), "wt");
     if (!settingsFile) {
         errorWarning("can't write settings file");
         return false;
@@ -675,8 +673,8 @@ bool Settings::write()
         soundVol,
         volumeFades,
         shortcutCommands,
-        keydelay,
-        keyinterval,
+        keyDelay,
+        keyInterval,
         filterMoveMessages,
         battleSpeed,
         enhancements,

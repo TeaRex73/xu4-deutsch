@@ -30,7 +30,7 @@ const ResponsePart ResponsePart::START_MUSIC_SILENCE(
 const ResponsePart ResponsePart::STOP_MUSIC("<STOP_MUSIC>", "", true);
 const ResponsePart ResponsePart::HAWKWIND("<HAWKWIND>", "", true);
 const ResponsePart ResponsePart::DISK_LOAD("<DISK_LOAD>", "", true);
-const unsigned int Conversation::BUFFER_LEN = 16;
+const int Conversation::BUFFER_LEN = 16;
 
 
 Response::Response(const std::string &response)

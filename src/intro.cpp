@@ -465,7 +465,7 @@ IntroController::IntroController()
             2,
             2,
             /*'d'*/ 7,
-            &settingsChanged.keydelay,
+            &settingsChanged.keyDelay,
             100,
             MAX_KEY_DELAY,
             100
@@ -478,7 +478,7 @@ IntroController::IntroController()
             2,
             3,
             /*'i'*/ 7,
-            &settingsChanged.keyinterval,
+            &settingsChanged.keyInterval,
             10,
             MAX_KEY_INTERVAL,
             10
@@ -1815,7 +1815,7 @@ void IntroController::updateInputMenu(const MenuEvent &event)
             settings.write();
             // re-initialize keyboard
             KeyHandler::setKeyRepeat(
-                settingsChanged.keydelay, settingsChanged.keyinterval
+                settingsChanged.keyDelay, settingsChanged.keyInterval
             );
             if (settings.mouseOptions.enabled) {
                 SDL_ShowCursor(SDL_ENABLE);

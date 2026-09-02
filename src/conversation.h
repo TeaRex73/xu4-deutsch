@@ -345,7 +345,7 @@ public:
     /* Member functions */
     InputType getInputRequired(int *bufferLen) const;
     /* Static variables */
-    static const unsigned int BUFFER_LEN; /**< The default maximum
+    static const int BUFFER_LEN; /**< The default maximum
                                             length of input */
 
     State state; /**< The state of the conversation */

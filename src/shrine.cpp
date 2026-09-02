@@ -35,8 +35,8 @@
 #include "utils.h"
 
 
-int cycles, completedCycles;
-std::vector<std::string> shrineAdvice;
+static int cycles, completedCycles;
+static std::vector<std::string> shrineAdvice;
 
 
 /**
@@ -99,7 +99,7 @@ std::string Shrine::getMantra() const
     return mantra;
 }
 
-void Shrine::setVirtue(Virtue v)
+void Shrine::setVirtue(const Virtue v)
 {
     virtue = v;
 }
@@ -116,12 +116,12 @@ void Shrine::setMantra(const std::string &m)
 void Shrine::enter()
 {
     if (shrineAdvice.empty()) {
-        U4FILE *shrinetext = u4fopen("shrine.ger");
-        if (!shrinetext) {
+        U4FILE *shrine_text = u4fopen("shrine.ger");
+        if (!shrine_text) {
             return;
         }
-        shrineAdvice = u4read_stringtable(shrinetext, 0, 24);
-        u4fclose(shrinetext);
+        shrineAdvice = u4read_stringtable(shrine_text, 0, 24);
+        u4fclose(shrine_text);
     }
     if (settings.enhancementsOptions.u5shrines) {
         enhancedSequence();
@@ -136,10 +136,10 @@ void Shrine::enter()
     virtueInput = ReadStringController::getString(
         32, TEXT_AREA_X + c->col, TEXT_AREA_Y + c->line
     );
-    int choice;
     screenMessage("\n\nWIE VIELE\nZYKLEN (0-3)?");
-    choice = ReadChoiceController::getChar("0123\015\033");
-    if ((choice == '\033') || (choice == '\015')) {
+    const int choice =
+        ReadChoiceController::getChar("0123\015\033");
+    if (choice == '\033' || choice == '\015') {
         cycles = 0;
     } else {
         cycles = choice - '0';
@@ -164,9 +164,9 @@ void Shrine::enter()
         eject();
         return;
     }
-    if (((c->saveGame->moves / SHRINE_MEDITATION_INTERVAL) >= 0x10000)
-        || (((c->saveGame->moves / SHRINE_MEDITATION_INTERVAL) & 0xffff)
-            != c->saveGame->last_meditation)) {
+    if (c->saveGame->moves / SHRINE_MEDITATION_INTERVAL >= 0x10000
+        || (c->saveGame->moves / SHRINE_MEDITATION_INTERVAL & 0xffff)
+        != c->saveGame->last_meditation) {
         screenMessage("** MEDITATION **\n");
         meditationCycle();
     } else {
@@ -194,16 +194,16 @@ void Shrine::enhancedSequence()
     obj->setTile(tileset->getByName("avatar")->getId());
     gameUpdateScreen();
     EventHandler::wait_msecs(400);
-    c->location->map->move(obj, DIR_NORTH);
+    move(obj, DIR_NORTH);
     gameUpdateScreen();
     EventHandler::wait_msecs(400);
-    c->location->map->move(obj, DIR_NORTH);
+    move(obj, DIR_NORTH);
     gameUpdateScreen();
     EventHandler::wait_msecs(400);
-    c->location->map->move(obj, DIR_NORTH);
+    move(obj, DIR_NORTH);
     gameUpdateScreen();
     EventHandler::wait_msecs(400);
-    c->location->map->move(obj, DIR_NORTH);
+    move(obj, DIR_NORTH);
     gameUpdateScreen();
     EventHandler::wait_msecs(800);
     obj->setTile(creatureMgr->getById(BEGGAR_ID)->getTile());
@@ -217,19 +217,19 @@ void Shrine::meditationCycle()
 {
     /* find our interval for meditation */
     int interval =
-        (settings.shrineTime * 1000) / MEDITATION_MANTRAS_PER_CYCLE;
-    interval -= (interval % eventTimerGranularity);
+        settings.shrineTime * 1000 / MEDITATION_MANTRAS_PER_CYCLE;
+    interval -= interval % eventTimerGranularity;
     interval /= eventTimerGranularity;
     if (interval <= 0) {
         interval = 1;
     }
     c->saveGame->last_meditation =
-        (c->saveGame->moves / SHRINE_MEDITATION_INTERVAL) & 0xffff;
+        c->saveGame->moves / SHRINE_MEDITATION_INTERVAL & 0xffff;
     screenDisableCursor();
     for (int i = 0; i < MEDITATION_MANTRAS_PER_CYCLE; i++) {
         WaitController controller(interval);
         eventHandler->pushController(&controller);
-        controller.wait();
+        WaitController::wait();
         screenMessage(".");
         screenRedrawScreen();
     }
@@ -260,7 +260,7 @@ void Shrine::askMantra()
     } else {
         completedCycles++;
         c->party->adjustKarma(KA_MEDITATION);
-        bool elevated = completedCycles == 3
+        const bool elevated = completedCycles == 3
             && c->party->attemptElevation(getVirtue());
         if (elevated) {
             screenMessage(
@@ -282,7 +282,7 @@ void Shrine::askMantra()
     }
 } // Shrine::askMantra
 
-void Shrine::showVision(bool elevated) const
+void Shrine::showVision(const bool elevated) const
 {
     if (elevated) {
         static const char *visionImageNames[] = {

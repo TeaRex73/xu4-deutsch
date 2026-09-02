@@ -27,7 +27,6 @@
 #include "weapon.h"
 
 
-extern bool verbose;
 /**
  * StatsArea class implementation
  */
@@ -50,8 +49,7 @@ StatsArea::StatsArea()
          STATS_AREA_WIDTH,
          1
      ),
-     view(STATS_PARTY_OVERVIEW),
-     reagentsMixMenu()
+     view(STATS_PARTY_OVERVIEW)
 {
     // Generate a formatted std::string for each menu item,
     // and then add the item to the menu.  The Y value
@@ -71,7 +69,7 @@ StatsArea::StatsArea()
                 1,
                 0,
                 -1,
-                c->party->getReagentPtr(static_cast<Reagent>(count)),
+                Party::getReagentPtr(count),
                 0,
                 99,
                 1,
@@ -82,9 +80,9 @@ StatsArea::StatsArea()
     reagentsMixMenu.addObserver(this);
 }
 
-void StatsArea::setView(StatsView view)
+void StatsArea::setView(const StatsView newView)
 {
-    this->view = view;
+    view = newView;
     update();
 }
 
@@ -98,8 +96,8 @@ void StatsArea::prevItem()
     if (view < STATS_CHAR1) {
         view = STATS_MIXTURES;
     }
-    if ((view <= STATS_CHAR8)
-        && ((view - STATS_CHAR1 + 1) > c->party->size())) {
+    if (view <= STATS_CHAR8
+        && view - STATS_CHAR1 + 1 > c->party->size()) {
         view = static_cast<StatsView>(STATS_CHAR1 - 1 + c->party->size());
     }
     update();
@@ -115,8 +113,8 @@ void StatsArea::nextItem()
     if (view > STATS_MIXTURES) {
         view = STATS_CHAR1;
     }
-    if ((view <= STATS_CHAR8)
-        && ((view - STATS_CHAR1 + 1) > c->party->size())) {
+    if (view <= STATS_CHAR8
+        && view - STATS_CHAR1 + 1 > c->party->size()) {
         view = STATS_WEAPONS;
     }
     update();
@@ -136,7 +134,7 @@ void StatsArea::update()
     case STATS_PARTY_OVERVIEW:
         showPartyView(false);
         break;
-    case STATS_PARTY_AVATARONLY:
+    case STATS_PARTY_AVATAR_ONLY:
         showPartyView(true);
         break;
     case STATS_CHAR1:
@@ -226,7 +224,7 @@ void StatsArea::update(Aura *aura)
     summary.update();
 } // StatsArea::update
 
-void StatsArea::highlightPlayer(int player)
+void StatsArea::highlightPlayer(const int player)
 {
     U4ASSERT(
         player < c->party->size(), "player number out of range: %d", player
@@ -262,7 +260,8 @@ void StatsArea::redraw()
  */
 void StatsArea::setTitle(const std::string &s)
 {
-    int titleStart = (STATS_AREA_WIDTH / 2) - ((s.length() + 2) / 2);
+    const int titleStart =
+        STATS_AREA_WIDTH / 2 - (static_cast<int>(s.length()) + 2) / 2;
     title.textAt(titleStart, 0, "%c%s%c", 16, s.c_str(), 17);
 }
 
@@ -270,11 +269,11 @@ void StatsArea::setTitle(const std::string &s)
 /**
  * The basic party view.
  */
-void StatsArea::showPartyView(bool avatarOnly)
+void StatsArea::showPartyView(const bool avatarOnly)
 {
-    const char *format = "%d%c%-9.8s%03d%s";
-    PartyMember *p = nullptr;
-    int activePlayer = c->party->getActivePlayer();
+    const auto *format = "%d%c%-9.8s%03d%s";
+    const PartyMember *p = nullptr;
+    const int activePlayer = c->party->getActivePlayer();
     U4ASSERT(
         c->party->size() <= 8,
         "party members out of range: %d",
@@ -288,10 +287,10 @@ void StatsArea::showPartyView(bool avatarOnly)
                 i,
                 format,
                 i + 1,
-                (i == activePlayer) ? CHARSET_BULLET : '-',
+                i == activePlayer ? CHARSET_BULLET : '-',
                 uppercase(p->getName()).c_str(),
                 p->getHp(),
-                mainArea.colorizeStatus(p->getStatus()).c_str()
+                TextView::colorizeStatus(p->getStatus()).c_str()
             );
         }
     } else {
@@ -301,9 +300,9 @@ void StatsArea::showPartyView(bool avatarOnly)
             0,
             format,
             1,
-            (activePlayer == 0) ? CHARSET_BULLET : '-',
+            activePlayer == 0 ? CHARSET_BULLET : '-',
             uppercase(p->getName()).c_str(), p->getHp(),
-            mainArea.colorizeStatus(p->getStatus()).c_str()
+            TextView::colorizeStatus(p->getStatus()).c_str()
         );
     }
 }
@@ -314,19 +313,21 @@ void StatsArea::showPartyView(bool avatarOnly)
  */
 void StatsArea::showPlayerDetails()
 {
-    int player = view - STATS_CHAR1;
+    const int player = view - STATS_CHAR1;
     U4ASSERT(player < 8, "character number out of range: %d", player);
-    PartyMember *p = c->party->member(player);
+    const PartyMember *p = c->party->member(player);
     char titleText[16];
     std::snprintf(titleText, 16, "SPL-%d", player + 1);
     setTitle(titleText);
-    std::string nameStr = uppercase(p->getName());
-    int nameStart = (STATS_AREA_WIDTH - nameStr.length()) / 2;
+    const std::string nameStr = uppercase(p->getName());
+    const int nameStart =
+        (STATS_AREA_WIDTH - static_cast<int>(nameStr.length())) / 2;
     mainArea.textAt(0, 1, "%c             %c", p->getSex(), p->getStatus());
     mainArea.textAt(nameStart, 0, "%s", nameStr.c_str());
-    std::string classStr =
+    const std::string classStr =
         uppercase(getClassNameTranslated(p->getClass(), p->getSex()));
-    int classStart = (STATS_AREA_WIDTH - classStr.length()) / 2;
+    const int classStart =
+        (STATS_AREA_WIDTH - static_cast<int>(classStr.length())) / 2;
     mainArea.textAt(classStart, 1, "%s", classStr.c_str());
     mainArea.textAt(0, 2, " MP:%02d  ST:%d", p->getMp(), p->getRealLevel());
     mainArea.textAt(0, 3, "STR:%02d  TP:%04d", p->getStr(), p->getHp());
@@ -362,7 +363,7 @@ void StatsArea::showWeapons()
             n = 99;
         }
         if (n >= 1) {
-            const char *format = (n >= 10) ? "%c%d-%s" : "%c-%d-%s";
+            const char *format = n >= 10 ? "%c%d-%s" : "%c-%d-%s";
             mainArea.textAt(
                 col,
                 line++,
@@ -373,7 +374,7 @@ void StatsArea::showWeapons()
                     Weapon::get(static_cast<WeaponType>(w))->getAbbrev()
                 ).c_str()
             );
-            if (line >= (STATS_AREA_HEIGHT)) {
+            if (line >= STATS_AREA_HEIGHT) {
                 line = 0;
                 col += 8;
             }
@@ -393,7 +394,7 @@ void StatsArea::showArmor()
     for (int a = ARMOR_NONE + 1; a < ARMOR_MAX; a++) {
         if (c->saveGame->armor[a] > 0) {
             const char *format =
-                (c->saveGame->armor[a] >= 10) ? "%c%d-%s" : "%c-%d-%s";
+                c->saveGame->armor[a] >= 10 ? "%c%d-%s" : "%c-%d-%s";
             mainArea.textAt(
                 0,
                 line++,
@@ -504,28 +505,28 @@ void StatsArea::showItems()
 /**
  * Unmixed reagents in inventory.
  */
-void StatsArea::showReagents(bool active)
+void StatsArea::showReagents(const bool active)
 {
     setTitle("REAGENZIEN");
-    Menu::MenuItemList::const_iterator i;
     int line = 0, r = REAGENT_ASH;
     std::string shortcut("A");
     reagentsMixMenu.show(&mainArea);
-    for (i = reagentsMixMenu.begin(); i != reagentsMixMenu.end(); ++i, ++r) {
-        if ((*i)->isVisible()) {
+    for (const auto *i: reagentsMixMenu) {
+        if (i->isVisible()) {
             // Insert the reagent menu item shortcut character
-            shortcut[0] = 'A' + r;
+            shortcut[0] = static_cast<char>('A' + r);
             if (active) {
                 mainArea.textAt(
                     0,
                     line++,
                     "%s",
-                    mainArea.colorizeString(shortcut, FG_YELLOW, 0, 1).c_str()
+                    TextView::colorizeString(shortcut, FG_YELLOW, 0, 1).c_str()
                 );
             } else {
                 mainArea.textAt(0, line++, "%s", shortcut.c_str());
             }
         }
+        ++r;
     }
 }
 
@@ -545,7 +546,7 @@ void StatsArea::showMixtures()
         }
         if (n >= 1) {
             mainArea.textAt(col, line++, "%c-%02d", s + 'A', n);
-            if (line >= (STATS_AREA_HEIGHT)) {
+            if (line >= STATS_AREA_HEIGHT) {
                 if (col >= 10) {
                     break;
                 }
@@ -558,16 +559,13 @@ void StatsArea::showMixtures()
 
 void StatsArea::resetReagentsMenu()
 {
-    Menu::MenuItemList::const_iterator current;
     int i = 0, row = 0;
-    for (current = reagentsMixMenu.begin();
-         current != reagentsMixMenu.end();
-         ++current) {
+    for (auto *current: reagentsMixMenu) {
         if (c->saveGame->reagents[i++] > 0) {
-            (*current)->setVisible(true);
-            (*current)->setY(row++);
+            current->setVisible(true);
+            current->setY(row++);
         } else {
-            (*current)->setVisible(false);
+            current->setVisible(false);
         }
     }
     reagentsMixMenu.reset(false);
@@ -579,7 +577,7 @@ void StatsArea::resetReagentsMenu()
  */
 bool ReagentsMenuController::keyPressed(int key)
 {
-    if ((key >= 'A') && (key <= ']')) {
+    if (key >= 'A' && key <= ']') {
         key = xu4_tolower(key);
     }
     switch (key) {
@@ -593,7 +591,7 @@ bool ReagentsMenuController::keyPressed(int key)
     case 'h':
     {
         /* select the corresponding reagent (if visible) */
-        Menu::MenuItemList::iterator mi = menu->getById(key - 'a');
+        const auto mi = menu->getById(key - 'a');
         if ((*mi)->isVisible()) {
             menu->setCurrent(menu->getById(key - 'a'));
             keyPressed(U4_SPACE);

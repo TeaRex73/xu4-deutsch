@@ -15,6 +15,8 @@
 #include <libxml/parser.h>
 
 
+typedef const xmlNode *xmlConstNodePtr;
+
 /**
  * An xml-scripting class. It loads and runs xml scripts that
  * take information and interact with the game environment itself.
@@ -39,9 +41,7 @@ public:
      */
     class Provider {
     public:
-        virtual ~Provider()
-        {
-        }
+        virtual ~Provider() = default;
 
         virtual std::string translate(std::vector<std::string> &parts) = 0;
     };
@@ -152,7 +152,7 @@ public:
     void run(const std::string &script);
     ReturnCode execute(
         xmlNodePtr script,
-        xmlNodePtr currentItem = nullptr,
+        xmlConstNodePtr theCurrentItem = nullptr,
         std::string *output = nullptr
     );
     void _continue();
@@ -194,7 +194,7 @@ private:
     int getPropAsInt(
         xmlNodePtr node, const std::string &prop, bool recursive = false
     );
-    std::string getContent(xmlNodePtr node);
+    std::string getContent(xmlConstNodePtr node);
     ReturnCode pushContext(xmlNodePtr script, xmlNodePtr current);
     ReturnCode popContext(xmlNodePtr script, xmlNodePtr current);
     ReturnCode end(xmlNodePtr script, xmlNodePtr current);
@@ -205,7 +205,7 @@ private:
     ReturnCode forLoop(xmlNodePtr script, xmlNodePtr current);
     ReturnCode random(xmlNodePtr script, xmlNodePtr current);
     ReturnCode move(xmlNodePtr script, xmlNodePtr current);
-    ReturnCode sleep(xmlNodePtr script, xmlNodePtr current);
+    ReturnCode sleep(xmlNodePtr script, xmlNodePtr current) const;
     static ReturnCode cursor(xmlNodePtr script, xmlNodePtr current);
     ReturnCode pay(xmlNodePtr script, xmlNodePtr current);
     ReturnCode _if(xmlNodePtr script, xmlNodePtr current);
@@ -213,18 +213,17 @@ private:
     ReturnCode add(xmlNodePtr script, xmlNodePtr current);
     ReturnCode lose(xmlNodePtr script, xmlNodePtr current);
     ReturnCode heal(xmlNodePtr script, xmlNodePtr current);
-    ReturnCode castSpell(xmlNodePtr script, xmlNodePtr current);
+    ReturnCode castSpell(xmlNodePtr script, xmlNodePtr current) const;
     ReturnCode damage(xmlNodePtr script, xmlNodePtr current);
     ReturnCode karma(xmlNodePtr script, xmlNodePtr current);
     ReturnCode music(xmlNodePtr script, xmlNodePtr current);
     ReturnCode setVar(xmlNodePtr script, xmlNodePtr current);
-    ReturnCode setId(xmlNodePtr script, xmlNodePtr current);
     ReturnCode ztats(xmlNodePtr script, xmlNodePtr current);
-    void mathParseChildren(xmlNodePtr math, std::string *result);
+    void mathParseChildren(xmlConstNodePtr math, std::string *result);
     static int mathValue(const std::string &str);
-    static int math(int lval, int rval, const std::string &op);
+    static int math(int left_value, int right_value, const std::string &op);
     static bool mathParse(
-        const std::string &str, int *lval, int *rval, std::string *op
+        const std::string &str, int *left_value, int *right_value, std::string *op
     );
     static void parseOperation(
         const std::string &str,
@@ -237,7 +236,6 @@ private:
         const std::string &str, std::string *funcName, std::string *contents
     );
 
-private:
     typedef std::map<std::string, Action> ActionMap;
 
     static ActionMap action_map;
@@ -267,4 +265,4 @@ private:
     std::map<std::string, Provider *> providers;
 };
 
-#endif // ifndef SCRIPT_H
+#endif // SCRIPT_H

@@ -2099,7 +2099,7 @@ void castSpell(int player)
     screenMessage("%s!\n", uppercase(spellGetName(spell)).c_str());
     c->stats->setView(STATS_PARTY_OVERVIEW);
     // if we can't really cast this spell, skip the extra parameters
-    if (spellCheckPrerequisites(spell, player) != CASTERR_NOERROR) {
+    if (spellCheckPrerequisites(spell, player) != CAST_ERROR_NO_ERROR) {
         gameCastSpell(spell, player, 0);
         return;
     }
@@ -2141,28 +2141,28 @@ void castSpell(int player)
             }
         }
         break;
-    case Spell::PARAM_TYPEDIR:
+    case Spell::PARAM_TYPE_DIR:
     {
         screenMessage("ENERGIETYP?");
-        EnergyFieldType fieldType = ENERGYFIELD_NONE;
+        EnergyFieldType fieldType = ENERGY_FIELD_NONE;
         const char key = ReadChoiceController::getChar("fbgs \033\n\r");
         switch (key) {
         case 'f':
-            fieldType = ENERGYFIELD_FIRE;
+            fieldType = ENERGY_FIELD_FIRE;
             break;
         case 'b':
-            fieldType = ENERGYFIELD_LIGHTNING;
+            fieldType = ENERGY_FIELD_LIGHTNING;
             break;
         case 'g':
-            fieldType = ENERGYFIELD_POISON;
+            fieldType = ENERGY_FIELD_POISON;
             break;
         case 's':
-            fieldType = ENERGYFIELD_SLEEP;
+            fieldType = ENERGY_FIELD_SLEEP;
             break;
         default:
             break;
         }
-        if (fieldType != ENERGYFIELD_NONE) {
+        if (fieldType != ENERGY_FIELD_NONE) {
             screenMessage("\n");
             Direction dir;
             if (c->location->context == CTX_DUNGEON) {
@@ -2189,7 +2189,7 @@ void castSpell(int player)
         }
         break;
     }
-    case Spell::PARAM_FROMDIR:
+    case Spell::PARAM_FROM_DIR:
     {
         screenMessage("AUS RICHTUNG");
         const Direction dir = gameGetDirection();

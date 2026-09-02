@@ -6,6 +6,7 @@
 
 #include <algorithm>
 #include <list>
+#include <string>
 #include <vector>
 
 #include "spell.h"
@@ -14,7 +15,6 @@
 #include "aura.h"
 #include "combat.h"
 #include "context.h"
-#include "controller.h"
 #include "coords.h"
 #include "creature.h"
 #include "debug.h"
@@ -28,8 +28,10 @@
 #include "moongate.h"
 #include "music.h"
 #include "player.h"
+#include "savegame.h"
 #include "screen.h"
 #include "settings.h"
+#include "sound.h"
 #include "tile.h"
 #include "tileset.h"
 #include "types.h"
@@ -40,7 +42,7 @@
 SpellEffectCallback spellEffectCallback = nullptr;
 static CombatController *spellCombatController();
 static void spellMagicAttack(
-    const std::string &tilename, Direction dir, int minDamage, int maxDamage
+    const std::string &tileName, Direction dir, int minDamage, int maxDamage
 );
 static bool spellMagicAttackAt(
     const Coords &coords, MapTile attackTile, int attackDamage
@@ -49,7 +51,7 @@ static bool spellAwaken(int player);
 static bool spellBlink(int dir);
 static bool spellCure(int player);
 static bool spellDispel(int dir);
-static bool spellEField(int param);
+static bool spellEnergyField(int param);
 static bool spellFireball(int dir);
 static bool spellGate(int phase);
 static bool spellHeal(int player);
@@ -57,20 +59,20 @@ static bool spellIceball(int dir);
 static bool spellJinx(int);
 static bool spellKill(int dir);
 static bool spellLight(int);
-static bool spellMMissle(int dir);
+static bool spellMagicMissile(int dir);
 static bool spellNegate(int);
 static bool spellOpen(int);
 static bool spellProtect(int);
-static bool spellRez(int player);
-static bool spellQuick(int);
+static bool spellResurrect(int player);
+static bool spellQuickness(int);
 static bool spellSleep(int);
 static bool spellTremor(int);
 static bool spellUndead(int);
 static bool spellView(int);
-static bool spellWinds(int fromdir);
+static bool spellWinds(int fromDir);
 static bool spellXit(int);
-static bool spellYup(int);
-static bool spellZdown(int);
+static bool spellYUp(int);
+static bool spellZDown(int);
 
 /* masks for reagents */
 #define ASH (1 << REAGENT_ASH)
@@ -83,268 +85,290 @@ static bool spellZdown(int);
 #define MANDRAKE (1 << REAGENT_MANDRAKE)
 
 /* spell error messages */
-static const struct {
+static constexpr struct {
     SpellCastError err;
     const char *msg;
 } spellErrorMsgs[] = {
-    { CASTERR_NOMIX, "KEINE GEMISCHT!\n" },
-    { CASTERR_MPTOOLOW, "ZU WENIG M.P.!\nFEHLSCHLAG!\n" },
-    { CASTERR_FAILED, "FEHLSCHLAG!\n" },
-    { CASTERR_WRONGCONTEXT, "HIER NICHT!\n" },
-    { CASTERR_COMBATONLY, "NUR IM KAMPFE!\nFEHLSCHLAG!\n" },
-    { CASTERR_DUNGEONONLY, "NUR IN H\\HLEN!\nFEHLSCHLAG!\n" },
-    { CASTERR_WORLDMAPONLY, "NUR IM FREIEN!\nFEHLSCHLAG!\n" }
+    {
+        .err = CAST_ERROR_NO_MIXTURE,
+        .msg = "KEINE GEMISCHT!\n"
+    },
+    {
+        .err = CAST_ERROR_MP_TOO_LOW,
+        .msg = "ZU WENIG M.P.!\nFEHLSCHLAG!\n"
+    },
+    {
+        .err = CAST_ERROR_FAILED,
+        .msg = "FEHLSCHLAG!\n"
+    },
+    {
+        .err = CAST_ERROR_WRONG_CONTEXT,
+        .msg = "HIER NICHT!\n"
+    },
+    {
+        .err = CAST_ERROR_COMBAT_ONLY,
+        .msg = "NUR IM KAMPFE!\nFEHLSCHLAG!\n"
+    },
+    {
+        .err = CAST_ERROR_DUNGEON_ONLY,
+        .msg = "NUR IN H\\HLEN!\nFEHLSCHLAG!\n"
+    },
+    {
+        .err = CAST_ERROR_WORLD_MAP_ONLY,
+        .msg = "NUR IM FREIEN!\nFEHLSCHLAG!\n"
+    }
 };
-static const Spell spells[] = {
+static constexpr Spell spells[] = {
     {
-        "Avacus",
-        GINSENG | GARLIC,
-        CTX_ANY,
-        TRANSPORT_ANY,
-        &spellAwaken,
-        Spell::PARAM_PLAYER,
-        5
+        .name = "Avacus",
+        .components = GINSENG | GARLIC,
+        .context = CTX_ANY,
+        .transportContext = TRANSPORT_ANY,
+        .spellFunc = &spellAwaken,
+        .paramType = Spell::PARAM_PLAYER,
+        .mp = 5
     },
     {
-        "Blincatus",
-        SILK | MOSS,
-        CTX_WORLDMAP,
-        TRANSPORT_FOOT_OR_HORSE,
-        &spellBlink,
-        Spell::PARAM_DIR,
-        15
+        .name = "Blincatus",
+        .components = SILK | MOSS,
+        .context = CTX_WORLDMAP,
+        .transportContext = TRANSPORT_FOOT_OR_HORSE,
+        .spellFunc = &spellBlink,
+        .paramType = Spell::PARAM_DIR,
+        .mp = 15
     },
     {
-        "Curitus",
-        GINSENG | GARLIC,
-        CTX_ANY,
-        TRANSPORT_ANY,
-        &spellCure,
-        Spell::PARAM_PLAYER,
-        5
+        .name = "Curitus",
+        .components = GINSENG | GARLIC,
+        .context = CTX_ANY,
+        .transportContext = TRANSPORT_ANY,
+        .spellFunc = &spellCure,
+        .paramType = Spell::PARAM_PLAYER,
+        .mp = 5
     },
     {
-        "Dispelitus",
-        ASH | GARLIC | PEARL,
-        CTX_ANY,
-        TRANSPORT_ANY,
-        &spellDispel,
-        Spell::PARAM_DIR,
-        20
+        .name = "Dispelitus",
+        .components = ASH | GARLIC | PEARL,
+        .context = CTX_ANY,
+        .transportContext = TRANSPORT_ANY,
+        .spellFunc = &spellDispel,
+        .paramType = Spell::PARAM_DIR,
+        .mp = 20
     },
     {
-        "Energitus",
-        ASH | SILK | PEARL,
-        static_cast<LocationContext>(CTX_COMBAT | CTX_DUNGEON | CTX_CITY),
-        TRANSPORT_ANY,
-        &spellEField,
-        Spell::PARAM_TYPEDIR,
-        10
+        .name = "Energitus",
+        .components = ASH | SILK | PEARL,
+        .context =
+            static_cast<LocationContext>(CTX_COMBAT | CTX_DUNGEON | CTX_CITY),
+        .transportContext = TRANSPORT_ANY,
+        .spellFunc = &spellEnergyField,
+        .paramType = Spell::PARAM_TYPE_DIR,
+        .mp = 10
     },
     {
-        "Firbalatus",
-        ASH | PEARL,
-        CTX_COMBAT,
-        TRANSPORT_ANY,
-        &spellFireball,
-        Spell::PARAM_DIR,
-        15
+        .name = "Firbalatus",
+        .components = ASH | PEARL,
+        .context = CTX_COMBAT,
+        .transportContext = TRANSPORT_ANY,
+        .spellFunc = &spellFireball,
+        .paramType = Spell::PARAM_DIR,
+        .mp = 15
     },
     {
-        "Gatetus",
-        ASH | PEARL | MANDRAKE,
-        CTX_WORLDMAP,
-        TRANSPORT_FOOT_OR_HORSE,
-        &spellGate,
-        Spell::PARAM_PHASE,
-        40
+        .name = "Gatetus",
+        .components = ASH | PEARL | MANDRAKE,
+        .context = CTX_WORLDMAP,
+        .transportContext = TRANSPORT_FOOT_OR_HORSE,
+        .spellFunc = &spellGate,
+        .paramType = Spell::PARAM_PHASE,
+        .mp = 40
     },
     {
-        "Hilus",
-        GINSENG | SILK,
-        CTX_ANY,
-        TRANSPORT_ANY,
-        &spellHeal,
-        Spell::PARAM_PLAYER,
-        10
+        .name = "Hilus",
+        .components = GINSENG | SILK,
+        .context = CTX_ANY,
+        .transportContext = TRANSPORT_ANY,
+        .spellFunc = &spellHeal,
+        .paramType = Spell::PARAM_PLAYER,
+        .mp = 10
     },
     {
-        "Isbalatus",
-        PEARL | MANDRAKE,
-        CTX_COMBAT,
-        TRANSPORT_ANY,
-        &spellIceball,
-        Spell::PARAM_DIR,
-        20
+        .name = "Isbalatus",
+        .components = PEARL | MANDRAKE,
+        .context = CTX_COMBAT,
+        .transportContext = TRANSPORT_ANY,
+        .spellFunc = &spellIceball,
+        .paramType = Spell::PARAM_DIR,
+        .mp = 20
     },
     {
-        "Jinxus",
-        PEARL | NIGHTSHADE | MANDRAKE,
-        CTX_ANY,
-        TRANSPORT_ANY,
-        &spellJinx,
-        Spell::PARAM_NONE,
-        30
+        .name = "Jinxus",
+        .components = PEARL | NIGHTSHADE | MANDRAKE,
+        .context = CTX_ANY,
+        .transportContext = TRANSPORT_ANY,
+        .spellFunc = &spellJinx,
+        .paramType = Spell::PARAM_NONE,
+        .mp = 30
     },
     {
-        "Kilutus",
-        PEARL | NIGHTSHADE,
-        CTX_COMBAT,
-        TRANSPORT_ANY,
-        &spellKill,
-        Spell::PARAM_DIR,
-        25
+        .name = "Kilutus",
+        .components = PEARL | NIGHTSHADE,
+        .context = CTX_COMBAT,
+        .transportContext = TRANSPORT_ANY,
+        .spellFunc = &spellKill,
+        .paramType = Spell::PARAM_DIR,
+        .mp = 25
     },
     {
-        "Laitus",
-        ASH,
-        CTX_DUNGEON,
-        TRANSPORT_ANY,
-        &spellLight,
-        Spell::PARAM_NONE,
-        5
+        .name = "Laitus",
+        .components = ASH,
+        .context = CTX_DUNGEON,
+        .transportContext = TRANSPORT_ANY,
+        .spellFunc = &spellLight,
+        .paramType = Spell::PARAM_NONE,
+        .mp = 5
     },
     {
-        "Missailus",
-        ASH | PEARL,
-        CTX_COMBAT,
-        TRANSPORT_ANY,
-        &spellMMissle,
-        Spell::PARAM_DIR,
-        5
+        .name = "Missailus",
+        .components = ASH | PEARL,
+        .context = CTX_COMBAT,
+        .transportContext = TRANSPORT_ANY,
+        .spellFunc = &spellMagicMissile,
+        .paramType = Spell::PARAM_DIR,
+        .mp = 5
     },
     {
-        "Negativus",
-        ASH | GARLIC | MANDRAKE,
-        CTX_ANY,
-        TRANSPORT_ANY,
-        &spellNegate,
-        Spell::PARAM_NONE,
-        20
+        .name = "Negativus",
+        .components = ASH | GARLIC | MANDRAKE,
+        .context = CTX_ANY,
+        .transportContext = TRANSPORT_ANY,
+        .spellFunc = &spellNegate,
+        .paramType = Spell::PARAM_NONE,
+        .mp = 20
     },
     {
-        "Operatus",
-        ASH | MOSS,
-        CTX_ANY,
-        TRANSPORT_ANY,
-        &spellOpen,
-        Spell::PARAM_NONE,
-        5
+        .name = "Operatus",
+        .components = ASH | MOSS,
+        .context = CTX_ANY,
+        .transportContext = TRANSPORT_ANY,
+        .spellFunc = &spellOpen,
+        .paramType = Spell::PARAM_NONE,
+        .mp = 5
     },
     {
-        "Protectus",
-        ASH | GINSENG | GARLIC,
-        CTX_ANY,
-        TRANSPORT_ANY,
-        &spellProtect,
-        Spell::PARAM_NONE,
-        15
+        .name = "Protectus",
+        .components = ASH | GINSENG | GARLIC,
+        .context = CTX_ANY,
+        .transportContext = TRANSPORT_ANY,
+        .spellFunc = &spellProtect,
+        .paramType = Spell::PARAM_NONE,
+        .mp = 15
     },
     {
-        "Quicatus",
-        ASH | GINSENG | MOSS,
-        CTX_ANY,
-        TRANSPORT_ANY,
-        &spellQuick,
-        Spell::PARAM_NONE,
-        20
+        .name = "Quicatus",
+        .components = ASH | GINSENG | MOSS,
+        .context = CTX_ANY,
+        .transportContext = TRANSPORT_ANY,
+        .spellFunc = &spellQuickness,
+        .paramType = Spell::PARAM_NONE,
+        .mp = 20
     },
     {
-        "Resurrectus",
-        ASH | GINSENG | GARLIC | SILK | MOSS | MANDRAKE,
-        CTX_NON_COMBAT,
-        TRANSPORT_ANY,
-        &spellRez,
-        Spell::PARAM_PLAYER,
-        45
+        .name = "Resurrectus",
+        .components = ASH | GINSENG | GARLIC | SILK | MOSS | MANDRAKE,
+        .context = CTX_NON_COMBAT,
+        .transportContext = TRANSPORT_ANY,
+        .spellFunc = &spellResurrect,
+        .paramType = Spell::PARAM_PLAYER,
+        .mp = 45
     },
     {
-        "Slipitus",
-        SILK | GINSENG,
-        CTX_COMBAT,
-        TRANSPORT_ANY,
-        &spellSleep,
-        Spell::PARAM_NONE,
-        15
+        .name = "Slipitus",
+        .components = SILK | GINSENG,
+        .context = CTX_COMBAT,
+        .transportContext = TRANSPORT_ANY,
+        .spellFunc = &spellSleep,
+        .paramType = Spell::PARAM_NONE,
+        .mp = 15
     },
     {
-        "Tremendus",
-        ASH | MOSS | MANDRAKE,
-        CTX_COMBAT,
-        TRANSPORT_ANY,
-        &spellTremor,
-        Spell::PARAM_NONE,
-        30
+        .name = "Tremendus",
+        .components = ASH | MOSS | MANDRAKE,
+        .context = CTX_COMBAT,
+        .transportContext = TRANSPORT_ANY,
+        .spellFunc = &spellTremor,
+        .paramType = Spell::PARAM_NONE,
+        .mp = 30
     },
     {
-        "Undedus",
-        ASH | GARLIC,
-        CTX_COMBAT,
-        TRANSPORT_ANY,
-        &spellUndead,
-        Spell::PARAM_NONE,
-        15
+        .name = "Undedus",
+        .components = ASH | GARLIC,
+        .context = CTX_COMBAT,
+        .transportContext = TRANSPORT_ANY,
+        .spellFunc = &spellUndead,
+        .paramType = Spell::PARAM_NONE,
+        .mp = 15
     },
     {
-        "Vietus",
-        NIGHTSHADE | MANDRAKE,
-        CTX_NON_COMBAT,
-        TRANSPORT_ANY,
-        &spellView,
-        Spell::PARAM_NONE,
-        15
+        .name = "Vietus",
+        .components = NIGHTSHADE | MANDRAKE,
+        .context = CTX_NON_COMBAT,
+        .transportContext = TRANSPORT_ANY,
+        .spellFunc = &spellView,
+        .paramType = Spell::PARAM_NONE,
+        .mp = 15
     },
     {
-        "Windatus",
-        ASH | MOSS,
-        CTX_WORLDMAP,
-        TRANSPORT_ANY,
-        &spellWinds,
-        Spell::PARAM_FROMDIR,
-        10
+        .name = "Windatus",
+        .components = ASH | MOSS,
+        .context = CTX_WORLDMAP,
+        .transportContext = TRANSPORT_ANY,
+        .spellFunc = &spellWinds,
+        .paramType = Spell::PARAM_FROM_DIR,
+        .mp = 10
     },
     {
-        "Xitatus",
-        ASH | SILK | MOSS,
-        CTX_DUNGEON,
-        TRANSPORT_ANY,
-        &spellXit,
-        Spell::PARAM_NONE,
-        15
+        .name = "Xitatus",
+        .components = ASH | SILK | MOSS,
+        .context = CTX_DUNGEON,
+        .transportContext = TRANSPORT_ANY,
+        .spellFunc = &spellXit,
+        .paramType = Spell::PARAM_NONE,
+        .mp = 15
     },
     {
-        "Ypsapus",
-        SILK | MOSS,
-        CTX_DUNGEON,
-        TRANSPORT_ANY,
-        &spellYup,
-        Spell::PARAM_NONE,
-        10
+        .name = "Ypsapus",
+        .components = SILK | MOSS,
+        .context = CTX_DUNGEON,
+        .transportContext = TRANSPORT_ANY,
+        .spellFunc = &spellYUp,
+        .paramType = Spell::PARAM_NONE,
+        .mp = 10
     },
     {
-        "Zidaunus",
-        SILK | MOSS,
-        CTX_DUNGEON,
-        TRANSPORT_ANY,
-        &spellZdown,
-        Spell::PARAM_NONE,
-        5
+        .name = "Zidaunus",
+        .components = SILK | MOSS,
+        .context = CTX_DUNGEON,
+        .transportContext = TRANSPORT_ANY,
+        .spellFunc = &spellZDown,
+        .paramType = Spell::PARAM_NONE,
+        .mp = 5
     }
 };
 
 #define N_SPELLS (sizeof(spells) / sizeof(spells[0]))
 
-void spellSetEffectCallback(SpellEffectCallback callback)
+void spellSetEffectCallback(const SpellEffectCallback callback)
 {
     spellEffectCallback = callback;
 }
 
 Ingredients::Ingredients()
-    :reagents{0}
+    :reagents{}
 {
 }
 
-bool Ingredients::addReagent(Reagent reagent)
+bool Ingredients::addReagent(const Reagent reagent)
 {
     U4ASSERT(reagent < REAGENT_MAX, "invalid reagent: %d", reagent);
     if (Party::getReagent(reagent) < 1) {
@@ -355,7 +379,7 @@ bool Ingredients::addReagent(Reagent reagent)
     return true;
 }
 
-bool Ingredients::removeReagent(Reagent reagent)
+bool Ingredients::removeReagent(const Reagent reagent)
 {
     U4ASSERT(reagent < REAGENT_MAX, "invalid reagent: %d", reagent);
     if (reagents[reagent] == 0) {
@@ -366,7 +390,7 @@ bool Ingredients::removeReagent(Reagent reagent)
     return true;
 }
 
-int Ingredients::getReagent(Reagent reagent) const
+int Ingredients::getReagent(const Reagent reagent) const
 {
     U4ASSERT(reagent < REAGENT_MAX, "invalid reagent: %d", reagent);
     return reagents[reagent];
@@ -380,19 +404,19 @@ void Ingredients::revert()
     }
 }
 
-bool Ingredients::checkMultiple(int batches) const
+bool Ingredients::checkMultiple(const int batches) const
 {
     for (int i = 0; i < REAGENT_MAX; i++) {
         /* see if there's enough reagents to mix
            (-1 because one is already counted) */
-        if ((reagents[i] > 0) && (c->saveGame->reagents[i] < batches - 1)) {
+        if (reagents[i] > 0 && c->saveGame->reagents[i] < batches - 1) {
             return false;
         }
     }
     return true;
 }
 
-void Ingredients::multiply(int batches)
+void Ingredients::multiply(const int batches)
 {
     U4ASSERT(
         checkMultiple(batches),
@@ -407,51 +431,53 @@ void Ingredients::multiply(int batches)
     }
 }
 
-const char *spellGetName(unsigned int spell)
+const char *spellGetName(const unsigned int spell)
 {
     U4ASSERT(spell < N_SPELLS, "invalid spell: %u", spell);
     return spells[spell].name;
 }
 
-int spellGetRequiredMP(unsigned int spell)
+int spellGetRequiredMP(const unsigned int spell)
 {
     U4ASSERT(spell < N_SPELLS, "invalid spell: %u", spell);
     return spells[spell].mp;
 }
 
-LocationContext spellGetContext(unsigned int spell)
+LocationContext spellGetContext(const unsigned int spell)
 {
     U4ASSERT(spell < N_SPELLS, "invalid spell: %u", spell);
     return spells[spell].context;
 }
 
-TransportContext spellGetTransportContext(unsigned int spell)
+TransportContext spellGetTransportContext(const unsigned int spell)
 {
     U4ASSERT(spell < N_SPELLS, "invalid spell: %u", spell);
     return spells[spell].transportContext;
 }
 
-std::string spellGetErrorMessage(unsigned int spell, SpellCastError error)
+std::string spellGetErrorMessage(
+    const unsigned int spell, const SpellCastError error
+)
 {
     SpellCastError err = error;
     /* try to find a more specific error message */
-    if (err == CASTERR_WRONGCONTEXT) {
+    if (err == CAST_ERROR_WRONG_CONTEXT) {
         switch (spells[spell].context) {
         case CTX_COMBAT:
-            err = CASTERR_COMBATONLY;
+            err = CAST_ERROR_COMBAT_ONLY;
             break;
         case CTX_DUNGEON:
-            err = CASTERR_DUNGEONONLY;
+            err = CAST_ERROR_DUNGEON_ONLY;
             break;
         case CTX_WORLDMAP:
-            err = CASTERR_WORLDMAPONLY;
+            err = CAST_ERROR_WORLD_MAP_ONLY;
             break;
         default:
             break;
         }
     }
     /* find the message that we're looking for and return it! */
-    for (auto spellErrorMsg: spellErrorMsgs) {
+    for (const auto spellErrorMsg: spellErrorMsgs) {
         if (err == spellErrorMsg.err) {
             return spellErrorMsg.msg;
         }
@@ -464,23 +490,23 @@ std::string spellGetErrorMessage(unsigned int spell, SpellCastError error)
  * Mix reagents for a spell.  Fails and returns false if the reagents
  * selected were not correct.
  */
-bool spellMix(unsigned int spell, const Ingredients *ingredients)
+bool spellMix(const unsigned int spell, const Ingredients *ingredients)
 {
     U4ASSERT(spell < N_SPELLS, "invalid spell: %u", spell);
-    int regmask = 0;
+    int reg_mask = 0;
     for (int reg = 0; reg < REAGENT_MAX; reg++) {
         if (ingredients->getReagent(static_cast<Reagent>(reg)) > 0) {
-            regmask |= (1 << reg);
+            reg_mask |= 1 << reg;
         }
     }
-    if (regmask != spells[spell].components) {
+    if (reg_mask != spells[spell].components) {
         return false;
     }
     c->saveGame->mixtures[spell]++;
     return true;
 }
 
-Spell::Param spellGetParamType(unsigned int spell)
+Spell::Param spellGetParamType(const unsigned int spell)
 {
     U4ASSERT(spell < N_SPELLS, "invalid spell: %u", spell);
     return spells[spell].paramType;
@@ -488,11 +514,13 @@ Spell::Param spellGetParamType(unsigned int spell)
 
 
 /**
- * Checks some basic prerequistes for casting a spell.  Returns an
+ * Checks some basic prerequisites for casting a spell.  Returns an
  * error if no mixture is available, the context is invalid, or the
  * character doesn't have enough magic points.
  */
-SpellCastError spellCheckPrerequisites(unsigned int spell, int character)
+SpellCastError spellCheckPrerequisites(
+    const unsigned int spell, const int character
+)
 {
     U4ASSERT(spell < N_SPELLS, "invalid spell: %u", spell);
     U4ASSERT(
@@ -501,18 +529,18 @@ SpellCastError spellCheckPrerequisites(unsigned int spell, int character)
         character
     );
     if (c->saveGame->mixtures[spell] == 0) {
-        return CASTERR_NOMIX;
+        return CAST_ERROR_NO_MIXTURE;
     }
     if ((c->location->context & spells[spell].context) == 0) {
-        return CASTERR_WRONGCONTEXT;
+        return CAST_ERROR_WRONG_CONTEXT;
     }
     if ((c->transportContext & spells[spell].transportContext) == 0) {
-        return CASTERR_FAILED;
+        return CAST_ERROR_FAILED;
     }
     if (c->party->member(character)->getMp() < spells[spell].mp) {
-        return CASTERR_MPTOOLOW;
+        return CAST_ERROR_MP_TOO_LOW;
     }
-    return CASTERR_NOERROR;
+    return CAST_ERROR_NO_ERROR;
 }
 
 
@@ -521,15 +549,15 @@ SpellCastError spellCheckPrerequisites(unsigned int spell, int character)
  * The error code is updated with the reason for failure.
  */
 bool spellCast(
-    unsigned int spell,
-    int character,
-    int param,
+    const unsigned int spell,
+    const int character,
+    const int param,
     SpellCastError *error,
-    bool spellEffect
+    const bool spellEffect
 )
 {
-    int subject =
-        (spells[spell].paramType == Spell::PARAM_PLAYER) ? param : -1;
+    const int subject =
+        spells[spell].paramType == Spell::PARAM_PLAYER ? param : -1;
     PartyMember *p = c->party->member(character);
     U4ASSERT(spell < N_SPELLS, "invalid spell: %u", spell);
     U4ASSERT(
@@ -540,20 +568,20 @@ bool spellCast(
     *error = spellCheckPrerequisites(spell, character);
     // subtract the mixture for even trying to cast the spell
     AdjustValueMin(c->saveGame->mixtures[spell], -1, 0);
-    if (*error != CASTERR_NOERROR) {
+    if (*error != CAST_ERROR_NO_ERROR) {
         return false;
     }
     // If there's a negate magic aura, spells fail!
     if (*c->aura == Aura::NEGATE) {
-        *error = CASTERR_FAILED;
+        *error = CAST_ERROR_FAILED;
         return false;
     }
     // subtract the mp needed for the spell
     p->adjustMp(-spells[spell].mp);
     if (spellEffect) {
         /* recalculate spell speed - based on 5/sec */
-        double MP_OF_LARGEST_SPELL = 45;
-        int spellMp = spells[spell].mp;
+        constexpr double MP_OF_LARGEST_SPELL = 45;
+        const int spellMp = spells[spell].mp;
         const int time = static_cast<int>(
             17790.4 / settings.spellEffectSpeed * spellMp / MP_OF_LARGEST_SPELL
         );
@@ -562,7 +590,7 @@ bool spellCast(
         (*spellEffectCallback)(spell + 'a', subject, SOUND_MAGIC);
     }
     if (!(*spells[spell].spellFunc)(param)) {
-        *error = CASTERR_FAILED;
+        *error = CAST_ERROR_FAILED;
         return false;
     }
     return true;
@@ -582,17 +610,22 @@ CombatController *spellCombatController()
  * Makes a special magic ranged attack in the given direction
  */
 static void spellMagicAttack(
-    const std::string &tilename, Direction dir, int minDamage, int maxDamage
+    const std::string &tileName,
+    const Direction dir,
+    const int minDamage,
+    const int maxDamage
 )
 {
     CombatController *controller = spellCombatController();
-    PartyMemberVector *party = controller->getParty();
-    MapTile tile = c->location->map->tileset->getByName(tilename)->getId();
-    int attackDamage = (minDamage >= 0) ?
-        (xu4_random(maxDamage) | minDamage) :
-        maxDamage;
+    const PartyMemberVector *party = controller->getParty();
+    const MapTile tile =
+        c->location->map->tileset->getByName(tileName)->getId();
+    const int attackDamage =
+        minDamage >= 0
+        ? xu4_random(maxDamage) | minDamage
+        : maxDamage;
 
-    std::vector<Coords> path = gameGetDirectionalActionPath(
+    const std::vector<Coords> path = gameGetDirectionalActionPath(
         MASK_DIR(dir),
         MASK_DIR_ALL,
         (*party)[controller->getFocus()]->getCoords(),
@@ -613,12 +646,12 @@ static void spellMagicAttack(
 }
 
 static bool spellMagicAttackAt(
-    const Coords &coords, MapTile attackTile, int attackDamage
+    const Coords &coords, MapTile attackTile, const int attackDamage
 )
 {
     bool objectHit = false;
-    // int attackdelay = MAX_BATTLE_SPEED - settings.battleSpeed;
-    CombatMap *cm = getCombatMap();
+    // int attack_delay = MAX_BATTLE_SPEED - settings.battleSpeed;
+    const CombatMap *cm = getCombatMap();
     Creature *creature = cm->creatureAt(coords);
     if (!creature) {
         GameController::flashTile(coords, attackTile, 4);
@@ -628,7 +661,7 @@ static bool spellMagicAttackAt(
         soundPlay(SOUND_NPC_STRUCK);
         GameController::flashTile(coords, attackTile, 4);
         /* apply the damage to the creature */
-        CombatController *controller = spellCombatController();
+        const CombatController *controller = spellCombatController();
         controller->getCurrentPlayer()->dealDamage(
             creature, attackDamage
         );
@@ -636,12 +669,11 @@ static bool spellMagicAttackAt(
     return objectHit;
 }
 
-static bool spellAwaken(int player)
+static bool spellAwaken(const int player)
 {
     U4ASSERT(player < 8, "player out of range: %d", player);
     PartyMember *p = c->party->member(player);
-    if ((player < c->party->size())
-        && (p->getStatus() == STAT_SLEEPING)) {
+    if (player < c->party->size() && p->getStatus() == STAT_SLEEPING) {
         p->wakeUp();
         return true;
     }
@@ -660,20 +692,20 @@ static bool spellBlink(int dir)
        map, and that you can teleport to the abyss from the left edge of
        the map. At least in the original. This is now fixed for enhanced
        games. */
-    if ((coords.x >= 192) && (coords.y >= 192)) {
+    if (coords.x >= 192 && coords.y >= 192) {
         return false;
     }
     /* figure out what numbers we're working with */
-    const int *var = (dir & (DIR_WEST | DIR_EAST)) ? &coords.x : &coords.y;
+    const int *var = dir & (DIR_WEST | DIR_EAST) ? &coords.x : &coords.y;
     /* find the distance we are going to move */
-    int distance = (*var) % 0x10;
-    if ((dir == DIR_EAST) || (dir == DIR_SOUTH)) {
+    int distance = *var % 0x10;
+    if (dir == DIR_EAST || dir == DIR_SOUTH) {
         distance = 0x10 - distance;
     }
     /* see if we move another 16 spaces over */
     /* TODO: this algorithm has nothing to do with u4apple2. */
-    int diff = 0x10 - distance;
-    if ((diff > 0) && (xu4_random(diff * diff) > distance)) {
+    const int diff = 0x10 - distance;
+    if (diff > 0 && xu4_random(diff * diff) > distance) {
         distance += 0x10;
     }
     /* test our distance, and see if it works */
@@ -681,9 +713,9 @@ static bool spellBlink(int dir)
         coords.move(static_cast<Direction>(dir), c->location->map);
     }
     int i = distance;
-    Direction reverseDir = dirReverse(static_cast<Direction>(dir));
+    const Direction reverseDir = dirReverse(static_cast<Direction>(dir));
     /* begin walking backward until you find a valid spot */
-    while ((i-- > 0)
+    while (i-- > 0
            && !c->location->map->tileTypeAt(coords, WITH_OBJECTS)
            ->isWalkable()) {
         coords.move(reverseDir, c->location->map);
@@ -691,9 +723,9 @@ static bool spellBlink(int dir)
     bool success;
     if (c->location->map->tileTypeAt(coords, WITH_OBJECTS)->isWalkable()) {
         /* we didn't move! */
-        if ((c->location->coords == coords) ||
+        if (c->location->coords == coords ||
             /* CHANGE: No teleporting onto isle of abyss and surroundings */
-            (settings.enhancements && (coords.x >= 192) && (coords.y >= 192))) {
+            (settings.enhancements && coords.x >= 192 && coords.y >= 192)) {
             success = false;
         } else {
             EventHandler::simulateDiskLoad(2000);
@@ -707,7 +739,7 @@ static bool spellBlink(int dir)
     return success;
 } // spellBlink
 
-static bool spellCure(int player)
+static bool spellCure(const int player)
 {
     U4ASSERT(player < 8, "player out of range: %d", player);
     GameController::flashTile(
@@ -735,7 +767,7 @@ static bool spellDispel(int dir)
      * leave a wall tile behind (or other unwalkable surface).  So, we
      * need to provide a valid replacement annotation to fill in the gap :)
      */
-    Annotation::List a = c->location->map->annotations->allAt(field);
+    const Annotation::List a = c->location->map->annotations->allAt(field);
     if (!a.empty()) {
         const auto i = std::find_if(
              a.cbegin(),
@@ -748,7 +780,7 @@ static bool spellDispel(int dir)
             /*
              * get a replacement tile for the field
              */
-            MapTile newTile = c->location->getReplacementTile(
+            const MapTile newTile = c->location->getReplacementTile(
                 field, i->getTile().getTileType()
             );
             c->location->map->annotations->remove(*i);
@@ -761,44 +793,44 @@ static bool spellDispel(int dir)
     /*
      * if the map tile itself is a field, overlay it with replacement tile
      */
-    MapTile tile = c->location->map->tileAt(field, WITHOUT_OBJECTS);
+    const MapTile tile = c->location->map->tileAt(field, WITHOUT_OBJECTS);
     if (!tile.getTileType()->canDispel()) {
         return false;
     }
     /*
      * get a replacement tile for the field
      */
-    MapTile newTile =
+    const MapTile newTile =
         c->location->getReplacementTile(field, tile.getTileType());
     c->location->map->annotations->add(field, newTile, false, true);
     return true;
 } // spellDispel
 
-static bool spellEField(int param)
+static bool spellEnergyField(const int param)
 {
     /* Unpack fieldType and direction */
-    int fieldType = param >> 4u;
-    unsigned int dir = param & 0xFu;
+    const int fieldType = param >> 4u;
+    const unsigned int dir = param & 0xFu;
     /* Make sure params valid */
     MapTile fieldTile = 0;
     if (c->location->map->isDungeonMap()) {
         switch (fieldType) {
-        case ENERGYFIELD_FIRE:
+        case ENERGY_FIELD_FIRE:
             fieldTile =
                 c->location->map->tileset
                 ->getByName("dungeon_fire_field")->getId();
             break;
-        case ENERGYFIELD_LIGHTNING:
+        case ENERGY_FIELD_LIGHTNING:
             fieldTile =
                 c->location->map->tileset
                 ->getByName("dungeon_energy_field")->getId();
             break;
-        case ENERGYFIELD_POISON:
+        case ENERGY_FIELD_POISON:
             fieldTile =
                 c->location->map->tileset
                 ->getByName("dungeon_poison_field")->getId();
             break;
-        case ENERGYFIELD_SLEEP:
+        case ENERGY_FIELD_SLEEP:
             fieldTile =
                 c->location->map->tileset
                 ->getByName("dungeon_sleep_field")->getId();
@@ -808,19 +840,19 @@ static bool spellEField(int param)
         }
     } else {
         switch (fieldType) {
-        case ENERGYFIELD_FIRE:
+        case ENERGY_FIELD_FIRE:
             fieldTile =
                 c->location->map->tileset->getByName("fire_field")->getId();
             break;
-        case ENERGYFIELD_LIGHTNING:
+        case ENERGY_FIELD_LIGHTNING:
             fieldTile =
                 c->location->map->tileset->getByName("energy_field")->getId();
             break;
-        case ENERGYFIELD_POISON:
+        case ENERGY_FIELD_POISON:
             fieldTile =
                 c->location->map->tileset->getByName("poison_field")->getId();
             break;
-        case ENERGYFIELD_SLEEP:
+        case ENERGY_FIELD_SLEEP:
             fieldTile =
                 c->location->map->tileset->getByName("sleep_field")->getId();
             break;
@@ -832,8 +864,8 @@ static bool spellEField(int param)
     coords.move(static_cast<Direction>(dir), c->location->map);
     if (MAP_IS_OOB(c->location->map, coords)) {
         return false;
-    } else {
-        /*
+    }
+    /*
          * Observed behaviour on Amiga version of Ultima IV:
          * Field cast on other field: Works, unless original field
          * is lightning in which case it doesn't.
@@ -842,23 +874,22 @@ static bool spellEField(int param)
          * Field cast on top of field and then dispel = no fields left
          * The code below seems to produce this behaviour.
          */
-        const Tile *tile =
+    const Tile *tile =
             c->location->map->tileTypeAt(coords, WITH_GROUND_OBJECTS);
-        if (!tile->isWalkable()) {
-            return false;
-        }
-        /* Get rid of old field, if any */
-        Annotation::List a =
+    if (!tile->isWalkable()) {
+        return false;
+    }
+    /* Get rid of old field, if any */
+    const Annotation::List a =
             c->location->map->annotations->allAt(coords);
-        if (!a.empty()) {
-            for (auto &i: a) {
-                if (i.getTile().getTileType()->canDispel()) {
-                    c->location->map->annotations->remove(i);
-                }
+    if (!a.empty()) {
+        for (auto &i: a) {
+            if (i.getTile().getTileType()->canDispel()) {
+                c->location->map->annotations->remove(i);
             }
         }
-        c->location->map->annotations->add(coords, fieldTile);
     }
+    c->location->map->annotations->add(coords, fieldTile);
     return true;
 } // spellEField
 
@@ -868,7 +899,7 @@ static bool spellFireball(int dir)
     return true;
 }
 
-static bool spellGate(int phase)
+static bool spellGate(const int phase)
 {
     GameController::flashTile(c->location->coords, "moongate", 4);
     const Coords *moongate = moongateGetGateCoordsForPhase(phase);
@@ -879,7 +910,7 @@ static bool spellGate(int phase)
     return true;
 }
 
-static bool spellHeal(int player)
+static bool spellHeal(const int player)
 {
     U4ASSERT(player < 8, "player out of range: %d", player);
     GameController::flashTile(
@@ -913,7 +944,7 @@ static bool spellLight(int)
     return true;
 }
 
-static bool spellMMissle(int dir)
+static bool spellMagicMissile(int dir)
 {
     spellMagicAttack("miss_flash", static_cast<Direction>(dir), 16, 64);
     return true;
@@ -938,13 +969,13 @@ static bool spellProtect(int)
     return true;
 }
 
-static bool spellRez(int player)
+static bool spellResurrect(const int player)
 {
     U4ASSERT(player < 8, "player out of range: %d", player);
     return c->party->member(player)->heal(HT_RESURRECT);
 }
 
-static bool spellQuick(int)
+static bool spellQuickness(int)
 {
     c->aura->set(Aura::QUICKNESS, 10);
     return true;
@@ -952,19 +983,19 @@ static bool spellQuick(int)
 
 static bool spellSleep(int)
 {
-    CombatMap *cm = getCombatMap();
-    CreatureVector creatures = cm->getCreatures();
+    const CombatMap *cm = getCombatMap();
+    const CreatureVector creatures = cm->getCreatures();
     /* try to put each creature to sleep */
-    for (auto m : creatures) {
-        Coords coords = m->getCoords();
+    for (auto *creature: creatures) {
+        Coords coords = creature->getCoords();
         GameController::flashTile(coords, "wisp", 4);
         // BUGFIX from u4apple2: Balron resists sleep AND fire, which our
         // creatures.xml file cannot currently model
-        if ((m->getResists() != EFFECT_SLEEP)
-            && (m->getId() != BALRON_ID)
-            && (xu4_random(0xFF) >= m->getHp())) {
+        if (creature->getResists() != EFFECT_SLEEP
+            && creature->getId() != BALRON_ID
+            && xu4_random(0xFF) >= creature->getHp()) {
             soundPlay(SOUND_POISON_EFFECT);
-            m->putToSleep();
+            creature->putToSleep();
             GameController::flashTile(coords, "sleep_field", 4);
         } else {
             soundPlay(SOUND_EVADE);
@@ -975,32 +1006,31 @@ static bool spellSleep(int)
 
 static bool spellTremor(int)
 {
-    CombatController *ct = spellCombatController();
-    CreatureVector creatures = ct->getMap()->getCreatures();
-    for (auto *m: creatures) {
-        Coords coords = m->getCoords();
+    const CombatController *ct = spellCombatController();
+    const CreatureVector creatures = ct->getMap()->getCreatures();
+    for (auto *creature: creatures) {
+        Coords coords = creature->getCoords();
         // GameController::flashTile(coords, "rocks", 4);
         /* creatures with over 192 hp are unaffected */
-        if (m->getHp() > 192) {
+        if (creature->getHp() > 192) {
             soundPlay(SOUND_EVADE);
             continue;
+        }
+        /* Deal maximum damage to creature */
+        if (xu4_random(2) == 0) {
+            soundPlay(SOUND_NPC_STRUCK);
+            GameController::flashTile(coords, "hit_flash", 4);
+            ct->getCurrentPlayer()->dealDamage(creature, 0xFF);
+        }
+        /* Deal enough damage to creature to make it flee */
+        else if (xu4_random(2) == 0) {
+            soundPlay(SOUND_NPC_STRUCK);
+            GameController::flashTile(coords, "hit_flash", 4);
+            if (creature->getHp() > 23) {
+                ct->getCurrentPlayer()->dealDamage(creature, creature->getHp() - 23);
+            }
         } else {
-            /* Deal maximum damage to creature */
-            if (xu4_random(2) == 0) {
-                soundPlay(SOUND_NPC_STRUCK);
-                GameController::flashTile(coords, "hit_flash", 4);
-                ct->getCurrentPlayer()->dealDamage(m, 0xFF);
-            }
-            /* Deal enough damage to creature to make it flee */
-            else if (xu4_random(2) == 0) {
-                soundPlay(SOUND_NPC_STRUCK);
-                GameController::flashTile(coords, "hit_flash", 4);
-                if (m->getHp() > 23) {
-                    ct->getCurrentPlayer()->dealDamage(m, m->getHp() - 23);
-                }
-            } else {
-                soundPlay(SOUND_EVADE);
-            }
+            soundPlay(SOUND_EVADE);
         }
     }
     return true;
@@ -1010,10 +1040,10 @@ static bool spellUndead(int)
 {
     const CombatController *ct = spellCombatController();
     const CreatureVector creatures = ct->getMap()->getCreatures();
-    for (auto *m: creatures) {
-        if (m && m->isUndead()) {
-            if (m->getHp() > 23) {
-                m->setHp(23);
+    for (auto *creature: creatures) {
+        if (creature && creature->isUndead()) {
+            if (creature->getHp() > 23) {
+                creature->setHp(23);
             }
         }
     }
@@ -1026,9 +1056,9 @@ static bool spellView(int)
     return true;
 }
 
-static bool spellWinds(int fromdir)
+static bool spellWinds(const int fromDir)
 {
-    c->windDirection = fromdir;
+    c->windDirection = fromDir;
     return true;
 }
 
@@ -1049,7 +1079,7 @@ static bool spellXit(int)
     return false;
 }
 
-static bool spellYup(int)
+static bool spellYUp(int)
 {
     MapCoords coords = c->location->coords;
     const auto *dungeon = dynamic_cast<const Dungeon *>(c->location->map);
@@ -1059,7 +1089,7 @@ static bool spellYup(int)
         return false;
     }
     /* staying in the dungeon */
-    else if (coords.z > 0) {
+    if (coords.z > 0) {
         for (int i = 0; i < 0x100; i++) {
             coords = MapCoords(
                 xu4_random(DNG_WIDTH),
@@ -1082,9 +1112,9 @@ static bool spellYup(int)
     }
     /* didn't find a place to go, failed! */
     return false;
-} // spellYup
+} // spellYUp
 
-static bool spellZdown(int)
+static bool spellZDown(int)
 {
     MapCoords coords = c->location->coords;
     const auto *dungeon = dynamic_cast<const Dungeon *>(c->location->map);
@@ -1094,24 +1124,23 @@ static bool spellZdown(int)
         /* can't go lower than level 8 */
         coords.z >= 7) {
         return false;
-    } else {
-        for (int i = 0; i < 0x100; i++) {
-            coords = MapCoords(
-                xu4_random(DNG_WIDTH),
-                xu4_random(DNG_HEIGHT),
-                c->location->coords.z + 1
-            );
-            if (dungeon->validTeleportLocation(coords)) {
-                c->location->coords = coords;
-                return true;
-            }
+    }
+    for (int i = 0; i < 0x100; i++) {
+        coords = MapCoords(
+            xu4_random(DNG_WIDTH),
+            xu4_random(DNG_HEIGHT),
+            c->location->coords.z + 1
+        );
+        if (dungeon->validTeleportLocation(coords)) {
+            c->location->coords = coords;
+            return true;
         }
     }
     /* didn't find a place to go, failed! */
     return false;
-} // spellZdown
+} // spellZDown
 
-const Spell *getSpell(int i)
+const Spell *getSpell(const int i)
 {
     return &spells[i];
 }

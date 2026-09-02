@@ -26,7 +26,7 @@ class PartyEvent;
 
 enum StatsView {
     STATS_PARTY_OVERVIEW,
-    STATS_PARTY_AVATARONLY,
+    STATS_PARTY_AVATAR_ONLY,
     STATS_CHAR1,
     STATS_CHAR2,
     STATS_CHAR3,
@@ -52,19 +52,19 @@ class StatsArea
 public:
     using Observer<Aura *>::update; // suppress warnings in clang
     StatsArea();
-    void setView(StatsView view);
+    void setView(StatsView newView);
     void clear();
     void prevItem();
     void nextItem();
     void update();
-    virtual void update(Aura *aura) override;
+    void update(Aura *aura) override;
 
-    virtual void update(Party *, PartyEvent &) override
+    void update(Party *, PartyEvent &) override
     {
         update(); /* do a full update */
     }
 
-    virtual void update(Menu *, MenuEvent &) override
+    void update(Menu *, MenuEvent &) override
     {
         update(); /* do a full update */
     }
@@ -126,4 +126,4 @@ private:
     Ingredients *ingredients;
 };
 
-#endif // ifndef STATS_H
+#endif // STATS_H

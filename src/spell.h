@@ -14,25 +14,25 @@
 
 
 enum SpellCastError {
-    CASTERR_NOERROR, /* success */
-    CASTERR_NOMIX, /* no mixture available */
-    CASTERR_MPTOOLOW, /* caster doesn't have enough mp */
-    CASTERR_FAILED, /* the spell failed */
-    CASTERR_WRONGCONTEXT, /* generic 'wrong-context' error
+    CAST_ERROR_NO_ERROR, /* success */
+    CAST_ERROR_NO_MIXTURE, /* no mixture available */
+    CAST_ERROR_MP_TOO_LOW, /* caster doesn't have enough mp */
+    CAST_ERROR_FAILED, /* the spell failed */
+    CAST_ERROR_WRONG_CONTEXT, /* generic 'wrong-context' error
                              (generally finds the correct
                              context error message on its own) */
-    CASTERR_COMBATONLY, /* spell must be cast in combat */
-    CASTERR_DUNGEONONLY, /* spell must be cast in dungeons */
-    CASTERR_WORLDMAPONLY /* spell must be cast on the world map */
+    CAST_ERROR_COMBAT_ONLY, /* spell must be cast in combat */
+    CAST_ERROR_DUNGEON_ONLY, /* spell must be cast in dungeons */
+    CAST_ERROR_WORLD_MAP_ONLY /* spell must be cast on the world map */
 };
 
 /* Field types for the Energy field spell */
 enum EnergyFieldType {
-    ENERGYFIELD_NONE,
-    ENERGYFIELD_FIRE,
-    ENERGYFIELD_LIGHTNING,
-    ENERGYFIELD_POISON,
-    ENERGYFIELD_SLEEP
+    ENERGY_FIELD_NONE,
+    ENERGY_FIELD_FIRE,
+    ENERGY_FIELD_LIGHTNING,
+    ENERGY_FIELD_POISON,
+    ENERGY_FIELD_SLEEP
 };
 
 
@@ -58,9 +58,9 @@ struct Spell {
         PARAM_NONE, /* none */
         PARAM_PLAYER, /* number of a player required */
         PARAM_DIR, /* direction required */
-        PARAM_TYPEDIR, /* field type and direction required (energy field) */
+        PARAM_TYPE_DIR, /* field type and direction required (energy field) */
         PARAM_PHASE, /* phase required (gate) */
-        PARAM_FROMDIR /* direction from required (winds) */
+        PARAM_FROM_DIR /* direction from required (winds) */
     } Param;
 
     typedef enum {
@@ -98,4 +98,4 @@ bool spellCast(
 );
 const Spell *getSpell(int i);
 
-#endif // ifndef SPELL_H
+#endif // SPELL_H

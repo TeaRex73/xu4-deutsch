@@ -137,7 +137,7 @@ void screenInit()
     if (!u4isUpgradeAvailable() && settings.videoType == "VGA") {
         settings.videoType = "EGA";
     }
-    KeyHandler::setKeyRepeat(settings.keydelay, settings.keyinterval);
+    KeyHandler::setKeyRepeat(settings.keyDelay, settings.keyInterval);
     /* find the tile animations for our tileset */
     tileAnimations = nullptr;
     for (auto *tileAnimSet: tileAnimSets) {

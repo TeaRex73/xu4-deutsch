@@ -18,13 +18,11 @@ class Portal;
 class Shrine:public Map {
 public:
     Shrine()
-      :name(),
-       virtue(VIRTUE_MAX),
-       mantra()
+      :virtue(VIRTUE_MAX)
     {
     }
 
-    virtual std::string getName() override;
+    std::string getName() override;
     Virtue getVirtue() const;
     std::string getMantra() const;
     void setVirtue(Virtue v);
@@ -44,4 +42,4 @@ private:
 
 bool shrineCanEnter(const Portal *p);
 
-#endif // ifndef SHRINE_H
+#endif // SHRINE_H

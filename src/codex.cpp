@@ -88,7 +88,7 @@ void codexStart()
     /**
      * make the avatar alone
      */
-    c->stats->setView(STATS_PARTY_AVATARONLY);
+    c->stats->setView(STATS_PARTY_AVATAR_ONLY);
     c->stats->update(); /* show just the avatar */
     screenRedrawScreen();
     /**
