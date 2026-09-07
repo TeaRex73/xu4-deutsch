@@ -15,7 +15,7 @@
 #include "tile.h"
 #include "tileset.h"
 
-Debug dbg("debug/tilemap.txt", "TileMap");
+static Debug dbg("debug/tilemap.txt", "TileMap");
 
 
 /**
@@ -30,20 +30,18 @@ TileMap::TileIndexMapMap TileMap::tileMaps;
 void TileMap::loadAll()
 {
     const Config *config = Config::getInstance();
-    std::vector<ConfigElement> conf;
     /* FIXME: make sure tilesets are loaded by now */
     TRACE_LOCAL(dbg, "Unloading all tilemaps");
     unloadAll();
     /* open the filename for the tileset and parse it! */
     TRACE_LOCAL(dbg, "Loading tilemaps from config");
-    conf = config->getElement("tilesets").getChildren();
+    const std::vector<ConfigElement> children =
+        config->getElement("tilesets").getChildren();
     /* load all of the tilemaps */
-    for (std::vector<ConfigElement>::const_iterator i = conf.cbegin();
-         i != conf.cend();
-         ++i) {
-        if (i->getName() == "tilemap") {
+    for (const auto &child: children) {
+        if (child.getName() == "tilemap") {
             /* load the tilemap ! */
-            load(*i);
+            load(child);
         }
     }
 }
@@ -54,10 +52,9 @@ void TileMap::loadAll()
  */
 void TileMap::unloadAll()
 {
-    TileIndexMapMap::const_iterator map;
     /* free all the memory for the tile maps */
-    for (map = tileMaps.cbegin(); map != tileMaps.cend(); ++map) {
-        delete map->second;
+    for (const auto &tileMap: tileMaps) {
+        delete tileMap.second;
     }
     /* Clear the map so we don't attempt to delete the memory again
      * next time.
@@ -73,22 +70,20 @@ void TileMap::unloadAll()
  */
 void TileMap::load(const ConfigElement &tilemapConf)
 {
-    TileMap *tm = new TileMap;
-    std::string name = tilemapConf.getString("name");
+    auto *tm = new TileMap;
+    const std::string name = tilemapConf.getString("name");
     TRACE_LOCAL(dbg, std::string("Tilemap name is: ") + name);
-    std::string tileset = tilemapConf.getString("tileset");
+    const std::string tileset = tilemapConf.getString("tileset");
     int index = 0;
-    std::vector<ConfigElement> children = tilemapConf.getChildren();
-    for (std::vector<ConfigElement>::const_iterator i = children.cbegin();
-         i != children.cend();
-         ++i) {
-        if (i->getName() != "mapping") {
+    const std::vector<ConfigElement> children = tilemapConf.getChildren();
+    for (const auto &child: children) {
+        if (child.getName() != "mapping") {
             continue;
         }
         /* we assume tiles have already been loaded at this point,
            so let's do some translations! */
         int frames = 1;
-        std::string tile = i->getString("tile");
+        std::string tile = child.getString("tile");
         TRACE_LOCAL(dbg, std::string("\tLoading '") + tile + "'");
         /* find the tile this references */
         const Tile *t = Tileset::get(tileset)->getByName(tile);
@@ -100,11 +95,11 @@ void TileMap::load(const ConfigElement &tilemapConf)
                 tileset.c_str()
             );
         }
-        if (i->exists("index")) {
-            index = i->getInt("index");
+        if (child.exists("index")) {
+            index = child.getInt("index");
         }
-        if (i->exists("frames")) {
-            frames = i->getInt("frames");
+        if (child.exists("frames")) {
+            frames = child.getInt("frames");
         }
         /* insert the tile into the tile map */
         for (int j = 0; j < frames; j++) {
@@ -133,9 +128,8 @@ TileMap *TileMap::get(const std::string &name)
 {
     if (tileMaps.find(name) != tileMaps.end()) {
         return tileMaps[name];
-    } else {
-        return nullptr;
     }
+    return nullptr;
 }
 
 

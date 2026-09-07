@@ -2,7 +2,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-int main(int argc, const char *argv[])
+int main(const int argc, const char *argv[])
 {
     const char *x, *y;
     int n;
@@ -24,9 +24,9 @@ int main(int argc, const char *argv[])
     x = argv[1];
     y = argv[2];
     if (isdigit(x[0])) {
-        n = strtoul(x, NULL, 0);
+        n = (int)strtoul(x, NULL, 0);
         printf("%c'%c\"\n", n / 16 + 'A', n % 16 + 'A');
-        n = strtoul(y, NULL, 0);
+        n = (int)strtoul(y, NULL, 0);
         printf("%c'%c\"\n", n / 16 + 'A', n % 16 + 'A');
     } else {
         n = (toupper(x[0]) - 'A') * 16;

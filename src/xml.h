@@ -10,17 +10,21 @@
 #include <libxml/parser.h>
 #include <libxml/xmlstring.h>
 
+#include "script.h"
+
+typedef const xmlDoc *xmlConstDocPtr;
+typedef const xmlNode *xmlConstNodePtr;
 
 xmlDocPtr xmlParse(const char *filename);
-bool xmlPropExists(xmlNodePtr node, const char *name);
-std::string xmlGetPropAsString(xmlNodePtr node, const char *name);
-bool xmlGetPropAsBool(xmlNodePtr node, const char *name);
-int xmlGetPropAsInt(xmlNodePtr node, const char *name);
+bool xmlPropExists(xmlConstNodePtr node, const char *name);
+std::string xmlGetPropAsString(xmlConstNodePtr node, const char *name);
+bool xmlGetPropAsBool(xmlConstNodePtr node, const char *name);
+int xmlGetPropAsInt(xmlConstNodePtr node, const char *name);
 int xmlGetPropAsEnum(
-    xmlNodePtr node, const char *name, const char *enumValues[]
+    xmlConstNodePtr node, const char *name, const char *enumValues[]
 );
-int xmlPropCmp(xmlNodePtr node, const char *name, const char *s);
-int xmlPropCaseCmp(xmlNodePtr node, const char *name, const char *s);
+int xmlPropCmp(xmlConstNodePtr node, const char *name, const char *s);
+int xmlPropCaseCmp(xmlConstNodePtr node, const char *name, const char *s);
 
 inline const xmlChar *c2xc(const char *s)
 {

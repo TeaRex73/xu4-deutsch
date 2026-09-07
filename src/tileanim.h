@@ -114,8 +114,8 @@ public:
     {
     }
 
-    virtual void draw(Image *dest, Tile *tile, MapTile mapTile) override;
-    virtual bool drawsTile() const override;
+    void draw(Image *dest, Tile *tile, MapTile mapTile) override;
+    bool drawsTile() const override;
 
 protected:
     int currentFrame;
@@ -140,9 +140,9 @@ public:
         TileAnimPixelColorTransform &&
     ) = delete;
 
-    virtual ~TileAnimPixelColorTransform();
-    virtual void draw(Image *dest, Tile *tile, MapTile mapTile) override;
-    virtual bool drawsTile() const override;
+    ~TileAnimPixelColorTransform() override;
+    void draw(Image *dest, Tile *tile, MapTile mapTile) override;
+    bool drawsTile() const override;
     int x, y, w, h;
     RGBA *start, *end;
 };
@@ -153,24 +153,22 @@ public:
  */
 class TileAnimContext {
 public:
-    typedef std::vector<TileAnimTransform *> TileAnimTransformList;
+    typedef std::vector<TileAnimTransform *> TileAnimTransformVector;
 
     typedef enum {
         FRAME,
         DIR
     } Type;
 
-    TileAnimContext()
-        :animTransforms()
-    {
-    }
-
+    TileAnimContext() = default;
 
     static TileAnimContext *create(const ConfigElement &conf);
     void add(TileAnimTransform *);
-    virtual bool isInContext(Tile *t, MapTile mapTile, Direction d) = 0;
+    virtual bool isInContext(
+        const Tile *t, MapTile mapTile, Direction d
+    ) const = 0;
 
-    TileAnimTransformList &getTransforms()
+    const TileAnimTransformVector &getTransforms() const
     {
         return animTransforms;   /**< Returns a list of
                                     transformations under the
@@ -180,7 +178,7 @@ public:
     virtual ~TileAnimContext();
 
 private:
-    TileAnimTransformList animTransforms;
+    TileAnimTransformVector animTransforms;
 };
 
 
@@ -191,7 +189,7 @@ private:
 class TileAnimFrameContext:public TileAnimContext {
 public:
     explicit TileAnimFrameContext(int f);
-    virtual bool isInContext(Tile *t, MapTile mapTile, Direction d) override;
+    bool isInContext(const Tile *t, MapTile mapTile, Direction d) const override;
 
 private:
     int frame;
@@ -205,7 +203,7 @@ private:
 class TileAnimPlayerDirContext:public TileAnimContext {
 public:
     explicit TileAnimPlayerDirContext(Direction d);
-    virtual bool isInContext(Tile *t, MapTile mapTile, Direction d) override;
+    bool isInContext(const Tile *t, MapTile mapTile, Direction d) const override;
 
 private:
     Direction dir;
@@ -227,7 +225,7 @@ public:
     /* returns the frame to set the mapTile to (only relevant
        if persistent) */
     void draw(Image *dest, Tile *tile, MapTile mapTile, Direction dir) const;
-    int random; /* true if the tile animation occurs randomely */
+    int random; /* true if the tile animation occurs randomly */
 };
 
 
@@ -236,15 +234,14 @@ public:
  * specific image set which shares the same name.
  */
 class TileAnimSet {
-private:
     typedef std::map<std::string, TileAnim *> TileAnimMap;
 
 public:
     explicit TileAnimSet(const ConfigElement &conf);
     ~TileAnimSet();
-    TileAnim *getByName(const std::string &name);
+    TileAnim *getByName(const std::string &nameToFind);
     std::string name;
-    TileAnimMap tileanims;
+    TileAnimMap tileAnimations;
 };
 
-#endif // ifndef TILEANIM_H
+#endif // TILEANIM_H

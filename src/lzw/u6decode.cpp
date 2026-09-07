@@ -210,7 +210,7 @@ int U6Decode::lzw_decompress(
                 Stack stack;
                 // create the string associated with cW (on the stack)
                 get_string(stack, cW);
-                C = stack.gettop();
+                C = stack.get_top();
                 // output the string represented by cW
                 while (!stack.is_empty()) {
                     output_root(stack.pop(), destination, bytes_written);
@@ -228,7 +228,7 @@ int U6Decode::lzw_decompress(
                 Stack stack;
                 // create the string associated with pW (on the stack)
                 get_string(stack, pW);
-                C = stack.gettop();
+                C = stack.get_top();
                 // output the string represented by pW
                 while (!stack.is_empty()) {
                     output_root(stack.pop(), destination, bytes_written);

@@ -35,4 +35,4 @@ private:
     TileMapMap tilemap;
 };
 
-#endif // ifndef TILEMAP_H
+#endif // TILEMAP_H

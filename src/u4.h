@@ -5,7 +5,7 @@
 #ifndef U4_H
 #define U4_H
 
-#define VERSION "2026-08-20"
+#define VERSION "2026-09-07"
 
 /* info for loading city data from *.ult and *.tlk */
 #define CITY_HEIGHT 32

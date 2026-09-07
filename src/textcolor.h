@@ -14,7 +14,7 @@
 //
 // text foreground colors
 //
-typedef enum {
+enum ColorFG {
     FG_GREY = '\023',
     FG_BLUE = '\024',
     FG_PURPLE = '\025',
@@ -22,15 +22,15 @@ typedef enum {
     FG_RED = '\027',
     FG_YELLOW = '\030',
     FG_WHITE = '\031'
-} ColorFG;
+};
 
 
 //
 // text background colors
 //
-typedef enum {
+enum ColorBG {
     BG_NORMAL = '\032',
     BG_BRIGHT = '\033'
-} ColorBG;
+};
 
 #endif /* TEXTCOLOR_H */

@@ -5,10 +5,14 @@
 #include "vc6.h" // Fixes things if you're using VC6, does nothing otherwise
 
 #include <cctype> // IWYU pragma: keep
-#include <climits>
+#include <climits> // IWYU pragma: keep
 #include <cstdint> // IWYU pragma: keep
 #include <cstdio>
 #include <cwchar>
+#include <list>
+#include <string>
+#include <utility>
+#include <vector>
 
 #include "u4file.h"
 
@@ -17,100 +21,106 @@
 #include "xordata.h"
 
 
-/**
- * A specialization of U4FILE that uses C stdio internally.
- */
-class U4FILE_stdio:public U4FILE {
-public:
-    U4FILE_stdio()
-      :file(nullptr)
-    {
-    }
+namespace {
+    /**
+     * A specialization of U4FILE that uses C stdio internally.
+     */
+    class U4FILE_stdio:public U4FILE {
+    public:
+        U4FILE_stdio()
+            :file(nullptr)
+        {
+        }
 
-    U4FILE_stdio(const U4FILE_stdio &) = delete;
-    U4FILE_stdio(U4FILE_stdio &&) = delete;
-    U4FILE_stdio &operator=(const U4FILE_stdio &) = delete;
-    U4FILE_stdio &operator=(U4FILE_stdio &&) = delete;
+        U4FILE_stdio(const U4FILE_stdio &) = delete;
+        U4FILE_stdio(U4FILE_stdio &&) = delete;
+        U4FILE_stdio &operator=(const U4FILE_stdio &) = delete;
+        U4FILE_stdio &operator=(U4FILE_stdio &&) = delete;
 
-    static U4FILE *open(const std::string &fname);
-    virtual void close() override;
-    virtual int seek(long offset, int whence) override;
-    virtual long tell() override;
-    virtual std::size_t read(
-        void *ptr, std::size_t size, std::size_t nmemb
-    ) override;
-    virtual int getc() override;
-    virtual int putc(int c) override;
-    virtual long length() override;
-private:
-    std::FILE *file;
-};
+        static U4FILE *open(const std::string &fname);
+        void close() override;
+        int seek(long offset, int whence) override;
+        long tell() override;
+        std::size_t read(
+            void *ptr, std::size_t size, std::size_t nmemb
+        ) override;
+        int getc() override;
+        int putc(int c) override;
+        long length() override;
+    private:
+        std::FILE *file;
+    };
+}
 
-/**
- * A specialization of U4FILE that reads files out of zip archives
- * automatically.
- */
-class U4FILE_zip:public U4FILE {
-public:
-    U4FILE_zip()
-        :zfile(nullptr),
-         length_cached(0)
-    {
-    }
+namespace {
+    /**
+     * A specialization of U4FILE that reads files out of zip archives
+     * automatically.
+     */
+    class U4FILE_zip:public U4FILE {
+    public:
+        U4FILE_zip()
+            :zfile(nullptr),
+             length_cached(0)
+        {
+        }
 
-    U4FILE_zip(const U4FILE_zip &) = delete;
-    U4FILE_zip(U4FILE_zip &&) = delete;
-    U4FILE_zip &operator=(const U4FILE_zip &) = delete;
-    U4FILE_zip &operator=(U4FILE_zip &&) = delete;
+        U4FILE_zip(const U4FILE_zip &) = delete;
+        U4FILE_zip(U4FILE_zip &&) = delete;
+        U4FILE_zip &operator=(const U4FILE_zip &) = delete;
+        U4FILE_zip &operator=(U4FILE_zip &&) = delete;
 
-    static U4FILE *open(const std::string &fname, const U4ZipPackage *package);
-    virtual void close() override;
-    virtual int seek(long offset, int whence) override;
-    virtual long tell() override;
-    virtual std::size_t read(
-        void *ptr, std::size_t size, std::size_t nmemb
-    ) override;
-    virtual int getc() override;
-    virtual int putc(int) override;
-    virtual long length() override;
-private:
-    unzFile zfile;
-    long length_cached;
-};
+        static U4FILE *open(const std::string &fname, const U4ZipPackage *package);
+        void close() override;
+        int seek(long offset, int whence) override;
+        long tell() override;
+        std::size_t read(
+            void *ptr, std::size_t size, std::size_t nmemb
+        ) override;
+        int getc() override;
+        int putc(int) override;
+        long length() override;
+    private:
+        unzFile zfile;
+        long length_cached;
+    };
+}
 
-/**
- * A specialization of U4FILE that uses XOR data over another U4FILE.
- */
-class U4FILE_xor:public U4FILE {
-public:
-    U4FILE_xor()
-        :xordata(nullptr),
-         pos(0),
-         file(nullptr)
-    {
-    }
+namespace {
+    /**
+     * A specialization of U4FILE that uses XOR data over another U4FILE.
+     */
+    class U4FILE_xor:public U4FILE {
+    public:
+        U4FILE_xor()
+            :xor_data(nullptr),
+             pos(0),
+             file(nullptr)
+        {
+        }
 
-    U4FILE_xor(const U4FILE_xor &) = delete;
-    U4FILE_xor(U4FILE_xor &&) = delete;
-    U4FILE_xor &operator=(const U4FILE_xor &) = delete;
-    U4FILE_xor &operator=(U4FILE_xor &&) = delete;
+        U4FILE_xor(const U4FILE_xor &) = delete;
+        U4FILE_xor(U4FILE_xor &&) = delete;
+        U4FILE_xor &operator=(const U4FILE_xor &) = delete;
+        U4FILE_xor &operator=(U4FILE_xor &&) = delete;
 
-    static U4FILE *open(const std::string &fname);
-    static U4FILE *open(const std::string &fname, const U4ZipPackage *package);
-    virtual void close() override;
-    virtual int seek(long offset, int whence) override;
-    virtual long tell() override;
-    virtual std::size_t read(
-        void *ptr, std::size_t size, std::size_t nmemb
-    ) override;
-    virtual int getc() override;
-    virtual int putc(int) override;
-    virtual long length() override;
-private:
-    const ByteVector *xordata;
-    std::size_t pos;
-    U4FILE *file;
-};
+        static U4FILE *open(const std::string &fname);
+        static U4FILE *open(const std::string &fname, const U4ZipPackage *package);
+        void close() override;
+        int seek(long offset, int whence) override;
+        long tell() override;
+        std::size_t read(
+            void *ptr, std::size_t size, std::size_t nmemb
+        ) override;
+        int getc() override;
+        int putc(int) override;
+        long length() override;
+    private:
+        const ByteVector *xor_data;
+        std::size_t pos;
+        U4FILE *file;
+    };
+}
 
 extern bool verbose;
 
@@ -138,45 +148,45 @@ U4PATH *U4PATH::getInstance()
 
 void U4PATH::initDefaultPaths()
 {
-    if (defaultsHaveBeenInitd) {
+    if (defaultsHaveBeenInited) {
         return;
     }
     // The first part of the path searched will be one of these
     // root directories
     /*Try to cover all root possibilities. These can be added to
       by separate modules*/
-    rootResourcePaths.push_back(".");
-    rootResourcePaths.push_back("");
-    rootResourcePaths.push_back("./ultima4");
-    rootResourcePaths.push_back("/usr/lib/u4");
-    rootResourcePaths.push_back("/usr/local/lib/u4");
+    rootResourcePaths.emplace_back(".");
+    rootResourcePaths.emplace_back("");
+    rootResourcePaths.emplace_back("./ultima4");
+    rootResourcePaths.emplace_back("/usr/lib/u4");
+    rootResourcePaths.emplace_back("/usr/local/lib/u4");
     // The second (specific) part of the path searched will be these
     // various subdirectories
     /* the possible paths where u4 for DOS can be installed */
-    u4ForDOSPaths.push_back("");
-    u4ForDOSPaths.push_back("./u4");
-    u4ForDOSPaths.push_back("./ultima4");
-    /* the possible paths where the u4 zipfiles can be installed */
-    u4ZipPaths.push_back("");
-    u4ZipPaths.push_back("./u4");
+    u4ForDOSPaths.emplace_back("");
+    u4ForDOSPaths.emplace_back("./u4");
+    u4ForDOSPaths.emplace_back("./ultima4");
+    /* the possible paths where the u4 zip files can be installed */
+    u4ZipPaths.emplace_back("");
+    u4ZipPaths.emplace_back("./u4");
     /* the possible paths where the u4 music files can be installed */
-    musicPaths.push_back("./music");
-    musicPaths.push_back("../music");
-    musicPaths.push_back("./mid");
-    musicPaths.push_back("../mid");
-    musicPaths.push_back("");
+    musicPaths.emplace_back("./music");
+    musicPaths.emplace_back("../music");
+    musicPaths.emplace_back("./mid");
+    musicPaths.emplace_back("../mid");
+    musicPaths.emplace_back("");
     /* the possible paths where the u4 sound files can be installed */
-    soundPaths.push_back("./sound");
-    soundPaths.push_back("../sound");
-    soundPaths.push_back("");
+    soundPaths.emplace_back("./sound");
+    soundPaths.emplace_back("../sound");
+    soundPaths.emplace_back("");
     /* the possible paths where the u4 config files can be installed */
-    configPaths.push_back("./conf");
-    configPaths.push_back("../conf");
-    configPaths.push_back("");
+    configPaths.emplace_back("./conf");
+    configPaths.emplace_back("../conf");
+    configPaths.emplace_back("");
     /* the possible paths where the u4 graphics files can be installed */
-    graphicsPaths.push_back("./graphics");
-    graphicsPaths.push_back("../graphics");
-    graphicsPaths.push_back("");
+    graphicsPaths.emplace_back("./graphics");
+    graphicsPaths.emplace_back("../graphics");
+    graphicsPaths.emplace_back("");
 } // U4PATH::initDefaultPaths
 
 
@@ -205,10 +215,10 @@ bool u4isUpgradeInstalled()
     /* FIXME: Is there a better way to determine this? */
     U4FILE *u4f = u4fopen("ega.drv");
     if (u4f) {
-        long filelength = u4f->length();
+        const long file_length = u4f->length();
         u4fclose(u4f);
         /* see if (ega.drv > 5k).  If so, the upgrade is installed */
-        if (filelength > (5 * 1024)) {
+        if (file_length > 5 * 1024) {
             result = true;
         }
     }
@@ -223,9 +233,9 @@ bool u4isUpgradeInstalled()
  * Creates a new zip package.
  */
 U4ZipPackage::U4ZipPackage(
-    const std::string &name, const std::string &path, bool extension
+    std::string name, std::string path, const bool extension
 )
-    :name(name), path(path), extension(extension), translations()
+    :name(std::move(name)), path(std::move(path)), extension(extension)
 {
 }
 
@@ -236,15 +246,13 @@ void U4ZipPackage::addTranslation(
     translations[value] = translation;
 }
 
-const std::string &U4ZipPackage::translate(const std::string &name) const
+const std::string &U4ZipPackage::translate(const std::string &nameToFind) const
 {
-    std::map<std::string, std::string>::const_iterator i =
-        translations.find(name);
+    const auto i = translations.find(nameToFind);
     if (i != translations.cend()) {
         return i->second;
-    } else {
-        return name;
     }
+    return nameToFind;
 }
 
 U4ZipPackageMgr *U4ZipPackageMgr::instance = nullptr;
@@ -269,12 +277,11 @@ void U4ZipPackageMgr::add(U4ZipPackage *package)
 }
 
 U4ZipPackageMgr::U4ZipPackageMgr()
-    :packages()
 {
     std::string upg_pathname(u4find_path("u4upgrad.zip", u4Path.u4ZipPaths));
     if (!upg_pathname.empty()) {
         /* upgrade zip is present */
-        U4ZipPackage *upgrade = new U4ZipPackage(upg_pathname, "", false);
+        auto *upgrade = new U4ZipPackage(upg_pathname, "", false);
         upgrade->addTranslation("compassn.ega", "compassn.old");
         upgrade->addTranslation("courage.ega", "courage.old");
         upgrade->addTranslation("cove.tlk", "cove.old");
@@ -398,28 +405,24 @@ U4ZipPackageMgr::U4ZipPackageMgr()
 
 U4ZipPackageMgr::~U4ZipPackageMgr()
 {
-    for (std::vector<U4ZipPackage *>::iterator i = packages.begin();
-         i != packages.end();
-         ++i) {
-        delete *i;
+    for (const auto *package: packages) {
+        delete package;
     }
 }
 
-int U4FILE::getshort()
+int U4FILE::get_short()
 {
-    int byteLow = getc();
+    const int byteLow = getc();
     return byteLow | (getc() << 8);
 }
 
 U4FILE *U4FILE_stdio::open(const std::string &fname)
 {
-    U4FILE_stdio *u4f;
-    std::FILE *f;
-    f = std::fopen(fname.c_str(), "rb");
+    std::FILE *f = std::fopen(fname.c_str(), "rb");
     if (!f) {
         return nullptr;
     }
-    u4f = new U4FILE_stdio;
+    auto *u4f = new U4FILE_stdio;
     u4f->file = f;
     return u4f;
 }
@@ -429,7 +432,7 @@ void U4FILE_stdio::close()
     std::fclose(file);
 }
 
-int U4FILE_stdio::seek(long offset, int whence)
+int U4FILE_stdio::seek(const long offset, const int whence)
 {
     return std::fseek(file, offset, whence);
 }
@@ -439,7 +442,9 @@ long U4FILE_stdio::tell()
     return std::ftell(file);
 }
 
-std::size_t U4FILE_stdio::read(void *ptr, std::size_t size, std::size_t nmemb)
+std::size_t U4FILE_stdio::read(
+    void *ptr, const std::size_t size, const std::size_t nmemb
+)
 {
     return std::fread(ptr, size, nmemb, file);
 }
@@ -449,26 +454,24 @@ int U4FILE_stdio::getc()
     return std::fgetc(file);
 }
 
-int U4FILE_stdio::putc(int c)
+int U4FILE_stdio::putc(const int c)
 {
     return std::fputc(c, file);
 }
 
 long U4FILE_stdio::length()
 {
-    long curr, len;
-    curr = std::ftell(file);
+    const long curr = std::ftell(file);
     std::fseek(file, 0L, SEEK_END);
-    len = std::ftell(file);
+    const long len = std::ftell(file);
     std::fseek(file, curr, SEEK_SET);
     return len;
 }
 
 U4FILE *U4FILE_xor::open(const std::string &fname)
 {
-    XorDataMap::const_iterator i;
     U4FILE *u4f_stdio;
-    i = xorDataMap.find(fname);
+    const auto i = xorDataMap.find(fname);
     if (i == xorDataMap.end()) {
         u4f_stdio = U4FILE_stdio::open(fname);
         if (!u4f_stdio) {
@@ -480,19 +483,17 @@ U4FILE *U4FILE_xor::open(const std::string &fname)
     if (!u4f_stdio) {
         return nullptr;
     }
-    U4FILE_xor *u4f;
-    u4f = new U4FILE_xor;
+    auto *u4f = new U4FILE_xor;
     u4f->file = u4f_stdio;
     u4f->pos = 0;
-    u4f->xordata = &(i->second.contents);
+    u4f->xor_data = &i->second.contents;
     return u4f;
 }
 
 U4FILE *U4FILE_xor::open(const std::string &fname, const U4ZipPackage *package)
 {
-    XorDataMap::const_iterator i;
     U4FILE *u4f_zip;
-    i = xorDataMap.find(fname);
+    const auto i = xorDataMap.find(fname);
     if (i == xorDataMap.end()) {
         u4f_zip = U4FILE_zip::open(fname, package);
         if (!u4f_zip) {
@@ -504,11 +505,10 @@ U4FILE *U4FILE_xor::open(const std::string &fname, const U4ZipPackage *package)
     if (!u4f_zip) {
         return nullptr;
     }
-    U4FILE_xor *u4f;
-    u4f = new U4FILE_xor;
+    auto *u4f = new U4FILE_xor;
     u4f->file = u4f_zip;
     u4f->pos = 0;
-    u4f->xordata = &(i->second.contents);
+    u4f->xor_data = &i->second.contents;
     return u4f;
 }
 
@@ -517,63 +517,62 @@ void U4FILE_xor::close()
     file->close();
     delete file;
     file = nullptr;
-    xordata = nullptr;
+    xor_data = nullptr;
     pos = 0;
 }
 
-int U4FILE_xor::seek(long offset, int whence)
+int U4FILE_xor::seek(const long offset, const int whence)
 {
-    long newpos;
+    long new_pos;
     switch (whence) {
     case SEEK_SET:
-        newpos = offset;
+        new_pos = offset;
         break;
     case SEEK_CUR:
-        newpos = pos + offset;
+        new_pos = static_cast<long>(pos) + offset;
         break;
     case SEEK_END:
-        newpos = xordata->size() + offset;
+        new_pos = static_cast<long>(xor_data->size()) + offset;
         break;
     default:
         return -1;
     }
-    if (newpos < 0 || newpos >= static_cast<long>(xordata->size())) {
+    if (new_pos < 0 || new_pos >= static_cast<long>(xor_data->size())) {
         return -1;
     }
-    pos = static_cast<std::size_t>(newpos);
-    return file->seek(pos % file->length(), SEEK_SET);
+    pos = static_cast<std::size_t>(new_pos);
+    return file->seek(static_cast<long>(pos) % file->length(), SEEK_SET);
 }
 
 long U4FILE_xor::tell()
 {
-    return pos;
+    return static_cast<long>(pos);
 }
 
 int U4FILE_xor::getc()
 {
-    int c;
-    if (pos >= xordata->size()) return EOF;
-    c = file->getc();
+    if (pos >= xor_data->size()) return EOF;
+    int c = file->getc();
     if (c == EOF) {
         file->seek(0, SEEK_SET);
         c = file->getc();
         if (c == EOF) return EOF;
     }
-    return c ^ (*xordata)[pos++];
+    return c ^ (*xor_data)[pos++];
 }
 
 int U4FILE_xor::putc(int)
 {
-    U4ASSERT(0, "xorfiles must be read-only!");
+    U4ASSERT(0, "xor files must be read-only!");
     return EOF;
 }
 
-std::size_t U4FILE_xor::read(void *ptr, std::size_t size, std::size_t nmemb)
+std::size_t U4FILE_xor::read(
+    void *ptr, const std::size_t size, const std::size_t nmemb
+)
 {
-    int c;
-    std::size_t i;
-    for (i = 0; i < size * nmemb; i++) {
-        c = this->getc();
+    for (std::size_t i = 0; i < size * nmemb; i++) {
+        const int c = this->getc();
         if (c == EOF) return i / size;
         static_cast<std::uint8_t *>(ptr)[i] = c;
     }
@@ -582,7 +581,7 @@ std::size_t U4FILE_xor::read(void *ptr, std::size_t size, std::size_t nmemb)
 
 long U4FILE_xor::length()
 {
-    return xordata->size();
+    return static_cast<long>(xor_data->size());
 }
 
 
@@ -591,20 +590,18 @@ long U4FILE_xor::length()
  */
 U4FILE *U4FILE_zip::open(const std::string &fname, const U4ZipPackage *package)
 {
-    U4FILE_zip *u4f;
-    unzFile f;
-    f = unzOpen(package->getFilename().c_str());
+    const unzFile f = unzOpen(package->getFilename().c_str());
     if (!f) {
         return nullptr;
     }
-    std::string pathname =
+    const std::string pathname =
         package->getInternalPath() + package->translate(fname);
     if (unzLocateFile(f, pathname.c_str(), 2) == UNZ_END_OF_LIST_OF_FILE) {
         unzClose(f);
         return nullptr;
     }
     unzOpenCurrentFile(f);
-    u4f = new U4FILE_zip;
+    auto *u4f = new U4FILE_zip;
     u4f->zfile = f;
     u4f->length_cached = -1;
     return u4f;
@@ -615,15 +612,13 @@ void U4FILE_zip::close()
     unzClose(zfile);
 }
 
-int U4FILE_zip::seek(long offset, int whence)
+int U4FILE_zip::seek(long offset, const int whence)
 {
-    char *buf;
-    long pos;
     U4ASSERT(
         whence != SEEK_END,
-        "seeking with whence == SEEK_END not allowed with zipfiles"
+        "seeking with whence == SEEK_END not allowed with zip files"
     );
-    pos = unztell(zfile);
+    long pos = unztell(zfile);
     if (whence == SEEK_CUR) {
         offset = pos + offset;
     }
@@ -637,7 +632,7 @@ int U4FILE_zip::seek(long offset, int whence)
     }
     U4ASSERT(offset - pos >= 0, "error in U4FILE_zip::seek");
     if (offset > pos) {
-        buf = new char[offset - pos];
+        auto *buf = new char[offset - pos];
         unzReadCurrentFile(zfile, buf, offset - pos);
         delete[] buf;
     }
@@ -649,7 +644,9 @@ long U4FILE_zip::tell()
     return unztell(zfile);
 }
 
-std::size_t U4FILE_zip::read(void *ptr, std::size_t size, std::size_t nmemb)
+std::size_t U4FILE_zip::read(
+    void *ptr, const std::size_t size, const std::size_t nmemb
+)
 {
     std::size_t retval = unzReadCurrentFile(zfile, ptr, size * nmemb);
     if (retval > 0) {
@@ -672,7 +669,7 @@ int U4FILE_zip::getc()
 
 int U4FILE_zip::putc(int)
 {
-    U4ASSERT(0, "zipfiles must be read-only!");
+    U4ASSERT(0, "zip files must be read-only!");
     return EOF;
 }
 
@@ -683,7 +680,7 @@ long U4FILE_zip::length()
         unzGetCurrentFileInfo(
             zfile, &fileinfo, nullptr, 0, nullptr, 0, nullptr, 0
         );
-        length_cached = fileinfo.uncompressed_size;
+        length_cached = static_cast<long>(fileinfo.uncompressed_size);
     }
     return length_cached;
 }
@@ -695,10 +692,10 @@ long U4FILE_zip::length()
  * maps the filenames to uppercase if necessary.  The files are always
  * opened for reading only.
  *
- * First, it looks in the zipfiles.  Next, it tries FILENAME, Filename
+ * First, it looks in the zip files.  Next, it tries FILENAME, Filename
  * and filename in up to four paths, meaning up to twelve or more
  * opens per file.  Seems to be ok for performance, but could be
- * getting excessive.  The presence of the zipfiles should probably be
+ * getting excessive.  The presence of the zip files should probably be
  * cached.
  */
 U4FILE *u4fopen(const std::string &fname)
@@ -712,10 +709,7 @@ U4FILE *u4fopen(const std::string &fname)
      */
     const std::vector<U4ZipPackage *> &packages =
         U4ZipPackageMgr::getInstance()->getPackages();
-    for (std::vector<U4ZipPackage *>::const_reverse_iterator j =
-             packages.crbegin();
-         j != packages.crend();
-         ++j) {
+    for (auto j = packages.crbegin(); j != packages.crend(); ++j) {
         u4f = U4FILE_xor::open(fname, *j);
         if (u4f) {
             return u4f;  /* file was found, return it! */
@@ -728,13 +722,14 @@ U4FILE *u4fopen(const std::string &fname)
     std::string pathname = u4find_path(fname_copy, u4Path.u4ForDOSPaths);
     if (pathname.empty()) {
         if (std::islower(fname_copy[0])) {
-            fname_copy[0] = std::toupper(fname_copy[0]);
+            fname_copy[0] = static_cast<char>(std::toupper(fname_copy[0]));
             pathname = u4find_path(fname_copy, u4Path.u4ForDOSPaths);
         }
         if (pathname.empty()) {
             for (int i = 0; fname_copy[i] != '\0'; i++) {
                 if (std::islower(fname_copy[i])) {
-                    fname_copy[i] = std::toupper(fname_copy[i]);
+                    fname_copy[i] =
+                        static_cast<char>(std::toupper(fname_copy[i]));
                 }
             }
             pathname = u4find_path(fname_copy, u4Path.u4ForDOSPaths);
@@ -742,7 +737,7 @@ U4FILE *u4fopen(const std::string &fname)
     }
     if (!pathname.empty()) {
         u4f = U4FILE_xor::open(pathname);
-        if (verbose && (u4f != nullptr)) {
+        if (verbose && u4f != nullptr) {
             std::printf("%s successfully opened\n", pathname.c_str());
         }
     }
@@ -786,7 +781,7 @@ void u4fclose(U4FILE *f)
     delete f;
 }
 
-int u4fseek(U4FILE *f, long offset, int whence)
+int u4fseek(U4FILE *f, const long offset, const int whence)
 {
     return f->seek(offset, whence);
 }
@@ -796,7 +791,9 @@ long u4ftell(U4FILE *f)
     return f->tell();
 }
 
-std::size_t u4fread(void *ptr, std::size_t size, std::size_t nmemb, U4FILE *f)
+std::size_t u4fread(
+    void *ptr, const std::size_t size, const std::size_t nmemb, U4FILE *f
+)
 {
     return f->read(ptr, size, nmemb);
 }
@@ -806,12 +803,12 @@ int u4fgetc(U4FILE *f)
     return f->getc();
 }
 
-int u4fgetshort(U4FILE *f)
+int u4fget_short(U4FILE *f)
 {
-    return f->getshort();
+    return f->get_short();
 }
 
-int u4fputc(int c, U4FILE *f)
+int u4fputc(const int c, U4FILE *f)
 {
     return f->putc(c);
 }
@@ -831,21 +828,20 @@ long u4flength(U4FILE *f)
  * are read from the given offset, or the current file position if
  * offset is -1.
  */
-std::vector<std::string> u4read_stringtable(
-    U4FILE *f, long offset, int nstrings
+std::vector<std::string> u4read_string_table(
+    U4FILE *f, const long offset, const int n_strings
 )
 {
     std::string buffer;
-    int i;
     std::vector<std::string> strs;
     U4ASSERT(offset < u4flength(f), "offset begins beyond end of file");
     if (offset != -1) {
         f->seek(offset, SEEK_SET);
     }
-    for (i = 0; i < nstrings; i++) {
+    for (int i = 0; i < n_strings; i++) {
         char c;
         buffer.erase();
-        while ((c = f->getc()) != '\0') {
+        while ((c = static_cast<char>(f->getc())) != '\0') {
             buffer += c;
         }
         strs.push_back(buffer);
@@ -888,12 +884,10 @@ std::string u4find_path(
 
     // Try paths
     if (f == nullptr) {
-        for (std::list<std::string>::const_iterator rootItr =
-                 u4Path.rootResourcePaths.cbegin();
+        for (auto rootItr = u4Path.rootResourcePaths.cbegin();
              rootItr != u4Path.rootResourcePaths.cend() && !f;
              ++rootItr) {
-            for (std::list<std::string>::const_iterator subItr =
-                     specificSubPaths.cbegin();
+            for (auto subItr = specificSubPaths.cbegin();
                  subItr != specificSubPaths.cend() && !f;
                  ++subItr) {
                 std::snprintf(
@@ -923,9 +917,8 @@ std::string u4find_path(
     if (f) {
         std::fclose(f);
         return path;
-    } else {
-        return "";
     }
+    return "";
 } // u4find_path
 
 std::string u4find_music(const std::string &fname)

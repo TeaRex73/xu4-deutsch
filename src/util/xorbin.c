@@ -12,7 +12,7 @@
    if too short) */
 /* based on code from stackoverflow, by Sato Katsura */
 
-int main(int argc, const char *argv[])
+int main(const int argc, const char *argv[])
 {
     FILE *f, *kf;
     size_t ks, n, i;
@@ -70,7 +70,7 @@ int main(int argc, const char *argv[])
         exit(EXIT_FAILURE);
     }
     for (i = 0; i < strlen(name); i++) {
-        name[i] = tolower(name[i]);
+        name[i] = (char)tolower(name[i]);
     }
     keyname = strdup(argv[2]);
     if (!keyname) {
@@ -78,7 +78,7 @@ int main(int argc, const char *argv[])
         exit(EXIT_FAILURE);
     }
     for (i = 0; i < strlen(keyname); i++) {
-        keyname[i] = tolower(keyname[i]);
+        keyname[i] = (char)tolower(keyname[i]);
     }
 #ifdef _WIN32
     if (_setmode(_fileno(stdout), _O_BINARY) < 0) {

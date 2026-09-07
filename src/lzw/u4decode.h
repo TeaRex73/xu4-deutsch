@@ -10,11 +10,11 @@ extern "C" {
 #define STDFILE FILE
 #endif
 
-long decompress_u4_file(STD_FILE *in, long filesize, unsigned char **out);
+long decompress_u4_file(STD_FILE *in, long file_size, unsigned char **out);
 long getFilesize(STD_FILE *input_file);
-unsigned char mightBeValidCompressedFile(STD_FILE *compressed_file);
+unsigned char mightBeValidCompressedFile(STD_FILE *input_file);
 long decompress_u4_memory(
-    const unsigned char *in, long inlen, unsigned char **out
+    const unsigned char *in, long in_len, unsigned char **out
 );
 
 #undef STD_FILE

@@ -58,16 +58,7 @@ public:
     }
 
     MapTile(const MapTile &t) = default;
-
-    MapTile &operator=(const MapTile &t)
-    {
-        if (this != &t) {
-            id = t.id;
-            frame = t.frame;
-            freezeAnimation = t.freezeAnimation;
-        }
-        return *this;
-    }
+    MapTile &operator=(const MapTile &t) = default;
 
     TileId getId() const
     {
@@ -94,27 +85,27 @@ public:
         freezeAnimation = f;
     }
 
-    bool operator==(const MapTile &m) const
+    bool operator==(const MapTile m) const
     {
         return id == m.id;
     }
 
-    bool operator==(const TileId &i) const
+    bool operator==(const TileId i) const
     {
         return id == i;
     }
 
-    bool operator!=(const MapTile &m) const
+    bool operator!=(const MapTile m) const
     {
         return id != m.id;
     }
 
-    bool operator!=(const TileId &i) const
+    bool operator!=(const TileId i) const
     {
         return id != i;
     }
 
-    bool operator<(const MapTile &m) const
+    bool operator<(const MapTile m) const
     {
         return id < m.id; /* for std::less */
     }

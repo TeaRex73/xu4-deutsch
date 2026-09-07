@@ -23,7 +23,7 @@
 #define U4_STRCAT(dst, src) \
     std::strncat((dst), (src), sizeof(dst) - std::strlen(dst) - 1)
 
-/* The AdjustValue functions used to be #define'd macros, but these are
+/* The AdjustValue functions used to be #define macros, but these are
  * evil for several reasons, *especially* when they contain multiple
  * statements, and have if statements in them. The macros did both.
  * See http://www.parashift.com/c++-faq-lite/inline-functions.html#faq-9.5
@@ -31,7 +31,8 @@
  */
 
 // for unsigned types, checks for overflow/underflow
-template<typename T, typename U> inline void AdjustValueMax_helper(
+template<typename T, typename U>
+void AdjustValueMax_helper(
     T &v, typename std::make_signed<T>::type val, U max, std::true_type
 )
 {
@@ -44,7 +45,8 @@ template<typename T, typename U> inline void AdjustValueMax_helper(
 }
 
 // for signed types, no check since signed overflow is undefined behaviour
-template<typename T, typename U> inline void AdjustValueMax_helper(
+template<typename T, typename U>
+void AdjustValueMax_helper(
     T &v, typename std::make_signed<T>::type val, U max, std::false_type
 )
 {
@@ -56,7 +58,8 @@ template<typename T, typename U> inline void AdjustValueMax_helper(
 }
 
 // use tag dispatch to chose the right one
-template<typename T, typename U> inline void AdjustValueMax(
+template<typename T, typename U>
+void AdjustValueMax(
     T &v, typename std::make_signed<T>::type val, U max
 )
 {
@@ -66,7 +69,8 @@ template<typename T, typename U> inline void AdjustValueMax(
 }
 
 // for unsigned types, checks for overflow/underflow
-template<typename T, typename U> inline void AdjustValueMin_helper(
+template<typename T, typename U>
+void AdjustValueMin_helper(
     T &v, typename std::make_signed<T>::type val, U min, std::true_type
 )
 {
@@ -79,7 +83,8 @@ template<typename T, typename U> inline void AdjustValueMin_helper(
 }
 
 // for signed types, no check since signed overflow is undefined behaviour
-template<typename T, typename U> inline void AdjustValueMin_helper(
+template<typename T, typename U>
+void AdjustValueMin_helper(
     T &v, typename std::make_signed<T>::type val, U min, std::false_type
 )
 {
@@ -91,7 +96,8 @@ template<typename T, typename U> inline void AdjustValueMin_helper(
 }
 
 // use tag dispatch to chose the right one
-template<typename T, typename U> inline void AdjustValueMin(
+template<typename T, typename U>
+void AdjustValueMin(
     T &v, typename std::make_signed<T>::type val, U min
 )
 {
@@ -101,7 +107,8 @@ template<typename T, typename U> inline void AdjustValueMin(
 }
 
 // for unsigned types, checks for overflow/underflow
-template<typename T, typename U> inline void AdjustValue_helper(
+template<typename T, typename U>
+void AdjustValue_helper(
     T &v, typename std::make_signed<T>::type val, U max, U min, std::true_type
 )
 {
@@ -118,7 +125,8 @@ template<typename T, typename U> inline void AdjustValue_helper(
 }
 
 // for signed types, no check since signed overflow is undefined behaviour
-template<typename T, typename U> inline void AdjustValue_helper(
+template<typename T, typename U>
+void AdjustValue_helper(
     T &v, typename std::make_signed<T>::type val, U max, U min, std::false_type
 )
 {
@@ -134,7 +142,8 @@ template<typename T, typename U> inline void AdjustValue_helper(
 }
 
 // use tag dispatch to chose the right one
-template<typename T, typename U> inline void AdjustValue(
+template<typename T, typename U>
+void AdjustValue(
     T &v, typename std::make_signed<T>::type val, U max, U min
 )
 {
@@ -163,7 +172,6 @@ std::vector<std::string> split(
 );
 
 class Performance {
-private:
     typedef std::map<std::string, std::clock_t> TimeMap;
 
 public:
@@ -276,7 +284,7 @@ public:
         sync();
         log = nullptr;
         times.clear();
-#endif // ifndef NPERF
+#endif // NPERF
     } // report
 
 #ifndef NPERF
@@ -288,4 +296,4 @@ private:
 #endif
 };
 
-#endif // ifndef UTILS_H
+#endif // UTILS_H

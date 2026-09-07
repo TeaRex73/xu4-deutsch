@@ -140,17 +140,17 @@ bool IntroBinData::load()
     if (!title) {
         return false;
     }
-    introQuestions[0] = u4read_stringtable(introGerman, 0, 28);
-    introText[0] = u4read_stringtable(introGerman, -1, 25);
-    introGypsy[0] = u4read_stringtable(introGerman, -1, 14);
+    introQuestions[0] = u4read_string_table(introGerman, 0, 28);
+    introText[0] = u4read_string_table(introGerman, -1, 25);
+    introGypsy[0] = u4read_string_table(introGerman, -1, 14);
     u4fclose(introGerman);
     introGerman = u4fopen("introf.ger");
     if (!introGerman) {
         return false;
     }
-    introQuestions[1] = u4read_stringtable(introGerman, 0, 28);
-    introText[1] = u4read_stringtable(introGerman, -1, 25);
-    introGypsy[1] = u4read_stringtable(introGerman, -1, 14);
+    introQuestions[1] = u4read_string_table(introGerman, 0, 28);
+    introText[1] = u4read_string_table(introGerman, -1, 25);
+    introGypsy[1] = u4read_string_table(introGerman, -1, 14);
     u4fclose(introGerman);
 
     /* clean up stray newlines at end of strings */

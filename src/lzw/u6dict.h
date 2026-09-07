@@ -10,7 +10,7 @@ class Dict {
 public:
 
     Dict()
-        :dict(), contains(0x102)
+        : contains(0x102)
     {
     }
 
@@ -19,7 +19,7 @@ public:
         contains = 0x102;
     }
 
-    void add(unsigned char root, int codeword)
+    void add(const unsigned char root, const int codeword)
     {
         dict.resize(contains+1);
         dict[contains].root = root;
@@ -27,12 +27,12 @@ public:
         contains++;
     }
 
-    unsigned char get_root(int codeword) const
+    unsigned char get_root(const int codeword) const
     {
         return dict[codeword].root;
     }
 
-    int get_codeword(int codeword) const
+    int get_codeword(const int codeword) const
     {
         return dict[codeword].codeword;
     }

@@ -54,9 +54,9 @@ static bool codexInit()
     if (!codexText) {
         return false;
     }
-    codexVirtueQuestions = u4read_stringtable(codexText, 0, 11);
-    codexEndgameText1 = u4read_stringtable(codexText, -1, 7);
-    codexEndgameText2 = u4read_stringtable(codexText, -1, 5);
+    codexVirtueQuestions = u4read_string_table(codexText, 0, 11);
+    codexEndgameText1 = u4read_string_table(codexText, -1, 7);
+    codexEndgameText2 = u4read_string_table(codexText, -1, 5);
     u4fclose(codexText);
     return true;
 }

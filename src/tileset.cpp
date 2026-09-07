@@ -4,6 +4,7 @@
 
 #include "vc6.h" // Fixes things if you're using VC6, does nothing otherwise
 
+#include <string>
 #include <vector>
 
 #include "tileset.h"
@@ -14,6 +15,7 @@
 #include "error.h"
 #include "tile.h"
 #include "tilemap.h"
+#include "types.h"
 
 
 /**
@@ -27,7 +29,7 @@ TileRuleMap TileRule::rules;
  */
 TileRule *TileRule::findByName(const std::string &name)
 {
-    TileRuleMap::const_iterator i = rules.find(name);
+    const TileRuleMap::const_iterator i = rules.find(name);
     if (i != rules.cend()) {
         return i->second;
     }
@@ -36,9 +38,8 @@ TileRule *TileRule::findByName(const std::string &name)
 
 void TileRule::unloadAll()
 {
-    TileRuleMap::const_iterator i;
-    for (i = rules.cbegin(); i != rules.cend(); ++i) {
-        delete i->second;
+    for (const auto &rule: rules) {
+        delete rule.second;
     }
     rules.clear();
 }
@@ -50,17 +51,15 @@ void TileRule::unloadAll()
 void TileRule::load()
 {
     const Config *config = Config::getInstance();
-    std::vector<ConfigElement> rules =
+    const std::vector<ConfigElement> children =
         config->getElement("tileRules").getChildren();
-    for (std::vector<ConfigElement>::const_iterator i = rules.cbegin();
-         i != rules.cend();
-         ++i) {
-        TileRule *rule = new TileRule;
-        rule->initFromConf(*i);
-        TileRule::rules[rule->name] = rule;
+    for (const auto &child: children) {
+        auto *rule = new TileRule;
+        rule->initFromConf(child);
+        rules[rule->name] = rule;
     }
 
-    if (TileRule::findByName("default") == nullptr) {
+    if (findByName("default") == nullptr) {
         errorFatal("no 'default' rule found in tile rules");
     }
 }
@@ -76,32 +75,32 @@ bool TileRule::initFromConf(const ConfigElement &conf)
         const char *name;
         unsigned int mask;
     } booleanAttributes[] = {
-        { "dispel", MASK_DISPEL },
-        { "talkover", MASK_TALKOVER },
-        { "door", MASK_DOOR },
-        { "lockeddoor", MASK_LOCKEDDOOR },
-        { "chest", MASK_CHEST },
-        { "ship", MASK_SHIP },
-        { "horse", MASK_HORSE },
-        { "balloon", MASK_BALLOON },
-        { "canattackover", MASK_ATTACKOVER },
-        { "canlandballoon", MASK_CANLANDBALLOON },
-        { "replacement", MASK_REPLACEMENT },
-        { "foreground", MASK_FOREGROUND },
-        { "onWaterOnlyReplacement", MASK_WATER_REPLACEMENT },
-        { "livingthing", MASK_LIVING_THING },
-        { "spawnslandmonster", MASK_SPAWNS_LAND_MONSTER },
-        { "spawnsseamonster", MASK_SPAWNS_SEA_MONSTER }
+        { .name = "dispel", .mask = MASK_DISPEL},
+        { .name = "talkover", .mask = MASK_TALK_OVER},
+        { .name = "door", .mask = MASK_DOOR},
+        { .name = "lockeddoor", .mask = MASK_LOCKED_DOOR},
+        { .name = "chest", .mask = MASK_CHEST},
+        { .name = "ship", .mask = MASK_SHIP},
+        { .name = "horse", .mask = MASK_HORSE},
+        { .name = "balloon", .mask = MASK_BALLOON},
+        { .name = "canattackover", .mask = MASK_ATTACK_OVER},
+        { .name = "canlandballoon", .mask = MASK_CAN_LAND_BALLOON},
+        { .name = "replacement", .mask = MASK_REPLACEMENT},
+        { .name = "foreground", .mask = MASK_FOREGROUND},
+        { .name = "onWaterOnlyReplacement", .mask = MASK_WATER_REPLACEMENT},
+        { .name = "livingthing", .mask = MASK_LIVING_THING},
+        { .name = "spawnslandmonster", .mask = MASK_SPAWNS_LAND_MONSTER},
+        { .name = "spawnsseamonster", .mask = MASK_SPAWNS_SEA_MONSTER}
     };
     static const struct {
         const char *name;
         unsigned int mask;
     } movementBooleanAttr[] = {
-        { "swimable", MASK_SWIMABLE },
-        { "sailable", MASK_SAILABLE },
-        { "unflyable", MASK_UNFLYABLE },
-        { "creatureunwalkable", MASK_CREATURE_UNWALKABLE },
-        { "wontwanderon", MASK_WONTWANDERON }
+        { .name = "swimmable", .mask = MASK_SWIMMABLE},
+        { .name = "sailable", .mask = MASK_SAILABLE},
+        { .name = "unflyable", .mask = MASK_UNFLYABLE},
+        { .name = "creatureunwalkable", .mask = MASK_CREATURE_UNWALKABLE},
+        { .name = "wontwanderon", .mask = MASK_WONT_WANDER_ON}
     };
     static const char *speedEnumStrings[] = {
         "fast",
@@ -124,8 +123,8 @@ bool TileRule::initFromConf(const ConfigElement &conf)
     this->movementMask = 0;
     this->speed = FAST;
     this->effect = EFFECT_NONE;
-    this->walkonDirs = MASK_DIR_ALL;
-    this->walkoffDirs = MASK_DIR_ALL;
+    this->walkOnDirs = MASK_DIR_ALL;
+    this->walkOffDirs = MASK_DIR_ALL;
     this->name = conf.getString("name");
     for (i = 0;
          i < sizeof(booleanAttributes) / sizeof(booleanAttributes[0]);
@@ -141,39 +140,39 @@ bool TileRule::initFromConf(const ConfigElement &conf)
             this->movementMask |= movementBooleanAttr[i].mask;
         }
     }
-    std::string cantwalkon = conf.getString("cantwalkon");
-    if (cantwalkon == "all") {
-        this->walkonDirs = 0;
-    } else if (cantwalkon == "west") {
-        this->walkonDirs = DIR_REMOVE_FROM_MASK(DIR_WEST, this->walkonDirs);
-    } else if (cantwalkon == "north") {
-        this->walkonDirs = DIR_REMOVE_FROM_MASK(DIR_NORTH, this->walkonDirs);
-    } else if (cantwalkon == "east") {
-        this->walkonDirs = DIR_REMOVE_FROM_MASK(DIR_EAST, this->walkonDirs);
-    } else if (cantwalkon == "south") {
-        this->walkonDirs = DIR_REMOVE_FROM_MASK(DIR_SOUTH, this->walkonDirs);
-    } else if (cantwalkon == "advance") {
-        this->walkonDirs = DIR_REMOVE_FROM_MASK(DIR_ADVANCE, this->walkonDirs);
-    } else if (cantwalkon == "retreat") {
-        this->walkonDirs = DIR_REMOVE_FROM_MASK(DIR_RETREAT, this->walkonDirs);
+    const std::string cantWalkOn = conf.getString("cantwalkon");
+    if (cantWalkOn == "all") {
+        this->walkOnDirs = 0;
+    } else if (cantWalkOn == "west") {
+        this->walkOnDirs = DIR_REMOVE_FROM_MASK(DIR_WEST, this->walkOnDirs);
+    } else if (cantWalkOn == "north") {
+        this->walkOnDirs = DIR_REMOVE_FROM_MASK(DIR_NORTH, this->walkOnDirs);
+    } else if (cantWalkOn == "east") {
+        this->walkOnDirs = DIR_REMOVE_FROM_MASK(DIR_EAST, this->walkOnDirs);
+    } else if (cantWalkOn == "south") {
+        this->walkOnDirs = DIR_REMOVE_FROM_MASK(DIR_SOUTH, this->walkOnDirs);
+    } else if (cantWalkOn == "advance") {
+        this->walkOnDirs = DIR_REMOVE_FROM_MASK(DIR_ADVANCE, this->walkOnDirs);
+    } else if (cantWalkOn == "retreat") {
+        this->walkOnDirs = DIR_REMOVE_FROM_MASK(DIR_RETREAT, this->walkOnDirs);
     }
-    std::string cantwalkoff = conf.getString("cantwalkoff");
-    if (cantwalkoff == "all") {
-        this->walkoffDirs = 0;
-    } else if (cantwalkoff == "west") {
-        this->walkoffDirs = DIR_REMOVE_FROM_MASK(DIR_WEST, this->walkoffDirs);
-    } else if (cantwalkoff == "north") {
-        this->walkoffDirs = DIR_REMOVE_FROM_MASK(DIR_NORTH, this->walkoffDirs);
-    } else if (cantwalkoff == "east") {
-        this->walkoffDirs = DIR_REMOVE_FROM_MASK(DIR_EAST, this->walkoffDirs);
-    } else if (cantwalkoff == "south") {
-        this->walkoffDirs = DIR_REMOVE_FROM_MASK(DIR_SOUTH, this->walkoffDirs);
-    } else if (cantwalkoff == "advance") {
-        this->walkoffDirs =
-            DIR_REMOVE_FROM_MASK(DIR_ADVANCE, this->walkoffDirs);
-    } else if (cantwalkoff == "retreat") {
-        this->walkoffDirs =
-            DIR_REMOVE_FROM_MASK(DIR_RETREAT, this->walkoffDirs);
+    const std::string cantWalkOff = conf.getString("cantwalkoff");
+    if (cantWalkOff == "all") {
+        this->walkOffDirs = 0;
+    } else if (cantWalkOff == "west") {
+        this->walkOffDirs = DIR_REMOVE_FROM_MASK(DIR_WEST, this->walkOffDirs);
+    } else if (cantWalkOff == "north") {
+        this->walkOffDirs = DIR_REMOVE_FROM_MASK(DIR_NORTH, this->walkOffDirs);
+    } else if (cantWalkOff == "east") {
+        this->walkOffDirs = DIR_REMOVE_FROM_MASK(DIR_EAST, this->walkOffDirs);
+    } else if (cantWalkOff == "south") {
+        this->walkOffDirs = DIR_REMOVE_FROM_MASK(DIR_SOUTH, this->walkOffDirs);
+    } else if (cantWalkOff == "advance") {
+        this->walkOffDirs =
+            DIR_REMOVE_FROM_MASK(DIR_ADVANCE, this->walkOffDirs);
+    } else if (cantWalkOff == "retreat") {
+        this->walkOffDirs =
+            DIR_REMOVE_FROM_MASK(DIR_RETREAT, this->walkOffDirs);
     }
     this->speed =
         static_cast<TileSpeed>(conf.getEnum("speed", speedEnumStrings));
@@ -199,24 +198,22 @@ void Tileset::loadAll()
 {
     Debug dbg("debug/tileset.txt", "Tileset");
     const Config *config = Config::getInstance();
-    std::vector<ConfigElement> conf;
     TRACE(dbg, "Unloading all tilesets");
     unloadAll();
     // get the config element for all tilesets
     TRACE_LOCAL(dbg, "Loading tilesets info from config");
-    conf = config->getElement("tilesets").getChildren();
+    const std::vector<ConfigElement> children =
+        config->getElement("tilesets").getChildren();
     // load tile rules
     TRACE_LOCAL(dbg, "Loading tile rules");
-    if (!TileRule::rules.size()) {
+    if (TileRule::rules.empty()) {
         TileRule::load();
     }
     // load all of the tilesets
-    for (std::vector<ConfigElement>::const_iterator i = conf.cbegin();
-         i != conf.cend();
-         ++i) {
-        if (i->getName() == "tileset") {
-            Tileset *tileset = new Tileset;
-            tileset->load(*i);
+    for (const auto &child: children) {
+        if (child.getName() == "tileset") {
+            auto *tileset = new Tileset;
+            tileset->load(child);
             tilesets[tileset->name] = tileset;
         }
     }
@@ -232,14 +229,13 @@ void Tileset::loadAll()
  */
 void Tileset::unloadAll()
 {
-    TilesetMap::const_iterator i;
     // unload all tilemaps
     TileMap::unloadAll();
     TileRule::unloadAll();
     unloadAllImages();
-    for (i = tilesets.cbegin(); i != tilesets.cend(); ++i) {
-        i->second->unload();
-        delete i->second;
+    for (const auto& tileset: tilesets) {
+        tileset.second->unload();
+        delete tileset.second;
     }
     tilesets.clear();
     Tile::resetNextId();
@@ -251,9 +247,8 @@ void Tileset::unloadAll()
  */
 void Tileset::unloadAllImages()
 {
-    TilesetMap::const_iterator i;
-    for (i = tilesets.cbegin(); i != tilesets.cend(); ++i) {
-        i->second->unloadImages();
+    for (const auto &tileset: tilesets) {
+        tileset.second->unloadImages();
     }
     Tile::resetNextId();
 }
@@ -266,9 +261,8 @@ Tileset *Tileset::get(const std::string &name)
 {
     if (tilesets.find(name) != tilesets.end()) {
         return tilesets[name];
-    } else {
-        return nullptr;
     }
+    return nullptr;
 }
 
 
@@ -277,9 +271,8 @@ Tileset *Tileset::get(const std::string &name)
  */
 Tile *Tileset::findTileByName(const std::string &name)
 {
-    TilesetMap::const_iterator i;
-    for (i = tilesets.cbegin(); i != tilesets.cend(); ++i) {
-        Tile *t = i->second->getByName(name);
+    for (const auto &tileset: tilesets) {
+        Tile *t = tileset.second->getByName(name);
         if (t) {
             return t;
         }
@@ -287,11 +280,10 @@ Tile *Tileset::findTileByName(const std::string &name)
     return nullptr;
 }
 
-Tile *Tileset::findTileById(TileId id)
+Tile *Tileset::findTileById(const TileId id)
 {
-    TilesetMap::const_iterator i;
-    for (i = tilesets.cbegin(); i != tilesets.cend(); ++i) {
-        Tile *t = i->second->get(id);
+    for (const auto &tileset: tilesets) {
+        Tile *t = tileset.second->get(id);
         if (t) {
             return t;
         }
@@ -311,21 +303,19 @@ void Tileset::load(const ConfigElement &tilesetConf)
         imageName = tilesetConf.getString("imageName");
     }
     if (tilesetConf.exists("extends")) {
-        extends = Tileset::get(tilesetConf.getString("extends"));
+        extends = get(tilesetConf.getString("extends"));
     } else {
         extends = nullptr;
     }
     TRACE_LOCAL(dbg, "\tLoading Tiles...");
     int index = 0;
-    std::vector<ConfigElement> children = tilesetConf.getChildren();
-    for (std::vector<ConfigElement>::const_iterator i = children.cbegin();
-         i != children.cend();
-         ++i) {
-        if (i->getName() != "tile") {
+    const std::vector<ConfigElement> children = tilesetConf.getChildren();
+    for (const auto &child: children) {
+        if (child.getName() != "tile") {
             continue;
         }
-        Tile *tile = new Tile(this);
-        tile->loadProperties(*i);
+        auto *tile = new Tile(this);
+        tile->loadProperties(child);
         TRACE_LOCAL(dbg, std::string("\t\tLoaded '") + tile->getName() + "'");
         /* add the tile to our tileset */
         tiles[tile->getId()] = tile;
@@ -337,11 +327,10 @@ void Tileset::load(const ConfigElement &tilesetConf)
 
 void Tileset::unloadImages() const
 {
-    Tileset::TileIdMap::const_iterator i;
     /* free all the image memory and nullify so that reloading can
        automatically take place lazily */
-    for (i = tiles.cbegin(); i != tiles.cend(); ++i) {
-        i->second->deleteImage();
+    for (auto &tile: tiles) {
+        tile.second->deleteImage();
     }
 }
 
@@ -350,10 +339,9 @@ void Tileset::unloadImages() const
  */
 void Tileset::unload()
 {
-    Tileset::TileIdMap::const_iterator i;
     /* free all the memory for the tiles */
-    for (i = tiles.cbegin(); i != tiles.cend(); ++i) {
-        delete i->second;
+    for (const auto &tile: tiles) {
+        delete tile.second;
     }
     tiles.clear();
     totalFrames = 0;
@@ -364,11 +352,12 @@ void Tileset::unload()
 /**
  * Returns the tile with the given id in the tileset
  */
-Tile *Tileset::get(TileId id)
+Tile *Tileset::get(const TileId id)
 {
     if (tiles.find(id) != tiles.end()) {
         return tiles[id];
-    } else if (extends) {
+    }
+    if (extends) {
         return extends->get(id);
     }
     return nullptr;
@@ -378,15 +367,15 @@ Tile *Tileset::get(TileId id)
 /**
  * Returns the tile with the given name from the tileset, if it exists
  */
-Tile *Tileset::getByName(const std::string &name)
+Tile *Tileset::getByName(const std::string &nameToGet)
 {
-    if (nameMap.find(name) != nameMap.end()) {
-        return nameMap[name];
-    } else if (extends) {
-        return extends->getByName(name);
-    } else {
-        return nullptr;
+    if (nameMap.find(nameToGet) != nameMap.end()) {
+        return nameMap[nameToGet];
     }
+    if (extends) {
+        return extends->getByName(nameToGet);
+    }
+    return nullptr;
 }
 
 
@@ -397,9 +386,8 @@ std::string Tileset::getImageName() const
 {
     if (imageName.empty() && extends) {
         return extends->getImageName();
-    } else {
-        return imageName;
     }
+    return imageName;
 }
 
 

@@ -797,16 +797,16 @@ int Map::getValidMoves(
                 if (isWorldMap()) {
                     retval = DIR_ADD_TO_MASK(d, retval);
                 } else if (tile.getTileType()->isWalkable()
-                           || tile.getTileType()->isSwimable()
+                           || tile.getTileType()->isSwimmable()
                            || tile.getTileType()->isSailable()) {
                     retval = DIR_ADD_TO_MASK(d, retval);
                 }
             }
             // swimming creatures and sailing creatures
-            else if (tile.getTileType()->isSwimable()
+            else if (tile.getTileType()->isSwimmable()
                      || tile.getTileType()->isSailable()
                      || tile.getTileType()->isShip()) {
-                if (m->swims() && tile.getTileType()->isSwimable()) {
+                if (m->swims() && tile.getTileType()->isSwimmable()) {
                     retval = DIR_ADD_TO_MASK(d, retval);
                 }
                 if (m->sails() && tile.getTileType()->isSailable()) {

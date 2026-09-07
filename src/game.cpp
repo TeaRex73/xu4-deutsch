@@ -4136,7 +4136,7 @@ bool gameSpawnCreature(const Creature *m)
                 const Tile *tile =
                     c->location->map->tileTypeAt(new_coords, WITHOUT_OBJECTS);
                 if ((m->sails() && tile->isSailable())
-                    || (m->swims() && tile->isSwimable())
+                    || (m->swims() && tile->isSwimmable())
                     || (m->walks()
                         && tile->isCreatureWalkable()
                         && tile->willWanderOn())

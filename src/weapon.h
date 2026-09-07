@@ -9,24 +9,24 @@
 #include <vector>
 
 class ConfigElement;
-enum ClassType : unsigned char;
-enum WeaponType : unsigned short;
+enum ClassType: unsigned char;
+enum WeaponType: unsigned short;
 
 
 class Weapon {
 public:
     enum Flags: unsigned short {
-        WEAP_LOSE = 0x0001,
-        WEAP_LOSEWHENRANGED = 0x0002,
-        WEAP_CHOOSEDISTANCE = 0x0004,
-        WEAP_ALWAYSHITS = 0x0008,
-        WEAP_MAGIC = 0x0010,
-        WEAP_ATTACKTHROUGHOBJECTS = 0x0040,
-        WEAP_ABSOLUTERANGE = 0x0080,
-        WEAP_RETURNS = 0x0100,
-        WEAP_DONTSHOWTRAVEL = 0x0200,
-        WEAP_RANGEDONLY = 0x0400,
-        WEAP_MYSTIC = 0x0800
+        WEAPON_LOSE = 0x0001,
+        WEAPON_LOSE_WHEN_RANGED = 0x0002,
+        WEAPON_CHOOSE_DISTANCE = 0x0004,
+        WEAPON_ALWAYS_HITS = 0x0008,
+        WEAPON_MAGIC = 0x0010,
+        WEAPON_ATTACK_THROUGH_OBJS = 0x0040,
+        WEAPON_ABSOLUTE_RANGE = 0x0080,
+        WEAPON_RETURNS = 0x0100,
+        WEAPON_DONT_SHOW_TRAVEL = 0x0200,
+        WEAPON_RANGED_ONLY = 0x0400,
+        WEAPON_MYSTIC = 0x0800
     };
 
     static void cleanup();
@@ -54,9 +54,9 @@ public:
         return neg;
     }
 
-    bool canReady(ClassType klass) const
+    bool canReady(const ClassType klass) const
     {
-        return (canuse & (1 << klass)) != 0;
+        return (canUse & (1 << klass)) != 0;
     }
 
     int getRange() const
@@ -71,17 +71,17 @@ public:
 
     const std::string &getHitTile() const
     {
-        return hittile;
+        return hitTile;
     }
 
     const std::string &getMissTile() const
     {
-        return misstile;
+        return missTile;
     }
 
     const std::string &leavesTile() const
     {
-        return leavetile;
+        return leaveTile;
     }
 
     unsigned short getFlags() const
@@ -91,57 +91,57 @@ public:
 
     bool loseWhenUsed() const
     {
-        return flags & WEAP_LOSE;
+        return flags & WEAPON_LOSE;
     }
 
     bool loseWhenRanged() const
     {
-        return flags & WEAP_LOSEWHENRANGED;
+        return flags & WEAPON_LOSE_WHEN_RANGED;
     }
 
     bool canChooseDistance() const
     {
-        return flags & WEAP_CHOOSEDISTANCE;
+        return flags & WEAPON_CHOOSE_DISTANCE;
     }
 
     bool alwaysHits() const
     {
-        return flags & WEAP_ALWAYSHITS;
+        return flags & WEAPON_ALWAYS_HITS;
     }
 
     bool isMagic() const
     {
-        return flags & WEAP_MAGIC;
+        return flags & WEAPON_MAGIC;
     }
 
     bool rangedOnly() const
     {
-        return flags & WEAP_RANGEDONLY;
+        return flags & WEAPON_RANGED_ONLY;
     }
 
     bool isMystic() const
     {
-        return flags & WEAP_MYSTIC;
+        return flags & WEAPON_MYSTIC;
     }
 
     bool canAttackThroughObjects() const
     {
-        return flags & WEAP_ATTACKTHROUGHOBJECTS;
+        return flags & WEAPON_ATTACK_THROUGH_OBJS;
     }
 
     bool rangeAbsolute() const
     {
-        return flags & WEAP_ABSOLUTERANGE;
+        return flags & WEAPON_ABSOLUTE_RANGE;
     }
 
     bool returns() const
     {
-        return flags & WEAP_RETURNS;
+        return flags & WEAPON_RETURNS;
     }
 
     bool showTravel() const
     {
-        return !(flags & WEAP_DONTSHOWTRAVEL);
+        return !(flags & WEAPON_DONT_SHOW_TRAVEL);
     }
 
 private:
@@ -154,13 +154,13 @@ private:
     std::string name;
     std::string abbr; /**< abbreviation for the weapon */
     std::string neg; /**< negative of the name (needed in German) */
-    unsigned char canuse; /**< bitmask of classes that can use */
+    unsigned char canUse; /**< bitmask of classes that can use */
     int range; /**< range of weapon */
     int damage; /**< damage of weapon */
-    std::string hittile; /**< tile to display a hit */
-    std::string misstile; /**< tile to display a miss */
-    std::string leavetile; /**< the tile #, zero if nothing left */
+    std::string hitTile; /**< tile to display a hit */
+    std::string missTile; /**< tile to display a miss */
+    std::string leaveTile; /**< the tile #, zero if nothing left */
     unsigned short flags;
 };
 
-#endif // ifndef WEAPON_H
+#endif // WEAPON_H

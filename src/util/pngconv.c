@@ -12,7 +12,7 @@ static void setBWPalette(png_color *palette);
 static void setEgaPalette(png_color *palette);
 static void setVgaPalette(png_color *palette);
 
-static void *my_malloc(size_t size)
+static void *my_malloc(const size_t size)
 {
     void *ret = malloc(size);
     if (!ret) {
@@ -32,51 +32,51 @@ static void setBWPalette(png_color *palette)
     palette[1].blue = 255;
 }
 
-#define setpalentry(i, r, g, b) do { \
-    palette[i].red = r;              \
-    palette[i].green = g;            \
+#define SET_PALETTE_ENTRY(i, r, g, b) do { \
+    palette[i].red = r;                    \
+    palette[i].green = g;                  \
     palette[i].blue = b; } while(0)
 
 static void setEgaPalette(png_color *palette)
 {
 #ifdef RASB_PI
-    setpalentry( 0,   0,   0,   0);
-    setpalentry( 1,  56, 139, 255);
-    setpalentry( 2,  56, 189,   0);
-    setpalentry( 3, 255, 255, 255);
-    setpalentry( 4, 199,  66, 255);
-    setpalentry( 5, 199, 116,   0);
-    setpalentry( 6, 199, 116,   0);
-    setpalentry( 7, 255, 255, 255);
-    setpalentry( 8,   0,   0,   0);
-    setpalentry( 9,  56, 139, 255);
-    setpalentry(10,  56, 189,   0);
-    setpalentry(11,  56, 139, 255);
-    setpalentry(12, 199, 116,   0);
-    setpalentry(13, 199,  66, 255);
-    setpalentry(14, 199, 116,   0);
-    setpalentry(15, 255, 255, 255);
+    SET_PALETTE_ENTRY( 0,   0,   0,   0);
+    SET_PALETTE_ENTRY( 1,  56, 139, 255);
+    SET_PALETTE_ENTRY( 2,  56, 189,   0);
+    SET_PALETTE_ENTRY( 3, 255, 255, 255);
+    SET_PALETTE_ENTRY( 4, 199,  66, 255);
+    SET_PALETTE_ENTRY( 5, 199, 116,   0);
+    SET_PALETTE_ENTRY( 6, 199, 116,   0);
+    SET_PALETTE_ENTRY( 7, 255, 255, 255);
+    SET_PALETTE_ENTRY( 8,   0,   0,   0);
+    SET_PALETTE_ENTRY( 9,  56, 139, 255);
+    SET_PALETTE_ENTRY(10,  56, 189,   0);
+    SET_PALETTE_ENTRY(11,  56, 139, 255);
+    SET_PALETTE_ENTRY(12, 199, 116,   0);
+    SET_PALETTE_ENTRY(13, 199,  66, 255);
+    SET_PALETTE_ENTRY(14, 199, 116,   0);
+    SET_PALETTE_ENTRY(15, 255, 255, 255);
 #else
-    setpalentry( 0,   0,   0,   0);
-    setpalentry( 1,  54, 146, 255);
-    setpalentry( 2,  60, 204,   0);
-    setpalentry( 3, 241, 241, 241);
-    setpalentry( 4, 214,  67, 255);
-    setpalentry( 5, 216, 115,   0);
-    setpalentry( 6, 216, 115,   0);
-    setpalentry( 7, 241, 241, 241);
-    setpalentry( 8,   0,   0,   0);
-    setpalentry( 9,  54, 146, 255);
-    setpalentry(10,  60, 204,   0);
-    setpalentry(11,  54, 146, 255);
-    setpalentry(12, 216, 115,   0);
-    setpalentry(13, 214,  67, 255);
-    setpalentry(14, 216, 115,   0);
-    setpalentry(15, 241, 241, 241);
+    SET_PALETTE_ENTRY( 0,   0,   0,   0);
+    SET_PALETTE_ENTRY( 1,  54, 146, 255);
+    SET_PALETTE_ENTRY( 2,  60, 204,   0);
+    SET_PALETTE_ENTRY( 3, 241, 241, 241);
+    SET_PALETTE_ENTRY( 4, 214,  67, 255);
+    SET_PALETTE_ENTRY( 5, 216, 115,   0);
+    SET_PALETTE_ENTRY( 6, 216, 115,   0);
+    SET_PALETTE_ENTRY( 7, 241, 241, 241);
+    SET_PALETTE_ENTRY( 8,   0,   0,   0);
+    SET_PALETTE_ENTRY( 9,  54, 146, 255);
+    SET_PALETTE_ENTRY(10,  60, 204,   0);
+    SET_PALETTE_ENTRY(11,  54, 146, 255);
+    SET_PALETTE_ENTRY(12, 216, 115,   0);
+    SET_PALETTE_ENTRY(13, 214,  67, 255);
+    SET_PALETTE_ENTRY(14, 216, 115,   0);
+    SET_PALETTE_ENTRY(15, 241, 241, 241);
 #endif
 }
 
-#undef setpalentry
+#undef SET_PALETTE_ENTRY
 
 static void setVgaPalette(png_color *palette)
 {
@@ -96,7 +96,11 @@ static void setVgaPalette(png_color *palette)
 }
 
 int writePngFromEga(
-    unsigned char *data, int height, int width, int bits, const char *fname
+    const unsigned char *data,
+    const int height,
+    const int width,
+    const int bits,
+    const char *fname
 )
 {
     FILE *fp;
@@ -130,14 +134,14 @@ int writePngFromEga(
     }
     info_ptr = png_create_info_struct(png_ptr);
     if (!info_ptr) {
-        png_destroy_write_struct(&png_ptr, (png_infopp)NULL);
+        png_destroy_write_struct(&png_ptr, NULL);
         fprintf(stderr, "png_create_info_struct error\n");
         exit(1);
     }
     if (setjmp(png_jmpbuf(png_ptr))) {
         png_destroy_write_struct(&png_ptr, &info_ptr);
         fclose(fp);
-        fprintf(stderr, "longjump error\n");
+        fprintf(stderr, "setjmp() error\n");
         exit(1);
     }
     if (bits == 1) {
@@ -215,7 +219,7 @@ int readEgaFromPng(
     png_structp png_ptr;
     png_infop info_ptr;
     png_infop end_info;
-    png_uint_32 pwidth, pheight;
+    png_uint_32 p_width, p_height;
     int bit_depth, color_type, interlace_type, compression_type, filter_method;
     png_byte **row_pointers;
     unsigned int i, j;
@@ -238,22 +242,20 @@ int readEgaFromPng(
     }
     info_ptr = png_create_info_struct(png_ptr);
     if (!info_ptr) {
-        png_destroy_read_struct(
-            &png_ptr, (png_infopp) NULL, (png_infopp) NULL
-        );
+        png_destroy_read_struct(&png_ptr, NULL, NULL);
         fprintf(stderr, "png_create_info_struct error\n");
         exit(1);
     }
     end_info = png_create_info_struct(png_ptr);
     if (!end_info) {
-        png_destroy_read_struct(&png_ptr, &info_ptr, (png_infopp) NULL);
+        png_destroy_read_struct(&png_ptr, &info_ptr, NULL);
         fprintf(stderr, "png_create_info_struct error\n");
         exit(1);
     }
     if (setjmp(png_jmpbuf(png_ptr))) {
         png_destroy_read_struct(&png_ptr, &info_ptr, &end_info);
         fclose(fp);
-        fprintf(stderr, "longjump error\n");
+        fprintf(stderr, "setjmp() error\n");
         exit(1);
     }
     png_init_io(png_ptr, fp);
@@ -262,15 +264,15 @@ int readEgaFromPng(
     png_get_IHDR(
         png_ptr,
         info_ptr,
-        &pwidth, &pheight,
+        &p_width, &p_height,
         &bit_depth,
         &color_type,
         &interlace_type,
         &compression_type,
         &filter_method
     );
-    *height = pheight;
-    *width = pwidth;
+    *height = (int)p_height;
+    *width = (int)p_width;
     if (color_type == PNG_COLOR_TYPE_PALETTE) {
         *bits = bit_depth;
     } else if (color_type == PNG_COLOR_TYPE_RGB) {
@@ -279,10 +281,10 @@ int readEgaFromPng(
         *bits = bit_depth * 4;
     }
     row_pointers = png_get_rows(png_ptr, info_ptr);
-    *data = (unsigned char *) my_malloc(pwidth * pheight * (*bits) / 8);
+    *data = (unsigned char *) my_malloc(p_width * p_height * *bits / 8);
     p = *data;
-    for (i = 0; i < pheight; i++) {
-        for (j = 0; j < pwidth * (*bits) / 8; j++) {
+    for (i = 0; i < p_height; i++) {
+        for (j = 0; j < p_width * *bits / 8; j++) {
             *p++ = row_pointers[i][j];
         }
     }

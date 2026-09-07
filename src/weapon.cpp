@@ -6,6 +6,7 @@
 
 #include <cstdlib>
 #include <string>
+#include <vector>
 
 #include "weapon.h"
 
@@ -22,7 +23,7 @@ std::vector<Weapon *> Weapon::weapons;
 /**
  * Returns weapon by WeaponType.
  */
-const Weapon *Weapon::get(WeaponType w)
+const Weapon *Weapon::get(const WeaponType w)
 {
     // Load in XML if it hasn't been already
     loadConf();
@@ -40,9 +41,9 @@ const Weapon *Weapon::get(const std::string &name)
 {
     // Load in XML if it hasn't been already
     loadConf();
-    for (unsigned int i = 0; i < weapons.size(); i++) {
-        if (xu4_strcasecmp(name.c_str(), weapons[i]->name.c_str()) == 0) {
-            return weapons[i];
+    for (const auto *weapon: weapons) {
+        if (xu4_strcasecmp(name.c_str(), weapon->name.c_str()) == 0) {
+            return weapon;
         }
     }
     return nullptr;
@@ -54,28 +55,27 @@ Weapon::Weapon(const ConfigElement &conf)
      name(conf.getString("name")),
      abbr(conf.getString("abbr")),
      neg(conf.getString("neg")),
-     canuse(0xFF),
+     canUse(0xFF),
      range(0),
      damage(conf.getInt("damage")),
-     hittile("hit_flash"),
-     misstile("miss_flash"),
-     leavetile(),
+     hitTile("hit_flash"),
+     missTile("miss_flash"),
      flags(0)
 {
     static const struct {
         const char *name;
         unsigned int flag;
     } booleanAttributes[] = {
-        { "lose", WEAP_LOSE },
-        { "losewhenranged", WEAP_LOSEWHENRANGED },
-        { "choosedistance", WEAP_CHOOSEDISTANCE },
-        { "alwayshits", WEAP_ALWAYSHITS },
-        { "magic", WEAP_MAGIC },
-        { "attackthroughobjects", WEAP_ATTACKTHROUGHOBJECTS },
-        { "returns", WEAP_RETURNS },
-        { "dontshowtravel", WEAP_DONTSHOWTRAVEL },
-        { "rangedonly", WEAP_RANGEDONLY },
-        { "mystic", WEAP_MYSTIC },
+        { .name = "lose", .flag = WEAPON_LOSE },
+        { .name = "losewhenranged", .flag = WEAPON_LOSE_WHEN_RANGED },
+        { .name = "choosedistance", .flag = WEAPON_CHOOSE_DISTANCE },
+        { .name = "alwayshits", .flag = WEAPON_ALWAYS_HITS },
+        { .name = "magic", .flag = WEAPON_MAGIC },
+        { .name = "attackthroughobjects", .flag = WEAPON_ATTACK_THROUGH_OBJS },
+        { .name = "returns", .flag = WEAPON_RETURNS },
+        { .name = "dontshowtravel", .flag = WEAPON_DONT_SHOW_TRAVEL },
+        { .name = "rangedonly", .flag = WEAPON_RANGED_ONLY },
+        { .name = "mystic", .flag = WEAPON_MYSTIC },
     };
     /* Get the range of the weapon, whether it is absolute or
        normal range */
@@ -83,7 +83,7 @@ Weapon::Weapon(const ConfigElement &conf)
     if (wrange.empty()) {
         wrange = conf.getString("absolute_range");
         if (!wrange.empty()) {
-            flags |= WEAP_ABSOLUTERANGE;
+            flags |= WEAPON_ABSOLUTE_RANGE;
         }
     }
     if (wrange.empty()) {
@@ -93,81 +93,75 @@ Weapon::Weapon(const ConfigElement &conf)
             name.c_str()
         );
     }
-    range = std::atoi(wrange.c_str());
+    range = static_cast<int>(std::strtol(wrange.c_str(), nullptr, 10));
     /* Load weapon attributes */
-    for (unsigned int at = 0;
-         at < sizeof(booleanAttributes) / sizeof(booleanAttributes[0]);
-         at++) {
-        if (conf.getBool(booleanAttributes[at].name)) {
-            flags |= booleanAttributes[at].flag;
+    for (const auto &booleanAttribute : booleanAttributes) {
+        if (conf.getBool(booleanAttribute.name)) {
+            flags |= booleanAttribute.flag;
         }
     }
     /* Load hit tiles */
     if (conf.exists("hittile")) {
-        hittile = conf.getString("hittile");
+        hitTile = conf.getString("hittile");
     }
     /* Load miss tiles */
     if (conf.exists("misstile")) {
-        misstile = conf.getString("misstile");
+        missTile = conf.getString("misstile");
     }
     /* Load leave tiles */
     if (conf.exists("leavetile")) {
-        leavetile = conf.getString("leavetile");
+        leaveTile = conf.getString("leavetile");
     }
-    std::vector<ConfigElement> contraintConfs = conf.getChildren();
-    for (std::vector<ConfigElement>::const_iterator i =
-             contraintConfs.cbegin();
-         i != contraintConfs.cend();
-         ++i) {
+    const std::vector<ConfigElement> constraintConfs = conf.getChildren();
+    for (const auto &constraintConf: constraintConfs) {
         unsigned char mask = 0;
-        if (i->getName() != "constraint") {
+        if (constraintConf.getName() != "constraint") {
             continue;
         }
         for (int cl = 0; cl < 8; cl++) {
             if (xu4_strcasecmp(
-                    i->getString("class").c_str(),
+                    constraintConf.getString("class").c_str(),
                     getClassNameEnglish(static_cast<ClassType>(cl))
                 ) == 0) {
-                mask = (1 << cl);
+                mask = 1 << cl;
             }
         }
-        if ((mask == 0) &&
-            (xu4_strcasecmp(i->getString("class").c_str(), "all") == 0)) {
+        if (mask == 0 &&
+            xu4_strcasecmp(
+                constraintConf.getString("class").c_str(), "all"
+            ) == 0) {
             mask = 0xFF;
         }
         if (mask == 0) {
             errorFatal(
                 "malformed weapons.xml file: constraint has unknown class %s",
-                i->getString("class").c_str()
+                constraintConf.getString("class").c_str()
             );
         }
-        if (i->getBool("canuse")) {
-            canuse |= mask;
+        if (constraintConf.getBool("canuse")) {
+            canUse |= mask;
         } else {
-            canuse &= ~mask;
+            canUse &= ~mask;
         }
     }
 }
 
 Weapon::~Weapon()
 {
-    for (std::vector<Weapon *>::iterator i = weapons.begin();
-         i != weapons.end();
-         ) {
-        if (*i == this) {
-            i = weapons.erase(i);
+    for (auto weapon = weapons.begin(); weapon != weapons.end();) {
+        if (*weapon == this) {
+            weapon = weapons.erase(weapon);
         } else {
-            ++i;
+            ++weapon;
         }
     }
 }
 
 void Weapon::cleanup()
 {
-    for (std::vector<Weapon *>::iterator i = weapons.begin();
-         i != weapons.end();
-        ) { // no increment, deleting moves consecutive elements to 1st pos
-        delete *i;
+    for (const auto weapon = weapons.begin(); weapon != weapons.end();) {
+        // no increment, deleting moves consecutive elements to 1st pos
+        delete *weapon;
     }
     weapons.clear();
 }
@@ -179,14 +173,12 @@ void Weapon::loadConf()
     }
     confLoaded = true;
     const Config *config = Config::getInstance();
-    std::vector<ConfigElement> weaponConfs =
+    const std::vector<ConfigElement> weaponConfs =
         config->getElement("weapons").getChildren();
-    for (std::vector<ConfigElement>::const_iterator i = weaponConfs.cbegin();
-         i != weaponConfs.cend();
-         ++i) {
-        if (i->getName() != "weapon") {
+    for (const auto &weaponConf : weaponConfs) {
+        if (weaponConf.getName() != "weapon") {
             continue;
         }
-        weapons.push_back(new Weapon(*i));
+        weapons.push_back(new Weapon(weaponConf));
     }
 }

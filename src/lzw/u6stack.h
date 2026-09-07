@@ -8,14 +8,11 @@ namespace U6Decode
 
 class Stack {
 public:
-    Stack()
-        :stack()
-    {
-    }
+    Stack() = default;
 
     bool is_empty() const
     {
-        return stack.size() == 0;
+        return stack.empty();
     }
 
     bool is_full() const
@@ -23,7 +20,7 @@ public:
         return stack.size() == stack_size;
     }
 
-    void push(unsigned char element)
+    void push(const unsigned char element)
     {
         if (!is_full()) {
             stack.push_back(element);
@@ -42,17 +39,16 @@ public:
         return element;
     }
 
-    unsigned char gettop() const
+    unsigned char get_top() const
     {
         if (!is_empty()) {
             return stack.back();
-        } else {
-            return 0;
         }
+        return 0;
     }
 
 private:
-    static const unsigned int stack_size = 10000;
+    static constexpr unsigned int stack_size = 10000;
     std::vector<unsigned char> stack;
 };
 

@@ -4,28 +4,26 @@
 
 #include "vc6.h" // Fixes things if you're using VC6, does nothing otherwise
 
+#include <vector>
+
 #include "tileview.h"
 
 #include "debug.h"
 #include "direction.h"
 #include "image.h"
 #include "screen.h"
-#include "settings.h"
 #include "tile.h"
 #include "tileanim.h"
 #include "tileset.h"
 #include "types.h"
 #include "u4.h"
+#include "view.h"
 
 
-TileView::TileView(int x, int y, int columns, int rows)
+TileView::TileView(const int x, const int y, const int columns, const int rows)
     :View(x, y, columns * TILE_WIDTH, rows * TILE_HEIGHT),
      columns(columns),
      rows(rows),
-#if 0
-     tileWidth(TILE_WIDTH),
-     tileHeight(TILE_HEIGHT),
-#endif
      tileset(Tileset::get("base")),
      animated(
          Image::create(
@@ -37,15 +35,15 @@ TileView::TileView(int x, int y, int columns, int rows)
 }
 
 TileView::TileView(
-    int x, int y, int columns, int rows, const std::string &tileset
+    const int x,
+    const int y,
+    const int columns,
+    const int rows,
+    const std::string &tileset
 )
     :View(x, y, columns * TILE_WIDTH, rows * TILE_HEIGHT),
      columns(columns),
      rows(rows),
-#if 0
-     tileWidth(TILE_WIDTH),
-     tileHeight(TILE_HEIGHT),
-#endif
      tileset(Tileset::get(tileset)),
      animated(
          Image::create(
@@ -73,7 +71,7 @@ void TileView::reinit()
     animated->alphaOff();
 }
 
-void TileView::loadTile(MapTile mapTile)
+void TileView::loadTile(MapTile mapTile) const
 {
     // This attempts to preload tiles in advance
     Tile *tile = tileset->get(mapTile.getId());
@@ -81,10 +79,12 @@ void TileView::loadTile(MapTile mapTile)
         tile->getImage();
     }
     // But may fail if the tiles don't exist directly in the expected
-    // imagesets
+    // image sets
 }
 
-void TileView::drawTile(MapTile mapTile, bool focus, int x, int y)
+void TileView::drawTile(
+    const MapTile mapTile, const bool focus, const int x, const int y
+) const
 {
     Tile *tile = tileset->get(mapTile.getId());
     const Image *image = tile->getImage();
@@ -96,17 +96,6 @@ void TileView::drawTile(MapTile mapTile, bool focus, int x, int y)
     animated->fillRect(
         0, 0, SCALED(tileWidth), SCALED(tileHeight), 0, 0, 0, 255
     );
-#if 0 // disabled - causes ugly flashing in intro animation on slow systems
-    // Draw blackness on the tile.
-    animated->drawSubRect(
-        SCALED(x * tileWidth + this->x),
-        SCALED(y * tileHeight + this->y),
-        0,
-        0,
-        SCALED(tileWidth),
-        SCALED(tileHeight)
-    );
-#endif
     // draw the tile to the screen
     if (tile->getAnim()) {
         // First, create our animated version of the tile
@@ -136,8 +125,11 @@ void TileView::drawTile(MapTile mapTile, bool focus, int x, int y)
 } // TileView::drawTile
 
 void TileView::drawTile(
-    const std::vector<MapTile> &tiles, bool focus, int x, int y
-    )
+    const std::vector<MapTile> &tiles,
+    const bool focus,
+    const int x,
+    const int y
+) const
 {
     U4ASSERT(x < columns, "x value of %d out of range", x);
     U4ASSERT(y < rows, "y value of %d out of range", y);
@@ -153,7 +145,7 @@ void TileView::drawTile(
         SCALED(tileHeight)
     );
     // int layer = 0;
-    for (std::vector<MapTile>::const_reverse_iterator t = tiles.crbegin();
+    for (auto t = tiles.crbegin();
          t != tiles.crend();
          ++t) {
         MapTile frontTile = *t;
@@ -206,14 +198,14 @@ void TileView::drawTile(
 /**
  * Draw a focus rectangle around the tile
  */
-void TileView::drawFocus(int x, int y) const
+void TileView::drawFocus(const int x, const int y) const
 {
     U4ASSERT(x < columns, "x value of %d out of range", x);
     U4ASSERT(y < rows, "y value of %d out of range", y);
     /*
      * draw the focus rectangle around the tile
      */
-    if ((screenCurrentCycle * 4 / SCR_CYCLE_PER_SECOND) % 2) {
+    if (screenCurrentCycle * 4 / SCR_CYCLE_PER_SECOND % 2) {
         /* left edge */
         screen->fillRect(
             SCALED(x * tileWidth + this->x),
@@ -282,7 +274,7 @@ void TileView::drawFocus(int x, int y) const
     }
 }
 
-void TileView::setTileset(Tileset *tileset)
+void TileView::setTileset(Tileset *ts)
 {
-    this->tileset = tileset;
+    tileset = ts;
 }

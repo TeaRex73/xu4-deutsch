@@ -61,7 +61,7 @@ Dialogue *U4HWDialogueLoader::load(void *)
     if (!hawkwind) {
         return nullptr;
     }
-    hawkwindText = u4read_stringtable(hawkwind, 0, 53);
+    hawkwindText = u4read_string_table(hawkwind, 0, 53);
     u4fclose(hawkwind);
     auto *dlg = new Dialogue();
     dlg->setTurnAwayProb(0);

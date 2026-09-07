@@ -3,8 +3,8 @@
 <!-- $Id$ -->
 <tileRules>
     <rule name="default"/>
-    <rule name="water" cantwalkon="all" swimable="true" sailable="true" onWaterOnlyReplacement="true" spawnsseamonster="true"/>
-    <rule name="shallows" cantwalkon="all" swimable="true" onWaterOnlyReplacement="true"/>
+    <rule name="water" cantwalkon="all" swimmable="true" sailable="true" onWaterOnlyReplacement="true" spawnsseamonster="true"/>
+    <rule name="shallows" cantwalkon="all" swimmable="true" onWaterOnlyReplacement="true"/>
     <rule name="swamp" speed="vslow" effect="poison"/>
     <rule name="grass" canlandballoon="true" replacement="true" spawnslandmonster="true"/>
     <rule name="brush" speed="slow" spawnslandmonster="true"/>

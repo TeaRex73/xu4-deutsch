@@ -15,26 +15,26 @@
 
 static int compressing = 1;
 static int save = -1;
-static int dictsize = 0;
+static int dict_size = 0;
 
-struct {
+static struct {
     int len;
     unsigned char *data;
     int occupied;
-} lzwdict[DICT_SIZE];
+} lzw_dict[DICT_SIZE];
 
 static void putc_12(int c, FILE *out);
 static void flush_12(FILE *out);
-static void initdict(void);
-static int getcode(unsigned char *str, int len);
-static void addcode(unsigned char *str, int len);
+static void init_dict(void);
+static int get_code(unsigned char *str, int len);
+static void add_code(unsigned char *str, int len);
 
 /**
  * Outputs a 12 bit word.  If a half byte is left, it is saved until
  * the next time this is called.  flush_12 must be called to flush out
  * any saved data at the end of the stream.
  */
-static void putc_12(int c, FILE *out)
+static void putc_12(const int c, FILE *out)
 {
     if (save == -1) {
         putc(c >> 4, out);
@@ -62,24 +62,24 @@ static void flush_12(FILE *out)
 /**
  *  Initializes the LZW dictionary.
  */
-static void initdict(void)
+static void init_dict(void)
 {
     int i;
-    dictsize = 0;
+    dict_size = 0;
     for (i = 0; i < 256; i++) {
-        lzwdict[i].len = 1;
-        lzwdict[i].data = (unsigned char *)strdup("");
-        if (!lzwdict[i].data) {
+        lzw_dict[i].len = 1;
+        lzw_dict[i].data = (unsigned char *)strdup("");
+        if (!lzw_dict[i].data) {
             perror("out of memory");
             exit(EXIT_FAILURE);
         }
-        lzwdict[i].data[0] = i;
-        lzwdict[i].occupied = 1;
+        lzw_dict[i].data[0] = i;
+        lzw_dict[i].occupied = 1;
     }
     for (; i < DICT_SIZE; i++) {
-        lzwdict[i].len = 0;
-        lzwdict[i].data = NULL;
-        lzwdict[i].occupied = 0;
+        lzw_dict[i].len = 0;
+        lzw_dict[i].data = NULL;
+        lzw_dict[i].occupied = 0;
     }
 }
 
@@ -88,34 +88,34 @@ static void initdict(void)
  * Gets the 12-bit LZW code for a given string.  -1 is returned if not
  * in the dictionary.
  */
-static int getcode(unsigned char *str, int len)
+static int get_code(unsigned char *str, const int len)
 {
-    int prefixcode;
-    int hashcode;
+    int prefix_code;
+    int hash_code;
     if (len == 1) {
         return str[0];
     }
-    prefixcode = getcode(str, len - 1);
-    hashcode = probe1(str[len - 1], prefixcode);
-    if (lzwdict[hashcode].occupied
-        && lzwdict[hashcode].len == len
-        && memcmp(lzwdict[hashcode].data, str, len) == 0) {
-        return hashcode;
+    prefix_code = get_code(str, len - 1);
+    hash_code = probe1(str[len - 1], prefix_code);
+    if (lzw_dict[hash_code].occupied
+        && lzw_dict[hash_code].len == len
+        && memcmp(lzw_dict[hash_code].data, str, len) == 0) {
+        return hash_code;
     }
-    hashcode = probe2(str[len - 1], prefixcode);
-    if (lzwdict[hashcode].occupied
-        && lzwdict[hashcode].len == len
-        && memcmp(lzwdict[hashcode].data, str, len) == 0) {
-        return hashcode;
+    hash_code = probe2(str[len - 1], prefix_code);
+    if (lzw_dict[hash_code].occupied
+        && lzw_dict[hash_code].len == len
+        && memcmp(lzw_dict[hash_code].data, str, len) == 0) {
+        return hash_code;
     }
     do {
-        hashcode = probe3(hashcode);
-        if (lzwdict[hashcode].occupied
-            && lzwdict[hashcode].len == len
-            && memcmp(lzwdict[hashcode].data, str, len) == 0) {
-            return hashcode;
+        hash_code = probe3(hash_code);
+        if (lzw_dict[hash_code].occupied
+            && lzw_dict[hash_code].len == len
+            && memcmp(lzw_dict[hash_code].data, str, len) == 0) {
+            return hash_code;
         }
-    } while (lzwdict[hashcode].occupied);
+    } while (lzw_dict[hash_code].occupied);
     return -1;
 }
 
@@ -123,43 +123,43 @@ static int getcode(unsigned char *str, int len)
 /**
  * Add a new word to the LZW dictionary.
  */
-static void addcode(unsigned char *str, int len)
+static void add_code(unsigned char *str, int len)
 {
     int hashcode;
     if (!compressing) {
         return;
     }
-    hashcode = probe1(str[len - 1], getcode(str, len - 1));
-    if (lzwdict[hashcode].occupied) {
-        hashcode = probe2(str[len - 1], getcode(str, len - 1));
+    hashcode = probe1(str[len - 1], get_code(str, len - 1));
+    if (lzw_dict[hashcode].occupied) {
+        hashcode = probe2(str[len - 1], get_code(str, len - 1));
     }
-    if (lzwdict[hashcode].occupied) {
+    if (lzw_dict[hashcode].occupied) {
         do {
             hashcode = probe3(hashcode);
-        } while (lzwdict[hashcode].occupied);
+        } while (lzw_dict[hashcode].occupied);
     }
-    lzwdict[hashcode].len = len;
-    lzwdict[hashcode].data = (unsigned char *) malloc(len);
-    if (!lzwdict[hashcode].data) {
+    lzw_dict[hashcode].len = len;
+    lzw_dict[hashcode].data = (unsigned char *) malloc(len);
+    if (!lzw_dict[hashcode].data) {
         perror("out of memory");
         exit(EXIT_FAILURE);
     }
-    memcpy(lzwdict[hashcode].data, str, len);
-    lzwdict[hashcode].occupied = 1;
-    dictsize++;
+    memcpy(lzw_dict[hashcode].data, str, len);
+    lzw_dict[hashcode].occupied = 1;
+    dict_size++;
 }
 
 
 /**
  * LZW encode a file.
  */
-int main(int argc, char *argv[])
+int main(const int argc, char *argv[])
 {
     FILE *out;
-    const char *alg, *infname, *outfname;
+    const char *alg, *in_file_name, *out_file_name;
     int bits;
     int height = 0, width = 0;
-    int datalen, c;
+    int data_length, c;
     unsigned char *data;
     const unsigned char *p;
     if (argc != 4) {
@@ -167,43 +167,43 @@ int main(int argc, char *argv[])
         exit(EXIT_FAILURE);
     }
     alg = argv[1];
-    infname = argv[2];
-    outfname = argv[3];
-    out = fopen(outfname, "wb");
+    in_file_name = argv[2];
+    out_file_name = argv[3];
+    out = fopen(out_file_name, "wb");
     if (!out) {
-        perror(outfname);
+        perror(out_file_name);
         exit(EXIT_FAILURE);
     }
-    readEgaFromPng(&data, &height, &width, &bits, infname);
-    datalen = width * height * bits / 8;
+    readEgaFromPng(&data, &height, &width, &bits, in_file_name);
+    data_length = width * height * bits / 8;
     fprintf(stderr, "image is %dx%d (%d bits)\n", width, height, bits);
     if (strcmp(alg, "lzw") == 0) {
         unsigned char str[4096];
         int idx;
-        initdict();
+        init_dict();
         p = data;
         idx = 0;
         c = *p++;
         str[idx++] = c;
         while (1) {
             c = *p++;
-            if (p > (data + datalen)) {
+            if (p > data + data_length) {
                 break;
             }
             str[idx++] = c;
-            if (getcode(str, idx) == -1) {
-                int code = getcode(str, idx-1);
+            if (get_code(str, idx) == -1) {
+                const int code = get_code(str, idx-1);
                 putc_12(code, out);
                 if (idx >= 4095) {
-                    fprintf(stderr, "overflow in lzwenc\n");
+                    fprintf(stderr, "overflow in lzw encoding\n");
                     exit(EXIT_FAILURE);
                 }
-                addcode(str, idx);
-                if (dictsize > MAX_DICT_CAPACITY) {
-                    initdict();
+                add_code(str, idx);
+                if (dict_size > MAX_DICT_CAPACITY) {
+                    init_dict();
                     putc_12(c, out);
                     c = *p++;
-                    if (p > (data + datalen)) {
+                    if (p > data + data_length) {
                         break;
                     }
                 }
@@ -212,16 +212,16 @@ int main(int argc, char *argv[])
             }
         }
         if (idx != 0) {
-            putc_12(getcode(str, idx), out);
+            putc_12(get_code(str, idx), out);
         }
         flush_12(out);
     } else if (strcmp(alg, "rle") == 0) {
         int count, threshold, val, i;
         /*
          * The original, 4-bit graphics only start a run if the count is 5
-         * or more; but the upgrade uses a run whereever it doesn't expand
+         * or more; but the upgrade uses a run wherever it doesn't expand
          * the file (i.e. at a count of 3).  This value is adjusted to
-         * reecode the files exactly as they were, if they weren't
+         * re-encode the files exactly as they were, if they weren't
          * changed.  A threshold of 3 or 4 gives optimal compression; 5 is
          * slightly worse and it is not clear why the original files used
          * it.
@@ -234,7 +234,7 @@ int main(int argc, char *argv[])
         p = data;
         count = 0;
         val = -1;
-        while (p < data + datalen) {
+        while (p < data + data_length) {
             c = *p++;
             switch (c) {
             case 0x01:
@@ -275,7 +275,7 @@ int main(int argc, char *argv[])
             }
         }
     } else if (strcmp(alg, "raw") == 0) {
-        fwrite(data, datalen, 1, out);
+        fwrite(data, data_length, 1, out);
     } else {
         fprintf(stderr, "unknown algorithm %s\n", alg);
         exit(EXIT_FAILURE);

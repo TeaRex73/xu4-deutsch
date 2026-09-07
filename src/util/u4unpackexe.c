@@ -25,14 +25,15 @@
 #define NEW_SP 0xa
 #define NEW_IP 0x11
 
-long getWord(unsigned char *ofs);
-void putWord(unsigned char *ofs, long word);
+static long getWord(const unsigned char *ofs);
+
+static void putWord(unsigned char *ofs, long word);
 
 /**
  * Removes the outer packing layer from AVATAR.EXE, so that it can be
  * decompressed with a Microsoft Exepack unpacker
  */
-int main(int argc, const char *argv[])
+int main(const int argc, const char *argv[])
 {
     FILE *file;
     unsigned char *buffer;
@@ -45,17 +46,17 @@ int main(int argc, const char *argv[])
     /* Are the command-line arguments valid? */
     if (argc != 3) {
         printf("Usage:\nu4unpackexe infile outfile\n");
-        return (EXIT_FAILURE);
+        return EXIT_FAILURE;
     }
     if (strcmp(argv[1],argv[2]) == 0) {
         printf("File names must not be identical!\n");
-        return (EXIT_FAILURE);
+        return EXIT_FAILURE;
     }
     /* Does the infile exist? */
     file = fopen(argv[1],"rb");
     if (!file) {
         printf("Couldn't open %s\n for reading!", argv[1]);
-        return (EXIT_FAILURE);
+        return EXIT_FAILURE;
     }
     /* Get the filesize of the infile */
     fseek(file, 0, SEEK_END);   /* move file pointer to file end */
@@ -66,7 +67,7 @@ int main(int argc, const char *argv[])
     if (!buffer) {
         printf("Couldn't allocate buffer for %s\n", argv[1]);
         fclose(file);
-        return (EXIT_FAILURE);
+        return EXIT_FAILURE;
     }
     if ((long)fread(buffer, 1, infileSize, file) != infileSize) {
         perror("fread failed");
@@ -81,12 +82,12 @@ int main(int argc, const char *argv[])
             BASE_HEADER_SIZE
         );
         free(buffer);
-        return (EXIT_FAILURE);
+        return EXIT_FAILURE;
     }
     if (getWord(buffer) != MZ_SIG) {
         printf("%s doesn't have an 'MZ' signature!\n", argv[1]);
         free(buffer);
-        return (EXIT_FAILURE);
+        return EXIT_FAILURE;
     }
     /* Get the old entry point */
     headerSize = getWord(buffer + HEADER_PARAS) * 0x10;
@@ -103,7 +104,7 @@ int main(int argc, const char *argv[])
             FAR_RET_SIZE
         );
         free(buffer);
-        return (EXIT_FAILURE);
+        return EXIT_FAILURE;
     }
 
     /* Get the new stack location and the new entry point */
@@ -133,23 +134,23 @@ int main(int argc, const char *argv[])
     if (!file) {
         printf("Couldn't open %s for writing!\n", argv[2]);
         free(buffer);
-        return (EXIT_FAILURE);
+        return EXIT_FAILURE;
     }
     fwrite(buffer, 1, outfileSize, file);
     fclose(file);
     free(buffer);
-    return (EXIT_SUCCESS);
+    return EXIT_SUCCESS;
 }
 
-long getWord(unsigned char *ofs)
+long getWord(const unsigned char *ofs)
 {
     long word;
     word = *ofs;
-    word += (*(ofs+1))*0x100;
-    return (word);
+    word += *(ofs+1)*0x100;
+    return word;
 }
 
-void putWord(unsigned char *ofs, long word)
+void putWord(unsigned char *ofs, const long word)
 {
     *ofs = (char)(word & 0xff);
     *(ofs+1) = (char)(word >> 8);

@@ -1,6 +1,5 @@
 #include <cstdio>
 #include <cstdlib>
-#include <cwchar>
 
 #include "names.h"
 #include "savegame.h"
@@ -11,15 +10,14 @@ static void showSaveGame(const SaveGame *sg);
 static void showSaveGamePlayerRecord(const SaveGamePlayerRecord *rec);
 static char *itemsString(unsigned short items);
 
-int main(int argc, const char *argv[])
+int main(const int argc, const char *argv[])
 {
-    SaveGame sg;
-    std::FILE *in;
+    SaveGame sg = {};
     if (argc != 2) {
         std::fprintf(stderr, "usage: %s party.sav\n", argv[0]);
         return EXIT_FAILURE;
     }
-    in = std::fopen(argv[1], "rb");
+    std::FILE *in = std::fopen(argv[1], "rb");
     if (!in) {
         std::perror(argv[1]);
         return EXIT_FAILURE;
@@ -80,18 +78,18 @@ static void showSaveGame(const SaveGame *sg)
     std::printf(
         "trammel: %d  felucca: %d\n", sg->trammel_phase, sg->felucca_phase
     );
-    std::printf("shiphull: %d\n", sg->ship_hull);
-    std::printf("lbintro: %d\n", sg->lord_british_intro);
+    std::printf("ship hull: %d\n", sg->ship_hull);
+    std::printf("lord british intro: %d\n", sg->lord_british_intro);
     std::printf(
-        "lastcamp: %d       lastreagent: %d\n", sg->last_camp, sg->last_reagent
+        "last camp: %d       last reagent: %d\n", sg->last_camp, sg->last_reagent
     );
     std::printf(
-        "lastmeditation: %d lastvirtue: %d\n",
+        "last meditation: %d last virtue: %d\n",
         sg->last_meditation,
         sg->last_virtue
     );
     std::printf(
-        "dngx: %-5d dngy: %-5d orientation: %d dnglevel: %d\n",
+        "dungeon x: %-5d dungeon y: %-5d orientation: %d dungeon level: %d\n",
         sg->dungeon_x,
         sg->dungeon_y,
         sg->orientation,
@@ -100,13 +98,13 @@ static void showSaveGame(const SaveGame *sg)
     std::printf("location: %x\n", sg->location);
     for (i = 0; i < 8; i++) {
         std::printf("player %d\n", i);
-        showSaveGamePlayerRecord(&(sg->players[i]));
+        showSaveGamePlayerRecord(&sg->players[i]);
     }
 }
 
 static void showSaveGamePlayerRecord(const SaveGamePlayerRecord *rec)
 {
-    static const char *const weapNames[] = {
+    static constexpr const char *weaponNames[] = {
         "Hands",
         "Staff",
         "Dagger",
@@ -124,7 +122,7 @@ static void showSaveGamePlayerRecord(const SaveGamePlayerRecord *rec)
         "Magic Wand",
         "Mystic Sword"
     };
-    static const char *const armorNames[] = {
+    static constexpr const char *armorNames[] = {
         "Skin",
         "Cloth",
         "Leather",
@@ -151,7 +149,7 @@ static void showSaveGamePlayerRecord(const SaveGamePlayerRecord *rec)
     );
     std::printf(
         "  weapon: %-15s armor: %s\n",
-        weapNames[rec->weapon],
+        weaponNames[rec->weapon],
         armorNames[rec->armor]
     );
     std::printf(
@@ -162,7 +160,7 @@ static void showSaveGamePlayerRecord(const SaveGamePlayerRecord *rec)
     );
 }
 
-static char *itemsString(unsigned short items)
+static char *itemsString(const unsigned short items)
 {
     static char buffer[256];
     int first = 1;

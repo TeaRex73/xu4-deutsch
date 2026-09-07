@@ -20,7 +20,7 @@ class U4PATH;
 class U4ZipPackage {
 public:
     U4ZipPackage(
-        const std::string &name, const std::string &path, bool extension
+        std::string name, std::string path, bool extension
     );
     void addTranslation(
         const std::string &value, const std::string &translation
@@ -41,7 +41,7 @@ public:
         return extension;
     }
 
-    const std::string &translate(const std::string &name) const;
+    const std::string &translate(const std::string &nameToFind) const;
 
 private:
     std::string name; /**< filename */
@@ -85,9 +85,7 @@ private:
  */
 class U4FILE {
 public:
-    virtual ~U4FILE()
-    {
-    }
+    virtual ~U4FILE() = default;
 
     virtual void close() = 0;
     virtual int seek(long offset, int whence) = 0;
@@ -98,7 +96,7 @@ public:
     virtual int getc() = 0;
     virtual int putc(int c) = 0;
     virtual long length() = 0;
-    int getshort();
+    int get_short();
 };
 
 
@@ -108,14 +106,7 @@ public:
 class U4PATH {
 public:
     U4PATH()
-        :rootResourcePaths(),
-         u4ForDOSPaths(),
-         u4ZipPaths(),
-         musicPaths(),
-         soundPaths(),
-         configPaths(),
-         graphicsPaths(),
-         defaultsHaveBeenInitd(false)
+        :defaultsHaveBeenInited(false)
     {
     }
 
@@ -132,7 +123,7 @@ public:
     std::list<std::string> graphicsPaths;
 
 private:
-    bool defaultsHaveBeenInitd;
+    bool defaultsHaveBeenInited;
 };
 
 
@@ -150,11 +141,11 @@ std::size_t u4fread(
     void *ptr, std::size_t size, std::size_t nmemb, U4FILE *f
 );
 int u4fgetc(U4FILE *f);
-int u4fgetshort(U4FILE *f);
+int u4fget_short(U4FILE *f);
 int u4fputc(int c, U4FILE *f);
 long u4flength(U4FILE *f);
-std::vector<std::string> u4read_stringtable(
-    U4FILE *f, long offset, int nstrings
+std::vector<std::string> u4read_string_table(
+    U4FILE *f, long offset, int n_strings
 );
 std::string u4find_path(
     const std::string &fname, const std::list<std::string> &specificSubPaths
@@ -164,4 +155,4 @@ std::string u4find_sound(const std::string &fname);
 std::string u4find_conf(const std::string &fname);
 std::string u4find_graphics(const std::string &fname);
 
-#endif // ifndef U4FILE_H
+#endif // U4FILE_H

@@ -19,9 +19,9 @@ static int isPowerOfTwo(int n);
 int main(const int argc, const char *argv[])
 {
     FILE *infile;
-    unsigned char *indata, *outdata;
-    long inlen, outlen;
-    const char *alg, *infname, *outfname;
+    unsigned char *in_data, *out_data;
+    long in_len, out_len;
+    const char *alg, *in_file_name, *out_file_name;
     int width, height;
     int cond1, cond2;
     if (argc != 4 && argc != 6) {
@@ -31,84 +31,86 @@ int main(const int argc, const char *argv[])
         exit(EXIT_FAILURE);
     }
     alg = argv[1];
-    infname = argv[2];
-    outfname = argv[3];
+    in_file_name = argv[2];
+    out_file_name = argv[3];
     if (argc > 4) {
-        width = strtoul(argv[4], NULL, 0);
-        height = strtoul(argv[5], NULL, 0);
+        width = (int)strtoul(argv[4], NULL, 0);
+        height = (int)strtoul(argv[5], NULL, 0);
     } else {
         width = 320;
         height = 200;
     }
     printf("decoding %s image of size %dx%d\n", alg, width, height);
-    infile = fopen(infname, "rb");
+    infile = fopen(in_file_name, "rb");
     if (!infile) {
-        perror(infname);
+        perror(in_file_name);
         exit(EXIT_FAILURE);
     }
     if (fseek(infile, 0L, SEEK_END)) {
-        perror(infname);
+        perror(in_file_name);
         exit(EXIT_FAILURE);
     }
-    inlen = ftell(infile);
+    in_len = ftell(infile);
     fseek(infile, 0L, SEEK_SET);
-    indata = (unsigned char *)malloc(inlen);
-    if (!indata) {
+    in_data = (unsigned char *)malloc(in_len);
+    if (!in_data) {
         perror("out of memory");
         exit(EXIT_FAILURE);
     }
-    if ((long)fread(indata, 1, inlen, infile) != inlen) {
+    if ((long)fread(in_data, 1, in_len, infile) != in_len) {
         perror("fread failed");
     }
     fclose(infile);
     if (strcmp(alg, "lzw") == 0) {
-        outlen = lzwGetDecompressedSize(indata, inlen);
-        outdata = (unsigned char *)malloc(outlen);
-        if (!outdata) {
+        out_len = lzwGetDecompressedSize(in_data, in_len);
+        out_data = (unsigned char *)malloc(out_len);
+        if (!out_data) {
             perror("out of memory");
             exit(EXIT_FAILURE);
         }
-        lzwDecompress(indata, outdata, inlen);
+        lzwDecompress(in_data, out_data, in_len);
     } else if (strcmp(alg, "rle") == 0) {
-        outlen = rleGetDecompressedSize(indata, inlen);
-        cond1 = (outlen*8) % (width*height) == 0;
-        cond2 = isPowerOfTwo((outlen*8) / (width*height));
+        out_len = rleGetDecompressedSize(in_data, in_len);
+        cond1 = out_len*8 % (width*height) == 0;
+        cond2 = isPowerOfTwo((int)(out_len*8 / (width*height)));
         if (!cond1 || !cond2) {
             printf("Invalid width or height.\n");
             exit(EXIT_FAILURE);
         }
-        outdata = (unsigned char *)malloc(outlen);
-        if (!outdata) {
+        out_data = (unsigned char *)malloc(out_len);
+        if (!out_data) {
             perror("out of memory");
             exit(EXIT_FAILURE);
         }
-        rleDecompress(indata, inlen, outdata, outlen);
+        rleDecompress(in_data, in_len, out_data, out_len);
     } else if (strcmp(alg, "raw") == 0) {
-        outlen = inlen;
-        outdata = indata;
+        out_len = in_len;
+        out_data = in_data;
     } else {
         fprintf(stderr, "unknown algorithm %s\n", alg);
         exit(EXIT_FAILURE);
     }
     writePngFromEga(
-        outdata, height, width, outlen * 8 / (height * width), outfname
+        out_data,
+        height,
+        width,
+        (int)(out_len * 8 / (height * width)),
+        out_file_name
     );
     return EXIT_SUCCESS;
 }
 
-int isPowerOfTwo(int n)
+int isPowerOfTwo(const int n)
 {
     if (n <= 0) {
         return 0;
-    } else {
-        int tmp = n;
-        while (tmp % 2 == 0) {
-            tmp = tmp >> 1;
-        }
-        if (tmp == 1) {
-            return 1;
-        } else {
-            return 0;
-        }
     }
+    int tmp = n;
+    while (tmp % 2 == 0) {
+        tmp = tmp >> 1;
+    }
+    if (tmp == 1) {
+        return 1;
+    }
+    return 0;
 }

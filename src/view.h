@@ -20,15 +20,13 @@ class View {
 public:
     View(int x, int y, int width, int height);
 
-    virtual ~View()
-    {
-    }
+    virtual ~View() = default;
 
     virtual void reinit();
     virtual void clear();
     virtual void update();
     virtual void update(int x, int y, int width, int height);
-    virtual void highlight(int x, int y, int width, int height);
+    virtual void highlight(int h_x, int h_y, int h_width, int h_height);
     virtual void unhighlight();
 
 protected:

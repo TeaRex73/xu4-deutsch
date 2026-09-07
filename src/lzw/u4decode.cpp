@@ -36,13 +36,12 @@
  * -1 if there was an error
  * the decompressed file length, on success
  */
-long decompress_u4_file(std::FILE *in, long filesize, unsigned char **out)
+long decompress_u4_file(
+    std::FILE *in, const long file_size, unsigned char **out
+)
 {
-    unsigned char *compressed_mem, *decompressed_mem;
-    long compressed_filesize, decompressed_filesize;
-    long errorCode;
     /* size of the compressed input file */
-    compressed_filesize = filesize;
+    const long compressed_filesize = file_size;
     /* input file should be longer than 0 bytes */
     if (compressed_filesize == 0) {
         return -1;
@@ -52,8 +51,8 @@ long decompress_u4_file(std::FILE *in, long filesize, unsigned char **out)
         return -1;
     }
     /* load compressed file into compressed_mem[] */
-    compressed_mem =
-        static_cast<unsigned char *>(std::malloc(compressed_filesize));
+    auto *compressed_mem = static_cast<unsigned char *>(std::malloc(
+        compressed_filesize));
     if (std::fread(compressed_mem, 1, compressed_filesize, in)
         != static_cast<size_t>(compressed_filesize)) {
         perror("fread failed");
@@ -63,32 +62,29 @@ long decompress_u4_file(std::FILE *in, long filesize, unsigned char **out)
      * if lzw_get_decompressed_size() can't determine the decompressed size
      * (i.e. the compressed data is corrupt), it returns -1
      */
-    decompressed_filesize =
-        lzwGetDecompressedSize(compressed_mem,compressed_filesize);
+    const long decompressed_filesize = lzwGetDecompressedSize(
+        compressed_mem, compressed_filesize);
     if (decompressed_filesize <= 0) {
         return -1;
     }
     /* decompress file from compressed_mem[] into decompressed_mem[] */
-    decompressed_mem =
-        static_cast<unsigned char *>(std::malloc(decompressed_filesize));
+    auto *decompressed_mem = static_cast<unsigned char *>(std::malloc(
+        decompressed_filesize));
     /* testing: clear destination mem */
     memset(decompressed_mem, 0, decompressed_filesize);
-    errorCode =
-        lzwDecompress(compressed_mem, decompressed_mem, compressed_filesize);
+    const long errorCode = lzwDecompress(compressed_mem, decompressed_mem,
+                                   compressed_filesize);
     std::free(compressed_mem);
     *out = decompressed_mem;
     return errorCode;
 }
 
 long decompress_u4_memory(
-    const unsigned char *in, long inlen, unsigned char **out
+    const unsigned char *in, const long in_len, unsigned char **out
 )
 {
-    unsigned char *decompressed_mem;
-    long compressed_filesize, decompressed_filesize;
-    long errorCode;
     /* size of the compressed input */
-    compressed_filesize = inlen;
+    const long compressed_filesize = in_len;
     /* input file should be longer than 0 bytes */
     if (compressed_filesize == 0)
         return -1;
@@ -97,18 +93,17 @@ long decompress_u4_memory(
      * if lzw_get_decompressed_size() can't determine the decompressed size
      * (i.e. the compressed data is corrupt), it returns -1
      */
-    decompressed_filesize =
-        lzwGetDecompressedSize(in, compressed_filesize);
+    const long decompressed_filesize =
+            lzwGetDecompressedSize(in, compressed_filesize);
     if (decompressed_filesize <= 0) {
         return -1;
     }
     /* decompress file from compressed_mem[] into decompressed_mem[] */
-    decompressed_mem =
-        static_cast<unsigned char *>(std::malloc(decompressed_filesize));
+    auto *decompressed_mem = static_cast<unsigned char *>(std::malloc(
+        decompressed_filesize));
     /* testing: clear destination mem */
     memset(decompressed_mem, 0, decompressed_filesize);
-    errorCode =
-        lzwDecompress(in, decompressed_mem, compressed_filesize);
+    const long errorCode = lzwDecompress(in, decompressed_mem, compressed_filesize);
     *out = decompressed_mem;
     return errorCode;
 }
@@ -120,9 +115,8 @@ long decompress_u4_memory(
  */
 long getFilesize(std::FILE *input_file)
 {
-    long file_length;
     std::fseek(input_file, 0, SEEK_END);   /* move file ptr to file end */
-    file_length = std::ftell(input_file);
+    const long file_length = std::ftell(input_file);
     std::fseek(input_file, 0, SEEK_SET);   /* move file ptr to file start */
     return file_length;
 }
@@ -135,21 +129,20 @@ long getFilesize(std::FILE *input_file)
 unsigned char mightBeValidCompressedFile(std::FILE *input_file)
 {
     unsigned char firstByte;
-    unsigned char c1, c2, c3;   /* booleans */
-    long input_filesize;
+    /* booleans */
     /*  check if the input file has a valid size             */
     /*  the compressed file is made up of 12-bit codewords,  */
     /*  so there are either 0 or 4 bits of wasted space      */
-    input_filesize = getFilesize(input_file);
-    c1 = (input_filesize * 8) % 12 == 0;
-    c2 = (input_filesize * 8 - 4) % 12 == 0;
+    const long input_filesize = getFilesize(input_file);
+    const unsigned char c1 = input_filesize * 8 % 12 == 0;
+    const unsigned char c2 = (input_filesize * 8 - 4) % 12 == 0;
     /* read first byte */
     std::fseek(input_file, 0, SEEK_SET);   /* move file ptr to file start */
     if (std::fread(&firstByte, 1, 1, input_file) != 1) {
         perror("fread failed");
     }
     std::fseek(input_file, 0, SEEK_SET);   /* move file ptr to file start */
-    c3 = (firstByte >> 4) == 0;
+    const unsigned char c3 = firstByte >> 4 == 0;
     /* check if upper 4 bits are 0 */
     return (c1 || c2) && c3;
 }

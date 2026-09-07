@@ -101,9 +101,9 @@ public:
 
     void setCoords(const Coords &co);
 
-    void setPrevCoords(const Coords &c)
+    void setPrevCoords(const Coords &pc)
     {
-        prevCoords = c;
+        prevCoords = pc;
     }
 
     void setMovementBehavior(const ObjectMovementBehavior b)

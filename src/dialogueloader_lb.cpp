@@ -42,9 +42,9 @@ Dialogue *U4LBDialogueLoader::load(void *)
         return nullptr;
     }
     const std::vector<std::string> lbKeywords =
-        u4read_stringtable(britkey, 0, 27);
+        u4read_string_table(britkey, 0, 27);
     const std::vector<std::string> lbText =
-        u4read_stringtable(britansw, 0, 27);
+        u4read_string_table(britansw, 0, 27);
     u4fclose(britkey);
     u4fclose(britansw);
     /* There's a \0 in the 19th std::string so we get a

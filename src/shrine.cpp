@@ -120,7 +120,7 @@ void Shrine::enter()
         if (!shrine_text) {
             return;
         }
-        shrineAdvice = u4read_stringtable(shrine_text, 0, 24);
+        shrineAdvice = u4read_string_table(shrine_text, 0, 24);
         u4fclose(shrine_text);
     }
     if (settings.enhancementsOptions.u5shrines) {

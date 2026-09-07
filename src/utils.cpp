@@ -25,10 +25,9 @@ static int rand_limit_precalc[256];
  */
 void xu4_seed_random()
 {
-    int i;
     std::srand(std::random_device()());
-    for (i = 1; i <= 256; i++) {
-        rand_limit_precalc[i - 1] = RAND_MAX - (((RAND_MAX % i) + 1) % i);
+    for (int i = 1; i <= 256; i++) {
+        rand_limit_precalc[i - 1] = RAND_MAX - (RAND_MAX % i + 1) % i;
     }
 }
 
@@ -36,7 +35,7 @@ void xu4_seed_random()
 /**
  * Generate a random number between 0 and (upperRange - 1).
  */
-int xu4_random(int upperRange)
+int xu4_random(const int upperRange)
 {
     int r;
     int rand_limit;
@@ -44,8 +43,8 @@ int xu4_random(int upperRange)
     if (upperRange <= 1) {
         return 0;
     }
-    if (__builtin_expect((upperRange > 256), false)) {
-        rand_limit = RAND_MAX - (((RAND_MAX % upperRange) + 1) % upperRange);
+    if (__builtin_expect(upperRange > 256, false)) {
+        rand_limit = RAND_MAX - (RAND_MAX % upperRange + 1) % upperRange;
     } else {
         rand_limit = rand_limit_precalc[upperRange - 1];
     }
@@ -63,14 +62,13 @@ int xu4_random(int upperRange)
  */
 std::string &trim(std::string &val, const std::string &chars_to_trim)
 {
-    std::string::iterator i;
-    if (val.size()) {
-        for (i = val.begin();
+    if (!val.empty()) {
+        for (auto i = val.begin();
              i != val.end() &&
-                 chars_to_trim.find(*i) != std::string::npos;) {
+             chars_to_trim.find(*i) != std::string::npos;) {
             i = val.erase(i);
         }
-        for (i = val.end() - 1;
+        for (auto i = val.end() - 1;
              i != val.begin() &&
                  chars_to_trim.find(*i) != std::string::npos;) {
             i = val.erase(i) - 1;
@@ -147,10 +145,9 @@ char *xu4_strdup(const char *s)
  */
 std::string lowercase(const std::string &val)
 {
-    std::string ret = "";
-    std::string::const_iterator i;
-    for (i = val.cbegin(); i != val.cend(); ++i) {
-        ret += std::string(1, static_cast<char>(xu4_tolower(*i)));
+    std::string ret;
+    for (const char i: val) {
+        ret += {static_cast<char>(xu4_tolower(i))};
     }
     return ret;
 }
@@ -161,13 +158,12 @@ std::string lowercase(const std::string &val)
  */
 std::string uppercase(const std::string &val)
 {
-    std::string ret = "";
-    std::string::const_iterator i;
-    for (i = val.cbegin(); i != val.cend(); ++i) {
-        if (*i == '~') {
+    std::string ret;
+    for (const char i: val) {
+        if (i == '~') {
             ret += "SS";
         } else {
-            ret += std::string(1, static_cast<char>(xu4_toupper(*i)));
+            ret += {static_cast<char>(xu4_toupper(i))};
         }
     }
     return ret;
@@ -175,10 +171,9 @@ std::string uppercase(const std::string &val)
 
 std::string deumlaut(const std::string &val)
 {
-    std::string ret = "";
-    std::string::const_iterator i;
-    for (i = val.cbegin(); i != val.cend(); ++i) {
-        switch (*i) {
+    std::string ret;
+    for (char i: val) {
+        switch (i) {
         case '[':
             ret += "AE";
             break;
@@ -201,7 +196,7 @@ std::string deumlaut(const std::string &val)
             ret += "ss";
             break;
         default:
-            ret += std::string(1, static_cast<char>(*i));
+            ret += {i};
         }
     }
     return ret;
@@ -215,13 +210,13 @@ std::string xu4_to_string(int val)
 {
     char buffer[16];
     std::snprintf(buffer, 16, "%d", val);
-    return std::string(buffer);
+    return {buffer};
 }
 
 
 /**
  * Splits a string into substrings, divided by the characters in
- * separators.  Multiple adjacent seperators are treated as one.
+ * separators.  Multiple adjacent separators are treated as one.
  */
 std::vector<std::string> split(
     const std::string &s, const std::string &separators
@@ -231,7 +226,7 @@ std::vector<std::string> split(
     std::string current;
     for (unsigned int i = 0; i < s.length(); i++) {
         if (separators.find(s[i]) != std::string::npos) {
-            if (current.length() > 0) {
+            if (!current.empty()) {
                 result.push_back(current);
             }
             current.erase();
@@ -239,7 +234,7 @@ std::vector<std::string> split(
             current += s[i];
         }
     }
-    if (current.length() > 0) {
+    if (!current.empty()) {
         result.push_back(current);
     }
     return result;
