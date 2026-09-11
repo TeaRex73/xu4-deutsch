@@ -49,6 +49,12 @@ public:
 
 private:
     explicit Armor(const ConfigElement &conf);
+public:
+    Armor(const Armor &) = delete;
+    Armor &operator=(const Armor &) = delete;
+    Armor(Armor &&) noexcept = delete;
+    Armor &operator=(Armor &&) noexcept = delete;
+private:
     ~Armor();
     static void loadConf();
     static bool confLoaded;

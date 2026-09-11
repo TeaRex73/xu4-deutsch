@@ -646,7 +646,7 @@ static void spellMagicAttack(
 }
 
 static bool spellMagicAttackAt(
-    const Coords &coords, MapTile attackTile, const int attackDamage
+    const Coords &coords, const MapTile attackTile, const int attackDamage
 )
 {
     bool objectHit = false;

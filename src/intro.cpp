@@ -986,7 +986,7 @@ void IntroController::drawMap()
     }
 } // IntroController::drawMap
 
-void IntroController::drawMapStatic()
+void IntroController::drawMapStatic() const
 {
     // draw unmodified map
     for (int y = 0; y < INTRO_MAP_HEIGHT; y++) {
@@ -998,7 +998,7 @@ void IntroController::drawMapStatic()
     }
 }
 
-void IntroController::drawMapAnimated()
+void IntroController::drawMapAnimated() const
 {
     int x, y;
     MapTile tempMap[INTRO_MAP_WIDTH][INTRO_MAP_HEIGHT];
@@ -2202,7 +2202,7 @@ void IntroController::initPlayers(SaveGame *saveGame) const
 /**
  * Preload map tiles
  */
-void IntroController::preloadMap()
+void IntroController::preloadMap() const
 {
     // draw unmodified map
     for (int y = 0; y < INTRO_MAP_HEIGHT; y++) {

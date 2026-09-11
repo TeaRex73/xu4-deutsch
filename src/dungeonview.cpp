@@ -56,7 +56,7 @@ void DungeonView::cleanup()
     delete instance;
 }
 
-void DungeonView::display(const Context *ctx, TileView *view) const
+void DungeonView::display(const Context *ctx, const TileView *view) const
 {
     /* 1st-person perspective */
     if (screen3dDungeonViewEnabled) {

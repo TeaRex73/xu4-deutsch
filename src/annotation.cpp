@@ -21,7 +21,10 @@
  * Constructors
  */
 Annotation::Annotation(
-    const Coords &coords, MapTile tile, const bool visual, const bool coverUp
+    const Coords &coords,
+    const MapTile tile,
+    const bool visual,
+    const bool coverUp
 )
     :coords(coords), tile(tile), visual(visual), ttl(-1), coverUp(coverUp)
 {
@@ -144,7 +147,7 @@ void AnnotationMgr::passTurn()
 /**
  * Removes an annotation from the current map
  */
-void AnnotationMgr::remove(const Coords &coords, MapTile tile)
+void AnnotationMgr::remove(const Coords &coords, const MapTile tile)
 {
     const Annotation look_for(coords, tile);
     remove(look_for);

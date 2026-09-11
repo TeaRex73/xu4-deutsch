@@ -80,7 +80,7 @@ public:
     int initialNumberOfCreatures(const Creature *creat) const;
     bool isWon() const;
     bool isLost() const;
-    void moveCreatures();
+    void moveCreatures() const;
     void placeCreatures() const;
     void placePartyMembers();
     bool setActivePlayer(int player);

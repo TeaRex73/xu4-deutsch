@@ -302,7 +302,7 @@ public:
     void pushKeyHandler(const KeyHandler &kh);
     void popKeyHandler();
     const KeyHandler *getKeyHandler() const;
-    void setKeyHandler(KeyHandler &kh);
+    void setKeyHandler(const KeyHandler &kh);
     void pushMouseAreaSet(MouseArea *mouseAreas);
     void popMouseAreaSet();
     MouseArea *getMouseAreaSet() const;

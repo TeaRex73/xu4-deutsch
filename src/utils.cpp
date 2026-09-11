@@ -77,12 +77,12 @@ std::string &trim(std::string &val, const std::string &chars_to_trim)
     return val;
 }
 
-int xu4_islower(int c)
+int xu4_islower(const int c)
 {
     return ((c >= 'a') && (c <= '~'));
 }
 
-int xu4_toupper(int c)
+int xu4_toupper(const int c)
 {
     if ((c >= 'a') && (c <= '}')) {
         return c - 32;
@@ -90,7 +90,7 @@ int xu4_toupper(int c)
     return c;
 }
 
-int xu4_tolower(int c)
+int xu4_tolower(const int c)
 {
     if ((c >= 'A') && (c <= ']')) {
         return c + 32;
@@ -132,7 +132,7 @@ int xu4_strncasecmp(const char *s1, const char *s2, std::size_t n)
 
 char *xu4_strdup(const char *s)
 {
-    std::size_t length = std::strlen(s) + 1;
+    const std::size_t length = std::strlen(s) + 1;
     void *copy = std::malloc(length);
     if (copy == nullptr) {
         return nullptr;
@@ -206,7 +206,7 @@ std::string deumlaut(const std::string &val)
 /**
  * Converts an integer value to a string
  */
-std::string xu4_to_string(int val)
+std::string xu4_to_string(const int val)
 {
     char buffer[16];
     std::snprintf(buffer, 16, "%d", val);

@@ -1430,7 +1430,7 @@ MapTile Party::getTransport() const
     return transport;
 }
 
-void Party::setTransport(MapTile tile)
+void Party::setTransport(const MapTile tile)
 {
     // transport value stored in savegame hardcoded to index
     // into base tilemap

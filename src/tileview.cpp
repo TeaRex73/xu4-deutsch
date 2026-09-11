@@ -71,7 +71,7 @@ void TileView::reinit()
     animated->alphaOff();
 }
 
-void TileView::loadTile(MapTile mapTile) const
+void TileView::loadTile(const MapTile mapTile) const
 {
     // This attempts to preload tiles in advance
     Tile *tile = tileset->get(mapTile.getId());

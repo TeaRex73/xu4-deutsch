@@ -104,9 +104,9 @@ void screenShowCharMasked(int chr, int x, int y, unsigned char mask);
 void screenTextAt(int x, int y, const char *fmt, ...) PRINTF_LIKE(3, 4);
 void screenTextColor(int color);
 bool screenTileUpdate(
-    TileView *view, const Coords &coords, bool redraw = true
+    const TileView *view, const Coords &coords, bool redraw = true
 ); // whether screen was affected
-void screenUpdate(TileView *view, bool show_map, bool blackout);
+void screenUpdate(const TileView *view, bool show_map, bool blackout);
 void screenUpdateCursor();
 void screenUpdateMoons();
 void screenUpdateWind();

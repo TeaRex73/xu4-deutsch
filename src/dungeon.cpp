@@ -55,7 +55,7 @@ std::string Dungeon::getName()
 /**
  * Returns the dungeon token associated with the given dungeon tile
  */
-DungeonToken Dungeon::tokenForTile(MapTile tile) const
+DungeonToken Dungeon::tokenForTile(const MapTile tile) const
 {
     typedef std::pair<std::string, int> StrIntPair;
     const static StrIntPair tileNames[] = {

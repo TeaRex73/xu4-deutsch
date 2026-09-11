@@ -11,6 +11,7 @@
 #include <vector>
 
 class Debug;
+class Script;
 
 
 /**
@@ -352,7 +353,7 @@ public:
     std::string playerInput; /**< A std::string holding the text
                                 the player inputs */
     std::list<std::string> reply; /**< What the talker says */
-    class Script *script; /**< A script that this person
+    Script *script; /**< A script that this person
                              follows during the
                              conversation (may be nullptr) */
     Dialogue::Question *question; /**< The current question

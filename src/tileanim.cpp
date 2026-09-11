@@ -514,7 +514,7 @@ TileAnim::~TileAnim()
 }
 
 void TileAnim::draw(
-    Image *dest, Tile *tile, MapTile mapTile, const Direction dir
+    Image *dest, Tile *tile, const MapTile mapTile, const Direction dir
 ) const
 {
     std::vector<TileAnimTransform *>::const_iterator t;

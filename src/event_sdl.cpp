@@ -685,7 +685,7 @@ const KeyHandler *EventHandler::getKeyHandler() const
  * only key handler left. Use this function only if you
  * are sure the key handlers in the stack are disposable.
  */
-void EventHandler::setKeyHandler(KeyHandler &kh)
+void EventHandler::setKeyHandler(const KeyHandler &kh)
 {
     while (popController() != nullptr) {}
     pushKeyHandler(kh);

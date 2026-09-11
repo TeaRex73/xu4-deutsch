@@ -59,7 +59,7 @@ public:
         coords = c;       /**< Sets coords for the annotation */
     }
 
-    void setTile(MapTile t) // NOLINT(performance-unnecessary-value-param)
+    void setTile(const MapTile t) // NOLINT(performance-unnecessary-value-param)
     {
         tile = t;         /**< Sets tile for the annotation */
     }

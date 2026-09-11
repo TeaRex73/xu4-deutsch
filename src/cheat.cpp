@@ -475,7 +475,7 @@ void CheatMenuController::summonCreature(const std::string &name)
     screenMessage("\n%s UNBEKANNT!\n", creatureName.c_str());
 } // CheatMenuController::summonCreature
 
-bool WindCmdController::keyPressed(int key)
+bool WindCmdController::keyPressed(const int key)
 {
     switch (key) {
     case U4_UP:

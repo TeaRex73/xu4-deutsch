@@ -43,7 +43,6 @@ public:
          party_south_start_y(),
          party_west_start_x(),
          party_west_start_y(),
-         map_data(),
          buffer()
     {
     }
@@ -91,14 +90,10 @@ enum DungeonToken {
 class Dungeon:public Map {
 public:
     Dungeon()
-        :name(),
-         n_rooms(0),
-         dataSubTokens(),
-         rooms(nullptr),
-         roomMaps(nullptr),
-         currentRoom(0),
-         tempData(),
-         tempDataSubTokens()
+        : n_rooms(0),
+          rooms(nullptr),
+          roomMaps(nullptr),
+          currentRoom(0)
     {
     }
 
@@ -106,8 +101,8 @@ public:
     Dungeon(Dungeon &&) = delete;
     Dungeon &operator=(const Dungeon &) = delete;
     Dungeon &operator=(Dungeon &&) = delete;
-    virtual ~Dungeon();
-    virtual std::string getName() override;
+    ~Dungeon() override;
+    std::string getName() override;
     DungeonToken tokenForTile(MapTile tile) const;
     DungeonToken currentToken() const;
     unsigned char currentSubToken() const;

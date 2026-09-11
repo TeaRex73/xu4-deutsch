@@ -72,7 +72,7 @@ public:
         DungeonGraphicType type
     );
 
-    void display(const Context *ctx, TileView *view) const;
+    void display(const Context *ctx, const TileView *view) const;
     static DungeonGraphicType tilesToGraphic(
         const std::vector<MapTile> &tiles
     );

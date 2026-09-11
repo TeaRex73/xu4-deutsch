@@ -90,7 +90,7 @@ public:
     unsigned char *getSigData() const;
     void updateScreen();
     void timerFired() override;
-    void preloadMap();
+    void preloadMap() const;
     void update(Menu *menu, MenuEvent &event) override;
     void updateConfMenu(const MenuEvent &event);
     void updateVideoMenu(const MenuEvent &event);
@@ -105,8 +105,8 @@ public:
 
 private:
     void drawMap();
-    void drawMapStatic();
-    void drawMapAnimated();
+    void drawMapStatic() const;
+    void drawMapAnimated() const;
     void drawBeasties(bool musicon = true);
     void drawBeastie(int beast, int vertOffset, int frame) const;
     void animateTree(const std::string &frame) const;

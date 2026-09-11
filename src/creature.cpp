@@ -1006,7 +1006,7 @@ void CreatureMgr::loadAll()
  * Returns a creature using a tile to find which one to create
  * or nullptr if a creature with that tile cannot be found
  */
-Creature *CreatureMgr::getByTile(MapTile tile) const
+Creature *CreatureMgr::getByTile(const MapTile tile) const
 {
     const auto i = std::find_if(
         creatures.cbegin(),

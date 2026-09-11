@@ -26,7 +26,13 @@ typedef std::list<PersonRole *> PersonRoleList;
 class City:public Map {
 public:
     City() = default;
+
+    City(const City &) = delete;
+    City &operator=(const City &) = delete;
+    City(const City &&) noexcept = delete;
+    City &operator=(const City &&) noexcept = delete;
     ~City() override;
+    
     std::string getName() override;
     Person *addPerson(const Person *person);
     void addPeople();

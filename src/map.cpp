@@ -552,7 +552,7 @@ Object *Map::addObject(Object *obj, const Coords &)
 }
 
 Object *Map::addObject(
-    MapTile tile, MapTile previousTile, const Coords &coords
+    const MapTile tile, const MapTile previousTile, const Coords &coords
 )
 {
     auto *obj = new Object;
@@ -696,7 +696,7 @@ int Map::getNumberOfCreatures(const int level) const
  * Returns a mask of valid moves for the given transport on the given map
  */
 int Map::getValidMoves(
-    const MapCoords &from, MapTile transport, const bool wanders
+    const MapCoords &from, const MapTile transport, const bool wanders
 ) const
 {
     // get the creature object, if it exists (the one that's moving)

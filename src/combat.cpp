@@ -571,7 +571,7 @@ bool CombatController::isLost() const
 /**
  * Performs all of the creature's actions
  */
-void CombatController::moveCreatures()
+void CombatController::moveCreatures() const
 {
     // XXX: this iterator is rather complex; but the vector::iterator can
     // break and crash if we delete elements while iterating it, which we

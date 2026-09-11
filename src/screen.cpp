@@ -463,7 +463,9 @@ static MapTile screenViewportTileGem(
     return c->location->tilesAt(tc, focus).front();
 } // screenViewportTileGem
 
-bool screenTileUpdate(TileView *view, const Coords &coords, const bool redraw)
+bool screenTileUpdate(
+    const TileView *view, const Coords &coords, const bool redraw
+)
 {
     if (c->location->map->flags & FIRST_PERSON) {
         return false;
@@ -525,7 +527,9 @@ bool screenTileUpdate(TileView *view, const Coords &coords, const bool redraw)
  * the map area.  If blackout is set, the map area is blacked out. If
  * neither is set, the map area is left untouched.
  */
-void screenUpdate(TileView *view, const bool show_map, const bool blackout)
+void screenUpdate(
+    const TileView *view, const bool show_map, const bool blackout
+)
 {
     U4ASSERT(c != nullptr, "context has not yet been initialized");
     screenLock();
