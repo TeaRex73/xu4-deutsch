@@ -27,6 +27,7 @@
 #include <string>
 #include <vector>
 
+class TileAnimSet;
 class Image;
 class TileView;
 class Coords;
@@ -121,6 +122,7 @@ Image *screenScale(const Image *src, int scale, int n, int filter);
 Image *screenScaleDown(const Image *src, int scale);
 extern std::atomic_int screenCurrentCycle;
 extern std::atomic_bool screenMoving;
+extern TileAnimSet *tileAnimations;
 
 #define SCR_CYCLE_MAX 16
 

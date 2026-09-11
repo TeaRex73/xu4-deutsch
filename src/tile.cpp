@@ -14,6 +14,7 @@
 #include "error.h"
 #include "image.h"
 #include "imagemgr.h"
+#include "screen.h"
 #include "settings.h"
 #include "tileanim.h"
 #include "tileset.h"
@@ -179,7 +180,6 @@ void Tile::loadImage()
 
         info->image->alphaOff();
         if (!animationRule.empty()) {
-            extern TileAnimSet *tileAnimations;
             anim = nullptr;
             if (tileAnimations) {
                 anim = tileAnimations->getByName(animationRule);
