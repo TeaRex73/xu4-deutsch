@@ -49,7 +49,7 @@ bool isPartyMember(Object *p_unknown)
  * PartyMember class implementation
  */
 PartyMember::PartyMember(Party *p, SaveGamePlayerRecord *pr)
-    :Creature(tileForClass(pr->klass)), player(pr), party(p)
+    :Creature(tileForClass(pr->klass)), party(p), player(pr)
 {
     setType(PARTY_MEMBER);
     /* FIXME: we need to rename movement behaviors */
@@ -906,14 +906,18 @@ void Party::adjustKarma(const KarmaAction action)
         // you get +3 HONOR in Apple 2, but not in in U4DOS.
         // That is arguably a bug, SACRIFICE should be it.
         // TODO: Make this a configuration option.
-        AdjustValueMax(newKarma[VIRTUE_SACRIFICE], 3, maxVal[VIRTUE_SACRIFICE]);
-        /* FALLTHROUGH */
+        AdjustValueMax(
+            newKarma[VIRTUE_SACRIFICE], 3, maxVal[VIRTUE_SACRIFICE]
+        );
+        [[fallthrough]];
     case KA_GAVE_TO_BEGGAR:
         // In U4DOS, we only get +2 COMPASSION,
         // no HONOR or SACRIFICE even if
         // donating all.
         timeLimited = true;
-        AdjustValueMax(newKarma[VIRTUE_COMPASSION], 2, maxVal[VIRTUE_COMPASSION]);
+        AdjustValueMax(
+            newKarma[VIRTUE_COMPASSION], 2, maxVal[VIRTUE_COMPASSION]
+        );
         break;
     case KA_BRAGGED:
         AdjustValueMin(newKarma[VIRTUE_HUMILITY], -5, 1);
@@ -1353,7 +1357,9 @@ CannotJoinError Party::join(const std::string &name)
                 && saveGame->karma[saveGame->players[i].klass] < 40) {
                 return JOIN_NOT_VIRTUOUS;
             }
-            std::swap(saveGame->players[saveGame->members], saveGame->players[i]);
+            std::swap(
+                saveGame->players[saveGame->members], saveGame->players[i]
+            );
             members.push_back(
                 new PartyMember(this, &saveGame->players[saveGame->members++])
             );

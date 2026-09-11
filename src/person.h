@@ -42,11 +42,13 @@ typedef enum {
 class Person:public Creature {
 public:
     explicit Person(MapTile tile);
-    Person(const Person &p) = default;
-    Person(Person &&p) noexcept = default;
-    Person &operator=(const Person &p) = default;
-    Person &operator=(Person &&p) = default;
+
+    Person(const Person &) = default;
+    Person(Person &&) noexcept = default;
+    Person &operator=(const Person &) = default;
+    Person &operator=(Person &&) noexcept = default;
     ~Person() override = default;
+
     bool canConverse() const;
     bool isVendor() const;
     std::string getName() const override;
@@ -85,9 +87,9 @@ public:
     static std::string getQuestion(const Conversation *cnv);
 
 private:
-    Dialogue *dialogue;
-    MapCoords start;
-    PersonNpcType npcType;
+    Dialogue *dialogue {nullptr};
+    MapCoords start {0, 0};
+    PersonNpcType npcType {NPC_EMPTY};
 };
 
 bool isPerson(Object *p_unknown);

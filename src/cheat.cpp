@@ -411,7 +411,8 @@ bool CheatMenuController::keyPressed(int key)
     case U4_F_KEY + 6:
     case U4_F_KEY + 7:
         screenMessage(
-            "STEIGERE %s!\n", getVirtueName(static_cast<Virtue>(key - U4_F_KEY))
+            "STEIGERE %s!\n",
+            getVirtueName(static_cast<Virtue>(key - U4_F_KEY))
         );
         if (c->saveGame->karma[key - U4_F_KEY] == 99) {
             c->saveGame->karma[key - U4_F_KEY] = 0;

@@ -49,7 +49,9 @@ bool moongateFindActiveGateAt(
     return false;
 }
 
-bool moongateIsEntryToShrineOfSpirituality(const int trammel, const int felucca)
+bool moongateIsEntryToShrineOfSpirituality(
+    const int trammel, const int felucca
+)
 {
     return trammel == 4 && felucca == 4;
 }

@@ -391,7 +391,8 @@ TileAnimContext *TileAnimContext::create(const ConfigElement &conf)
         const std::vector<ConfigElement> children = conf.getChildren();
         for (const auto &child: children) {
             if (child.getName() == "transform") {
-                TileAnimTransform *transform = TileAnimTransform::create(child);
+                TileAnimTransform *transform =
+                    TileAnimTransform::create(child);
                 context->add(transform);
             }
         }

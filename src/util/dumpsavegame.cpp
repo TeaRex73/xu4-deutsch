@@ -81,7 +81,9 @@ static void showSaveGame(const SaveGame *sg)
     std::printf("ship hull: %d\n", sg->ship_hull);
     std::printf("lord british intro: %d\n", sg->lord_british_intro);
     std::printf(
-        "last camp: %d       last reagent: %d\n", sg->last_camp, sg->last_reagent
+        "last camp: %d       last reagent: %d\n",
+        sg->last_camp,
+        sg->last_reagent
     );
     std::printf(
         "last meditation: %d last virtue: %d\n",

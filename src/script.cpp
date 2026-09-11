@@ -256,7 +256,9 @@ bool Script::load(
                 this->translationContext.push_back(node);
                 break;
             }
-            for (xmlNodePtr child = node->xmlChildrenNode; child; child = child->next) {
+            for (xmlNodePtr child = node->xmlChildrenNode;
+                child;
+                child = child->next) {
                 if (xmlNodeIsText(child)
                     || xmlStrcmp(
                         child->name, c2xc(subNodeName.c_str())
@@ -354,7 +356,8 @@ void Script::run(const std::string &script)
             search_id = "null";
         }
     }
-    const xmlNodePtr scriptNodeToRun = find(this->scriptNode, script, search_id);
+    const xmlNodePtr scriptNodeToRun =
+        find(this->scriptNode, script, search_id);
     if (!scriptNodeToRun) {
         errorFatal(
             "Script '%s' not found in vendorScript.xml", script.c_str()
@@ -1142,7 +1145,8 @@ Script::ReturnCode Script::redirect(xmlNodePtr, const xmlNodePtr current)
     }
     /* set a new search id */
     const std::string search_id = getPropAsStr(current, idPropName);
-    const xmlNodePtr newScript = find(this->scriptNode, targetScript, search_id);
+    const xmlNodePtr newScript =
+        find(this->scriptNode, targetScript, search_id);
     if (!newScript) {
         errorFatal(
             "Error: redirect failed -- could not find target script '%s' "
@@ -1748,7 +1752,9 @@ Script::ReturnCode Script::ztats(xmlNodePtr, const xmlNodePtr current)
 void Script::mathParseChildren(const xmlConstNodePtr math, std::string *result)
 {
     result->erase();
-    for (xmlConstNodePtr current = math->children; current; current = current->next) {
+    for (xmlConstNodePtr current = math->children;
+        current;
+        current = current->next) {
         if (xmlNodeIsText(current)) {
             *result = getContent(current);
         } else if (xmlStrcmp(current->name, c2xc("math")) == 0) {
@@ -1936,7 +1942,9 @@ bool Script::compare(const std::string &statement)
         return invert;
     }
     if (mathParse(str, &left_value, &right_value, &op)) {
-        return static_cast<bool>(math(left_value, right_value, op)) ? !invert : invert;
+        return static_cast<bool>(math(left_value, right_value, op))
+        ? !invert
+        : invert;
     }
     parseOperation(str, &left, &right, &op);
     /* can only really do equality comparison */

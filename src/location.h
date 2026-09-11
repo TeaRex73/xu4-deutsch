@@ -46,7 +46,9 @@ public:
     Location(Location &&) = delete;
     Location &operator=(const Location &) = delete;
     Location &operator=(Location &&) = delete;
-    std::vector<MapTile> tilesAt(const MapCoords &objectCoords, bool &focus) const;
+    std::vector<MapTile> tilesAt(
+        const MapCoords &objectCoords, bool &focus
+    ) const;
 
     TileId getReplacementTile(
         const MapCoords &atCoords, Tile const *forTile

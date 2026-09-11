@@ -223,7 +223,10 @@ private:
     static int mathValue(const std::string &str);
     static int math(int left_value, int right_value, const std::string &op);
     static bool mathParse(
-        const std::string &str, int *left_value, int *right_value, std::string *op
+        const std::string &str,
+        int *left_value,
+        int *right_value,
+        std::string *op
     );
     static void parseOperation(
         const std::string &str,

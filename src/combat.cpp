@@ -750,7 +750,9 @@ bool CombatController::attackAt(
 } // CombatController::attackAt
 
 
-bool CombatController::rangedAttack(const Coords &coords, Creature *attacker) const
+bool CombatController::rangedAttack(
+    const Coords &coords, Creature *attacker
+) const
 {
     const MapTile hitTile =
         map->tileset->getByName(attacker->getHitTile())->getId();

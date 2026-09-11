@@ -51,7 +51,13 @@ void ProgressBar::draw()
     );
     // border color
     bar->fillRect(
-        0, 0, SCALED(width), SCALED(height), border_color.r, border_color.g, border_color.b
+        0,
+        0,
+        SCALED(width),
+        SCALED(height),
+        border_color.r,
+        border_color.g,
+        border_color.b
     );
     // color
     bar->fillRect(

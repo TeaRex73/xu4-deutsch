@@ -5,13 +5,78 @@
 #ifndef OBJECT_H
 #define OBJECT_H
 
+#include <atomic>
+#include <cstdio>
 #include <deque>
-#include <set>
+#include <unordered_set>
 
 #include "coords.h"
+#include "debug.h"
 #include "direction.h"
 #include "tile.h"
 #include "types.h"
+
+
+template <typename T>
+class Registered {
+protected:
+    Registered()
+    {
+        if (cleaning) return;
+        registrees.insert(static_cast<T *>(this));
+    }
+
+    Registered(const Registered &)
+    {
+        if (cleaning) return;
+        registrees.insert(static_cast<T *>(this));
+    }
+
+    Registered(Registered &&) noexcept
+    {
+        if (cleaning) return;
+        registrees.insert(static_cast<T *>(this));
+    }
+
+    Registered &operator=(const Registered &) = default;
+    Registered &operator=(Registered &&) noexcept = default;
+
+    ~Registered()
+    {
+        if (cleaning) return;
+        const bool found =
+            static_cast<bool>(registrees.erase(static_cast<T *>(this)));
+        U4ASSERT(found, "Tried to delete non-existing Object\n");
+    }
+
+public:
+    static void cleanup()
+    {
+        if (cleaning.exchange(true)) return;
+        for (const auto *reg: registrees) {
+            delete reg;
+        }
+        registrees.clear();
+        cleaning = false;
+    }
+
+private:
+    static std::unordered_set<T *> registrees;
+    static std::atomic_bool cleaning;
+};
+
+template <typename T>
+std::unordered_set<T *> Registered<T>::registrees {
+    [] {
+        std::unordered_set<T *> tmp;
+        tmp.reserve(512);
+        return tmp;
+    }()
+};
+
+template <typename T>
+std::atomic_bool Registered<T>::cleaning {false};
+
 
 typedef std::deque<class Object *> ObjectDeque;
 
@@ -22,7 +87,7 @@ typedef enum {
     MOVEMENT_ATTACK_AVATAR
 } ObjectMovementBehavior;
 
-class Object {
+class Object: public Registered<Object> {
 public:
     enum Type {
         UNKNOWN,
@@ -32,10 +97,13 @@ public:
     };
 
     explicit Object(Type type = UNKNOWN);
-    Object(const Object &o);
-    Object &operator=(const Object &o);
+
+    Object(const Object &) = default;
+    Object(Object &&) noexcept = default;
+    Object &operator=(const Object &) = default;
+    Object &operator=(Object &&) noexcept = default;
+    // ReSharper disable once CppHidingFunction
     virtual ~Object();
-    static void cleanup();
 
     MapTile getTile() const
     {
@@ -84,7 +152,7 @@ public:
         return animated;
     }
 
-    void setTile(MapTile t)
+    void setTile(const MapTile t)
     {
         tile = t;
     }
@@ -94,7 +162,7 @@ public:
         tile = t->getId();
     }
 
-    void setPrevTile(MapTile t)
+    void setPrevTile(const MapTile t)
     {
         prevTile = t;
     }
@@ -138,15 +206,14 @@ public:
     void animateMovement() const;
 
 protected:
-    MapTile tile, prevTile;
+    std::deque<Map *> maps; /**< maps that this object is part of */
     Coords coords, prevCoords;
-    ObjectMovementBehavior movement_behavior;
-    Type objType;
-    std::deque<class Map *> maps; /**< maps that this object is part of */
-    bool focused;
-    bool visible;
-    bool animated;
-    static std::set<Object *> all_objects;
+    MapTile tile = 0, prevTile = 0;
+    ObjectMovementBehavior movement_behavior = MOVEMENT_FIXED;
+    Type objType = UNKNOWN;
+    bool focused = false;
+    bool visible = true;
+    bool animated = true;
 };
 
 #endif // OBJECT_H

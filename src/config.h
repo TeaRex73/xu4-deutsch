@@ -54,7 +54,9 @@ public:
     std::string getString(const std::string &element_name) const;
     int getInt(const std::string &element_name, int defaultValue = 0) const;
     bool getBool(const std::string &element_name) const;
-    int getEnum(const std::string &element_name, const char *enumValues[]) const;
+    int getEnum(
+        const std::string &element_name, const char *enumValues[]
+    ) const;
     std::vector<ConfigElement> getChildren() const;
 
     xmlNodePtr getNode() const

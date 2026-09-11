@@ -189,7 +189,9 @@ private:
 class TileAnimFrameContext:public TileAnimContext {
 public:
     explicit TileAnimFrameContext(int f);
-    bool isInContext(const Tile *t, MapTile mapTile, Direction d) const override;
+    bool isInContext(
+        const Tile *t, MapTile mapTile, Direction d
+    ) const override;
 
 private:
     int frame;
@@ -203,7 +205,9 @@ private:
 class TileAnimPlayerDirContext:public TileAnimContext {
 public:
     explicit TileAnimPlayerDirContext(Direction d);
-    bool isInContext(const Tile *t, MapTile mapTile, Direction d) const override;
+    bool isInContext(
+        const Tile *t, MapTile mapTile, Direction d
+    ) const override;
 
 private:
     Direction dir;

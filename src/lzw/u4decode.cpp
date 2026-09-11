@@ -103,7 +103,8 @@ long decompress_u4_memory(
         decompressed_filesize));
     /* testing: clear destination mem */
     memset(decompressed_mem, 0, decompressed_filesize);
-    const long errorCode = lzwDecompress(in, decompressed_mem, compressed_filesize);
+    const long errorCode =
+        lzwDecompress(in, decompressed_mem, compressed_filesize);
     *out = decompressed_mem;
     return errorCode;
 }

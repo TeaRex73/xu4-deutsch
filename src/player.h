@@ -88,12 +88,15 @@ enum EquipError {
 class PartyMember:public Creature, public Script::Provider {
 public:
     friend class Party;
+
     PartyMember(Party *p, SaveGamePlayerRecord *pr);
-    PartyMember(const PartyMember &p) = default;
-    PartyMember(PartyMember &&p) = default;
-    PartyMember &operator=(const PartyMember &p) = default;
-    PartyMember &operator=(PartyMember &&p) = default;
+
+    PartyMember(const PartyMember &) = default;
+    PartyMember(PartyMember &&) noexcept = default;
+    PartyMember &operator=(const PartyMember &) = default;
+    PartyMember &operator=(PartyMember &&) noexcept = default;
     ~PartyMember() override = default;
+
     void notifyOfChange();
     // Used to translate script values into something useful
     std::string translate(std::vector<std::string> &parts) override;
@@ -166,8 +169,8 @@ public:
 
 protected:
     static MapTile tileForClass(int klass);
-    SaveGamePlayerRecord *player;
     Party *party;
+    SaveGamePlayerRecord *player;
 };
 
 

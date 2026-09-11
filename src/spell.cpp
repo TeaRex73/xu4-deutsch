@@ -1027,7 +1027,8 @@ static bool spellTremor(int)
             soundPlay(SOUND_NPC_STRUCK);
             GameController::flashTile(coords, "hit_flash", 4);
             if (creature->getHp() > 23) {
-                ct->getCurrentPlayer()->dealDamage(creature, creature->getHp() - 23);
+                ct->getCurrentPlayer()
+                    ->dealDamage(creature, creature->getHp() - 23);
             }
         } else {
             soundPlay(SOUND_EVADE);

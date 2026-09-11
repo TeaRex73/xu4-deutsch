@@ -50,15 +50,14 @@ public:
     {
     }
 
+    /* Rule of Zero */
+
     // cppcheck-suppress noExplicitConstructor //implicit intended
     // NOLINTNEXTLINE(google-explicit-constructor, hicpp-explicit-conversions)
     MapTile(const TileId i, const unsigned char f = 0)
         :id(i), frame(f), freezeAnimation(false)
     {
     }
-
-    MapTile(const MapTile &t) = default;
-    MapTile &operator=(const MapTile &t) = default;
 
     TileId getId() const
     {

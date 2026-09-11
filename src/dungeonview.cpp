@@ -114,7 +114,8 @@ void DungeonView::display(const Context *ctx, TileView *view) const
                 if (type == DNG_GRAPHIC_DNG_TILE
                     || type == DNG_GRAPHIC_BASE_TILE) {
                     drawTile(
-                        ctx->location->map->tileset->get(tiles.front().getId()),
+                        ctx->location->map->tileset
+                            ->get(tiles.front().getId()),
                         0,
                         y,
                         static_cast<Direction>(ctx->saveGame->orientation)
@@ -139,7 +140,9 @@ void DungeonView::display(const Context *ctx, TileView *view) const
                 /* Only show blackness if there is no light */
                 if (ctx->party->getTorchDuration() <= 0) {
                     view->drawTile(black, false, x, y);
-                } else if (x == VIEWPORT_WIDTH / 2 && y == VIEWPORT_HEIGHT / 2) {
+                } else if (
+                    x == VIEWPORT_WIDTH / 2 && y == VIEWPORT_HEIGHT / 2
+                ) {
                     view->drawTile(avatar, false, x, y);
                 } else {
                     view->drawTile(tiles, false, x, y);

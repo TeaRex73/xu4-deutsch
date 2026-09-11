@@ -142,11 +142,13 @@ typedef enum {
 class Creature:public Object {
 public:
     explicit Creature(MapTile tile = MapTile(0));
-    Creature(const Creature &c) = default;
-    Creature(Creature &&c) = default;
-    Creature &operator=(const Creature &c) = default;
-    Creature &operator=(Creature &&c) = default;
+
+    Creature(const Creature &) = default;
+    Creature(Creature &&) noexcept = default;
+    Creature &operator=(const Creature &) = default;
+    Creature &operator=(Creature &&) noexcept = default;
     ~Creature() override = default;
+
     void load(const ConfigElement &conf);
 
     virtual std::string getName() const
@@ -407,22 +409,23 @@ protected:
     std::string name;
     std::string ranged_hit_tile;
     std::string ranged_miss_tile;
-    CreatureId id;
     std::string camouflage_tile;
-    CreatureId leader;
-    int base_hp;
-    int hp;
-    StatusType status;
-    int xp;
-    unsigned char ranged;
     std::string world_ranged_tile;
-    bool leaves_tile;
-    CreatureAttrib m_attr;
-    CreatureMovementAttrib movement_attr;
-    SlowedType slowed_type;
-    int encounter_size;
-    unsigned char resists;
-    CreatureId spawn;
+    int base_hp = 0;
+    int hp = 0;
+    int xp = 0;
+    int encounter_size = 0;
+    CreatureAttrib m_attr = static_cast<CreatureAttrib>(0);
+    CreatureMovementAttrib movement_attr =
+        static_cast<CreatureMovementAttrib>(0);
+    SlowedType slowed_type = SLOWED_BY_TILE;
+    CreatureId id = 0;
+    CreatureId leader = 0;
+    CreatureId spawn = 0;
+    StatusType status = STAT_GOOD;
+    unsigned char ranged = 0;
+    unsigned char resists = 0;
+    bool leaves_tile = false;
 };
 
 

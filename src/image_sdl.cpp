@@ -545,7 +545,10 @@ void Image::performTransparencyHack(
                         r,
                         g,
                         b,
-                        std::min(IM_OPAQUE, a + haloOpacityIncrementByPixelDistance / divisor)
+                        std::min(
+                            IM_OPAQUE,
+                            a + haloOpacityIncrementByPixelDistance / divisor
+                        )
                     );
                 }
             }

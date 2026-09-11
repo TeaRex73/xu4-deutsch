@@ -85,6 +85,11 @@ private:
  */
 class U4FILE {
 public:
+    U4FILE() = default;
+    U4FILE(const U4FILE &) = delete;
+    U4FILE &operator=(const U4FILE &) = delete;
+    U4FILE(U4FILE &&) = delete;
+    U4FILE &operator=(U4FILE &&) = delete;
     virtual ~U4FILE() = default;
 
     virtual void close() = 0;
@@ -110,7 +115,12 @@ public:
     {
     }
 
+    U4PATH(const U4PATH &) = delete;
+    U4PATH &operator=(const U4PATH &) = delete;
+    U4PATH(U4PATH &&) = delete;
+    U4PATH &operator=(U4PATH &&) = delete;
     ~U4PATH();
+
     void initDefaultPaths();
     static U4PATH *instance;
     static U4PATH *getInstance();

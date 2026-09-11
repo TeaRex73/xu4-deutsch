@@ -392,15 +392,16 @@ void GameController::init()
      * Translate info from the savegame to something we can use
      */
     if (c->location->prev) {
-        c->location->coords =
-            MapCoords(c->saveGame->x, c->saveGame->y, c->saveGame->dungeon_level);
+        c->location->coords = MapCoords(
+                c->saveGame->x, c->saveGame->y, c->saveGame->dungeon_level
+            );
         c->location->prev->coords =
             MapCoords(c->saveGame->dungeon_x, c->saveGame->dungeon_y);
     } else {
         c->location->coords = MapCoords(
             c->saveGame->x,
             c->saveGame->y,
-            static_cast<int>(c->saveGame->dungeon_level)
+            c->saveGame->dungeon_level
         );
     }
     c->saveGame->orientation =
@@ -516,7 +517,9 @@ static bool gameSave()
     c->location->map->resetObjectAnimations();
     /* fill the monster table so we can save it */
     c->location->map->fillMonsterTable(c->location);
-    if (!saveGameMonstersWrite(c->location->map->monster_table, monstersFile)) {
+    if (
+        !saveGameMonstersWrite(c->location->map->monster_table, monstersFile)
+    ) {
         screenMessage("Error writing to " MONSTERS_SAV_BASE_FILENAME "\n");
         std::fflush(monstersFile);
         fsync(fileno(monstersFile));
@@ -1956,7 +1959,8 @@ static bool destroyAt(const Coords &coords)
             const auto *m = dynamic_cast<Creature *>(obj);
             screenMessage("%s ZERST\\RT!\n", uppercase(m->getName()).c_str());
         } else {
-            const Tile *t = c->location->map->tileset->get(obj->getTile().getId());
+            const Tile *t =
+                c->location->map->tileset->get(obj->getTile().getId());
             screenMessage("%s ZERST\\RT!\n", uppercase(t->getName()).c_str());
         }
         c->location->map->removeObject(obj);
@@ -2339,7 +2343,8 @@ void getChest(int player)
         if (obj) {
             c->location->map->removeObject(obj);
         } else {
-            const TileId newTile = c->location->getReplacementTile(coords, tile);
+            const TileId newTile =
+                c->location->getReplacementTile(coords, tile);
             c->location->map->annotations->add(coords, newTile, false, true);
         }
         // see if the chest is trapped and handle it
@@ -3680,7 +3685,8 @@ static void gameFixupObjects(Map *map)
             // tile values stored in monsters.sav hardcoded to index
             // into base tilemap
             MapTile tile = TileMap::get("base")->translate(monster->tile);
-            const MapTile oldTile = TileMap::get("base")->translate(monster->previous_tile);
+            const MapTile oldTile =
+                TileMap::get("base")->translate(monster->previous_tile);
             const int limitForCreatures =
                 map->isDungeonMap() ?
                 MONSTER_TABLE_SIZE :
@@ -3705,7 +3711,7 @@ static void gameFixupObjects(Map *map)
             }
             /* set the map for our object */
             obj->setMap(map);
-            /* set tile / prevtile, fixes pirate ship direction */
+            /* set tile / prevTile, fixes pirate ship direction */
             obj->setTile(tile);
             obj->setPrevTile(oldTile);
             /* CHANGE: If first object in inanimate objects
@@ -4197,7 +4203,9 @@ void gameDestroyAllCreatures()
     } else {
         /* destroy all creatures on the map */
         Map *map = c->location->map;
-        for (auto current = map->objects.begin(); current != map->objects.end();) {
+        for (auto current = map->objects.begin();
+            current != map->objects.end();
+            /* nothing */) {
             const Creature *m = dynamic_cast<Creature *>(*current);
             if (m) {
                 /* the skull does not destroy Lord British */

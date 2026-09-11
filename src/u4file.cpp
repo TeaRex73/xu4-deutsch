@@ -36,6 +36,7 @@ namespace {
         U4FILE_stdio(U4FILE_stdio &&) = delete;
         U4FILE_stdio &operator=(const U4FILE_stdio &) = delete;
         U4FILE_stdio &operator=(U4FILE_stdio &&) = delete;
+        ~U4FILE_stdio() override = default;
 
         static U4FILE *open(const std::string &fname);
         void close() override;
@@ -69,8 +70,11 @@ namespace {
         U4FILE_zip(U4FILE_zip &&) = delete;
         U4FILE_zip &operator=(const U4FILE_zip &) = delete;
         U4FILE_zip &operator=(U4FILE_zip &&) = delete;
+        ~U4FILE_zip() override = default;
 
-        static U4FILE *open(const std::string &fname, const U4ZipPackage *package);
+        static U4FILE *open(
+            const std::string &fname, const U4ZipPackage *package
+        );
         void close() override;
         int seek(long offset, int whence) override;
         long tell() override;
@@ -103,9 +107,12 @@ namespace {
         U4FILE_xor(U4FILE_xor &&) = delete;
         U4FILE_xor &operator=(const U4FILE_xor &) = delete;
         U4FILE_xor &operator=(U4FILE_xor &&) = delete;
+        ~U4FILE_xor() override = default;
 
         static U4FILE *open(const std::string &fname);
-        static U4FILE *open(const std::string &fname, const U4ZipPackage *package);
+        static U4FILE *open(
+            const std::string &fname, const U4ZipPackage *package
+        );
         void close() override;
         int seek(long offset, int whence) override;
         long tell() override;

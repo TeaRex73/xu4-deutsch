@@ -1265,7 +1265,8 @@ void IntroController::initiateNewGame()
     menuArea.enableCursor();
     drawBeasties(false);
     screenRedrawScreen();
-    const std::string nameBuffer = ReadStringController::getString(8, &menuArea);
+    const std::string nameBuffer =
+        ReadStringController::getString(8, &menuArea);
     if (nameBuffer.empty()) {
         // the user didn't enter a name
         menuArea.disableCursor();

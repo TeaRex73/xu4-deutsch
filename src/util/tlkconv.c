@@ -145,7 +145,8 @@ static void xmlToTlk(const xmlDocPtr doc, FILE *tlk)
                     }
                     tlk_buffer[0] = trigger;
                     val = (const char *) xmlGetProp(child, (xmlChar *) "type");
-                    tlk_buffer[1] = (char) (unsigned char) strtoul(val, NULL, 10);
+                    tlk_buffer[1] =
+                        (char) (unsigned char) strtoul(val, NULL, 10);
                     for (q_child = child->children;
                          q_child;
                          q_child = q_child->next) {

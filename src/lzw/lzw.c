@@ -308,7 +308,9 @@ void discardRoot(
 
 
 /* output a root to memory */
-void outputRoot(const unsigned char root, unsigned char *destination, long *position)
+void outputRoot(
+    const unsigned char root, unsigned char *destination, long *position
+)
 {
     destination[*position] = root;
     (*position)++;

@@ -5,7 +5,6 @@
 #include "vc6.h" // Fixes things if you're using VC6, does nothing otherwise
 
 #include <algorithm>
-#include <set>
 
 #include "object.h"
 
@@ -15,51 +14,9 @@
 #include "map.h"
 #include "screen.h"
 
-
-std::set<Object *> Object::all_objects;
-
 Object::Object(const Type type)
-    :tile(0),
-     prevTile(0),
-     movement_behavior(MOVEMENT_FIXED),
-     objType(type),
-     focused(false),
-     visible(true),
-     animated(true)
+    : objType(type)
 {
-    all_objects.insert(this);
-}
-
-Object::Object(const Object &o)
-    :tile(o.tile),
-     prevTile(o.prevTile),
-     coords(o.coords),
-     prevCoords(o.prevCoords),
-     movement_behavior(o.movement_behavior),
-     objType(o.objType),
-     maps(o.maps),
-     focused(o.focused),
-     visible(o.visible),
-     animated(o.animated)
-{
-    all_objects.insert(this);
-}
-
-Object &Object::operator=(const Object &o)
-{
-    if (&o != this) {
-        tile = o.tile;
-        prevTile = o.prevTile;
-        coords = o.coords;
-        prevCoords = o.prevCoords;
-        movement_behavior = o.movement_behavior;
-        objType = o.objType;
-        maps = o.maps;
-        focused = o.focused;
-        visible = o.visible;
-        animated = o.animated;
-    }
-    return *this;
 }
 
 Object::~Object()
@@ -67,20 +24,6 @@ Object::~Object()
     if(c && c->lastShip == this) {
         c->lastShip = nullptr;
     }
-    all_objects.erase(this);
-}
-
-void Object::cleanup()
-{
-    for (auto i = all_objects.begin();
-         i != all_objects.end();
-         /* nothing */ ) {
-        auto tmp = i; /* save iterator so deletion doesn't affect it */
-        ++tmp;
-        delete *i;
-        i = tmp;
-    }
-    all_objects.clear();
 }
 
 void Object::setCoords(const Coords &co)

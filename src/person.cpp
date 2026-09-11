@@ -105,8 +105,8 @@ std::list<std::string> replySplit(const std::string &text)
     return reply;
 }  // replySplit
 
-Person::Person(MapTile tile)
-    :Creature(tile), dialogue(nullptr), start(0, 0), npcType(NPC_EMPTY)
+Person::Person(const MapTile tile)
+    :Creature(tile)
 {
     setType(PERSON);
 }

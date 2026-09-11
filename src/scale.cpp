@@ -299,19 +299,37 @@ static Image *scale2xSaI(const Image *src, int scale, int N)
                 src->getPixel(x, y, a.r, a.g, a.b, a.a);
                 src->getPixel(x + x_offset_1, y, b.r, b.g, b.b, b.a);
                 src->getPixel(x, y + y_offset_1, c.r, c.g, c.b, c.a);
-                src->getPixel(x + x_offset_1, y + y_offset_1, d.r, d.g, d.b, d.a);
+                src->getPixel(
+                    x + x_offset_1, y + y_offset_1, d.r, d.g, d.b, d.a
+                );
                 src->getPixel(x, y + y_offset_0, e.r, e.g, e.b, e.a);
-                src->getPixel(x + x_offset_1, y + y_offset_0, f.r, f.g, f.b, f.a);
+                src->getPixel(
+                    x + x_offset_1, y + y_offset_0, f.r, f.g, f.b, f.a
+                );
                 src->getPixel(x + x_offset_0, y, g.r, g.g, g.b, g.a);
-                src->getPixel(x + x_offset_0, y + y_offset_1, h.r, h.g, h.b, h.a);
-                src->getPixel(x + x_offset_0, y + y_offset_0, i.r, i.g, i.b, i.a);
-                src->getPixel(x + x_offset_2, y + y_offset_0, j.r, j.g, j.b, j.a);
+                src->getPixel(
+                    x + x_offset_0, y + y_offset_1, h.r, h.g, h.b, h.a
+                );
+                src->getPixel(
+                    x + x_offset_0, y + y_offset_0, i.r, i.g, i.b, i.a
+                );
+                src->getPixel(
+                    x + x_offset_2, y + y_offset_0, j.r, j.g, j.b, j.a
+                );
                 src->getPixel(x + x_offset_0, y, k.r, k.g, k.b, k.a);
-                src->getPixel(x + x_offset_0, y + y_offset_1, l.r, l.g, l.b, l.a);
-                src->getPixel(x + x_offset_0, y + y_offset_2, m.r, m.g, m.b, m.a);
+                src->getPixel(
+                    x + x_offset_0, y + y_offset_1, l.r, l.g, l.b, l.a
+                );
+                src->getPixel(
+                    x + x_offset_0, y + y_offset_2, m.r, m.g, m.b, m.a
+                );
                 src->getPixel(x, y + y_offset_2, n.r, n.g, n.b, n.a);
-                src->getPixel(x + x_offset_1, y + y_offset_2, o.r, o.g, o.b, o.a);
-                src->getPixel(x + x_offset_2, y + y_offset_2, p.r, p.g, p.b, p.a);
+                src->getPixel(
+                    x + x_offset_1, y + y_offset_2, o.r, o.g, o.b, o.a
+                );
+                src->getPixel(
+                    x + x_offset_2, y + y_offset_2, p.r, p.g, p.b, p.a
+                );
                 if (colorEqual(a, d) && !colorEqual(b, c)) {
                     if ((colorEqual(a, e)
                          && colorEqual(b, l))
@@ -494,15 +512,23 @@ static Image *scaleScale2x(const Image *src, int scale, int N)
                 } else {
                     x_offset_1 = 1;
                 }
-                src->getPixel(x + x_offset_0, y + y_offset_0, a.r, a.g, a.b, a.a);
+                src->getPixel(
+                    x + x_offset_0, y + y_offset_0, a.r, a.g, a.b, a.a
+                );
                 src->getPixel(x, y + y_offset_0, b.r, b.g, b.b, b.a);
-                src->getPixel(x + x_offset_1, y + y_offset_0, c.r, c.g, c.b, c.a);
+                src->getPixel(
+                    x + x_offset_1, y + y_offset_0, c.r, c.g, c.b, c.a
+                );
                 src->getPixel(x + x_offset_0, y, d.r, d.g, d.b, d.a);
                 src->getPixel(x, y, e.r, e.g, e.b, e.a);
                 src->getPixel(x + x_offset_1, y, f.r, f.g, f.b, f.a);
-                src->getPixel(x + x_offset_0, y + y_offset_1, g.r, g.g, g.b, g.a);
+                src->getPixel(
+                    x + x_offset_0, y + y_offset_1, g.r, g.g, g.b, g.a
+                );
                 src->getPixel(x, y + y_offset_1, h.r, h.g, h.b, h.a);
-                src->getPixel(x + x_offset_1, y + y_offset_1, i.r, i.g, i.b, i.a);
+                src->getPixel(
+                    x + x_offset_1, y + y_offset_1, i.r, i.g, i.b, i.a
+                );
                 // Lissen diagonals (45deg,135deg,225deg,315deg)
                 // corner : if there is gradient towards
                 // a diagonal direction, take the color

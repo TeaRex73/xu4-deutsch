@@ -50,22 +50,8 @@ bool isCreature(Object *pUnknown)
 /**
  * Creature class implementation
  */
-Creature::Creature(MapTile tile)
-    :Object(CREATURE),
-     id(0),
-     leader(0),
-     base_hp(0),
-     hp(0),
-     status(STAT_GOOD),
-     xp(0),
-     ranged(0),
-     leaves_tile(false),
-     m_attr(),
-     movement_attr(),
-     slowed_type(SLOWED_BY_TILE),
-     encounter_size(0),
-     resists(0),
-     spawn(0)
+Creature::Creature(const MapTile tile)
+    :Object(CREATURE)
 {
     const Creature *m = creatureMgr->getByTile(tile);
     if (m) {
@@ -181,7 +167,8 @@ void Creature::load(const ConfigElement &conf)
     /* get ranged miss tile */
     if (conf.exists("rangedmisstile")) {
         if (conf.getString("rangedmisstile") == "random") {
-            m_attr = static_cast<CreatureAttrib>(m_attr | M_ATTR_RANDOM_RANGED);
+            m_attr =
+                static_cast<CreatureAttrib>(m_attr | M_ATTR_RANDOM_RANGED);
         } else {
             setMissTile(conf.getString("rangedmisstile"));
         }
