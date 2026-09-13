@@ -20,12 +20,12 @@
 
 #include "error.h"
 #include "settings.h"
+#include "u4.h"
 #include "u4file.h"
 
 static void xmlAccumError(void *l, const char *fmt, ...);
 static void *xmlXu4FileOpen(const char *filename);
 static void xmlRegisterIO();
-extern bool verbose;
 static int ioRegistered = 0;
 
 static void *xmlXu4FileOpen(const char *filename)

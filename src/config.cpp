@@ -23,11 +23,11 @@
 
 #include "error.h"
 #include "settings.h"
+#include "u4.h"
 #include "u4file.h"
 #include "xml.h"
 
 
-extern bool verbose;
 Config *Config::instance = nullptr;
 static char DEFAULT_CONFIG_XML_LOCATION[] = "config.xml";
 char *Config::CONFIG_XML_LOCATION_POINTER = &DEFAULT_CONFIG_XML_LOCATION[0];
@@ -147,19 +147,6 @@ void Config::accumError(void *l, const char *fmt, ...)
 ConfigElement::ConfigElement(xmlNode *const xmlNode)
     :node(xmlNode), name(xc2c(xmlNode->name))
 {
-}
-
-ConfigElement::ConfigElement(const ConfigElement &e) = default;
-
-ConfigElement::~ConfigElement() = default;
-
-ConfigElement &ConfigElement::operator=(const ConfigElement &e)
-{
-    if (&e != this) {
-        node = e.node;
-        name = e.name;
-    }
-    return *this;
 }
 
 bool ConfigElement::exists(const std::string &element_name) const

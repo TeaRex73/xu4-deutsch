@@ -41,6 +41,12 @@ public:
      */
     class Provider {
     public:
+        Provider() = default;
+
+        Provider(const Provider &) = default;
+        Provider(Provider &&) noexcept = default;
+        Provider &operator=(const Provider &) = default;
+        Provider &operator=(Provider &&) noexcept = default;
         virtual ~Provider() = default;
 
         virtual std::string translate(std::vector<std::string> &parts) = 0;

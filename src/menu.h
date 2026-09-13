@@ -62,7 +62,13 @@ class Menu:public Observable<Menu *, MenuEvent &> {
 public:
     typedef std::list<MenuItem *> MenuItemList;
     Menu();
+
+    Menu(const Menu &) = delete;
+    Menu(Menu &&) = delete;
+    Menu &operator=(const Menu &) = delete;
+    Menu &operator=(Menu &&) = delete;
     ~Menu() override;
+
     void removeAll();
     void add(int id, const std::string &text, int x, int y, int sc = -1);
     MenuItem *add(int id, MenuItem *item);
@@ -105,10 +111,13 @@ private:
 class MenuController:public WaitableController<void *> {
 public:
     MenuController(Menu *menu, TextView *view);
+
     MenuController(const MenuController &) = delete;
     MenuController(MenuController &&) = delete;
     MenuController &operator=(const MenuController &) = delete;
     MenuController &operator=(MenuController &&) = delete;
+    ~MenuController() override = default;
+
     bool keyPressed(int key) override;
 
 protected:

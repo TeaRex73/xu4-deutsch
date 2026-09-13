@@ -67,7 +67,13 @@ private:
 class TileAnimPixelTransform:public TileAnimTransform {
 public:
     TileAnimPixelTransform(int x, int y);
+
+    TileAnimPixelTransform(const TileAnimPixelTransform &) = delete;
+    TileAnimPixelTransform(TileAnimPixelTransform &&) = delete;
+    TileAnimPixelTransform &operator=(const TileAnimPixelTransform &) = delete;
+    TileAnimPixelTransform &operator=(TileAnimPixelTransform &&) = delete;
     ~TileAnimPixelTransform() override;
+
     void draw(Image *dest, Tile *tile, MapTile mapTile) override;
     bool drawsTile() const override;
     int x, y;
@@ -175,6 +181,10 @@ public:
                                     context. */
     }
 
+    TileAnimContext(const TileAnimContext&) = delete;
+    TileAnimContext(TileAnimContext&&) = delete;
+    TileAnimContext& operator=(const TileAnimContext&) = delete;
+    TileAnimContext& operator=(TileAnimContext&&) = delete;
     virtual ~TileAnimContext();
 
 private:
@@ -222,7 +232,13 @@ private:
 class TileAnim {
 public:
     explicit TileAnim(const ConfigElement &conf);
+
+    TileAnim(const TileAnim &) = delete;
+    TileAnim(TileAnim &&) = delete;
+    TileAnim &operator=(const TileAnim &) = delete;
+    TileAnim &operator=(TileAnim &&) = delete;
     ~TileAnim();
+
     std::string name;
     std::vector<TileAnimTransform *> transforms;
     std::vector<TileAnimContext *> contexts;
@@ -242,7 +258,13 @@ class TileAnimSet {
 
 public:
     explicit TileAnimSet(const ConfigElement &conf);
+
+    TileAnimSet(const TileAnimSet &) = delete;
+    TileAnimSet(TileAnimSet &&) = delete;
+    TileAnimSet &operator=(const TileAnimSet &) = delete;
+    TileAnimSet &operator=(TileAnimSet &&) = delete;
     ~TileAnimSet();
+
     TileAnim *getByName(const std::string &nameToFind);
     std::string name;
     TileAnimMap tileAnimations;

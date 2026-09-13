@@ -66,7 +66,7 @@ void SoundManager::play_sys(
     // spin lock - EventHandler::sleep() might block far too long
     // SDL_Delay(1) to yield thread, since otherwise valgrind can't debug this
     while (!onlyOnce && !finished) {
-        SDL_Delay(1);
+        SDL_Delay(1); // NOLINT(misc-include-cleaner)
     }
     if (finished || !onlyOnce) {
         finished = false;

@@ -32,7 +32,13 @@ bool ImageInfo::hasBlackBackground() const
 class ImageSet {
 public:
     ImageSet() = default;
+
+    ImageSet(const ImageSet &) = delete;
+    ImageSet &operator=(const ImageSet &) = delete;
+    ImageSet(ImageSet &&) = delete;
+    ImageSet &operator=(ImageSet &&) = delete;
     ~ImageSet();
+
     std::string name;
     std::string location;
     std::string extends;

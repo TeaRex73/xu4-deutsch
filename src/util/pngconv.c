@@ -7,17 +7,17 @@
 #include "pngconv.h"
 
 
-static void *my_malloc(size_t size);
+static void *my_malloc(size_t size); // NOLINT(misc-include-cleaner)
 static void setBWPalette(png_color *palette);
 static void setEgaPalette(png_color *palette);
 static void setVgaPalette(png_color *palette);
 
 static void *my_malloc(const size_t size)
 {
-    void *ret = malloc(size);
+    void *ret = malloc(size); // NOLINT(misc-include-cleaner)
     if (!ret) {
-        perror("out of memory");
-        exit(EXIT_FAILURE);
+        perror("out of memory"); // NOLINT(misc-include-cleaner)
+        exit(EXIT_FAILURE); // NOLINT(misc-include-cleaner)
     }
     return ret;
 }
@@ -80,19 +80,19 @@ static void setEgaPalette(png_color *palette)
 
 static void setVgaPalette(png_color *palette)
 {
-    FILE *pal;
+    FILE *pal; // NOLINT(misc-include-cleaner)
     int i;
-    pal = fopen("u4vga.pal", "rb");
+    pal = fopen("u4vga.pal", "rb"); // NOLINT(misc-include-cleaner)
     if (!pal) {
         perror("u4vga.pal");
         exit(1);
     }
     for (i = 0; i < 256; i++) {
-        palette[i].red = getc(pal) * 255 / 63;
+        palette[i].red = getc(pal) * 255 / 63; // NOLINT(misc-include-cleaner)
         palette[i].green = getc(pal) * 255 / 63;
         palette[i].blue = getc(pal) * 255 / 63;
     }
-    fclose(pal);
+    fclose(pal); // NOLINT(misc-include-cleaner)
 }
 
 int writePngFromEga(
@@ -110,7 +110,7 @@ int writePngFromEga(
     int bit_depth, color_type, interlace_type, compression_type, filter_method;
     int palette_size;
     png_color *palette = NULL;
-    png_byte **row_pointers;
+    png_byte **row_pointers; // NOLINT(misc-include-cleaner)
     int i, j;
     row_pointers = (png_byte **)my_malloc(height * sizeof(png_byte *));
     for (i = 0; i < height; i++)
@@ -129,6 +129,7 @@ int writePngFromEga(
     }
     png_ptr = png_create_write_struct(PNG_LIBPNG_VER_STRING, NULL, NULL, NULL);
     if (!png_ptr) {
+        // NOLINTNEXTLINE(misc-include-cleaner)
         fprintf(stderr, "png_create_write_struct error\n");
         exit(1);
     }
@@ -155,6 +156,7 @@ int writePngFromEga(
     }
     if (palette_size != 0) {
         palette = (png_color *)my_malloc(sizeof(png_color) * palette_size);
+        // NOLINTNEXTLINE(misc-include-cleaner)
         printf("palette size = %d\n", palette_size);
         if (palette_size == 2) {
             setBWPalette(palette);
@@ -183,7 +185,7 @@ int writePngFromEga(
         color_type = PNG_COLOR_TYPE_RGB_ALPHA;
         break;
     default:
-        abort();
+        abort(); // NOLINT(misc-include-cleaner)
     }
     interlace_type = PNG_INTERLACE_NONE;
     compression_type = PNG_COMPRESSION_TYPE_DEFAULT;
@@ -191,7 +193,7 @@ int writePngFromEga(
     png_set_IHDR(
         png_ptr,
         info_ptr,
-        (png_uint_32) width,
+        (png_uint_32) width, // NOLINT(misc-include-cleaner)
         (png_uint_32) height,
         bit_depth,
         color_type,
@@ -205,7 +207,7 @@ int writePngFromEga(
     png_set_rows(png_ptr, info_ptr, row_pointers);
     png_write_png(png_ptr, info_ptr, PNG_TRANSFORM_IDENTITY, NULL);
     fclose(fp);
-    if (palette) free(palette);
+    if (palette) free(palette); // NOLINT(misc-include-cleaner)
     return 0;
 }
 
@@ -228,6 +230,7 @@ int readEgaFromPng(
         perror(fname);
         exit(1);
     }
+    // NOLINTNEXTLINE(misc-include-cleaner)
     if (fread(header, 1, sizeof(header), fp) != sizeof(header)) {
         perror("fread failed");
     }

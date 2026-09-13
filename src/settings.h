@@ -166,7 +166,12 @@ public:
     {
     }
 
+    SettingsData(const SettingsData &) = default;
+    SettingsData &operator=(const SettingsData &) = default;
+    SettingsData(SettingsData &&) noexcept = default;
+    SettingsData &operator=(SettingsData &&) noexcept = default;
     virtual ~SettingsData() = default;
+
     bool operator==(const SettingsData &) const;
     bool operator!=(const SettingsData &) const;
     int battleSpeed;
@@ -226,6 +231,10 @@ class Settings
 public:
     void init(bool useProfile, const std::string &profileName);
 
+    Settings(const Settings &) = delete;
+    Settings &operator=(const Settings &) = delete;
+    Settings(Settings &&) = delete;
+    Settings &operator=(Settings &&) = delete;
     ~Settings() override = default;
 
     static Settings &getInstance()

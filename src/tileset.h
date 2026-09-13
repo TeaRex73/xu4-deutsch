@@ -64,6 +64,7 @@ public:
     Tileset(Tileset &&) = delete;
     Tileset &operator=(const Tileset &) = delete;
     Tileset &operator=(Tileset &&) = delete;
+    ~Tileset() = default;
 
     static void loadAll();
     static void unloadAll();

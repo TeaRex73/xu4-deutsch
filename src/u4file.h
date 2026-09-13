@@ -68,6 +68,11 @@ public:
         return packages;
     }
 
+    U4ZipPackageMgr(const U4ZipPackageMgr &) = delete;
+    U4ZipPackageMgr &operator=(const U4ZipPackageMgr &) = delete;
+    U4ZipPackageMgr(U4ZipPackageMgr &&) = delete;
+    U4ZipPackageMgr &operator=(U4ZipPackageMgr &&) = delete;
+
 private:
     U4ZipPackageMgr();
     ~U4ZipPackageMgr();

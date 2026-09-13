@@ -21,6 +21,7 @@ ImageLoader *PngImageLoader::instance = registerLoader(
 );
 
 static void png_read_xu4(
+    // NOLINTNEXTLINE(misc-misplaced-const, misc-include-cleaner)
     const png_structp png_ptr, const png_bytep data, const png_size_t length
 )
 {
@@ -48,6 +49,7 @@ Image *PngImageLoader::load(
     file->read(header, 1, sizeof(header));
     if (png_sig_cmp(
             // ReSharper disable once CppRedundantCastExpression
+            // NOLINTNEXTLINE(misc-include-cleaner)
             static_cast<png_byte *>(header), 0, sizeof(header)
         ) != 0) {
         return nullptr;
@@ -74,14 +76,14 @@ Image *PngImageLoader::load(
         );
         return nullptr;
     }
-    if (setjmp(png_jmpbuf(png_ptr))) {
+    if (setjmp(png_jmpbuf(png_ptr))) { // NOLINT(cert-err52-cpp)
         png_destroy_read_struct(&png_ptr, &info_ptr, &end_info);
         return nullptr;
     }
     png_set_read_fn(png_ptr, file, &png_read_xu4);
     png_set_sig_bytes(png_ptr, sizeof(header));
     png_read_png(png_ptr, info_ptr, PNG_TRANSFORM_IDENTITY, nullptr);
-    png_uint_32 p_width, p_height;
+    png_uint_32 p_width, p_height; // NOLINT(misc-include-cleaner)
     int bit_depth, color_type, interlace_type;
     int compression_type, filter_method;
     png_get_IHDR(

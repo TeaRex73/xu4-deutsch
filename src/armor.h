@@ -15,6 +15,11 @@ enum ClassType: unsigned char;
 
 class Armor {
 public:
+    Armor(const Armor &) = delete;
+    Armor &operator=(const Armor &) = delete;
+    Armor(Armor &&) = delete;
+    Armor &operator=(Armor &&) = delete;
+
     static void cleanup();
 
     static const Armor *get(ArmorType a);
@@ -49,12 +54,6 @@ public:
 
 private:
     explicit Armor(const ConfigElement &conf);
-public:
-    Armor(const Armor &) = delete;
-    Armor &operator=(const Armor &) = delete;
-    Armor(Armor &&) noexcept = delete;
-    Armor &operator=(Armor &&) noexcept = delete;
-private:
     ~Armor();
     static void loadConf();
     static bool confLoaded;

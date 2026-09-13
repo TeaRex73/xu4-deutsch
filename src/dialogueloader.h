@@ -22,6 +22,12 @@ class Dialogue;
  */
 class DialogueLoader {
 public:
+    DialogueLoader() = default;
+
+    DialogueLoader(const DialogueLoader &) = delete;
+    DialogueLoader &operator=(const DialogueLoader &) = delete;
+    DialogueLoader(DialogueLoader &&) = delete;
+    DialogueLoader &operator=(DialogueLoader &&) = delete;
     virtual ~DialogueLoader() = default;
 
     static DialogueLoader *getLoader(const std::string &mimeType);

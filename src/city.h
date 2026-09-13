@@ -29,8 +29,8 @@ public:
 
     City(const City &) = delete;
     City &operator=(const City &) = delete;
-    City(const City &&) noexcept = delete;
-    City &operator=(const City &&) noexcept = delete;
+    City(const City &&) = delete;
+    City &operator=(const City &&) = delete;
     ~City() override;
     
     std::string getName() override;

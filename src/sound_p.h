@@ -48,7 +48,12 @@ typedef Mix_Chunk OSSoundChunk;
 
 class SoundManager {
 public:
+    SoundManager(const SoundManager &) = delete;
+    SoundManager &operator=(const SoundManager &) = delete;
+    SoundManager(SoundManager &&) = delete;
+    SoundManager &operator=(SoundManager &&) = delete;
     ~SoundManager();
+
     static SoundManager *getInstance();
     bool init();
     bool load(Sound sound);

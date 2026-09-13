@@ -17,9 +17,9 @@ public:
     explicit CheatMenuController(GameController *game);
 
     CheatMenuController(const CheatMenuController &) = delete;
-    CheatMenuController(CheatMenuController &&) noexcept = delete;
+    CheatMenuController(CheatMenuController &&) = delete;
     CheatMenuController &operator=(const CheatMenuController &) = delete;
-    CheatMenuController &operator=(CheatMenuController &&) noexcept = delete;
+    CheatMenuController &operator=(CheatMenuController &&) = delete;
     ~CheatMenuController() override = default;
 
     bool keyPressed(int key) override;

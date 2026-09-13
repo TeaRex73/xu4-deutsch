@@ -8,6 +8,7 @@
 #include <map>
 #include <set>
 #include <string>
+#include <utility>
 #include <vector>
 
 #include "location.h"
@@ -41,14 +42,14 @@ static Location *locationPop(Location **stack);
  * start a new stack if 'prev' is nullptr
  */
 Location::Location(
-    const MapCoords &coords,
+    MapCoords coords,
     Map *map,
     const int viewMode,
     const LocationContext ctx,
     TurnCompleter *turnCompleter,
     Location *prev
 )
-    :coords(coords),
+    :coords(std::move(coords)),
      map(map),
      viewMode(viewMode),
      context(ctx),

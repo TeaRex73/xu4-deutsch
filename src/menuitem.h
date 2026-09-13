@@ -84,10 +84,12 @@ public:
     BoolMenuItem(
         const std::string &text, int x, int y, int shortcutKey, bool *val
     );
+
     BoolMenuItem(const BoolMenuItem &) = delete;
     BoolMenuItem(BoolMenuItem &&) = delete;
     BoolMenuItem &operator=(const BoolMenuItem &) = delete;
     BoolMenuItem &operator=(BoolMenuItem &&) = delete;
+    ~BoolMenuItem() override = default;
 
     BoolMenuItem *setValueStrings(
         const std::string &onString, const std::string &offString
@@ -115,10 +117,12 @@ public:
         std::string *val,
         const std::vector<std::string> &validSettings
     );
+
     StringMenuItem(const StringMenuItem &) = delete;
     StringMenuItem(StringMenuItem &&) = delete;
     StringMenuItem &operator=(const StringMenuItem &) = delete;
     StringMenuItem &operator=(StringMenuItem &&) = delete;
+    ~StringMenuItem() override = default;
 
     void activate(MenuEvent &event) override;
     std::string getText() const override;
@@ -146,10 +150,12 @@ public:
         int increment,
         menuOutputType output = MENU_OUTPUT_INT
     );
+
     IntMenuItem(const IntMenuItem &) = delete;
     IntMenuItem(IntMenuItem &&) = delete;
     IntMenuItem &operator=(const IntMenuItem &) = delete;
     IntMenuItem &operator=(IntMenuItem &&) = delete;
+    ~IntMenuItem() override = default;
 
     void activate(MenuEvent &event) override;
     std::string getText() const override;
@@ -177,10 +183,12 @@ public:
         unsigned short increment,
         menuOutputType output = MENU_OUTPUT_INT
     );
+
     UnsignedShortMenuItem(const UnsignedShortMenuItem &) = delete;
     UnsignedShortMenuItem(UnsignedShortMenuItem &&) = delete;
     UnsignedShortMenuItem &operator=(const UnsignedShortMenuItem &) = delete;
     UnsignedShortMenuItem &operator=(UnsignedShortMenuItem &&) = delete;
+    ~UnsignedShortMenuItem() override = default;
 
     void activate(MenuEvent &event) override;
     std::string getText() const override;
@@ -191,4 +199,4 @@ protected:
     menuOutputType output;
 };
 
-#endif // ifndef MENUITEM_H
+#endif // MENUITEM_H

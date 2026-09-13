@@ -158,7 +158,7 @@ unsigned char Dungeon::subTokenAt(const MapCoords &coords) const
 
 
 /**
- * Handles 's'earching while in dungeons
+ * Handles searching while in dungeons
  */
 void dungeonSearch()
 {
@@ -276,42 +276,42 @@ void dungeonTouchOrb()
         c->location->getReplacementTile(c->location->coords, orb_tile);
     switch (c->location->map->id) {
     case MAP_DECEIT:
-        stats = STATSBONUS_INT;
+        stats = STATS_BONUS_INT;
         break;
     case MAP_DESPISE:
-        stats = STATSBONUS_DEX;
+        stats = STATS_BONUS_DEX;
         break;
     case MAP_DESTARD:
-        stats = STATSBONUS_STR;
+        stats = STATS_BONUS_STR;
         break;
     case MAP_WRONG:
-        stats = STATSBONUS_INT | STATSBONUS_DEX;
+        stats = STATS_BONUS_INT | STATS_BONUS_DEX;
         break;
     case MAP_COVETOUS:
-        stats = STATSBONUS_DEX | STATSBONUS_STR;
+        stats = STATS_BONUS_DEX | STATS_BONUS_STR;
         break;
     case MAP_SHAME:
-        stats = STATSBONUS_INT | STATSBONUS_STR;
+        stats = STATS_BONUS_INT | STATS_BONUS_STR;
         break;
     case MAP_HYTHLOTH:
-        stats = STATSBONUS_INT | STATSBONUS_DEX | STATSBONUS_STR;
+        stats = STATS_BONUS_INT | STATS_BONUS_DEX | STATS_BONUS_STR;
         break;
     default:
         break;
     }
     screenMessage("\n");
     /* give stats bonuses */
-    if (stats & STATSBONUS_STR) {
+    if (stats & STATS_BONUS_STR) {
         screenMessage("Str + 5\n");
         AdjustValueMax(c->saveGame->players[player].str, 5, 50);
         damage *= 2;
     }
-    if (stats & STATSBONUS_DEX) {
+    if (stats & STATS_BONUS_DEX) {
         screenMessage("Ges + 5\n");
         AdjustValueMax(c->saveGame->players[player].dex, 5, 50);
         damage *= 2;
     }
-    if (stats & STATSBONUS_INT) {
+    if (stats & STATS_BONUS_INT) {
         screenMessage("Int + 5\n");
         AdjustValueMax(c->saveGame->players[player].intel, 5, 50);
         damage *= 2;

@@ -18,7 +18,7 @@
  *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-// Ultima 6 dempression utility
+// Ultima 6 decompression utility
 // Last updated on 18-February-2005
 
 /*
@@ -51,17 +51,17 @@ unsigned char U6Decode::read1(std::FILE *f)
 
 long U6Decode::read4(std::FILE *f)
 {
-    unsigned char b0 = std::fgetc(f);
-    unsigned char b1 = std::fgetc(f);
-    unsigned char b2 = std::fgetc(f);
-    unsigned char b3 = std::fgetc(f);
+    const unsigned char b0 = std::fgetc(f);
+    const unsigned char b1 = std::fgetc(f);
+    const unsigned char b2 = std::fgetc(f);
+    const unsigned char b3 = std::fgetc(f);
     return b0 + (b1 << 8) + (b2 << 16) + (b3 << 24);
 }
 
 long U6Decode::get_filesize(std::FILE *input_file)
 {
     std::fseek(input_file, 0, SEEK_END);
-    long file_length = std::ftell(input_file);
+    const long file_length = std::ftell(input_file);
     std::fseek(input_file, 0, SEEK_SET);
     return file_length;
 }
@@ -88,7 +88,7 @@ bool U6Decode::is_valid_lzw_file(std::FILE *input_file)
     const unsigned char b0 = std::fgetc(input_file);
     const unsigned char b1 = std::fgetc(input_file);
     std::fseek(input_file, 0, SEEK_SET);
-    if ((b0 != 0) || ((b1 & 1) != 1)) {
+    if (b0 != 0 || (b1 & 1) != 1) {
         return false;
     }
     return true;

@@ -31,6 +31,12 @@ class Dungeon;
  */
 class MapLoader {
 public:
+    MapLoader() = default;
+
+    MapLoader(const MapLoader &) = delete;
+    MapLoader &operator=(const MapLoader &) = delete;
+    MapLoader(MapLoader &&) = delete;
+    MapLoader &operator=(MapLoader &&) = delete;
     virtual ~MapLoader() = default;
 
     static MapLoader *getLoader(Map::Type type);

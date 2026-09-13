@@ -119,6 +119,7 @@ public:
     ReagentsMenuController(ReagentsMenuController &&) = delete;
     ReagentsMenuController &operator=(const ReagentsMenuController &) = delete;
     ReagentsMenuController &operator=(ReagentsMenuController &&) = delete;
+    ~ReagentsMenuController() override = default;
 
     bool keyPressed(int key) override;
 

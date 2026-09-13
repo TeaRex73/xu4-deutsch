@@ -28,7 +28,13 @@ class Image;
 class TextView:public View {
 public:
     TextView(int x, int y, int columns, int rows);
+
+    TextView(const TextView &) = delete;
+    TextView &operator=(const TextView &) = delete;
+    TextView(TextView &&) = delete;
+    TextView &operator=(TextView &&) = delete;
     ~TextView() override;
+
     void reinit() override;
 
     int getCursorX() const

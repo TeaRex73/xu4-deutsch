@@ -1,6 +1,14 @@
 #ifndef VC6_H
 #define VC6_H
 
+#ifdef __cplusplus
+#   include <cstdio>
+#   define STD_FILE std::FILE
+#else
+#   include <stdio.h>
+#   define STD_FILE FILE
+#endif
+
 // IWYU pragma: always_keep
 
 /* VC6 Compiler issues */
@@ -30,17 +38,23 @@
 #if defined(__WIN32__) || defined(WIN32) || defined (_WIN32) \
   || defined(__CYGWIN__)
 
-/* also nop sync and fsync - on a PC, they're not as necessary */
+/* also nop sync and implement fsync - sync() has no Windows equivalent */
+#include <io.h>
 
 static inline int fsync(int fd)
 {
-  (void) fd;
-  return 0;
+  return _commit(fd);
+}
+
+static inline int fileno(STD_FILE *f)
+{
+    return _fileno(f);
 }
 
 static inline void sync(void)
 {
 }
+
 #else
 # include <unistd.h>
 #endif

@@ -188,10 +188,12 @@ public:
         init(s);
 #endif
     }
+
     Performance(const Performance &) = delete;
     Performance(Performance &&) = delete;
     Performance &operator=(const Performance &) = delete;
     Performance &operator=(Performance &&) = delete;
+    ~Performance() = default;
 
     void init(const std::string &
 #ifndef NPERF

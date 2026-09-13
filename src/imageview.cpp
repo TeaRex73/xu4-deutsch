@@ -21,8 +21,6 @@ ImageView::ImageView(
 {
 }
 
-ImageView::~ImageView() = default;
-
 /**
  * Draw the image at the optionally specified offset.
  */

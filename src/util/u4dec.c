@@ -18,50 +18,52 @@ static int isPowerOfTwo(int n);
  */
 int main(const int argc, const char *argv[])
 {
-    FILE *infile;
+    FILE *infile; // NOLINT(misc-include-cleaner)
     unsigned char *in_data, *out_data;
     long in_len, out_len;
     const char *alg, *in_file_name, *out_file_name;
     int width, height;
     int cond1, cond2;
     if (argc != 4 && argc != 6) {
-        fprintf(
+        fprintf( // NOLINT(misc-include-cleaner)
             stderr, "usage: u4dec rle|lzw|raw infile outfile [width height]\n"
         );
-        exit(EXIT_FAILURE);
+        exit(EXIT_FAILURE); // NOLINT(misc-include-cleaner)
     }
     alg = argv[1];
     in_file_name = argv[2];
     out_file_name = argv[3];
     if (argc > 4) {
-        width = (int)strtoul(argv[4], NULL, 0);
+        width = (int)strtoul(argv[4], NULL, 0); // NOLINT(misc-include-cleaner)
         height = (int)strtoul(argv[5], NULL, 0);
     } else {
         width = 320;
         height = 200;
     }
+    // NOLINTNEXTLINE(misc-include-cleaner)
     printf("decoding %s image of size %dx%d\n", alg, width, height);
-    infile = fopen(in_file_name, "rb");
+    infile = fopen(in_file_name, "rb"); // NOLINT(misc-include-cleaner)
     if (!infile) {
+        perror(in_file_name); // NOLINT(misc-include-cleaner)
+        exit(EXIT_FAILURE);
+    }
+    if (fseek(infile, 0L, SEEK_END)) { // NOLINT(misc-include-cleaner)
         perror(in_file_name);
         exit(EXIT_FAILURE);
     }
-    if (fseek(infile, 0L, SEEK_END)) {
-        perror(in_file_name);
-        exit(EXIT_FAILURE);
-    }
-    in_len = ftell(infile);
+    in_len = ftell(infile); // NOLINT(misc-include-cleaner)
     fseek(infile, 0L, SEEK_SET);
-    in_data = (unsigned char *)malloc(in_len);
+    in_data = (unsigned char *)malloc(in_len); // NOLINT(misc-include-cleaner)
     if (!in_data) {
         perror("out of memory");
         exit(EXIT_FAILURE);
     }
+    // NOLINTNEXTLINE(misc-include-cleaner)
     if ((long)fread(in_data, 1, in_len, infile) != in_len) {
         perror("fread failed");
     }
-    fclose(infile);
-    if (strcmp(alg, "lzw") == 0) {
+    fclose(infile); // NOLINT(misc-include-cleaner)
+    if (strcmp(alg, "lzw") == 0) { // NOLINT(misc-include-cleaner)
         out_len = lzwGetDecompressedSize(in_data, in_len);
         out_data = (unsigned char *)malloc(out_len);
         if (!out_data) {

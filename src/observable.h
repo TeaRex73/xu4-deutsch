@@ -31,6 +31,10 @@ public:
     {
     }
 
+    Observable(const Observable &o) = default;
+    Observable &operator=(const Observable &o) = default;
+    Observable(Observable &&o) noexcept = default;
+    Observable &operator=(Observable &&o) noexcept= default;
     virtual ~Observable() = default;
 
     void addObserver(Observer<O, A> *o)

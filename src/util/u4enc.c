@@ -23,7 +23,7 @@ static struct {
     int occupied;
 } lzw_dict[DICT_SIZE];
 
-static void putc_12(int c, FILE *out);
+static void putc_12(int c, FILE *out); // NOLINT(misc-include-cleaner)
 static void flush_12(FILE *out);
 static void init_dict(void);
 static int get_code(unsigned char *str, int len);
@@ -37,7 +37,7 @@ static void add_code(unsigned char *str, int len);
 static void putc_12(const int c, FILE *out)
 {
     if (save == -1) {
-        putc(c >> 4, out);
+        putc(c >> 4, out); // NOLINT(misc-include-cleaner)
         save = c & 0x0f;
     } else {
         putc((save << 4) | (c >> 8), out);
@@ -68,10 +68,11 @@ static void init_dict(void)
     dict_size = 0;
     for (i = 0; i < 256; i++) {
         lzw_dict[i].len = 1;
+        // NOLINTNEXTLINE(misc-include-cleaner)
         lzw_dict[i].data = (unsigned char *)strdup("");
         if (!lzw_dict[i].data) {
-            perror("out of memory");
-            exit(EXIT_FAILURE);
+            perror("out of memory"); // NOLINT(misc-include-cleaner)
+            exit(EXIT_FAILURE); // NOLINT(misc-include-cleaner)
         }
         lzw_dict[i].data[0] = i;
         lzw_dict[i].occupied = 1;
@@ -99,6 +100,7 @@ static int get_code(unsigned char *str, const int len)
     hash_code = probe1(str[len - 1], prefix_code);
     if (lzw_dict[hash_code].occupied
         && lzw_dict[hash_code].len == len
+        // NOLINTNEXTLINE(misc-include-cleaner)
         && memcmp(lzw_dict[hash_code].data, str, len) == 0) {
         return hash_code;
     }
@@ -139,6 +141,7 @@ static void add_code(unsigned char *str, int len)
         } while (lzw_dict[hashcode].occupied);
     }
     lzw_dict[hashcode].len = len;
+    // NOLINTNEXTLINE(misc-include-cleaner)
     lzw_dict[hashcode].data = (unsigned char *) malloc(len);
     if (!lzw_dict[hashcode].data) {
         perror("out of memory");
@@ -163,13 +166,14 @@ int main(const int argc, char *argv[])
     unsigned char *data;
     const unsigned char *p;
     if (argc != 4) {
+        // NOLINTNEXTLINE(misc-include-cleaner)
         fprintf(stderr, "usage: u4enc rle|lzw|raw infile outfile\n");
         exit(EXIT_FAILURE);
     }
     alg = argv[1];
     in_file_name = argv[2];
     out_file_name = argv[3];
-    out = fopen(out_file_name, "wb");
+    out = fopen(out_file_name, "wb"); // NOLINT(misc-include-cleaner)
     if (!out) {
         perror(out_file_name);
         exit(EXIT_FAILURE);
@@ -177,7 +181,7 @@ int main(const int argc, char *argv[])
     readEgaFromPng(&data, &height, &width, &bits, in_file_name);
     data_length = width * height * bits / 8;
     fprintf(stderr, "image is %dx%d (%d bits)\n", width, height, bits);
-    if (strcmp(alg, "lzw") == 0) {
+    if (strcmp(alg, "lzw") == 0) { // NOLINT(misc-include-cleaner)
         unsigned char str[4096];
         int idx;
         init_dict();
@@ -275,11 +279,11 @@ int main(const int argc, char *argv[])
             }
         }
     } else if (strcmp(alg, "raw") == 0) {
-        fwrite(data, data_length, 1, out);
+        fwrite(data, data_length, 1, out); // NOLINT(misc-include-cleaner)
     } else {
         fprintf(stderr, "unknown algorithm %s\n", alg);
         exit(EXIT_FAILURE);
     }
-    fclose(out);
+    fclose(out); // NOLINT(misc-include-cleaner)
     return EXIT_SUCCESS;
 }

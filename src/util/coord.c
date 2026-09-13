@@ -7,7 +7,7 @@ int main(const int argc, const char *argv[])
     const char *x, *y;
     int n;
     if (argc != 3 || !argv[1] || !argv[2]) {
-        fprintf(
+        fprintf( // NOLINT(misc-include-cleaner)
             stderr,
             "coord: a simple program to convert between numeric and sextant "
             "coordinates for Ultima IV\n"
@@ -19,17 +19,18 @@ int main(const int argc, const char *argv[])
         fprintf(
             stderr, "example: coord BE EF (converts to numeric coordinates)\n"
         );
-        exit(1);
+        exit(1); // NOLINT(misc-include-cleaner)
     }
     x = argv[1];
     y = argv[2];
-    if (isdigit(x[0])) {
-        n = (int)strtoul(x, NULL, 0);
+    if (isdigit(x[0])) { // NOLINT(misc-include-cleaner)
+        n = (int)strtoul(x, NULL, 0); // NOLINT(misc-include-cleaner)
+        // NOLINTNEXTLINE(misc-include-cleaner)
         printf("%c'%c\"\n", n / 16 + 'A', n % 16 + 'A');
-        n = (int)strtoul(y, NULL, 0);
+        n = (int)strtoul(y, NULL, 0); // NOLINT(misc-include-cleaner)
         printf("%c'%c\"\n", n / 16 + 'A', n % 16 + 'A');
     } else {
-        n = (toupper(x[0]) - 'A') * 16;
+        n = (toupper(x[0]) - 'A') * 16; // NOLINT(misc-include-cleaner)
         n += toupper(x[1]) - 'A';
         printf("%d, ", n);
         n = (toupper(y[0]) - 'A') * 16;

@@ -41,13 +41,13 @@ Image *Image::create(
     const int w, const int h, const bool indexed, const Type type
 )
 {
-    Uint32 r_mask, g_mask, b_mask, a_mask;
-    Uint32 flags;
+    Uint32 r_mask, g_mask, b_mask, a_mask; // NOLINT(misc-include-cleaner)
+    Uint32 flags; // NOLINT(misc-include-cleaner)
     auto *im = new Image;
     im->w = w;
     im->h = h;
     im->indexed = indexed;
-#if SDL_BYTEORDER == SDL_BIG_ENDIAN
+#if SDL_BYTEORDER == SDL_BIG_ENDIAN // NOLINT(misc-include-cleaner)
     r_mask = 0xff000000;
     g_mask = 0x00ff0000;
     b_mask = 0x0000ff00;
@@ -59,16 +59,16 @@ Image *Image::create(
     a_mask = 0xff000000;
 #endif
     if (type == HARDWARE) {
-        flags = SDL_HWSURFACE | SDL_SRCALPHA;
+        flags = SDL_HWSURFACE | SDL_SRCALPHA; // NOLINT(misc-include-cleaner)
     } else {
-        flags = SDL_SWSURFACE | SDL_SRCALPHA;
+        flags = SDL_SWSURFACE | SDL_SRCALPHA; // NOLINT(misc-include-cleaner)
     }
     if (indexed) {
-        im->surface = SDL_CreateRGBSurface(
+        im->surface = SDL_CreateRGBSurface( // NOLINT(misc-include-cleaner)
             flags, w, h, 8, r_mask, g_mask, b_mask, a_mask
         );
     } else {
-        im->surface = SDL_CreateRGBSurface(
+        im->surface = SDL_CreateRGBSurface( // NOLINT(misc-include-cleaner)
             flags, w, h, 32, r_mask, g_mask, b_mask, a_mask
         );
     }
@@ -87,7 +87,7 @@ Image *Image::createScreenImage()
 {
     auto *screen = new Image();
 
-    screen->surface = SDL_GetVideoSurface();
+    screen->surface = SDL_GetVideoSurface(); // NOLINT(misc-include-cleaner)
     U4ASSERT(
         screen->surface != nullptr,
         "SDL_GetVideoSurface() returned a nullptr screen surface!"
@@ -126,7 +126,7 @@ Image *Image::duplicate(const Image *image)
 Image::~Image()
 {
     if (!isScreen) {
-        SDL_FreeSurface(surface);
+        SDL_FreeSurface(surface); // NOLINT(misc-include-cleaner)
         surface = nullptr;
     }
 }
@@ -141,13 +141,14 @@ void Image::setPalette(const RGBA *colors, const int n_colors) const
     if (n_colors > 256) {
         errorFatal("n_colors > 256 in Image::setPalette");
     }
-    auto *sdl_colors = new SDL_Color[n_colors];
+    auto *sdl_colors = new SDL_Color[n_colors]; // NOLINT(misc-include-cleaner)
     for (int i = 0; i < n_colors; i++) {
         sdl_colors[i].r = colors[i].r;
         sdl_colors[i].g = colors[i].g;
         sdl_colors[i].b = colors[i].b;
         sdl_colors[i].unused = 0;
     }
+    // NOLINTNEXTLINE(misc-include-cleaner)
     SDL_SetColors(surface, sdl_colors, 0, n_colors);
     delete[] sdl_colors;
 }
@@ -385,6 +386,7 @@ bool Image::setPaletteIndex(const unsigned int index, const RGBA color) const
 
 bool Image::getTransparentIndex(unsigned int &index) const
 {
+    // NOLINTNEXTLINE(misc-include-cleaner)
     if (!indexed || (surface->flags & SDL_SRCCOLORKEY) == 0) {
         return false;
     }
@@ -410,17 +412,18 @@ void Image::initializeToBackgroundColor(const RGBA bgColor)
 
 bool Image::isAlphaOn() const
 {
-    return surface->flags & SDL_SRCALPHA;
+    return surface->flags & SDL_SRCALPHA; // NOLINT(misc-include-cleaner)
 }
 
 void Image::alphaOn() const
 {
+    // NOLINTNEXTLINE(misc-include-cleaner)
     SDL_SetAlpha(surface, SDL_SRCALPHA, IM_OPAQUE);
 }
 
 void Image::alphaOff() const
 {
-    SDL_SetAlpha(surface, 0, IM_OPAQUE);
+    SDL_SetAlpha(surface, 0, IM_OPAQUE); // NOLINT(misc-include-cleaner)
 }
 
 void Image::putPixel(
@@ -436,16 +439,16 @@ void Image::putPixel(
     putPixelIndex(
         x,
         y,
-        SDL_MapRGBA(
+        SDL_MapRGBA( // NOLINT(misc-include-cleaner)
             surface->format,
             // ReSharper disable once CppRedundantCastExpression
-            static_cast<Uint8>(r),
+            static_cast<Uint8>(r), // NOLINT(misc-include-cleaner)
             // ReSharper disable once CppRedundantCastExpression
-            static_cast<Uint8>(g),
+            static_cast<Uint8>(g), // NOLINT(misc-include-cleaner)
             // ReSharper disable once CppRedundantCastExpression
-            static_cast<Uint8>(b),
+            static_cast<Uint8>(b), // NOLINT(misc-include-cleaner)
             // ReSharper disable once CppRedundantCastExpression
-            static_cast<Uint8>(a)
+            static_cast<Uint8>(a) // NOLINT(misc-include-cleaner)
         ),
         anyway
     );
@@ -455,16 +458,16 @@ void Image::makeBackgroundColorTransparent(
     const int haloSize, const int shadowOpacity
 ) const
 {
-    const Uint32 bgColor = SDL_MapRGBA(
+    const Uint32 bgColor = SDL_MapRGBA( // NOLINT(misc-include-cleaner)
         surface->format,
         // ReSharper disable once CppRedundantCastExpression
-        static_cast<Uint8>(backgroundColor.r),
+        static_cast<Uint8>(backgroundColor.r), // NOLINT(misc-include-cleaner)
         // ReSharper disable once CppRedundantCastExpression
-        static_cast<Uint8>(backgroundColor.g),
+        static_cast<Uint8>(backgroundColor.g), // NOLINT(misc-include-cleaner)
         // ReSharper disable once CppRedundantCastExpression
-        static_cast<Uint8>(backgroundColor.b),
+        static_cast<Uint8>(backgroundColor.b), // NOLINT(misc-include-cleaner)
         // ReSharper disable once CppRedundantCastExpression
-        static_cast<Uint8>(backgroundColor.a)
+        static_cast<Uint8>(backgroundColor.a) // NOLINT(misc-include-cleaner)
     );
     performTransparencyHack(
         // ReSharper disable once CppRedundantCastExpression
@@ -485,6 +488,7 @@ void Image::performTransparencyHack(
     std::list<std::pair<unsigned int, unsigned int> > opaqueXYs;
     unsigned int x, y;
     Uint8 t_r, t_g, t_b;
+    // NOLINTNEXTLINE(misc-include-cleaner)
     SDL_GetRGB(colorValue, surface->format, &t_r, &t_g, &t_b);
     const unsigned int frameHeight = static_cast<unsigned int>(h) / numFrames;
     // Min'd so that they never go out of range (>=h)
@@ -559,6 +563,7 @@ void Image::performTransparencyHack(
 void Image::setTransparentIndex(const unsigned int index) const
 {
     if (indexed) {
+        // NOLINTNEXTLINE(misc-include-cleaner)
         SDL_SetColorKey(surface, SDL_SRCCOLORKEY, index);
     } else {
         // errorWarning("Setting transparent index for non indexed");
@@ -575,12 +580,13 @@ void Image::putPixelIndex(
     const int x, const int y, const unsigned int index, const bool anyway
 ) const
 {
-    Uint8 *p;
-    Uint16 *p2;
-    Uint32 *p4;
+    Uint8 *p; // NOLINT(misc-include-cleaner)
+    Uint16 *p2; // NOLINT(misc-include-cleaner)
+    Uint32 *p4; // NOLINT(misc-include-cleaner)
     if (!__builtin_expect(screenMoving, true) && isScreen && !anyway) {
         return;
     }
+    // NOLINTNEXTLINE(misc-include-cleaner)
     if (SDL_MUSTLOCK(surface)) SDL_LockSurface(surface);
     const int bpp = surface->format->BytesPerPixel;
     switch (__builtin_expect(bpp, 1)) {
@@ -620,6 +626,7 @@ void Image::putPixelIndex(
     default:
         errorFatal("wrong bpp, only 1-4 are supported");
     }
+    // NOLINTNEXTLINE(misc-include-cleaner)
     if (SDL_MUSTLOCK(surface)) SDL_UnlockSurface(surface);
 } // Image::putPixelIndex
 
@@ -639,24 +646,24 @@ void Image::fillRect(
     const bool anyway
 ) const
 {
-    SDL_Rect dest;
-    const Uint32 pixel = SDL_MapRGBA(
+    SDL_Rect dest; // NOLINT(misc-include-cleaner)
+    const Uint32 pixel = SDL_MapRGBA( // NOLINT(misc-include-cleaner)
         surface->format,
         // ReSharper disable once CppRedundantCastExpression
-        static_cast<Uint8>(r),
+        static_cast<Uint8>(r), // NOLINT(misc-include-cleaner)
         // ReSharper disable once CppRedundantCastExpression
-        static_cast<Uint8>(g),
+        static_cast<Uint8>(g), // NOLINT(misc-include-cleaner)
         // ReSharper disable once CppRedundantCastExpression
-        static_cast<Uint8>(b),
+        static_cast<Uint8>(b), // NOLINT(misc-include-cleaner)
         // ReSharper disable once CppRedundantCastExpression
-        static_cast<Uint8>(a)
+        static_cast<Uint8>(a) // NOLINT(misc-include-cleaner)
     );
-    dest.x = static_cast<Sint16>(x);
-    dest.y = static_cast<Sint16>(y);
+    dest.x = static_cast<Sint16>(x); // NOLINT(misc-include-cleaner)
+    dest.y = static_cast<Sint16>(y); // NOLINT(misc-include-cleaner)
     dest.w = ww;
     dest.h = hh;
     if (__builtin_expect(screenMoving, true) || !isScreen || anyway) {
-        SDL_FillRect(surface, &dest, pixel);
+        SDL_FillRect(surface, &dest, pixel); // NOLINT(misc-include-cleaner)
     }
 }
 
@@ -676,6 +683,7 @@ void Image::getPixel(
     unsigned int index = 0;
     Uint8 r1, g1, b1, a1;
     getPixelIndex(x, y, index);
+    // NOLINTNEXTLINE(misc-include-cleaner)
     SDL_GetRGBA(index, surface->format, &r1, &g1, &b1, &a1);
     r = r1;
     g = g1;
@@ -740,10 +748,10 @@ void Image::drawOn(
     const Image *d, const int x, const int y, const bool anyway
 ) const
 {
-    SDL_Rect r;
-    SDL_Surface *destSurface;
+    SDL_Rect r; // NOLINT(misc-include-cleaner)
+    SDL_Surface *destSurface; // NOLINT(misc-include-cleaner)
     if (d == nullptr) {
-        destSurface = SDL_GetVideoSurface();
+        destSurface = SDL_GetVideoSurface(); // NOLINT(misc-include-cleaner)
     } else {
         destSurface = d->surface;
     }
@@ -755,6 +763,7 @@ void Image::drawOn(
         (d && !d->isScreen) ||
         anyway
     ) {
+        // NOLINTNEXTLINE(misc-include-cleaner)
         SDL_BlitSurface(surface, nullptr, destSurface, &r);
     }
 } // Image::drawOn
@@ -832,6 +841,7 @@ void Image::drawSubRectInvertedOn(
             (d && !d->isScreen) ||
             anyway
         ) {
+            // NOLINTNEXTLINE(misc-include-cleaner)
             SDL_BlitSurface(surface, &src, destSurface, &dest);
         }
     }
@@ -844,7 +854,7 @@ void Image::drawSubRectInvertedOn(
  */
 void Image::save(const std::string &filename) const
 {
-    SDL_SaveBMP(surface, filename.c_str());
+    SDL_SaveBMP(surface, filename.c_str()); // NOLINT(misc-include-cleaner)
 }
 
 

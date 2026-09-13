@@ -895,7 +895,7 @@ void Creature::wakeUp()
  * Returns true if the creature still exists after the damage has been applied
  * or false, if the creature was destroyed
  *
- * If byplayer is false (when a monster is killed by walking through
+ * If by_player is false (when a monster is killed by walking through
  * fire or poison, or as a result of jinx) we don't report experience
  * on death
  */

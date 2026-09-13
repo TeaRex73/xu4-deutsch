@@ -11,6 +11,7 @@
 #include <limits>
 #include <list>
 #include <string>
+#include <utility>
 
 #include "event.h"
 
@@ -27,7 +28,6 @@
 
 
 std::atomic_int eventTimerGranularity(250);
-extern int quit;
 bool EventHandler::controllerDone = false;
 bool EventHandler::ended = false;
 unsigned int TimedEventMgr::instances = 0;
@@ -314,25 +314,25 @@ ReadStringController::ReadStringController(
     const int max_len,
     const int screenX,
     const int screenY,
-    const std::string &accepted_chars
+    std::string accepted_chars
 )
 
     :max_len(max_len),
      screenX(screenX),
      screenY(screenY),
      view(nullptr),
-     accepted(accepted_chars)
+     accepted(std::move(accepted_chars))
 {
 }
 
 ReadStringController::ReadStringController(
-    const int max_len, TextView *view, const std::string &accepted_chars
+    const int max_len, TextView *view, std::string accepted_chars
 )
     :max_len(max_len),
      screenX(view->getCursorX()),
      screenY(view->getCursorY()),
      view(view),
-     accepted(accepted_chars)
+     accepted(std::move(accepted_chars))
 {
 }
 
@@ -434,8 +434,8 @@ int ReadIntController::stringToInt() const
     return static_cast<int>(std::strtol(value.c_str(), nullptr, 10));
 }
 
-ReadChoiceController::ReadChoiceController(const std::string &choices)
-    :choices(choices)
+ReadChoiceController::ReadChoiceController(std::string choices)
+    :choices(std::move(choices))
 {
 }
 

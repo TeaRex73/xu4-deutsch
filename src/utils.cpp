@@ -2,33 +2,31 @@
  * $Id$
  */
 
-#include <random>
-
 #include "vc6.h" // Fixes things if you're using VC6, does nothing otherwise
+
+#include <cstdio>
+#include <cstdlib>
+#include <cstring>
+#include <ctime>
+#include <random>
+#include <string>
+#include <vector>
 
 #if (defined(__unix__) || defined(unix)) && !defined(USG)
 #include <sys/param.h>
 #endif
 
 #include "utils.h"
-#include <cstdio>
-#include <cstdlib>
-#include <cstring>
-#include <ctime>
 
 
-static int rand_limit_precalc[256];
-
+static std::default_random_engine gen(std::random_device{}());
 
 /**
  * Seed the random number generator.
  */
 void xu4_seed_random()
 {
-    std::srand(std::random_device()());
-    for (int i = 1; i <= 256; i++) {
-        rand_limit_precalc[i - 1] = RAND_MAX - (RAND_MAX % i + 1) % i;
-    }
+    gen.discard(1<<20);
 }
 
 
@@ -37,21 +35,7 @@ void xu4_seed_random()
  */
 int xu4_random(const int upperRange)
 {
-    int r;
-    int rand_limit;
-
-    if (upperRange <= 1) {
-        return 0;
-    }
-    if (__builtin_expect(upperRange > 256, false)) {
-        rand_limit = RAND_MAX - (RAND_MAX % upperRange + 1) % upperRange;
-    } else {
-        rand_limit = rand_limit_precalc[upperRange - 1];
-    }
-    do {
-        r = std::rand();
-    } while (r > rand_limit);
-    return r % upperRange;
+    return std::uniform_int_distribution<>(0, upperRange - 1)(gen);
 }
 
 
@@ -79,12 +63,12 @@ std::string &trim(std::string &val, const std::string &chars_to_trim)
 
 int xu4_islower(const int c)
 {
-    return ((c >= 'a') && (c <= '~'));
+    return c >= 'a' && c <= '~';
 }
 
 int xu4_toupper(const int c)
 {
-    if ((c >= 'a') && (c <= '}')) {
+    if (c >= 'a' && c <= '}') {
         return c - 32;
     }
     return c;
@@ -92,7 +76,7 @@ int xu4_toupper(const int c)
 
 int xu4_tolower(const int c)
 {
-    if ((c >= 'A') && (c <= ']')) {
+    if (c >= 'A' && c <= ']') {
         return c + 32;
     }
     return c;

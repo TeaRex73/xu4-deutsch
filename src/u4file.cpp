@@ -18,6 +18,7 @@
 
 #include "debug.h"
 #include "unzip.h"
+#include "u4.h"
 #include "xordata.h"
 
 
@@ -128,8 +129,6 @@ namespace {
         U4FILE *file;
     };
 }
-
-extern bool verbose;
 
 U4PATH *U4PATH::instance = nullptr;
 

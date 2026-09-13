@@ -37,8 +37,8 @@ public:
     // cppcheck-suppress noExplicitConstructor // implicit intended
     // NOLINTNEXTLINE(google-explicit-constructor, hicpp-explicit-conversions)
     ResponsePart(
-        const std::string &value,
-        const std::string &arg = "",
+        std::string value,
+        std::string arg = "",
         bool command = false
     );
     explicit operator std::string() const;
@@ -59,6 +59,10 @@ class Response {
 public:
     explicit Response(const std::string &response);
 
+    Response(const Response &) = delete;
+    Response(Response &&) = delete;
+    Response &operator=(const Response &) = delete;
+    Response &operator=(Response &&) = delete;
     virtual ~Response() = default;
 
     void add(const ResponsePart &part);
@@ -82,13 +86,15 @@ class DynamicResponse:public Response {
 public:
     explicit DynamicResponse(
         Response *(*generator)(const DynamicResponse *),
-        const std::string &param = ""
+        std::string param = ""
     );
+
     DynamicResponse(const DynamicResponse &) = delete;
     DynamicResponse(DynamicResponse &&) = delete;
     DynamicResponse &operator=(const DynamicResponse &) = delete;
     DynamicResponse &operator=(DynamicResponse &&) = delete;
     ~DynamicResponse() override;
+
     const std::vector<ResponsePart> &getParts() override;
 
     const std::string &getParam() const
@@ -116,7 +122,7 @@ public:
      */
     class Question {
     public:
-        Question(const std::string &txt, Response *yes, Response *no);
+        Question(std::string txt, Response *yes, Response *no);
         Question(const Question &) = delete;
         Question(Question &&) = delete;
         Question &operator=(const Question &) = delete;
@@ -138,8 +144,8 @@ public:
      */
     class Keyword {
     public:
-        Keyword(const std::string &kw, Response *resp);
-        Keyword(const std::string &kw, const std::string &resp);
+        Keyword(std::string kw, Response *resp);
+        Keyword(std::string kw, const std::string &resp);
         Keyword(const Keyword &) = delete;
         Keyword(Keyword &&) = delete;
         Keyword &operator=(const Keyword &) = delete;

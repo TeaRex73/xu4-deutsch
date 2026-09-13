@@ -19,7 +19,7 @@ static void u4_SDL_Delete()
     SDL_Quit();
 }
 
-int u4_SDL_InitSubSystem(const Uint32 flags)
+int u4_SDL_InitSubSystem(const Uint32 flags) // NOLINT(misc-include-cleaner)
 {
     const int f = static_cast<int>(SDL_WasInit(SDL_INIT_EVERYTHING));
     if (f == 0) {

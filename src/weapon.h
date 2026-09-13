@@ -29,6 +29,11 @@ public:
         WEAPON_MYSTIC = 0x0800
     };
 
+    Weapon(const Weapon &) = delete;
+    Weapon(Weapon &&) = delete;
+    const Weapon &operator=(const Weapon &) = delete;
+    const Weapon &operator=(Weapon &&) = delete;
+
     static void cleanup();
 
     static const Weapon *get(WeaponType w);
@@ -146,6 +151,7 @@ public:
 
 private:
     explicit Weapon(const ConfigElement &conf);
+
     ~Weapon();
     static void loadConf();
     static bool confLoaded;

@@ -35,7 +35,7 @@ static void putWord(unsigned char *ofs, long word);
  */
 int main(const int argc, const char *argv[])
 {
-    FILE *file;
+    FILE *file; // NOLINT(misc-include-cleaner)
     unsigned char *buffer;
     long oldMemSize;
     long headerSize;
@@ -45,32 +45,36 @@ int main(const int argc, const char *argv[])
     long infileSize, outfileSize;
     /* Are the command-line arguments valid? */
     if (argc != 3) {
+        // NOLINTNEXTLINE(misc-include-cleaner)
         printf("Usage:\nu4unpackexe infile outfile\n");
         return EXIT_FAILURE;
     }
-    if (strcmp(argv[1],argv[2]) == 0) {
+    if (strcmp(argv[1],argv[2]) == 0) { // NOLINT(misc-include-cleaner)
         printf("File names must not be identical!\n");
         return EXIT_FAILURE;
     }
     /* Does the infile exist? */
-    file = fopen(argv[1],"rb");
+    file = fopen(argv[1],"rb"); // NOLINT(misc-include-cleaner)
     if (!file) {
         printf("Couldn't open %s\n for reading!", argv[1]);
         return EXIT_FAILURE;
     }
     /* Get the filesize of the infile */
+    // NOLINTNEXTLINE(misc-include-cleaner)
     fseek(file, 0, SEEK_END);   /* move file pointer to file end */
-    infileSize = ftell(file);
+    infileSize = ftell(file); // NOLINT(misc-include-cleaner)
     fseek(file, 0, SEEK_SET);   /* move file pointer to file start */
     /* Read the infile into memory */
+    // NOLINTNEXTLINE(misc-include-cleaner)
     buffer = (unsigned char *) malloc(sizeof(unsigned char) * infileSize);
     if (!buffer) {
         printf("Couldn't allocate buffer for %s\n", argv[1]);
-        fclose(file);
+        fclose(file); // NOLINT(misc-include-cleaner)
         return EXIT_FAILURE;
     }
+    // NOLINTNEXTLINE(misc-include-cleaner)
     if ((long)fread(buffer, 1, infileSize, file) != infileSize) {
-        perror("fread failed");
+        perror("fread failed"); // NOLINT(misc-include-cleaner)
     }
     fclose(file);
     /* Is the infile a valid exe file? */
@@ -81,7 +85,7 @@ int main(const int argc, const char *argv[])
             argv[1],
             BASE_HEADER_SIZE
         );
-        free(buffer);
+        free(buffer); // NOLINT(misc-include-cleaner)
         return EXIT_FAILURE;
     }
     if (getWord(buffer) != MZ_SIG) {
@@ -136,7 +140,7 @@ int main(const int argc, const char *argv[])
         free(buffer);
         return EXIT_FAILURE;
     }
-    fwrite(buffer, 1, outfileSize, file);
+    fwrite(buffer, 1, outfileSize, file); // NOLINT(misc-include-cleaner)
     fclose(file);
     free(buffer);
     return EXIT_SUCCESS;

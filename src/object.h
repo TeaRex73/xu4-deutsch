@@ -22,19 +22,16 @@ class Registered {
 protected:
     Registered()
     {
-        if (cleaning) return;
         registrees.insert(static_cast<T *>(this));
     }
 
     Registered(const Registered &)
     {
-        if (cleaning) return;
         registrees.insert(static_cast<T *>(this));
     }
 
     Registered(Registered &&) noexcept
     {
-        if (cleaning) return;
         registrees.insert(static_cast<T *>(this));
     }
 
@@ -43,7 +40,6 @@ protected:
 
     ~Registered()
     {
-        if (cleaning) return;
         const bool found =
             static_cast<bool>(registrees.erase(static_cast<T *>(this)));
         U4ASSERT(found, "Tried to delete non-existing Object\n");
@@ -52,30 +48,28 @@ protected:
 public:
     static void cleanup()
     {
-        if (cleaning.exchange(true)) return;
-        for (const auto *reg: registrees) {
+        // Use duplicate set to iterate over, since changing the original set
+        // (which the destructor invoked by "delete reg" does) while
+        // iterating over it is bad
+        std::unordered_set<T *> tmp = registrees;
+        for (auto *reg: tmp) {
             delete reg;
         }
         registrees.clear();
-        cleaning = false;
     }
 
 private:
     static std::unordered_set<T *> registrees;
-    static std::atomic_bool cleaning;
 };
 
 template <typename T>
 std::unordered_set<T *> Registered<T>::registrees {
-    [] {
+    []() -> std::unordered_set<T *> {
         std::unordered_set<T *> tmp;
         tmp.reserve(512);
         return tmp;
     }()
 };
-
-template <typename T>
-std::atomic_bool Registered<T>::cleaning {false};
 
 
 typedef std::deque<class Object *> ObjectDeque;

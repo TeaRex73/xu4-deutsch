@@ -166,17 +166,17 @@ long generalizedDecompress(
     long bitsRead = 0;
     long bytesWritten = 0;
     /* initialize the dictionary and the stack */
-    lzwDictionaryEntry *lzwDictionary = malloc(
+    lzwDictionaryEntry *lzwDictionary = malloc( // NOLINT(misc-include-cleaner)
         sizeof(lzwDictionaryEntry) * lzwDictionarySize
     );
     if (!lzwDictionary) {
-        perror("out of memory");
-        exit(EXIT_FAILURE);
+        perror("out of memory"); // NOLINT(misc-include-cleaner)
+        exit(EXIT_FAILURE); // NOLINT(misc-include-cleaner)
     }
     unsigned char *lzwStack = malloc(sizeof(unsigned char) * lzwStackSize);
     if (!lzwStack) {
-        perror("out of memory");
-        exit(EXIT_FAILURE);
+        perror("out of memory"); // NOLINT(misc-include-cleaner)
+        exit(EXIT_FAILURE); // NOLINT(misc-include-cleaner)
     }
     int elementsInStack = 0;
     /* clear the dictionary */
@@ -245,8 +245,8 @@ long generalizedDecompress(
             /* check for errors */
             if (unknownCodeword && new_pos != new_code) {
                 /* clean up */
-                free(lzwStack);
-                free(lzwDictionary);
+                free(lzwStack); // NOLINT(misc-include-cleaner)
+                free(lzwDictionary); // NOLINT(misc-include-cleaner)
                 return -1;
             }
             if (codewordsInDictionary > maxDictEntries) {

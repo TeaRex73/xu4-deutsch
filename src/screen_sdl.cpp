@@ -37,52 +37,57 @@
 #  undef FIXUP
 #endif
 
-static SDL_Cursor *cursors[5];
+static SDL_Cursor *cursors[5]; // NOLINT(misc-include-cleaner)
 static Scaler filterScaler;
+// NOLINTNEXTLINE(misc-include-cleaner)
 static SDL_Cursor *screenInitCursor(const char *const xpm[]);
 static void screenRefreshThreadInit();
 static void screenRefreshThreadEnd();
-
-void screenInit_sys();
-void screenDelete_sys();
 static int screenRefreshThreadFunction(void *);
 
-static SDL_Surface *icon;
+// ReSharper disable once CppUseInternalLinkage
+void screenInit_sys();
+// ReSharper disable once CppUseInternalLinkage
+void screenDelete_sys();
+
+static SDL_Surface *icon; // NOLINT(misc-include-cleaner)
 
 void screenInit_sys()
 {
     SDL_Surface *screen, *window;
     /* start SDL */
     if (u4_SDL_InitSubSystem(SDL_INIT_VIDEO) < 0) {
+        // NOLINTNEXTLINE(misc-include-cleaner)
         errorFatal("unable to init SDL: %s", SDL_GetError());
     }
-    SDL_EnableUNICODE(1);
-    SDL_SetGamma(
+    SDL_EnableUNICODE(1); // NOLINT(misc-include-cleaner)
+    SDL_SetGamma( // NOLINT(misc-include-cleaner)
         settings.gamma / 100.0f,
         settings.gamma / 100.0f,
         settings.gamma / 100.0f
     );
     std::atexit(SDL_Quit);
-    SDL_WM_SetCaption("Ultima IV", nullptr);
+    SDL_WM_SetCaption("Ultima IV", nullptr); // NOLINT(misc-include-cleaner)
 #ifdef ICON_FILE
-    icon = SDL_LoadBMP(ICON_FILE);
+    icon = SDL_LoadBMP(ICON_FILE); // NOLINT(misc-include-cleaner)
     if (icon) {
-        SDL_WM_SetIcon(icon, nullptr);
+        SDL_WM_SetIcon(icon, nullptr); // NOLINT(misc-include-cleaner)
     }
 #endif
-    screen = SDL_SetVideoMode(
+    screen = SDL_SetVideoMode( // NOLINT(misc-include-cleaner)
         MY_WIDTH * settings.scale,
         MY_HEIGHT * settings.scale,
         8,
-        SDL_HWSURFACE
-        | SDL_ANYFORMAT
+        SDL_HWSURFACE // NOLINT(misc-include-cleaner)
+        | SDL_ANYFORMAT // NOLINT(misc-include-cleaner)
+        // NOLINTNEXTLINE(misc-include-cleaner)
         | (settings.fullscreen ? SDL_FULLSCREEN : 0)
     );
     if (!screen) {
         errorFatal("unable to set video: %s", SDL_GetError());
     }
-    SDL_LockSurface(screen);
-    window = SDL_CreateRGBSurfaceFrom(
+    SDL_LockSurface(screen); // NOLINT(misc-include-cleaner)
+    window = SDL_CreateRGBSurfaceFrom( // NOLINT(misc-include-cleaner)
         screen->pixels,
         MY_WIDTH,
         MY_HEIGHT,
@@ -94,16 +99,16 @@ void screenInit_sys()
         screen->format->Amask
     );
     if (screen->format->palette) {
-        SDL_SetColors(
+        SDL_SetColors( // NOLINT(misc-include-cleaner)
             window,
             screen->format->palette->colors,
             0,
             screen->format->palette->ncolors
         );
     }
-    SDL_FreeSurface(window);
+    SDL_FreeSurface(window); // NOLINT(misc-include-cleaner)
     window = nullptr;
-    SDL_UnlockSurface(screen);
+    SDL_UnlockSurface(screen); // NOLINT(misc-include-cleaner)
 #ifdef FIXUP
     screen->w = 320 * settings.scale;
     screen->h = 200 * settings.scale;
@@ -117,19 +122,20 @@ void screenInit_sys()
         char driver[32];
         std::printf(
             "screen initialized [screenInit()], using %s video driver\n",
+            // NOLINTNEXTLINE(misc-include-cleaner)
             SDL_VideoDriverName(driver, sizeof(driver))
         );
     }
     /* enable or disable the mouse cursor */
     if (settings.mouseOptions.enabled) {
-        SDL_ShowCursor(SDL_ENABLE);
-        cursors[0] = SDL_GetCursor();
+        SDL_ShowCursor(SDL_ENABLE); // NOLINT(misc-include-cleaner)
+        cursors[0] = SDL_GetCursor(); // NOLINT(misc-include-cleaner)
         cursors[1] = screenInitCursor(w_xpm);
         cursors[2] = screenInitCursor(n_xpm);
         cursors[3] = screenInitCursor(e_xpm);
         cursors[4] = screenInitCursor(s_xpm);
     } else {
-        SDL_ShowCursor(SDL_DISABLE);
+        SDL_ShowCursor(SDL_DISABLE); // NOLINT(misc-include-cleaner)
     }
     filterScaler = scalerGet(settings.filter);
     if (!filterScaler) {
@@ -143,13 +149,13 @@ void screenDelete_sys()
     screenRefreshThreadEnd();
     for (int i = 1; i <= 4; i++) {
         if (cursors[i]) {
-            SDL_FreeCursor(cursors[i]);
+            SDL_FreeCursor(cursors[i]); // NOLINT(misc-include-cleaner)
             cursors[i] = nullptr;
         }
     }
-    u4_SDL_QuitSubSystem(SDL_INIT_VIDEO);
+    u4_SDL_QuitSubSystem(SDL_INIT_VIDEO); // NOLINT(misc-include-cleaner)
     if (icon) {
-        SDL_FreeSurface(icon);
+        SDL_FreeSurface(icon); // NOLINT(misc-include-cleaner)
         icon = nullptr;
     }
 }
@@ -160,7 +166,7 @@ void screenDelete_sys()
  */
 void screenIconify()
 {
-    SDL_WM_IconifyWindow();
+    SDL_WM_IconifyWindow(); // NOLINT(misc-include-cleaner)
 }
 
 #if 0
@@ -291,22 +297,23 @@ bool screenLoadImageCga(
 /**
  * Force a redraw.
  */
-static SDL_mutex *screenLockMutex = nullptr;
+static SDL_mutex *screenLockMutex = nullptr; // NOLINT(misc-include-cleaner)
 static int frameDuration = 0;
 
 void screenLock()
 {
-    SDL_mutexP(screenLockMutex);
+    SDL_mutexP(screenLockMutex); // NOLINT(misc-include-cleaner)
 }
 
 void screenUnlock()
 {
-    SDL_mutexV(screenLockMutex);
+    SDL_mutexV(screenLockMutex); // NOLINT(misc-include-cleaner)
 }
 
 void screenRedrawScreen()
 {
     screenLock();
+    // NOLINTNEXTLINE(misc-include-cleaner)
     SDL_UpdateRect(SDL_GetVideoSurface(), 0, 0, 0, 0);
     screenUnlock();
 }
@@ -316,8 +323,8 @@ void screenRedrawTextArea(
 )
 {
     screenLock();
-    SDL_UpdateRect(
-        SDL_GetVideoSurface(),
+    SDL_UpdateRect( // NOLINT(misc-include-cleaner)
+        SDL_GetVideoSurface(), // NOLINT(misc-include-cleaner)
         x * CHAR_WIDTH * settings.scale,
         y * CHAR_HEIGHT * settings.scale + 4 * settings.scale,
         width * CHAR_WIDTH * settings.scale,
@@ -328,16 +335,18 @@ void screenRedrawTextArea(
 
 void screenWait(const int numberOfAnimationFrames)
 {
+    // NOLINTNEXTLINE(misc-include-cleaner)
     SDL_Delay(numberOfAnimationFrames * frameDuration);
 }
 
 static std::atomic_bool continueScreenRefresh(false);
+// NOLINTNEXTLINE(misc-include-cleaner)
 static SDL_Thread *screenRefreshThread = nullptr;
 
 static int screenRefreshThreadFunction(void *)
 {
     while (continueScreenRefresh) {
-        SDL_Delay(frameDuration);
+        SDL_Delay(frameDuration); // NOLINT(misc-include-cleaner)
         screenRedrawScreen();
     }
     return 0;
@@ -345,17 +354,18 @@ static int screenRefreshThreadFunction(void *)
 
 void screenRefreshThreadInit()
 {
-    screenLockMutex = SDL_CreateMutex();
+    screenLockMutex = SDL_CreateMutex(); // NOLINT(misc-include-cleaner)
     frameDuration = 1000 / settings.screenAnimationFramesPerSecond;
     continueScreenRefresh = true;
     if (screenRefreshThread) {
         errorWarning("Screen refresh thread already exists.");
         return;
     }
-    screenRefreshThread = SDL_CreateThread(
+    screenRefreshThread = SDL_CreateThread( // NOLINT(misc-include-cleaner)
         screenRefreshThreadFunction, nullptr
     );
     if (!screenRefreshThread) {
+        // NOLINTNEXTLINE(misc-include-cleaner)
         errorWarning("SDL Error: %s", SDL_GetError());
     }
 }
@@ -363,10 +373,11 @@ void screenRefreshThreadInit()
 void screenRefreshThreadEnd()
 {
     continueScreenRefresh = false;
+    // NOLINTNEXTLINE(misc-include-cleaner)
     SDL_WaitThread(screenRefreshThread, nullptr);
     screenRefreshThread = nullptr;
-    SDL_UnlockMutex(screenLockMutex);
-    SDL_DestroyMutex(screenLockMutex);
+    SDL_UnlockMutex(screenLockMutex); // NOLINT(misc-include-cleaner)
+    SDL_DestroyMutex(screenLockMutex); // NOLINT(misc-include-cleaner)
 }
 
 
@@ -463,8 +474,8 @@ Image *screenScaleDown(const Image *src, const int scale)
 SDL_Cursor *screenInitCursor(const char *const xpm[])
 {
     int row;
-    Uint8 data[CURSOR_SIZE / 8 * CURSOR_SIZE];
-    Uint8 mask[CURSOR_SIZE / 8 * CURSOR_SIZE];
+    Uint8 data[CURSOR_SIZE / 8 * CURSOR_SIZE]; // NOLINT(misc-include-cleaner)
+    Uint8 mask[CURSOR_SIZE / 8 * CURSOR_SIZE]; // NOLINT(misc-include-cleaner)
     int hot_x, hot_y;
     int i = -1;
     for (row = 0; row < CURSOR_SIZE; row++) {
@@ -491,8 +502,12 @@ SDL_Cursor *screenInitCursor(const char *const xpm[])
             }
         }
     }
-    std::sscanf(xpm[4 + row], "%d,%d", &hot_x, &hot_y);
-    return SDL_CreateCursor(
+    // NOLINTNEXTLINE(cert-err34-c)
+    if (std::sscanf(xpm[4 + row], "%d,%d", &hot_x, &hot_y) != 2) {
+        errorFatal("BUG: wrong char in xpm");
+    }
+
+    return SDL_CreateCursor( // NOLINT(misc-include-cleaner)
         data, mask, CURSOR_SIZE, CURSOR_SIZE, hot_x, hot_y
     );
 } // screenInitCursor
@@ -501,7 +516,7 @@ void screenSetMouseCursor(const MouseCursor cursor)
 {
     static int current = 0;
     if (cursor != current) {
-        SDL_SetCursor(cursors[cursor]);
+        SDL_SetCursor(cursors[cursor]); // NOLINT(misc-include-cleaner)
         current = cursor;
     }
 }

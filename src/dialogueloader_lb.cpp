@@ -33,20 +33,20 @@ DialogueLoader *U4LBDialogueLoader::instance = registerLoader(
  */
 Dialogue *U4LBDialogueLoader::load(void *)
 {
-    U4FILE *britkey = u4fopen("britkey.ger");
-    if (!britkey) {
+    U4FILE *lbKeyFile = u4fopen("britkey.ger");
+    if (!lbKeyFile) {
         return nullptr;
     }
-    U4FILE *britansw = u4fopen("britansw.ger");
-    if (!britansw) {
+    U4FILE *lbTextFile = u4fopen("britansw.ger");
+    if (!lbTextFile) {
         return nullptr;
     }
     const std::vector<std::string> lbKeywords =
-        u4read_string_table(britkey, 0, 27);
+        u4read_string_table(lbKeyFile, 0, 27);
     const std::vector<std::string> lbText =
-        u4read_string_table(britansw, 0, 27);
-    u4fclose(britkey);
-    u4fclose(britansw);
+        u4read_string_table(lbTextFile, 0, 27);
+    u4fclose(lbKeyFile);
+    u4fclose(lbTextFile);
     /* There's a \0 in the 19th std::string so we get a
        spurious 20th entry.
        No we don't in the fixed German translation.

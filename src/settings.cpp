@@ -8,6 +8,7 @@
 #include <cstdio>
 #include <cstdlib>
 #include <cstring>
+#include <string>
 #include <vector>
 
 #include <unistd.h>
@@ -335,14 +336,14 @@ bool Settings::read()
         while (std::isspace(buffer[std::strlen(buffer) - 1])) {
             buffer[std::strlen(buffer) - 1] = '\0';
         }
-        if (std::strstr(buffer, "scale=") == buffer) {
-            /* do nothing */
-            /* scale =
+        /* if (std::strstr(buffer, "scale=") == buffer) {
+            scale =
                 (unsigned int) std::strtoul(
                     buffer + std::strlen("scale="), nullptr, 0
-               ); */
+               );
         }
-        else if (std::strstr(buffer, "fullscreen=") == buffer) {
+        else */
+        if (std::strstr(buffer, "fullscreen=") == buffer) {
             fullscreen = static_cast<int>(
                 std::strtoul(buffer + std::strlen("fullscreen="), nullptr, 0)
             );
@@ -562,18 +563,7 @@ bool Settings::read()
                     )
                 );
         }
-        /**
-         * FIXME: this is just to avoid an error for those who
-         * have not written a new xu4.cfg file since these items
-         * were removed.  Remove them after a reasonable
-         * amount of time
-         *
-         * remove:  attackspeed, minorEnhancements,
-         * majorEnhancements, vol
-         */
-        else if (std::strstr(buffer, "attackspeed=") == buffer) {
-            /* do nothing */
-        } else if (std::strstr(buffer, "minorEnhancements=") == buffer) {
+        else if (std::strstr(buffer, "minorEnhancements=") == buffer) {
             enhancements = static_cast<int>(
                 std::strtoul(
                     buffer + std::strlen("minorEnhancements="),
@@ -581,14 +571,11 @@ bool Settings::read()
                     0
                 )
             );
-        } else if (std::strstr(buffer, "majorEnhancements=") == buffer) {
-            /* do nothing */
         } else if (std::strstr(buffer, "vol=") == buffer) {
             musicVol = soundVol = static_cast<int>(
                 std::strtoul(buffer + std::strlen("vol="), nullptr, 0)
             );
         }
-        /***/
         else {
             errorWarning(
                 "invalid line in settings file %s", buffer
@@ -615,7 +602,7 @@ bool Settings::write()
     }
     std::fprintf(
         settingsFile,
-        "scale=%d\n"
+        // "scale=%d\n"
         "fullscreen=%d\n"
         "filter=%s\n"
         "video=%s\n"
@@ -661,7 +648,7 @@ bool Settings::write()
         "renderTileTransparency=%d\n"
         "transparentTilePixelShadowOpacity=%d\n"
         "transparentTileShadowSize=%d\n",
-        scale,
+//      scale,
         fullscreen,
         filter.c_str(),
         videoType.c_str(),
@@ -709,7 +696,7 @@ bool Settings::write()
         enhancementsOptions.u4TileTransparencyHackShadowBreadth
     );
     std::fflush(settingsFile);
-    fsync(fileno(settingsFile));
+    fsync(fileno(settingsFile)); // NOLINT(misc-include-cleaner)
     std::fclose(settingsFile);
     sync();
     setChanged();

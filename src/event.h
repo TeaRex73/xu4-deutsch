@@ -118,9 +118,9 @@ class ReadStringController:public WaitableController<std::string> {
 public:
     ReadStringController(
         int max_len,
-        int screenX, int
-        screenY,
-        const std::string &accepted_chars =
+        int screenX,
+        int screenY,
+        std::string accepted_chars =
         "abcdefghijklmnopqrstuvwxyz{|}~"
         "ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]"
         "1234567890 \n\r\010"
@@ -128,7 +128,7 @@ public:
     ReadStringController(
         int max_len,
         TextView *view,
-        const std::string &accepted_chars =
+        std::string accepted_chars =
         "abcdefghijklmnopqrstuvwxyz{|}~"
         "ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]"
         "1234567890 \n\r\010"
@@ -137,6 +137,7 @@ public:
     ReadStringController(ReadStringController &&) = delete;
     ReadStringController &operator=(const ReadStringController &) = delete;
     ReadStringController &operator=(ReadStringController &&) = delete;
+    ~ReadStringController() override = default;
 
     bool keyPressed(int key) override;
     static std::string getString(
@@ -172,7 +173,7 @@ public:
  */
 class ReadChoiceController:public WaitableController<int> {
 public:
-    explicit ReadChoiceController(const std::string &choices);
+    explicit ReadChoiceController(std::string choices);
     bool keyPressed(int key) override;
     static char getChar(
         const std::string &choices, EventHandler *eh = nullptr
@@ -282,7 +283,13 @@ public:
     typedef std::list<MouseArea *> MouseAreaList;
 
     EventHandler();
+
+    EventHandler(const EventHandler &) = delete;
+    EventHandler(EventHandler &&) = delete;
+    EventHandler &operator=(const EventHandler &) = delete;
+    EventHandler &operator=(EventHandler &&) = delete;
     ~EventHandler();
+
     static EventHandler *getInstance();
     static void sleep(unsigned int msec);
     static void wait_msecs(unsigned int msecs);

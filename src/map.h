@@ -71,6 +71,10 @@ public:
     }
 
     MapCoords(const MapCoords &a) = default;
+    MapCoords(MapCoords &&a) = default;
+    MapCoords &operator=(const MapCoords &a) = default;
+    MapCoords &operator=(MapCoords &&a) = default;
+    virtual ~MapCoords() = default;
 
     // cppcheck-suppress noExplicitConstructor // implicit intended
     // NOLINTNEXTLINE(google-explicit-constructor, hicpp-explicit-conversions)
@@ -79,18 +83,6 @@ public:
          active_x(C2A(a.x)),
          active_y(C2A(a.y))
     {
-    }
-
-    MapCoords &operator=(const MapCoords &a)
-    {
-        if (&a != this) {
-            x = a.x;
-            y = a.y;
-            z = a.z;
-            active_x = a.active_x;
-            active_y = a.active_y;
-        }
-        return *this;
     }
 
     MapCoords &operator=(const Coords &a)
@@ -142,7 +134,9 @@ public:
     ) const;
     int movementDistance(const MapCoords &mc, const Map *map) const;
     int distance(const MapCoords &mc, const Map *map) const;
+
     static MapCoords nowhere;
+
     unsigned int active_x, active_y;
 };
 

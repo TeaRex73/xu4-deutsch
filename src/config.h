@@ -41,9 +41,8 @@ private:
 class ConfigElement {
 public:
     explicit ConfigElement(xmlNodePtr xmlNode);
-    ConfigElement(const ConfigElement &e);
-    ~ConfigElement();
-    ConfigElement &operator=(const ConfigElement &e);
+
+    /* Rule of Zero */
 
     const std::string &getName() const
     {

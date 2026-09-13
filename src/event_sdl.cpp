@@ -9,7 +9,6 @@
 #include <cstdlib>
 #include <list>
 #include <string>
-#include <utility>
 #include <vector>
 
 #include <SDL.h>
@@ -26,12 +25,10 @@
 #include "settings.h"
 #include "tile.h"
 #include "types.h"
+#include "u4.h"
 #include "u4_sdl.h"
 #include "utils.h"
 
-
-extern bool verbose;
-extern int quit;
 
 KeyHandler::KeyHandler(const Callback func, void *d, const bool asynchronous)
     :handler(func), async(asynchronous), data(d)
@@ -44,6 +41,7 @@ KeyHandler::KeyHandler(const Callback func, void *d, const bool asynchronous)
  */
 int KeyHandler::setKeyRepeat(const int delay, const int interval)
 {
+    // NOLINTNEXTLINE(misc-include-cleaner)
     return SDL_EnableKeyRepeat(delay, interval);
 }
 
@@ -189,9 +187,11 @@ TimedEventMgr::TimedEventMgr(const int i)
     /* start the SDL timer */
     if (instances == 0) {
         if (u4_SDL_InitSubSystem(SDL_INIT_TIMER) < 0) {
+            // NOLINTNEXTLINE(misc-include-cleaner)
             errorFatal("unable to init SDL: %s", SDL_GetError());
         }
     }
+    // NOLINTNEXTLINE(misc-include-cleaner)
     id = static_cast<void *>(SDL_AddTimer(i, &TimedEventMgr::callback, this));
     instances++;
 }
@@ -205,6 +205,7 @@ TimedEventMgr::TimedEventMgr(const int i)
  */
 TimedEventMgr::~TimedEventMgr()
 {
+    // NOLINTNEXTLINE(misc-include-cleaner)
     SDL_RemoveTimer(static_cast<SDL_TimerID>(id));
     id = nullptr;
     if (instances == 1) {
@@ -229,12 +230,12 @@ TimedEventMgr::~TimedEventMgr()
  */
 unsigned int TimedEventMgr::callback(unsigned int interval, void *param)
 {
-    SDL_Event event;
-    event.type = SDL_USEREVENT;
+    SDL_Event event; // NOLINT(misc-include-cleaner)
+    event.type = SDL_USEREVENT; // NOLINT(misc-include-cleaner)
     event.user.code = 0;
     event.user.data1 = param;
     event.user.data2 = nullptr;
-    SDL_PushEvent(&event);
+    SDL_PushEvent(&event); // NOLINT(misc-include-cleaner)
     return interval;
 }
 
@@ -294,6 +295,7 @@ static void handleActiveEvent(
     const SDL_Event &event, const updateScreenCallback updateScreen
 )
 {
+    // NOLINTNEXTLINE(misc-include-cleaner)
     if (event.active.state & SDL_APPACTIVE) {
         // application was previously iconified and
         // is now being restored
@@ -307,7 +309,7 @@ static void handleActiveEvent(
 }
 
 static void handleMouseButtonDownEvent(
-    const SDL_Event &event,
+    const SDL_Event &event, // NOLINT(misc-include-cleaner)
     Controller *controller,
     const updateScreenCallback updateScreen
 )
@@ -332,7 +334,7 @@ static void handleMouseButtonDownEvent(
 }
 
 static void handleKeyDownEvent(
-    const SDL_Event &event,
+    const SDL_Event &event, // NOLINT(misc-include-cleaner)
     Controller *controller,
     const updateScreenCallback updateScreen
 )
@@ -343,7 +345,8 @@ static void handleKeyDownEvent(
     if (old_keysym == event.key.keysym.sym) {
         /* check if key is really still pressed to prevent "stuck" keys */
         int num_keys;
-        SDL_PumpEvents();
+        SDL_PumpEvents(); // NOLINT(misc-include-cleaner)
+        // NOLINTNEXTLINE(misc-include-cleaner)
         const Uint8 *key_state = SDL_GetKeyState(&num_keys);
         if (event.key.keysym.sym < num_keys &&
             key_state[event.key.keysym.sym] == 0) return;
@@ -386,35 +389,43 @@ static void handleKeyDownEvent(
     } else {
         key = event.key.keysym.sym;
     }
-    if (event.key.keysym.sym == SDLK_UP) {
+    if (event.key.keysym.sym == SDLK_UP) { // NOLINT(misc-include-cleaner)
         key = U4_UP;
+    // NOLINTNEXTLINE(misc-include-cleaner)
     } else if (event.key.keysym.sym == SDLK_DOWN) {
         key = U4_DOWN;
+    // NOLINTNEXTLINE(misc-include-cleaner)
     } else if (event.key.keysym.sym == SDLK_LEFT) {
         key = U4_LEFT;
+    // NOLINTNEXTLINE(misc-include-cleaner)
     } else if (event.key.keysym.sym == SDLK_RIGHT) {
         key = U4_RIGHT;
+    // NOLINTNEXTLINE(misc-include-cleaner)
     } else if (event.key.keysym.sym == SDLK_BACKSPACE
+               // NOLINTNEXTLINE(misc-include-cleaner)
                || event.key.keysym.sym == SDLK_DELETE) {
         key = U4_BACKSPACE;
     }
-    if (event.key.keysym.sym >= SDLK_F1
-        && event.key.keysym.sym <= SDLK_F15) {
+    if (event.key.keysym.sym >= SDLK_F1 // NOLINT(misc-include-cleaner)
+        && event.key.keysym.sym <= SDLK_F15) { // NOLINT(misc-include-cleaner)
+        // NOLINTNEXTLINE(misc-include-cleaner)
         key = U4_F_KEY + (event.key.keysym.sym - SDLK_F1);
     }
     if (key >= 64 && key <= 127) {
-      if (event.key.keysym.mod & KMOD_CTRL) {
-        key &= 0x1f;
-      }
+        if (event.key.keysym.mod & KMOD_CTRL) { // NOLINT(misc-include-cleaner)
+            key &= 0x1f;
+        }
     }
-    if (event.key.keysym.mod & KMOD_ALT) {
-      if (event.key.keysym.sym != SDLK_LALT
-          && event.key.keysym.sym != SDLK_RALT) {
-        key = event.key.keysym.sym + U4_ALT;
-      }
+    if (event.key.keysym.mod & KMOD_ALT) { // NOLINT(misc-include-cleaner)
+        if (event.key.keysym.sym != SDLK_LALT // NOLINT(misc-include-cleaner)
+            // NOLINTNEXTLINE(misc-include-cleaner)
+            && event.key.keysym.sym != SDLK_RALT) {
+            key = event.key.keysym.sym + U4_ALT;
+        }
     }
-    if (event.key.keysym.mod & KMOD_META) {
-      if (event.key.keysym.sym != SDLK_LMETA
+    if (event.key.keysym.mod & KMOD_META) { // NOLINT(misc-include-cleaner)
+      if (event.key.keysym.sym != SDLK_LMETA // NOLINT(misc-include-cleaner)
+          // NOLINTNEXTLINE(misc-include-cleaner)
           && event.key.keysym.sym != SDLK_RMETA) {
         key = event.key.keysym.sym + U4_META;
       }
@@ -442,19 +453,20 @@ static void handleKeyDownEvent(
     }
 } // handleKeyDownEvent
 
+// NOLINTNEXTLINE(misc-include-cleaner)
 static Uint32 sleepTimerCallback(Uint32, void *)
 {
-    SDL_Event stopEvent;
-    stopEvent.type = SDL_USEREVENT;
+    SDL_Event stopEvent; // NOLINT(misc-include-cleaner)
+    stopEvent.type = SDL_USEREVENT; // NOLINT(misc-include-cleaner)
     stopEvent.user.code = 1;
     stopEvent.user.data1 = nullptr;
     stopEvent.user.data2 = nullptr;
-    SDL_PushEvent(&stopEvent);
+    SDL_PushEvent(&stopEvent); // NOLINT(misc-include-cleaner)
     return 0;
 }
 
 static std::atomic_bool stopUserInput(true);
-static SDL_TimerID sleepingTimer(nullptr);
+static SDL_TimerID sleepingTimer(nullptr); // NOLINT(misc-include-cleaner)
 
 
 /**
@@ -471,36 +483,38 @@ void EventHandler::sleep(const unsigned int msec)
     // (e.g., sleep calling sleep).
     stopUserInput = true;
     sleepingTimer =
+        // NOLINTNEXTLINE(misc-include-cleaner)
         SDL_AddTimer(msec, sleepTimerCallback, nullptr);
 
     while (stopUserInput) {
-        SDL_Event event;
-        SDL_WaitEvent(&event);
+        SDL_Event event; // NOLINT(misc-include-cleaner)
+        SDL_WaitEvent(&event); // NOLINT(misc-include-cleaner)
         switch (event.type) {
-        case SDL_KEYDOWN:
-        case SDL_KEYUP:
-        case SDL_MOUSEBUTTONDOWN:
-        case SDL_MOUSEBUTTONUP:
+        case SDL_KEYDOWN: // NOLINT(misc-include-cleaner)
+        case SDL_KEYUP: // NOLINT(misc-include-cleaner)
+        case SDL_MOUSEBUTTONDOWN: // NOLINT(misc-include-cleaner)
+        case SDL_MOUSEBUTTONUP: // NOLINT(misc-include-cleaner)
             // Discard the event.
             break;
-        case SDL_MOUSEMOTION:
+        case SDL_MOUSEMOTION: // NOLINT(misc-include-cleaner)
             handleMouseMotionEvent(event);
             break;
-        case SDL_ACTIVEEVENT:
+        case SDL_ACTIVEEVENT: // NOLINT(misc-include-cleaner)
             handleActiveEvent(event, eventHandler->updateScreen);
             break;
-        case SDL_USEREVENT:
+        case SDL_USEREVENT: // NOLINT(misc-include-cleaner)
             if (event.user.code == 0) {
                 eventHandler->getTimer()->tick();
             } else if (event.user.code == 1) {
                 if (sleepingTimer) {
+                    // NOLINTNEXTLINE(misc-include-cleaner)
                     SDL_RemoveTimer(sleepingTimer);
                     sleepingTimer = nullptr;
                 }
                 stopUserInput = false;
             }
             break;
-        case SDL_QUIT:
+        case SDL_QUIT: // NOLINT(misc-include-cleaner)
             std::exit(EXIT_FAILURE);
             break;
         default:
@@ -522,32 +536,37 @@ void EventHandler::run()
         SDL_Event all_events[MAX_EVENTS];
         // The following throws out all earlier keypresses if more than
         // four are in the pipeline
-        SDL_PumpEvents();
-        int num_events = SDL_PeepEvents(
+        SDL_PumpEvents(); // NOLINT(misc-include-cleaner)
+        int num_events = SDL_PeepEvents( // NOLINT(misc-include-cleaner)
+            // NOLINTNEXTLINE(misc-include-cleaner)
             all_events, MAX_EVENTS, SDL_PEEKEVENT, SDL_KEYDOWNMASK
         );
         if (num_events > 4) {
-            SDL_PeepEvents(
+            SDL_PeepEvents( // NOLINT(misc-include-cleaner)
+                // NOLINTNEXTLINE(misc-include-cleaner)
                 all_events, num_events - 4, SDL_GETEVENT, SDL_KEYDOWNMASK
             );
         }
         // The following throws out all earlier keypresses if SPACE is pressed
-        num_events = SDL_PeepEvents(
+        num_events = SDL_PeepEvents( // NOLINT(misc-include-cleaner)
+            // NOLINTNEXTLINE(misc-include-cleaner)
             all_events, MAX_EVENTS, SDL_PEEKEVENT, SDL_KEYDOWNMASK
         );
         if (num_events > 1) {
             for (int i = num_events - 1; i > 0; i--) {
+                // NOLINTNEXTLINE(misc-include-cleaner)
                 if (all_events[i].key.keysym.sym == SDLK_SPACE) {
-                    SDL_PeepEvents(
+                    SDL_PeepEvents( // NOLINT(misc-include-cleaner)
+                        // NOLINTNEXTLINE(misc-include-cleaner)
                         all_events, i, SDL_GETEVENT, SDL_KEYDOWNMASK
                     );
                     break;
                 }
             }
         }
-        SDL_WaitEvent(&event);
+        SDL_WaitEvent(&event); // NOLINT(misc-include-cleaner)
         switch (event.type) {
-        case SDL_KEYDOWN:
+        case SDL_KEYDOWN: // NOLINT(misc-include-cleaner)
             {
 #ifndef NPERF
                 static std::atomic<std::clock_t> clock_sum(0);
@@ -580,13 +599,13 @@ void EventHandler::run()
 #endif
                 break;
             }
-        case SDL_MOUSEBUTTONDOWN:
+        case SDL_MOUSEBUTTONDOWN: // NOLINT(misc-include-cleaner)
             handleMouseButtonDownEvent(event, getController(), updateScreen);
             break;
-        case SDL_MOUSEMOTION:
+        case SDL_MOUSEMOTION: // NOLINT(misc-include-cleaner)
             handleMouseMotionEvent(event);
             break;
-        case SDL_USEREVENT:
+        case SDL_USEREVENT: // NOLINT(misc-include-cleaner)
             if (event.user.code == 0) {
                 eventHandler->getTimer()->tick();
             } else if (event.user.code == 1) {
@@ -597,10 +616,10 @@ void EventHandler::run()
                 stopUserInput = false;
             }
             break;
-        case SDL_ACTIVEEVENT:
+        case SDL_ACTIVEEVENT: // NOLINT(misc-include-cleaner)
             handleActiveEvent(event, updateScreen);
             break;
-        case SDL_QUIT:
+        case SDL_QUIT: // NOLINT(misc-include-cleaner)
             std::exit(EXIT_FAILURE);
             break;
         default:
@@ -620,8 +639,9 @@ void EventHandler::setScreenUpdate(const updateScreenCallback update_screen)
  */
 bool EventHandler::timerQueueEmpty()
 {
-    SDL_Event event;
-    if (SDL_PeepEvents(
+    SDL_Event event; // NOLINT(misc-include-cleaner)
+    if (SDL_PeepEvents( // NOLINT(misc-include-cleaner)
+            // NOLINTNEXTLINE(misc-include-cleaner)
             &event, 1, SDL_PEEKEVENT, SDL_EVENTMASK(SDL_USEREVENT)
         )) {
         return false;

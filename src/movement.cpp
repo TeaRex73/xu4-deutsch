@@ -251,7 +251,7 @@ bool moveObject(const Map *map, Creature *obj, const MapCoords &avatar)
         }
         /* not wandering in this move AND on world map
            -> fall through to pursuing the Avatar */
-        /* FALLTHROUGH */
+        [[fallthrough]];
     case MOVEMENT_FOLLOW_AVATAR:
     case MOVEMENT_ATTACK_AVATAR:
         dir_mask = map->getValidMoves(new_coords, obj->getTile());

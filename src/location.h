@@ -34,7 +34,7 @@ class TurnCompleter;
 class Location:public Observable<Location *, MoveEvent &> {
 public:
     Location(
-        const MapCoords &coords,
+        MapCoords coords,
         Map *map,
         int viewMode,
         LocationContext ctx,

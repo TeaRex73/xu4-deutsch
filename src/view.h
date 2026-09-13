@@ -20,6 +20,10 @@ class View {
 public:
     View(int x, int y, int width, int height);
 
+    View(const View &) = delete;
+    View(View &&) = delete;
+    View &operator=(const View &) = delete;
+    View &operator=(View &&) = delete;
     virtual ~View() = default;
 
     virtual void reinit();

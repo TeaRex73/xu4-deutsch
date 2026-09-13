@@ -44,7 +44,7 @@ typedef enum {
 class ReadPlayerController:public ReadChoiceController {
 public:
     ReadPlayerController();
-    ~ReadPlayerController() override;
+
     bool keyPressed(int key) override;
     int getPlayer() const;
     int waitFor() override;
@@ -86,6 +86,12 @@ public:
 
 class TurnCompleter {
 public:
+    TurnCompleter() = default;
+
+    TurnCompleter(const TurnCompleter &) = delete;
+    TurnCompleter &operator=(const TurnCompleter &) = delete;
+    TurnCompleter(TurnCompleter &&) = delete;
+    TurnCompleter &operator=(TurnCompleter &&) = delete;
     virtual ~TurnCompleter() = default;
 
     virtual void finishTurn() = 0;
@@ -108,7 +114,13 @@ class GameController
      public TurnCompleter {
 public:
     GameController();
+
+    GameController(const GameController &) = delete;
+    GameController &operator=(const GameController &) = delete;
+    GameController(GameController &&) = delete;
+    GameController &operator=(GameController &&) = delete;
     ~GameController() override;
+
     /* controller functions */
     bool keyPressed(int key) override;
     void timerFired() override;

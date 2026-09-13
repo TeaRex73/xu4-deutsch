@@ -4,6 +4,7 @@
 
 #include "vc6.h" // Fixes things if you're using VC6, does nothing otherwise
 
+#include <utility>
 #include <vector>
 
 #include "conversation.h"
@@ -73,9 +74,9 @@ void Response::release()
 }
 
 ResponsePart::ResponsePart(
-    const std::string &value, const std::string &arg, const bool command
+    std::string value, std::string arg, const bool command
 )
-    :value(value), arg(arg), command(command)
+    :value(std::move(value)), arg(std::move(arg)), command(command)
 {
 }
 
@@ -95,9 +96,12 @@ bool ResponsePart::isCommand() const
 }
 
 DynamicResponse::DynamicResponse(
-    Response *(*generator)(const DynamicResponse *), const std::string &param
+    Response *(*generator)(const DynamicResponse *), std::string param
 )
-    :Response(""), generator(generator), currentResponse(nullptr), param(param)
+    :Response(""),
+    generator(generator),
+    currentResponse(nullptr),
+    param(std::move(param))
 {
 }
 
@@ -118,9 +122,9 @@ const std::vector<ResponsePart> &DynamicResponse::getParts()
  * Dialogue::Question class
  */
 Dialogue::Question::Question(
-    const std::string &txt, Response *yes, Response *no
+    std::string txt, Response *yes, Response *no
 )
-    :text(txt), yes_resp(yes->add_ref()), no_resp(no->add_ref())
+    :text(std::move(txt)), yes_resp(yes->add_ref()), no_resp(no->add_ref())
 {
 }
 
@@ -147,15 +151,15 @@ Response *Dialogue::Question::getResponse(const bool yes) const
 /*
  * Dialogue::Keyword class
  */
-Dialogue::Keyword::Keyword(const std::string &kw, Response *resp)
-    :keyword(kw), response(resp->add_ref())
+Dialogue::Keyword::Keyword(std::string kw, Response *resp)
+    :keyword(std::move(kw)), response(resp->add_ref())
 {
     trim(keyword);
     lowercase(keyword);
 }
 
-Dialogue::Keyword::Keyword(const std::string &kw, const std::string &resp)
-    :keyword(kw), response((new Response(resp))->add_ref())
+Dialogue::Keyword::Keyword(std::string kw, const std::string &resp)
+    :keyword(std::move(kw)), response((new Response(resp))->add_ref())
 {
     trim(keyword);
     lowercase(keyword);

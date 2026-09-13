@@ -14,12 +14,12 @@ class CombatMap;
 class MapTile;
 
 
-#define DNGROOM_NTRIGGERS 4
+#define DUNGEON_ROOM_NUMBER_OF_TRIGGERS 4
 
 enum StatsBonusType {
-    STATSBONUS_INT = 0x1,
-    STATSBONUS_DEX = 0x2,
-    STATSBONUS_STR = 0x4
+    STATS_BONUS_INT = 0x1,
+    STATS_BONUS_DEX = 0x2,
+    STATS_BONUS_STR = 0x4
 };
 
 struct Trigger {
@@ -47,7 +47,7 @@ public:
     {
     }
 
-    Trigger triggers[DNGROOM_NTRIGGERS];
+    Trigger triggers[DUNGEON_ROOM_NUMBER_OF_TRIGGERS];
     unsigned char creature_tiles[16];
     unsigned char creature_start_x[16];
     unsigned char creature_start_y[16];
@@ -151,4 +151,4 @@ void dungeonDrinkFountain();
 void dungeonTouchOrb();
 bool dungeonHandleTrap(TrapType trap);
 
-#endif // ifndef DUNGEON_H
+#endif // DUNGEON_H

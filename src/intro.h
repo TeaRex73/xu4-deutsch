@@ -28,9 +28,13 @@ struct SaveGame;
  */
 class IntroBinData {
 public:
-    //disallow assignment, copy construction
+    IntroBinData();
+
     IntroBinData(const IntroBinData &) = delete;
     const IntroBinData &operator=(const IntroBinData &) = delete;
+    IntroBinData(IntroBinData &&) = delete;
+    IntroBinData &operator=(IntroBinData &&) = delete;
+    ~IntroBinData();
 
     const static int INTRO_TEXT_OFFSET;
     const static int INTRO_MAP_OFFSET;
@@ -44,8 +48,6 @@ public:
     const static int BEASTIE_FRAME_TABLE_OFFSET;
     const static int BEASTIE1_FRAMES_OFFSET;
     const static int BEASTIE2_FRAMES_OFFSET;
-    IntroBinData();
-    ~IntroBinData();
     bool load();
     std::vector<MapTile> introMap;
     unsigned char *sigData;
@@ -83,6 +85,8 @@ public:
     IntroController(IntroController &&) = delete;
     IntroController &operator=(const IntroController &) = delete;
     IntroController &operator=(IntroController &&) = delete;
+    ~IntroController() override = default;
+
     bool init();
     bool hasInitiatedNewGame() const;
     void deleteIntro();
@@ -241,7 +245,12 @@ private:
 
     class AnimElement {
     public:
+        AnimElement(const AnimElement &) = default;
+        AnimElement &operator=(const AnimElement &) = default;
+        AnimElement(AnimElement &&) noexcept = default;
+        AnimElement &operator=(AnimElement &&) noexcept = default;
         ~AnimElement();
+
         int rx, ry; // screen/source x and y
         int rw, rh; // source width and height
         AnimType method; // render method

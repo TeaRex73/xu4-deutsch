@@ -187,6 +187,7 @@ void FileSystem::createDirectory(Path &path)
 #ifdef FS_WINDOWS
             CreateDirectoryA(dir.c_str(), 0);
 #else
+            // NOLINTNEXTLINE(misc-include-cleaner)
             mkdir(dir.c_str(), S_IRWXU | S_IRWXG | S_IRWXO);
 #endif
         }

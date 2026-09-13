@@ -19,11 +19,13 @@ void Music::create_sys() const
      */
     TRACE_LOCAL(*logger, "Initializing SDL sound subsystem");
     constexpr int audio_rate = 48000;
+    // NOLINTNEXTLINE(misc-include-cleaner)
     constexpr Uint16 audio_format = AUDIO_S16LSB; /* 16-bit stereo */
     constexpr int audio_channels = 2;
     constexpr int audio_buffers = 1024;
     if (u4_SDL_InitSubSystem(SDL_INIT_AUDIO) == -1) {
         errorWarning(
+            // NOLINTNEXTLINE(misc-include-cleaner)
             "unable to init SDL audio subsystem: %s", SDL_GetError()
         );
         functional = false;

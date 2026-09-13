@@ -43,9 +43,6 @@
 
 static int getTicks();
 
-extern bool useProfile;
-extern std::string profileName;
-extern int quit;
 IntroController *intro = nullptr;
 
 #if defined(FS_WINDOWS)
@@ -1326,7 +1323,7 @@ void IntroController::finishInitiateGame(
     saveGame.torches = 2;
     saveGame.write(saveGameFile);
     std::fflush(saveGameFile);
-    fsync(fileno(saveGameFile));
+    fsync(fileno(saveGameFile)); // NOLINT(misc-include-cleaner)
     std::fclose(saveGameFile);
     sync();
     saveGameFile =
@@ -1704,6 +1701,7 @@ void IntroController::updateConfMenu(const MenuEvent &event)
             break;
         case CANCEL:
             // discard settings
+            // NOLINTNEXTLINE(cppcoreguidelines-slicing)
             settingsChanged = static_cast<SettingsData>(settings);
             break;
         default:
@@ -1738,6 +1736,7 @@ void IntroController::updateVideoMenu(const MenuEvent &event)
             break;
         case CANCEL:
             // discard settings
+            // NOLINTNEXTLINE(cppcoreguidelines-slicing)
             settingsChanged = static_cast<SettingsData>(settings);
             break;
         default:
@@ -1792,6 +1791,7 @@ void IntroController::updateSoundMenu(const MenuEvent &event) const
             musicMgr->setMusicVolume(settings.musicVol);
             musicMgr->setSoundVolume(settings.soundVol);
             // discard settings
+            // NOLINTNEXTLINE(cppcoreguidelines-slicing)
             settingsChanged = static_cast<SettingsData>(settings);
             break;
         default:
@@ -1819,13 +1819,14 @@ void IntroController::updateInputMenu(const MenuEvent &event)
                 settingsChanged.keyDelay, settingsChanged.keyInterval
             );
             if (settings.mouseOptions.enabled) {
-                SDL_ShowCursor(SDL_ENABLE);
+                SDL_ShowCursor(SDL_ENABLE); // NOLINT(misc-include-cleaner)
             } else {
-                SDL_ShowCursor(SDL_DISABLE);
+                SDL_ShowCursor(SDL_DISABLE);// NOLINT(misc-include-cleaner)
             }
             break;
         case CANCEL:
             // discard settings
+            // NOLINTNEXTLINE(cppcoreguidelines-slicing)
             settingsChanged = static_cast<SettingsData>(settings);
             break;
         default:
@@ -1856,6 +1857,7 @@ void IntroController::updateSpeedMenu(const MenuEvent &event) const
             break;
         case CANCEL:
             // discard settings
+            // NOLINTNEXTLINE(cppcoreguidelines-slicing)
             settingsChanged = static_cast<SettingsData>(settings);
             break;
         default:
@@ -1881,6 +1883,7 @@ void IntroController::updateGameplayMenu(const MenuEvent &event) const
             break;
         case CANCEL:
             // discard settings
+            // NOLINTNEXTLINE(cppcoreguidelines-slicing)
             settingsChanged = static_cast<SettingsData>(settings);
             break;
         default:
@@ -1906,6 +1909,7 @@ void IntroController::updateInterfaceMenu(const MenuEvent &event)
             break;
         case CANCEL:
             // discard settings
+            // NOLINTNEXTLINE(cppcoreguidelines-slicing)
             settingsChanged = static_cast<SettingsData>(settings);
             break;
         default:
@@ -2267,9 +2271,9 @@ void IntroController::addTitle(
         .timeDuration = duration, // total animation time
         .srcImage = nullptr, // storage for the source image
         .destImage = nullptr, // storage for the animation frame
-        .plotData = std::vector<AnimPlot>(),
-        .prescaled = false
-    };         // prescaled
+        .plotData = std::vector<AnimPlot>(), // the plot data itself
+        .prescaled = false // prescaled to screen scale
+    };
 
     titles.push_back(data);
 }
@@ -2492,7 +2496,7 @@ void IntroController::getTitleSourceData()
 
 static int getTicks()
 {
-    return static_cast<int>(SDL_GetTicks());
+    return static_cast<int>(SDL_GetTicks());// NOLINT(misc-include-cleaner)
 }
 
 //

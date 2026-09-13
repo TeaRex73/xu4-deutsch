@@ -767,15 +767,13 @@ int Map::getValidMoves(
             }
         }
         // avatar movement
+            // if it is a balloon, check flyable
         if (isAvatar) {
             // if the transport is a ship, check sailable
-            if (transport.getTileType()->isShip()
-                && tile.getTileType()->isSailable()) {
-                retval = DIR_ADD_TO_MASK(d, retval);
-            }
-            // if it is a balloon, check flyable
-            else if (transport.getTileType()->isBalloon()
-                     && tile.getTileType()->isFlyable()) {
+            if ((transport.getTileType()->isShip()
+                && tile.getTileType()->isSailable())
+            || (transport.getTileType()->isBalloon()
+                && tile.getTileType()->isFlyable())) {
                 retval = DIR_ADD_TO_MASK(d, retval);
             }
             // avatar or horseback: check walkable
@@ -794,11 +792,10 @@ int Map::getValidMoves(
             // flying creatures
             if (tile.getTileType()->isFlyable() && m->flies()) {
                 // FIXME: flying creatures behave differently on the world map?
-                if (isWorldMap()) {
-                    retval = DIR_ADD_TO_MASK(d, retval);
-                } else if (tile.getTileType()->isWalkable()
-                           || tile.getTileType()->isSwimmable()
-                           || tile.getTileType()->isSailable()) {
+                if (isWorldMap()
+                    || tile.getTileType()->isWalkable()
+                    || tile.getTileType()->isSwimmable()
+                    || tile.getTileType()->isSailable()) {
                     retval = DIR_ADD_TO_MASK(d, retval);
                 }
             }

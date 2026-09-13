@@ -72,10 +72,11 @@ public:
     Debug(Debug &&) = delete;
     const Debug &operator=(const Debug &) = delete;
     const Debug &operator=(Debug &&) = delete;
+    ~Debug() = default;
 
     explicit Debug(
-        const std::string &fn,
-        const std::string &nm = "",
+        std::string fn,
+        std::string nm = "",
         bool append = false
     );
     static void initGlobal(const std::string &filename);
