@@ -39,8 +39,7 @@ public:
 
     void addObserver(Observer<O, A> *o)
     {
-        typename std::vector<Observer<O, A> *>::const_iterator i =
-            std::find(observers.cbegin(), observers.cend(), o);
+        const auto i = std::find(observers.cbegin(), observers.cend(), o);
         if (i == observers.cend()) {
             observers.push_back(o);
         }
