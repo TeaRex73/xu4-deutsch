@@ -11,7 +11,6 @@
 #include <string>
 #include <vector>
 
-#include <unistd.h>
 #if defined(_WIN32) || defined(__CYGWIN__)
 #include <windows.h>
 #include <shlobj.h>
@@ -698,7 +697,7 @@ bool Settings::write()
     std::fflush(settingsFile);
     fsync(fileno(settingsFile)); // NOLINT(misc-include-cleaner)
     std::fclose(settingsFile);
-    sync();
+    sync(); // NOLINT(misc-include-cleaner)
     setChanged();
     notifyObservers(nullptr);
     return true;

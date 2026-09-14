@@ -2,11 +2,12 @@
 #define VC6_H
 
 #ifdef __cplusplus
-#   include <cstdio>
-#   define STD_FILE std::FILE
+extern "C" {
+#include <cstdio>
+#define STD_FILE std::FILE
 #else
-#   include <stdio.h>
-#   define STD_FILE FILE
+#include <stdio.h>
+#define STD_FILE FILE
 #endif
 
 // IWYU pragma: always_keep
@@ -35,20 +36,27 @@
 #define __builtin_expect(x, y) (x)
 #endif
 
-#if defined(__WIN32__) || defined(WIN32) || defined (_WIN32) \
-  || defined(__CYGWIN__)
+#if (defined(_WIN32) || defined(_WIN64))
 
-/* also nop sync and implement fsync - sync() has no Windows equivalent */
 #include <io.h>
 
-static inline int fsync(int fd)
-{
-  return _commit(fd);
-}
+#if defined(_MSC_VER)
 
 static inline int fileno(STD_FILE *f)
 {
     return _fileno(f);
+}
+
+
+#elif defined(__MINGW32__) || defined(__MINGW64__) || defined(__CYGWIN__)
+#include <unistd.h>
+#else
+#error "Unsupported Windows platform"
+#endif
+
+static inline int fsync(int fd)
+{
+   return _commit(fd);
 }
 
 static inline void sync(void)
@@ -56,7 +64,11 @@ static inline void sync(void)
 }
 
 #else
-# include <unistd.h>
+#include <unistd.h>
+#endif
+
+#ifdef __cplusplus
+}
 #endif
 
 #endif

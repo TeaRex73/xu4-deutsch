@@ -17,8 +17,6 @@
 #include <string>
 #include <vector>
 
-#include <unistd.h>
-
 #include "game.h"
 
 #include "annotation.h"
@@ -496,7 +494,7 @@ static bool gameSave()
         std::fflush(saveGameFile);
         fsync(fileno(saveGameFile)); // NOLINT(misc-include-cleaner)
         std::fclose(saveGameFile);
-        sync();
+        sync(); // NOLINT(misc-include-cleaner)
         return false;
     }
     std::fflush(saveGameFile);

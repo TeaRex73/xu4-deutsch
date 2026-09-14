@@ -13,7 +13,6 @@
 #include <vector>
 
 #include <SDL.h> // IWYU pragma: keep
-#include <unistd.h>
 
 #include "intro.h"
 
@@ -1052,7 +1051,7 @@ void IntroController::drawBeasties(const bool musicon)
  * Animates the "beasties".  The animate intro image is made up frames
  * for the two creatures in the top left and top right corners of the
  * screen.  This function draws the frame for the given beastie on the
- * screen.  vertoffset is used lower the creatures down from the top
+ * screen.  vertOffset is used to lower the creatures down from the top
  * of the screen.
  */
 void IntroController::drawBeastie(
@@ -1078,7 +1077,7 @@ void IntroController::drawBeastie(
  * the frame parameter is "moongate", the moongate overlay is painted
  * over the image.  If frame is "items", the second overlay is
  * painted: the circle without the moongate, but with a small white
- * dot representing the anhk and history book.
+ * dot representing the Ankh and history book.
  */
 void IntroController::animateTree(const std::string &frame) const
 {
@@ -1325,7 +1324,7 @@ void IntroController::finishInitiateGame(
     std::fflush(saveGameFile);
     fsync(fileno(saveGameFile)); // NOLINT(misc-include-cleaner)
     std::fclose(saveGameFile);
-    sync();
+    sync(); // NOLINT(misc-include-cleaner)
     saveGameFile =
         std::fopen((tmpStr + MONSTERS_SAV_BASE_FILENAME).c_str(), "wb");
     if (saveGameFile) {
@@ -1390,7 +1389,7 @@ void IntroController::showStory(const SexType sex)
 
 
 /**
- * Starts the gypsys questioning that eventually determines the new
+ * Starts the gypsy's questioning that eventually determines the new
  * characters class.
  */
 void IntroController::startQuestions(const SexType sex)

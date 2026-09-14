@@ -14,7 +14,6 @@
 
 #ifndef NPERF
 #   include <cstdio>
-#   include <unistd.h>
 #   include "filesystem.h"
 #endif
 
