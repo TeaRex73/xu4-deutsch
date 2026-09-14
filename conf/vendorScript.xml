@@ -160,7 +160,7 @@
         </tell_about>
 
         <tell_about choice="o">
-            DIESER MAGISCHE STAB ERZEUGT M[CHTIGE BLAUE BLITZE, UM DEINE FEINDE NIEDERZUSTRECKEN, {price}gs.
+            DIESER MAGISCHE STAB ERZEUGT M[CHTIGE BLAUE BLITZE, UM DEINE FEINDE NIEDER ZU STRECKEN, {price}gs.
         </tell_about>
 
         <!-- input how many to buy -->
@@ -403,7 +403,7 @@
         </tell_about>
 
         <tell_about choice="e">
-            VOLLE PLATTENR]STUNG IST DAS NONPLUSULTRA DER NICHT-MAGISCHEN R]STUNGEN. ERHALTE DEINE F]R {price}gs.
+            VOLLE PLATTENR]STUNG IST DAS NONPLUSULTRA DER NICHT MAGISCHEN R]STUNGEN. ERHALTE DEINE F]R {price}gs.
         </tell_about>
 
         <tell_about choice="f">
@@ -592,7 +592,7 @@
         <vendor id="GLIMMEMOND" name=" DEN WEISEN DELIKATESSEN" owner="SHAMAN" price="25" quant="25"/>
         <vendor id="BRITAIN" name=" ABENTEUER-KOST" owner="WINDRICK" price="40" quant="25"/>
         <vendor id="EIBE" name=" DEN TROCKENWAREN" owner="DONNAR" price="35" quant="25"/>
-        <vendor id="SKARA BRAE" name=" GANZ SCH\N WAS ZU KNABBBERN" owner="MINTOL" price="20" quant="25"/>
+        <vendor id="SKARA BRAE" name=" GANZ SCH\N WAS ZU KNABBERN" owner="MINTOL" price="20" quant="25"/>
         <vendor id="PFOTEN" name="M DISCOUNTER" owner="MAX" price="30" quant="25"/>
     </script>
 
@@ -669,7 +669,7 @@
             <if test="{$price}={ale_price}" redirect="something_else"/>
             <if test="{$price}&gt;{ale_price}">
                 <var name="tip_total" value="{math({$price}-{ale_price})}"/>
-                WAS WILLST'N WISSSEN, <if test="{party:member1:sex}=f">MEINE FREUNDIN?
+                WAS WILLST'N WISSEN, <if test="{party:member1:sex}=f">MEINE FREUNDIN?
                 </if><if test="{party:member1:sex}=m">MEIN FREUND?
                 </if>
                 <input name="choice" type="text" target="topic"/>
@@ -695,10 +695,11 @@
         </reply>
 
         <reply choice="sexta">
-            {owner} SAGT: BEIM NAVIGIEREN IST 'N SEXTANT LEBENSWICHTIG... FRAG IN DEN GILDENL[DEN NACH GEGENSTAND "D"!
+            {owner} SAGT: BEIM NAVIGIEREN IST 'N SEXTANT LEBENSWICHTIG... FRAG IN DEN GILDEN-L[DEN NACH GEGENSTAND "D"!
             <redirect target="something_else"/>
         </reply>
 
+        <!--suppress GrazieStyle -->
         <reply choice="weiss">
             LASS MICH ]BERLEGEN... JA, 'S WAR DIESER ALTE EREMIT... SLOVEN! SCHWER ZU FINDEN, LEBT BEIM LOCH-SEE WIE MAN H\RT.
             <redirect target="something_else"/>
@@ -709,11 +710,13 @@
             <redirect target="something_else"/>
         </reply>
 
+        <!--suppress GrazieStyle -->
         <reply choice="schae">
             {owner} SAGT: WENN DU DENN VON DIESEM B\SESTEN ALLER DINGE WISSEN MUSST... FINDE DEN BETTLER JUDE. ER IST SEHR, SEHR ARM!
             <redirect target="something_else"/>
         </reply>
 
+        <!--suppress GrazieStyle -->
         <reply choice="schat">
             {owner} SAGT: VON SCHATTEN WEISS ICH NUR SOVIEL... FRAG VIRGIL, SONST FIND'STE KEINEN STIEL. VERSUCH'S IN TRINSIC!
             <redirect target="something_else"/>
@@ -752,11 +755,11 @@
             <redirect target="sorry"/>
         </cantpay_topic>
 
-        <vendor id="BRITAIN" name="BEI DEN LAUNIGEN GEISTERN" owner="SAM" specialty="LAMMKOTLETTS" spec_price="4" ale_price="2">
+        <vendor id="BRITAIN" name="BEI DEN LAUNIGEN GEISTERN" owner="SAM" specialty="LAMMKOTELETTS" spec_price="4" ale_price="2">
             <topic choice="schwa" price="20" redirect="save"/>
         </vendor>
 
-        <vendor id="JHELOM" name="IN DER BLUTIGEN PINTE" owner="CELESTIAL" specialty="DRACHENTARTAR" spec_price="2" ale_price="2">
+        <vendor id="JHELOM" name="IN DER BLUTIGEN PINTE" owner="CELESTIAL" specialty="DRACHENTATAR" spec_price="2" ale_price="2">
             <topic choice="sexta" price="30" redirect="save"/>
         </vendor>
 
@@ -798,7 +801,7 @@
         </end>
 
         <bye>
-            {owner} SAGT: DANN VIELLEICHT EIN ANDERNMAL... UND DREHT SICH LANGSAM WEG.
+            {owner} SAGT: DANN VIELLEICHT EIN ANDERMAL... UND DREHT SICH LANGSAM WEG.
             <end/>
         </bye>
 
@@ -1065,7 +1068,7 @@
             <service choice="c" name="TOTE ERWECKEN" desc="EINE ERWECKUNG" price="300" type="resurrect"/>
         </vendor>
 
-        <vendor id="KESSELBUCHT" name="M HEILERLADEN" healer="QUAT">
+        <vendor id="KESSELBUCHT" name="M HEILER-LADEN" healer="QUAT">
             <service choice="a" name="GIFT KURIEREN" desc="EINE ENTGIFTUNG" price="100" type="cure"/>
             <service choice="b" name="WUNDEN HEILEN" desc="EINE WUNDHEILUNG" price="200" type="fullheal"/>
             <service choice="c" name="TOTE ERWECKEN" desc="EINE ERWECKUNG" price="300" type="resurrect"/>
@@ -1277,7 +1280,7 @@
             <redirect target="see_more"/>
         </buy>
         <cantpay>
-            WAS? KANNST NICHT ZAHLEN? HAUB AB, SCHWEIN!
+            WAS? KANNST NICHT ZAHLEN? HAU AB, SCHWEIN!
             <end/>
         </cantpay>
 
@@ -1286,7 +1289,7 @@
             {owner} SAGT: MEHR SEHEN?<input type="choice" options="jn" target="show_goods"/>
         </see_more>
 
-        <vendor id="VESPER" name="IM GILDENLADEN" owner="LONG JOHN LEARY" ownerdat="LONG JOHN LEARY">
+        <vendor id="VESPER" name="IM GILDEN-LADEN" owner="LONG JOHN LEARY" ownerdat="LONG JOHN LEARY">
             <item choice="a" name="FACKELN" price="50" quant="5" type="torch"/>
             <item choice="b" name="JUWELEN" price="60" quant="5" type="gem"/>
             <item choice="c" name="DIETRICHE" price="60" quant="6" type="key"/>
@@ -1309,7 +1312,7 @@
     <script id="Stable">
         <intro>
             <music type="shopping"/>
-            WILLKOMMEN <if test="{party:member1:sex}=f">FREUNDIN!</if><if test="{party:member1:sex}=m">FREUND!</if> KANN ICH DICH AN PFERDEN INERESSIEREN?<input type="choice" options="jn" target="ask"/>
+            WILLKOMMEN <if test="{party:member1:sex}=f">FREUNDIN!</if><if test="{party:member1:sex}=m">FREUND!</if> KANN ICH DICH AN PFERDEN INTERESSIEREN?<input type="choice" options="jn" target="ask"/>
         </intro>
 
         <end>
