@@ -444,10 +444,10 @@ public:
     static CreatureMgr *getInstance();
     void loadAll();
     Creature *getByTile(MapTile tile) const;
-    Creature *getById(CreatureId id);
+    Creature *getById(CreatureId id) const;
     Creature *getByName(const std::string &name) const;
     Creature *randomForTile(const Tile *tile) const;
-    Creature *randomForDungeon(int dngLevel);
+    Creature *randomForDungeon(int dngLevel) const;
     Creature *randomAmbushing() const;
 
 private:

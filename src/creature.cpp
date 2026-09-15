@@ -62,7 +62,7 @@ Creature::Creature(const MapTile tile)
 void Creature::load(const ConfigElement &conf)
 {
     unsigned int idx;
-    static const struct {
+    static constexpr struct {
         const char *name;
         unsigned int mask;
     } booleanAttributes[] = {
@@ -287,7 +287,7 @@ void Creature::setRandomRanged()
         ranged_hit_tile = ranged_miss_tile = "sleep_field";
         break;
     default:
-        errorFatal("BUG: xu4_random(4) output should be 0-3");
+        U4ASSERT(0, "BUG: xu4_random(4) output should be 0-3");
     }
 }
 
@@ -1027,9 +1027,9 @@ Creature *CreatureMgr::getByTile(const MapTile tile) const
  * or returns nullptr if no creature with that id could
  * be found.
  */
-Creature *CreatureMgr::getById(const CreatureId id)
+Creature *CreatureMgr::getById(const CreatureId id) const
 {
-    const CreatureMap::const_iterator i = creatures.find(id);
+    const auto i = creatures.find(id);
     if (i != creatures.cend()) {
         return i->second;
     }
@@ -1096,7 +1096,7 @@ Creature *CreatureMgr::randomForTile(const Tile *tile) const
 /**
  * Creates a random creature based on the dungeon level given
  */
-Creature *CreatureMgr::randomForDungeon(const int dngLevel)
+Creature *CreatureMgr::randomForDungeon(const int dngLevel) const
 {
     const CreatureId monster = RAT_ID + dngLevel + xu4_random(4);
     if (monster == MIMIC_ID) {
@@ -1128,7 +1128,7 @@ Creature *CreatureMgr::randomAmbushing() const
         const int randCreature = xu4_random(numAmbushingCreatures);
         int countAmbushingCreatures = 0;
         /* now, find the one we selected */
-        for (const auto creature: creatures) {
+        for (const auto &creature: creatures) {
             if (creature.second->ambushes()) {
                 /* found the creature - return it! */
                 if (countAmbushingCreatures == randCreature) {

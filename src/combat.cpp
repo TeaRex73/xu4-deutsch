@@ -1291,7 +1291,7 @@ void CombatController::attack() const
         targetCoords = path.back();
     }
     int distance = 1;
-    for (auto coords: path) {
+    for (auto &coords: path) {
         if (attackAt(coords, attacker, MASK_DIR(dir), range, distance)) {
             foundTarget = true;
             targetDistance = distance;

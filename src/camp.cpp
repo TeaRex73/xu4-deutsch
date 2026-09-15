@@ -213,7 +213,7 @@ bool InnController::maybeMeetIsaac()
                 27, xu4_random(3) + 10, c->location->coords.z
             );
             // If Isaac is already around, just bring him back to the inn
-            for (const auto object: c->location->map->objects) {
+            for (auto *object: c->location->map->objects) {
                 auto *p = dynamic_cast<Person *>(object);
                 if (p && p->getName() == "Isaac") {
                     p->setCoords(coords);
