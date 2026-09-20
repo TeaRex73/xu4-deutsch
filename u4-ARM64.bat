@@ -88,7 +88,7 @@ if not exist Referenz.pdf goto error2
 if not exist Weisheit.pdf goto error2
 del /f /q *.xor >nul 2>nul
 cd /d "%~dp0"
-cscript //NoLogo //E:jscript MessageBox.js 64 "Lesbarmachen war erfolgreich, bitte lies die PDF-Dateien im Ordner Ultima IV Dokumentation! Klicke nochmal auf Ultima IV, um zu spielen!"
+cscript //NoLogo //E:jscript MessageBox.js 64 "Lesbar machen war erfolgreich, bitte lies die PDF-Dateien im Ordner Ultima IV Dokumentation! Klicke nochmal auf Ultima IV, um zu spielen!"
 exit /b 0
 :nodecode
 cd /d "%~dp0"
@@ -103,7 +103,7 @@ cscript //NoLogo //E:jscript MessageBox.js 16 "Die Dokumentation konnte nicht le
 exit /b 1
 :notarm
 cd /d "%~dp0"
-cscript //NoLogo //E:jscript MessageBox.js 16 "Diese Version von Ultima IV Deutsch ist nur fr Windows auf 64-Bit ARM-Prozessoren verwendbar. Bitte lade entweder die Version fr 32-Bit Windows oder die fr 64-Bit Windows auf Intel- und AMD-Prozessoren herunter!"
+cscript //NoLogo //E:jscript MessageBox.js 16 "Diese Version von Ultima IV Deutsch ist nur fï¿½r Windows auf 64-Bit ARM-Prozessoren verwendbar. Bitte lade entweder die Version fï¿½r 32-Bit Windows oder die fï¿½r 64-Bit Windows auf Intel- und AMD-Prozessoren herunter!"
 exit /b 1
 :getfile
 attrib -s -h -r .\ultima4.zip >nul 2>nul

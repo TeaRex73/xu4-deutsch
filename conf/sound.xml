@@ -18,8 +18,8 @@
     <track file="sound08.ogg"/>      <!-- C64 EVADE          -->
     <track file="sound08.ogg"/>      <!-- C64 FLEE           -->  <!-- same as EVADE -->
     <track file="sound08.ogg"/>      <!--     ITEM_STOLEN    -->
-    <track file="sound09.ogg"/>      <!--     LBHEAL         -->
-    <track file="sound09.ogg"/>      <!--     LEVELUP        -->
+    <track file="sound09.ogg"/>      <!--     LB_HEAL        -->
+    <track file="sound09.ogg"/>      <!--     LEVEL_UP       -->
     <track file="moongate.ogg"/>     <!--     MOONGATE       -->
     <track file="sound07.ogg"/>      <!--     CANNON         -->
     <track file="trem_fx.ogg"/>      <!--     RUMBLE         -->
@@ -27,56 +27,6 @@
     <track file="sound09.ogg"/>      <!-- C64 MAGIC          -->
     <track file="sound11.ogg"/>      <!--     STORM          -->
     <track file="sound12.ogg"/>      <!--     WHIRLPOOL      -->
-    <track file="soundyy.ogg"/>      <!--     INTROGATE_OPEN -->
-    <track file="soundzz.ogg"/>      <!--     INTROGATE_CLOSE-->
+    <track file="soundyy.ogg"/>      <!--    INTRO_GATE_OPEN -->
+    <track file="soundzz.ogg"/>      <!--    INTRO_GATE_CLOSE-->
 </sound>
-
-
-
-
-
-
-<!--
-
-horse
-horse fast
-steal
-
-
-ccs2.wav
-        6s              bad command
-        15s             move
-        34s             blocked
-        90s             sleep
-        170s    heal (LB)
-        340s    moongate
-        365s    attack
-        366s    kill
-        368s    acid trap
-        394s    attack
-        398s    flee
-        404s    trap evaded
-        436s    move in combat
-        474             move slow
-        482s    attack
-        491s    monster attack
-        492s    monster hit
-        532s    attack
-        533s    hit
-
-ccs3.wav
-        39s             monster attack
-        40s     monster hit
-        160s    monster range attack (nixie)
-        174s    monster range hit
-        307             move slow
-        308             move
-        313             poisoned!
-        370s    poison damage
-        886s    poison damage (2 PCs)
-        890s    poison damage (1 PC)
-        950s    sleep trap
-        1140s   poison damage (1 PC)
-        1190s   level up (LB)
-        1200s   heal (LB)
--->

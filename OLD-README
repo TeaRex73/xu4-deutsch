@@ -42,7 +42,7 @@ STATUS
 New in v1.0beta4
  - many bug fixes
  - text colorization
- - enchanced line-of-sight algorithm
+ - enhanced line-of-sight algorithm
  - more sound effects
  - support for multiple profiles/saved games
  - the traditional title sequence was implemented
@@ -64,7 +64,7 @@ New in v1.0beta1
    vendor scripting system
 
 New in v0.9
- - dungeon altars and codex sequence (the game is now completeable)
+ - dungeon altars and codex sequence (the game is now completable)
  - added context-sensitive default action to "Enter" key
  - completed first person dungeon view
  - sounds effects
@@ -113,7 +113,7 @@ New in v0.5
  - lots of combat refinements, random monsters
  - lots of fixes to vendor code (weapon, armor and food fully
    implemented)
- - Lord British nows heals party when asked about health
+ - Lord British now heals party when asked about health
  - "Mix Reagents" command works
  - the "Yell" command now controls horse speed
  - lots of the game mechanics that were guessed before now match the
@@ -194,8 +194,8 @@ Download UltimaIV.zip and (optionally) u4upgrad.zip, and place them in
 the same directory as the u4 executable.  xu4 will read the Ultima IV
 data files straight out of the zipfile.
 
-xu4 searches for the zipfiles, or the unpacked contents of the
-zipfiles in the following places:
+xu4 searches for the zip files, or the unpacked contents of the
+zip files in the following places:
  - the current directory when u4 is run
  - a subdirectory named "ultima4" of the current directory
  - "/usr/lib/u4/ultima4/"
@@ -204,7 +204,7 @@ zipfiles in the following places:
 The zipfile doesn't need to be unpacked, but if it is, xu4 can handle
 uppercase or lowercase filenames even on case-sensitive filesystems,
 so it doesn't matter whether the files are named AVATAR.EXE or
-avater.exe or even Avatar.exe.
+avatar.exe or even Avatar.exe.
 
 At the title screen, a configuration menu can be accessed by pressing
 'c'.  Here, the screen scale, filter, volume and other settings can be
@@ -225,7 +225,7 @@ xu4 also accepts the following command line options:
                         Scale2x
 
    -skipintro       Skip the intro, and go directly into the game.
-   -i               This option requires the existance of a valid saved
+   -i               This option requires the existence of a valid saved
                     game.
 
    -profile <str>   Activate a specific save game profile.  Using this
@@ -260,8 +260,8 @@ system of magic and provides descriptions of the spells and reagents.
 
 PDF versions of these books are included in the official download in
 the EXTRA folder of the zip file.
-As an added bonus this folder also includes a pdf of the offical 
-Ultima IV cluebook.
+As an added bonus this folder also includes a pdf of the official
+Ultima IV clue book.
 
 An image of the cloth map from the original Ultima IV box is also
 included in the EXTRA folder.

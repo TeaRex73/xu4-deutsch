@@ -28,7 +28,7 @@ define sar(n) {
     return n
 }
 /* Print two-digit hex value between 00 and FF */
-define void prhex(n) {
+define void print_hex(n) {
     auto oob
     oob = obase
     obase = 16
@@ -48,18 +48,18 @@ scale += 5
 pi = a(1) * 4 /* pi is 4 times arc tangent of 1 */
 sr2op = sqrt(2) / pi /* Square root of 2 Over Pi, comes from fourier
                         series expansion of Apple II pulse signal shape */
-ufac = sqrt(865318419 / 209556997)
-vfac = sqrt(288439473 / 221990474)
+u_fac = sqrt(865318419 / 209556997)
+v_fac = sqrt(288439473 / 221990474)
 /* The following factor desaturates the colors so that the 6 hi-res colors
    are just not oversaturated any more */
 desat = (6 * sqrt(40296339852095054)) / (209556997 * pi)
-ufac = ufac / desat
-vfac = vfac / desat
+u_fac = u_fac / desat
+v_fac = v_fac / desat
 scale -= 5
 pi /= 1
 sr2op /= 1
-ufac /= 1
-vfac /= 1
+u_fac /= 1
+v_fac /= 1
 desat /= 1
 
 /* loop over the lo-res color numbers */
@@ -92,8 +92,8 @@ for (c = 0; c < 16; ++c) {
     }
     /* calc R, G, B (in range 0-1)
        see article "YUV-Farbmodell" in German Wikipedia */
-    b = y + (ufac * u)
-    r = y + (vfac * v)
+    b = y + (u_fac * u)
+    r = y + (v_fac * v)
     g = (y - 0.299 * r - 0.114 * b) / 0.587
     /* restrict to 0-1 range */
     r = clamp(r)
@@ -113,9 +113,9 @@ for (c = 0; c < 16; c += 1) {
     print "COLOR="
     if (c < 10) print " "
     print c, " #"
-    prhex(r)
-    prhex(g)
-    prhex(b)
+    print_hex(r)
+    print_hex(g)
+    print_hex(b)
     print "\n"
 }
 quit

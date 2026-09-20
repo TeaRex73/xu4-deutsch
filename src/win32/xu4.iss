@@ -8,14 +8,14 @@ AppSupportURL=http://xu4.sourceforge.net/
 AppUpdatesURL=http://xu4.sourceforge.net/
 DefaultDirName={pf}\xu4
 DefaultGroupName=xu4
-AllowNoIcons=true
-AlwaysUsePersonalGroup=false
-EnableDirDoesntExistWarning=false
+AllowNoIcons=yes
+AlwaysUsePersonalGroup=no
+EnableDirDoesntExistWarning=no
 OutputDir=C:\xu4
 OutputBaseFilename=xu4win32
-DisableStartupPrompt=true
-AppendDefaultDirName=false
-SolidCompression=true
+DisableStartupPrompt=yes
+AppendDefaultDirName=no
+SolidCompression=yes
 DirExistsWarning=no
 
 [Icons]

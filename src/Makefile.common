@@ -1,5 +1,5 @@
 NULL=
-MAIN=u4$(EXEEXT)
+MAIN=u4
 
 CSRCS=\
         lzw/hash.c \
@@ -96,40 +96,40 @@ OBJS += $(CSRCS:.c=.o) $(CXXSRCS:.cpp=.o)
 
 all:: $(MAIN) mkutils
 
-mkutils::  coord$(EXEEXT) dumpsavegame$(EXEEXT) tlkconv$(EXEEXT) u4dec$(EXEEXT) u4enc$(EXEEXT) u4unpackexe$(EXEEXT) xor$(EXEEXT) xorbin$(EXEEXT)
+mkutils::  coord dumpsavegame tlkconv u4dec u4enc u4unpackexe xor xorbin
 
 $(MAIN): $(OBJS)
 	$(CXX) $(CXXFLAGS) -o $@ $(OBJS) $(LDFLAGS)
 
-coord$(EXEEXT): util/coord.o
+coord: util/coord.o
 	$(CC) $(CCFLAGS) -o $@ $+ $(LDFLAGS)
 
-dumpsavegame$(EXEEXT) : util/dumpsavegame.o savegame.o u4io.o names.o
+dumpsavegame: util/dumpsavegame.o savegame.o u4io.o names.o
 	$(CXX) $(CXXFLAGS) -o $@ $+ $(LDFLAGS)
 
-tlkconv$(EXEEXT) : util/tlkconv.o
+tlkconv: util/tlkconv.o
 	$(CC) $(CCFLAGS) -o $@ $+ $(LDFLAGS) $(shell xml2-config --libs)
 
-u4dec$(EXEEXT) : util/u4dec.o lzw/lzw.o lzw/hash.o rle.o util/pngconv.o
+u4dec: util/u4dec.o lzw/lzw.o lzw/hash.o rle.o util/pngconv.o
 	$(CXX) $(CXXFLAGS) -o $@ $+ $(LDFLAGS) -lpng -lz
 
-u4enc$(EXEEXT) : util/u4enc.o lzw/hash.o util/pngconv.o
+u4enc: util/u4enc.o lzw/hash.o util/pngconv.o
 	$(CC) $(CCFLAGS) -o $@ $+ $(LDFLAGS) -lpng -lz
 
-u4unpackexe$(EXEEXT): util/u4unpackexe.o
+u4unpackexe: util/u4unpackexe.o
 	$(CC) $(CCFLAGS) -o $@ $+ $(LDFLAGS)
 
-xor$(EXEEXT): util/xor.o
+xor: util/xor.o
 	$(CC) $(CCFLAGS) -o $@ $+ $(LDFLAGS)
 
-xorbin$(EXEEXT): util/xorbin.o
+xorbin: util/xorbin.o
 	$(CC) $(CCFLAGS) -o $@ $+ $(LDFLAGS)
 
 clean:: cleanutil
 	rm -rf *~ */*~ $(OBJS) $(MAIN)
 
 cleanutil::
-	rm -rf util/coord.o coord$(EXEEXT) util/dumpsavegame.o dumpsavegame$(EXEEXT) util/u4dec.o u4dec$(EXEEXT) util/u4enc.o u4enc$(EXEEXT) util/pngconv.o util/tlkconv.o tlkconv$(EXEEXT) util/u4unpackexe.o u4unpackexe$(EXEEXT) util/xor.o xor$(EXEEXT) util/xorbin.o xorbin$(EXEEXT)
+	rm -rf util/coord.o coord util/dumpsavegame.o dumpsavegame util/u4dec.o u4dec util/u4enc.o u4enc util/pngconv.o util/tlkconv.o tlkconv util/u4unpackexe.o u4unpackexe util/xor.o xor util/xorbin.o xorbin
 
 TAGS: $(CSRCS) $(CXXSRCS)
 	etags *.h $(CSRCS) $(CXXSRCS)

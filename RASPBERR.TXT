@@ -43,7 +43,7 @@ Ordner "Ultima IV Dokumentation" der Karte lesen.
 
 Ich empfehle folgende Reihenfolge:
 
-1. Box.pdf (noch unvollständig, es fehlt das Coverbild)
+1. Box.pdf (noch unvollständig, es fehlt das Cover-Bild)
 2. Referenz.pdf
 3. Karte.png
 4. Geschichte.pdf
@@ -61,7 +61,7 @@ Algorithmen vom Apple-II- und MS-DOS-Original behoben.
 
 Folgende Probleme sind derzeit bekannt:
 
-1. Fehleneds Coverbild (ich besitze das Original, die Box ist aber zu sehr
+1. Fehlendes Cover-Bild (ich besitze das Original, die Box ist aber zu sehr
 zerkratzt und zerdrückt, um einen guten Scan möglich zu machen.) Hilfe ist
 hierbei sehr willkommen, falls Du ein besser erhaltenes Original besitzt!
 

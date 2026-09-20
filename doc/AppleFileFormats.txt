@@ -1,7 +1,7 @@
 Ultima 4 File Structs (Apple version)
 =====================================
 
-I haven't yet explored all of the ways in which Ultima IV 
+I haven't yet explored all the ways in which Ultima IV
 stores its static data.  That's a project for another day.
 
 On the Apple 2 Britannia disk, game state is saved in four files:
@@ -52,7 +52,7 @@ offset	len	notes
 0x113	2	Gold
 0x115   1	Horn
 0x116	1	Wheel
-0x117	1	Skull (1 if owned, 0xff if destoyed)
+0x117	1	Skull (1 if owned, 0xff if destroyed)
 0x118	8	Armor quantities (skin through robe)
 0x120	16	Weapon quantities (hands through mystic swords)
 0x130	8	UNKNOWN (always zero)
@@ -97,7 +97,7 @@ offset	len	notes
 0x0	1	x position (hex value; on any map, including dungeon)
 0x1	1	y position (ditto)
 0x2     4	redundant x,y position data (probably has to do with
-                with which sub-map of Britannia we are on; doesn't
+        which sub-map of Britannia we are on; doesn't
 		change in dungeons)
 0x6 	2	weird rotating values... almost like a PRNG
 0x8	1	x of last settlement/dungeon visited
@@ -115,11 +115,11 @@ OxF	1	Party size
 0x13	1	Felucca phase, 0-7
 0x14	1	0 normal, ff when Giddyup'd (not loaded from disk)
 0x15 	1	Introduced to Lord British
-0x16	1	Last camp (hundreds byte of nmoves)
+0x16	1	Last camp (hundreds byte of moves)
 0x17	1	Last humility question / give to beggar (ones byte & 0xf0)
 0x18	1	Altar Room Type (0x0: Truth, 0x1: Love, 0x2: Courage,
 	                         0xFF: Not an Altar Room)
-0x19	1	Last meditate (hundred byte?)
+0x19	1	Last meditate (hundreds byte?)
 0x1A	1	Last mandrake/nightshade (ones byte & 0xf0)
 0x1B 	1	hull strength (is it preserved??)
 0x1C	4	Number of moves	

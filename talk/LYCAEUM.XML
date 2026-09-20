@@ -40,6 +40,7 @@
     <topic query="job">Ich bewache den Thronsaal.</topic>
     <topic query="health">Bißchen müde.</topic>
     <topic query="THRO">Thron der Wahrheit!</topic>
+    <!--suppress GrazieInspection -->
     <topic query="WAHR">Es gibt vier Städte, die dem Prinzipe der Wahrheit folgen.<question type="0">Weißt du welche?<yes>Gut!</yes><no>Es gibt acht mögliche Kombinationen der drei Prinzipien, es gibt acht Städte!</no></question></topic>
   </person>
   <person id="6" name="Scatu" pronoun="Er" turnAwayProb="0">
@@ -50,7 +51,7 @@
     <topic query="RUES">Ich trage mystische Rüstung.<question type="0">Bist du ein Teil-Avatar?<yes>Wenn du 8 Teile Avatar bist, such Zircon in Minoc auf und frag nach mystischem!</yes><no>Leider.</no></question></topic>
   </person>
   <person id="7" name="Estro" pronoun="Er" turnAwayProb="0">
-    <description>Einen kurzgewachsenen Druiden.</description>
+    <description>Einen kurz gewachsenen Druiden.</description>
     <topic query="job">Recherche.</topic>
     <topic query="health">Oh, es geht mir prima, dir auch, hoffe ich.</topic>
     <topic query="RECH">Ich suche nach dem Buche der Gerechtigkeit!</topic>
@@ -60,7 +61,7 @@
     <description>Einen stattlichen Zauberer.</description>
     <topic query="job">Dich willkommen zu heißen!</topic>
     <topic query="health">Sehr gut, danke!</topic>
-    <topic query="WILL">Ja, willkommen im Lyzeum, der Festung der Wahrheit!<question type="0">Weißt du, wie viele Städte dem Prinzipe der Wahrheit folgen?<yes>Wie viele?</yes><no>Reise und lerne!</no></question></topic>
+    <topic query="WILL">Ja, willkommen im Lyzeum, der Festung der Wahrheit!<!--suppress GrazieInspection --><question type="0">Weißt du, wie viele Städte dem Prinzipe der Wahrheit folgen?<yes>Wie viele?</yes><no>Reise und lerne!</no></question></topic>
     <topic query="VIER">Die Altarräume der Höhlen brauchen jeweils 4 Steine!</topic>
   </person>
   <person id="9" name="ein Wahrheitssucher" pronoun="Er" turnAwayProb="32">
@@ -107,8 +108,11 @@
   </person>
   <person id="15" name="Shylock der Sanftmütige" pronoun="Er" turnAwayProb="0">
     <description>Einen erbärmlichen Bettler.</description>
+    <!--suppress GrazieStyle -->
     <topic query="job">Ich sitze und bettle. Oh... bitte...</topic>
-    <topic query="health">Mir ist kalt und ich bin krank! Oh... bitte...<question type="0">Wirst du mir helfen? Oh... bitte...<yes>Oh... bitte...</yes><no>Oh... bitte...</no></question></topic>
+    <!--suppress GrazieStyle -->
+    <topic query="health">Mir ist kalt und ich bin krank! Oh... bitte...  <!--suppress GrazieStyle --><question type="0">Wirst du mir helfen? Oh... bitte...<yes>Oh... bitte...</yes><no>Oh... bitte...</no></question></topic>
+    <!--suppress GrazieStyle -->
     <topic query="BETT">Ja, bitte gib mir Geld! Oh... bitte...</topic>
     <topic query="KRAN">Ich habe die schwarze Pest!</topic>
   </person>

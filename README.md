@@ -1,10 +1,10 @@
 ﻿# ULTIMA IV: DIE QUESTE DES AVATARS auf Deutsch
 
-Diesem klassischen Werke zu Ehren jetzt erstmals komplett auf deutsch - inklusive der Papierdokumente und Stoffkarte des Originals als PDFs!
+Diesem klassischen Werke zu Ehren jetzt erstmals komplett auf Deutsch - inklusive der Papierdokumente und Stoffkarte des Originals als PDFs!
 
 **Original © 1985-1987 Lord British und Origin Systems, Inc. Alle Rechte vorbehalten**
-**Modernes Remake © 2002-2020 Das XU4 Team, veröffentlicht als Freie Software unter GPLv2**
-**Deutsche Fassung © 2013-2024 Finire Dragon UDIC, ebenfalls unter GPLv2**
+**modernes Remake © 2002-2020 das XU4 Team, veröffentlicht als Freie Software unter GPLv2**
+**deutsche Fassung © 2013-2024 Finire Dragon UDIC, ebenfalls unter GPLv2**
 
 Die Lizenz befindet sich in der Datei COPYING.
 
@@ -18,7 +18,7 @@ Das Spiel erschien damals nur in englischer Sprache, auch erfolgreiche Computers
 ## Was bekomme ich hier?
 
 Der hier erhältliche Code basiert auf dem bereits 2002 erstmals veröffentlichten Projekt "xu4", wurde aber komplett aus dem Englischen ins Deutsche übersetzt und verwendet Grafik und Sound aus der Apple-II-Originalversion von "Ultima IV"
-statt wie xu4 aus der später entstandenen MS-DOS-Version. Sound und Musik sind dabei von einem echten Apple II mit Mockinboard-Soundkarte aufgenommen worden.
+statt wie xu4 aus der später entstandenen MS-DOS-Version. Sound und Musik sind dabei von einem echten Apple II mit Mockingboard-Soundkarte aufgenommen worden.
 
 Die Originaldateien aus der MS-DOS-Version sind aus urheberrechtlichen Gründen nicht enthalten; sie dürfen aber von bestimmten anderen Personen legal im Internet zum Download angeboten werden und werden beim ersten Start automatisch heruntergeladen.
 
@@ -35,7 +35,7 @@ Fehler bitte unbedingt melden! Pull requests sind natürlich ebenfalls willkomme
 
 ## Wie benutze ich es?
 
-Diese Version ist für Windows. Es gibt keinen Installer, sonder es ist portable Software nach dem Prinzip "Nur entpacken und starten". Bitte die heruntergeladene ZIP-Datei
+Diese Version ist für Windows. Es gibt keinen Installer, sondern es ist portable Software nach dem Prinzip "Nur entpacken und starten". Bitte die heruntergeladene ZIP-Datei
 einfach irgendwohin entpacken und dann den Link "Ultima IV" aus dem Hauptordner
 starten. Das Icon für den Link sieht nur dann richtig aus, wenn sich der
 Hauptordner auf demDesktop des aktuellen Benutzers befindet (eine durch Windows bedingte technische Einschränkung für portable Programme ohne Installer), der Link funktioniert aber
@@ -62,14 +62,14 @@ der Raspberry-Version in "RASPBERR.TXT" auch hierfür. Die Dokumentation ist noc
 angepasst, sollte aber wohl kein Problem sein.
 
 Behobene Bugs seit der vorigen Version:
-- Auch die Dokumentation enthält nun keine nutzbaren urheberrechtlich geschützten Inhalte von Origin Systems, Inc. oder Electronic Arts mehr. Erst mit Hilfe der Originaldatei werden diese erzeugt. Damit dürfte nun alles saubere Open Source sein.
+- Auch die Dokumentation enthält nun keine nutzbaren urheberrechtlich geschützten Inhalte von Origin Systems, Inc. oder Electronic Arts mehr. Erst mithilfe der Originaldatei werden diese erzeugt. Damit dürfte jetzt alles saubere Open Source sein.
 - Kleine Fehlerbehebungen
 
 Alle Bugs dürfen sehr gerne an mich gemeldet werden, einfach ein Issue hier eröffnen.
 Auch sonstiges Feedback ist willkommen!
 
 ## To Do
-- Workflows hinzufügen, die für ein Tag oder Release den Tag statt des Git-Hashs in den Dateinamen verwenden
+- Workflows hinzufügen, die für ein Tag oder Release den Tag statt des Git-Hash in den Dateinamen verwenden
 - Code aufräumen, diversen "toten" Code entfernen (z.B. nicht mehr funktionierende Unterstützung für andere Grafikvarianten als Apple II)
 - Karma-Punktevergabe an die Apple II Version angleichen, wo noch Abweichungen sind
 - Abweichungen zu xu4 und zu den Originalversionen (Apple II und MS-DOS) vollständig dokumentieren
@@ -77,9 +77,9 @@ Auch sonstiges Feedback ist willkommen!
 - Changelog mit den einzelnen Änderungen seit 2013 erstellen (momentan nur im Git-Log zu lesen)
 - Beta-Tester gewinnen und Tests durchführen lassen (das bedeutet Dich!)
 - Raspberry-Pi-Version (bisher händisch außerhalb von Github gepflegt) automatisiert hier bauen lassen
-- Raspberry-Pi-Version von der veralteten DispmanX-API auf KMS oder eine andere moderne API umziehen, so dass sie auch auf Pi's nach dem Pi 3 und auf neuen Pi-OS-Versionen noch läuft
+- Raspberry-Pi-Version von der veralteten DispmanX-API auf KMS oder eine andere moderne API umziehen, sodass sie auch auf Pis nach dem Pi 3 und auf neuen Pi-OS-Versionen noch läuft
 - Von SDL 1.2.15 auf SDL 2 oder SDL 3 portieren
-- Enhancement-Idee: In Kämpfen die Himmelsrichtung berücksichtigen, aus der der Feind kam, so dass die Gegner nicht immer im Norden und die Spielercharaktere nicht immer im Süden stehen.
+- Enhancement-Idee: In Kämpfen die Himmelsrichtung berücksichtigen, aus der der Feind kam, sodass die Gegner nicht immer im Norden und die Spielercharaktere nicht immer im Süden stehen.
 
 Wenn Du Dich hier angesprochen fühlst, ist jede Mitarbeit willkommen!
 

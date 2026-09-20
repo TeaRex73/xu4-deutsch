@@ -25,7 +25,7 @@
     <description>Einen kurzen runden Mann mit Hute und Weste.</description>
     <topic query="job">Reisender Dan, der Zinkermann.</topic>
     <topic query="health">Mir geht's prima, danke.</topic>
-    <topic query="ZINK">Ich bin hier, um für den Gildenladen Waren zu reparieren.<question type="0">Warst du schon im Gildenladen?<yes>Tolle Auswahl!</yes><no>Beste Preise!</no></question></topic>
+    <topic query="ZINK">Ich bin hier, um für den Gilden-Laden Waren zu reparieren.<question type="0">Warst du schon im Gilden-Laden?<yes>Tolle Auswahl!</yes><no>Beste Preise!</no></question></topic>
     <topic query="REIS">Ich weiß, daß die Welt rund ist!</topic>
   </person>
   <person id="4" name="Balthasar" pronoun="Er" turnAwayProb="0">
@@ -67,8 +67,8 @@
     <description>Eine schöne und beeindruckende Wache.</description>
     <topic query="job">Ich soll dich davor warnen, dieses Gold zu nehmen!<question type="0">Planst du, es zu nehmen?<yes>Das würde kein gutes Licht auf deine Tugenden werfen!</yes><no>Das ist gut.</no></question></topic>
     <topic query="health">Mir geht es gut genug!</topic>
-    <topic query="GOLD">Es ist nicht deins!</topic>
-    <topic query="WARN">Es ist nicht deins!</topic>
+    <topic query="GOLD">Es ist nicht deines!</topic>
+    <topic query="WARN">Es ist nicht deines!</topic>
   </person>
   <person id="10" name="Randal" pronoun="Er" turnAwayProb="0">
     <description>Einen ernsten Waldläufer.</description>

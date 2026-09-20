@@ -88,7 +88,7 @@ if not exist Referenz.pdf goto error2
 if not exist Weisheit.pdf goto error2
 del /f /q *.xor >nul 2>nul
 cd /d "%~dp0"
-cscript //NoLogo //E:jscript MessageBox.js 64 "Lesbarmachen war erfolgreich, bitte lies die PDF-Dateien im Ordner Ultima IV Dokumentation! Klicke nochmal auf Ultima IV, um zu spielen!"
+cscript //NoLogo //E:jscript MessageBox.js 64 "Lesbar machen war erfolgreich, bitte lies die PDF-Dateien im Ordner Ultima IV Dokumentation! Klicke nochmal auf Ultima IV, um zu spielen!"
 exit /b 0
 :nodecode
 cd /d "%~dp0"

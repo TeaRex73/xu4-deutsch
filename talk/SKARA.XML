@@ -12,14 +12,14 @@
     <topic query="job">Ich suche den spirituellen Weg.</topic>
     <topic query="health">Ich bin ernsthaft verletzt.</topic>
     <topic query="SPIR">Das geistige ist stäker als jede materielle Kraft.</topic>
-    <topic query="VERL">Nichts kann dir Frieden bringen als der Triumph von Prinzpien!<question type="0">Bist du gut im Geiste?<yes>Ein guter Weg.</yes><no>Ein böser Weg!</no></question></topic>
+    <topic query="VERL">Nichts kann dir Frieden bringen als der Triumph von Prinzipien!<question type="0">Bist du gut im Geiste?<yes>Ein guter Weg.</yes><no>Ein böser Weg!</no></question></topic>
   </person>
   <person id="2" name="Santayana" pronoun="Er" turnAwayProb="0">
     <description>Einen großen Waldläufer.</description>
     <topic query="job">Ich trage das Licht in meinem Herzen.</topic>
     <topic query="health">Ich lebe.</topic>
     <topic query="LICH">Das Licht der Philosophie.</topic>
-    <topic query="PHIL">In philosophischen Geistern weckt das alltägliche Verwunderung!<question type="1">Beschreitest du immer den rechten Weg?<yes>Zweifelhaft!</yes><no>Wenige können es, aber strebe danach!</no></question></topic>
+    <topic query="PHIL">In philosophischen Geistern weckt das Alltägliche Verwunderung!<question type="1">Beschreitest du immer den rechten Weg?<yes>Zweifelhaft!</yes><no>Wenige können es, aber strebe danach!</no></question></topic>
   </person>
   <person id="3" name="Presto" pronoun="Er" turnAwayProb="0">
     <description>Einen sehr kleinen Zauberer.</description>
@@ -40,14 +40,14 @@
     <topic query="job">Ich lese das Zauber-Journal.</topic>
     <topic query="health">Mir geht es prima.</topic>
     <topic query="JOUR">Es berichtet über den weißen Stein.</topic>
-    <topic query="STEI">Er liegt nicht mehr in der Höhle Hylot, er ist fort!<question type="0">Willst du versuchen, ihn zurück zu holen?<yes>Frag nach dem weißen Steine beim Zapfhahne in Trinsic!</yes><no>Schade.</no></question></topic>
+    <topic query="STEI">Er liegt nicht mehr in der Höhle Hylot, er ist fort!<question type="0">Willst du versuchen, ihn zurückzuholen?<yes>Frag nach dem weißen Steine beim Zapfhahne in Trinsic!</yes><no>Schade.</no></question></topic>
   </person>
   <person id="6" name="Buddha" pronoun="Er" turnAwayProb="0">
     <description>Einen großen Philosophen.</description>
     <topic query="job">Ich lehre.</topic>
     <topic query="health">Mir geht es gut.</topic>
-    <topic query="LEHR">Wenn einer Mitgefühl mit allen lebenden Wesen hat, dann ist er edel.</topic>
-    <topic query="EDEL">Wenn einer mit reinem Gedanken spricht oder handelt, wird Glück ihm folgen wie ein Schatten, der nie fortgeht.</topic>
+    <topic query="LEHR">Wenn jemand Mitgefühl mit allen lebenden Wesen hat, dann ist er edel.</topic>
+    <topic query="EDEL">Wenn jemand mit reinem Gedanken spricht oder handelt, wird Glück ihm folgen wie ein Schatten, der nie fortgeht.</topic>
   </person>
   <person id="7" name="Michelangelo" pronoun="Er" turnAwayProb="0">
     <description>Einen geübten Waldläufer.</description>
@@ -75,13 +75,14 @@
     <topic query="job">Ich schreibe Geschichten.</topic>
     <topic query="health">O.K.</topic>
     <topic query="GESC">Geschichten sind gut für den Geist!</topic>
-    <topic query="GEIS">Denk dran, niemand ist in dieser Welt überflüssig, der anderen ihre Lasten erleichtert!<question type="0">Bist du von guter Natur?<yes>Sieh zu, daß dein Netto-Gutes dein Netto-Böses klar übersteigt!</yes><no>Ich verstehe.</no></question></topic>
+    <topic query="GEIS">Denk dran, niemand ist in dieser Welt überflüssig, der anderen ihre Lasten erleichtert!<question type="0">Bist du von guter Natur?<!--suppress GrazieInspection --><yes>Sieh zu, daß dein Netto-Gutes dein Netto-Böses klar übersteigt!</yes><no>Ich verstehe.</no></question></topic>
   </person>
   <person id="11" name="White" pronoun="Er" turnAwayProb="0">
-    <description>Einen gallanten Kämpfer.</description>
+    <description>Einen galanten Kämpfer.</description>
     <topic query="job">Ich queste.</topic>
     <topic query="health">Exzellent!</topic>
     <topic query="QUES">Viele Questen sind sehr gefährlich!<question type="1">Bist du in allen Dingen furchtlos?<yes>Angeberischer Narr!</yes><no>Gefahr ist wirklich!</no></question></topic>
+    <!--suppress GrazieInspection -->
     <topic query="GEFA">Ich habe keine Angst vor Morgen; ich habe Gestern gesehen und ich liebe Heute.</topic>
   </person>
   <person id="12" name="das Anch der Spiritualität" pronoun="Es" turnAwayProb="0">
@@ -110,6 +111,6 @@
     <topic query="job">Ich spuke in diesem Gasthause!</topic>
     <topic query="health">Ich bin seit vielen Jahren tot.</topic>
     <topic query="SPUK">Die Queste ist nicht vollendet!<question type="0">Bist du auf der Queste?<yes>Hoffnung!</yes><no>Leider.</no></question></topic>
-    <topic query="STEI">Der weiße Stein sitzt oben auf Der Schlange Rückgrat. Er kann nur von jemandem erreicht werden, der in den Wolken schwebt.</topic>
+    <topic query="STEI">Der weiße Stein sitzt oben auf der Schlange Rückgrat. Er kann nur von jemandem erreicht werden, der in den Wolken schwebt.</topic>
   </person>
 </dialogue>

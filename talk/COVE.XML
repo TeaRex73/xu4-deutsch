@@ -99,17 +99,17 @@
     <topic query="KODE">Das eine reine Axiom ist endloser als die wechselnden Gezeiten, ewiger als Tag und Nacht!</topic>
   </person>
   <person id="14" name="Charm" pronoun="Sie" turnAwayProb="0">
-    <description>Eine hübsche Hexerin.</description>
+    <description>Eine hübsche Hexe.</description>
     <topic query="job">Ich betrachte den Schlüssel zum Axiome.</topic>
     <topic query="health">Gut genug.</topic>
     <topic query="SCHL">Zum Axiome.</topic>
-    <topic query="AXIO">Das 1 reine Axiom umfaßt alle Dinge.<question type="0">Weißt du, was sie sind?<yes>Gut.</yes><no>Die Wahrheiten des Universumes, die Liebe des Herzens, und der Mut der Seele!</no></question></topic>
+    <topic query="AXIO">Das 1 reine Axiom umfaßt alle Dinge.<question type="0">Weißt du, was sie sind?<yes>Gut.</yes><no>Die Wahrheiten des Universums, die Liebe des Herzens, und der Mut der Seele!</no></question></topic>
   </person>
   <person id="15" name="Circe" pronoun="Er" turnAwayProb="0">
     <description>Einen weisen Magier.</description>
     <topic query="job">Ich lehre vom Axiome!</topic>
     <topic query="health">Gut.</topic>
-    <topic query="AXIO">Das Ganze des Axiomes ist größer als alle seine Teile!</topic>
+    <topic query="AXIO">Das Ganze des Axioms ist größer als alle seine Teile!</topic>
     <topic query="TEIL">Das Maß unendlicher Liebe, der unbegrenzte Mut, der alle Hindernisse angeht, die Wahrheit, die alle Dinge umfaßt!</topic>
   </person>
 </dialogue>

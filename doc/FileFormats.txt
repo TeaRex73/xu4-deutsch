@@ -36,7 +36,7 @@ character 122.  The lowest 32 characters have the following glyphs:
 1 - Symbol for horn effect
 2 - Brick wall 1
 3 - Brick wall 2
-4 - Updown arrow
+4 - Up-down arrow
 5 - Down arrow
 6 - Up arrow
 7 - Partial ankh
@@ -48,8 +48,8 @@ character 122.  The lowest 32 characters have the following glyphs:
 13 - Border bar
 14 - Hollow square
 15 - 
-16 - Border endpiece (right)
-17 - Border endpiece (left)
+16 - Border end piece (right)
+17 - Border end piece (left)
 18 - 
 19 - Ellipsis
 20 - Moon phase 0
@@ -126,7 +126,7 @@ introduction sequence (title.exe); the images used by avatar.exe are
 RLE encoded instead.  (Description of LZW algorithm to go here).
 
 file         purpose
-TITLE.EGA    the background for the inital screen, including the large Ultima IV and
+TITLE.EGA    the background for the initial screen, including the large Ultima IV and
              the border for the map/menu
 ANIMATE.EGA  the frames for the little critters in the upper corners of the intro
              screen
@@ -134,7 +134,7 @@ TREE.EGA     initial graphic for character creation sequence (has animated moong
 PORTAL.EGA   closeup of the moongate
 OUTSIDE.EGA  the faire from outside
 INSIDE.EGA   inside the faire
-WAGON.EGA    the gyspy's wagon
+WAGON.EGA    the gypsy's wagon
 GYPSY.EGA    the gypsy herself
 ABACUS.EGA   the abacus that serves as the background while the questions are asked
 HONCOM.EGA   the cards for honor and compassion
@@ -178,9 +178,9 @@ offset len  notes
 0x400  32   tile for NPCs 0-31
 0x420  32   start_x for NPCs 0-31
 0x440  32   start_y for NPCs 0-31
-0x460  32   repitition of 0x400-0x41F
-0x480  32   repitition of 0x420-0x43F
-0x4A0  32   repitition of 0x440-0x45F
+0x460  32   repetition of 0x400-0x41F
+0x480  32   repetition of 0x420-0x43F
+0x4A0  32   repetition of 0x440-0x45F
 0x4C0  32   movement_behavior for NPCs 0-31 (0x0-fixed, 0x1-wander, 0x80-follow, 0xFF-attack)
 0x4E0  32   conversion index (tlk file) for NPCs 0-31
 
@@ -471,7 +471,7 @@ Surface:
 On the surface, the monster table contains information about monsters
 and inanimate objects (chests, horses, ships, balloon).
 A table entry is free if (previousTile[i] == 0). However, when u4dos
-deletes and entry, it sets both currentTile[i] and previousTile[i] to 0.
+deletes an entry, it sets both currentTile[i] and previousTile[i] to 0.
 Slots 0-7 are for monsters, while slots 8-31 are for inanimate objects.
 Non-empty entries don't have to be contiguous.
 Whirlpools and twisters are special cases; they must be placed in slot 0-3,
@@ -629,7 +629,7 @@ for the intro screens embedded in it.
 
 offset len   notes
 0x0    17445 ???
-0x4425 11088 text for introduction, gypsy dialog and gyspy questions
+0x4425 11088 text for introduction, gypsy dialog and gypsy questions
              (zero terminated strings)
 0x6f75 1035  ???
 0x7380 184   list of frames sequences for beasties on intro screen
@@ -731,7 +731,7 @@ offset  len   notes
 0x11701 2     ???
 0x11703 16    weapon value list (one byte per weapon type)
 0x11713 8     armor value list (one byte per armor type)
-0x1171b 16    weapon type list (one byte per weapon type; 0 = melee, 0xff
+0x1171b 16    weapon type list (one byte per weapon type; 0 = mêlée, 0xff
               = missile)
 0x1172b 154   .CON filenames; 14 zero terminated strings
 0x117c5 28    14 two-byte offsets to .CON filenames (value + 62131 gives
@@ -851,7 +851,7 @@ offset  len   notes
 0x15417 456   food vendor dialog text; x zero terminated strings
 0x155df 16    food vendor index for each city (one byte per castle/city/town)
 0x155ef 10    price for 25 units of food at each vendor (two bytes for
-              each price) for Moonglow, Britan, Yew, Skara Brae, and
+              each price) for Moonglow, Britain, Yew, Skara Brae, and
               Paws, respectively
 0x155f9 10    5 two-byte offsets to food shop names (value + 62067 gives
               file offset)

@@ -9,7 +9,7 @@ Deutsche Fassung 2013-2024 Finire Dragon UDIC
 
 Basiert auf xu4 mit Grafik und Sound aus der Apple-II-Originalversion und
 (in geringem Maße) aus der Commodore-64-Version. Sound und Musik sind dabei
-von einem echten Apple II mit Mockinboard-Soundkarte aufgenommen worden.
+von einem echten Apple II mit Mockingboard-Soundkarte aufgenommen worden.
 
 Version U4DEU-2024-12-27 "Legal Wonderland!" für Microsoft Windows
 (Windows 7 oder höher, 32 oder 64 Bit, Pentium IV oder höher)
@@ -44,7 +44,7 @@ angepasst, sollte aber wohl kein Problem sein.
 
 Behobene Bugs seit der vorigen Version:
 - Enthält jetzt keine Dateien aus der MS-DOS-Version mehr.
-  Statdessen wird diese beim ersten Start von einem Server im Internet 
+  Stattdessen wird diese beim ersten Start von einem Server im Internet
   heruntergeladen, der diese legal hosten darf, und die
   ausführbare Datei u4.exe enthält nur die Änderungen in der deutschen
   Version als XOR-Daten, so dass nur noch Open Source enthalten ist.

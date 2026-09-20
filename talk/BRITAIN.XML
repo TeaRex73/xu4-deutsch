@@ -5,7 +5,7 @@
     <topic query="job">Ich spiele für die Leute.</topic>
     <topic query="health">Gut.</topic>
     <topic query="SPIE">Ich spiele meine Laute und empfange die guten Wünsche der Leute.<question type="0">Magst du meine Musik?<yes>Ich würde dich begleiten!</yes><no>Wie schade.</no></question></topic>
-    <topic query="MITG">Wenn du jemand anders gut behandelst, wird er einen Grund haben, das gleiche zu tun.</topic>
+    <topic query="MITG">Wenn du jemand anders gut behandelst, wird er einen Grund haben, das Gleiche zu tun.</topic>
   </person>
   <person id="1" name="Gweno" pronoun="Sie" turnAwayProb="0">
     <description>Eine charmante Närrin.</description>
@@ -37,7 +37,7 @@
   </person>
   <person id="5" name="Thevel" pronoun="Er" turnAwayProb="0">
     <description>Einen bewährten Kämpfer.</description>
-    <topic query="job">Ich suche nach dem Geheimnisse der Magischen Kugeln.</topic>
+    <topic query="job">Ich suche nach dem Geheimnisse der magischen Kugeln.</topic>
     <topic query="health">Halbwegs gut.</topic>
     <topic query="KUGE">Ein einhändiger Bettler kennt ihre Geheimnisse!<question type="0">Hast du ihn gesehen?<yes>Nur er kennt die Gabe der Kugeln!</yes><no>Finde ihn in der Schlangenfeste denn er weiß von Kugeln!</no></question></topic>
     <topic query="MAGI">Magische Kugeln.</topic>

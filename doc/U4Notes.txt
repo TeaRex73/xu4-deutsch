@@ -21,11 +21,11 @@ Function info (by number)
                   * Blinking effect caused by repetitively painting original
                   tile, then after a short delay, painting the bounding box.
 01 - Tile Row Expansion (Dungeon)
-     Input: (Tile, TRow, SRow, SCol, Exp)
+     Input: (Tile, Tile_Row, Screen_Row, Screen_Col, Exp)
             - Tile is the tile number, 0 to 255, with the row to be expanded
-            - TRow is the row in the tile, 0 to 15, to be expanded
-            - SRow is the screen row to expand to, 0 to 199
-            - SCol is the screen column to expand to, 0 to 319
+            - Tile_Row is the row in the tile, 0 to 15, to be expanded
+            - Screen_Row is the screen row to expand to, 0 to 199
+            - Screen_Col is the screen column to expand to, 0 to 319
             - Exp is the expansion factor, 1 (false) or not 1 (true)
      Literally: Draws the specified row of the specified tile to the screen at
                 coordinate (SRow, SCol).  If Exp is not 1 (true), then the row
@@ -50,7 +50,7 @@ Function info (by number)
 03 - Tremor Shift Down
 04 - Tremor Shift Up
      Input (Sound)
-           - Sound is a flag for whether or not to play sound (based on program
+           - Sound is a flag for whether to play sound (based on program
              sound setting, don't remember the key, but there is a toggle key)
      Literally: Shifts entire main view down(up) half a tile (8 pixels).
                 Makes rumble noise if sound != 0
@@ -142,7 +142,7 @@ Function info (by number)
            - FileName is a near pointer to the filename (string) containing the
              picture to load
            - DestOff is the Offset in DestSeg to begin writing picture data
-           - DestSeg is the Segment in memory to write picture data to.  If this
+           - DestSeg is the Segment in memory to write picture data to. (If this
              Value = 0, then write directly to the screen, instead)
            * the format of the file is as follows:
              Do
@@ -173,26 +173,26 @@ Function info (by number)
      Description: Used only at the end of the game, after you have answered every
                   Avatar question correctly, to show the final in game scene.
 
-17 - Dungeon Draw (Trapazoids)
+17 - Dungeon Draw (Trapezoids)
      Input (X1, X2, Y1A, Y1B, Y2A, Y2B, C1, C2)
-           - X1 is left edge of trapazoid (0 to 319)
-           - X2 is right edge of trapazoid (0 to 319)
+           - X1 is left edge of trapezoid (0 to 319)
+           - X2 is right edge of trapezoid (0 to 319)
            - Y1A is upper left boundry (0 to 199)
            - Y1B is lower left boundry (0 to 199)
            - Y2A is upper right boundry (0 to 199)
            - Y2B is lower right boundry (0 to 199)
            * left and right & Upper/lower don't matter much, as I sort them to
-             make sense anyways
-           - C1 is the the Color of the Trapazoid (0-3) they are then looked up
+             make sense anyway
+           - C1 is the Color of the Trapezoid (0-3) they are then looked up
              on a color table in the driver (Black, Blue, Green, White)
            - C2 is unused (both in mine and in the EGA version)
-     Literally: Draws the trapazoid matching the specified dimensions of the given
+     Literally: Draws the trapezoid matching the specified dimensions of the given
                 Color.  As a side note, my version draws the dungeon as specified,
                 as opposed to the EGA version, which does some cheap time saving
                 tricks.  As a result, their lines are all at 45 and 90 degree angles,
                 while mine match the specified coordinates, like the C64 version.
      Description: Used to draw the walls & doors & stuff in the dungeon.  Not much
-                  more than a Trapazoid drawing function
+                  more than a Trapezoid drawing function
 
 18 - Ankh Set
      Input (List)

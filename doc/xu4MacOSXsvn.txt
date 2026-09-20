@@ -37,7 +37,7 @@ Things you only have to do once
 
 5. Grab libpng (universal).dmg
    http://ethan.tira-thompson.org/Mac_OS_X_Ports.html
-   Mount the disk image by doubleclicking and install the libpng framework.
+   Mount the disk image by double-clicking and install the libpng framework.
    Unfortunately this package is now only for intel machines. If you want to 
    compile for PPC machines, please grab 
    http://xu4.sourceforge.net/download/libpng(ppcintel).dmg

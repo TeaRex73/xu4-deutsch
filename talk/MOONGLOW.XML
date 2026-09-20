@@ -10,9 +10,10 @@
   <person id="1" name="Tracie" pronoun="Sie" turnAwayProb="0">
     <description>Eine hungernde Journalistin.</description>
     <topic query="job">Ich bin Autorin.</topic>
+    <!--suppress GrazieStyle -->
     <topic query="health">Ich fühle mich prima... wenn ich nur mit dem Rauchen aufhören könnte!</topic>
     <topic query="AUTO">Es wird schlecht bezahlt, aber es ist glamourös!</topic>
-    <topic query="RAUC">Hust... Hust...<question type="0">Rauchst du?<yes>Ich merk's am Geruche!</yes><no>Fang nicht an!</no></question></topic>
+    <topic query="RAUC">hust... hust...<question type="0">Rauchst du?<yes>Ich merk's am Geruche!</yes><no>Fang nicht an!</no></question></topic>
   </person>
   <person id="2" name="Cromwell" pronoun="Er" turnAwayProb="0">
     <description>Einen hoheitsvollen Paladin.</description>

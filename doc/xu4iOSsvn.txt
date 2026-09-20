@@ -8,7 +8,7 @@ You can build xu4 for the iPad by using opening xu4.xcodeproj in the u4/src/iOS
 directory and building the Ultima4-iPad application. Everything should be set
 up for you aside from two missing references to ultima4.zip and u4upgrad.zip.
 For these files, you will have to obtain from the well known places (i.e.,
-check the xu4 web site). There shouldn't be much more magic than that.
+check the xu4 website). There shouldn't be much more magic than that.
 
 The iOS code does use boost (boost.org) (specifically scoped_ptr and
 intrusive_ptr). If this is a deal-breaker, I guess I could roll my own
@@ -22,7 +22,7 @@ The port uses no SDL. The tiles are handled using CGLayer. Event handling using
 standard Cocoa Touch and sound using the AVFramework. Performance is excellent
 with very little time spent optimizing the code.
 
-Points in the code that needed to call-in to iOS code are all conditionally
+Points in the code that needed to call into iOS code are all conditionally
 compiled using the IOS macro. I strongly encourage everyone else uses this when
 they are ifdef'ing as well. The patterns I used should be straightforward.
 
@@ -39,13 +39,13 @@ Files for iPad/iOS specific things like in the following:
 
 I refactored the code for sound and music. I think this matches more the intent
 of the original changes in January. That is, it hides the implementation
-details into specific functions that are called by the backed that is chosen at
+details into specific functions that are called by the back-end that is chosen at
 compile time. Adding your own file is simply a matter of creating your own
 implementation of these functions and making sure that it is chosen during
 compilation. Currently, the backends only SDL_Mixer and the AVFoundation on
 iOS. If there is some other viable sound system, it would be neat to try and
 add it as well as that would likely uncover any issues with my current level of
 abstraction. No support for changing the backend at runtime is supported and I
-would be hard pressed to see why this would be a good idea for xu4.
+would be hard-pressed to see why this would be a good idea for xu4.
 
 

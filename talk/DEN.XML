@@ -44,7 +44,7 @@
   </person>
   <person id="6" name="Seanna" pronoun="Sie" turnAwayProb="0">
     <description>Eine aufreizende Magierin.</description>
-    <topic query="job">Ich bin eine Hexerin.<question type="0">Mein lieber Freund, darf ich dir helfen?<yes>Zum Beispiel mit deiner Magie?</yes><no>Ah</no></question></topic>
+    <topic query="job">Ich bin eine Hexe.<question type="0">Mein lieber Freund, darf ich dir helfen?<yes>Zum Beispiel mit deiner Magie?</yes><no>Ah</no></question></topic>
     <topic query="health">Mir geht es gut.</topic>
     <topic query="MAGI">Wie wär's mit dem Zauber Slipitus... Zzzzz... Zzzzz....</topic>
     <topic query="SLIP">Der Slipitus erfordert nur &gt;einen&lt; Teil Weben! Zzzzz... Zzzzz... Zzzzz...</topic>
@@ -57,7 +57,7 @@
     <topic query="HYLO">Die Höhle Hylot erreicht man nur durch einen geheimen Eingang in der großen Burg.</topic>
   </person>
   <person id="8" name="Starlight" pronoun="Er" turnAwayProb="0">
-    <description>Einen Magier, ganz in schwarz gekleidet.</description>
+    <description>Einen Magier, ganz in Schwarz gekleidet.</description>
     <topic query="job">Ich benutze schwarze Magie!</topic>
     <topic query="health">Wirklich dunkel.</topic>
     <topic query="MAGI">Ich mache den Zauber Missailus mächtig.<question type="0">Du auch?<yes>Versuch mal meine Mischung von Reagenzien!</yes><no>Schade.</no></question></topic>
@@ -74,7 +74,7 @@
     <description>Einen häßlichen Ork!</description>
     <topic query="job">Ich schmuggle Waren für den Schwarzmarkt.</topic>
     <topic query="health">Gut und stinkig.</topic>
-    <topic query="WARE">Magische Dietriche, Magische Juwelen, so'n Kram.<question type="0">Brauchst du so was?<yes>Ich hab dem Gildenladen gerade 'ne frische Ladung besorgt!</yes><no>Na ja, vielleicht nächstes mal.</no></question></topic>
+    <topic query="WARE">Magische Dietriche, Magische Juwelen, so'n Kram.<question type="0">Brauchst du so was?<yes>Ich hab dem Gilden-Laden gerade 'ne frische Ladung besorgt!</yes><no>Na ja, vielleicht nächstes Mal.</no></question></topic>
     <topic query="A   ">A</topic>
   </person>
   <person id="11" name="Ignap" pronoun="Er" turnAwayProb="0">

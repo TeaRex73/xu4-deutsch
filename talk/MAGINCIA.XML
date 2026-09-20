@@ -5,7 +5,7 @@
     <topic query="job">Eine Überlebende.</topic>
     <topic query="health">Gut.</topic>
     <topic query="UEBE">Die Stadt Magincia wurde für ihren Stolz zerstört.</topic>
-    <topic query="STOL">Stolz gedeiht in Abwesehnheit von Wahrheit, Liebe und Mut.<question type="1">Bist du stolz?<yes>Deine Mühen sind bedeutungslos.</yes><no>Demut ist die Tugend, die den Stolz überwinden muß!</no></question></topic>
+    <topic query="STOL">Stolz gedeiht in Abwesenheit von Wahrheit, Liebe und Mut.<question type="1">Bist du stolz?<yes>Deine Mühen sind bedeutungslos.</yes><no>Demut ist die Tugend, die den Stolz überwinden muß!</no></question></topic>
   </person>
   <person id="1" name="Ghostly" pronoun="Es" turnAwayProb="0">
     <description>Ein schattenhaftes Gespenst.</description>

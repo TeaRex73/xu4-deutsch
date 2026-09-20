@@ -11,7 +11,7 @@ and have visual representations of tiles be decoupled from tile rules.
 		Towne maps
 		Overworld map
 	- xu4 uses tile names for:
-		xml files:
+		XML files:
 			- graphics
 			- tileset-base:
 				maps tile name to tile rule, specifies visuals
@@ -25,25 +25,25 @@ and have visual representations of tiles be decoupled from tile rules.
 	dataset files to xu4 objects.
 	
 	1) Remove 'tile' attribute
-	2) Add 'basetile' attribute to indicate a basetile name
+	2) Add 'base_tile' attribute to indicate a base tile name
 			ie: terrain type
 			eg: sea, water, shallows, swamp, etc.
 	3) Add 'creature' attribute to indicate a creature name
 			eg: mage, bard, lord_british, ettin
-	4) Add 'object' attribute to indiate an object name
+	4) Add 'object' attribute to indicate an object name
 			eg: chest, door, bridge
-	5) Add 'object_basetiles' attribute to indicate which 
-		basetiles (comma-separated) should appear below an object.
+	5) Add 'object_base_tiles' attribute to indicate which
+		base tiles (comma-separated) should appear below an object.
 		Default is 'brick_floor'.
 		When multiple options are specified, the nearest match
 		will be chosen.
-		During map creation, a basetile is placed and the object
-		is placed on top. If the object has tranparency, the
-		basetile will show underneath. If the object is taken
-		or opened, the basetile will also be visible.
+		During map creation, a base tile is placed and the object
+		is placed on top. If the object has transparency, the
+		base tile will show underneath. If the object is taken
+		or opened, the base tile will also be visible.
 		Note that this inference need only take place for ULTIMA4
 		maps -- custom maps may use a unique format which may
-		represent basetiles and objects differently.
+		represent base tiles and objects differently.
 					
 - tileset-base.xml
 	- Purpose is to map tile names to tile rules.
@@ -138,8 +138,8 @@ Structures
 	- large ship (i.e. battle screen)
 
 Building components:
-	- brickwall
-	- stonewall
+	- brick wall
+	- stone wall
 	- door (locked/unlocked/open)
 	- secret door (hidden,occupied)
 	- tables (countertops, letters, signs, etc.)

@@ -5,7 +5,7 @@
     <topic query="job">Ich kann helfen.</topic>
     <topic query="health">Gut.</topic>
     <topic query="HELF">Das Rätsel!</topic>
-    <topic query="RAET">Wenn die acht Philosophien des Avatartumes sich kombinieren in und gemacht werden aus Wahrheit, Liebe &amp; Mut...<question type="0">Weiter?<yes>Welches Eine erschafft und ist erschaffen von allen Wahrheiten, aller Liebe &amp; allem Mute?</yes><no>Oh.</no></question></topic>
+    <topic query="RAET">Wenn die acht Philosophien des Avatartums sich kombinieren in und gemacht werden aus Wahrheit, Liebe &amp; Mut...<question type="0">Weiter?<yes>Welches Eine erschafft und ist erschaffen von allen Wahrheiten, aller Liebe &amp; allem Mute?</yes><no>Oh.</no></question></topic>
   </person>
   <person id="1" name="Juliet" pronoun="Sie" turnAwayProb="0">
     <description>Eine schöne Maid.</description>
@@ -54,7 +54,7 @@
     <topic query="job">Ich bin hier, um dir zu helfen.</topic>
     <topic query="health">Ich bin alt, sehr alt...</topic>
     <topic query="HELF">Such Hilfe in den Burgen!</topic>
-    <topic query="BURG">Such: Das Lyzeum, Empath-Abtei, Schlangenburg!<question type="0">Wirst du dorthin gehen?<yes>Finde darin alle namens Antos und frag nach der Glocke, dem Buche und der Kerze!</yes><no>Leider.</no></question></topic>
+    <topic query="BURG">Such: das Lyzeum, Empath-Abtei, Schlangenburg!<question type="0">Wirst du dorthin gehen?<yes>Finde darin alle namens Antos und frag nach der Glocke, dem Buche und der Kerze!</yes><no>Leider.</no></question></topic>
   </person>
   <person id="8" name="eine Wache" pronoun="Er" turnAwayProb="0">
     <description>Eine stramme Wache.</description>
@@ -68,14 +68,14 @@
     <topic query="job">Ich bewahre ein Geheimnis.</topic>
     <topic query="health">Prima.</topic>
     <topic query="GEHE">Worüber?</topic>
-    <topic query="ALTA">Es gibt drei Altarräume. Sie verbinden die untersten Ebenen aller acht Höhlen!<question type="0">Weiter?<yes>Wenn jemand die Steine der richtigen Farben an den Altären verwendet, kann er einen Dreiteiligen Schlüssel gewinnen!</yes><no>Oh.</no></question></topic>
+    <topic query="ALTA">Es gibt drei Altarräume. Sie verbinden die untersten Ebenen aller acht Höhlen!<question type="0">Weiter?<yes>Wenn jemand die Steine der richtigen Farben an den Altären verwendet, kann er einen dreiteiligen Schlüssel gewinnen!</yes><no>Oh.</no></question></topic>
   </person>
   <person id="10" name="Shawn" pronoun="Sie" turnAwayProb="0">
     <description>Eine ebenso starke wie schöne Hirtin.</description>
     <topic query="job">Ich betrachte das Wasser.</topic>
     <topic query="health">Gut.</topic>
     <topic query="WASS">Es bringt mir Frieden.</topic>
-    <topic query="FRIE">Ich komme aus einer stolzen Stadt.<question type="1">Bist du stolz?<yes>Hmmm.</yes><no>Meine Stadt wurde für ihren Stolz zerstört. Die Ruinen liegen auf einer Insel bei Breite-K'J" Länge-L'L"!</no></question></topic>
+    <topic query="FRIE">Ich komme aus einer stolzen Stadt.<question type="1">Bist du stolz?<yes>Hmmm.</yes><!--suppress GrazieInspection --><no>Meine Stadt wurde für ihren Stolz zerstört. Die Ruinen liegen auf einer Insel bei Breite-K'J" Länge-L'L"!</no></question></topic>
   </person>
   <person id="11" name="Seesha" pronoun="Sie" turnAwayProb="0">
     <description>Eine verletzte Kämpferin.</description>

@@ -149,7 +149,7 @@ provided the tools to compile xu4 in Visual Studio 6.0.
 
     1. Open the folder where you did the "SVN Checkout"
 
-    2. Right click on the "u4" directory itself and click "SVN Update"
+    2. Right-click on the "u4" directory itself and click "SVN Update"
 
     3. Open Visual Studio 6.0 and open the xu4 project
 

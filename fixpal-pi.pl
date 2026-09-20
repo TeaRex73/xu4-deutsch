@@ -2,7 +2,7 @@
 use strict;
 use warnings;
 use Digest::CRC qw(crc32);
-use IO::Compress::Deflate qw(deflate $DeflateError :constants) ;
+use IO::Compress::Deflate qw(deflate $DeflateError :constants);
 
 # Our beloved fixed palette
 my @palette=(
@@ -43,29 +43,29 @@ sub PNGoutputChunk()
    $line = <STDIN>;
 
    # Read entire remainder of PNM file
-   my $expectedsize=$width * $height * 3;
+   my $expectedSize=$width * $height * 3;
    my $PNMdata;
-   my $bytesRead = read(STDIN,$PNMdata,$expectedsize);
-   if($bytesRead != $expectedsize){die "Unable to read PNM data"}
+   my $bytesRead = read(STDIN,$PNMdata,$expectedSize);
+   if($bytesRead != $expectedSize){die "Unable to read PNM data"}
 
    # Output PNG header chunk
    printf "\x89PNG\x0d\x0a\x1a\x0a";
 
-   my $bitdepth=4;
-   my $colortype=3;
-   my $compressiontype=0;
-   my $filtertype=0;
-   my $interlacetype=0;
+   my $bitDepth=4;
+   my $colorType=3;
+   my $compressionType=0;
+   my $filterType=0;
+   my $interlaceType=0;
 
    # Output PNG IHDR chunk
    my $IHDR='IHDR';
    $IHDR .= pack 'N',$width;
    $IHDR .= pack 'N',$height;
-   $IHDR .= pack 'c',$bitdepth;
-   $IHDR .= pack 'c',$colortype;
-   $IHDR .= pack 'c',$compressiontype;
-   $IHDR .= pack 'c',$filtertype;
-   $IHDR .= pack 'c',$interlacetype;
+   $IHDR .= pack 'c',$bitDepth;
+   $IHDR .= pack 'c',$colorType;
+   $IHDR .= pack 'c',$compressionType;
+   $IHDR .= pack 'c',$filterType;
+   $IHDR .= pack 'c',$interlaceType;
    &PNGoutputChunk($IHDR);
 
    #Output color space info
@@ -108,15 +108,15 @@ sub PNGoutputChunk()
       my $g=$PNMvalues[(3*$pixel)+1]; # Green PNM value
       my $b=$PNMvalues[(3*$pixel)+2]; # Blue PNM value
       my $nearest=0;
-      my $distmin=(255*255)+(255*255)+(255*255); # Couldn't get further
+      my $distMin=(255*255)+(255*255)+(255*255); # Couldn't get further
       # Go through all palette entries to find nearest to this RGB
       for(my $pe=0;$pe<scalar @palette;$pe++){
          my $pr=$palette[$pe][0];   # Red palette value
          my $pg=$palette[$pe][1]; # Green palette value
          my $pb=$palette[$pe][2]; # Blue palette value
          my $dist = ($pr-$r)*($pr-$r) + ($pg-$g)*($pg-$g) + ($pb-$b)*($pb-$b);
-         if($dist<$distmin){
-            $distmin=$dist;
+         if($dist<$distMin){
+            $distMin=$dist;
             $nearest=$pe;
          }
       }
@@ -135,7 +135,7 @@ sub PNGoutputChunk()
    print STDERR "Length of raw: ",length($raw), "\n";
 
    my $deflated;
-   my $status = deflate \$raw => \$deflated, Level => Z_BEST_COMPRESSION
+   deflate \$raw => \$deflated, Level => Z_BEST_COMPRESSION
         or die "deflate failed: $DeflateError\n";
 
    my $IDAT="IDAT" . $deflated;

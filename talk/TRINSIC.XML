@@ -11,7 +11,8 @@
     <description>Einen mystischen Zauberer.</description>
     <topic query="job">Ich schaffe magische Felder.</topic>
     <topic query="health">Mir geht es gut.</topic>
-    <topic query="FELD">Gift ist mein Liebstes.<question type="0">Deins auch?<yes>Bravo!</yes><no>Nun, mich kümmert's nicht!</no></question></topic>
+    <topic query="FELD">Gift ist mein Liebstes.<question type="0">Deines auch?<yes>Bravo!</yes><no>Nun, mich kümmert's nicht!</no></question></topic>
+    <!--suppress GrazieInspection -->
     <topic query="SCHA">Schatten findet man nur nahe Breite-J'F" Länge-C'O" nur in den dunkelsten Nächten!</topic>
   </person>
   <person id="2" name="Publius" pronoun="Er" turnAwayProb="0">
@@ -19,7 +20,7 @@
     <topic query="job">Ich bringe einen Toast auf die Ehre!</topic>
     <topic query="health">Müde.</topic>
     <topic query="EHRE">Was bleibt, wenn die Ehre verloren geht?</topic>
-    <topic query="NICH">Genau, nimm mir die Ehre und mein Leben ist vorbei!<question type="0">Strebst du nach einem ehrenhaften Leben?<yes>Ehre schenkt Größe.</yes><no>Keine Ehre, keine Bedeutung!</no></question></topic>
+    <topic query="NICH">Genau, nimm mir die Ehre, und mein Leben ist vorbei!<question type="0">Strebst du nach einem ehrenhaften Leben?<yes>Ehre schenkt Größe.</yes><no>Keine Ehre, keine Bedeutung!</no></question></topic>
   </person>
   <person id="3" name="Skitle" pronoun="Es" turnAwayProb="0">
     <description>Ein knochiges Skelett.</description>
@@ -52,7 +53,7 @@
   <person id="7" name="Rigmore" pronoun="Er" turnAwayProb="0">
     <description>Einen starken Paladin.</description>
     <topic query="job">Ich bin der Begrüßer.</topic>
-    <topic query="health">Extragut.</topic>
+    <topic query="health">Extra gut.</topic>
     <topic query="BEGR">Ja, willkommen in Trinsic, Stadt der Ehre!</topic>
     <topic query="EHRE">Weisheit über die Tugend der Ehre findet man überall in dieser Stadt.<question type="0">Suchst du diese Weisheit?<yes>Tritt ein und finde deinen Weg.</yes><no>Dies ist der falsche Ort!</no></question></topic>
   </person>
@@ -61,6 +62,7 @@
     <topic query="job">Ich handle in Gerüchten.</topic>
     <topic query="health">Ein bißchen abgerissen.</topic>
     <topic query="GERU">Worüber?</topic>
+    <!--suppress GrazieStyle -->
     <topic query="RUNE">Es gibt ein kleines Kind, das von ihr wußte... Terrin.<question type="0">Kennst du ihn?<yes>Frag ihn nach der Rune.</yes><no>Finde ihn und frag nach der Rune!</no></question></topic>
   </person>
   <person id="9" name="Swindrik" pronoun="Er" turnAwayProb="0">
@@ -96,14 +98,14 @@
     <topic query="job">Wir wachen über das Tor.</topic>
     <topic query="health">Exzellent.</topic>
     <topic query="TOR ">Herein nach und hinaus aus Trinsic.</topic>
-    <topic query="WACH">Es ist ein ehrenvoller Beruf!<question type="0">Strebst du danach, Ehre auf deine Zeitgenossen zu bringen?<yes>Dupre, der Anfüher unserer Stadt, begleitet viele ehrenhafte Questen!</yes><no>Tölpel.</no></question></topic>
+    <topic query="WACH">Es ist ein ehrenvoller Beruf!<question type="0">Strebst du danach, Ehre auf deine Zeitgenossen zu bringen?<yes>Dupre, der Anführer unserer Stadt, begleitet viele ehrenhafte Questen!</yes><no>Tölpel.</no></question></topic>
   </person>
   <person id="14" name="Quix" pronoun="Sie" turnAwayProb="0">
     <description>Eine wandernde Magierin.</description>
     <topic query="job">Ich suche das Skelett!</topic>
     <topic query="health">Ausreichend.</topic>
     <topic query="SKEL">Es kennt ein großes Geheimnis.</topic>
-    <topic query="GEHE">Über den violetten Stein der Ehre!<question type="0">Hast du den violetten Stein?<yes>Benutz ihn weise!</yes><no>Such ihn, denn er ist sehr nützlich!</no></question></topic>
+    <topic query="GEHE">Über den violetten Stein der Ehre!<question type="0">Hast du den violetten Stein?<yes>Benutze ihn weise!</yes><no>Such ihn, denn er ist sehr nützlich!</no></question></topic>
   </person>
   <person id="15" name="eine Wache" pronoun="Sie" turnAwayProb="0">
     <description>Eine starke Wache.</description>

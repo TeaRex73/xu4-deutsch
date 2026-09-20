@@ -19,7 +19,7 @@
     <topic query="job">Ich habe keinen, hilf mir.</topic>
     <topic query="health">Ich bin sehr krank, hilf mir!</topic>
     <topic query="HILF">Ich brauche Geld, um meine Krankheit zu heilen.</topic>
-    <topic query="KRAN">Ich habe Beinfäule im Endstadium.<question type="0">Hast du Geld?<yes>Dann teil es bitte mit mir!</yes><no>Dann begleite mich und wir können zusammen betteln!</no></question></topic>
+    <topic query="KRAN">Ich habe Beinfäule im Endstadium.<question type="0">Hast du Geld?<yes>Dann teile es bitte mit mir!</yes><no>Dann begleite mich und wir können zusammen betteln!</no></question></topic>
   </person>
   <person id="3" name="Linda Sue" pronoun="Sie" turnAwayProb="0">
     <description>Ein kleines schlammiges Mädchen.</description>
@@ -40,14 +40,14 @@
     <topic query="job">Wiedergutmachung</topic>
     <topic query="health">Kränklich.</topic>
     <topic query="WIED">Ich spreche nicht von meiner Sünde!</topic>
-    <topic query="SCHA">Ich habe ihn benutzt!<question type="0">Wenn ich dir helfe, wirst du schwören, ihn nur am Munde des Abgrundes zu benutzen, um ihn zu zerstören?<yes>Man findet ihn bei Breite-P'F" Länge-M'F" in der dunkelsten Nacht!</yes><no>Oh.</no></question></topic>
+    <topic query="SCHA">Ich habe ihn benutzt!<question type="0">Wenn ich dir helfe, wirst du schwören, ihn nur am Munde des Abgrundes zu benutzen, um ihn zu zerstören?<!--suppress GrazieInspection --><yes>Man findet ihn bei Breite-P'F" Länge-M'F" in der dunkelsten Nacht!</yes><no>Oh.</no></question></topic>
   </person>
   <person id="6" name="Alkerion" pronoun="Er" turnAwayProb="0">
     <description>Einen alten abgerissenen Mann.</description>
     <topic query="job">Ich bin Bauer, ich höre viele Dinge.</topic>
     <topic query="health">Ich bin alt und schwach.</topic>
     <topic query="HOER">Was willst du wissen?</topic>
-    <topic query="STEI">Der Stein des Verzichtes ist von orangener Farbe und wird in den Altarräumen der Liebe und des Mutes benutzt!<question type="0">Suchst du?<yes>Viel Glück.</yes><no>Oh.</no></question></topic>
+    <topic query="STEI">Der Stein des Verzichtes ist von oranger Farbe und wird in den Altarräumen der Liebe und des Mutes benutzt!<question type="0">Suchst du?<yes>Viel Glück.</yes><no>Oh.</no></question></topic>
   </person>
   <person id="7" name="Mike Ward" pronoun="Er" turnAwayProb="0">
     <description>Einen gedrungenen Waldläufer.</description>
@@ -87,7 +87,7 @@
   <person id="12" name="Mischief" pronoun="Sie" turnAwayProb="0">
     <description>Eine glückliche Zinkerin.</description>
     <topic query="job">Dies und das.</topic>
-    <topic query="health">O.K., denk ich.</topic>
+    <topic query="health">O.K., denk' ich.</topic>
     <topic query="DIES">Und das...</topic>
     <topic query="RUNE">Die Rune des Verzichtes ist schwer zu bekommen. Sie liegt inmitten des Feuers der Schmiede!<question type="0">Hast du die Rune?<yes>Dann frag Alkerion nach dem Steine!</yes><no>Komm wieder, wenn du sie findest!</no></question></topic>
   </person>
@@ -109,7 +109,7 @@
     <description>Eine massige Wache.</description>
     <topic query="job">Zu wachen natürlich.</topic>
     <topic query="health">Ordentlich.</topic>
-    <topic query="WACH">Ich frage mich oft, ob ich einmal mein Leben geben muß in Ausübung meiner Pflicht.<question type="0">Verstehst du mein Dilemma?<yes>Natürlich, wenn es soweit käme, hoffe ich, ich würde es tun!</yes><no>Schade.</no></question></topic>
+    <topic query="WACH">Ich frage mich oft, ob ich einmal mein Leben geben muß in Ausübung meiner Pflicht.<question type="0">Verstehst du mein Dilemma?<yes>Natürlich, wenn es so weit käme, hoffe ich, ich würde es tun!</yes><no>Schade.</no></question></topic>
     <topic query="LEBE">Ein Leben für viele!</topic>
   </person>
 </dialogue>

@@ -18,8 +18,8 @@
     <track file="evade.caf"/>           <!-- C64 EVADE          -->
     <track file="flee.caf"/>            <!-- C64 FLEE           -->  <!-- same as EVADE -->
     <track file="flee.caf"/>            <!--     ITEM_STOLEN    -->
-    <track file="magic.caf"/>           <!--     LBHEAL         -->
-    <track file="reaper_sleeper.caf"/>  <!--     LEVELUP        -->
+    <track file="magic.caf"/>           <!--     LB_HEAL        -->
+    <track file="reaper_sleeper.caf"/>  <!--     LEVEL_UP       -->
     <track file="moongate_flash.caf"/>  <!--     MOONGATE       -->
     <track file="enemy_magic_proj.caf"/><!--     CANNON         -->
     <track file="fx_tremor.caf"/>       <!--     RUMBLE         -->
@@ -28,56 +28,6 @@
     <track file="fire_field_walking.caf"/>      <!--     WHIRLPOOL      -->
     <track file="fire_field_walking.caf"/>      <!--     STORM          -->
     <track file="badcommand.caf"/>      <!--     MISSED  THERE IS NO MISSED SOUND!!!       -->
-    <track file="attack2.caf"/>         <!--     CREATUREATTACK -->
-    <track file="hit2.caf"/>            <!--     PLAYERHIT      -->
+    <track file="attack2.caf"/>         <!--    CREATURE_ATTACK -->
+    <track file="hit2.caf"/>            <!--    PLAYER_HIT      -->
 </sound>
-
-
-
-
-
-
-<!--
-
-horse
-horse fast
-steal
-
-
-ccs2.wav
-        6s              bad command
-        15s             move
-        34s             blocked
-        90s             sleep
-        170s    heal (LB)
-        340s    moongate
-        365s    attack
-        366s    kill
-        368s    acid trap
-        394s    attack
-        398s    flee
-        404s    trap evaded
-        436s    move in combat
-        474             move slow
-        482s    attack
-        491s    monster attack
-        492s    monster hit
-        532s    attack
-        533s    hit
-
-ccs3.wav
-        39s             monster attack
-        40s     monster hit
-        160s    monster range attack (nixie)
-        174s    monster range hit
-        307             move slow
-        308             move
-        313             poisoned!
-        370s    poison damage
-        886s    poison damage (2 PCs)
-        890s    poison damage (1 PC)
-        950s    sleep trap
-        1140s   poison damage (1 PC)
-        1190s   level up (LB)
-        1200s   heal (LB)
--->
