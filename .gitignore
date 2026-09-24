@@ -8,6 +8,7 @@ src/util/*.o
 src/win32/*.o
 src/coord
 src/dumpsavegame
+src/recreate
 src/tlkconv
 src/u4
 src/u4dec

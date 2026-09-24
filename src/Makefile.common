@@ -96,7 +96,7 @@ OBJS += $(CSRCS:.c=.o) $(CXXSRCS:.cpp=.o)
 
 all:: $(MAIN) mkutils
 
-mkutils::  coord dumpsavegame tlkconv u4dec u4enc u4unpackexe xor xorbin
+mkutils::  coord dumpsavegame tlkconv recreate u4dec u4enc u4unpackexe xor xorbin
 
 $(MAIN): $(OBJS)
 	$(CXX) $(CXXFLAGS) -o $@ $(OBJS) $(LDFLAGS)
@@ -105,6 +105,9 @@ coord: util/coord.o
 	$(CC) $(CCFLAGS) -o $@ $+ $(LDFLAGS)
 
 dumpsavegame: util/dumpsavegame.o savegame.o u4io.o names.o
+	$(CXX) $(CXXFLAGS) -o $@ $+ $(LDFLAGS)
+
+recreate: util/recreate.o u4file.o unzip.o xordata.o
 	$(CXX) $(CXXFLAGS) -o $@ $+ $(LDFLAGS)
 
 tlkconv: util/tlkconv.o
@@ -129,7 +132,7 @@ clean:: cleanutil
 	rm -rf *~ */*~ $(OBJS) $(MAIN)
 
 cleanutil::
-	rm -rf util/coord.o coord util/dumpsavegame.o dumpsavegame util/u4dec.o u4dec util/u4enc.o u4enc util/pngconv.o util/tlkconv.o tlkconv util/u4unpackexe.o u4unpackexe util/xor.o xor util/xorbin.o xorbin
+	rm -rf util/coord.o coord util/dumpsavegame.o dumpsavegame util/recreate.o recreate util/u4dec.o u4dec util/u4enc.o u4enc util/pngconv.o util/tlkconv.o tlkconv util/u4unpackexe.o u4unpackexe util/xor.o xor util/xorbin.o xorbin
 
 TAGS: $(CSRCS) $(CXXSRCS)
 	etags *.h $(CSRCS) $(CXXSRCS)

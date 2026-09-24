@@ -40,6 +40,7 @@ install-prog::
 	$(INSTALL) -D -s $(MAIN) $(bindir)/$(MAIN)
 	$(INSTALL) -D -s coord $(libdir)/u4/coord
 	$(INSTALL) -D -s dumpsavegame $(libdir)/u4/dumpsavegame
+	$(INSTALL) -D -s recreate $(libdir)/u4/recreate
 	$(INSTALL) -D -s tlkconv $(libdir)/u4/tlkconv
 	$(INSTALL) -D -s u4dec $(libdir)/u4/u4dec
 	$(INSTALL) -D -s u4enc $(libdir)/u4/u4enc
