@@ -41,6 +41,9 @@ jobs:
           pacman --noconfirm -U ./mingw-w64-i686-SDL_mixer-1.2.12-9-any.pkg.tar.zst
           cd src
           touch .depends
+          sed 's/^# define DEFAULT_SCALE .$/# define DEFAULT_SCALE 2/' < settings.h > ~/settings2.h
+          cp -a settings.h ~/settings.h
+          cp -af ~/settings2.h settings.h
           make -f Makefile32 .depends
           make -f Makefile32 -j 6
           cd ..
@@ -86,7 +89,7 @@ jobs:
           cp -a talk artifact2x/U4DEU-Win32-2xZoom-$GIT_HASH/Daten/
           cp -a src/xu4.ico artifact2x/U4DEU-Win32-2xZoom-$GIT_HASH/Daten/
           cd src
-          sed 's/^# define DEFAULT_SCALE 2$/# define DEFAULT_SCALE 1/' < settings.h > ~/settings2.h
+          sed 's/^# define DEFAULT_SCALE .$/# define DEFAULT_SCALE 1/' < settings.h > ~/settings2.h
           cp -a settings.h ~/settings.h
           cp -af ~/settings2.h settings.h
           make -f Makefile32 -j 6

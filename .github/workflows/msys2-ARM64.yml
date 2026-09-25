@@ -38,6 +38,9 @@ jobs:
           GIT_HASH=${{ steps.git-hash.outputs.hash }}
           cd src
           touch .depends
+          sed 's/^# define DEFAULT_SCALE .$/# define DEFAULT_SCALE 2/' < settings.h > ~/settings2.h
+          cp -a settings.h ~/settings.h
+          cp -af ~/settings2.h settings.h
           make -f MakefileARM64 .depends
           make -f MakefileARM64 -j 6
           cd ..
@@ -83,7 +86,7 @@ jobs:
           cp -a talk artifact2x/U4DEU-WinARM64-2xZoom-$GIT_HASH/Daten/
           cp -a src/xu4.ico artifact2x/U4DEU-WinARM64-2xZoom-$GIT_HASH/Daten/
           cd src
-          sed 's/^# define DEFAULT_SCALE 2$/# define DEFAULT_SCALE 1/' < settings.h > ~/settings2.h
+          sed 's/^# define DEFAULT_SCALE .$/# define DEFAULT_SCALE 1/' < settings.h > ~/settings2.h
           cp -a settings.h ~/settings.h
           cp -af ~/settings2.h settings.h
           make -f MakefileARM64 -j 6
