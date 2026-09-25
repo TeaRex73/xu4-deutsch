@@ -48,8 +48,8 @@ Niederschlag und das Kopfgeld fordern,
 oder B) deinem Herrn demütig seinen
 Glauben lassen?X
 In einem Duelle gelingt es dir, deinen
-Todfeind zu entwaffnen. Er ist dir ausge-
-liefert. Wirst du A) Mitgefühl zeigen
+Todfeind zu entwaffnen. Er ist dir aus-
+geliefert. Wirst du A) Mitgefühl zeigen
 und ihm die Aufgabe gestatten, oder B)
 ihn erschlagen, wie von einer tapferen
 Duellantin erwartet?X
@@ -114,11 +114,11 @@ Geiste weißt, daß kein bleibendes Gutes
 daraus erwächst?X
 Du bist Musiklehrerin, aber auch eine
 exzellente Ringerin. Man fordert dich
-auf, bei einer Dorfmeisterschaft zu kämp-
-fen. Wirst du A) die Einladung annehmen
-und tapfer um den Sieg kämpfen, oder B)
-demütig ablehnen, da du dir deines Sie-
-ges sicher bist?X
+auf, bei einer Dorfmeisterschaft zu
+kämpfen. Wirst du A) die Einladung an-
+nehmen und tapfer um den Sieg kämpfen,
+oder B) demütig ablehnen, da du dir
+deines Sieges sicher bist?X
 In einer Schlacht siehst du einen Kame-
 raden seinen Posten verlassen, wodurch
 er viele in Gefahr bringt. Auf seiner
