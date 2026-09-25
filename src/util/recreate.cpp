@@ -9,6 +9,7 @@
 /* these globals are needed to link u4file.o successfully */
 // ReSharper disable CppUseInternalLinkage
 bool verbose = false;
+void print_trace(std::FILE *);
 void print_trace(std::FILE *)
 {
 }
