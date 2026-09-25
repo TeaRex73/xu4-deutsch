@@ -16014,7 +16014,7 @@ const XorDataMap xorDataMap = {
     },
     {
         "beads.ega",
-         {
+        {
             .name = "abacus.ega",
             .contents = {
                 0x02, 0x22, 0x02, 0x62, 0x42, 0x8a, 0x82, 0x8a,
@@ -16031,7 +16031,7 @@ const XorDataMap xorDataMap = {
     },
     {
         "compcard.ega",
-         {
+        {
             .name = "honcom.ega",
             .contents = {
                 0x0a, 0xab, 0xf7, 0xbc, 0xa5, 0xfe, 0x55, 0x7e,
@@ -16200,7 +16200,7 @@ const XorDataMap xorDataMap = {
     },
     {
         "honecard.ega",
-         {
+        {
             .name = "honcom.ega",
             .contents = {
                 0x0a, 0xab, 0xf7, 0xbc, 0xa5, 0xfe, 0x55, 0x7e,
@@ -16340,7 +16340,7 @@ const XorDataMap xorDataMap = {
     },
     {
         "humicard.ega",
-         {
+        {
             .name = "spirhum.ega",
             .contents = {
                 0x0a, 0xab, 0xf7, 0xbc, 0xa5, 0xfe, 0x55, 0x7e,
@@ -16486,7 +16486,7 @@ const XorDataMap xorDataMap = {
     },
     {
         "spircard.ega",
-         {
+        {
             .name = "spirhum.ega",
             .contents = {
                 0x0a, 0xab, 0xf7, 0xbc, 0xa5, 0xfe, 0x55, 0x7e,
@@ -16642,7 +16642,7 @@ const XorDataMap xorDataMap = {
     },
     {
         "valocard.ega",
-         {
+        {
             .name = "valjus.ega",
             .contents = {
                 0x0a, 0xab, 0xf7, 0xbc, 0xa5, 0xfe, 0x55, 0x7e,
@@ -16813,7 +16813,7 @@ const XorDataMap xorDataMap = {
     },
     {
         "justcard.ega",
-         {
+        {
             .name = "valjus.ega",
             .contents = {
                 0x0a, 0xab, 0xf7, 0xbc, 0xa5, 0xfe, 0x55, 0x7e,
@@ -16967,7 +16967,7 @@ const XorDataMap xorDataMap = {
     },
     {
         "sacrcard.ega",
-         {
+        {
             .name = "sachonor.ega",
             .contents = {
                 0x0a, 0xab, 0xf7, 0xbc, 0xa5, 0xfe, 0x55, 0x7e,
@@ -17116,7 +17116,7 @@ const XorDataMap xorDataMap = {
     },
     {
         "honocard.ega",
-         {
+        {
             .name = "sachonor.ega",
             .contents = {
                 0x0a, 0xab, 0xf7, 0xbc, 0xa5, 0xfe, 0x55, 0x7e,
@@ -17273,7 +17273,7 @@ const XorDataMap xorDataMap = {
     },
     {
         "rune_6.ega",
-         {
+        {
             .name = "rune_1.ega",
             .contents = {
                 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
@@ -17521,7 +17521,7 @@ const XorDataMap xorDataMap = {
     },
     {
         "rune_7.ega",
-         {
+        {
             .name = "rune_2.ega",
             .contents = {
                 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
@@ -17945,7 +17945,7 @@ const XorDataMap xorDataMap = {
     },
     {
         "rune_8.ega",
-         {
+        {
             .name = "rune_3.ega",
             .contents = {
                 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
