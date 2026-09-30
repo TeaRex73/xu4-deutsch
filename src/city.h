@@ -32,7 +32,7 @@ public:
     City(const City &&) = delete;
     City &operator=(const City &&) = delete;
     ~City() override;
-    
+
     std::string getName() override;
     Person *addPerson(const Person *person);
     void addPeople();

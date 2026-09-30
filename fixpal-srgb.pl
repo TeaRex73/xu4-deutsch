@@ -107,17 +107,17 @@ sub PNGoutputChunk()
       # Output filter type byte (0) at start of each scanline
       if($pixel%$width==0){$raw .= "\x00"; $mem=0;}
 
-      my $r=$PNMvalues[(3*$pixel)];   # Red PNM value
-      my $g=$PNMvalues[(3*$pixel)+1]; # Green PNM value
-      my $b=$PNMvalues[(3*$pixel)+2]; # Blue PNM value
+      my $red  =$PNMvalues[(3*$pixel)];   # Red PNM value
+      my $green=$PNMvalues[(3*$pixel)+1]; # Green PNM value
+      my $blue =$PNMvalues[(3*$pixel)+2]; # Blue PNM value
       my $nearest=0;
       my $distMin=(255*255)+(255*255)+(255*255); # Couldn't get further
       # Go through all palette entries to find nearest to this RGB
       for(my $pe=0;$pe<scalar @palette;$pe++){
-         my $pr=$palette[$pe][0];   # Red palette value
-         my $pg=$palette[$pe][1]; # Green palette value
-         my $pb=$palette[$pe][2]; # Blue palette value
-         my $dist = ($pr-$r)*($pr-$r) + ($pg-$g)*($pg-$g) + ($pb-$b)*($pb-$b);
+         my $p_red  =$palette[$pe][0];   # Red palette value
+         my $p_green=$palette[$pe][1]; # Green palette value
+         my $p_blue =$palette[$pe][2]; # Blue palette value
+         my $dist = ($p_red-$red)*($p_red-$red) + ($p_green-$green)*($p_green-$green) + ($p_blue-$blue)*($p_blue-$blue);
          if($dist<$distMin){
             $distMin=$dist;
             $nearest=$pe;
@@ -133,12 +133,12 @@ sub PNGoutputChunk()
               $raw .= sprintf "%c",$mem*16;
           }
       }
-#     print STDERR "Pixel: $pixel, r=$r, g=$g, b=$b. Chose palette entry $nearest\n";
+#     print STDERR "Pixel: $pixel, r=$red, g=$green, b=$blue. Chose palette entry $nearest\n";
    }
    print STDERR "Length of raw: ",length($raw), "\n";
 
    my $deflated;
-   deflate \$raw => \$deflated, Level => Z_BEST_COMPRESSION
+   deflate \$raw => \$deflated, Level => 9
         or die "deflate failed: $DeflateError\n";
 
    my $IDAT="IDAT" . $deflated;

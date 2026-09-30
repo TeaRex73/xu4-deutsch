@@ -16,7 +16,7 @@ void print_trace(std::FILE *)
 // ReSharper enable CppUseInternalLinkage
 
 int main()
-{    
+{
     for (const auto &file: xorDataMap) {
         std::fprintf(stderr, "Recreating file %s\n", file.first.c_str());
         U4FILE *u4f = u4fopen(file.first);
