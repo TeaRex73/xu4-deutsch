@@ -28,15 +28,20 @@ int main()
         }
         const std::size_t read_len = u4fread(data, 1, len, u4f);
         if (read_len != len) {
-            std::fprintf(stderr, "Error reading file %s.\n", file.first.c_str());
+            std::fprintf(
+                stderr, "Error reading file %s.\n", file.first.c_str()
+            );
             std::free(data);
             return EXIT_FAILURE;
         }
         u4fclose(u4f);
-        std::FILE *disk_file = std::fopen(("out/" + file.first).c_str(), "wb");
+        std::FILE *disk_file =
+            std::fopen(("out/" + file.first).c_str(), "wb");
         const std::size_t write_len = std::fwrite(data, 1, len, disk_file);
         if (write_len != len) {
-            std::fprintf(stderr, "Error writing file out/%s.\n", file.first.c_str());
+            std::fprintf(
+                stderr, "Error writing file out/%s.\n", file.first.c_str()
+            );
             std::free(data);
             return EXIT_FAILURE;
         }
