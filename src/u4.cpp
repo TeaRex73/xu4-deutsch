@@ -37,12 +37,10 @@
 
 
 /* globals */
-// ReSharper disable CppUseInternalLinkage
 bool verbose = false;
 int quit = 0;
 bool useProfile = false;
 std::string profileName;
-// ReSharper restore CppUseInternalLinkage
 
 
 int main(const int argc, char **argv)

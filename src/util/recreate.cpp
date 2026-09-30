@@ -3,17 +3,16 @@
 #include <cstdio>
 #include <cstdlib>
 
+#include "debug.h"
 #include "u4file.h"
+#include "u4.h"
 #include "xordata.h"
 
-/* these globals are needed to link u4file.o successfully */
-// ReSharper disable CppUseInternalLinkage
+/* these dummy globals are needed to link u4file.o successfully */
 bool verbose = false;
-void print_trace(std::FILE *);
 void print_trace(std::FILE *)
 {
 }
-// ReSharper enable CppUseInternalLinkage
 
 int main()
 {
