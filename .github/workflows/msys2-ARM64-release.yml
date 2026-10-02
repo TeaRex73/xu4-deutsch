@@ -11,7 +11,7 @@ jobs:
       run:
         shell: msys2 {0}
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v7
       - uses: msys2/setup-msys2@v2
         with:
           msystem: CLANGARM64
@@ -19,20 +19,21 @@ jobs:
           install: >-
             git
             make
-            mingw-w64-clang-aarch64-clang
-            mingw-w64-clang-aarch64-libc++
-            mingw-w64-clang-aarch64-SDL2
-            mingw-w64-clang-aarch64-sdl12-compat
-            mingw-w64-clang-aarch64-SDL_mixer
-            mingw-w64-clang-aarch64-flac
-            mingw-w64-clang-aarch64-libiconv
-            mingw-w64-clang-aarch64-libmad
-            mingw-w64-clang-aarch64-libogg
-            mingw-w64-clang-aarch64-libpng
-            mingw-w64-clang-aarch64-libvorbis
-            mingw-w64-clang-aarch64-libwinpthread
-            mingw-w64-clang-aarch64-libxml2
-            mingw-w64-clang-aarch64-zlib
+          pacboy: >-
+            clang
+            libc++
+            SDL2
+            sdl12-compat
+            SDL_mixer
+            flac
+            libiconv
+            libmad
+            libogg
+            libpng
+            libvorbis
+            libwinpthread
+            libxml2
+            zlib
       - name: Retrieve Git Tag
         id: git-tag
         run: echo "tag=${GITHUB_REF#refs/*/}" >> $GITHUB_OUTPUT
@@ -107,11 +108,13 @@ jobs:
           cp -a src artifact2x/U4DEU-WinARM64-2xZoom-$GIT_TAG/Daten/
           powershell -ExecutionPolicy Bypass -Command '$ws = New-Object -ComObject WScript.Shell; $s = $ws.CreateShortcut('\''artifact2x\U4DEU-WinARM64-2xZoom-'$GIT_TAG'\Ultima IV.lnk'\''); $s.TargetPath = '\''%COMSPEC%'\''; $s.Arguments = '\''/c Daten\u4.bat'\''; $s.WindowStyle = 1; $s.IconLocation = '\''%USERPROFILE%\Desktop\U4DEU-WinARM64-2xZoom-'$GIT_TAG'\Daten\xu4.ico'\''; $s.Save()'
           powershell -ExecutionPolicy Bypass -Command '$ws = New-Object -ComObject WScript.Shell; $s = $ws.CreateShortcut('\''artifact1x\U4DEU-WinARM64-1xZoom-'$GIT_TAG'\Ultima IV.lnk'\''); $s.TargetPath = '\''%COMSPEC%'\''; $s.Arguments = '\''/c Daten\u4.bat'\''; $s.WindowStyle = 1; $s.IconLocation = '\''%USERPROFILE%\Desktop\U4DEU-WinARM64-1xZoom-'$GIT_TAG'\Daten\xu4.ico'\''; $s.Save()'
-      - uses: actions/upload-artifact@v6
+      - uses: actions/upload-artifact@v7
         with:
           name: U4DEU-WinARM64-2xZoom-${{ steps.git-tag.outputs.tag }}
           path: artifact2x/
-      - uses: actions/upload-artifact@v6
+          compression-level: 9
+      - uses: actions/upload-artifact@v7
         with:
           name: U4DEU-WinARM64-1xZoom-${{ steps.git-tag.outputs.tag }}
           path: artifact1x/
+          compression-level: 9
