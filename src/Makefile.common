@@ -99,34 +99,34 @@ all:: $(MAIN) mkutils
 mkutils::  coord dumpsavegame tlkconv recreate u4dec u4enc u4unpackexe xor xorbin
 
 $(MAIN): $(OBJS)
-	$(CXX) $(CXXFLAGS) -o $@ $(OBJS) $(LDFLAGS)
+	$(CXX) $(LDFLAGS) -o $@ $(OBJS)
 
 coord: util/coord.o
-	$(CC) $(CCFLAGS) -o $@ $+ $(LDFLAGS)
+	$(CC) $(LDFLAGS) -o $@ $+
 
 dumpsavegame: util/dumpsavegame.o savegame.o u4io.o names.o
-	$(CXX) $(CXXFLAGS) -o $@ $+ $(LDFLAGS)
+	$(CXX) $(LDFLAGS) -o $@ $+
 
 recreate: util/recreate.o u4file.o unzip.o xordata.o
-	$(CXX) $(CXXFLAGS) -o $@ $+ $(LDFLAGS)
+	$(CXX) $(LDFLAGS) -o $@ $+
 
 tlkconv: util/tlkconv.o
-	$(CC) $(CCFLAGS) -o $@ $+ $(LDFLAGS) $(shell xml2-config --libs)
+	$(CC) $(LDFLAGS) -o $@ $+
 
 u4dec: util/u4dec.o lzw/lzw.o lzw/hash.o rle.o util/pngconv.o
-	$(CXX) $(CXXFLAGS) -o $@ $+ $(LDFLAGS) -lpng -lz
+	$(CXX) $(LDFLAGS) -o $@ $+
 
 u4enc: util/u4enc.o lzw/hash.o util/pngconv.o
-	$(CC) $(CCFLAGS) -o $@ $+ $(LDFLAGS) -lpng -lz
+	$(CC) $(LDFLAGS) -o $@ $+
 
 u4unpackexe: util/u4unpackexe.o
-	$(CC) $(CCFLAGS) -o $@ $+ $(LDFLAGS)
+	$(CC) $(LDFLAGS) -o $@ $+
 
 xor: util/xor.o
-	$(CC) $(CCFLAGS) -o $@ $+ $(LDFLAGS)
+	$(CC) $(LDFLAGS) -o $@ $+
 
 xorbin: util/xorbin.o
-	$(CC) $(CCFLAGS) -o $@ $+ $(LDFLAGS)
+	$(CC) $(LDFLAGS) -o $@ $+
 
 clean:: cleanutil
 	rm -rf *~ */*~ $(OBJS) $(MAIN)
