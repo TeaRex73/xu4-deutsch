@@ -451,6 +451,7 @@ void GameController::init()
     c->aura->addObserver(c->stats);
     c->party->addObserver(c->stats);
     initScreenWithoutReloadingState();
+    c->willPassTurn = true;
     TRACE(gameDbg, "gameInit() completed successfully.");
 } // GameController::init
 
