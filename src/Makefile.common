@@ -99,34 +99,34 @@ all:: $(MAIN) mkutils
 mkutils::  coord dumpsavegame tlkconv recreate u4dec u4enc u4unpackexe xor xorbin
 
 $(MAIN): $(OBJS)
-	$(CXX) $(LDFLAGS) -o $@ $(OBJS)
+	$(CXX) -o $@ $(OBJS) $(LDFLAGS)
 
 coord: util/coord.o
-	$(CC) $(LDFLAGS) -o $@ $+
+	$(CC) -o $@ $+ $(LDFLAGS)
 
 dumpsavegame: util/dumpsavegame.o savegame.o u4io.o names.o
-	$(CXX) $(LDFLAGS) -o $@ $+
+	$(CXX) -o $@ $+ $(LDFLAGS)
 
 recreate: util/recreate.o u4file.o unzip.o xordata.o
-	$(CXX) $(LDFLAGS) -o $@ $+
+	$(CXX) -o $@ $+ $(LDFLAGS)
 
 tlkconv: util/tlkconv.o
-	$(CC) $(LDFLAGS) -o $@ $+
+	$(CC) -o $@ $+ $(LDFLAGS)
 
 u4dec: util/u4dec.o lzw/lzw.o lzw/hash.o rle.o util/pngconv.o
-	$(CXX) $(LDFLAGS) -o $@ $+
+	$(CXX) -o $@ $+ $(LDFLAGS)
 
 u4enc: util/u4enc.o lzw/hash.o util/pngconv.o
-	$(CC) $(LDFLAGS) -o $@ $+
+	$(CC) -o $@ $+ $(LDFLAGS)
 
 u4unpackexe: util/u4unpackexe.o
-	$(CC) $(LDFLAGS) -o $@ $+
+	$(CC) -o $@ $+ $(LDFLAGS)
 
 xor: util/xor.o
-	$(CC) $(LDFLAGS) -o $@ $+
+	$(CC) -o $@ $+ $(LDFLAGS)
 
 xorbin: util/xorbin.o
-	$(CC) $(LDFLAGS) -o $@ $+
+	$(CC) -o $@ $+ $(LDFLAGS)
 
 clean:: cleanutil
 	rm -rf *~ */*~ $(OBJS) $(MAIN)
