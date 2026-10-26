@@ -682,10 +682,6 @@ static bool spellAwaken(const int player)
 
 static bool spellBlink(int dir)
 {
-    /* TODO: Blink should only teleport within the active 32x32 area.
-       It should go as far as it can without leaving this active area.
-       No randomness should be involved. See u4remasteredA2, label
-       "spell_blink:" in file "src/patchedgame/program/ULT4.s" */
     MapCoords coords = c->location->coords;
     /* Blink doesn't work near the mouth of the abyss */
     /* Note: This means you can teleport to Hythloth from the top of the
@@ -695,18 +691,31 @@ static bool spellBlink(int dir)
     if (coords.x >= 192 && coords.y >= 192) {
         return false;
     }
-    /* figure out what numbers we're working with */
-    const int *var = dir & (DIR_WEST | DIR_EAST) ? &coords.x : &coords.y;
-    /* find the distance we are going to move */
-    int distance = *var % 0x10;
-    if (dir == DIR_EAST || dir == DIR_SOUTH) {
-        distance = 0x10 - distance;
-    }
-    /* see if we move another 16 spaces over */
-    /* TODO: this algorithm has nothing to do with u4apple2. */
-    const int diff = 0x10 - distance;
-    if (diff > 0 && xu4_random(diff * diff) > distance) {
-        distance += 0x10;
+    /* Teleport to the farthest point within the active 32x32 area. */
+    const int base_x = static_cast<int>(coords.active_x << 4u);
+    const int base_y = static_cast<int>(coords.active_y << 4u);
+    const int width = c->location->map->width;
+    const int height = c->location->map->height;
+    /* The following formula does floored modulo to put in bounds */
+    const int pos_x = ((coords.x - base_x) % width + width) % width;
+    const int pos_y = ((coords.y - base_y) % height + height) % height;
+    int distance;
+    switch (dir) {
+    case DIR_WEST:
+        distance = pos_x;
+        break;
+    case DIR_NORTH:
+        distance = pos_y;
+        break;
+    case DIR_EAST:
+        distance = 0x1f - pos_x;
+        break;
+    case DIR_SOUTH:
+        distance = 0x1f - pos_y;
+        break;
+    default:
+        U4ASSERT(0, "unexpected direction in spellBlink(): %d", dir);
+        return false;
     }
     /* test our distance, and see if it works */
     for (int i = 0; i < distance; i++) {
@@ -730,6 +739,7 @@ static bool spellBlink(int dir)
         } else {
             EventHandler::simulateDiskLoad(2000);
             c->location->coords =
+                /* cast back and forth to update active_x/active_y */
                 MapCoords(Coords(coords.x, coords.y, coords.z));
             success = true;
         }

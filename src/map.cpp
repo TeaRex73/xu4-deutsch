@@ -47,10 +47,10 @@ MapCoords &MapCoords::wrap(const Map *map)
         while (y < 0) {
             y += map->height;
         }
-        while (x >= static_cast<int>(map->width)) {
+        while (x >= map->width) {
             x -= map->width;
         }
-        while (y >= static_cast<int>(map->height)) {
+        while (y >= map->height) {
             y -= map->height;
         }
     }
@@ -63,19 +63,19 @@ MapCoords &MapCoords::putInBounds(const Map *map)
         if (x < 0) {
             x = 0;
         }
-        if (x >= static_cast<int>(map->width)) {
+        if (x >= map->width) {
             x = map->width - 1;
         }
         if (y < 0) {
             y = 0;
         }
-        if (y >= static_cast<int>(map->height)) {
+        if (y >= map->height) {
             y = map->height - 1;
         }
         if (z < 0) {
             z = 0;
         }
-        if (z >= static_cast<int>(map->levels)) {
+        if (z >= map->levels) {
             z = map->levels - 1;
         }
     }
