@@ -154,7 +154,7 @@ int main(const int argc, char **argv)
                         " Mehr Konsolenausgabe.\n");
             std::printf("-q, --quiet              Setzt alle Lautstaerkeregler"
                         " auf Null.\n");
-            std::printf("-f, --fullscreen         Fuehrt xu5g im Vollbildmodus"
+            std::printf("-f, --fullscreen         Fuehrt xu4 im Vollbildmodus"
                         " aus.\n");
             std::printf("-i, --skip-intro         Ueberspringt das Intro und"
                         " laedt den letzten Spielstand.\n");

@@ -1129,6 +1129,7 @@ bool Party::canEnterShrine(const Virtue virtue) const
 bool Party::canPersonJoin(const std::string &name, Virtue *v) const
 {
     if (name.empty()) {
+        if (v) *v = VIRTUE_MAX;
         return false;
     }
     for (int i = 1; i < 8; i++) {
@@ -1139,6 +1140,7 @@ bool Party::canPersonJoin(const std::string &name, Virtue *v) const
             return true;
         }
     }
+    if (v) *v = VIRTUE_MAX;
     return false;
 }
 

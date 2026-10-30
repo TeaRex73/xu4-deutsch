@@ -32,11 +32,6 @@
 #include "types.h"
 #include "utils.h"
 
-void campTimer(void *data);
-void campEnd();
-int campHeal(HealType heal_type);
-void innTimer(void *data);
-
 CampController::CampController()
 {
     MapId id;
