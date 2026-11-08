@@ -53,8 +53,10 @@ void CampController::init(Creature *m)
 
 void CampController::begin()
 {
+    StatusType remembered[8];
     // make sure everyone's asleep
     for (int i = 0; i < c->party->size(); i++) {
+        remembered[i] = c->party->member(i)->getStatus();
         c->party->member(i)->putToSleep(false);
     }
     CombatController::begin();
@@ -65,6 +67,12 @@ void CampController::begin()
     screenEnableCursor();
     /* Is the party ambushed during their rest? */
     if (settings.campingAlwaysCombat || xu4_random(8) == 0) {
+        /* if you were Good, you're now Sleeping, otherwise keep status */
+        for (int i = 0; i < c->party->size(); i++) {
+            if (remembered[i] != STAT_GOOD) {
+                c->party->member(i)->setStatus(remembered[i]);
+            }
+        }
         const Creature *m = creatureMgr->randomAmbushing();
         musicMgr->play();
         screenMessage("HINTERHALT!\n");
@@ -80,7 +88,14 @@ void CampController::begin()
     } else {
         /* Wake everyone up! */
         for (int i = 0; i < c->party->size(); i++) {
-            c->party->member(i)->wakeUp();
+            /* if you were Sleeping, you're now Good, otherwise keep status */
+            for (int i = 0; i < c->party->size(); i++) {
+                if (remembered[i] == STAT_SLEEPING) {
+                    c->party->member(i)->wakeUp();
+                } else {
+                    c->party->member(i)->setStatus(remembered[i]);
+                }
+            }
         }
         /* Make sure we've waited long enough for camping
            to be effective */
