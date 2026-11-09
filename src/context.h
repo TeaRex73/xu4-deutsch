@@ -14,6 +14,8 @@
 #include "script.h"
 
 class Aura;
+class Location;
+class Object;
 class Party;
 class StatsArea;
 struct SaveGame;
@@ -41,7 +43,7 @@ public:
     Context &operator=(Context &&) = delete;
     Party *party;
     SaveGame *saveGame;
-    class Location *location;
+    Location *location;
     int line, col;
     StatsArea *stats;
     int moonPhase;
@@ -53,7 +55,7 @@ public:
     TransportContext transportContext;
     std::time_t lastCommandTime;
     bool willPassTurn;
-    class Object *lastShip;
+    Object *lastShip;
 
 
     /**

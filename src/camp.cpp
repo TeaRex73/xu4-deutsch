@@ -89,12 +89,10 @@ void CampController::begin()
         /* Wake everyone up! */
         for (int i = 0; i < c->party->size(); i++) {
             /* if you were Sleeping, you're now Good, otherwise keep status */
-            for (int i = 0; i < c->party->size(); i++) {
-                if (remembered[i] == STAT_SLEEPING) {
-                    c->party->member(i)->wakeUp();
-                } else {
-                    c->party->member(i)->setStatus(remembered[i]);
-                }
+            if (remembered[i] == STAT_SLEEPING) {
+                c->party->member(i)->wakeUp();
+            } else {
+                c->party->member(i)->setStatus(remembered[i]);
             }
         }
         /* Make sure we've waited long enough for camping

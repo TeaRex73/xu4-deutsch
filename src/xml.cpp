@@ -183,7 +183,7 @@ int xmlGetPropAsEnum(
         }
     }
     if (result == -1) {
-        errorFatal("invalid enum value for %s: %s", name, prop);
+        errorFatal("invalid enum value for %s: %s", name, xc2c(prop));
     }
     xmlFree(prop);
     return result;

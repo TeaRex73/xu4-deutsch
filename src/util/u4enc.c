@@ -125,7 +125,7 @@ static int get_code(unsigned char *str, const int len)
 /**
  * Add a new word to the LZW dictionary.
  */
-static void add_code(unsigned char *str, int len)
+static void add_code(unsigned char *str, const int len)
 {
     int hashcode;
     if (!compressing) {
@@ -227,7 +227,7 @@ int main(const int argc, char *argv[])
          * the file (i.e. at a count of 3).  This value is adjusted to
          * re-encode the files exactly as they were, if they weren't
          * changed.  A threshold of 3 or 4 gives optimal compression; 5 is
-         * slightly worse and it is not clear why the original files used
+         * slightly worse, and it is not clear why the original files used
          * it.
          */
         if (bits == 4) {

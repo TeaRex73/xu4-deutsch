@@ -217,7 +217,7 @@ int ConfigElement::getEnum(
     }
     if (result == -1) {
         errorFatal(
-            "invalid enum value for %s: %s", element_name.c_str(), prop
+            "invalid enum value for %s: %s", element_name.c_str(), xc2c(prop)
         );
     }
     xmlFree(prop);
