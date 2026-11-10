@@ -39,6 +39,8 @@ jobs:
           pacman --noconfirm -U ./mingw-w64-i686-libpng-1.6.59-2-any.pkg.tar.zst
           wget https://repo.msys2.org/mingw/mingw32/mingw-w64-i686-libvorbis-1.3.7-3-any.pkg.tar.zst
           pacman --noconfirm -U ./mingw-w64-i686-libvorbis-1.3.7-3-any.pkg.tar.zst
+          wget https://repo.msys2.org/mingw/mingw32/mingw-w64-i686-vulkan-loader-1~1.4.363.0-1-any.pkg.tar.zst
+          pacman --noconfirm -U ./mingw-w64-i686-vulkan-loader-1~1.4.363.0-1-any.pkg.tar.zst
           wget https://repo.msys2.org/mingw/mingw32/mingw-w64-i686-SDL2-2.32.10-1-any.pkg.tar.zst
           pacman --noconfirm -U ./mingw-w64-i686-SDL2-2.32.10-1-any.pkg.tar.zst
           wget https://repo.msys2.org/mingw/mingw32/mingw-w64-i686-sdl12-compat-1.2.74-1-any.pkg.tar.zst
