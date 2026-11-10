@@ -26,6 +26,7 @@ jobs:
             gcc-libs
             libiconv
             libmad
+            libmikmod
             libogg
             libpng
             libvorbis
@@ -58,6 +59,7 @@ jobs:
             libgcc_s_seh-1.dll \
             libiconv-2.dll \
             libmad-0.dll \
+            libmikmod-3.dll \
             libogg-0.dll \
             libpng16-16.dll \
             libstdc++-6.dll \
