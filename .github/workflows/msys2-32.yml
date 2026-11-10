@@ -46,6 +46,8 @@ jobs:
           pacman --noconfirm -U ./mingw-w64-i686-libmad-0.15.1b-5-any.pkg.tar.zst
           wget https://repo.msys2.org/mingw/mingw32/mingw-w64-i686-libmikmod-3.3.13-1-any.pkg.tar.zst
           pacman --noconfirm -U ./mingw-w64-i686-libmikmod-3.3.13-1-any.pkg.tar.zst
+          wget https://repo.msys2.org/mingw/mingw32/mingw-w64-i686-flac-1.5.0-2-any.pkg.tar.zst
+          pacman --noconfirm -U ./mingw-w64-i686-flac-1.5.0-2-any.pkg.tar.zst
           wget https://repo.msys2.org/mingw/mingw32/mingw-w64-i686-SDL_mixer-1.2.12-9-any.pkg.tar.zst
           pacman --noconfirm -U ./mingw-w64-i686-SDL_mixer-1.2.12-9-any.pkg.tar.zst
           cd src
