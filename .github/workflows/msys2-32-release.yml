@@ -22,8 +22,6 @@ jobs:
             make
           pacboy: >-
             gcc
-            SDL2
-            sdl12-compat
             gcc-libs
             libiconv
             libogg
@@ -38,6 +36,10 @@ jobs:
       - name: Build
         run: |
           GIT_TAG=${{ steps.git-tag.outputs.tag }}
+          wget https://repo.msys2.org/mingw/mingw32/mingw-w64-i686-SDL2-2.32.10-1-any.pkg.tar.zst
+          pacman --noconfirm -U ./mingw-w64-i686-SDL2-2.32.10-1-any.pkg.tar.zst
+          wget https://repo.msys2.org/mingw/mingw32/mingw-w64-i686-sdl12-compat-1.2.74-1-any.pkg.tar.zst
+          pacman --noconfirm -U ./mingw-w64-i686-sdl12-compat-1.2.74-1-any.pkg.tar.zst
           wget https://repo.msys2.org/mingw/mingw32/mingw-w64-i686-libmad-0.15.1b-5-any.pkg.tar.zst
           pacman --noconfirm -U ./mingw-w64-i686-libmad-0.15.1b-5-any.pkg.tar.zst
           wget https://repo.msys2.org/mingw/mingw32/mingw-w64-i686-libmikmod-3.3.13-1-any.pkg.tar.zst
