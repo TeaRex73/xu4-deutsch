@@ -19,7 +19,8 @@ jobs:
           pacboy: >-
             clang
             libc++
-            SDL2
+            sdl3
+            sdl2-compat
             sdl12-compat
             SDL_mixer
             flac
@@ -53,6 +54,7 @@ jobs:
           for i in \
             SDL.dll \
             SDL2.dll \
+            SDL3.dll \
             libSDL_mixer-1-2-0.dll \
             libFLAC.dll \
             libiconv-2.dll \
