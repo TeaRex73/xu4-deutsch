@@ -86,7 +86,8 @@ void screenInit_sys()
     if (!screen) {
         errorFatal("unable to set video: %s", SDL_GetError());
     }
-    SDL_LockSurface(screen); // NOLINT(misc-include-cleaner)
+    // NOLINTNEXTLINE(misc-include-cleaner)
+    if (SDL_MUSTLOCK(screen)) SDL_LockSurface(screen);
     window = SDL_CreateRGBSurfaceFrom( // NOLINT(misc-include-cleaner)
         screen->pixels,
         MY_WIDTH,
@@ -108,7 +109,8 @@ void screenInit_sys()
     }
     SDL_FreeSurface(window); // NOLINT(misc-include-cleaner)
     window = nullptr;
-    SDL_UnlockSurface(screen); // NOLINT(misc-include-cleaner)
+    // NOLINTNEXTLINE(misc-include-cleaner)
+    if (SDL_MUSTLOCK(screen)) SDL_UnlockSurface(screen);
 #ifdef FIXUP
     screen->w = 320 * settings.scale;
     screen->h = 200 * settings.scale;
@@ -302,12 +304,12 @@ static int frameDuration = 0;
 
 void screenLock()
 {
-    SDL_mutexP(screenLockMutex); // NOLINT(misc-include-cleaner)
+    SDL_LockMutex(screenLockMutex); // NOLINT(misc-include-cleaner)
 }
 
 void screenUnlock()
 {
-    SDL_mutexV(screenLockMutex); // NOLINT(misc-include-cleaner)
+    SDL_UnlockMutex(screenLockMutex); // NOLINT(misc-include-cleaner)
 }
 
 void screenRedrawScreen()
@@ -376,8 +378,8 @@ void screenRefreshThreadEnd()
     // NOLINTNEXTLINE(misc-include-cleaner)
     SDL_WaitThread(screenRefreshThread, nullptr);
     screenRefreshThread = nullptr;
-    SDL_UnlockMutex(screenLockMutex); // NOLINT(misc-include-cleaner)
     SDL_DestroyMutex(screenLockMutex); // NOLINT(misc-include-cleaner)
+    screenLockMutex = nullptr;
 }
 
 

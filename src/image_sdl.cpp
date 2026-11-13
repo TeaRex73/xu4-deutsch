@@ -586,6 +586,7 @@ void Image::putPixelIndex(
     if (!__builtin_expect(screenMoving, true) && isScreen && !anyway) {
         return;
     }
+    if (isScreen) screenLock();
     // NOLINTNEXTLINE(misc-include-cleaner)
     if (SDL_MUSTLOCK(surface)) SDL_LockSurface(surface);
     const int bpp = surface->format->BytesPerPixel;
@@ -628,6 +629,7 @@ void Image::putPixelIndex(
     }
     // NOLINTNEXTLINE(misc-include-cleaner)
     if (SDL_MUSTLOCK(surface)) SDL_UnlockSurface(surface);
+    if (isScreen) screenUnlock();
 } // Image::putPixelIndex
 
 
@@ -663,7 +665,9 @@ void Image::fillRect(
     dest.w = ww;
     dest.h = hh;
     if (__builtin_expect(screenMoving, true) || !isScreen || anyway) {
+        if (isScreen) screenLock();
         SDL_FillRect(surface, &dest, pixel); // NOLINT(misc-include-cleaner)
+        if (isScreen) screenUnlock();
     }
 }
 
@@ -702,6 +706,7 @@ void Image::getPixelIndex(const int x, const int y, unsigned int &index) const
     const Uint8 *p1, *p3;
     const Uint16 *p2;
     const Uint32 *p4;
+    if (isScreen) screenLock();
     if (SDL_MUSTLOCK(surface)) SDL_LockSurface(surface);
     const int bpp = surface->format->BytesPerPixel;
     switch (__builtin_expect(bpp, 1)) {
@@ -738,6 +743,7 @@ void Image::getPixelIndex(const int x, const int y, unsigned int &index) const
         index = 0;
     }
     if (SDL_MUSTLOCK(surface)) SDL_UnlockSurface(surface);
+    if (isScreen) screenUnlock();
 }
 
 
@@ -750,6 +756,7 @@ void Image::drawOn(
 {
     SDL_Rect r; // NOLINT(misc-include-cleaner)
     SDL_Surface *destSurface; // NOLINT(misc-include-cleaner)
+    const bool touchesScreen = isScreen || !d || d->isScreen;
     if (d == nullptr) {
         destSurface = SDL_GetVideoSurface(); // NOLINT(misc-include-cleaner)
     } else {
@@ -763,8 +770,10 @@ void Image::drawOn(
         (d && !d->isScreen) ||
         anyway
     ) {
+        if (touchesScreen) screenLock();
         // NOLINTNEXTLINE(misc-include-cleaner)
         SDL_BlitSurface(surface, nullptr, destSurface, &r);
+        if (touchesScreen) screenUnlock();
     }
 } // Image::drawOn
 
@@ -785,6 +794,7 @@ void Image::drawSubRectOn(
 {
     SDL_Rect src, dest;
     SDL_Surface *destSurface;
+    const bool touchesScreen = isScreen || !d || d->isScreen;
     if (__builtin_expect(d == nullptr, true)) {
         destSurface = SDL_GetVideoSurface();
     } else {
@@ -802,7 +812,9 @@ void Image::drawSubRectOn(
         (d && !d->isScreen) ||
         anyway
     ) {
+        if (touchesScreen) screenLock();
         SDL_BlitSurface(surface, &src, destSurface, &dest);
+        if (touchesScreen) screenUnlock();
     }
 } // Image::drawSubRectOn
 
@@ -823,6 +835,7 @@ void Image::drawSubRectInvertedOn(
 {
     SDL_Rect src, dest;
     SDL_Surface *destSurface;
+    const bool touchesScreen = isScreen || !d || d->isScreen;
     if (d == nullptr) {
         destSurface = SDL_GetVideoSurface();
     } else {
@@ -841,8 +854,10 @@ void Image::drawSubRectInvertedOn(
             (d && !d->isScreen) ||
             anyway
         ) {
+            if (touchesScreen) screenLock();
             // NOLINTNEXTLINE(misc-include-cleaner)
             SDL_BlitSurface(surface, &src, destSurface, &dest);
+            if (touchesScreen) screenUnlock();
         }
     }
 } // Image::drawSubRectInvertedOn

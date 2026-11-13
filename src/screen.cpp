@@ -1622,7 +1622,7 @@ void screenEraseTextArea(
  */
 void screenShake(const int iterations)
 {
-    // the MSVC8 binary was generating a Access Violation when using
+    // the MSVC8 binary was generating an Access Violation when using
     // drawSubRectOn() or drawOn() to draw the screen surface on top
     // of itself.  Occurred on settings.scale 2 and 4 only.
     // Therefore, a temporary Image buffer is used to store the area
@@ -1635,6 +1635,10 @@ void screenShake(const int iterations)
         const Image *bottom = Image::create(
             SCALED(320), SCALED(shakeOffset + 1), false, Image::SOFTWARE
         );
+        U4ASSERT(bottom, "unable to create the shake buffer");
+        if (!bottom) {
+            return;
+        }
         bottom->alphaOff();
         // disable all screen updates except our own
         // otherwise image will get messed up because things aren't in their
@@ -1642,6 +1646,9 @@ void screenShake(const int iterations)
         screenMoving = false;
         // do the actual shaking
         for (int i = 0; i < iterations; i++) {
+            // draw and present each half step under one lock so the
+            // refresh thread cannot show a partially shaken screen
+            screenLock();
             // store the bottom row
             screen->drawOn(bottom, 0, SCALED(shakeOffset + 1 - 200));
             // shift the screen down and make the top row black
@@ -1655,7 +1662,6 @@ void screenShake(const int iterations)
                 SCALED(200 - (shakeOffset + 1)),
                 true
             );
-            bottom->drawOn(screen, 0, SCALED(200 - shakeOffset), true);
             screen->fillRect(
                 0,
                 0,
@@ -1668,11 +1674,14 @@ void screenShake(const int iterations)
                 true
             );
             screenRedrawScreen();
+            screenUnlock();
             EventHandler::sleep(settings.shakeInterval);
             // shift the screen back up, and replace the bottom row
+            screenLock();
             screen->drawOn(screen, 0, 0 - SCALED(shakeOffset), true);
             bottom->drawOn(screen, 0, SCALED(200 - (shakeOffset + 1)), true);
             screenRedrawScreen();
+            screenUnlock();
             EventHandler::sleep(settings.shakeInterval);
         }
         // free the bottom row image
