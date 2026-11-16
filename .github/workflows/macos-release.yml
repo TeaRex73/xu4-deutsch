@@ -1,0 +1,48 @@
+name: MACOS-RELEASE
+on:
+  push:
+    tags:
+     - '**'
+  workflow_dispatch:
+
+jobs:
+  macos:
+    # arm64 runner; both slices are cross-compiled against the same SDK.
+    runs-on: macos-15
+    steps:
+      - uses: actions/checkout@v7
+      - name: Select SDK
+        id: xcode
+        run: |
+          echo "sdk=$(xcrun --sdk macosx --show-sdk-path)" \
+              >> "$GITHUB_OUTPUT"
+          echo "version=$(xcodebuild -version | head -1 | tr -d ' ')" \
+              >> "$GITHUB_OUTPUT"
+          echo "SDK=$(xcrun --sdk macosx --show-sdk-path)" \
+              >> "$GITHUB_ENV"
+          xcodebuild -version
+      - name: Cache dependencies
+        uses: actions/cache@v4
+        with:
+          path: apple-stuff/build/deps/prefix
+          key: >-
+            macos-deps-v1-${{ steps.xcode.outputs.version }}-${{
+            hashFiles('apple-stuff/deps/**',
+            'apple-stuff/build-deps.sh') }}
+      - name: Build dependencies
+        run: apple-stuff/build-deps.sh
+      - name: Install dmg tool
+        run: brew install create-dmg
+      - name: Build app
+        # BUILD_DATE defaults to today.  A release pipeline can pass the
+        # date of the included commit instead:
+        #   BUILD_DATE=$(git log -1 --format=%cs)
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+        run: apple-stuff/build-app.sh
+      - uses: actions/upload-artifact@v7
+        with:
+          name: ultima4-deutsch-macos-${{ github.ref_name }}
+          path: |
+            apple-stuff/out/*.dmg
+            apple-stuff/out/*.dSYM.zip

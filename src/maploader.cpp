@@ -21,6 +21,7 @@
 #include "dialogueloader.h"
 #include "dungeon.h"
 #include "error.h"
+#include "filesystem.h"
 #include "map.h"
 #include "mapmgr.h"
 #include "music.h"

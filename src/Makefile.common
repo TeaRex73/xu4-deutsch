@@ -35,6 +35,7 @@ CXXSRCS=\
         event_$(UI).cpp \
         filesystem.cpp \
         game.cpp \
+        gamedata.cpp \
         image_$(UI).cpp \
         imageloader.cpp \
         imageloader_png.cpp \

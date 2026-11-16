@@ -44,6 +44,7 @@ protected:
     {
         const bool found =
             static_cast<bool>(registrees.erase(static_cast<T *>(this)));
+        (void)found;
         U4ASSERT(found, "Tried to delete non-existing Object\n");
     }
 

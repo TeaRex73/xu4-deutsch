@@ -4,10 +4,17 @@
 
 #include "vc6.h" // Fixes things if you're using VC6, does nothing otherwise
 
+#include <climits>
+#include <cstdint>
 #include <cstdio>
 #include <cstdlib>
 #include <cstring>
 #include <string>
+
+#if defined(__APPLE__) && defined(__MACH__)
+#include <mach-o/dyld.h>
+#include <unistd.h>
+#endif
 
 #include "u4.h"
 
@@ -20,6 +27,7 @@
 #include "error.h"
 #include "event.h"
 #include "game.h"
+#include "gamedata.h"
 #include "imageloader.h"
 #include "imageloader_u4.h"
 #include "intro.h"
@@ -42,30 +50,53 @@ int quit = 0;
 bool useProfile = false;
 std::string profileName;
 
+namespace {
+    /**
+     * When u4 is the main executable of an app bundle, the working
+     * directory is not the data directory: macOS starts apps launched
+     * from Finder in "/".  All game data is looked up relative to the
+     * working directory, so move to Contents/Resources first.
+     *
+     * Returns true when the bundle layout was detected, so the caller
+     * can apply the app's startup defaults.
+     */
+    bool changeToBundleResources()
+    {
+#if defined(__APPLE__) && defined(__MACH__)
+        char exe[PATH_MAX];
+        uint32_t size = static_cast<uint32_t>(sizeof(exe));
+        if (_NSGetExecutablePath(exe, &size) != 0) {
+            return false;
+        }
+        char resolved[PATH_MAX];
+        if (realpath(exe, resolved) == nullptr) {
+            return false;
+        }
+        const std::string path(resolved);
+        const std::string suffix("/Contents/MacOS/");
+        const std::size_t pos = path.rfind(suffix);
+        if (pos == std::string::npos
+            || path.find('/', pos + suffix.size()) != std::string::npos) {
+            return false;
+        }
+        const std::string resources =
+            path.substr(0, pos) + "/Contents/Resources";
+        return chdir(resources.c_str()) == 0;
+#else
+        return false;
+#endif
+    }
+}
+
 
 int main(const int argc, char **argv)
 {
+    const bool inBundle = changeToBundleResources();
     Debug::initGlobal("debug/global.txt");
     static Performance perf("debug/performance.txt");
-    U4FILE *avatar = u4fopen("AVATAR.EXE");
-    if (!avatar) {
-        errorFatal(
-            "xu4 erfordert die MS-DOS-Version von Ultima IV. "
-            "Diese muss sich im gleichen Verzeichnisse befinden "
-            "wie die ausfuehrbare Datei, oder in einem "
-            "Unterverzeichnisse davon namens \"ultima4\"."
-            "\n\nDies kannst Du erreichen, indem Du"
-            "\n - \"ultima4.zip\" von "
-            "https://ultima.thatfleminggent.com/ultima4.zip "
-            "herunterlaedst\n - die Datei \"ultima4.zip\" an den Ort "
-            "der ausfuehrbaren Datei u4.exe kopierst."
-            "\n\nBesuche die xu4-Webseite fuer weitere "
-            "Informationen.\n\thttp://xu4.sourceforge.net/"
-        );
-    }
-    u4fclose(avatar);
     unsigned int i;
     int skipIntro = 0;
+    bool downloadData = false;
     /*
      * if the -p or -profile arguments are passed to the application,
      * they need to be identified before the settings are initialized.
@@ -97,6 +128,14 @@ int main(const int argc, char **argv)
     }
     /* initialize the settings */
     settings.init(useProfile, profileName);
+    /* a downloaded ultima4.zip lives here, and is found regardless of
+       whether the app runs from the dmg or from /Applications */
+    addUserDataSearchPath(settings.getUserPath());
+    /* the bundle has no launcher to pass -f, so keep starting in
+       fullscreen the way it always did */
+    if (inBundle) {
+        settings.fullscreen = true;
+    }
     /* update the settings based upon command-line arguments */
     for (i = 1; i < static_cast<unsigned int>(argc); i++) {
         if (std::strcmp(argv[i], "-filter") == 0
@@ -143,6 +182,8 @@ int main(const int argc, char **argv)
                    || std::strcmp(argv[i], "--quiet") == 0) {
             settings.musicVol = 0;
             settings.soundVol = 0;
+        } else if (std::strcmp(argv[i], "--download-data") == 0) {
+            downloadData = true;
         } else if (std::strcmp(argv[i], "-h") == 0
                    || std::strcmp(argv[i], "-help") == 0
                    || std::strcmp(argv[i], "--help") == 0) {
@@ -158,6 +199,9 @@ int main(const int argc, char **argv)
                         " aus.\n");
             std::printf("-i, --skip-intro         Ueberspringt das Intro und"
                         " laedt den letzten Spielstand.\n");
+            std::printf("--download-data          Laedt die Spieldaten von"
+                        " einem Gentoo-Mirror,\n"
+                        "                         falls sie fehlen.\n");
 #if 0
             std::printf("\n-s <Ganzzahl>,\n");
             std::printf("--scale <Ganzzahl>       Spezifiziert"
@@ -181,6 +225,45 @@ int main(const int argc, char **argv)
             " unterstuetzten Parameter anzuzeigen.\n",
             argv[i]
         );
+    }
+
+    /*
+     * The data is looked up through the settings and the search path,
+     * so the check has to happen after the options were parsed.  In a
+     * bundle the missing game data is fetched automatically, without
+     * asking: writing only to the user data directory leaves the
+     * signature of a signed app intact.
+     */
+    U4FILE *avatar = u4fopen("AVATAR.EXE");
+    if (!avatar && (inBundle || downloadData)) {
+        if (downloadGameData(settings.getUserPath(), inBundle)) {
+            /* the package manager cached the failed scan */
+            U4ZipPackageMgr::destroy();
+            avatar = u4fopen("AVATAR.EXE");
+        }
+    }
+    if (!avatar) {
+        errorFatal(
+            "xu4 erfordert die MS-DOS-Version von Ultima IV. "
+            "Diese muss sich im gleichen Verzeichnisse befinden "
+            "wie die ausfuehrbare Datei, oder in einem "
+            "Unterverzeichnisse davon namens \"ultima4\"."
+            "\n\nDies kannst Du erreichen, indem Du"
+            "\n - \"ultima4.zip\" von "
+            "https://ultima.thatfleminggent.com/ultima4.zip "
+            "herunterlaedst\n - die Datei \"ultima4.zip\" an den Ort "
+            "der ausfuehrbaren Datei u4.exe kopierst."
+            "\n\nIm App-Bundle wird sie beim Start automatisch nach "
+            "~/Library/Application Support/com.ticmanis.u4/ geladen."
+            "\n\nBesuche die xu4-Webseite fuer weitere "
+            "Informationen.\n\thttp://xu4.sourceforge.net/"
+        );
+    }
+    u4fclose(avatar);
+    const std::string docs = decodeDocumentation();
+    if (!docs.empty() && verbose) {
+        std::fprintf(stderr, "Documentation decoded into %s\n",
+                     docs.c_str());
     }
 
     xu4_seed_random();

@@ -1,5 +1,24 @@
 _Deparsed_XSubs.pm
 .idea
+.DS_Store
+/Frameworks
+apple-stuff/build
+apple-stuff/out
+apple-stuff/source_folder/.DS_Store
+apple-stuff/source_folder/.VolumeIcon.icns
+apple-stuff/source_folder/.background
+apple-stuff/source_folder/Ultima IV Dokumentation
+apple-stuff/source_folder/Ultima IV Deutsch.app/Contents/Frameworks
+apple-stuff/source_folder/Ultima IV Deutsch.app/Contents/Info.plist
+apple-stuff/source_folder/Ultima IV Deutsch.app/Contents/MacOS/u4
+apple-stuff/source_folder/Ultima IV Deutsch.app/Contents/_CodeSignature
+apple-stuff/source_folder/Ultima IV Deutsch.app/Contents/Resources/conf
+apple-stuff/source_folder/Ultima IV Deutsch.app/Contents/Resources/debug
+apple-stuff/source_folder/Ultima IV Deutsch.app/Contents/Resources/graphics
+apple-stuff/source_folder/Ultima IV Deutsch.app/Contents/Resources/mirrors.txt
+apple-stuff/source_folder/Ultima IV Deutsch.app/Contents/Resources/music
+apple-stuff/source_folder/Ultima IV Deutsch.app/Contents/Resources/sound
+apple-stuff/source_folder/Ultima IV Deutsch.app/Contents/Resources/ultima4.zip
 src/*.o
 src/Makefile
 src/lzw/*.o

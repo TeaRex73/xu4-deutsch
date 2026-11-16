@@ -16,3 +16,13 @@ Die resultierenden Dateien haben nach Wiederherstellung folgenden Inhalt:
 5.) Karte.pdf: Die beigelegte Stoff-Landkarte von Ultima IV
 
 Alle Dateien wurden aus dem englischen Original ins Deutsche übersetzt.
+
+Speicherort der entschlüsselten Dateien:
+
+macOS:
+Beim ersten Start des Spiels werden die entschlüsselten PDF-Dateien
+automatisch im Benutzerverzeichnis abgelegt. Die Dateien mit der Endung
+".xor" bleiben im Dokumentationsordner unverändert erhalten.
+
+Du findest sie unter "~/Documents/Ultima IV Deutsch/" - das ist der Ordner
+"Dokumente" im Finder, Unterordner "Ultima IV Deutsch".

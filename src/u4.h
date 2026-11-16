@@ -5,7 +5,13 @@
 #ifndef U4_H
 #define U4_H
 
-#define VERSION "2026-11-14"
+/*
+ * Build date shown in the game and in --help.  The build system
+ * overrides this; make-based builds keep the last release date.
+ */
+#ifndef VERSION
+#define VERSION "2026-11-17"
+#endif
 
 /* info for loading city data from *.ult and *.tlk */
 #define CITY_HEIGHT 32
