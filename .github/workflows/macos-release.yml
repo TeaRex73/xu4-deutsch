@@ -8,7 +8,7 @@ on:
 jobs:
   macos:
     # arm64 runner; both slices are cross-compiled against the same SDK.
-    runs-on: macos-15
+    runs-on: macos-26
     steps:
       - uses: actions/checkout@v7
       - name: Select SDK
