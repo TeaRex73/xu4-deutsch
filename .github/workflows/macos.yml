@@ -39,6 +39,7 @@ jobs:
       - name: Install dmg tool
         run: brew install create-dmg
       - name: Build app
+        # BUILD_DATE defaults to today's UTC date.
         env:
           GITHUB_TOKEN: ${{ github.token }}
         run: apple-stuff/build-app.sh

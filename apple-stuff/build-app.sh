@@ -38,8 +38,8 @@
 #                   XU4_GIT_DEPS_DIR)
 #   SDK             macOS SDK to compile against
 #   BUILD_DATE      date shown by the game and used for the bundle
-#                   version (default: today, YYYY-MM-DD; a release
-#                   pipeline can pass the commit date)
+#                   version (default: today, UTC, YYYY-MM-DD; a
+#                   release pipeline can pass the commit date)
 #   CODESIGN_ID     signing identity (default: -, ad-hoc)
 #   SKIP_DEPS_UPDATE_CHECK  set to 1 to skip the release check
 #   GITHUB_TOKEN    optional token for the release check
@@ -87,7 +87,8 @@ else
     deps_prefix=
 fi
 min_os=10.13
-build_date=${BUILD_DATE:-$(date +%Y-%m-%d)}
+# Dates are UTC so local builds and CI builds agree.
+build_date=${BUILD_DATE:-$(date -u +%Y-%m-%d)}
 # CFBundleShortVersionString is conventionally dot-separated, so it
 # carries the same date in a different notation.
 version=$(printf '%s' "$build_date" | tr '-' '.')

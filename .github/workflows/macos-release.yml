@@ -34,8 +34,8 @@ jobs:
       - name: Install dmg tool
         run: brew install create-dmg
       - name: Build app
-        # BUILD_DATE defaults to today.  A release pipeline can pass the
-        # date of the included commit instead:
+        # BUILD_DATE defaults to today's UTC date.  A release pipeline
+        # can pass the date of the included commit instead:
         #   BUILD_DATE=$(git log -1 --format=%cs)
         env:
           GITHUB_TOKEN: ${{ github.token }}

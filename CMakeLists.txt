@@ -11,10 +11,11 @@ endif()
 project(xu4-deutsch LANGUAGES C CXX)
 
 # Build date shown by the game.  The macOS release script passes the
-# date explicitly; other CMake builds fall back to today.  A future
-# release pipeline can hand in the date of the final included commit.
+# date explicitly; other CMake builds fall back to today's UTC date.
+# A future release pipeline can hand in the date of the final included
+# commit.
 if(NOT XU4_BUILD_DATE)
-  string(TIMESTAMP XU4_BUILD_DATE "%Y-%m-%d")
+  string(TIMESTAMP XU4_BUILD_DATE "%Y-%m-%d" UTC)
 endif()
 
 include(GNUInstallDirs)
